@@ -237,13 +237,9 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('EigenmodeStrat
   <div class="headertitle"><div class="title">EigenmodeStrategy.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="Davidson_8h_source.html">Davidson.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="Dimer_8h_source.html">Dimer.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="ImprovedDimer_8h_source.html">ImprovedDimer.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="Lanczos_8h_source.html">Lanczos.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="ImprovedDimer_8h_source.html">ImprovedDimer.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>&quot;</code><br />
-<code>#include &lt;stdexcept&gt;</code><br />
-<code>#include &lt;variant&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
 </div>
 <p><a href="EigenmodeStrategy_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -254,45 +250,22 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-typedef-members" class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:ae12bf1108d97000e0f36f746d2fcf16e" id="r_ae12bf1108d97000e0f36f746d2fcf16e"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#ae12bf1108d97000e0f36f746d2fcf16e">eonc::EigenmodeStrategy</a> = std::variant&lt;<a class="el" href="classDimer.html">Dimer</a>, <a class="el" href="classImprovedDimer.html">ImprovedDimer</a>, <a class="el" href="classLanczos.html">Lanczos</a>, <a class="el" href="classDavidson.html">Davidson</a>&gt;</td></tr>
-<tr class="memitem:ae12bf1108d97000e0f36f746d2fcf16e" id="r_ae12bf1108d97000e0f36f746d2fcf16e"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#ae12bf1108d97000e0f36f746d2fcf16e">EigenmodeStrategy</a></td></tr>
+<tr class="memitem:a2ccaf2c1835c240d5fff93174bd0a416" id="r_a2ccaf2c1835c240d5fff93174bd0a416"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a2ccaf2c1835c240d5fff93174bd0a416">eonc::EigenmodeStrategy</a> = <a class="el" href="classeonc_1_1LowestEigenmode.html">LowestEigenmode</a></td></tr>
+<tr class="memdesc:a2ccaf2c1835c240d5fff93174bd0a416"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type-erased eigenmode solver. Layout is the same with or without gprd.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a7545c583c637f9e0e579f64c63d2fe2d" id="r_a7545c583c637f9e0e579f64c63d2fe2d"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="namespaceeonc.html#ae12bf1108d97000e0f36f746d2fcf16e">EigenmodeStrategy</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a7545c583c637f9e0e579f64c63d2fe2d">eonc::buildEigenmodeStrategy</a> (std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; matter, const <a class="el" href="classParameters.html">Parameters</a> &amp;params, std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt; pot)</td></tr>
-<tr class="memdesc:a7545c583c637f9e0e579f64c63d2fe2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the eigenmode solver from parameters.  <br /></td></tr>
-<tr class="memitem:aadea15a7f9fe0b9bdc5983ed470d6917" id="r_aadea15a7f9fe0b9bdc5983ed470d6917"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#aadea15a7f9fe0b9bdc5983ed470d6917">eonc::eigenmodeCompute</a> (<a class="el" href="namespaceeonc.html#ae12bf1108d97000e0f36f746d2fcf16e">EigenmodeStrategy</a> &amp;s, std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; matter, <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> direction)</td></tr>
-<tr class="memdesc:aadea15a7f9fe0b9bdc5983ed470d6917"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch compute() to the active variant.  <br /></td></tr>
-<tr class="memitem:ab1dbea20c2a27bbd87d55a6872c31c45" id="r_ab1dbea20c2a27bbd87d55a6872c31c45"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#ab1dbea20c2a27bbd87d55a6872c31c45">eonc::eigenmodeGetEigenvalue</a> (<a class="el" href="namespaceeonc.html#ae12bf1108d97000e0f36f746d2fcf16e">EigenmodeStrategy</a> &amp;s)</td></tr>
-<tr class="memdesc:ab1dbea20c2a27bbd87d55a6872c31c45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch getEigenvalue() to the active variant.  <br /></td></tr>
-<tr class="memitem:a0fd02adc2178dcd83316cf4000037143" id="r_a0fd02adc2178dcd83316cf4000037143"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a0fd02adc2178dcd83316cf4000037143">eonc::eigenmodeGetEigenvector</a> (<a class="el" href="namespaceeonc.html#ae12bf1108d97000e0f36f746d2fcf16e">EigenmodeStrategy</a> &amp;s)</td></tr>
-<tr class="memdesc:a0fd02adc2178dcd83316cf4000037143"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch getEigenvector() to the active variant.  <br /></td></tr>
-<tr class="memitem:a252f9d850cebf055ff6c7d8c2dfc233a" id="r_a252f9d850cebf055ff6c7d8c2dfc233a"><td class="memItemLeft"><a class="el" href="classImprovedDimer.html">ImprovedDimer</a> *&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a252f9d850cebf055ff6c7d8c2dfc233a">eonc::asImprovedDimer</a> (<a class="el" href="namespaceeonc.html#ae12bf1108d97000e0f36f746d2fcf16e">EigenmodeStrategy</a> &amp;s)</td></tr>
-<tr class="memdesc:a252f9d850cebf055ff6c7d8c2dfc233a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access ImprovedDimer-specific features.  <br /></td></tr>
-<tr class="memitem:abf20409e0f17ed8149afee287ddace88" id="r_abf20409e0f17ed8149afee287ddace88"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#abf20409e0f17ed8149afee287ddace88">eonc::eigenmodeTotalForceCalls</a> (<a class="el" href="namespaceeonc.html#ae12bf1108d97000e0f36f746d2fcf16e">EigenmodeStrategy</a> &amp;s)</td></tr>
-<tr class="memdesc:abf20409e0f17ed8149afee287ddace88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read stats from any variant (all inherit <a class="el" href="classeonc_1_1LowestEigenmode.html" title="Base for eigenmode solvers.">LowestEigenmode</a> stats fields).  <br /></td></tr>
-<tr class="memitem:a6c459cc968ac8f250df6a87fa3beda7e" id="r_a6c459cc968ac8f250df6a87fa3beda7e"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a6c459cc968ac8f250df6a87fa3beda7e">eonc::eigenmodeStatsTorque</a> (<a class="el" href="namespaceeonc.html#ae12bf1108d97000e0f36f746d2fcf16e">EigenmodeStrategy</a> &amp;s)</td></tr>
-<tr class="memitem:a0da1d79d507da82af103f009805a6d66" id="r_a0da1d79d507da82af103f009805a6d66"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a0da1d79d507da82af103f009805a6d66">eonc::eigenmodeStatsAngle</a> (<a class="el" href="namespaceeonc.html#ae12bf1108d97000e0f36f746d2fcf16e">EigenmodeStrategy</a> &amp;s)</td></tr>
-<tr class="memitem:ab7bd5157cd9a90e6bb2aec80fa03b091" id="r_ab7bd5157cd9a90e6bb2aec80fa03b091"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#ab7bd5157cd9a90e6bb2aec80fa03b091">eonc::eigenmodeStatsRotations</a> (<a class="el" href="namespaceeonc.html#ae12bf1108d97000e0f36f746d2fcf16e">EigenmodeStrategy</a> &amp;s)</td></tr>
-<tr class="memitem:ae9df3bb8673d01b66f6b43449cbf4c6a" id="r_ae9df3bb8673d01b66f6b43449cbf4c6a"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#ae9df3bb8673d01b66f6b43449cbf4c6a">eonc::eigenmodeTotalIterations</a> (<a class="el" href="namespaceeonc.html#ae12bf1108d97000e0f36f746d2fcf16e">EigenmodeStrategy</a> &amp;s)</td></tr>
+<tr class="memitem:a53a942db7f595f4023b790db6ca2758a" id="r_a53a942db7f595f4023b790db6ca2758a"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classeonc_1_1LowestEigenmode.html">LowestEigenmode</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a53a942db7f595f4023b790db6ca2758a">eonc::buildEigenmodeStrategy</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; matter, const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;params, std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt; pot)</td></tr>
+<tr class="memitem:a1f0e36e8301c8aec77f544e954f8d301" id="r_a1f0e36e8301c8aec77f544e954f8d301"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a1f0e36e8301c8aec77f544e954f8d301">eonc::eigenmodeCompute</a> (<a class="el" href="classeonc_1_1LowestEigenmode.html">LowestEigenmode</a> &amp;s, std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; matter, <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> direction)</td></tr>
+<tr class="memitem:a8a03dd97e2b389d73bdce26bd963e813" id="r_a8a03dd97e2b389d73bdce26bd963e813"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a8a03dd97e2b389d73bdce26bd963e813">eonc::eigenmodeGetEigenvalue</a> (<a class="el" href="classeonc_1_1LowestEigenmode.html">LowestEigenmode</a> &amp;s)</td></tr>
+<tr class="memitem:ad0433330767efe79507c743a1472a351" id="r_ad0433330767efe79507c743a1472a351"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#ad0433330767efe79507c743a1472a351">eonc::eigenmodeGetEigenvector</a> (<a class="el" href="classeonc_1_1LowestEigenmode.html">LowestEigenmode</a> &amp;s)</td></tr>
+<tr class="memitem:a609e4ec754e7f8d2ae248fccfd498955" id="r_a609e4ec754e7f8d2ae248fccfd498955"><td class="memItemLeft"><a class="el" href="classeonc_1_1ImprovedDimer.html">ImprovedDimer</a> *&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a609e4ec754e7f8d2ae248fccfd498955">eonc::asImprovedDimer</a> (<a class="el" href="classeonc_1_1LowestEigenmode.html">LowestEigenmode</a> &amp;s)</td></tr>
+<tr class="memitem:a4d8ec283541cb5174ad4eef0e5ac5103" id="r_a4d8ec283541cb5174ad4eef0e5ac5103"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a4d8ec283541cb5174ad4eef0e5ac5103">eonc::eigenmodeTotalForceCalls</a> (<a class="el" href="classeonc_1_1LowestEigenmode.html">LowestEigenmode</a> &amp;s)</td></tr>
+<tr class="memitem:a9b68b0a4373afddf26f50ad7c9b22c2f" id="r_a9b68b0a4373afddf26f50ad7c9b22c2f"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a9b68b0a4373afddf26f50ad7c9b22c2f">eonc::eigenmodeStatsTorque</a> (<a class="el" href="classeonc_1_1LowestEigenmode.html">LowestEigenmode</a> &amp;s)</td></tr>
+<tr class="memitem:af3eebc95b6d9df083b351e6284a088ca" id="r_af3eebc95b6d9df083b351e6284a088ca"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#af3eebc95b6d9df083b351e6284a088ca">eonc::eigenmodeStatsAngle</a> (<a class="el" href="classeonc_1_1LowestEigenmode.html">LowestEigenmode</a> &amp;s)</td></tr>
+<tr class="memitem:a5ee27f96de9987a7e81b1b5b24470a4b" id="r_a5ee27f96de9987a7e81b1b5b24470a4b"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a5ee27f96de9987a7e81b1b5b24470a4b">eonc::eigenmodeStatsRotations</a> (<a class="el" href="classeonc_1_1LowestEigenmode.html">LowestEigenmode</a> &amp;s)</td></tr>
+<tr class="memitem:a730aa4fd117b14e5edf687766f4e6044" id="r_a730aa4fd117b14e5edf687766f4e6044"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a730aa4fd117b14e5edf687766f4e6044">eonc::eigenmodeTotalIterations</a> (<a class="el" href="classeonc_1_1LowestEigenmode.html">LowestEigenmode</a> &amp;s)</td></tr>
 </table>
-<a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Typedef Documentation</h2>
-<a id="ae12bf1108d97000e0f36f746d2fcf16e" name="ae12bf1108d97000e0f36f746d2fcf16e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae12bf1108d97000e0f36f746d2fcf16e">&#9670;&#160;</a></span>EigenmodeStrategy</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespaceeonc.html#ae12bf1108d97000e0f36f746d2fcf16e">eonc::EigenmodeStrategy</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="EigenmodeStrategy_8h_source.html#l00032">32</a> of file <a class="el" href="EigenmodeStrategy_8h_source.html">EigenmodeStrategy.h</a>.</p>
-
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

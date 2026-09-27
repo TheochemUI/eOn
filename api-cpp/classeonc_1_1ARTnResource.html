@@ -239,58 +239,50 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classeonc_1_1A
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>&gt;</code></p>
+<div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for eonc::ARTnResource:</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+ <div class="center">
+  <img src="classeonc_1_1ARTnResource.png" usemap="#eonc_3A_3AARTnResource_map" alt=""/>
+  <map id="eonc_3A_3AARTnResource_map" name="eonc_3A_3AARTnResource_map">
+<area href="classeonc_1_1IARTnResource.html" alt="eonc::IARTnResource" shape="rect" coords="0,0,134,24"/>
+  </map>
+</div></div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
-Public Types</h2></td></tr>
-<tr class="memitem:a9387cf4526d81dc0dae95f967635d942" id="r_a9387cf4526d81dc0dae95f967635d942"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a9387cf4526d81dc0dae95f967635d942">artn_create_fn</a> = int (*)()</td></tr>
-<tr class="memitem:a58836e6aad681dd66b71494bf40fb7e3" id="r_a58836e6aad681dd66b71494bf40fb7e3"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a58836e6aad681dd66b71494bf40fb7e3">setup_artn_fn</a> = void (*)(const int nat, bool *cerr)</td></tr>
-<tr class="memitem:a6094090131140d24c996761f61685b02" id="r_a6094090131140d24c996761f61685b02"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a6094090131140d24c996761f61685b02">artn_fn</a></td></tr>
-<tr class="memitem:a2c4044dd4ac4c1d72887220909593cb4" id="r_a2c4044dd4ac4c1d72887220909593cb4"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a2c4044dd4ac4c1d72887220909593cb4">artn_destroy_fn</a> = void (*)()</td></tr>
-<tr class="memitem:a62fa949465328ec78d9fb812589f7755" id="r_a62fa949465328ec78d9fb812589f7755"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a62fa949465328ec78d9fb812589f7755">set_param_fn</a></td></tr>
-<tr class="memitem:afdab6fdb48b9f59e7a13d1bf69e01314" id="r_afdab6fdb48b9f59e7a13d1bf69e01314"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#afdab6fdb48b9f59e7a13d1bf69e01314">get_param_fn</a> = int (*)(const char *name, void *cval)</td></tr>
-<tr class="memitem:aa37ae39e14fb3851e0944cf273db62f0" id="r_aa37ae39e14fb3851e0944cf273db62f0"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#aa37ae39e14fb3851e0944cf273db62f0">get_runparam_fn</a> = int (*)(const char *name, void *cval)</td></tr>
-<tr class="memitem:a2b7060ece1a537465fc6deba833b0b6c" id="r_a2b7060ece1a537465fc6deba833b0b6c"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a2b7060ece1a537465fc6deba833b0b6c">get_data_fn</a> = int (*)(const char *name, void **cval)</td></tr>
-<tr class="memitem:a60cbaccf228793f5ebaf1c66649a835e" id="r_a60cbaccf228793f5ebaf1c66649a835e"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a60cbaccf228793f5ebaf1c66649a835e">print_caller_fn</a> = void (*)()</td></tr>
-<tr class="memitem:a3c5d818469608986d1889b6412d05612" id="r_a3c5d818469608986d1889b6412d05612"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a3c5d818469608986d1889b6412d05612">artn_step_fn</a></td></tr>
-<tr class="memitem:afb7f92c2f2f38c200ae100998ecb6ccf" id="r_afb7f92c2f2f38c200ae100998ecb6ccf"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#afb7f92c2f2f38c200ae100998ecb6ccf">get_error_fn</a> = int (*)(void **cmsg)</td></tr>
-<tr class="memdesc:afb7f92c2f2f38c200ae100998ecb6ccf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve pARTn error code + c_malloc'd message pointer.  <br /></td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2b728ef808b3d4a39ac17f3d83a900d7" id="r_a2b728ef808b3d4a39ac17f3d83a900d7"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a2b728ef808b3d4a39ac17f3d83a900d7">is_loaded</a> () const noexcept</td></tr>
-<tr class="memdesc:a2b728ef808b3d4a39ac17f3d83a900d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if libartn was successfully loaded.  <br /></td></tr>
-<tr class="memitem:a2e5b58fc292fd7298bb8519982375cdb" id="r_a2e5b58fc292fd7298bb8519982375cdb"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a2e5b58fc292fd7298bb8519982375cdb">require_loaded</a> () const</td></tr>
-<tr class="memdesc:a2e5b58fc292fd7298bb8519982375cdb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Throws std::runtime_error if libartn is not available.  <br /></td></tr>
-<tr class="memitem:ad688f08e54f333f55e64862f2f81e879" id="r_ad688f08e54f333f55e64862f2f81e879"><td class="memItemLeft"><a class="el" href="#a9387cf4526d81dc0dae95f967635d942">artn_create_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#ad688f08e54f333f55e64862f2f81e879">get_create_fn</a> () const</td></tr>
-<tr class="memitem:ae698e5e400f1dad1f176bb1380cea229" id="r_ae698e5e400f1dad1f176bb1380cea229"><td class="memItemLeft"><a class="el" href="#a58836e6aad681dd66b71494bf40fb7e3">setup_artn_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#ae698e5e400f1dad1f176bb1380cea229">get_setup_fn</a> () const</td></tr>
-<tr class="memitem:a9a53007d328f7d3d089e42023c0deb2a" id="r_a9a53007d328f7d3d089e42023c0deb2a"><td class="memItemLeft"><a class="el" href="#a6094090131140d24c996761f61685b02">artn_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a9a53007d328f7d3d089e42023c0deb2a">get_artn_fn</a> () const</td></tr>
-<tr class="memitem:afa48618abc205c6061676350d367d4ac" id="r_afa48618abc205c6061676350d367d4ac"><td class="memItemLeft"><a class="el" href="#a2c4044dd4ac4c1d72887220909593cb4">artn_destroy_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#afa48618abc205c6061676350d367d4ac">get_destroy_fn</a> () const</td></tr>
-<tr class="memitem:a849f7d7cd3a2d7c8f8fe0f757703b1f1" id="r_a849f7d7cd3a2d7c8f8fe0f757703b1f1"><td class="memItemLeft"><a class="el" href="#a62fa949465328ec78d9fb812589f7755">set_param_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a849f7d7cd3a2d7c8f8fe0f757703b1f1">get_set_param_fn</a> () const</td></tr>
-<tr class="memitem:a8fcef4d20792f7c9a7c123d752771d6c" id="r_a8fcef4d20792f7c9a7c123d752771d6c"><td class="memItemLeft"><a class="el" href="#afdab6fdb48b9f59e7a13d1bf69e01314">get_param_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a8fcef4d20792f7c9a7c123d752771d6c">get_get_param_fn</a> () const</td></tr>
-<tr class="memitem:aaed5c09048da8d985b59f9a2f44b1c46" id="r_aaed5c09048da8d985b59f9a2f44b1c46"><td class="memItemLeft"><a class="el" href="#aa37ae39e14fb3851e0944cf273db62f0">get_runparam_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#aaed5c09048da8d985b59f9a2f44b1c46">get_get_runparam_fn</a> () const</td></tr>
-<tr class="memitem:ab74f2980a81b3926222bd7329001c943" id="r_ab74f2980a81b3926222bd7329001c943"><td class="memItemLeft"><a class="el" href="#a2b7060ece1a537465fc6deba833b0b6c">get_data_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#ab74f2980a81b3926222bd7329001c943">get_get_data_fn</a> () const</td></tr>
-<tr class="memitem:aaa42638bd3df5e4fd92a848be4596c55" id="r_aaa42638bd3df5e4fd92a848be4596c55"><td class="memItemLeft"><a class="el" href="#a60cbaccf228793f5ebaf1c66649a835e">print_caller_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#aaa42638bd3df5e4fd92a848be4596c55">get_print_caller_fn</a> () const</td></tr>
-<tr class="memitem:a9a138750d1f270d64e495464e850b628" id="r_a9a138750d1f270d64e495464e850b628"><td class="memItemLeft"><a class="el" href="#a3c5d818469608986d1889b6412d05612">artn_step_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a9a138750d1f270d64e495464e850b628">get_artn_step_fn</a> () const</td></tr>
-<tr class="memitem:af00b7fdf177758c46c8cc93872d87e92" id="r_af00b7fdf177758c46c8cc93872d87e92"><td class="memItemLeft"><a class="el" href="#afb7f92c2f2f38c200ae100998ecb6ccf">get_error_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#af00b7fdf177758c46c8cc93872d87e92">get_get_error_fn</a> () const</td></tr>
-<tr class="memdesc:af00b7fdf177758c46c8cc93872d87e92"><td class="mdescLeft">&#160;</td><td class="mdescRight">May be null on older pARTn builds that predate the C get_error wrapper; callers must null-check before dispatching.  <br /></td></tr>
+<tr class="memitem:af37478f73fac9f03d4427e7803a2c8ff" id="r_af37478f73fac9f03d4427e7803a2c8ff"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#af37478f73fac9f03d4427e7803a2c8ff">is_loaded</a> () const noexcept override</td></tr>
+<tr class="memitem:a1708f49bfa8dbcda9cd3cb73fdedd665" id="r_a1708f49bfa8dbcda9cd3cb73fdedd665"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a1708f49bfa8dbcda9cd3cb73fdedd665">require_loaded</a> () override</td></tr>
+<tr class="memdesc:a1708f49bfa8dbcda9cd3cb73fdedd665"><td class="mdescLeft">&#160;</td><td class="mdescRight">Throws std::runtime_error if libartn is not available.  <br /></td></tr>
+<tr class="memitem:aca870d5390c11fbc5857803de8457315" id="r_aca870d5390c11fbc5857803de8457315"><td class="memItemLeft"><a class="el" href="classeonc_1_1IARTnResource.html#a7d9f99cd9c7299bdeae9ffe8471f2323">artn_create_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#aca870d5390c11fbc5857803de8457315">get_create_fn</a> () const override</td></tr>
+<tr class="memitem:a901d818015b2f4e3f1333f0b9b4168d7" id="r_a901d818015b2f4e3f1333f0b9b4168d7"><td class="memItemLeft"><a class="el" href="classeonc_1_1IARTnResource.html#a15c357ab0e167435045175d3bed3c178">setup_artn_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a901d818015b2f4e3f1333f0b9b4168d7">get_setup_fn</a> () const override</td></tr>
+<tr class="memitem:aef3fc97786275d1d6a0f3ec5a4915bae" id="r_aef3fc97786275d1d6a0f3ec5a4915bae"><td class="memItemLeft"><a class="el" href="classeonc_1_1IARTnResource.html#a49827330a3fc62fab80f453f11eb5fa5">artn_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#aef3fc97786275d1d6a0f3ec5a4915bae">get_artn_fn</a> () const override</td></tr>
+<tr class="memitem:a149f95839dd53f7b9bf39de910c560bc" id="r_a149f95839dd53f7b9bf39de910c560bc"><td class="memItemLeft"><a class="el" href="classeonc_1_1IARTnResource.html#ad6fa2da3050b5bd0999d672b97314d48">artn_destroy_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a149f95839dd53f7b9bf39de910c560bc">get_destroy_fn</a> () const override</td></tr>
+<tr class="memitem:a86383cbe5e8a28f4d019f33bda01c96e" id="r_a86383cbe5e8a28f4d019f33bda01c96e"><td class="memItemLeft"><a class="el" href="classeonc_1_1IARTnResource.html#aece4deab7ec1144d9ad93ac407f47d6e">set_param_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a86383cbe5e8a28f4d019f33bda01c96e">get_set_param_fn</a> () const override</td></tr>
+<tr class="memitem:a761493c38c327d4d44bd2faf068f3247" id="r_a761493c38c327d4d44bd2faf068f3247"><td class="memItemLeft"><a class="el" href="classeonc_1_1IARTnResource.html#a5c6c54b273f2aa56dac1c1368044e236">get_param_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a761493c38c327d4d44bd2faf068f3247">get_get_param_fn</a> () const override</td></tr>
+<tr class="memitem:a9767257b072130672c8fa8d6cb9b0491" id="r_a9767257b072130672c8fa8d6cb9b0491"><td class="memItemLeft"><a class="el" href="classeonc_1_1IARTnResource.html#ad80bebc76044730288c43c9314d30569">get_runparam_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a9767257b072130672c8fa8d6cb9b0491">get_get_runparam_fn</a> () const override</td></tr>
+<tr class="memitem:a3fc62a9d64eadfd6db9676e2d89bc34a" id="r_a3fc62a9d64eadfd6db9676e2d89bc34a"><td class="memItemLeft"><a class="el" href="classeonc_1_1IARTnResource.html#a822d979f9793529a40baeb5e073316f0">get_data_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a3fc62a9d64eadfd6db9676e2d89bc34a">get_get_data_fn</a> () const override</td></tr>
+<tr class="memitem:a644bccc0e374d845900d10ae2718fd9b" id="r_a644bccc0e374d845900d10ae2718fd9b"><td class="memItemLeft"><a class="el" href="classeonc_1_1IARTnResource.html#a37f19951afa537621609f31bad7b82d8">print_caller_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a644bccc0e374d845900d10ae2718fd9b">get_print_caller_fn</a> () const override</td></tr>
+<tr class="memitem:a21f13328807f61dc213e4166f12e2f1d" id="r_a21f13328807f61dc213e4166f12e2f1d"><td class="memItemLeft"><a class="el" href="classeonc_1_1IARTnResource.html#aa5e36e2a1ad56ad568d7a092f11c2fd1">artn_step_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a21f13328807f61dc213e4166f12e2f1d">get_artn_step_fn</a> () const override</td></tr>
+<tr class="memitem:aa2009ed6f3d668aebcb7e9c7eb06608d" id="r_aa2009ed6f3d668aebcb7e9c7eb06608d"><td class="memItemLeft"><a class="el" href="classeonc_1_1IARTnResource.html#a70bfa105afb0d1cf3c2a528f872fa629">get_error_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#aa2009ed6f3d668aebcb7e9c7eb06608d">get_get_error_fn</a> () const override</td></tr>
+<tr class="memdesc:aa2009ed6f3d668aebcb7e9c7eb06608d"><td class="mdescLeft">&#160;</td><td class="mdescRight">May be null on older pARTn builds that predate the C get_error wrapper; callers must null-check before dispatching.  <br /></td></tr>
+<tr class="memitem:a7ec752e31f5a8edaf75fb165e5531ec0" id="r_a7ec752e31f5a8edaf75fb165e5531ec0"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a7ec752e31f5a8edaf75fb165e5531ec0">~ARTnResource</a> () override</td></tr>
 <tr class="memitem:a62445671146915b5a9932c489c173683" id="r_a62445671146915b5a9932c489c173683"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a62445671146915b5a9932c489c173683">ARTnResource</a> (const ARTnResource &amp;)=delete</td></tr>
-<tr class="memdesc:a62445671146915b5a9932c489c173683"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-copyable, non-movable.  <br /></td></tr>
 <tr class="memitem:a650ce85ab9b05c656e3a45e6441eeaf9" id="r_a650ce85ab9b05c656e3a45e6441eeaf9"><td class="memItemLeft"><a class="el" href="#a62445671146915b5a9932c489c173683">ARTnResource</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a650ce85ab9b05c656e3a45e6441eeaf9">operator=</a> (const <a class="el" href="#a62445671146915b5a9932c489c173683">ARTnResource</a> &amp;)=delete</td></tr>
+<tr class="inherit_header pub_methods_classeonc_1_1IARTnResource"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1IARTnResource')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1IARTnResource.html">eonc::IARTnResource</a></td></tr>
+<tr class="memitem:aa83b6eccffc6458541e56df8e37df8f8 inherit pub_methods_classeonc_1_1IARTnResource" id="r_aa83b6eccffc6458541e56df8e37df8f8"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IARTnResource.html#aa83b6eccffc6458541e56df8e37df8f8">~IARTnResource</a> ()=default</td></tr>
+<tr class="memitem:ab66271635e145c76288327f520b6d682 inherit pub_methods_classeonc_1_1IARTnResource" id="r_ab66271635e145c76288327f520b6d682"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IARTnResource.html#ab66271635e145c76288327f520b6d682">IARTnResource</a> (const IARTnResource &amp;)=delete</td></tr>
+<tr class="memitem:aff8d3a9a0ca605837404e6613ea0db58 inherit pub_methods_classeonc_1_1IARTnResource" id="r_aff8d3a9a0ca605837404e6613ea0db58"><td class="memItemLeft"><a class="el" href="classeonc_1_1IARTnResource.html#ab66271635e145c76288327f520b6d682">IARTnResource</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IARTnResource.html#aff8d3a9a0ca605837404e6613ea0db58">operator=</a> (const <a class="el" href="classeonc_1_1IARTnResource.html#ab66271635e145c76288327f520b6d682">IARTnResource</a> &amp;)=delete</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:aff81180e8c245d659489d93364ee2889" id="r_aff81180e8c245d659489d93364ee2889"><td class="memItemLeft">static <a class="el" href="#a62445671146915b5a9932c489c173683">ARTnResource</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#aff81180e8c245d659489d93364ee2889">instance</a> ()</td></tr>
-<tr class="memdesc:aff81180e8c245d659489d93364ee2889"><td class="mdescLeft">&#160;</td><td class="mdescRight">Singleton accessor (Meyer's pattern).  <br /></td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
-<tr class="memitem:a601773df557a089b2cfd6309d4ebb9b3" id="r_a601773df557a089b2cfd6309d4ebb9b3"><td class="memItemLeft">std::mutex&#160;</td><td class="memItemRight"><a class="el" href="#a601773df557a089b2cfd6309d4ebb9b3">library_mutex</a></td></tr>
-<tr class="memdesc:a601773df557a089b2cfd6309d4ebb9b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Global mutex to ensure only one thread accesses ARTn library at a time.  <br /></td></tr>
+<tr class="memdesc:aff81180e8c245d659489d93364ee2889"><td class="mdescLeft">&#160;</td><td class="mdescRight">Thread-safe singleton accessor (Meyer's pattern).  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
 <tr class="memitem:ac7d65e35c0fefc67098ea74b8d9de3e5" id="r_ac7d65e35c0fefc67098ea74b8d9de3e5"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#ac7d65e35c0fefc67098ea74b8d9de3e5">ARTnResource</a> ()</td></tr>
-<tr class="memitem:a756f604b0320c8d8165e8965bd76270d" id="r_a756f604b0320c8d8165e8965bd76270d"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a756f604b0320c8d8165e8965bd76270d">~ARTnResource</a> ()</td></tr>
 <tr class="memitem:ab4183b72c9b0d5e3c45af4eb136c8e62" id="r_ab4183b72c9b0d5e3c45af4eb136c8e62"><td class="memTemplParams" colspan="2">template&lt;typename Fn&gt; </td></tr>
 <tr class="memitem:ab4183b72c9b0d5e3c45af4eb136c8e62 template"><td class="memItemLeft">Fn&#160;</td><td class="memItemRight"><a class="el" href="#ab4183b72c9b0d5e3c45af4eb136c8e62">load_sym</a> (const char *name) const</td></tr>
 <tr class="memdesc:ab4183b72c9b0d5e3c45af4eb136c8e62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Try to load a symbol; returns nullptr on failure.  <br /></td></tr>
@@ -299,213 +291,73 @@ Private Member Functions</h2></td></tr>
 Private Attributes</h2></td></tr>
 <tr class="memitem:aeac2a49ba8218609676513f00648e460" id="r_aeac2a49ba8218609676513f00648e460"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#aeac2a49ba8218609676513f00648e460">m_loaded</a> {false}</td></tr>
 <tr class="memitem:a5743236d036edc0d1fda05f358d0d9ac" id="r_a5743236d036edc0d1fda05f358d0d9ac"><td class="memItemLeft"><a class="el" href="namespaceeonc_1_1dynlib.html#a77fed09f5c75a2dc000c73773884df69">dynlib::Handle</a>&#160;</td><td class="memItemRight"><a class="el" href="#a5743236d036edc0d1fda05f358d0d9ac">m_handle</a> {}</td></tr>
-<tr class="memitem:a80a88865762b7c6048bb0760cdb35264" id="r_a80a88865762b7c6048bb0760cdb35264"><td class="memItemLeft"><a class="el" href="#a9387cf4526d81dc0dae95f967635d942">artn_create_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a80a88865762b7c6048bb0760cdb35264">artn_create_</a> {nullptr}</td></tr>
-<tr class="memitem:aecef326ca518fcc4c35038205c8e4af7" id="r_aecef326ca518fcc4c35038205c8e4af7"><td class="memItemLeft"><a class="el" href="#a58836e6aad681dd66b71494bf40fb7e3">setup_artn_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#aecef326ca518fcc4c35038205c8e4af7">setup_artn_</a> {nullptr}</td></tr>
-<tr class="memitem:a5eb215597384ba905438d44ca4ebd321" id="r_a5eb215597384ba905438d44ca4ebd321"><td class="memItemLeft"><a class="el" href="#a6094090131140d24c996761f61685b02">artn_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a5eb215597384ba905438d44ca4ebd321">artn_</a> {nullptr}</td></tr>
-<tr class="memitem:ab5bc442e0202c9c5800f2e841ebba00b" id="r_ab5bc442e0202c9c5800f2e841ebba00b"><td class="memItemLeft"><a class="el" href="#a2c4044dd4ac4c1d72887220909593cb4">artn_destroy_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#ab5bc442e0202c9c5800f2e841ebba00b">artn_destroy_</a> {nullptr}</td></tr>
-<tr class="memitem:a83ff8a3abb983233d7a8344c0897123e" id="r_a83ff8a3abb983233d7a8344c0897123e"><td class="memItemLeft"><a class="el" href="#a62fa949465328ec78d9fb812589f7755">set_param_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a83ff8a3abb983233d7a8344c0897123e">set_param_</a> {nullptr}</td></tr>
-<tr class="memitem:ad378cf0e735e912e2b99af9e1352e04e" id="r_ad378cf0e735e912e2b99af9e1352e04e"><td class="memItemLeft"><a class="el" href="#afdab6fdb48b9f59e7a13d1bf69e01314">get_param_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#ad378cf0e735e912e2b99af9e1352e04e">get_param_</a> {nullptr}</td></tr>
-<tr class="memitem:aa840e95be2aecd4bd1e601b787a3b0bc" id="r_aa840e95be2aecd4bd1e601b787a3b0bc"><td class="memItemLeft"><a class="el" href="#aa37ae39e14fb3851e0944cf273db62f0">get_runparam_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#aa840e95be2aecd4bd1e601b787a3b0bc">get_runparam_</a> {nullptr}</td></tr>
-<tr class="memitem:a4d336516ea4cde57f7292d1cb521e0c0" id="r_a4d336516ea4cde57f7292d1cb521e0c0"><td class="memItemLeft"><a class="el" href="#a2b7060ece1a537465fc6deba833b0b6c">get_data_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a4d336516ea4cde57f7292d1cb521e0c0">get_data_</a> {nullptr}</td></tr>
-<tr class="memitem:a21b91925c04a0e597e70921a928a34ea" id="r_a21b91925c04a0e597e70921a928a34ea"><td class="memItemLeft"><a class="el" href="#a60cbaccf228793f5ebaf1c66649a835e">print_caller_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a21b91925c04a0e597e70921a928a34ea">print_caller_</a> {nullptr}</td></tr>
-<tr class="memitem:a8972ad3f14975ea9ff627eb61f62d6af" id="r_a8972ad3f14975ea9ff627eb61f62d6af"><td class="memItemLeft"><a class="el" href="#a3c5d818469608986d1889b6412d05612">artn_step_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a8972ad3f14975ea9ff627eb61f62d6af">artn_step_</a> {nullptr}</td></tr>
-<tr class="memitem:a09b038b0332f97d8fb25c1617dc119f2" id="r_a09b038b0332f97d8fb25c1617dc119f2"><td class="memItemLeft"><a class="el" href="#afb7f92c2f2f38c200ae100998ecb6ccf">get_error_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a09b038b0332f97d8fb25c1617dc119f2">get_error_</a> {nullptr}</td></tr>
+<tr class="memitem:a80a88865762b7c6048bb0760cdb35264" id="r_a80a88865762b7c6048bb0760cdb35264"><td class="memItemLeft"><a class="el" href="classeonc_1_1IARTnResource.html#a7d9f99cd9c7299bdeae9ffe8471f2323">artn_create_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a80a88865762b7c6048bb0760cdb35264">artn_create_</a> {nullptr}</td></tr>
+<tr class="memitem:aecef326ca518fcc4c35038205c8e4af7" id="r_aecef326ca518fcc4c35038205c8e4af7"><td class="memItemLeft"><a class="el" href="classeonc_1_1IARTnResource.html#a15c357ab0e167435045175d3bed3c178">setup_artn_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#aecef326ca518fcc4c35038205c8e4af7">setup_artn_</a> {nullptr}</td></tr>
+<tr class="memitem:a5eb215597384ba905438d44ca4ebd321" id="r_a5eb215597384ba905438d44ca4ebd321"><td class="memItemLeft"><a class="el" href="classeonc_1_1IARTnResource.html#a49827330a3fc62fab80f453f11eb5fa5">artn_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a5eb215597384ba905438d44ca4ebd321">artn_</a> {nullptr}</td></tr>
+<tr class="memitem:ab5bc442e0202c9c5800f2e841ebba00b" id="r_ab5bc442e0202c9c5800f2e841ebba00b"><td class="memItemLeft"><a class="el" href="classeonc_1_1IARTnResource.html#ad6fa2da3050b5bd0999d672b97314d48">artn_destroy_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#ab5bc442e0202c9c5800f2e841ebba00b">artn_destroy_</a> {nullptr}</td></tr>
+<tr class="memitem:a83ff8a3abb983233d7a8344c0897123e" id="r_a83ff8a3abb983233d7a8344c0897123e"><td class="memItemLeft"><a class="el" href="classeonc_1_1IARTnResource.html#aece4deab7ec1144d9ad93ac407f47d6e">set_param_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a83ff8a3abb983233d7a8344c0897123e">set_param_</a> {nullptr}</td></tr>
+<tr class="memitem:ad378cf0e735e912e2b99af9e1352e04e" id="r_ad378cf0e735e912e2b99af9e1352e04e"><td class="memItemLeft"><a class="el" href="classeonc_1_1IARTnResource.html#a5c6c54b273f2aa56dac1c1368044e236">get_param_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#ad378cf0e735e912e2b99af9e1352e04e">get_param_</a> {nullptr}</td></tr>
+<tr class="memitem:aa840e95be2aecd4bd1e601b787a3b0bc" id="r_aa840e95be2aecd4bd1e601b787a3b0bc"><td class="memItemLeft"><a class="el" href="classeonc_1_1IARTnResource.html#ad80bebc76044730288c43c9314d30569">get_runparam_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#aa840e95be2aecd4bd1e601b787a3b0bc">get_runparam_</a> {nullptr}</td></tr>
+<tr class="memitem:a4d336516ea4cde57f7292d1cb521e0c0" id="r_a4d336516ea4cde57f7292d1cb521e0c0"><td class="memItemLeft"><a class="el" href="classeonc_1_1IARTnResource.html#a822d979f9793529a40baeb5e073316f0">get_data_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a4d336516ea4cde57f7292d1cb521e0c0">get_data_</a> {nullptr}</td></tr>
+<tr class="memitem:a21b91925c04a0e597e70921a928a34ea" id="r_a21b91925c04a0e597e70921a928a34ea"><td class="memItemLeft"><a class="el" href="classeonc_1_1IARTnResource.html#a37f19951afa537621609f31bad7b82d8">print_caller_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a21b91925c04a0e597e70921a928a34ea">print_caller_</a> {nullptr}</td></tr>
+<tr class="memitem:a8972ad3f14975ea9ff627eb61f62d6af" id="r_a8972ad3f14975ea9ff627eb61f62d6af"><td class="memItemLeft"><a class="el" href="classeonc_1_1IARTnResource.html#aa5e36e2a1ad56ad568d7a092f11c2fd1">artn_step_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a8972ad3f14975ea9ff627eb61f62d6af">artn_step_</a> {nullptr}</td></tr>
+<tr class="memitem:a09b038b0332f97d8fb25c1617dc119f2" id="r_a09b038b0332f97d8fb25c1617dc119f2"><td class="memItemLeft"><a class="el" href="classeonc_1_1IARTnResource.html#a70bfa105afb0d1cf3c2a528f872fa629">get_error_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a09b038b0332f97d8fb25c1617dc119f2">get_error_</a> {nullptr}</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-friends" class="groupheader"><a id="friends" name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:af3d14e26ba8af9e6cc5a32aad8446de7" id="r_af3d14e26ba8af9e6cc5a32aad8446de7"><td class="memItemLeft">class&#160;</td><td class="memItemRight"><a class="el" href="#af3d14e26ba8af9e6cc5a32aad8446de7">Runtime</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_types_classeonc_1_1IARTnResource"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_types_classeonc_1_1IARTnResource')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Types inherited from <a class="el" href="classeonc_1_1IARTnResource.html">eonc::IARTnResource</a></td></tr>
+<tr class="memitem:a7d9f99cd9c7299bdeae9ffe8471f2323 inherit pub_types_classeonc_1_1IARTnResource" id="r_a7d9f99cd9c7299bdeae9ffe8471f2323"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IARTnResource.html#a7d9f99cd9c7299bdeae9ffe8471f2323">artn_create_fn</a> = int (*)()</td></tr>
+<tr class="memitem:a15c357ab0e167435045175d3bed3c178 inherit pub_types_classeonc_1_1IARTnResource" id="r_a15c357ab0e167435045175d3bed3c178"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IARTnResource.html#a15c357ab0e167435045175d3bed3c178">setup_artn_fn</a> = void (*)(const int nat, bool *cerr)</td></tr>
+<tr class="memitem:a49827330a3fc62fab80f453f11eb5fa5 inherit pub_types_classeonc_1_1IARTnResource" id="r_a49827330a3fc62fab80f453f11eb5fa5"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IARTnResource.html#a49827330a3fc62fab80f453f11eb5fa5">artn_fn</a></td></tr>
+<tr class="memitem:ad6fa2da3050b5bd0999d672b97314d48 inherit pub_types_classeonc_1_1IARTnResource" id="r_ad6fa2da3050b5bd0999d672b97314d48"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IARTnResource.html#ad6fa2da3050b5bd0999d672b97314d48">artn_destroy_fn</a> = void (*)()</td></tr>
+<tr class="memitem:aece4deab7ec1144d9ad93ac407f47d6e inherit pub_types_classeonc_1_1IARTnResource" id="r_aece4deab7ec1144d9ad93ac407f47d6e"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IARTnResource.html#aece4deab7ec1144d9ad93ac407f47d6e">set_param_fn</a></td></tr>
+<tr class="memitem:a5c6c54b273f2aa56dac1c1368044e236 inherit pub_types_classeonc_1_1IARTnResource" id="r_a5c6c54b273f2aa56dac1c1368044e236"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IARTnResource.html#a5c6c54b273f2aa56dac1c1368044e236">get_param_fn</a> = int (*)(const char *name, void **cval)</td></tr>
+<tr class="memdesc:a5c6c54b273f2aa56dac1c1368044e236 inherit pub_types_classeonc_1_1IARTnResource"><td class="mdescLeft">&#160;</td><td class="mdescRight">pARTn bind(C) get_param / get_runparam: type(c_ptr), intent(out).  <br /></td></tr>
+<tr class="memitem:ad80bebc76044730288c43c9314d30569 inherit pub_types_classeonc_1_1IARTnResource" id="r_ad80bebc76044730288c43c9314d30569"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IARTnResource.html#ad80bebc76044730288c43c9314d30569">get_runparam_fn</a> = int (*)(const char *name, void **cval)</td></tr>
+<tr class="memitem:a822d979f9793529a40baeb5e073316f0 inherit pub_types_classeonc_1_1IARTnResource" id="r_a822d979f9793529a40baeb5e073316f0"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IARTnResource.html#a822d979f9793529a40baeb5e073316f0">get_data_fn</a> = int (*)(const char *name, void **cval)</td></tr>
+<tr class="memitem:a37f19951afa537621609f31bad7b82d8 inherit pub_types_classeonc_1_1IARTnResource" id="r_a37f19951afa537621609f31bad7b82d8"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IARTnResource.html#a37f19951afa537621609f31bad7b82d8">print_caller_fn</a> = void (*)()</td></tr>
+<tr class="memitem:aa5e36e2a1ad56ad568d7a092f11c2fd1 inherit pub_types_classeonc_1_1IARTnResource" id="r_aa5e36e2a1ad56ad568d7a092f11c2fd1"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IARTnResource.html#aa5e36e2a1ad56ad568d7a092f11c2fd1">artn_step_fn</a></td></tr>
+<tr class="memitem:a70bfa105afb0d1cf3c2a528f872fa629 inherit pub_types_classeonc_1_1IARTnResource" id="r_a70bfa105afb0d1cf3c2a528f872fa629"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IARTnResource.html#a70bfa105afb0d1cf3c2a528f872fa629">get_error_fn</a> = int (*)(void **cmsg)</td></tr>
+<tr class="memdesc:a70bfa105afb0d1cf3c2a528f872fa629 inherit pub_types_classeonc_1_1IARTnResource"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve pARTn error code + c_malloc'd message pointer.  <br /></td></tr>
+<tr class="inherit_header pub_attribs_classeonc_1_1IARTnResource"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_classeonc_1_1IARTnResource')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="classeonc_1_1IARTnResource.html">eonc::IARTnResource</a></td></tr>
+<tr class="memitem:aefe2a306ace697602730f0f6261e6fe4 inherit pub_attribs_classeonc_1_1IARTnResource" id="r_aefe2a306ace697602730f0f6261e6fe4"><td class="memItemLeft">std::mutex&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IARTnResource.html#aefe2a306ace697602730f0f6261e6fe4">library_mutex</a></td></tr>
+<tr class="memdesc:aefe2a306ace697602730f0f6261e6fe4 inherit pub_attribs_classeonc_1_1IARTnResource"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializes access to the Fortran backend's shared global state.  <br /></td></tr>
+<tr class="inherit_header pro_methods_classeonc_1_1IARTnResource"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classeonc_1_1IARTnResource')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classeonc_1_1IARTnResource.html">eonc::IARTnResource</a></td></tr>
+<tr class="memitem:a3b9e57b38c2d076121fceb665d0b2d35 inherit pro_methods_classeonc_1_1IARTnResource" id="r_a3b9e57b38c2d076121fceb665d0b2d35"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IARTnResource.html#a3b9e57b38c2d076121fceb665d0b2d35">IARTnResource</a> ()=default</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00034">34</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-</div><a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Member Typedef Documentation</h2>
-<a id="a9387cf4526d81dc0dae95f967635d942" name="a9387cf4526d81dc0dae95f967635d942"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9387cf4526d81dc0dae95f967635d942">&#9670;&#160;</a></span>artn_create_fn</h2>
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00098">98</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a7ec752e31f5a8edaf75fb165e5531ec0" name="a7ec752e31f5a8edaf75fb165e5531ec0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ec752e31f5a8edaf75fb165e5531ec0">&#9670;&#160;</a></span>~ARTnResource()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="#a9387cf4526d81dc0dae95f967635d942">eonc::ARTnResource::artn_create_fn</a> = int (*)()</td>
+          <td class="memname">eonc::ARTnResource::~ARTnResource </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00037">37</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-
 </div>
 </div>
-<a id="a2c4044dd4ac4c1d72887220909593cb4" name="a2c4044dd4ac4c1d72887220909593cb4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2c4044dd4ac4c1d72887220909593cb4">&#9670;&#160;</a></span>artn_destroy_fn</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="#a2c4044dd4ac4c1d72887220909593cb4">eonc::ARTnResource::artn_destroy_fn</a> = void (*)()</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00043">43</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-
-</div>
-</div>
-<a id="a6094090131140d24c996761f61685b02" name="a6094090131140d24c996761f61685b02"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6094090131140d24c996761f61685b02">&#9670;&#160;</a></span>artn_fn</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="#a6094090131140d24c996761f61685b02">eonc::ARTnResource::artn_fn</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">void (*)(<span class="keyword">const</span> <span class="keywordtype">int</span> nat, <span class="keyword">const</span> <span class="keywordtype">double</span> *etot, <span class="keyword">const</span> <span class="keywordtype">double</span> *f,</div>
-<div class="line">                          <span class="keywordtype">int</span> <span class="keyword">const</span> *ityp, <span class="keywordtype">double</span> *<span class="keyword">const</span> tau, <span class="keyword">const</span> <span class="keywordtype">int</span> *order,</div>
-<div class="line">                          <span class="keyword">const</span> <span class="keywordtype">double</span> *lat, <span class="keyword">const</span> <span class="keywordtype">int</span> *if_pos, <span class="keywordtype">int</span> *disp_code,</div>
-<div class="line">                          <span class="keywordtype">double</span> *disp_vec, <span class="keywordtype">bool</span> *lconv)</div>
-</div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00039">39</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-
-</div>
-</div>
-<a id="a3c5d818469608986d1889b6412d05612" name="a3c5d818469608986d1889b6412d05612"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3c5d818469608986d1889b6412d05612">&#9670;&#160;</a></span>artn_step_fn</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="#a3c5d818469608986d1889b6412d05612">eonc::ARTnResource::artn_step_fn</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">void (*)(<span class="keyword">const</span> <span class="keywordtype">int</span> nat, <span class="keyword">const</span> <span class="keywordtype">double</span> etot,</div>
-<div class="line">                               <span class="keywordtype">double</span> *<span class="keyword">const</span> force, <span class="keywordtype">int</span> <span class="keyword">const</span> *ityp,</div>
-<div class="line">                               <span class="keywordtype">double</span> *<span class="keyword">const</span> pos, <span class="keyword">const</span> <span class="keywordtype">double</span> *box,</div>
-<div class="line">                               <span class="keyword">const</span> <span class="keywordtype">int</span> *if_pos, <span class="keywordtype">double</span> *displ_vec,</div>
-<div class="line">                               <span class="keywordtype">bool</span> *lconv)</div>
-</div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00050">50</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-
-</div>
-</div>
-<a id="a2b7060ece1a537465fc6deba833b0b6c" name="a2b7060ece1a537465fc6deba833b0b6c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2b7060ece1a537465fc6deba833b0b6c">&#9670;&#160;</a></span>get_data_fn</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="#a2b7060ece1a537465fc6deba833b0b6c">eonc::ARTnResource::get_data_fn</a> = int (*)(const char *name, void **cval)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00048">48</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-
-</div>
-</div>
-<a id="afb7f92c2f2f38c200ae100998ecb6ccf" name="afb7f92c2f2f38c200ae100998ecb6ccf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afb7f92c2f2f38c200ae100998ecb6ccf">&#9670;&#160;</a></span>get_error_fn</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="#afb7f92c2f2f38c200ae100998ecb6ccf">eonc::ARTnResource::get_error_fn</a> = int (*)(void **cmsg)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Retrieve pARTn error code + c_malloc'd message pointer. </p>
-<p>Defined in m_artn_error.f90 as bind(C, name="get_error"): int get_error(void** cmsg); Non-zero return indicates an error; *cmsg then points at a C-string the caller must std::free. Zero leaves *cmsg null. </p>
-
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00060">60</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-
-</div>
-</div>
-<a id="afdab6fdb48b9f59e7a13d1bf69e01314" name="afdab6fdb48b9f59e7a13d1bf69e01314"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afdab6fdb48b9f59e7a13d1bf69e01314">&#9670;&#160;</a></span>get_param_fn</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="#afdab6fdb48b9f59e7a13d1bf69e01314">eonc::ARTnResource::get_param_fn</a> = int (*)(const char *name, void *cval)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00046">46</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-
-</div>
-</div>
-<a id="aa37ae39e14fb3851e0944cf273db62f0" name="aa37ae39e14fb3851e0944cf273db62f0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa37ae39e14fb3851e0944cf273db62f0">&#9670;&#160;</a></span>get_runparam_fn</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="#aa37ae39e14fb3851e0944cf273db62f0">eonc::ARTnResource::get_runparam_fn</a> = int (*)(const char *name, void *cval)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00047">47</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-
-</div>
-</div>
-<a id="a60cbaccf228793f5ebaf1c66649a835e" name="a60cbaccf228793f5ebaf1c66649a835e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a60cbaccf228793f5ebaf1c66649a835e">&#9670;&#160;</a></span>print_caller_fn</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="#a60cbaccf228793f5ebaf1c66649a835e">eonc::ARTnResource::print_caller_fn</a> = void (*)()</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00049">49</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-
-</div>
-</div>
-<a id="a62fa949465328ec78d9fb812589f7755" name="a62fa949465328ec78d9fb812589f7755"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a62fa949465328ec78d9fb812589f7755">&#9670;&#160;</a></span>set_param_fn</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="#a62fa949465328ec78d9fb812589f7755">eonc::ARTnResource::set_param_fn</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">int (*)(<span class="keyword">const</span> <span class="keywordtype">char</span> *<span class="keyword">const</span> name, <span class="keyword">const</span> <span class="keywordtype">int</span> crank,</div>
-<div class="line">                              <span class="keyword">const</span> <span class="keywordtype">int</span> *csize, <span class="keyword">const</span> <span class="keywordtype">void</span> *cval)</div>
-</div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00044">44</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-
-</div>
-</div>
-<a id="a58836e6aad681dd66b71494bf40fb7e3" name="a58836e6aad681dd66b71494bf40fb7e3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a58836e6aad681dd66b71494bf40fb7e3">&#9670;&#160;</a></span>setup_artn_fn</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="#a58836e6aad681dd66b71494bf40fb7e3">eonc::ARTnResource::setup_artn_fn</a> = void (*)(const int nat, bool *cerr)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00038">38</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-
-</div>
-</div>
-<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a62445671146915b5a9932c489c173683" name="a62445671146915b5a9932c489c173683"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a62445671146915b5a9932c489c173683">&#9670;&#160;</a></span>ARTnResource() <span class="overload">[1/2]</span></h2>
 
@@ -528,8 +380,6 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Non-copyable, non-movable. </p>
 
 </div>
 </div>
@@ -558,34 +408,9 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a756f604b0320c8d8165e8965bd76270d" name="a756f604b0320c8d8165e8965bd76270d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a756f604b0320c8d8165e8965bd76270d">&#9670;&#160;</a></span>~ARTnResource()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">eonc::ARTnResource::~ARTnResource </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a9a53007d328f7d3d089e42023c0deb2a" name="a9a53007d328f7d3d089e42023c0deb2a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9a53007d328f7d3d089e42023c0deb2a">&#9670;&#160;</a></span>get_artn_fn()</h2>
+<a id="aef3fc97786275d1d6a0f3ec5a4915bae" name="aef3fc97786275d1d6a0f3ec5a4915bae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef3fc97786275d1d6a0f3ec5a4915bae">&#9670;&#160;</a></span>get_artn_fn()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -594,7 +419,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#a6094090131140d24c996761f61685b02">artn_fn</a> eonc::ARTnResource::get_artn_fn </td>
+          <td class="memname"><a class="el" href="classeonc_1_1IARTnResource.html#a49827330a3fc62fab80f453f11eb5fa5">artn_fn</a> eonc::ARTnResource::get_artn_fn </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -602,19 +427,21 @@ Private Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00077">77</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   77</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a5eb215597384ba905438d44ca4ebd321">artn_</a>; }</div>
-<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a5eb215597384ba905438d44ca4ebd321"><div class="ttname"><a href="#a5eb215597384ba905438d44ca4ebd321">eonc::ARTnResource::artn_</a></div><div class="ttdeci">artn_fn artn_</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00103">ARTnResource.h:103</a></div></div>
+<p>Implements <a class="el" href="classeonc_1_1IARTnResource.html#abbaa4218b3e68e219f6500dc6030f148">eonc::IARTnResource</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00114">114</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  114</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a5eb215597384ba905438d44ca4ebd321">artn_</a>; }</div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a5eb215597384ba905438d44ca4ebd321"><div class="ttname"><a href="#a5eb215597384ba905438d44ca4ebd321">eonc::ARTnResource::artn_</a></div><div class="ttdeci">artn_fn artn_</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00154">ARTnResource.h:154</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="a9a138750d1f270d64e495464e850b628" name="a9a138750d1f270d64e495464e850b628"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9a138750d1f270d64e495464e850b628">&#9670;&#160;</a></span>get_artn_step_fn()</h2>
+<a id="a21f13328807f61dc213e4166f12e2f1d" name="a21f13328807f61dc213e4166f12e2f1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21f13328807f61dc213e4166f12e2f1d">&#9670;&#160;</a></span>get_artn_step_fn()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -623,7 +450,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#a3c5d818469608986d1889b6412d05612">artn_step_fn</a> eonc::ARTnResource::get_artn_step_fn </td>
+          <td class="memname"><a class="el" href="classeonc_1_1IARTnResource.html#aa5e36e2a1ad56ad568d7a092f11c2fd1">artn_step_fn</a> eonc::ARTnResource::get_artn_step_fn </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -631,19 +458,23 @@ Private Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00084">84</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   84</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a8972ad3f14975ea9ff627eb61f62d6af">artn_step_</a>; }</div>
-<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a8972ad3f14975ea9ff627eb61f62d6af"><div class="ttname"><a href="#a8972ad3f14975ea9ff627eb61f62d6af">eonc::ARTnResource::artn_step_</a></div><div class="ttdeci">artn_step_fn artn_step_</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00110">ARTnResource.h:110</a></div></div>
+<p>Implements <a class="el" href="classeonc_1_1IARTnResource.html#a1d51bf41a8a0b6253bf39f7c1bb13d1d">eonc::IARTnResource</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00133">133</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  133</span>                                                               {</div>
+<div class="line"><span class="lineno">  134</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a8972ad3f14975ea9ff627eb61f62d6af">artn_step_</a>;</div>
+<div class="line"><span class="lineno">  135</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a8972ad3f14975ea9ff627eb61f62d6af"><div class="ttname"><a href="#a8972ad3f14975ea9ff627eb61f62d6af">eonc::ARTnResource::artn_step_</a></div><div class="ttdeci">artn_step_fn artn_step_</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00161">ARTnResource.h:161</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="ad688f08e54f333f55e64862f2f81e879" name="ad688f08e54f333f55e64862f2f81e879"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad688f08e54f333f55e64862f2f81e879">&#9670;&#160;</a></span>get_create_fn()</h2>
+<a id="aca870d5390c11fbc5857803de8457315" name="aca870d5390c11fbc5857803de8457315"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca870d5390c11fbc5857803de8457315">&#9670;&#160;</a></span>get_create_fn()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -652,7 +483,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#a9387cf4526d81dc0dae95f967635d942">artn_create_fn</a> eonc::ARTnResource::get_create_fn </td>
+          <td class="memname"><a class="el" href="classeonc_1_1IARTnResource.html#a7d9f99cd9c7299bdeae9ffe8471f2323">artn_create_fn</a> eonc::ARTnResource::get_create_fn </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -660,19 +491,23 @@ Private Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00075">75</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   75</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a80a88865762b7c6048bb0760cdb35264">artn_create_</a>; }</div>
-<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a80a88865762b7c6048bb0760cdb35264"><div class="ttname"><a href="#a80a88865762b7c6048bb0760cdb35264">eonc::ARTnResource::artn_create_</a></div><div class="ttdeci">artn_create_fn artn_create_</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00101">ARTnResource.h:101</a></div></div>
+<p>Implements <a class="el" href="classeonc_1_1IARTnResource.html#ad9fe6f8b1ab8285f1a72a994b6968fd1">eonc::IARTnResource</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00108">108</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  108</span>                                                              {</div>
+<div class="line"><span class="lineno">  109</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a80a88865762b7c6048bb0760cdb35264">artn_create_</a>;</div>
+<div class="line"><span class="lineno">  110</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a80a88865762b7c6048bb0760cdb35264"><div class="ttname"><a href="#a80a88865762b7c6048bb0760cdb35264">eonc::ARTnResource::artn_create_</a></div><div class="ttdeci">artn_create_fn artn_create_</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00152">ARTnResource.h:152</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="afa48618abc205c6061676350d367d4ac" name="afa48618abc205c6061676350d367d4ac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afa48618abc205c6061676350d367d4ac">&#9670;&#160;</a></span>get_destroy_fn()</h2>
+<a id="a149f95839dd53f7b9bf39de910c560bc" name="a149f95839dd53f7b9bf39de910c560bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a149f95839dd53f7b9bf39de910c560bc">&#9670;&#160;</a></span>get_destroy_fn()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -681,7 +516,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#a2c4044dd4ac4c1d72887220909593cb4">artn_destroy_fn</a> eonc::ARTnResource::get_destroy_fn </td>
+          <td class="memname"><a class="el" href="classeonc_1_1IARTnResource.html#ad6fa2da3050b5bd0999d672b97314d48">artn_destroy_fn</a> eonc::ARTnResource::get_destroy_fn </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -689,19 +524,23 @@ Private Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00078">78</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   78</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#ab5bc442e0202c9c5800f2e841ebba00b">artn_destroy_</a>; }</div>
-<div class="ttc" id="aclasseonc_1_1ARTnResource_html_ab5bc442e0202c9c5800f2e841ebba00b"><div class="ttname"><a href="#ab5bc442e0202c9c5800f2e841ebba00b">eonc::ARTnResource::artn_destroy_</a></div><div class="ttdeci">artn_destroy_fn artn_destroy_</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00104">ARTnResource.h:104</a></div></div>
+<p>Implements <a class="el" href="classeonc_1_1IARTnResource.html#ab08fb292aa07303852f7acabf30a7af8">eonc::IARTnResource</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00115">115</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  115</span>                                                                {</div>
+<div class="line"><span class="lineno">  116</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#ab5bc442e0202c9c5800f2e841ebba00b">artn_destroy_</a>;</div>
+<div class="line"><span class="lineno">  117</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_ab5bc442e0202c9c5800f2e841ebba00b"><div class="ttname"><a href="#ab5bc442e0202c9c5800f2e841ebba00b">eonc::ARTnResource::artn_destroy_</a></div><div class="ttdeci">artn_destroy_fn artn_destroy_</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00155">ARTnResource.h:155</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="ab74f2980a81b3926222bd7329001c943" name="ab74f2980a81b3926222bd7329001c943"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab74f2980a81b3926222bd7329001c943">&#9670;&#160;</a></span>get_get_data_fn()</h2>
+<a id="a3fc62a9d64eadfd6db9676e2d89bc34a" name="a3fc62a9d64eadfd6db9676e2d89bc34a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fc62a9d64eadfd6db9676e2d89bc34a">&#9670;&#160;</a></span>get_get_data_fn()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -710,7 +549,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#a2b7060ece1a537465fc6deba833b0b6c">get_data_fn</a> eonc::ARTnResource::get_get_data_fn </td>
+          <td class="memname"><a class="el" href="classeonc_1_1IARTnResource.html#a822d979f9793529a40baeb5e073316f0">get_data_fn</a> eonc::ARTnResource::get_get_data_fn </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -718,19 +557,23 @@ Private Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00082">82</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   82</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a4d336516ea4cde57f7292d1cb521e0c0">get_data_</a>; }</div>
-<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a4d336516ea4cde57f7292d1cb521e0c0"><div class="ttname"><a href="#a4d336516ea4cde57f7292d1cb521e0c0">eonc::ARTnResource::get_data_</a></div><div class="ttdeci">get_data_fn get_data_</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00108">ARTnResource.h:108</a></div></div>
+<p>Implements <a class="el" href="classeonc_1_1IARTnResource.html#aec4fbbd66994a4d665945e95761a0a60">eonc::IARTnResource</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00127">127</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  127</span>                                                             {</div>
+<div class="line"><span class="lineno">  128</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a4d336516ea4cde57f7292d1cb521e0c0">get_data_</a>;</div>
+<div class="line"><span class="lineno">  129</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a4d336516ea4cde57f7292d1cb521e0c0"><div class="ttname"><a href="#a4d336516ea4cde57f7292d1cb521e0c0">eonc::ARTnResource::get_data_</a></div><div class="ttdeci">get_data_fn get_data_</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00159">ARTnResource.h:159</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="af00b7fdf177758c46c8cc93872d87e92" name="af00b7fdf177758c46c8cc93872d87e92"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af00b7fdf177758c46c8cc93872d87e92">&#9670;&#160;</a></span>get_get_error_fn()</h2>
+<a id="aa2009ed6f3d668aebcb7e9c7eb06608d" name="aa2009ed6f3d668aebcb7e9c7eb06608d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2009ed6f3d668aebcb7e9c7eb06608d">&#9670;&#160;</a></span>get_get_error_fn()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -739,7 +582,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#afb7f92c2f2f38c200ae100998ecb6ccf">get_error_fn</a> eonc::ARTnResource::get_get_error_fn </td>
+          <td class="memname"><a class="el" href="classeonc_1_1IARTnResource.html#a70bfa105afb0d1cf3c2a528f872fa629">get_error_fn</a> eonc::ARTnResource::get_get_error_fn </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -747,21 +590,25 @@ Private Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>May be null on older pARTn builds that predate the C get_error wrapper; callers must null-check before dispatching. </p>
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00087">87</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   87</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a09b038b0332f97d8fb25c1617dc119f2">get_error_</a>; }</div>
-<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a09b038b0332f97d8fb25c1617dc119f2"><div class="ttname"><a href="#a09b038b0332f97d8fb25c1617dc119f2">eonc::ARTnResource::get_error_</a></div><div class="ttdeci">get_error_fn get_error_</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00111">ARTnResource.h:111</a></div></div>
+<p>Implements <a class="el" href="classeonc_1_1IARTnResource.html#ae2274a5860378023f920ae04450de1f8">eonc::IARTnResource</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00136">136</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  136</span>                                                               {</div>
+<div class="line"><span class="lineno">  137</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a09b038b0332f97d8fb25c1617dc119f2">get_error_</a>;</div>
+<div class="line"><span class="lineno">  138</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a09b038b0332f97d8fb25c1617dc119f2"><div class="ttname"><a href="#a09b038b0332f97d8fb25c1617dc119f2">eonc::ARTnResource::get_error_</a></div><div class="ttdeci">get_error_fn get_error_</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00162">ARTnResource.h:162</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="a8fcef4d20792f7c9a7c123d752771d6c" name="a8fcef4d20792f7c9a7c123d752771d6c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8fcef4d20792f7c9a7c123d752771d6c">&#9670;&#160;</a></span>get_get_param_fn()</h2>
+<a id="a761493c38c327d4d44bd2faf068f3247" name="a761493c38c327d4d44bd2faf068f3247"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a761493c38c327d4d44bd2faf068f3247">&#9670;&#160;</a></span>get_get_param_fn()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -770,7 +617,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#afdab6fdb48b9f59e7a13d1bf69e01314">get_param_fn</a> eonc::ARTnResource::get_get_param_fn </td>
+          <td class="memname"><a class="el" href="classeonc_1_1IARTnResource.html#a5c6c54b273f2aa56dac1c1368044e236">get_param_fn</a> eonc::ARTnResource::get_get_param_fn </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -778,19 +625,23 @@ Private Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00080">80</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   80</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#ad378cf0e735e912e2b99af9e1352e04e">get_param_</a>; }</div>
-<div class="ttc" id="aclasseonc_1_1ARTnResource_html_ad378cf0e735e912e2b99af9e1352e04e"><div class="ttname"><a href="#ad378cf0e735e912e2b99af9e1352e04e">eonc::ARTnResource::get_param_</a></div><div class="ttdeci">get_param_fn get_param_</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00106">ARTnResource.h:106</a></div></div>
+<p>Implements <a class="el" href="classeonc_1_1IARTnResource.html#a013ab18645b78e230ee52ed7dd2367fa">eonc::IARTnResource</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00121">121</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  121</span>                                                               {</div>
+<div class="line"><span class="lineno">  122</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#ad378cf0e735e912e2b99af9e1352e04e">get_param_</a>;</div>
+<div class="line"><span class="lineno">  123</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_ad378cf0e735e912e2b99af9e1352e04e"><div class="ttname"><a href="#ad378cf0e735e912e2b99af9e1352e04e">eonc::ARTnResource::get_param_</a></div><div class="ttdeci">get_param_fn get_param_</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00157">ARTnResource.h:157</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="aaed5c09048da8d985b59f9a2f44b1c46" name="aaed5c09048da8d985b59f9a2f44b1c46"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaed5c09048da8d985b59f9a2f44b1c46">&#9670;&#160;</a></span>get_get_runparam_fn()</h2>
+<a id="a9767257b072130672c8fa8d6cb9b0491" name="a9767257b072130672c8fa8d6cb9b0491"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9767257b072130672c8fa8d6cb9b0491">&#9670;&#160;</a></span>get_get_runparam_fn()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -799,7 +650,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#aa37ae39e14fb3851e0944cf273db62f0">get_runparam_fn</a> eonc::ARTnResource::get_get_runparam_fn </td>
+          <td class="memname"><a class="el" href="classeonc_1_1IARTnResource.html#ad80bebc76044730288c43c9314d30569">get_runparam_fn</a> eonc::ARTnResource::get_get_runparam_fn </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -807,19 +658,23 @@ Private Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00081">81</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   81</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#aa840e95be2aecd4bd1e601b787a3b0bc">get_runparam_</a>; }</div>
-<div class="ttc" id="aclasseonc_1_1ARTnResource_html_aa840e95be2aecd4bd1e601b787a3b0bc"><div class="ttname"><a href="#aa840e95be2aecd4bd1e601b787a3b0bc">eonc::ARTnResource::get_runparam_</a></div><div class="ttdeci">get_runparam_fn get_runparam_</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00107">ARTnResource.h:107</a></div></div>
+<p>Implements <a class="el" href="classeonc_1_1IARTnResource.html#ae8efb47d2d7180fac18067ee54246ad2">eonc::IARTnResource</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00124">124</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  124</span>                                                                     {</div>
+<div class="line"><span class="lineno">  125</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#aa840e95be2aecd4bd1e601b787a3b0bc">get_runparam_</a>;</div>
+<div class="line"><span class="lineno">  126</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_aa840e95be2aecd4bd1e601b787a3b0bc"><div class="ttname"><a href="#aa840e95be2aecd4bd1e601b787a3b0bc">eonc::ARTnResource::get_runparam_</a></div><div class="ttdeci">get_runparam_fn get_runparam_</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00158">ARTnResource.h:158</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="aaa42638bd3df5e4fd92a848be4596c55" name="aaa42638bd3df5e4fd92a848be4596c55"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaa42638bd3df5e4fd92a848be4596c55">&#9670;&#160;</a></span>get_print_caller_fn()</h2>
+<a id="a644bccc0e374d845900d10ae2718fd9b" name="a644bccc0e374d845900d10ae2718fd9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a644bccc0e374d845900d10ae2718fd9b">&#9670;&#160;</a></span>get_print_caller_fn()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -828,7 +683,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#a60cbaccf228793f5ebaf1c66649a835e">print_caller_fn</a> eonc::ARTnResource::get_print_caller_fn </td>
+          <td class="memname"><a class="el" href="classeonc_1_1IARTnResource.html#a37f19951afa537621609f31bad7b82d8">print_caller_fn</a> eonc::ARTnResource::get_print_caller_fn </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -836,19 +691,23 @@ Private Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00083">83</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   83</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a21b91925c04a0e597e70921a928a34ea">print_caller_</a>; }</div>
-<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a21b91925c04a0e597e70921a928a34ea"><div class="ttname"><a href="#a21b91925c04a0e597e70921a928a34ea">eonc::ARTnResource::print_caller_</a></div><div class="ttdeci">print_caller_fn print_caller_</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00109">ARTnResource.h:109</a></div></div>
+<p>Implements <a class="el" href="classeonc_1_1IARTnResource.html#ae3547743ccd5e1dfd4507343fccec6fc">eonc::IARTnResource</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00130">130</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  130</span>                                                                     {</div>
+<div class="line"><span class="lineno">  131</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a21b91925c04a0e597e70921a928a34ea">print_caller_</a>;</div>
+<div class="line"><span class="lineno">  132</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a21b91925c04a0e597e70921a928a34ea"><div class="ttname"><a href="#a21b91925c04a0e597e70921a928a34ea">eonc::ARTnResource::print_caller_</a></div><div class="ttdeci">print_caller_fn print_caller_</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00160">ARTnResource.h:160</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="a849f7d7cd3a2d7c8f8fe0f757703b1f1" name="a849f7d7cd3a2d7c8f8fe0f757703b1f1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a849f7d7cd3a2d7c8f8fe0f757703b1f1">&#9670;&#160;</a></span>get_set_param_fn()</h2>
+<a id="a86383cbe5e8a28f4d019f33bda01c96e" name="a86383cbe5e8a28f4d019f33bda01c96e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86383cbe5e8a28f4d019f33bda01c96e">&#9670;&#160;</a></span>get_set_param_fn()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -857,7 +716,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#a62fa949465328ec78d9fb812589f7755">set_param_fn</a> eonc::ARTnResource::get_set_param_fn </td>
+          <td class="memname"><a class="el" href="classeonc_1_1IARTnResource.html#aece4deab7ec1144d9ad93ac407f47d6e">set_param_fn</a> eonc::ARTnResource::get_set_param_fn </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -865,19 +724,23 @@ Private Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00079">79</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   79</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a83ff8a3abb983233d7a8344c0897123e">set_param_</a>; }</div>
-<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a83ff8a3abb983233d7a8344c0897123e"><div class="ttname"><a href="#a83ff8a3abb983233d7a8344c0897123e">eonc::ARTnResource::set_param_</a></div><div class="ttdeci">set_param_fn set_param_</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00105">ARTnResource.h:105</a></div></div>
+<p>Implements <a class="el" href="classeonc_1_1IARTnResource.html#a945315fe99d713dc944c64d114531a18">eonc::IARTnResource</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00118">118</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  118</span>                                                               {</div>
+<div class="line"><span class="lineno">  119</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a83ff8a3abb983233d7a8344c0897123e">set_param_</a>;</div>
+<div class="line"><span class="lineno">  120</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a83ff8a3abb983233d7a8344c0897123e"><div class="ttname"><a href="#a83ff8a3abb983233d7a8344c0897123e">eonc::ARTnResource::set_param_</a></div><div class="ttdeci">set_param_fn set_param_</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00156">ARTnResource.h:156</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="ae698e5e400f1dad1f176bb1380cea229" name="ae698e5e400f1dad1f176bb1380cea229"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae698e5e400f1dad1f176bb1380cea229">&#9670;&#160;</a></span>get_setup_fn()</h2>
+<a id="a901d818015b2f4e3f1333f0b9b4168d7" name="a901d818015b2f4e3f1333f0b9b4168d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a901d818015b2f4e3f1333f0b9b4168d7">&#9670;&#160;</a></span>get_setup_fn()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -886,7 +749,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#a58836e6aad681dd66b71494bf40fb7e3">setup_artn_fn</a> eonc::ARTnResource::get_setup_fn </td>
+          <td class="memname"><a class="el" href="classeonc_1_1IARTnResource.html#a15c357ab0e167435045175d3bed3c178">setup_artn_fn</a> eonc::ARTnResource::get_setup_fn </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -894,14 +757,18 @@ Private Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00076">76</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   76</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#aecef326ca518fcc4c35038205c8e4af7">setup_artn_</a>; }</div>
-<div class="ttc" id="aclasseonc_1_1ARTnResource_html_aecef326ca518fcc4c35038205c8e4af7"><div class="ttname"><a href="#aecef326ca518fcc4c35038205c8e4af7">eonc::ARTnResource::setup_artn_</a></div><div class="ttdeci">setup_artn_fn setup_artn_</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00102">ARTnResource.h:102</a></div></div>
+<p>Implements <a class="el" href="classeonc_1_1IARTnResource.html#ad7f0ef62dea57d325671efa119642f57">eonc::IARTnResource</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00111">111</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  111</span>                                                            {</div>
+<div class="line"><span class="lineno">  112</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#aecef326ca518fcc4c35038205c8e4af7">setup_artn_</a>;</div>
+<div class="line"><span class="lineno">  113</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_aecef326ca518fcc4c35038205c8e4af7"><div class="ttname"><a href="#aecef326ca518fcc4c35038205c8e4af7">eonc::ARTnResource::setup_artn_</a></div><div class="ttdeci">setup_artn_fn setup_artn_</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00153">ARTnResource.h:153</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -928,12 +795,12 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Singleton accessor (Meyer's pattern). </p>
+<p>Thread-safe singleton accessor (Meyer's pattern). </p>
 
 </div>
 </div>
-<a id="a2b728ef808b3d4a39ac17f3d83a900d7" name="a2b728ef808b3d4a39ac17f3d83a900d7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2b728ef808b3d4a39ac17f3d83a900d7">&#9670;&#160;</a></span>is_loaded()</h2>
+<a id="af37478f73fac9f03d4427e7803a2c8ff" name="af37478f73fac9f03d4427e7803a2c8ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af37478f73fac9f03d4427e7803a2c8ff">&#9670;&#160;</a></span>is_loaded()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -950,16 +817,16 @@ Private Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>True if libartn was successfully loaded. </p>
+<p>Implements <a class="el" href="classeonc_1_1IARTnResource.html#a3ae60c54ca98eddbba2e4adaa5d34bfc">eonc::IARTnResource</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00069">69</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   69</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#aeac2a49ba8218609676513f00648e460">m_loaded</a>; }</div>
-<div class="ttc" id="aclasseonc_1_1ARTnResource_html_aeac2a49ba8218609676513f00648e460"><div class="ttname"><a href="#aeac2a49ba8218609676513f00648e460">eonc::ARTnResource::m_loaded</a></div><div class="ttdeci">bool m_loaded</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00097">ARTnResource.h:97</a></div></div>
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00103">103</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  103</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#aeac2a49ba8218609676513f00648e460">m_loaded</a>; }</div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_aeac2a49ba8218609676513f00648e460"><div class="ttname"><a href="#aeac2a49ba8218609676513f00648e460">eonc::ARTnResource::m_loaded</a></div><div class="ttdeci">bool m_loaded</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00148">ARTnResource.h:148</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -990,11 +857,11 @@ template&lt;typename Fn&gt; </div>
 
 <p>Try to load a symbol; returns nullptr on failure. </p>
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00114">114</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  114</span>                                                             {</div>
-<div class="line"><span class="lineno">  115</span>    <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span>Fn<span class="keyword">&gt;</span>(<a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a37bed29f19bcf42ee7abe5dff7bb1820">dynlib::sym</a>(<a class="code hl_variable" href="#a5743236d036edc0d1fda05f358d0d9ac">m_handle</a>, name));</div>
-<div class="line"><span class="lineno">  116</span>  }</div>
-<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a5743236d036edc0d1fda05f358d0d9ac"><div class="ttname"><a href="#a5743236d036edc0d1fda05f358d0d9ac">eonc::ARTnResource::m_handle</a></div><div class="ttdeci">dynlib::Handle m_handle</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00098">ARTnResource.h:98</a></div></div>
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00165">165</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  165</span>                                                             {</div>
+<div class="line"><span class="lineno">  166</span>    <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span>Fn<span class="keyword">&gt;</span>(<a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a37bed29f19bcf42ee7abe5dff7bb1820">dynlib::sym</a>(<a class="code hl_variable" href="#a5743236d036edc0d1fda05f358d0d9ac">m_handle</a>, name));</div>
+<div class="line"><span class="lineno">  167</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a5743236d036edc0d1fda05f358d0d9ac"><div class="ttname"><a href="#a5743236d036edc0d1fda05f358d0d9ac">eonc::ARTnResource::m_handle</a></div><div class="ttdeci">dynlib::Handle m_handle</div><div class="ttdef"><b>Definition</b> <a href="ARTnResource_8h_source.html#l00149">ARTnResource.h:149</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1dynlib_html_a37bed29f19bcf42ee7abe5dff7bb1820"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#a37bed29f19bcf42ee7abe5dff7bb1820">eonc::dynlib::sym</a></div><div class="ttdeci">void * sym(Handle h, const char *name) noexcept</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00075">DynLib.h:75</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -1024,22 +891,57 @@ template&lt;typename Fn&gt; </div>
 
 </div>
 </div>
-<a id="a2e5b58fc292fd7298bb8519982375cdb" name="a2e5b58fc292fd7298bb8519982375cdb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2e5b58fc292fd7298bb8519982375cdb">&#9670;&#160;</a></span>require_loaded()</h2>
+<a id="a1708f49bfa8dbcda9cd3cb73fdedd665" name="a1708f49bfa8dbcda9cd3cb73fdedd665"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1708f49bfa8dbcda9cd3cb73fdedd665">&#9670;&#160;</a></span>require_loaded()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void eonc::ARTnResource::require_loaded </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Throws std::runtime_error if libartn is not available. </p>
+
+<p>Implements <a class="el" href="classeonc_1_1IARTnResource.html#a9f2716cc8e3a437115a41061c5613c5a">eonc::IARTnResource</a>.</p>
+
+</div>
+</div>
+<a name="doc-related-members" id="doc-related-members"></a><h2 id="header-doc-related-members" class="groupheader">Friends And Related Symbol Documentation</h2>
+<a id="af3d14e26ba8af9e6cc5a32aad8446de7" name="af3d14e26ba8af9e6cc5a32aad8446de7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3d14e26ba8af9e6cc5a32aad8446de7">&#9670;&#160;</a></span>Runtime</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class Runtime</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel friend">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00146">146</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
 
 </div>
 </div>
@@ -1054,7 +956,7 @@ template&lt;typename Fn&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#a6094090131140d24c996761f61685b02">artn_fn</a> eonc::ARTnResource::artn_ {nullptr}</td>
+          <td class="memname"><a class="el" href="classeonc_1_1IARTnResource.html#a49827330a3fc62fab80f453f11eb5fa5">artn_fn</a> eonc::ARTnResource::artn_ {nullptr}</td>
         </tr>
       </table>
   </td>
@@ -1064,8 +966,8 @@ template&lt;typename Fn&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00103">103</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  103</span>{<span class="keyword">nullptr</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00154">154</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  154</span>{<span class="keyword">nullptr</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1079,7 +981,7 @@ template&lt;typename Fn&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#a9387cf4526d81dc0dae95f967635d942">artn_create_fn</a> eonc::ARTnResource::artn_create_ {nullptr}</td>
+          <td class="memname"><a class="el" href="classeonc_1_1IARTnResource.html#a7d9f99cd9c7299bdeae9ffe8471f2323">artn_create_fn</a> eonc::ARTnResource::artn_create_ {nullptr}</td>
         </tr>
       </table>
   </td>
@@ -1089,8 +991,8 @@ template&lt;typename Fn&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00101">101</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  101</span>{<span class="keyword">nullptr</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00152">152</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  152</span>{<span class="keyword">nullptr</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1104,7 +1006,7 @@ template&lt;typename Fn&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#a2c4044dd4ac4c1d72887220909593cb4">artn_destroy_fn</a> eonc::ARTnResource::artn_destroy_ {nullptr}</td>
+          <td class="memname"><a class="el" href="classeonc_1_1IARTnResource.html#ad6fa2da3050b5bd0999d672b97314d48">artn_destroy_fn</a> eonc::ARTnResource::artn_destroy_ {nullptr}</td>
         </tr>
       </table>
   </td>
@@ -1114,8 +1016,8 @@ template&lt;typename Fn&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00104">104</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  104</span>{<span class="keyword">nullptr</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00155">155</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  155</span>{<span class="keyword">nullptr</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1129,7 +1031,7 @@ template&lt;typename Fn&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#a3c5d818469608986d1889b6412d05612">artn_step_fn</a> eonc::ARTnResource::artn_step_ {nullptr}</td>
+          <td class="memname"><a class="el" href="classeonc_1_1IARTnResource.html#aa5e36e2a1ad56ad568d7a092f11c2fd1">artn_step_fn</a> eonc::ARTnResource::artn_step_ {nullptr}</td>
         </tr>
       </table>
   </td>
@@ -1139,8 +1041,8 @@ template&lt;typename Fn&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00110">110</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  110</span>{<span class="keyword">nullptr</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00161">161</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  161</span>{<span class="keyword">nullptr</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1154,7 +1056,7 @@ template&lt;typename Fn&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#a2b7060ece1a537465fc6deba833b0b6c">get_data_fn</a> eonc::ARTnResource::get_data_ {nullptr}</td>
+          <td class="memname"><a class="el" href="classeonc_1_1IARTnResource.html#a822d979f9793529a40baeb5e073316f0">get_data_fn</a> eonc::ARTnResource::get_data_ {nullptr}</td>
         </tr>
       </table>
   </td>
@@ -1164,8 +1066,8 @@ template&lt;typename Fn&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00108">108</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  108</span>{<span class="keyword">nullptr</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00159">159</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  159</span>{<span class="keyword">nullptr</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1179,7 +1081,7 @@ template&lt;typename Fn&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#afb7f92c2f2f38c200ae100998ecb6ccf">get_error_fn</a> eonc::ARTnResource::get_error_ {nullptr}</td>
+          <td class="memname"><a class="el" href="classeonc_1_1IARTnResource.html#a70bfa105afb0d1cf3c2a528f872fa629">get_error_fn</a> eonc::ARTnResource::get_error_ {nullptr}</td>
         </tr>
       </table>
   </td>
@@ -1189,8 +1091,8 @@ template&lt;typename Fn&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00111">111</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  111</span>{<span class="keyword">nullptr</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00162">162</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  162</span>{<span class="keyword">nullptr</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1204,7 +1106,7 @@ template&lt;typename Fn&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#afdab6fdb48b9f59e7a13d1bf69e01314">get_param_fn</a> eonc::ARTnResource::get_param_ {nullptr}</td>
+          <td class="memname"><a class="el" href="classeonc_1_1IARTnResource.html#a5c6c54b273f2aa56dac1c1368044e236">get_param_fn</a> eonc::ARTnResource::get_param_ {nullptr}</td>
         </tr>
       </table>
   </td>
@@ -1214,8 +1116,8 @@ template&lt;typename Fn&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00106">106</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  106</span>{<span class="keyword">nullptr</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00157">157</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  157</span>{<span class="keyword">nullptr</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1229,7 +1131,7 @@ template&lt;typename Fn&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#aa37ae39e14fb3851e0944cf273db62f0">get_runparam_fn</a> eonc::ARTnResource::get_runparam_ {nullptr}</td>
+          <td class="memname"><a class="el" href="classeonc_1_1IARTnResource.html#ad80bebc76044730288c43c9314d30569">get_runparam_fn</a> eonc::ARTnResource::get_runparam_ {nullptr}</td>
         </tr>
       </table>
   </td>
@@ -1239,27 +1141,9 @@ template&lt;typename Fn&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00107">107</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  107</span>{<span class="keyword">nullptr</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00158">158</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  158</span>{<span class="keyword">nullptr</span>};</div>
 </div><!-- fragment -->
-</div>
-</div>
-<a id="a601773df557a089b2cfd6309d4ebb9b3" name="a601773df557a089b2cfd6309d4ebb9b3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a601773df557a089b2cfd6309d4ebb9b3">&#9670;&#160;</a></span>library_mutex</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::mutex eonc::ARTnResource::library_mutex</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Global mutex to ensure only one thread accesses ARTn library at a time. </p>
-
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00066">66</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-
 </div>
 </div>
 <a id="a5743236d036edc0d1fda05f358d0d9ac" name="a5743236d036edc0d1fda05f358d0d9ac"></a>
@@ -1282,8 +1166,8 @@ template&lt;typename Fn&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00098">98</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   98</span>{};</div>
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00149">149</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  149</span>{};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1307,8 +1191,8 @@ template&lt;typename Fn&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00097">97</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   97</span>{<span class="keyword">false</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00148">148</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  148</span>{<span class="keyword">false</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1322,7 +1206,7 @@ template&lt;typename Fn&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#a60cbaccf228793f5ebaf1c66649a835e">print_caller_fn</a> eonc::ARTnResource::print_caller_ {nullptr}</td>
+          <td class="memname"><a class="el" href="classeonc_1_1IARTnResource.html#a37f19951afa537621609f31bad7b82d8">print_caller_fn</a> eonc::ARTnResource::print_caller_ {nullptr}</td>
         </tr>
       </table>
   </td>
@@ -1332,8 +1216,8 @@ template&lt;typename Fn&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00109">109</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  109</span>{<span class="keyword">nullptr</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00160">160</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  160</span>{<span class="keyword">nullptr</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1347,7 +1231,7 @@ template&lt;typename Fn&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#a62fa949465328ec78d9fb812589f7755">set_param_fn</a> eonc::ARTnResource::set_param_ {nullptr}</td>
+          <td class="memname"><a class="el" href="classeonc_1_1IARTnResource.html#aece4deab7ec1144d9ad93ac407f47d6e">set_param_fn</a> eonc::ARTnResource::set_param_ {nullptr}</td>
         </tr>
       </table>
   </td>
@@ -1357,8 +1241,8 @@ template&lt;typename Fn&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00105">105</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  105</span>{<span class="keyword">nullptr</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00156">156</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  156</span>{<span class="keyword">nullptr</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1372,7 +1256,7 @@ template&lt;typename Fn&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#a58836e6aad681dd66b71494bf40fb7e3">setup_artn_fn</a> eonc::ARTnResource::setup_artn_ {nullptr}</td>
+          <td class="memname"><a class="el" href="classeonc_1_1IARTnResource.html#a15c357ab0e167435045175d3bed3c178">setup_artn_fn</a> eonc::ARTnResource::setup_artn_ {nullptr}</td>
         </tr>
       </table>
   </td>
@@ -1382,8 +1266,8 @@ template&lt;typename Fn&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00102">102</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  102</span>{<span class="keyword">nullptr</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ARTnResource_8h_source.html#l00153">153</a> of file <a class="el" href="ARTnResource_8h_source.html">ARTnResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  153</span>{<span class="keyword">nullptr</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>

@@ -1,6 +1,6 @@
 var classGPRPotential =
 [
-    [ "GPRPotential", "classGPRPotential.html#a7e192dcb7f30d97ce43d8e823a2cab92", null ],
+    [ "GPRPotential", "classGPRPotential.html#a23cc051c67581a06dab2a2013c77b843", null ],
     [ "cleanMemory", "classGPRPotential.html#a9ef7b2ba558501ebdeb8a10e702eca8d", null ],
     [ "force", "classGPRPotential.html#a19aa6f4080ff12fb6f302141d035e311", null ],
     [ "initialize", "classGPRPotential.html#af27ee074b9234ca7a0b0406ae1b747e5", null ],

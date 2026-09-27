@@ -1,9 +1,9 @@
 var searchData=
 [
-  ['valid_0',['valid',['../classeonc_1_1GleThermostat.html#af5f0642e4b2c9df3ec2cda66708d4c3b',1,'eonc::GleThermostat::valid()'],['../classGleThermostat.html#af5f0642e4b2c9df3ec2cda66708d4c3b',1,'GleThermostat::valid()']]],
+  ['valid_0',['valid',['../classeonc_1_1GleThermostat.html#af5f0642e4b2c9df3ec2cda66708d4c3b',1,'eonc::GleThermostat']]],
   ['validate_5fand_5flink_1',['validate_and_link',['../namespaceeonc_1_1config.html#a78d7cf925cc0890b91729530015d1018',1,'eonc::config']]],
-  ['validate_5forder_2',['validate_order',['../classAMS.html#a7d3e6944edba27dfb4d97728147ecc19',1,'AMS']]],
-  ['vasp_3',['VASP',['../classVASP.html#aba4b144242d9fc665dc17cf1f3719922',1,'VASP']]],
+  ['validatecaps_2',['validateCaps',['../classRgpotAdapter.html#a5d9f82311bf9a6e71a55e9d7debaecbf',1,'RgpotAdapter']]],
+  ['vasp_3',['VASP',['../classVASP.html#af47ae4d0da03317dbf33d29364052ff1',1,'VASP']]],
   ['vasprunning_4',['vaspRunning',['../classVASP.html#abc1179999b1b57e9e402be2cd2bbd8f3',1,'VASP']]],
   ['vaxpy_5',['Vaxpy',['../Vec_8h.html#a5672354a53987c319eb5d9d17de25050',1,'Vec.h']]],
   ['vec_6',['Vec',['../classVec.html#aefd6dd5ca241f55cdc5548e4c02dc187',1,'Vec::Vec()'],['../classVec.html#acc3ae4d516a2d93138ed786f4eaeb930',1,'Vec::Vec(double x0, double x1, double x2)']]],
@@ -22,8 +22,8 @@ var searchData=
   ['vec_5fmul_5fscal_5fadd_5fscal_19',['vec_mul_scal_add_scal',['../vectools_8h.html#a89d3c2a4aa98752f16568bba24b5f095',1,'vectools.h']]],
   ['vec_5fself_5fmul_5fmul_5findir_20',['vec_self_mul_mul_indir',['../vectools_8h.html#ac2df66045fd4684e7763da202d123777',1,'vectools.h']]],
   ['vector_21',['vector',['../classeonc_1_1VesinNeighbors.html#a1332b56a22d1485278dada592c2ef371',1,'eonc::VesinNeighbors']]],
-  ['velocityverlet_22',['velocityVerlet',['../classeonc_1_1Dynamics.html#a0e004685009d355d82a29f41c81e5aca',1,'eonc::Dynamics::velocityVerlet()'],['../classDynamics.html#a0e004685009d355d82a29f41c81e5aca',1,'Dynamics::velocityVerlet()']]],
-  ['velopt_23',['velopt',['../classeonc_1_1GlobalOptimizationJob.html#a5a32fa6e5ccbbff11c42d5c0aa82bc62',1,'eonc::GlobalOptimizationJob::velopt()'],['../classGlobalOptimizationJob.html#a5a32fa6e5ccbbff11c42d5c0aa82bc62',1,'GlobalOptimizationJob::velopt()']]],
+  ['velocityverlet_22',['velocityVerlet',['../classeonc_1_1Dynamics.html#afa99630c07f9015664f5c9473eb7fad3',1,'eonc::Dynamics']]],
+  ['velopt_23',['velopt',['../classeonc_1_1GlobalOptimizationJob.html#a5a8981475ca98745f4570ed4e94737bc',1,'eonc::GlobalOptimizationJob']]],
   ['vertcat_24',['vertCat',['../namespaceeonc_1_1helpers_1_1eigen.html#a5624032ddaa0a2e707326bb395b1fb18',1,'eonc::helpers::eigen']]],
   ['vesinneighbors_25',['VesinNeighbors',['../classeonc_1_1VesinNeighbors.html#ab90a6d756b4a307de13bfc75b7a971ac',1,'eonc::VesinNeighbors::VesinNeighbors()=default'],['../classeonc_1_1VesinNeighbors.html#ab8aa9582b8ef8320b64e7d4080ab9743',1,'eonc::VesinNeighbors::VesinNeighbors(const VesinNeighbors &amp;)=delete'],['../classeonc_1_1VesinNeighbors.html#a4b8d95d8cba9bc95eada7c500fb4c2e2',1,'eonc::VesinNeighbors::VesinNeighbors(VesinNeighbors &amp;&amp;other) noexcept']]],
   ['vexp_26',['vexp',['../mass_8h.html#a5d10d1713b90599726fa15998fcd06d5',1,'mass.h']]],

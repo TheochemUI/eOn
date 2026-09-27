@@ -1,6 +1,5 @@
 var BaseStructures_8h =
 [
-    [ "DimerRotationBackend", "BaseStructures_8h.html#a424d22bb15de7b1ea51aeab514681c37", null ],
     [ "eonc::DimerRotationBackend", "namespaceeonc.html#a424d22bb15de7b1ea51aeab514681c37", [
       [ "eonc::DimerRotationBackend::Classical", "namespaceeonc.html#a424d22bb15de7b1ea51aeab514681c37a2091523979dbedcad728958414922c72", null ],
       [ "eonc::DimerRotationBackend::Lanczos", "namespaceeonc.html#a424d22bb15de7b1ea51aeab514681c37a32970f54c315ab41c0582e2ed8eb4a7c", null ],
@@ -30,7 +29,6 @@ var BaseStructures_8h =
       [ "eonc::JobType::GP_Surrogate", "namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379aaff099e938d23e84611548dcfd6be790", null ],
       [ "eonc::JobType::OH_TST", "namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ac293911fe4119863c48c2c41e7cf1b6e", null ]
     ] ],
-    [ "JobType", "BaseStructures_8h.html#adebcdc96c8ae2e669e84843e070fc379", null ],
     [ "eonc::NEBInit", "namespaceeonc.html#a323be6616e43feab55a65202288b9459", [
       [ "eonc::NEBInit::LINEAR", "namespaceeonc.html#a323be6616e43feab55a65202288b9459aaac544aacc3615aada24897a215f5046", null ],
       [ "eonc::NEBInit::IDPP", "namespaceeonc.html#a323be6616e43feab55a65202288b9459a3e7a288b62da8504cbff0563b5ef4dbd", null ],
@@ -39,7 +37,6 @@ var BaseStructures_8h =
       [ "eonc::NEBInit::SIDPP_ZBL", "namespaceeonc.html#a323be6616e43feab55a65202288b9459a2a7e413327431337bd7ca169281ebe5d", null ],
       [ "eonc::NEBInit::FILE", "namespaceeonc.html#a323be6616e43feab55a65202288b9459a9fc5887c030f7a3e19821ebec457e719", null ]
     ] ],
-    [ "NEBInit", "BaseStructures_8h.html#a323be6616e43feab55a65202288b9459", null ],
     [ "eonc::OptType", "namespaceeonc.html#a0776629ae76e653dba046116f845ac56", [
       [ "eonc::OptType::Unknown", "namespaceeonc.html#a0776629ae76e653dba046116f845ac56a88183b946cc5f0e8c96b2e66e1c74a7e", null ],
       [ "eonc::OptType::None", "namespaceeonc.html#a0776629ae76e653dba046116f845ac56a6adf97f83acf6453d4a6a4b1070f3754", null ],
@@ -47,9 +44,9 @@ var BaseStructures_8h =
       [ "eonc::OptType::CG", "namespaceeonc.html#a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231", null ],
       [ "eonc::OptType::LBFGS", "namespaceeonc.html#a0776629ae76e653dba046116f845ac56a341acbe802de0e3a8902fb8d8a3a352c", null ],
       [ "eonc::OptType::FIRE", "namespaceeonc.html#a0776629ae76e653dba046116f845ac56ab7426fb9c3932995306fceba2874d057", null ],
-      [ "eonc::OptType::SD", "namespaceeonc.html#a0776629ae76e653dba046116f845ac56a38f99abbc1d339c277c0669e7bc373c0", null ]
+      [ "eonc::OptType::SD", "namespaceeonc.html#a0776629ae76e653dba046116f845ac56a38f99abbc1d339c277c0669e7bc373c0", null ],
+      [ "eonc::OptType::XTSCI", "namespaceeonc.html#a0776629ae76e653dba046116f845ac56a786f60c57ac658b1e2507b082736371d", null ]
     ] ],
-    [ "OptType", "BaseStructures_8h.html#a0776629ae76e653dba046116f845ac56", null ],
     [ "eonc::PotType", "namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2", [
       [ "eonc::PotType::UNKNOWN", "namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a696b031073e74bf2cb98e5ef201d4aa3", null ],
       [ "eonc::PotType::EMT", "namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a043a87d3c77eef398c11f7ac3e13cbb9", null ],
@@ -88,11 +85,9 @@ var BaseStructures_8h =
       [ "eonc::PotType::EXPR", "namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ab0cd8af157ed30eaa1980da18b07a38d", null ],
       [ "eonc::PotType::MOPAC", "namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a1115dd3b162b19bd382b0f99af799c82", null ]
     ] ],
-    [ "PotType", "BaseStructures_8h.html#a175de7946a44a0ade4cdbc0c762661d2", null ],
     [ "eonc::RunStatus", "namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459", [
       [ "eonc::RunStatus::GOOD", "namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459a45802158e78dd9584161629098018fe8", null ],
       [ "eonc::RunStatus::FAIL_MAX_ITERATIONS", "namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459a9d50412b69404284d20de2af7e4206dc", null ],
       [ "eonc::RunStatus::FAIL_POTENTIAL_FAILED", "namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459ad0a9f0540a833cc97bd3921d0de2d9b5", null ]
-    ] ],
-    [ "RunStatus", "BaseStructures_8h.html#a848a1af56249f0cafd872ca8b59fc459", null ]
+    ] ]
 ];

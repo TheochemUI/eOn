@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="teal" data-content_root="../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Changelog - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="[v3.2.1] - 2026-09-13" href="v3.2.1/index.html" /><link rel="prev" title="Releases" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Changelog - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="[v3.3.0] - 2026-09-15" href="v3.3.0/index.html" /><link rel="prev" title="Releases" href="index.html" />
       <link rel="canonical" href="https://eondocs.org/releases/changelog.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
@@ -139,6 +139,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/communicator.html">Communicator</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/debug.html">Debug</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/paths.html">Paths</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/stdpar.html">nvc++ stdpar (NEB image forces)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/kdb.html">Kinetic database</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/rgpot_integration.html">rgpot integration (three roles)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/rgpot_pot.html">RgpotPot (direct in-process rgpot)</a></li>
@@ -150,6 +151,10 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/testing.html">Tests</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/parallel-potentials.html">Parallel force evaluation</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/library-api.html">Library API</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/in-process.html">In-process jobs (no file IPC)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/abi-surface.html">Public C++ surface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/rgpot-migration.html">rgpot kernel inventory</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/docbuild.html">Working with the documentation</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn.html">Subversion</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn-migration.html">Migrating from SVN</a></li>
@@ -168,49 +173,54 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.geometry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.pbc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.concorpus.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.concorpus</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.params_ssot.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.params_ssot</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.structure.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.structure</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.params_ssot.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.params_ssot</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.process_id.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.structure.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.structure</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.process_id.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Releases</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="v3.3.0/index.html">[v3.3.0] - 2026-09-15</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="v3.3.0/release-notes.html">eOn 3.3.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="v3.2.1/index.html">[v3.2.1] - 2026-09-13</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="v3.2.1/release-notes.html">eOn 3.2.1</a></li>
 </ul>
@@ -295,165 +305,172 @@ data-aria-dark="Switch to auto color mode">
       <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
-<li><a class="reference internal" href="#id1">3.2.1 - 2026-09-13</a><ul>
+<li><a class="reference internal" href="#id1">3.3.0 - 2026-09-15</a><ul>
+<li><a class="reference internal" href="#removed">Removed</a></li>
 <li><a class="reference internal" href="#added">Added</a></li>
-<li><a class="reference internal" href="#developer">Developer</a></li>
 <li><a class="reference internal" href="#changed">Changed</a></li>
 <li><a class="reference internal" href="#fixed">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id2">3.2.0 - 2026-08-16</a><ul>
+<li><a class="reference internal" href="#id2">3.2.1 - 2026-09-13</a><ul>
 <li><a class="reference internal" href="#id3">Added</a></li>
+<li><a class="reference internal" href="#developer">Developer</a></li>
 <li><a class="reference internal" href="#id4">Changed</a></li>
 <li><a class="reference internal" href="#id5">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id6">3.1.0 - 2026-08-08</a><ul>
-<li><a class="reference internal" href="#id7">Changed</a></li>
-<li><a class="reference internal" href="#id8">Fixed</a></li>
+<li><a class="reference internal" href="#id6">3.2.0 - 2026-08-16</a><ul>
+<li><a class="reference internal" href="#id7">Added</a></li>
+<li><a class="reference internal" href="#id8">Changed</a></li>
+<li><a class="reference internal" href="#id9">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id9">3.0.0 - 2026-07-26</a><ul>
-<li><a class="reference internal" href="#id10">Added</a></li>
-<li><a class="reference internal" href="#id11">Developer</a></li>
-<li><a class="reference internal" href="#id12">Changed</a></li>
-<li><a class="reference internal" href="#id13">Fixed</a></li>
+<li><a class="reference internal" href="#id10">3.1.0 - 2026-08-08</a><ul>
+<li><a class="reference internal" href="#id11">Changed</a></li>
+<li><a class="reference internal" href="#id12">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id14">2.17.10 - 2026-07-20</a><ul>
-<li><a class="reference internal" href="#id15">Fixed</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id16">2.17.9 - 2026-07-20</a><ul>
+<li><a class="reference internal" href="#id13">3.0.0 - 2026-07-26</a><ul>
+<li><a class="reference internal" href="#id14">Added</a></li>
+<li><a class="reference internal" href="#id15">Developer</a></li>
+<li><a class="reference internal" href="#id16">Changed</a></li>
 <li><a class="reference internal" href="#id17">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id18">2.17.8 - 2026-07-20</a><ul>
+<li><a class="reference internal" href="#id18">2.17.10 - 2026-07-20</a><ul>
 <li><a class="reference internal" href="#id19">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id20">2.17.7 - 2026-07-20</a><ul>
+<li><a class="reference internal" href="#id20">2.17.9 - 2026-07-20</a><ul>
 <li><a class="reference internal" href="#id21">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id22">2.17.6 - 2026-07-20</a><ul>
+<li><a class="reference internal" href="#id22">2.17.8 - 2026-07-20</a><ul>
 <li><a class="reference internal" href="#id23">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id24">2.17.5 - 2026-07-20</a><ul>
+<li><a class="reference internal" href="#id24">2.17.7 - 2026-07-20</a><ul>
 <li><a class="reference internal" href="#id25">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id26">2.17.4 - 2026-07-20</a><ul>
+<li><a class="reference internal" href="#id26">2.17.6 - 2026-07-20</a><ul>
 <li><a class="reference internal" href="#id27">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id28">2.17.3 - 2026-07-20</a><ul>
+<li><a class="reference internal" href="#id28">2.17.5 - 2026-07-20</a><ul>
 <li><a class="reference internal" href="#id29">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id30">2.17.2 - 2026-07-17</a><ul>
-<li><a class="reference internal" href="#id31">Added</a></li>
-<li><a class="reference internal" href="#id32">Fixed</a></li>
+<li><a class="reference internal" href="#id30">2.17.4 - 2026-07-20</a><ul>
+<li><a class="reference internal" href="#id31">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id33">2.17.1 - 2026-07-17</a><ul>
-<li><a class="reference internal" href="#id34">Fixed</a></li>
+<li><a class="reference internal" href="#id32">2.17.3 - 2026-07-20</a><ul>
+<li><a class="reference internal" href="#id33">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id35">2.17.0 - 2026-07-17</a><ul>
-<li><a class="reference internal" href="#id36">Added</a></li>
-<li><a class="reference internal" href="#id37">Developer</a></li>
-<li><a class="reference internal" href="#id38">Changed</a></li>
-<li><a class="reference internal" href="#id39">Fixed</a></li>
+<li><a class="reference internal" href="#id34">2.17.2 - 2026-07-17</a><ul>
+<li><a class="reference internal" href="#id35">Added</a></li>
+<li><a class="reference internal" href="#id36">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id40">2.16.0 - 2026-07-03</a><ul>
-<li><a class="reference internal" href="#id41">Added</a></li>
+<li><a class="reference internal" href="#id37">2.17.1 - 2026-07-17</a><ul>
+<li><a class="reference internal" href="#id38">Fixed</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id39">2.17.0 - 2026-07-17</a><ul>
+<li><a class="reference internal" href="#id40">Added</a></li>
+<li><a class="reference internal" href="#id41">Developer</a></li>
 <li><a class="reference internal" href="#id42">Changed</a></li>
 <li><a class="reference internal" href="#id43">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id44">2.15.0 - 2026-06-24</a><ul>
+<li><a class="reference internal" href="#id44">2.16.0 - 2026-07-03</a><ul>
 <li><a class="reference internal" href="#id45">Added</a></li>
-<li><a class="reference internal" href="#id46">Developer</a></li>
+<li><a class="reference internal" href="#id46">Changed</a></li>
 <li><a class="reference internal" href="#id47">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id48">2.14.0 - 2026-04-24</a><ul>
+<li><a class="reference internal" href="#id48">2.15.0 - 2026-06-24</a><ul>
 <li><a class="reference internal" href="#id49">Added</a></li>
-<li><a class="reference internal" href="#id50">Fixed</a></li>
+<li><a class="reference internal" href="#id50">Developer</a></li>
+<li><a class="reference internal" href="#id51">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id51">2.13.0 - 2026-04-18</a><ul>
-<li><a class="reference internal" href="#removed">Removed</a></li>
-<li><a class="reference internal" href="#id52">Added</a></li>
-<li><a class="reference internal" href="#id53">Developer</a></li>
-<li><a class="reference internal" href="#id54">Changed</a></li>
-<li><a class="reference internal" href="#id55">Fixed</a></li>
+<li><a class="reference internal" href="#id52">2.14.0 - 2026-04-24</a><ul>
+<li><a class="reference internal" href="#id53">Added</a></li>
+<li><a class="reference internal" href="#id54">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id56">2.12.0 - 2026-03-08</a><ul>
-<li><a class="reference internal" href="#id57">Removed</a></li>
-<li><a class="reference internal" href="#id58">Added</a></li>
+<li><a class="reference internal" href="#id55">2.13.0 - 2026-04-18</a><ul>
+<li><a class="reference internal" href="#id56">Removed</a></li>
+<li><a class="reference internal" href="#id57">Added</a></li>
+<li><a class="reference internal" href="#id58">Developer</a></li>
 <li><a class="reference internal" href="#id59">Changed</a></li>
 <li><a class="reference internal" href="#id60">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id61">2.12.0 - 2026-03-04</a><ul>
-<li><a class="reference internal" href="#id62">Changed</a></li>
-<li><a class="reference internal" href="#id63">Fixed</a></li>
+<li><a class="reference internal" href="#id61">2.12.0 - 2026-03-08</a><ul>
+<li><a class="reference internal" href="#id62">Removed</a></li>
+<li><a class="reference internal" href="#id63">Added</a></li>
+<li><a class="reference internal" href="#id64">Changed</a></li>
+<li><a class="reference internal" href="#id65">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id64">2.11.1 - 2026-03-01</a><ul>
-<li><a class="reference internal" href="#id65">Added</a></li>
-<li><a class="reference internal" href="#id66">Developer</a></li>
-<li><a class="reference internal" href="#id67">Fixed</a></li>
+<li><a class="reference internal" href="#id66">2.12.0 - 2026-03-04</a><ul>
+<li><a class="reference internal" href="#id67">Changed</a></li>
+<li><a class="reference internal" href="#id68">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id68">2.11.0 - 2026-02-24</a><ul>
-<li><a class="reference internal" href="#id69">Added</a></li>
-<li><a class="reference internal" href="#id70">Developer</a></li>
-<li><a class="reference internal" href="#id71">Fixed</a></li>
+<li><a class="reference internal" href="#id69">2.11.1 - 2026-03-01</a><ul>
+<li><a class="reference internal" href="#id70">Added</a></li>
+<li><a class="reference internal" href="#id71">Developer</a></li>
+<li><a class="reference internal" href="#id72">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id72">2.10.2 - 2026-02-22</a><ul>
-<li><a class="reference internal" href="#id73">Fixed</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id74">2.10.1 - 2026-02-18</a><ul>
+<li><a class="reference internal" href="#id73">2.11.0 - 2026-02-24</a><ul>
+<li><a class="reference internal" href="#id74">Added</a></li>
 <li><a class="reference internal" href="#id75">Developer</a></li>
 <li><a class="reference internal" href="#id76">Fixed</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#id77">2.10.2 - 2026-02-22</a><ul>
+<li><a class="reference internal" href="#id78">Fixed</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id79">2.10.1 - 2026-02-18</a><ul>
+<li><a class="reference internal" href="#id80">Developer</a></li>
+<li><a class="reference internal" href="#id81">Fixed</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#v2-10-0-2026-02-15">v2.10.0 - 2026-02-15</a><ul>
-<li><a class="reference internal" href="#id77">Added</a></li>
-<li><a class="reference internal" href="#id78">Developer</a></li>
-<li><a class="reference internal" href="#id79">Changed</a></li>
-<li><a class="reference internal" href="#id80">Fixed</a></li>
+<li><a class="reference internal" href="#id82">Added</a></li>
+<li><a class="reference internal" href="#id83">Developer</a></li>
+<li><a class="reference internal" href="#id84">Changed</a></li>
+<li><a class="reference internal" href="#id85">Fixed</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#v2-9-0-2026-01-27">v2.9.0 - 2026-01-27</a><ul>
-<li><a class="reference internal" href="#id81">Added</a></li>
-<li><a class="reference internal" href="#id82">Changed</a></li>
-<li><a class="reference internal" href="#id83">Fixed</a></li>
+<li><a class="reference internal" href="#id86">Added</a></li>
+<li><a class="reference internal" href="#id87">Changed</a></li>
+<li><a class="reference internal" href="#id88">Fixed</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#v2-8-2-2025-12-01">v2.8.2 - 2025-12-01</a><ul>
-<li><a class="reference internal" href="#id84">Added</a></li>
-<li><a class="reference internal" href="#id85">Changed</a></li>
-<li><a class="reference internal" href="#id86">Developer</a></li>
+<li><a class="reference internal" href="#id89">Added</a></li>
+<li><a class="reference internal" href="#id90">Changed</a></li>
+<li><a class="reference internal" href="#id91">Developer</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#v2-8-1-2025-11-03">v2.8.1 - 2025-11-03</a><ul>
-<li><a class="reference internal" href="#id87">Added</a></li>
-<li><a class="reference internal" href="#id88">Changed</a></li>
-<li><a class="reference internal" href="#id89">Fixed</a></li>
+<li><a class="reference internal" href="#id92">Added</a></li>
+<li><a class="reference internal" href="#id93">Changed</a></li>
+<li><a class="reference internal" href="#id94">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id90">2.8.0 - 2025-09-04</a><ul>
-<li><a class="reference internal" href="#id91">Added</a></li>
-<li><a class="reference internal" href="#id92">Developer</a><ul>
+<li><a class="reference internal" href="#id95">2.8.0 - 2025-09-04</a><ul>
+<li><a class="reference internal" href="#id96">Added</a></li>
+<li><a class="reference internal" href="#id97">Developer</a><ul>
 <li><a class="reference internal" href="#build-tooling">Build &amp; Tooling</a></li>
 <li><a class="reference internal" href="#code-quality-refactoring">Code Quality &amp; Refactoring</a></li>
 <li><a class="reference internal" href="#documentation">Documentation</a></li>
@@ -557,9 +574,226 @@ data-aria-dark="Switch to auto color mode">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading">¶</a></h1>
 <!-- towncrier release notes start -->
 <section id="id1">
-<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/3.2.1">3.2.1</a> - 2026-09-13<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/3.3.0">3.3.0</a> - 2026-09-15<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<section id="removed">
+<h3>Removed<a class="headerlink" href="#removed" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Drop the unused <code class="docutils literal notranslate"><span class="pre">with_pybind11</span></code> meson option and the dead <code class="docutils literal notranslate"><span class="pre">EONMPIBGP</span></code> include in ClientEON. Feature-gated public headers remain.</p></li>
+<li><p>OCI-NEB MMF triggers on the adaptive threshold only. The floor is <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">force_tolerance</span></code>; <code class="docutils literal notranslate"><span class="pre">ci_mmf_after</span></code> is no longer an extra OR.</p></li>
+</ul>
+</section>
 <section id="added">
 <h3>Added<a class="headerlink" href="#added" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>AKMC CI builds with <code class="docutils literal notranslate"><span class="pre">-Dwith_pyeonclient=true</span></code>. XTB CI includes windows-2022. Lanczos docs name stiff EAM/Tersoff. <code class="docutils literal notranslate"><span class="pre">load_ini_text</span></code> and AMSEl <code class="docutils literal notranslate"><span class="pre">on_error</span></code> / <code class="docutils literal notranslate"><span class="pre">fallback_single</span></code> are in.</p></li>
+<li><p>Document Potential/Matter thread-safe interface. <code class="docutils literal notranslate"><span class="pre">matter_to_ase</span></code> copies atom ids. Testing guide names Baker 05/17/19/20 as the reduced parameter-check set.</p></li>
+<li><p>External C++ includes <code class="docutils literal notranslate"><span class="pre">eon/api.h</span></code> for Matter, Parameters, NEB, IDPP/SIDPP, and dimer. Job headers stay internal.</p></li>
+<li><p>Hash-pin GitHub Actions (zizmor), add <code class="docutils literal notranslate"><span class="pre">ci_zizmor.yml</span></code>, and run zizmor from prek.</p></li>
+<li><p>Hessian, Prefactor, and Dynamics jobs write results.dat from JobResultEnvelope. LocalInProcess builds CON text only when a caller reads min.con.</p></li>
+<li><p>IRACompare.cpp is always compiled so NEB can call match_endpoints when
+IRA is off (the methods stub). <code class="docutils literal notranslate"><span class="pre">matchArrays</span></code> plus <code class="docutils literal notranslate"><span class="pre">pyeonclient.ira_match</span></code>
+let <code class="docutils literal notranslate"><span class="pre">eon.atoms.rot_match</span></code> use IRA when the wheel has it, else Kabsch.</p></li>
+<li><p>In-process <code class="docutils literal notranslate"><span class="pre">process_search</span></code> puts <code class="docutils literal notranslate"><span class="pre">saddle.con</span></code> on the result record so explorer can register the saddle without an <code class="docutils literal notranslate"><span class="pre">eonclient</span></code> subprocess.</p></li>
+<li><p>JobResult Cap’n Proto names historical <code class="docutils literal notranslate"><span class="pre">termination_reason</span></code> integers as <code class="docutils literal notranslate"><span class="pre">TerminationCode</span></code> (0–21). <code class="docutils literal notranslate"><span class="pre">statusCode</span></code> stays the results.dat integer.</p></li>
+<li><p>JobResult has a <code class="docutils literal notranslate"><span class="pre">body</span></code> union (<code class="docutils literal notranslate"><span class="pre">minimization</span></code> / <code class="docutils literal notranslate"><span class="pre">neb</span></code> / <code class="docutils literal notranslate"><span class="pre">processSearch</span></code>). Shared scalars stay on the outer struct.</p></li>
+<li><p>Jobs register themselves into a table; <code class="docutils literal notranslate"><span class="pre">makeJob</span></code> looks up the factory. AMSEl persist_split writes a sidecar so a resume does not re-split the basin.</p></li>
+<li><p>LAMMPSPot accepts an injected ILammpsLoader. Production still uses the
+process-default LammpsLoader singleton.</p></li>
+<li><p>LocalInProcess also dispatches dynamics, Monte Carlo, basin hopping, Hessian, prefactor, and finite-difference. Those C++ jobs write results.dat from JobResultEnvelope.</p></li>
+<li><p>LocalInProcess dispatches minimization, point, process_search, and saddle_search. PointJob writes results.dat from JobResultEnvelope. JobType.OH_TST is bound.</p></li>
+<li><p>Meson <code class="docutils literal notranslate"><span class="pre">-Dstdpar=cpu|gpu</span></code> turns on nvc++ <code class="docutils literal notranslate"><span class="pre">-stdpar=multicore|gpu</span></code> for the NEB image-force <code class="docutils literal notranslate"><span class="pre">std::execution::par</span></code> path without TBB. <code class="docutils literal notranslate"><span class="pre">-Dstdpar=gpu</span></code> also passes <code class="docutils literal notranslate"><span class="pre">-gpu=cc80,cc90</span></code> (override with <code class="docutils literal notranslate"><span class="pre">-Dstdpar_gpu_cc=</span></code>). GCC/Clang still use <code class="docutils literal notranslate"><span class="pre">-Dwith_parallel_neb=true</span></code>. Morse atom loops stay on the host. <code class="docutils literal notranslate"><span class="pre">QMC_GPU</span></code> is a QMCPACK flag, not an eOn option. eOn skips the cmake Highway wrap on nvc++ so Meson does not import <code class="docutils literal notranslate"><span class="pre">hwy_list_targets</span></code> (PGICompiler has no <code class="docutils literal notranslate"><span class="pre">get_pie_args</span></code>).</p></li>
+<li><p>Metatomic <code class="docutils literal notranslate"><span class="pre">forceBatch</span></code> tries a single <code class="docutils literal notranslate"><span class="pre">model.forward</span></code> over N systems and falls back to sequential <code class="docutils literal notranslate"><span class="pre">force()</span></code> if that path throws.</p></li>
+<li><p>MetatomicPotential can clone the already-loaded Torch module for per-image NEB instances without a second disk load.</p></li>
+<li><p>MinimizationJob fills an in-memory JobResultEnvelope and writes results.dat from it. The Cap’n Proto schema is unchanged.</p></li>
+<li><p>NEB writes <code class="docutils literal notranslate"><span class="pre">peakNN_pos.con</span></code> and <code class="docutils literal notranslate"><span class="pre">peakNN_mode.dat</span></code> for every interior spline maximum (<code class="docutils literal notranslate"><span class="pre">setup_mmf_peaks</span></code>, default on). Those files are the dimer seeds for a follow-up saddle search.</p></li>
+<li><p>NEB, dimer, and process search query pot thread-safety through <code class="docutils literal notranslate"><span class="pre">potAllowsSharedInstance</span></code> in <code class="docutils literal notranslate"><span class="pre">eon/PotCapabilities.h</span></code>. Virtual <code class="docutils literal notranslate"><span class="pre">isThreadSafe</span></code> stays the override point.</p></li>
+<li><p>Optional ASE <code class="docutils literal notranslate"><span class="pre">batch_calculate</span></code> sets <code class="docutils literal notranslate"><span class="pre">supportsBatchEvaluation</span></code>.
+Without the hook the pot stays on sequential <code class="docutils literal notranslate"><span class="pre">force()</span></code>. From #409.</p></li>
+<li><p>Parameters can load INI from a memory string (<code class="docutils literal notranslate"><span class="pre">load_ini_text</span></code>). LocalInProcess uses that instead of a temp file. Docs floors drop the invalid rgpycrumbs <code class="docutils literal notranslate"><span class="pre">analysis</span></code> extra.</p></li>
+<li><p>RgpotAdapter rejects a kernel whose <code class="docutils literal notranslate"><span class="pre">caps().reentrancy</span></code> is not SharedInstance, PerInstance, or ProcessSerial. OCI-NEB hybrid-dimer defaults stay <code class="docutils literal notranslate"><span class="pre">ci_stability_count=5</span></code> and <code class="docutils literal notranslate"><span class="pre">max_steps=1000</span></code>.</p></li>
+<li><p>SaddleSearchJob and ProcessSearchJob accept an in-memory Matter via <code class="docutils literal notranslate"><span class="pre">runFromMatter</span></code>, so pyeonclient does not have to write pos.con first.</p></li>
+<li><p>With <code class="docutils literal notranslate"><span class="pre">write_movies</span> <span class="pre">=</span> <span class="pre">true</span></code>, saddle search writes <code class="docutils literal notranslate"><span class="pre">mode_000.dat</span></code>, <code class="docutils literal notranslate"><span class="pre">mode_001.dat</span></code>, … so dimer mode-evolution plots have per-iteration eigenvectors.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Potential::layoutFlags()</span></code> reports in-process vs cwd vs subprocess execution. ExtPot sets Subprocess and NeedsWorkingDirectory.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RGPOT_NWCHEM_ENGINE</span></code> is accepted as an alias of <code class="docutils literal notranslate"><span class="pre">RGPOT_NWCHEMC_ENGINE</span></code>. Devdocs list which pots live in rgpot vs in-tree.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[Nudged</span> <span class="pre">Elastic</span> <span class="pre">Band]</span> <span class="pre">match_endpoints</span> <span class="pre">=</span> <span class="pre">true</span></code> rigid-aligns and permutes the reactant onto the product with IRA before interpolation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[Potential]</span> <span class="pre">thread_safe</span> <span class="pre">=</span> <span class="pre">false</span></code> keeps a shared Potential serial. EAM and EMT refuse shared-instance threading (cell lists / ASAP state).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code> uses minimage <code class="docutils literal notranslate"><span class="pre">wrap_many</span></code> for packed displacements.
+<code class="docutils literal notranslate"><span class="pre">neighbor_list_pairs</span></code> returns vesin <code class="docutils literal notranslate"><span class="pre">ijS</span></code> rows without unique-index
+MIC reduction.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">eon_schema.jobs</span></code> encodes and decodes JobResult dicts (<code class="docutils literal notranslate"><span class="pre">job_result_dumps</span></code> / <code class="docutils literal notranslate"><span class="pre">job_result_loads</span></code>). pycapnp is used when installed; otherwise JSON of the wire field names.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">job</span> <span class="pre">=</span> <span class="pre">test</span></code> now constructs TestJob. The implementation is linked into eonclib and writes results.dat (OK/FAIL/SKIP per pot). Missing <code class="docutils literal notranslate"><span class="pre">pos_test.con</span></code> is SKIP, not a link error.</p></li>
+<li><p>pyeonclient exports ProcessSearchJob with min1/min2/saddle/prefactors. LocalInProcess uses that job when present. NEB writes results.dat from JobResultEnvelope plus image keys.</p></li>
+</ul>
+</section>
+<section id="changed">
+<h3>Changed<a class="headerlink" href="#changed" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>AMS and AMS_IO look up symbols with <code class="docutils literal notranslate"><span class="pre">readcon::z_to_symbol</span></code>. GPR dropped
+an unused private element table.</p></li>
+<li><p>ASE and CatLearn pot headers no longer inject <code class="docutils literal notranslate"><span class="pre">using</span> <span class="pre">namespace</span> <span class="pre">pybind11::literals</span></code>. The <code class="docutils literal notranslate"><span class="pre">_a</span></code> literal is function-local in the TUs.</p></li>
+<li><p>ASE-NWChem <code class="docutils literal notranslate"><span class="pre">basis</span></code> and <code class="docutils literal notranslate"><span class="pre">memory</span></code> come from <code class="docutils literal notranslate"><span class="pre">[ASE_NWCHEM]</span></code> instead of
+hard-coded <code class="docutils literal notranslate"><span class="pre">3-21G</span></code> / <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">gb</span></code>. Defaults are unchanged.</p></li>
+<li><p>ConjugateGradients, FIRE, LBFGS, Quickmin, and SteepestDescent headers no longer inject <code class="docutils literal notranslate"><span class="pre">using</span> <span class="pre">eonc::…</span></code>. Implementations live in <code class="docutils literal notranslate"><span class="pre">namespace</span> <span class="pre">eonc</span></code>.</p></li>
+<li><p>Dimer <code class="docutils literal notranslate"><span class="pre">opt_method</span></code> is <code class="docutils literal notranslate"><span class="pre">OptType</span></code> (CG/LBFGS/SD) like the other optimizers. INI still accepts <code class="docutils literal notranslate"><span class="pre">cg</span></code>/<code class="docutils literal notranslate"><span class="pre">lbfgs</span></code>/<code class="docutils literal notranslate"><span class="pre">sd</span></code>.</p></li>
+<li><p>Dimer, ImprovedDimer, Lanczos, Davidson, LOR, LowestEigenmode, MinModeSaddleSearch, and EigenmodeStrategy headers no longer inject <code class="docutils literal notranslate"><span class="pre">using</span> <span class="pre">eonc::…</span></code>.</p></li>
+<li><p>IRA CShDA marks unassigned pairs with <code class="docutils literal notranslate"><span class="pre">huge()</span></code> instead of 999.9.
+A 38-atom core-plus-outlier pair that used to return a non-bijective
+permutation now assigns every index.</p></li>
+<li><p>Matter, Parameters, NEB, and the RPC server TUs live in <code class="docutils literal notranslate"><span class="pre">namespace</span> <span class="pre">eonc</span></code>. <code class="docutils literal notranslate"><span class="pre">NudgedElasticBand.h</span></code>, <code class="docutils literal notranslate"><span class="pre">Optimizer.h</span></code>, and <code class="docutils literal notranslate"><span class="pre">ServeRpcServer.h</span></code> no longer inject <code class="docutils literal notranslate"><span class="pre">using</span> <span class="pre">eonc::…</span></code>.</p></li>
+<li><p>Minimization, Point, Dynamics, Hessian, FiniteDifference, and Test job headers no longer inject <code class="docutils literal notranslate"><span class="pre">using</span> <span class="pre">eonc::…</span></code> into the global namespace. The job factory qualifies <code class="docutils literal notranslate"><span class="pre">eonc::</span></code> at the register site.</p></li>
+<li><p>More public headers (dynamics, Hessian, IDPP, IRA, saddle methods) no longer inject <code class="docutils literal notranslate"><span class="pre">using</span> <span class="pre">eonc::…</span></code>. Implementations live in <code class="docutils literal notranslate"><span class="pre">namespace</span> <span class="pre">eonc</span></code>.</p></li>
+<li><p>NEB image forces use <code class="docutils literal notranslate"><span class="pre">std::execution::par</span></code> when built with <code class="docutils literal notranslate"><span class="pre">-Dwith_parallel_neb=true</span></code> (TBB), instead of one raw thread per bead.</p></li>
+<li><p>Option structs live in <code class="docutils literal notranslate"><span class="pre">ParametersOptions.h</span></code>. <code class="docutils literal notranslate"><span class="pre">Parameters.h</span></code> is the
+loader aggregate and keeps <code class="docutils literal notranslate"><span class="pre">Parameters::neb_options_t</span></code> aliases.</p></li>
+<li><p>Parameters option groups now expose only const accessors. INI/JSON loaders and
+bindings write through <code class="docutils literal notranslate"><span class="pre">ParametersLoadAccess</span></code>; MPI comm/rank use dedicated
+setters so <code class="docutils literal notranslate"><span class="pre">ParametersMpi.h</span></code> no longer takes the address of a temporary.</p></li>
+<li><p>Pot headers inherit <code class="docutils literal notranslate"><span class="pre">eonc::Potential</span></code> directly. <code class="docutils literal notranslate"><span class="pre">Potential.h</span></code> no longer injects <code class="docutils literal notranslate"><span class="pre">using</span> <span class="pre">eonc::Potential</span></code>.</p></li>
+<li><p>Production client sources no longer use <code class="docutils literal notranslate"><span class="pre">using</span> <span class="pre">namespace</span> <span class="pre">eonc::helpers</span></code>. Call sites are qualified.</p></li>
+<li><p>Public headers no longer include mpi.h or gate EigenmodeStrategy on
+WITH_GPRD. Potential and Matter forward-declare Parameters. Optional
+MPI helpers live in ParametersMpi.h.</p></li>
+<li><p>Public headers no longer inject <code class="docutils literal notranslate"><span class="pre">using</span> <span class="pre">eonc::Matter</span></code>, <code class="docutils literal notranslate"><span class="pre">Parameters</span></code>, or the
+BaseStructures enums. Helper rng/geometry names are called as <code class="docutils literal notranslate"><span class="pre">eonc::rng</span></code>
+and <code class="docutils literal notranslate"><span class="pre">eonc::geometry</span></code>. <code class="docutils literal notranslate"><span class="pre">Potential::get_ef</span></code> is defined on <code class="docutils literal notranslate"><span class="pre">eonc::Potential</span></code>.</p></li>
+<li><p>Python CNA now builds unique-index adjacency from vesin <code class="docutils literal notranslate"><span class="pre">ijS</span></code> pair
+arrays. The local element table is a Z-keyed radius/color overlay;
+symbol and Z lookups stay on readcon.</p></li>
+<li><p>Python CNA uses the same 0/1/2 labels as the C++ client (fcc/hcp/other).
+Common-neighbor lookup is a set membership test that keeps neighbor-list order.</p></li>
+<li><p>Remaining job headers no longer inject <code class="docutils literal notranslate"><span class="pre">using</span> <span class="pre">eonc::…</span></code>. Implementations live in <code class="docutils literal notranslate"><span class="pre">namespace</span> <span class="pre">eonc</span></code>. <code class="docutils literal notranslate"><span class="pre">Job.h</span></code> still has the <code class="docutils literal notranslate"><span class="pre">using</span> <span class="pre">eonc::Job</span></code> alias.</p></li>
+<li><p>ServeMode, BondBoost, Rgpot, and AMS use <code class="docutils literal notranslate"><span class="pre">std::ranges::transform</span></code> for case folding instead of <code class="docutils literal notranslate"><span class="pre">std::transform</span></code>.</p></li>
+<li><p>SocketNWChem looks up symbols with <code class="docutils literal notranslate"><span class="pre">readcon::z_to_symbol</span></code> instead of a
+private element table. The last owned file-scope <code class="docutils literal notranslate"><span class="pre">using</span></code> directives are gone.</p></li>
+<li><p>The ASE potential maps incoming C arrays with Eigen::Map, matching
+ASE-ORCA, instead of building pybind11 shape vectors by hand.</p></li>
+<li><p>The client Fortran compile no longer passes <code class="docutils literal notranslate"><span class="pre">-w</span></code>. Named <code class="docutils literal notranslate"><span class="pre">-Wno-*</span></code>
+flags stay. Water displacements are no longer a fake <code class="docutils literal notranslate"><span class="pre">Displace</span></code> subclass.</p></li>
+<li><p>The command-line parser qualifies Argum types instead of a file-scope
+using-directive. Helper file helpers use <code class="docutils literal notranslate"><span class="pre">std::string</span></code> / <code class="docutils literal notranslate"><span class="pre">std::ifstream</span></code>.</p></li>
+<li><p>The eon-schema <code class="docutils literal notranslate"><span class="pre">rgpycrumbs</span></code> extra matches the tree pin (<code class="docutils literal notranslate"><span class="pre">&gt;=1.10.4</span></code>). Dimer docs mark LOR as added in 2.17.2.</p></li>
+<li><p>Water and Water_Pt potential TUs wrap implementations in
+<code class="docutils literal notranslate"><span class="pre">namespace</span> <span class="pre">forcefields</span></code> instead of file-scope <code class="docutils literal notranslate"><span class="pre">using</span> <span class="pre">namespace</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Job.h</span></code> and <code class="docutils literal notranslate"><span class="pre">ServeMode.h</span></code> no longer inject <code class="docutils literal notranslate"><span class="pre">using</span> <span class="pre">eonc::…</span></code> into the global namespace.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Parameters::load</span></code>, <code class="docutils literal notranslate"><span class="pre">load_ini_text</span></code>, and <code class="docutils literal notranslate"><span class="pre">load_json</span></code> take
+<code class="docutils literal notranslate"><span class="pre">std::string_view</span></code> instead of owning <code class="docutils literal notranslate"><span class="pre">std::string</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Parameters</span></code> now has a private load-state <code class="docutils literal notranslate"><span class="pre">Impl</span></code>
+(<code class="docutils literal notranslate"><span class="pre">last_load_source</span></code> / <code class="docutils literal notranslate"><span class="pre">last_load_error</span></code>). Option-group layout stays
+in the installed header and is not ABI-stable. <code class="docutils literal notranslate"><span class="pre">Matter</span></code> still exposes
+Eigen.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Parameters</span></code> option groups are private. Callers use <code class="docutils literal notranslate"><span class="pre">main_options()</span></code>
+and the other accessors. <code class="docutils literal notranslate"><span class="pre">load</span></code> / <code class="docutils literal notranslate"><span class="pre">to_json</span></code> still round-trip.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Potential::force</span></code> has a <code class="docutils literal notranslate"><span class="pre">std::span</span></code> overload that checks sizes
+before the raw C-array virtual. Matter, <code class="docutils literal notranslate"><span class="pre">get_ef</span></code>, and surrogate
+<code class="docutils literal notranslate"><span class="pre">get_ef_var</span></code> use it. Fortran/FFI loaders keep the pointer API.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">eon.atoms.atomic_number</span></code> / <code class="docutils literal notranslate"><span class="pre">symbol_for_z</span></code> call readcon’s Python
+<code class="docutils literal notranslate"><span class="pre">symbol_to_atomic_number</span></code> / <code class="docutils literal notranslate"><span class="pre">atomic_number_to_symbol</span></code> (0.14.9+). The
+ctypes probe of <code class="docutils literal notranslate"><span class="pre">rkr_symbol_to_z</span></code> is gone.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">eon.atoms.atomic_number</span></code> / <code class="docutils literal notranslate"><span class="pre">symbol_for_z</span></code> prefer readcon for Z/symbol. The local table keeps radius and colour for viz.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">eon.geometry.neighbor_list</span></code> takes vesin’s per-axis <code class="docutils literal notranslate"><span class="pre">periodic</span></code> flag.
+<code class="docutils literal notranslate"><span class="pre">Structure.periodic</span></code> defaults to all-periodic and is used when the
+argument is omitted.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code> accepts a bool or length-3 mask so a free axis is
+not minimum-image wrapped. Partial masks use the numpy wrap.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">eon</span></code> no longer imports the AKMC server. <code class="docutils literal notranslate"><span class="pre">eon.server</span></code> loads on first access.</p></li>
+</ul>
+</section>
+<section id="fixed">
+<h3>Fixed<a class="headerlink" href="#fixed" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>NEB <code class="docutils literal notranslate"><span class="pre">minimize_endpoints</span></code> defaults to false, matching SVN and the
+pyeonclient NEB API. The old true default added endpoint relaxations
+to <code class="docutils literal notranslate"><span class="pre">total_force_calls</span></code> on fixtures that never asked for them.</p></li>
+<li><p>A failed <code class="docutils literal notranslate"><span class="pre">hessian.dat</span></code> write now fails the Hessian calculation instead of returning a successful eigen solve.</p></li>
+<li><p>AKMCState stores the search count in MetaData and increments it on each append, instead of rereading the search log.</p></li>
+<li><p>AtomicGPDimer throws on a null Matter and returns a zero mode if the GP orientation size does not match the free-atom count.</p></li>
+<li><p>BGSD uses <code class="docutils literal notranslate"><span class="pre">safe_normalize</span></code> on the trial mode so an all-fixed Matter does not write NaN.</p></li>
+<li><p>Bond-boost returns zero bias when QRR or the selected bond count is not positive, and skips a bond whose length or equilibrium is zero.</p></li>
+<li><p>Collective IDPP <code class="docutils literal notranslate"><span class="pre">lastMaxForce</span></code> uses free-atom residuals only, so frozen pair forces no longer pin SIDPP at <code class="docutils literal notranslate"><span class="pre">max_iterations</span></code>.</p></li>
+<li><p>Collective IDPP leaves a collapsed-image tangent as zero instead of <code class="docutils literal notranslate"><span class="pre">normalize()</span></code> to NaN.</p></li>
+<li><p>Cookbook tests skip unless <code class="docutils literal notranslate"><span class="pre">EON_PET_NEB_ROOT</span></code> / <code class="docutils literal notranslate"><span class="pre">EON_PET_MAD_MODEL</span></code> are set. ASE NWChem examples take <code class="docutils literal notranslate"><span class="pre">NWCHEM_COMMAND</span></code>.</p></li>
+<li><p>Dephase and INI dynamics step counts no longer divide by a zero <code class="docutils literal notranslate"><span class="pre">time_step</span></code>. A non-positive dt throws in the dephase paths and yields 0 steps in INI load.</p></li>
+<li><p>Document that XTB NEB is serial: <code class="docutils literal notranslate"><span class="pre">isThreadSafe</span></code> and <code class="docutils literal notranslate"><span class="pre">needsPerImageInstance</span></code> are both false because of Fortran restart units.</p></li>
+<li><p>Documentation PRs no longer get <code class="docutils literal notranslate"><span class="pre">contents:</span> <span class="pre">write</span></code>. The build job is read-only; deploy is a separate job that runs only on push.</p></li>
+<li><p>Dynamics throws on a null Matter. Kinetic temperature, thermal velocities, and Andersen redraws skip when there are no free atoms or a mass is not positive.</p></li>
+<li><p>EpiCenters throw on a null Matter instead of dereferencing it.</p></li>
+<li><p>Finite-difference displacements use <code class="docutils literal notranslate"><span class="pre">structure_comparison.neighbor_cutoff</span></code> and reject a zero displacement instead of normalizing it to NaN.</p></li>
+<li><p>Fix Matter size/cache bugs, dimer rotate/PBC/fixed-atom mode, NEB/Helper/min-mode signed max-component, FIRE zero-force/max-move, Hessian failed-cache, CG extra step, Dynamics extra MD step, BondBoost 0/dt and listed-atom range, Prefactor frozen atoms in the Hessian filter, GP surrogate target layout, OCINEB/GP-dimer eigenvector size, min-mode status/forcecalls/confine loop, ARTn direction.dat load, process-search pot/mode/displacement, fCallsMin double-count, replica-exchange config swap and per-thread ran2, basin-hopping accept/compare/swap, Nose-Hoover G2/Q2 plus post-Verlet KE, EpiCenters empty-set throw, MonteCarlo Metropolis sign, Quickmin zero-force, HessianJob failed-freq status, TAD/SafeHyper clock clamp and refine bounds, SafeHyper bias binding, BGSD NaN/iteration cap, OCINEB converged_only plus SIDPP collapse, TAD empty product, ParallelReplica first-hop stop, NEB path size, ASE position alias, SD two-point PBC, Prefactor empty moved set, ASE mixed-PBC throw, ASE unknown-constraint throw, readonly forces view, non-finite force reject, LAMMPS extract null and missing in.lammps, setForces mask persist, Structure-Matter atom_id copy, job catch of runtime_error, Lanczos/Davidson max_iterations floor, LBFGS negative s·y skip, LAMMPS neighbor rebuild and restricted cell, and Structure id uniqueness. Morse Pt saddle energy is unchanged; the dimer-rotate fix shifts the FD curvature from -1.014995 to -1.010564 and process-search force calls from 67 to 69.</p></li>
+<li><p>GPRD CI no longer reports Success when <code class="docutils literal notranslate"><span class="pre">SUBMODULE_PRIVATE</span></code> is missing. A <code class="docutils literal notranslate"><span class="pre">gprd-gate</span></code> job records availability; <code class="docutils literal notranslate"><span class="pre">gprd-integration</span></code> is Skipped on forks instead of a fake pass.</p></li>
+<li><p>IRA compare returns an error on a zero-atom Matter instead of indexing <code class="docutils literal notranslate"><span class="pre">cand1[0]</span></code>.</p></li>
+<li><p>LAMMPS <code class="docutils literal notranslate"><span class="pre">setforce</span></code> follows Matter’s per-axis freeze mask. An atom frozen
+only in z is no longer free to move in z inside LAMMPS.</p></li>
+<li><p>LAMMPS applies <code class="docutils literal notranslate"><span class="pre">fix</span> <span class="pre">setforce</span> <span class="pre">0</span> <span class="pre">0</span> <span class="pre">0</span></code> to atoms with <code class="docutils literal notranslate"><span class="pre">Atom.fixed</span></code> set on all three axes before <code class="docutils literal notranslate"><span class="pre">run</span> <span class="pre">1</span></code>, so buffer atoms stay put during post-saddle minimization.</p></li>
+<li><p>MPI <code class="docutils literal notranslate"><span class="pre">stop_clients</span></code> sends <code class="docutils literal notranslate"><span class="pre">STOPCAR</span></code> to ready client ranks. AKMC uses that instead of <code class="docutils literal notranslate"><span class="pre">Abort</span></code>.</p></li>
+<li><p>Matter atom accessors throw <code class="docutils literal notranslate"><span class="pre">out_of_range</span></code> on a bad atom index or axis instead of indexing Eigen unchecked.</p></li>
+<li><p>Meson accepts readcon-core 0.14.9. The v0.14.10 wrap tag still reports crate version 0.14.9, so a cargo-c install failed the old <code class="docutils literal notranslate"><span class="pre">&gt;=0.14.10</span></code> check.</p></li>
+<li><p>Metatomic seeds the Torch RNG from <code class="docutils literal notranslate"><span class="pre">main.randomSeed</span></code> when rotation averaging is on. NC force blocks must have <code class="docutils literal notranslate"><span class="pre">nAtoms*3</span></code> values before reshape.</p></li>
+<li><p>Min-mode <code class="docutils literal notranslate"><span class="pre">bowl_breakout</span></code> does not index atom 0 on an empty Matter and caps the bowl set at <code class="docutils literal notranslate"><span class="pre">nAtoms</span></code>.</p></li>
+<li><p>Minima-hopping Boltzmann accept/reject compares the hop to the current minimum and uses <code class="docutils literal notranslate"><span class="pre">exp(-dE/(kB</span> <span class="pre">T))</span></code> with <code class="docutils literal notranslate"><span class="pre">params.constants.kB</span></code>.</p></li>
+<li><p>NEB <code class="docutils literal notranslate"><span class="pre">isUncertain</span></code> now includes the product endpoint (<code class="docutils literal notranslate"><span class="pre">path[numImages+1]</span></code>).</p></li>
+<li><p>NEB spline extrema leave a collapsed endpoint tangent as zero instead of <code class="docutils literal notranslate"><span class="pre">normalize()</span></code> to NaN.</p></li>
+<li><p>Process search opens <code class="docutils literal notranslate"><span class="pre">pos.con</span></code> through <code class="docutils literal notranslate"><span class="pre">getRelevantFile</span></code>, throws on a failed load, and compares a copy so <code class="docutils literal notranslate"><span class="pre">Matter::compare</span></code> cannot translate <code class="docutils literal notranslate"><span class="pre">initial</span></code>.</p></li>
+<li><p>Removed the empty <code class="docutils literal notranslate"><span class="pre">CUH2_POT</span></code> ifdef from <code class="docutils literal notranslate"><span class="pre">Potential.cpp</span></code>.</p></li>
+<li><p>Replica exchange rejects <code class="docutils literal notranslate"><span class="pre">replicas</span> <span class="pre">&lt;</span> <span class="pre">1</span></code> and applies the same temperature fallback as the Python bind (<code class="docutils literal notranslate"><span class="pre">low</span></code> from main T or 300 K, <code class="docutils literal notranslate"><span class="pre">high</span></code> at least <code class="docutils literal notranslate"><span class="pre">1.5</span> <span class="pre">*</span> <span class="pre">low</span></code>).</p></li>
+<li><p>SIDPP throws if adjacent images collapse. <code class="docutils literal notranslate"><span class="pre">climbing_image_converged_only</span></code> no longer reports GOOD while the rest of the band exceeds <code class="docutils literal notranslate"><span class="pre">climbing_image_band_slack</span></code> times the force tolerance.</p></li>
+<li><p>Same-size <code class="docutils literal notranslate"><span class="pre">Matter::resize</span></code> and displacement.con loads keep the reactant’s <code class="docutils literal notranslate"><span class="pre">.con</span></code> atom ids instead of restamping 1..N.</p></li>
+<li><p>SocketNWChem drops a dead i-PI connection and accepts a new NWChem client once, so process_search / AKMC can continue after <code class="docutils literal notranslate"><span class="pre">task</span> <span class="pre">scf</span> <span class="pre">optimize</span></code> exits.</p></li>
+<li><p>Superbasin <code class="docutils literal notranslate"><span class="pre">make()</span></code> also calls <code class="docutils literal notranslate"><span class="pre">connect_states</span></code> on the new basin so intra-basin reverse processes register.</p></li>
+<li><p>TAD and SafeHyper rewind to <code class="docutils literal notranslate"><span class="pre">mdBuffer[0]</span></code> when refine returns 0. SafeHyper skips the boost exponential when T or kB is not positive.</p></li>
+<li><p>The SIGFPE continue path now demotes ARM FPCR trap-enable bits (Linux fpsimd_context and Apple neon state). enableFPE on Apple aarch64 sets <code class="docutils literal notranslate"><span class="pre">__fpcr</span></code>, not <code class="docutils literal notranslate"><span class="pre">__fpsr</span></code>. x86 MXCSR masking is unchanged.</p></li>
+<li><p>The client calls <code class="docutils literal notranslate"><span class="pre">getBundleSize()</span></code> again and enables bundling when a numbered bundle is present. A thrown <code class="docutils literal notranslate"><span class="pre">int</span></code> from a job is a failed exit, not a silent continue.</p></li>
+<li><p>The point job opens <code class="docutils literal notranslate"><span class="pre">pos.con</span></code> through <code class="docutils literal notranslate"><span class="pre">getRelevantFile</span></code>, so <code class="docutils literal notranslate"><span class="pre">pos_cp.con</span></code> / <code class="docutils literal notranslate"><span class="pre">pos_in.con</span></code> are used when present.</p></li>
+<li><p>The prefactor job writes <code class="docutils literal notranslate"><span class="pre">prefactor_reactant_to_product</span></code> and <code class="docutils literal notranslate"><span class="pre">prefactor_product_to_reactant</span></code>, honors <code class="docutils literal notranslate"><span class="pre">getPrefactors</span></code> failure, and does not assert on an empty moved set.</p></li>
+<li><p>Unbundled results name each slot <code class="docutils literal notranslate"><span class="pre">{state}_{first_wuid+slot}</span></code> so explorer
+does not add <code class="docutils literal notranslate"><span class="pre">result['number']</span></code> to recover the wuid. Reset paths share
+<code class="docutils literal notranslate"><span class="pre">fileio.remove_tree_and_empty_parents</span></code>.</p></li>
+<li><p>When a superbasin is active, <code class="docutils literal notranslate"><span class="pre">previous_state</span></code> stays the last KMC hop. Only <code class="docutils literal notranslate"><span class="pre">explore_state</span></code> is the lowest-confidence basin member.</p></li>
+<li><p>XTB sets periodicity from the box diagonal.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Matter::pbc</span></code> is the raw difference when periodic boundaries are off. OCINEB does not resample a non-periodic climbing image, so a 3-atom vacuum cell cannot fold to a 60 A reaction coordinate.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Parameters::load(FILE*)</span></code> returns 1 on a null FILE, a failed seek, or a negative <code class="docutils literal notranslate"><span class="pre">ftell</span></code> size.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Prefactor::getPrefactors</span></code> returns -1 if any of min1, saddle, or min2 is null.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">WeightedSpring::compute</span></code> throws if the image index is 0 or past the spring table.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[ASE_ORCA]</span> <span class="pre">charge</span></code> is read from the INI and passed to <code class="docutils literal notranslate"><span class="pre">ase.Atoms</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SaddleSearchConfig.displace_atom_list</span></code> accepts the scalar int <code class="docutils literal notranslate"><span class="pre">-1</span></code>
+used by <code class="docutils literal notranslate"><span class="pre">examples/akmc-al/run_akmc_al.py</span></code>, as well as <code class="docutils literal notranslate"><span class="pre">[-1]</span></code> and
+<code class="docutils literal notranslate"><span class="pre">&quot;-1&quot;</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SaddleSearchJob</span></code> and <code class="docutils literal notranslate"><span class="pre">ProcessSearchJob</span></code> apply
+<code class="docutils literal notranslate"><span class="pre">client_displace_type</span> <span class="pre">=</span> <span class="pre">listed_atoms</span></code> (and <code class="docutils literal notranslate"><span class="pre">random</span></code> / <code class="docutils literal notranslate"><span class="pre">last_atom</span></code> /
+<code class="docutils literal notranslate"><span class="pre">least_coordinated</span></code>) through <code class="docutils literal notranslate"><span class="pre">listedAtomEpiCenter</span></code> plus a
+<code class="docutils literal notranslate"><span class="pre">displace_radius</span></code> / <code class="docutils literal notranslate"><span class="pre">displace_magnitude</span></code> kick instead of copying the
+reactant unchanged.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">listedAtomEpiCenter</span></code> now picks with <code class="docutils literal notranslate"><span class="pre">randomDouble(size)</span></code> so the last
+listed (or last free, for lone <code class="docutils literal notranslate"><span class="pre">-1</span></code>) atom can be chosen. The previous
+<code class="docutils literal notranslate"><span class="pre">size-1</span></code> interval always dropped that last index.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">accuratePES</span></code> compares max <code class="docutils literal notranslate"><span class="pre">|pred-true|</span></code> and restores each image’s incoming potential. The unused <code class="docutils literal notranslate"><span class="pre">sqrt(pred^2-true^2)</span></code> leftover is gone.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">debug_keep_all_results</span></code> writes <code class="docutils literal notranslate"><span class="pre">results.dat</span></code> and con payloads from the result dict into <code class="docutils literal notranslate"><span class="pre">debug_results_path</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">eon_matter_to_atmconf</span></code> throws on a null Matter or when no atoms move.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">eonclient</span> <span class="pre">-m</span></code> does not write a <code class="docutils literal notranslate"><span class="pre">.con</span></code> when no output path is given.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">geometry::identical</span></code> will not assign two left atoms to the same right partner.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">getMidSlice</span></code> keeps the CatLearn order (endpoints, then a two-thirds interior image) and throws if the path has fewer than three images. It is not <code class="docutils literal notranslate"><span class="pre">n/2</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">getRelevantFile</span></code> no longer throws on a name without a <code class="docutils literal notranslate"><span class="pre">.</span></code>. <code class="docutils literal notranslate"><span class="pre">_cp</span></code> / <code class="docutils literal notranslate"><span class="pre">_in</span></code> suffixes still win when those files exist.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gh</span> <span class="pre">release</span> <span class="pre">edit</span></code> failures are no longer ignored. A stale notes update now fails the release job.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">job</span> <span class="pre">=</span> <span class="pre">dynamics</span></code> writes a <code class="docutils literal notranslate"><span class="pre">results.dat</span></code> envelope (<code class="docutils literal notranslate"><span class="pre">termination_reason</span></code>, <code class="docutils literal notranslate"><span class="pre">job_type</span></code>, <code class="docutils literal notranslate"><span class="pre">potential_energy</span></code>, <code class="docutils literal notranslate"><span class="pre">total_force_calls</span></code>) and still returns <code class="docutils literal notranslate"><span class="pre">final.con</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">job</span> <span class="pre">=</span> <span class="pre">structure_comparison</span></code> loads <code class="docutils literal notranslate"><span class="pre">matter1.con</span></code> and <code class="docutils literal notranslate"><span class="pre">matter2.con</span></code>, compares a copy, and writes <code class="docutils literal notranslate"><span class="pre">results.dat</span></code> (<code class="docutils literal notranslate"><span class="pre">match</span></code>, <code class="docutils literal notranslate"><span class="pre">distance</span></code>, <code class="docutils literal notranslate"><span class="pre">per_atom_norm</span></code>, energies).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">min_mode_method=gprdimer</span></code> constructs <code class="docutils literal notranslate"><span class="pre">AtomicGPDimer</span></code> in place in the eigenmode variant. A WITH_GPRD Catch2 case covers that path.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">removeNetForce</span></code> no longer runs on a one-atom Matter. Subtracting the mean force was identically zero and made a 1-atom NEB report immediate GOOD.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rgpot_pot</span></code> now compiles with the same <code class="docutils literal notranslate"><span class="pre">_args</span></code> as the other pot plugins (<code class="docutils literal notranslate"><span class="pre">WITH_RGPOT</span></code>). Dead Metatomic <code class="docutils literal notranslate"><span class="pre">n_avg</span></code> and the empty <code class="docutils literal notranslate"><span class="pre">.cargo/config.toml</span></code> are gone.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rotm</span></code>, <code class="docutils literal notranslate"><span class="pre">get_rotation_matrix</span></code>, and <code class="docutils literal notranslate"><span class="pre">internal_motion</span></code> call <code class="docutils literal notranslate"><span class="pre">numpy.cos</span></code> /
+<code class="docutils literal notranslate"><span class="pre">sin</span></code> / <code class="docutils literal notranslate"><span class="pre">arccos</span></code>. They used to call bare <code class="docutils literal notranslate"><span class="pre">cos</span></code>/<code class="docutils literal notranslate"><span class="pre">sin</span></code>/<code class="docutils literal notranslate"><span class="pre">acos</span></code> and raise
+NameError. <code class="docutils literal notranslate"><span class="pre">get_mappings</span></code> uses vector PBC distances.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unbundle</span></code> drops only those bundle slots that lack a <code class="docutils literal notranslate"><span class="pre">results*</span></code> file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unbundle</span></code> only copies <code class="docutils literal notranslate"><span class="pre">*_N.ext</span></code> when <code class="docutils literal notranslate"><span class="pre">N</span></code> is all digits and matches the bundle number. Non-numeric suffixes such as <code class="docutils literal notranslate"><span class="pre">pos_final.con</span></code> are left alone.</p></li>
+<li><p>eonclib compiles after the Parameters accessor split: pot TUs include
+Parameters.h, write-holes use ParametersLoadAccess, and Dimer/ConFileIO
+qualify helpers and Matter.</p></li>
+<li><p>pyeonclient ConFrame export uses mkstemps (exclusive) and releases the GIL while writing. The guessable world-writable temp name is gone.</p></li>
+</ul>
+</section>
+</section>
+<section id="id2">
+<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/3.2.1">3.2.1</a> - 2026-09-13<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<section id="id3">
+<h3>Added<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Exposed <code class="docutils literal notranslate"><span class="pre">opt_method</span></code>, <code class="docutils literal notranslate"><span class="pre">neb_opt_method</span></code>, <code class="docutils literal notranslate"><span class="pre">refine_opt_method</span></code>, and <code class="docutils literal notranslate"><span class="pre">refine_threshold</span></code> on pyeonclient <code class="docutils literal notranslate"><span class="pre">Parameters</span></code> so dimers and NEBs can pick FIRE/LBFGS/CG without a minimization-only path. (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/406">#406</a>)</p></li>
 <li><p>Added <code class="docutils literal notranslate"><span class="pre">PotType.EXPR</span></code> so rgpot 3.1 ExprPot can compose named kernels (<code class="docutils literal notranslate"><span class="pre">0.5*lj</span> <span class="pre">+</span> <span class="pre">d3</span></code>) from <code class="docutils literal notranslate"><span class="pre">[ExprPot]</span></code> expression and terms.</p></li>
@@ -582,16 +816,16 @@ compares the vesin neighbor list to <code class="docutils literal notranslate"><
 <li><p>Updated wrap pins to current releases: rgpot v3.1.2, readcon-core v0.14.10, Highway 1.4.0, potentials-schema v1.15.1, xtb v6.7.1, plus current IRA and ARTn heads.</p></li>
 </ul>
 </section>
-<section id="changed">
-<h3>Changed<a class="headerlink" href="#changed" title="Link to this heading">¶</a></h3>
+<section id="id4">
+<h3>Changed<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>PotentialConfig now uses parseable pot tokens (socketnwchem, ase_pot, catlearn) and exposes emt_rasmussen and potentials_path. (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/414">#414</a>)</p></li>
 <li><p>Docs footer credits antics and loads only <code class="docutils literal notranslate"><span class="pre">antics.js</span></code>.</p></li>
 <li><p>Raised Python floors to readcon 0.14.9, vesin 0.6.1, and rgpot 3.1.2.</p></li>
 </ul>
 </section>
-<section id="fixed">
-<h3>Fixed<a class="headerlink" href="#fixed" title="Link to this heading">¶</a></h3>
+<section id="id5">
+<h3>Fixed<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>The C++ API mainpage no longer prints undefined Makefile Doxygen aliases, and the theme header version matches 3.2.0. (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/401">#401</a>)</p></li>
 <li><p>Fixed IDPP, collective IDPP, and SIDPP path initialization moving frozen atoms when a mover sat next to a constraint. (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/410">#410</a>)</p></li>
@@ -609,10 +843,10 @@ a movable-first active-volume <code class="docutils literal notranslate"><span c
 </ul>
 </section>
 </section>
-<section id="id2">
-<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/3.2.0">3.2.0</a> - 2026-08-16<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
-<section id="id3">
-<h3>Added<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+<section id="id6">
+<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/3.2.0">3.2.0</a> - 2026-08-16<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
+<section id="id7">
+<h3>Added<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>The basic-eon workflow runs the tests/ suite on Unix after the
 client install, including the <code class="docutils literal notranslate"><span class="pre">sh</span></code> package those process tests import.
@@ -627,8 +861,8 @@ one call sees the whole band. The wrap tracks the rgpot branch that
 adds <code class="docutils literal notranslate"><span class="pre">ForceBatch</span></code> until a tag carries it.</p></li>
 </ul>
 </section>
-<section id="id4">
-<h3>Changed<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<section id="id8">
+<h3>Changed<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Appending a frame to a <code class="docutils literal notranslate"><span class="pre">.con</span></code> no longer reads and rewrites the whole movie. <code class="docutils literal notranslate"><span class="pre">matter2con(filename,</span> <span class="pre">append=true)</span></code> serializes the new frame on its own and concatenates it, so writing an N-frame trajectory costs N frame writes instead of N(N+1)/2, and per-step movie writers such as <code class="docutils literal notranslate"><span class="pre">dynamics.con</span></code>, <code class="docutils literal notranslate"><span class="pre">movie.con</span></code>, and the basin hopping trial movies stop growing quadratically with step count. Output bytes are unchanged: a movie built by repeated appends is identical to the same frames written in one call. A target eOn did not write, or whose size or modification time moved since eOn wrote it, is still parsed once before anything is added, so an unparseable file yields an append error with its bytes intact. Gzip and zstd targets keep the read-and-rewrite path because a compressed member cannot be extended in place.</p></li>
 <li><p>C++ wrap and Python pins move to readcon 0.14.5 together, so the client
@@ -642,8 +876,8 @@ highlighting, first-class, ship-as-verb, and the rest of that list).
 Drop remaining X-not-Y contrast frames: state what each path is.</p></li>
 </ul>
 </section>
-<section id="id5">
-<h3>Fixed<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
+<section id="id9">
+<h3>Fixed<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>ASE-NWChem and ASE-ORCA calculators each get a private work directory instead
 of <code class="docutils literal notranslate"><span class="pre">directory='.'</span></code>, so concurrent LocalInProcess jobs do not clobber each
@@ -680,10 +914,10 @@ nonnegative-mode abort.</p></li>
 </ul>
 </section>
 </section>
-<section id="id6">
-<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/3.1.0">3.1.0</a> - 2026-08-08<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
-<section id="id7">
-<h3>Changed<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
+<section id="id10">
+<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/3.1.0">3.1.0</a> - 2026-08-08<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h2>
+<section id="id11">
+<h3>Changed<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h3>
 <ul>
 <li><p>pyeonclient 0.4.0: the potentials it exposes come from <code class="docutils literal notranslate"><span class="pre">librgpot</span></code> now
 rather than eOn’s in-tree kernels, so the wheels bundle that library and
@@ -695,8 +929,8 @@ rehearsed against TestPyPI before the irreversible one; a
 </li>
 </ul>
 </section>
-<section id="id8">
-<h3>Fixed<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h3>
+<section id="id12">
+<h3>Fixed<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Fat <code class="docutils literal notranslate"><span class="pre">MetatomicPotential</span></code> loads exported PET-MAD (and similar) models on
 metatensor-torch 0.10.3: scripted modules without <code class="docutils literal notranslate"><span class="pre">_mts_buffer_names</span></code> no
@@ -704,10 +938,10 @@ longer trip the mixed-dict <code class="docutils literal notranslate"><span clas
 </ul>
 </section>
 </section>
-<section id="id9">
-<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/3.0.0">3.0.0</a> - 2026-07-26<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h2>
-<section id="id10">
-<h3>Added<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
+<section id="id13">
+<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/3.0.0">3.0.0</a> - 2026-07-26<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h2>
+<section id="id14">
+<h3>Added<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h3>
 <ul>
 <li><p>Continuous ASV dashboard: results history on the <code class="docutils literal notranslate"><span class="pre">asv-results</span></code> orphan branch, asv-tachyon UI under <code class="docutils literal notranslate"><span class="pre">gh-pages/bench/</span></code>, optional Netlify deploy for bench.eondocs.org.
 Windows CI: robust MSVC activation (VS 18 runners) and strip GNU link.exe from PATH for meson test. (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/378">#378</a>)</p></li>
@@ -750,8 +984,8 @@ colored-noise (Ceriotti-Bussi-Parrinello) thermostats and symmetry-restricted
 sampling of equivalent product minima. Configured under <code class="docutils literal notranslate"><span class="pre">[OH_TST]</span></code>.</p></li>
 </ul>
 </section>
-<section id="id11">
-<h3>Developer<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h3>
+<section id="id15">
+<h3>Developer<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Golden masters for CPython server atoms helpers vs pre-#368 scalar code; eon.fileio load/save/round-trip via live readcon fixtures; document chemfiles as optional and unused on server .con path. (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/370">#370</a>)</p></li>
 <li><p>Windows metatomic CI follows the metatomic/metatensor torch workflow:
@@ -769,8 +1003,8 @@ It accepts a <code class="docutils literal notranslate"><span class="pre">--defa
 archive that has no export table at all. (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/390">#390</a>)</p></li>
 </ul>
 </section>
-<section id="id12">
-<h3>Changed<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h3>
+<section id="id16">
+<h3>Changed<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h3>
 <ul>
 <li><p>Client public headers live under <code class="docutils literal notranslate"><span class="pre">include/eon/</span></code> (numpy/fmt layout). Sources
 stay in <code class="docutils literal notranslate"><span class="pre">client/</span></code>. Use <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&quot;eon/Potential.h&quot;</span></code> (and
@@ -807,8 +1041,8 @@ physics, pinned by the existing reference energies in <code class="docutils lite
 gain the same <code class="docutils literal notranslate"><span class="pre">phva_atoms</span></code> key in INI, schema, and <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code>.</p></li>
 </ul>
 </section>
-<section id="id13">
-<h3>Fixed<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h3>
+<section id="id17">
+<h3>Fixed<a class="headerlink" href="#id17" title="Link to this heading">¶</a></h3>
 <ul>
 <li><p>eOn no longer requires a Fortran compiler. It compiles no Fortran since the
 kernels moved into <code class="docutils literal notranslate"><span class="pre">librgpot</span></code>, but <code class="docutils literal notranslate"><span class="pre">client/meson.build</span></code> still asked for
@@ -879,10 +1113,10 @@ procdata files are not overwritten. Duplicate appends raise.</p></li>
 </ul>
 </section>
 </section>
-<section id="id14">
-<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.17.10">2.17.10</a> - 2026-07-20<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h2>
-<section id="id15">
-<h3>Fixed<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h3>
+<section id="id18">
+<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.17.10">2.17.10</a> - 2026-07-20<a class="headerlink" href="#id18" title="Link to this heading">¶</a></h2>
+<section id="id19">
+<h3>Fixed<a class="headerlink" href="#id19" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Optimizer file logs (<code class="docutils literal notranslate"><span class="pre">_lbfgs.log</span></code> etc.) use a durable temp directory so
 fixture workdir cleanup no longer races Quill file sinks.</p></li>
@@ -891,10 +1125,10 @@ suite so all-SKIP without nwchemc/cpmdc is a clean success.</p></li>
 </ul>
 </section>
 </section>
-<section id="id16">
-<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.17.9">2.17.9</a> - 2026-07-20<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h2>
-<section id="id17">
-<h3>Fixed<a class="headerlink" href="#id17" title="Link to this heading">¶</a></h3>
+<section id="id20">
+<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.17.9">2.17.9</a> - 2026-07-20<a class="headerlink" href="#id20" title="Link to this heading">¶</a></h2>
+<section id="id21">
+<h3>Fixed<a class="headerlink" href="#id21" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>EDIP OpenMP: zero shared energy/force accumulators under <code class="docutils literal notranslate"><span class="pre">!$omp</span> <span class="pre">single</span></code>
 before partial reduction (fixes wrong PointJob energies with multi-thread OMP).</p></li>
@@ -903,10 +1137,10 @@ before partial reduction (fixes wrong PointJob energies with multi-thread OMP).<
 </ul>
 </section>
 </section>
-<section id="id18">
-<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.17.8">2.17.8</a> - 2026-07-20<a class="headerlink" href="#id18" title="Link to this heading">¶</a></h2>
-<section id="id19">
-<h3>Fixed<a class="headerlink" href="#id19" title="Link to this heading">¶</a></h3>
+<section id="id22">
+<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.17.8">2.17.8</a> - 2026-07-20<a class="headerlink" href="#id22" title="Link to this heading">¶</a></h2>
+<section id="id23">
+<h3>Fixed<a class="headerlink" href="#id23" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Evaluate EDIP serially under OpenMP (Fortran energy reduction race under
 OMP_NUM_THREADS&gt;1 gave wrong PointJob energies with plausible forces).</p></li>
@@ -915,49 +1149,49 @@ budget matches the SVN reference path.</p></li>
 </ul>
 </section>
 </section>
-<section id="id20">
-<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.17.7">2.17.7</a> - 2026-07-20<a class="headerlink" href="#id20" title="Link to this heading">¶</a></h2>
-<section id="id21">
-<h3>Fixed<a class="headerlink" href="#id21" title="Link to this heading">¶</a></h3>
+<section id="id24">
+<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.17.7">2.17.7</a> - 2026-07-20<a class="headerlink" href="#id24" title="Link to this heading">¶</a></h2>
+<section id="id25">
+<h3>Fixed<a class="headerlink" href="#id25" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Un-nest SW CG minimization TEST_CASE in SiPotTest (was inside LBFGS case after
 packaging SKIP refactor, breaking with_tests packaging builds).</p></li>
 </ul>
 </section>
 </section>
-<section id="id22">
-<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.17.6">2.17.6</a> - 2026-07-20<a class="headerlink" href="#id22" title="Link to this heading">¶</a></h2>
-<section id="id23">
-<h3>Fixed<a class="headerlink" href="#id23" title="Link to this heading">¶</a></h3>
+<section id="id26">
+<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.17.6">2.17.6</a> - 2026-07-20<a class="headerlink" href="#id26" title="Link to this heading">¶</a></h2>
+<section id="id27">
+<h3>Fixed<a class="headerlink" href="#id27" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Keep JobIntegrationFixture::runJob a class method after SKIP macro refactor
 (stray brace broke TEST_CASE_METHOD inheritance under packaging builds).</p></li>
 </ul>
 </section>
 </section>
-<section id="id24">
-<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.17.5">2.17.5</a> - 2026-07-20<a class="headerlink" href="#id24" title="Link to this heading">¶</a></h2>
-<section id="id25">
-<h3>Fixed<a class="headerlink" href="#id25" title="Link to this heading">¶</a></h3>
+<section id="id28">
+<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.17.5">2.17.5</a> - 2026-07-20<a class="headerlink" href="#id28" title="Link to this heading">¶</a></h2>
+<section id="id29">
+<h3>Fixed<a class="headerlink" href="#id29" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Catch2 SKIP only via macros in job integration tests (helpers cannot call SKIP).</p></li>
 </ul>
 </section>
 </section>
-<section id="id26">
-<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.17.4">2.17.4</a> - 2026-07-20<a class="headerlink" href="#id26" title="Link to this heading">¶</a></h2>
-<section id="id27">
-<h3>Fixed<a class="headerlink" href="#id27" title="Link to this heading">¶</a></h3>
+<section id="id30">
+<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.17.4">2.17.4</a> - 2026-07-20<a class="headerlink" href="#id30" title="Link to this heading">¶</a></h2>
+<section id="id31">
+<h3>Fixed<a class="headerlink" href="#id31" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Fix Catch2 SKIP usage in unit-test helpers (macros / fixture require path)
 so packaging builds compile with <code class="docutils literal notranslate"><span class="pre">-Dwith_tests=true</span></code>.</p></li>
 </ul>
 </section>
 </section>
-<section id="id28">
-<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.17.3">2.17.3</a> - 2026-07-20<a class="headerlink" href="#id28" title="Link to this heading">¶</a></h2>
-<section id="id29">
-<h3>Fixed<a class="headerlink" href="#id29" title="Link to this heading">¶</a></h3>
+<section id="id32">
+<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.17.3">2.17.3</a> - 2026-07-20<a class="headerlink" href="#id32" title="Link to this heading">¶</a></h2>
+<section id="id33">
+<h3>Fixed<a class="headerlink" href="#id33" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Pin metatomic builds to vesin&gt;=0.6 and rgpot&gt;=2.5.2 so RGPOT
 <code class="docutils literal notranslate"><span class="pre">libmetatomic_engine</span></code> and fat Metatomic share a matching VesinOptions ABI
@@ -968,18 +1202,18 @@ so packaging builds compile with <code class="docutils literal notranslate"><spa
 </ul>
 </section>
 </section>
-<section id="id30">
-<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.17.2">2.17.2</a> - 2026-07-17<a class="headerlink" href="#id30" title="Link to this heading">¶</a></h2>
-<section id="id31">
-<h3>Added<a class="headerlink" href="#id31" title="Link to this heading">¶</a></h3>
+<section id="id34">
+<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.17.2">2.17.2</a> - 2026-07-17<a class="headerlink" href="#id34" title="Link to this heading">¶</a></h2>
+<section id="id35">
+<h3>Added<a class="headerlink" href="#id35" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>pyeonclient 0.3.3: in-memory <code class="docutils literal notranslate"><span class="pre">path_frames</span></code> / <code class="docutils literal notranslate"><span class="pre">to_conframes</span></code> for NEB (same stamps as writePathCon), <code class="docutils literal notranslate"><span class="pre">Matter.relax(retain_frames=…)</span></code> movie frames, and <code class="docutils literal notranslate"><span class="pre">MinModeSaddleSearch.run_retain_frames</span></code> climb frames. (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/pyeonclient-path-frames">#pyeonclient-path-frames</a>)</p></li>
 <li><p>Dimer supports <code class="docutils literal notranslate"><span class="pre">rotation_backend</span> <span class="pre">=</span> <span class="pre">classical|lanczos|davidson|lor</span></code> (Leng et al. JCP 2013 LOR for softest-mode with force translation; Lanczos/Davidson FD min-mode; classical constrained rotation). Climb remains on the dimer path.</p></li>
 <li><p>Optional Superbasin gate via amsel.discover_decide_status ([amsel] / amsel_discover_decide) before MCAMC; rejected_no_metastable_basin falls back to AKMC.</p></li>
 </ul>
 </section>
-<section id="id32">
-<h3>Fixed<a class="headerlink" href="#id32" title="Link to this heading">¶</a></h3>
+<section id="id36">
+<h3>Fixed<a class="headerlink" href="#id36" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>HessianJob FD eigen solve: ColMajor copy for SelfAdjointEigenSolver (avoids
 RowMajor segfaults on partial VTST blocks), finite-force/index guards, optional
@@ -990,10 +1224,10 @@ copy so moving-atom Hessians match PHVA-class active sets. (<a class="reference 
 </ul>
 </section>
 </section>
-<section id="id33">
-<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.17.1">2.17.1</a> - 2026-07-17<a class="headerlink" href="#id33" title="Link to this heading">¶</a></h2>
-<section id="id34">
-<h3>Fixed<a class="headerlink" href="#id34" title="Link to this heading">¶</a></h3>
+<section id="id37">
+<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.17.1">2.17.1</a> - 2026-07-17<a class="headerlink" href="#id37" title="Link to this heading">¶</a></h2>
+<section id="id38">
+<h3>Fixed<a class="headerlink" href="#id38" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Restore <code class="docutils literal notranslate"><span class="pre">with_pyeonclient</span></code> and <code class="docutils literal notranslate"><span class="pre">install_eon_server</span></code> meson options dropped
 from <code class="docutils literal notranslate"><span class="pre">meson_options.txt</span></code> in the v2.17.0 merge (configure failed with
@@ -1003,10 +1237,10 @@ from <code class="docutils literal notranslate"><span class="pre">meson_options.
 </ul>
 </section>
 </section>
-<section id="id35">
-<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.17.0">2.17.0</a> - 2026-07-17<a class="headerlink" href="#id35" title="Link to this heading">¶</a></h2>
-<section id="id36">
-<h3>Added<a class="headerlink" href="#id36" title="Link to this heading">¶</a></h3>
+<section id="id39">
+<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.17.0">2.17.0</a> - 2026-07-17<a class="headerlink" href="#id39" title="Link to this heading">¶</a></h2>
+<section id="id40">
+<h3>Added<a class="headerlink" href="#id40" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Distribution packaging: prefer installed <code class="docutils literal notranslate"><span class="pre">rgpot</span></code> via pkg-config (wrap pin
 <code class="docutils literal notranslate"><span class="pre">v2.5.0</span></code>) and installed <code class="docutils literal notranslate"><span class="pre">nlohmann_json</span></code> (module with wrap fallback, same
@@ -1037,15 +1271,15 @@ reproducibly build fat/ASE pyeonclient, refresh the metatomic backend compare
 JSON, and regenerate the docs figure.</p></li>
 </ul>
 </section>
-<section id="id37">
-<h3>Developer<a class="headerlink" href="#id37" title="Link to this heading">¶</a></h3>
+<section id="id41">
+<h3>Developer<a class="headerlink" href="#id41" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Multi-flag Codecov coverage for Python, C++, and Fortran (OIDC uploads). (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/367">#367</a>)</p></li>
 <li><p>CPython server entry points fixed (<code class="docutils literal notranslate"><span class="pre">eon-server</span></code> → <code class="docutils literal notranslate"><span class="pre">eon.server:main</span></code>); vectorized atoms neighbor/free-atom hot paths. (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/368">#368</a>)</p></li>
 </ul>
 </section>
-<section id="id38">
-<h3>Changed<a class="headerlink" href="#id38" title="Link to this heading">¶</a></h3>
+<section id="id42">
+<h3>Changed<a class="headerlink" href="#id42" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Move full job-config pydantic models into <code class="docutils literal notranslate"><span class="pre">eon-schema</span></code> (<code class="docutils literal notranslate"><span class="pre">eon_schema.config</span></code>).
 <code class="docutils literal notranslate"><span class="pre">eon.schema</span></code> and <code class="docutils literal notranslate"><span class="pre">pyeonclient.models</span></code> re-export the shared package so both
@@ -1053,8 +1287,8 @@ eon-akmc and pyeonclient share one schema surface. (<a class="reference external
 <li><p>Structure is readcon-backed (ConFrame bridge); geometry PBC/NL via vesin; process-atom selection uses vesin shells. Retires aselite-era atoms container as storage source of truth. (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/371">#371</a>)</p></li>
 </ul>
 </section>
-<section id="id39">
-<h3>Fixed<a class="headerlink" href="#id39" title="Link to this heading">¶</a></h3>
+<section id="id43">
+<h3>Fixed<a class="headerlink" href="#id43" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Release the GIL around Matter energy/force accessors and NEB construction,
 <code class="docutils literal notranslate"><span class="pre">update_forces</span></code>, and per-image energy reads so metatomic/torch autograd can
@@ -1066,10 +1300,10 @@ CUDA/MPS headers. (<a class="reference external" href="https://github.com/Theoch
 </ul>
 </section>
 </section>
-<section id="id40">
-<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.16.0">2.16.0</a> - 2026-07-03<a class="headerlink" href="#id40" title="Link to this heading">¶</a></h2>
-<section id="id41">
-<h3>Added<a class="headerlink" href="#id41" title="Link to this heading">¶</a></h3>
+<section id="id44">
+<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.16.0">2.16.0</a> - 2026-07-03<a class="headerlink" href="#id44" title="Link to this heading">¶</a></h2>
+<section id="id45">
+<h3>Added<a class="headerlink" href="#id45" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Matter exposes <code class="docutils literal notranslate"><span class="pre">PbcConvention</span></code> (Legacy vs MinimumImage) for position wrapping, selectable without merging the historical <code class="docutils literal notranslate"><span class="pre">v3c_pbcs</span></code> branch (issue #176). (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/176">#176</a>)</p></li>
 <li><p>ASE NWChem calculator takes <code class="docutils literal notranslate"><span class="pre">mpi_launcher</span></code> (<code class="docutils literal notranslate"><span class="pre">mpirun</span></code> default or <code class="docutils literal notranslate"><span class="pre">srun</span></code>) for Slurm-friendly execution (issue #193). (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/193">#193</a>)</p></li>
@@ -1087,8 +1321,8 @@ reproducible PyTorch evaluation (JIT profiling off, deterministic algorithms).</
 <li><p>The <code class="docutils literal notranslate"><span class="pre">rgpot</span></code> potential is selectable from the Python configuration layer: <code class="docutils literal notranslate"><span class="pre">eon/config.yaml</span></code> gains an <code class="docutils literal notranslate"><span class="pre">[RgpotPot]</span></code> section and <code class="docutils literal notranslate"><span class="pre">eon.schema</span></code> a matching <code class="docutils literal notranslate"><span class="pre">RgpotPot</span></code> model, mirroring the C++ INI keys (backend, basis, theory, scf_type, functional, cutoff_ry, charge, multiplicity, engine paths, title, memory_mb, scratch_dir, input_block).</p></li>
 </ul>
 </section>
-<section id="id42">
-<h3>Changed<a class="headerlink" href="#id42" title="Link to this heading">¶</a></h3>
+<section id="id46">
+<h3>Changed<a class="headerlink" href="#id46" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Matter::getForcesFree</span></code> / <code class="docutils literal notranslate"><span class="pre">getForcesFreeV</span></code> are const, and <code class="docutils literal notranslate"><span class="pre">setPositionsFree</span></code>
 applies PBC wrapping like <code class="docutils literal notranslate"><span class="pre">setPositions</span></code> so free-atom optimizers stay consistent
@@ -1106,8 +1340,8 @@ without re-reading the movie file per image. Matter exposes atom-index and CON
 header accessors for bindings.</p></li>
 </ul>
 </section>
-<section id="id43">
-<h3>Fixed<a class="headerlink" href="#id43" title="Link to this heading">¶</a></h3>
+<section id="id47">
+<h3>Fixed<a class="headerlink" href="#id47" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Min-mode saddle search no longer reports success (<code class="docutils literal notranslate"><span class="pre">STATUS_GOOD</span></code>) when the climb
 objective is still unconverged (issue #20). (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/20">#20</a>)</p></li>
@@ -1123,23 +1357,23 @@ non-centered molecules (issue #188). (<a class="reference external" href="https:
 </ul>
 </section>
 </section>
-<section id="id44">
-<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.15.0">2.15.0</a> - 2026-06-24<a class="headerlink" href="#id44" title="Link to this heading">¶</a></h2>
-<section id="id45">
-<h3>Added<a class="headerlink" href="#id45" title="Link to this heading">¶</a></h3>
+<section id="id48">
+<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.15.0">2.15.0</a> - 2026-06-24<a class="headerlink" href="#id48" title="Link to this heading">¶</a></h2>
+<section id="id49">
+<h3>Added<a class="headerlink" href="#id49" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>MPI build revived on the C API (<code class="docutils literal notranslate"><span class="pre">with_mpi</span></code>) after retiring the obsolete C++ MPI bindings path. (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/339">#339</a>)</p></li>
 <li><p>Runtime-loadable Fortran potentials via <code class="docutils literal notranslate"><span class="pre">dlopen</span></code> and <code class="docutils literal notranslate"><span class="pre">[Potential]</span> <span class="pre">potentials_path</span></code> (no rebuild to swap pot modules). (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/342">#342</a>)</p></li>
 </ul>
 </section>
-<section id="id46">
-<h3>Developer<a class="headerlink" href="#id46" title="Link to this heading">¶</a></h3>
+<section id="id50">
+<h3>Developer<a class="headerlink" href="#id50" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Documented and automated the full maintainer release path (cog/towncrier lockstep assert, GitHub tarball release, PyPI, conda-forge/eon-feedstock checklist, incomplete-release recovery). (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/343">#343</a>)</p></li>
 </ul>
 </section>
-<section id="id47">
-<h3>Fixed<a class="headerlink" href="#id47" title="Link to this heading">¶</a></h3>
+<section id="id51">
+<h3>Fixed<a class="headerlink" href="#id51" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Windows/conda-forge builds enable in-tree Fortran including CuH2 (m2w64 gfortran + MSVC C++, 16 MiB stack, xtb MinGW import lib) per feedstock#15. (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/15">#15</a>)</p></li>
 <li><p>NEB isolates per-image LAMMPS instances on private MPI communicators so parallel image evaluation does not corrupt neighbor state. (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/340">#340</a>)</p></li>
@@ -1147,26 +1381,26 @@ non-centered molecules (issue #188). (<a class="reference external" href="https:
 </ul>
 </section>
 </section>
-<section id="id48">
-<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.14.0">2.14.0</a> - 2026-04-24<a class="headerlink" href="#id48" title="Link to this heading">¶</a></h2>
-<section id="id49">
-<h3>Added<a class="headerlink" href="#id49" title="Link to this heading">¶</a></h3>
+<section id="id52">
+<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.14.0">2.14.0</a> - 2026-04-24<a class="headerlink" href="#id52" title="Link to this heading">¶</a></h2>
+<section id="id53">
+<h3>Added<a class="headerlink" href="#id53" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Structured per-iteration metadata is now embedded directly in minimization, saddle-search, and NEB movie <code class="docutils literal notranslate"><span class="pre">.con</span></code> files via <code class="docutils literal notranslate"><span class="pre">readcon-core</span></code>. The legacy minimization and saddle-search sidecar tables remain available temporarily behind <code class="docutils literal notranslate"><span class="pre">write_deprecated_outs</span> <span class="pre">=</span> <span class="pre">true</span></code>. (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/trajectory-output">#trajectory-output</a>)</p></li>
 <li><p>Added the <code class="docutils literal notranslate"><span class="pre">filin</span></code> option under <code class="docutils literal notranslate"><span class="pre">[ARTn]</span></code> to expose pARTn’s input-file name. Empty (the default) leaves pARTn with its post-<code class="docutils literal notranslate"><span class="pre">artn_create</span></code> sentinel so no file is read; setting it to a path wires that file into pARTn setup and aborts early with a clear error if it is missing. (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/334">#334</a>)</p></li>
 </ul>
 </section>
-<section id="id50">
-<h3>Fixed<a class="headerlink" href="#id50" title="Link to this heading">¶</a></h3>
+<section id="id54">
+<h3>Fixed<a class="headerlink" href="#id54" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Fixed a regression in threaded force-evaluation paths by keeping legacy Fortran-backed potentials out of shared-instance parallel execution. (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/332">#332</a>)</p></li>
 </ul>
 </section>
 </section>
-<section id="id51">
-<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.13.0">2.13.0</a> - 2026-04-18<a class="headerlink" href="#id51" title="Link to this heading">¶</a></h2>
-<section id="removed">
-<h3>Removed<a class="headerlink" href="#removed" title="Link to this heading">¶</a></h3>
+<section id="id55">
+<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.13.0">2.13.0</a> - 2026-04-18<a class="headerlink" href="#id55" title="Link to this heading">¶</a></h2>
+<section id="id56">
+<h3>Removed<a class="headerlink" href="#id56" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Removed 9 dead legacy pointer+size math functions from HelperFunctions (<code class="docutils literal notranslate"><span class="pre">dot</span></code>, <code class="docutils literal notranslate"><span class="pre">length</span></code>, <code class="docutils literal notranslate"><span class="pre">add</span></code>, <code class="docutils literal notranslate"><span class="pre">subtract</span></code>, <code class="docutils literal notranslate"><span class="pre">multiplyScalar</span></code>, <code class="docutils literal notranslate"><span class="pre">divideScalar</span></code>, <code class="docutils literal notranslate"><span class="pre">copyRightIntoLeft</span></code>, <code class="docutils literal notranslate"><span class="pre">normalize</span></code>, <code class="docutils literal notranslate"><span class="pre">makeProjection</span></code>), all superseded by Eigen. (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/dead-code">#dead-code</a>)</p></li>
 <li><p>Removed dead code: INIFile.cpp/h (superseded by inih), legacy CMakeLists.txt
@@ -1175,8 +1409,8 @@ Total: ~2600 lines of dead code removed. (<a class="reference external" href="ht
 <li><p>Removed dead <code class="docutils literal notranslate"><span class="pre">TADJob::saddleSearch()</span></code> function and associated <code class="docutils literal notranslate"><span class="pre">dimerSearch</span></code> member (dead since 2013). (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/dead-tad">#dead-tad</a>)</p></li>
 </ul>
 </section>
-<section id="id52">
-<h3>Added<a class="headerlink" href="#id52" title="Link to this heading">¶</a></h3>
+<section id="id57">
+<h3>Added<a class="headerlink" href="#id57" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Release builds now use <code class="docutils literal notranslate"><span class="pre">-O3</span> <span class="pre">-flto=auto</span></code>. Optional <code class="docutils literal notranslate"><span class="pre">native_arch</span></code> and <code class="docutils literal notranslate"><span class="pre">fast_math</span></code> meson options for <code class="docutils literal notranslate"><span class="pre">-march=native</span></code> and <code class="docutils literal notranslate"><span class="pre">-ffast-math</span></code>. (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/compiler-flags">#compiler-flags</a>)</p></li>
 <li><p>Added ARTn (Activation-Relaxation Technique nouveau) saddle search method via
@@ -1218,8 +1452,8 @@ potentials). (<a class="reference external" href="https://github.com/TheochemUI/
 <li><p>Added readcon-core v0.7.1 as a Meson subproject for .con/.convel file I/O. The Rust FFI library replaces the hand-written C FILE*-based parser with an mmap-based reader and a type-safe ConFrameBuilder/ConFrameWriter for output. Requires Rust &gt;= 1.88 and cbindgen &gt;= 0.29 at build time.</p></li>
 </ul>
 </section>
-<section id="id53">
-<h3>Developer<a class="headerlink" href="#id53" title="Link to this heading">¶</a></h3>
+<section id="id58">
+<h3>Developer<a class="headerlink" href="#id58" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Planned: approval tests (snapshot-based regression) and fuzz testing
 for parser robustness (INI, .con format, command line arguments). (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/approval-fuzz-testing">#approval-fuzz-testing</a>)</p></li>
@@ -1247,8 +1481,8 @@ minimization_sw_cg, min_lj_sd, replica_exchange_lj, bh50. (<a class="reference e
 <li><p>Removed abandoned v3c TOML migration artifacts from 11 documentation files. (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/docs-v3c-cleanup">#docs-v3c-cleanup</a>)</p></li>
 </ul>
 </section>
-<section id="id54">
-<h3>Changed<a class="headerlink" href="#id54" title="Link to this heading">¶</a></h3>
+<section id="id59">
+<h3>Changed<a class="headerlink" href="#id59" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Eigenmode methods (Dimer, ImprovedDimer, Lanczos, GPRDimer) now use <code class="docutils literal notranslate"><span class="pre">std::variant</span></code> instead of an abstract base class, eliminating virtual dispatch overhead. (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/eigenmode-variant">#eigenmode-variant</a>)</p></li>
 <li><p>LAMMPS potential now uses runtime dynamic loading (<code class="docutils literal notranslate"><span class="pre">dlopen</span></code>/<code class="docutils literal notranslate"><span class="pre">LoadLibrary</span></code>)
@@ -1279,8 +1513,8 @@ Water_Pt (11 pow calls replaced with explicit multiplies). (<a class="reference 
 <li><p>Replaced all FILE*-based con/convel I/O in the C++ client with readcon-core. Reading uses <code class="docutils literal notranslate"><span class="pre">readcon::read_first_frame()</span></code> (mmap). Writing uses <code class="docutils literal notranslate"><span class="pre">ConFrameBuilder</span></code> + <code class="docutils literal notranslate"><span class="pre">ConFrameWriter</span></code> with 17-digit precision for positions. All FILE* overloads removed; callers now pass filenames directly.</p></li>
 </ul>
 </section>
-<section id="id55">
-<h3>Fixed<a class="headerlink" href="#id55" title="Link to this heading">¶</a></h3>
+<section id="id60">
+<h3>Fixed<a class="headerlink" href="#id60" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Fixed bare <code class="docutils literal notranslate"><span class="pre">abs()</span></code> calls on <code class="docutils literal notranslate"><span class="pre">double</span></code> values in BondBoost, LBFGS, and
 Hessian that resolved to the C integer <code class="docutils literal notranslate"><span class="pre">abs(int)</span></code> overload on non-MSVC
@@ -1307,24 +1541,24 @@ and making transition time refinement unreliable. (<a class="reference external"
 </ul>
 </section>
 </section>
-<section id="id56">
-<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.12.0">2.12.0</a> - 2026-03-08<a class="headerlink" href="#id56" title="Link to this heading">¶</a></h2>
-<section id="id57">
-<h3>Removed<a class="headerlink" href="#id57" title="Link to this heading">¶</a></h3>
+<section id="id61">
+<h2><a class="reference external" href="https://github.com/TheochemUI/eOn/tree/2.12.0">2.12.0</a> - 2026-03-08<a class="headerlink" href="#id61" title="Link to this heading">¶</a></h2>
+<section id="id62">
+<h3>Removed<a class="headerlink" href="#id62" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Remove <code class="docutils literal notranslate"><span class="pre">_potcalls.log</span></code> text logger and <code class="docutils literal notranslate"><span class="pre">QUILL_LOG_TRACE_L3</span></code> from <code class="docutils literal notranslate"><span class="pre">Potential::get_ef()</span></code>. Remove static counters <code class="docutils literal notranslate"><span class="pre">Potential::fcalls</span></code>, <code class="docutils literal notranslate"><span class="pre">fcallsTotal</span></code>, <code class="docutils literal notranslate"><span class="pre">wu_fcallsTotal</span></code>, <code class="docutils literal notranslate"><span class="pre">totalUserTime</span></code>. Output is now <code class="docutils literal notranslate"><span class="pre">_potcalls.json</span></code> with structured per-instance records.</p></li>
 </ul>
 </section>
-<section id="id58">
-<h3>Added<a class="headerlink" href="#id58" title="Link to this heading">¶</a></h3>
+<section id="id63">
+<h3>Added<a class="headerlink" href="#id63" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Add <code class="docutils literal notranslate"><span class="pre">PotRegistry</span></code> singleton for thread-safe, enum-indexed force call tracking. Replaces per-instance <code class="docutils literal notranslate"><span class="pre">FileScoped</span></code> text loggers and dead static counters (<code class="docutils literal notranslate"><span class="pre">Potential::fcalls</span></code> et al.). Tracks per-instance lifecycle (created_at, destroyed_at, force_calls, unique ID) with JSON output (<code class="docutils literal notranslate"><span class="pre">_potcalls.json</span></code>). Restore force call delta tracking in SafeHyperJob, TADJob, ParallelReplicaJob, ReplicaExchangeJob, NudgedElasticBandJob, BasinHoppingJob, HessianJob, and PrefactorJob.</p></li>
 <li><p>Add <code class="docutils literal notranslate"><span class="pre">SafeMath.h</span></code> utility header with guarded arithmetic functions (<code class="docutils literal notranslate"><span class="pre">safe_div</span></code>, <code class="docutils literal notranslate"><span class="pre">safe_recip</span></code>, <code class="docutils literal notranslate"><span class="pre">safe_acos</span></code>, <code class="docutils literal notranslate"><span class="pre">safe_sqrt</span></code>, <code class="docutils literal notranslate"><span class="pre">safe_atan_ratio</span></code>) and an Eigen-aware <code class="docutils literal notranslate"><span class="pre">safe_normalized</span></code> template. These prevent floating-point exceptions (SIGFPE) from division-by-zero and domain errors in numerical code without changing results for valid inputs.</p></li>
 <li><p>Drop spdlog and fmt for quill and cpp20</p></li>
 </ul>
 </section>
-<section id="id59">
-<h3>Changed<a class="headerlink" href="#id59" title="Link to this heading">¶</a></h3>
+<section id="id64">
+<h3>Changed<a class="headerlink" href="#id64" title="Link to this heading">¶</a></h3>
 <ul>
 <li><p>Replace cxxopts with argum for command line parsing. This change updates the
 CLI argument handling library and requires C++20 support. (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/320">#320</a>)</p></li>
@@ -1342,8 +1576,8 @@ CLI argument handling library and requires C++20 support. (<a class="reference e
 <li><p>Wrap all client classes, enums, and helper namespaces under <code class="docutils literal notranslate"><span class="pre">namespace</span> <span class="pre">eonc</span></code>. Rename <code class="docutils literal notranslate"><span class="pre">helper_functions</span></code> namespace to <code class="docutils literal notranslate"><span class="pre">helpers</span></code>. <code class="docutils literal notranslate"><span class="pre">BaseStructures.h</span></code> enums (<code class="docutils literal notranslate"><span class="pre">PotType</span></code>, <code class="docutils literal notranslate"><span class="pre">JobType</span></code>, <code class="docutils literal notranslate"><span class="pre">AtomState</span></code>) are now scoped under <code class="docutils literal notranslate"><span class="pre">eonc</span></code>. Backward-compatible <code class="docutils literal notranslate"><span class="pre">using</span></code> aliases are provided for all classes and enums at global scope. Remove <code class="docutils literal notranslate"><span class="pre">using</span> <span class="pre">namespace</span> <span class="pre">std</span></code> from all client headers to prevent symbol leakage into downstream translation units.</p></li>
 </ul>
 </section>
-<section id="id60">
-<h3>Fixed<a class="headerlink" href="#id60" title="Link to this heading">¶</a></h3>
+<section id="id65">
+<h3>Fixed<a class="headerlink" href="#id65" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Fix ASE_POT compilation errors (wrong constructor, PotType, FPE calls, undeclared variable) and rename <code class="docutils literal notranslate"><span class="pre">-DASE_POT</span></code> to <code class="docutils literal notranslate"><span class="pre">-DWITH_ASE_POT</span></code> to avoid macro-enum collision. (<a class="reference external" href="https://github.com/TheochemUI/eOn/issues/321">#321</a>)</p></li>
 <li><p>Fix <code class="docutils literal notranslate"><span class="pre">[IDimerRot]</span></code> column misalignment: widen force placeholder from 10 to 18
@@ -1364,18 +1598,18 @@ triggered a noisy exception+catch in the metatomic constructor for no benefit. (
 </ul>
 </section>
 </section>
-<section id="id61">
-<h2><a class="reference external" href="https://github.com/theochemui/eongit/tree/2.12.0">2.12.0</a> - 2026-03-04<a class="headerlink" href="#id61" title="Link to this heading">¶</a></h2>
-<section id="id62">
-<h3>Changed<a class="headerlink" href="#id62" title="Link to this heading">¶</a></h3>
+<section id="id66">
+<h2><a class="reference external" href="https://github.com/theochemui/eongit/tree/2.12.0">2.12.0</a> - 2026-03-04<a class="headerlink" href="#id66" title="Link to this heading">¶</a></h2>
+<section id="id67">
+<h3>Changed<a class="headerlink" href="#id67" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Replace cxxopts with argum for command line parsing. This change updates the
 CLI argument handling library and requires C++20 support. (<a class="reference external" href="https://github.com/theochemui/eongit/issues/320">#320</a>)</p></li>
 <li><p>Replace per-site <code class="docutils literal notranslate"><span class="pre">scoped_interpreter</span></code> guards with lazy singleton <code class="docutils literal notranslate"><span class="pre">eonc::ensure_interpreter()</span></code> in <code class="docutils literal notranslate"><span class="pre">PyGuard.h</span></code>. Python interpreter is only started when a Python-based potential is actually used. (<a class="reference external" href="https://github.com/theochemui/eongit/issues/324">#324</a>)</p></li>
 </ul>
 </section>
-<section id="id63">
-<h3>Fixed<a class="headerlink" href="#id63" title="Link to this heading">¶</a></h3>
+<section id="id68">
+<h3>Fixed<a class="headerlink" href="#id68" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Fix ASE_POT compilation errors (wrong constructor, PotType, FPE calls, undeclared variable) and rename <code class="docutils literal notranslate"><span class="pre">-DASE_POT</span></code> to <code class="docutils literal notranslate"><span class="pre">-DWITH_ASE_POT</span></code> to avoid macro-enum collision. (<a class="reference external" href="https://github.com/theochemui/eongit/issues/321">#321</a>)</p></li>
 <li><p>Fix <code class="docutils literal notranslate"><span class="pre">[IDimerRot]</span></code> column misalignment: widen force placeholder from 10 to 18
@@ -1391,31 +1625,31 @@ triggered a noisy exception+catch in the metatomic constructor for no benefit. (
 </ul>
 </section>
 </section>
-<section id="id64">
-<h2><a class="reference external" href="https://github.com/theochemui/eongit/tree/2.11.1">2.11.1</a> - 2026-03-01<a class="headerlink" href="#id64" title="Link to this heading">¶</a></h2>
-<section id="id65">
-<h3>Added<a class="headerlink" href="#id65" title="Link to this heading">¶</a></h3>
+<section id="id69">
+<h2><a class="reference external" href="https://github.com/theochemui/eongit/tree/2.11.1">2.11.1</a> - 2026-03-01<a class="headerlink" href="#id69" title="Link to this heading">¶</a></h2>
+<section id="id70">
+<h3>Added<a class="headerlink" href="#id70" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>External potential (<code class="docutils literal notranslate"><span class="pre">ext_pot</span></code>) documentation with protocol spec, DeePMD and ASE wrapper examples, and conda-forge availability badges on all potential pages. (<a class="reference external" href="https://github.com/theochemui/eongit/issues/318">#318</a>)</p></li>
 </ul>
 </section>
-<section id="id66">
-<h3>Developer<a class="headerlink" href="#id66" title="Link to this heading">¶</a></h3>
+<section id="id71">
+<h3>Developer<a class="headerlink" href="#id71" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Add <code class="docutils literal notranslate"><span class="pre">ExtPotTest</span></code> unit test verifying the file-based ext_pot protocol with a harmonic spring calculator. (<a class="reference external" href="https://github.com/theochemui/eongit/issues/318">#318</a>)</p></li>
 </ul>
 </section>
-<section id="id67">
-<h3>Fixed<a class="headerlink" href="#id67" title="Link to this heading">¶</a></h3>
+<section id="id72">
+<h3>Fixed<a class="headerlink" href="#id72" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Rename <code class="docutils literal notranslate"><span class="pre">PotType::EXT</span></code> to <code class="docutils literal notranslate"><span class="pre">EXT_POT</span></code> so <code class="docutils literal notranslate"><span class="pre">magic_enum</span></code> matches the <code class="docutils literal notranslate"><span class="pre">ext_pot</span></code> config string. Previously <code class="docutils literal notranslate"><span class="pre">potential</span> <span class="pre">=</span> <span class="pre">ext_pot</span></code> was silently mapped to <code class="docutils literal notranslate"><span class="pre">UNKNOWN</span></code>. (<a class="reference external" href="https://github.com/theochemui/eongit/issues/318">#318</a>)</p></li>
 </ul>
 </section>
 </section>
-<section id="id68">
-<h2><a class="reference external" href="https://github.com/theochemui/eongit/tree/2.11.0">2.11.0</a> - 2026-02-24<a class="headerlink" href="#id68" title="Link to this heading">¶</a></h2>
-<section id="id69">
-<h3>Added<a class="headerlink" href="#id69" title="Link to this heading">¶</a></h3>
+<section id="id73">
+<h2><a class="reference external" href="https://github.com/theochemui/eongit/tree/2.11.0">2.11.0</a> - 2026-02-24<a class="headerlink" href="#id73" title="Link to this heading">¶</a></h2>
+<section id="id74">
+<h3>Added<a class="headerlink" href="#id74" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Add <code class="docutils literal notranslate"><span class="pre">eonclient</span> <span class="pre">--serve</span></code> mode that wraps any eOn potential as an
 rgpot-compatible RPC server over Cap’n Proto. Supports four serving modes:
@@ -1427,8 +1661,8 @@ round-robin pool via <code class="docutils literal notranslate"><span class="pre
 guide, demonstrating programmatic config generation alongside INI files. (<a class="reference external" href="https://github.com/theochemui/eongit/issues/317">#317</a>)</p></li>
 </ul>
 </section>
-<section id="id70">
-<h3>Developer<a class="headerlink" href="#id70" title="Link to this heading">¶</a></h3>
+<section id="id75">
+<h3>Developer<a class="headerlink" href="#id75" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Switch benchmark PR comment workflow from hand-rolled scripts to the
 <code class="docutils literal notranslate"><span class="pre">asv-perch</span></code> GitHub Action, and parallelize benchmark execution with a matrix
@@ -1437,8 +1671,8 @@ strategy for main and PR HEAD. (<a class="reference external" href="https://gith
 CI workflow for serve mode builds, and Catch2 unit tests for serve spec parsing. (<a class="reference external" href="https://github.com/theochemui/eongit/issues/316">#316</a>)</p></li>
 </ul>
 </section>
-<section id="id71">
-<h3>Fixed<a class="headerlink" href="#id71" title="Link to this heading">¶</a></h3>
+<section id="id76">
+<h3>Fixed<a class="headerlink" href="#id76" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Skip <code class="docutils literal notranslate"><span class="pre">torch_global_deps</span></code> on Windows where the conda-forge libtorch package does not ship it. (<a class="reference external" href="https://github.com/theochemui/eongit/issues/314">#314</a>)</p></li>
 <li><p>Fixed serve mode segfault caused by <code class="docutils literal notranslate"><span class="pre">AtomMatrix</span></code> type collision between eOn’s
@@ -1449,20 +1683,20 @@ collision entirely. The serve code now only links the capnp schema dependency
 </ul>
 </section>
 </section>
-<section id="id72">
-<h2><a class="reference external" href="https://github.com/theochemui/eongit/tree/2.10.2">2.10.2</a> - 2026-02-22<a class="headerlink" href="#id72" title="Link to this heading">¶</a></h2>
-<section id="id73">
-<h3>Fixed<a class="headerlink" href="#id73" title="Link to this heading">¶</a></h3>
+<section id="id77">
+<h2><a class="reference external" href="https://github.com/theochemui/eongit/tree/2.10.2">2.10.2</a> - 2026-02-22<a class="headerlink" href="#id77" title="Link to this heading">¶</a></h2>
+<section id="id78">
+<h3>Fixed<a class="headerlink" href="#id78" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Fixed a significant performance regression in NEB calculations caused by incorrect Eigen matrix storage order mapping. Added a regression test and updated CI to automatically mark PRs as draft if benchmark regressions exceed 10x. (<a class="reference external" href="https://github.com/theochemui/eongit/issues/310">#310</a>)</p></li>
 <li><p>Absorbed conda-forge Windows patches upstream: replace C99 VLA in XTBPot with <code class="docutils literal notranslate"><span class="pre">std::vector</span></code>, guard empty-string indexing in INIFile, decouple xtb from Fortran requirement, add Windows library search paths for libtorch/metatensor/vesin, guard POSIX headers, and replace shell commands in IMD with <code class="docutils literal notranslate"><span class="pre">std::filesystem</span></code>. (<a class="reference external" href="https://github.com/theochemui/eongit/issues/312">#312</a>)</p></li>
 </ul>
 </section>
 </section>
-<section id="id74">
-<h2><a class="reference external" href="https://github.com/theochemui/eongit/tree/2.10.1">2.10.1</a> - 2026-02-18<a class="headerlink" href="#id74" title="Link to this heading">¶</a></h2>
-<section id="id75">
-<h3>Developer<a class="headerlink" href="#id75" title="Link to this heading">¶</a></h3>
+<section id="id79">
+<h2><a class="reference external" href="https://github.com/theochemui/eongit/tree/2.10.1">2.10.1</a> - 2026-02-18<a class="headerlink" href="#id79" title="Link to this heading">¶</a></h2>
+<section id="id80">
+<h3>Developer<a class="headerlink" href="#id80" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Added a CI-NEB XTB regression test (<code class="docutils literal notranslate"><span class="pre">CINEBXTBTest.cpp</span></code>) that runs a 10-image
 climbing-image NEB with GFN2-xTB on a 9-atom molecule.  The test completes in
@@ -1470,8 +1704,8 @@ under 2 seconds and guards against storage-order regressions that corrupt force
 projections.</p></li>
 </ul>
 </section>
-<section id="id76">
-<h3>Fixed<a class="headerlink" href="#id76" title="Link to this heading">¶</a></h3>
+<section id="id81">
+<h3>Fixed<a class="headerlink" href="#id81" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Replaced the <code class="docutils literal notranslate"><span class="pre">EIGEN_DEFAULT_TO_ROW_MAJOR</span></code> preprocessor macro with explicit
 row-major type aliases in <code class="docutils literal notranslate"><span class="pre">client/Eigen.h</span></code>.  The macro made eOn’s Eigen types
@@ -1485,8 +1719,8 @@ Python 3.10 compatibility (the <code class="docutils literal notranslate"><span 
 </section>
 <section id="v2-10-0-2026-02-15">
 <h2><a class="reference external" href="https://github.com/theochemui/eongit/tree/v2.10.0">v2.10.0</a> - 2026-02-15<a class="headerlink" href="#v2-10-0-2026-02-15" title="Link to this heading">¶</a></h2>
-<section id="id77">
-<h3>Added<a class="headerlink" href="#id77" title="Link to this heading">¶</a></h3>
+<section id="id82">
+<h3>Added<a class="headerlink" href="#id82" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Added ASV benchmark CI workflow with asv-spyglass for PR performance comparison</p></li>
 <li><p>Added adsorbate_region.py example script for identifying adsorbate atoms and nearby surface atoms by element or z-coordinate</p></li>
@@ -1495,8 +1729,8 @@ Python 3.10 compatibility (the <code class="docutils literal notranslate"><span 
 <li><p>Expose gprd_linalg_backend option for selecting GPR-dimer linear algebra backend (eigen, cusolver, kokkos, stdpar)</p></li>
 </ul>
 </section>
-<section id="id78">
-<h3>Developer<a class="headerlink" href="#id78" title="Link to this heading">¶</a></h3>
+<section id="id83">
+<h3>Developer<a class="headerlink" href="#id83" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Added macOS arm64 to metatomic CI matrix using Homebrew gfortran (conda-forge gfortran_osx-arm64 wrapper is broken)</p></li>
 <li><p>Cleanup to build on windows</p></li>
@@ -1505,8 +1739,8 @@ Python 3.10 compatibility (the <code class="docutils literal notranslate"><span 
 <li><p>bld(meson): reduce build times by linking to xtb by default</p></li>
 </ul>
 </section>
-<section id="id79">
-<h3>Changed<a class="headerlink" href="#id79" title="Link to this heading">¶</a></h3>
+<section id="id84">
+<h3>Changed<a class="headerlink" href="#id84" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Eliminated unnecessary Eigen matrix copies in Matter, Potential, and HelperFunctions hot paths</p></li>
 <li><p>Replace per-typedef <code class="docutils literal notranslate"><span class="pre">Eigen::RowMajor</span></code> with a single <code class="docutils literal notranslate"><span class="pre">eOnStorageOrder</span></code> constant in <code class="docutils literal notranslate"><span class="pre">client/Eigen.h</span></code></p></li>
@@ -1515,8 +1749,8 @@ Python 3.10 compatibility (the <code class="docutils literal notranslate"><span 
 <li><p>Updated pinned gpr_optim commit with new linear algebra backends and performance improvements</p></li>
 </ul>
 </section>
-<section id="id80">
-<h3>Fixed<a class="headerlink" href="#id80" title="Link to this heading">¶</a></h3>
+<section id="id85">
+<h3>Fixed<a class="headerlink" href="#id85" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Fix Windows <code class="docutils literal notranslate"><span class="pre">STATUS_STACK_OVERFLOW</span></code> crash caused by large Fortran local arrays in the EAM Al potential (<code class="docutils literal notranslate"><span class="pre">gagafeDblexp.f</span></code>) exceeding the 1 MB default stack; request 16 MB via linker flags</p></li>
 <li><p>Fix Windows silent client failure by using non-color spdlog sink when stdout is redirected</p></li>
@@ -1526,8 +1760,8 @@ Python 3.10 compatibility (the <code class="docutils literal notranslate"><span 
 </section>
 <section id="v2-9-0-2026-01-27">
 <h2><a class="reference external" href="https://github.com/theochemui/eongit/tree/v2.9.0">v2.9.0</a> - 2026-01-27<a class="headerlink" href="#v2-9-0-2026-01-27" title="Link to this heading">¶</a></h2>
-<section id="id81">
-<h3>Added<a class="headerlink" href="#id81" title="Link to this heading">¶</a></h3>
+<section id="id86">
+<h3>Added<a class="headerlink" href="#id86" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Add support for ‘charge’ and ‘uhf’ (multiplicity) parameters in the xTB potential</p></li>
 <li><p>Introduce custom Catch2 Eigen matchers and add comprehensive regression tests for GFN2-xTB forces</p></li>
@@ -1541,15 +1775,15 @@ Python 3.10 compatibility (the <code class="docutils literal notranslate"><span 
 <li><p>feat(neb): write out peaks and modes for subsequent dimer runs</p></li>
 </ul>
 </section>
-<section id="id82">
-<h3>Changed<a class="headerlink" href="#id82" title="Link to this heading">¶</a></h3>
+<section id="id87">
+<h3>Changed<a class="headerlink" href="#id87" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Optimize xTB potential performance by persisting internal state and using coordinate updates between force calls</p></li>
 <li><p>Update installation guide to recommend Pixi and clarify dependency management</p></li>
 </ul>
 </section>
-<section id="id83">
-<h3>Fixed<a class="headerlink" href="#id83" title="Link to this heading">¶</a></h3>
+<section id="id88">
+<h3>Fixed<a class="headerlink" href="#id88" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>bug(ewneb): do not turn on if cineb threshold is not met!</p></li>
 <li><p>fix(mtapot): stop double counting mta calls</p></li>
@@ -1558,21 +1792,21 @@ Python 3.10 compatibility (the <code class="docutils literal notranslate"><span 
 </section>
 <section id="v2-8-2-2025-12-01">
 <h2><a class="reference external" href="https://github.com/theochemui/eongit/tree/v2.8.2">v2.8.2</a> - 2025-12-01<a class="headerlink" href="#v2-8-2-2025-12-01" title="Link to this heading">¶</a></h2>
-<section id="id84">
-<h3>Added<a class="headerlink" href="#id84" title="Link to this heading">¶</a></h3>
+<section id="id89">
+<h3>Added<a class="headerlink" href="#id89" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Metatomic is now uncertainty aware</p></li>
 <li><p>Metatomic variance reports per-atom uncertainty mean</p></li>
 </ul>
 </section>
-<section id="id85">
-<h3>Changed<a class="headerlink" href="#id85" title="Link to this heading">¶</a></h3>
+<section id="id90">
+<h3>Changed<a class="headerlink" href="#id90" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Reworked metatomic to use torch 2.9</p></li>
 </ul>
 </section>
-<section id="id86">
-<h3>Developer<a class="headerlink" href="#id86" title="Link to this heading">¶</a></h3>
+<section id="id91">
+<h3>Developer<a class="headerlink" href="#id91" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Update to use <code class="docutils literal notranslate"><span class="pre">metatensor_torch::Module</span></code></p></li>
 <li><p>Use <code class="docutils literal notranslate"><span class="pre">metatomic::pick_device</span></code> correctly</p></li>
@@ -1581,29 +1815,29 @@ Python 3.10 compatibility (the <code class="docutils literal notranslate"><span 
 </section>
 <section id="v2-8-1-2025-11-03">
 <h2><a class="reference external" href="https://github.com/theochemui/eongit/tree/v2.8.1">v2.8.1</a> - 2025-11-03<a class="headerlink" href="#v2-8-1-2025-11-03" title="Link to this heading">¶</a></h2>
-<section id="id87">
-<h3>Added<a class="headerlink" href="#id87" title="Link to this heading">¶</a></h3>
+<section id="id92">
+<h3>Added<a class="headerlink" href="#id92" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Enable minimization for given initial paths</p></li>
 </ul>
 </section>
-<section id="id88">
-<h3>Changed<a class="headerlink" href="#id88" title="Link to this heading">¶</a></h3>
+<section id="id93">
+<h3>Changed<a class="headerlink" href="#id93" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Reworked metatomic to use torch 2.8</p></li>
 </ul>
 </section>
-<section id="id89">
-<h3>Fixed<a class="headerlink" href="#id89" title="Link to this heading">¶</a></h3>
+<section id="id94">
+<h3>Fixed<a class="headerlink" href="#id94" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Generate neb.dat correctly without clobbering neb_000.dat</p></li>
 </ul>
 </section>
 </section>
-<section id="id90">
-<h2><a class="reference external" href="https://github.com/theochemui/eongit/tree/2.8.0">2.8.0</a> - 2025-09-04<a class="headerlink" href="#id90" title="Link to this heading">¶</a></h2>
-<section id="id91">
-<h3>Added<a class="headerlink" href="#id91" title="Link to this heading">¶</a></h3>
+<section id="id95">
+<h2><a class="reference external" href="https://github.com/theochemui/eongit/tree/2.8.0">2.8.0</a> - 2025-09-04<a class="headerlink" href="#id95" title="Link to this heading">¶</a></h2>
+<section id="id96">
+<h3>Added<a class="headerlink" href="#id96" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><strong>Potentials &amp; Interfaces</strong></p>
 <ul>
@@ -1645,8 +1879,8 @@ method (<a class="reference external" href="https://github.com/theochemui/eongit
 </li>
 </ul>
 </section>
-<section id="id92">
-<h3>Developer<a class="headerlink" href="#id92" title="Link to this heading">¶</a></h3>
+<section id="id97">
+<h3>Developer<a class="headerlink" href="#id97" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Consistent formatting and counting</p></li>
 <li><p>Support for M1 MacOS machines</p></li>
@@ -1739,10 +1973,10 @@ module, covering theory, keywords, and practical examples.</p></li>
         <span>Previous</span><div class="title">Releases</div></div>
     </a>
   </div><div class="navigation-next">
-    <a href="v3.2.1/index.html">
+    <a href="v3.3.0/index.html">
       <div class="page-info">
         <span>Next</span>
-        <div class="title">[v3.2.1] - 2026-09-13</div>
+        <div class="title">[v3.3.0] - 2026-09-15</div>
       </div>
       <i class="i-lucide chevron-right"></i>
     </a>
@@ -1844,7 +2078,7 @@ module, covering theory, keywords, and practical examples.</p></li>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=eb155f5e"></script>
+      <script src="../_static/documentation_options.js?v=b5dcbc37"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

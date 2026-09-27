@@ -8,6 +8,7 @@ var namespacemembers_func =
     [ "f", "namespacemembers_func_f.html", null ],
     [ "g", "namespacemembers_func_g.html", null ],
     [ "i", "namespacemembers_func_i.html", null ],
+    [ "j", "namespacemembers_func_j.html", null ],
     [ "l", "namespacemembers_func_l.html", null ],
     [ "m", "namespacemembers_func_m.html", null ],
     [ "n", "namespacemembers_func_n.html", null ],
@@ -19,5 +20,6 @@ var namespacemembers_func =
     [ "u", "namespacemembers_func_u.html", null ],
     [ "v", "namespacemembers_func_v.html", null ],
     [ "w", "namespacemembers_func_w.html", null ],
+    [ "x", "namespacemembers_func_x.html", null ],
     [ "z", "namespacemembers_func_z.html", null ]
 ];

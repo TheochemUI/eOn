@@ -1,0 +1,797 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: eonc::XtsciOptimizer Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn 3.2.0</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classeonc_1_1XtsciOptimizer.html','','classeonc_1_1XtsciOptimizer-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">eonc::XtsciOptimizer Class Reference<span class="mlabels"><span class="mlabel final">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>xtsci-optimize backend.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="XtsciOptimizer_8h_source.html">XtsciOptimizer.h</a>&gt;</code></p>
+<div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for eonc::XtsciOptimizer:</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+ <div class="center">
+  <img src="classeonc_1_1XtsciOptimizer.png" usemap="#eonc_3A_3AXtsciOptimizer_map" alt=""/>
+  <map id="eonc_3A_3AXtsciOptimizer_map" name="eonc_3A_3AXtsciOptimizer_map">
+<area href="classeonc_1_1Optimizer.html" alt="eonc::Optimizer" shape="rect" coords="0,0,127,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a7ec29a9644a5cf86a28f263164bc2936" id="r_a7ec29a9644a5cf86a28f263164bc2936"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a7ec29a9644a5cf86a28f263164bc2936">XtsciOptimizer</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1ObjectiveFunction.html">ObjectiveFunction</a> &gt; a_objf, const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;a_params)</td></tr>
+<tr class="memitem:a4c5185aaff94e1b79547580288d95e0d" id="r_a4c5185aaff94e1b79547580288d95e0d"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a4c5185aaff94e1b79547580288d95e0d">~XtsciOptimizer</a> () override</td></tr>
+<tr class="memitem:ace475c05a05056ee374e9f93762f1ba3" id="r_ace475c05a05056ee374e9f93762f1ba3"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#ace475c05a05056ee374e9f93762f1ba3">XtsciOptimizer</a> (const <a class="el" href="classXtsciOptimizer.html">XtsciOptimizer</a> &amp;)=delete</td></tr>
+<tr class="memitem:a87d98e09bd1a2d61a62892b4b08b0602" id="r_a87d98e09bd1a2d61a62892b4b08b0602"><td class="memItemLeft"><a class="el" href="classXtsciOptimizer.html">XtsciOptimizer</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a87d98e09bd1a2d61a62892b4b08b0602">operator=</a> (const <a class="el" href="classXtsciOptimizer.html">XtsciOptimizer</a> &amp;)=delete</td></tr>
+<tr class="memitem:ac8fa0e20cc86e1240da7e50af7ccd249" id="r_ac8fa0e20cc86e1240da7e50af7ccd249"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ac8fa0e20cc86e1240da7e50af7ccd249">step</a> (double a_maxMove) override</td></tr>
+<tr class="memitem:a4928929091c0d1f588e04ac29a8a86b4" id="r_a4928929091c0d1f588e04ac29a8a86b4"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a4928929091c0d1f588e04ac29a8a86b4">run</a> (size_t a_maxIterations, double a_maxMove) override</td></tr>
+<tr class="inherit_header pub_methods_classeonc_1_1Optimizer"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1Optimizer')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1Optimizer.html">eonc::Optimizer</a></td></tr>
+<tr class="memitem:a51ef8ef5f774fa7125131d8a5dd72710 inherit pub_methods_classeonc_1_1Optimizer" id="r_a51ef8ef5f774fa7125131d8a5dd72710"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#a51ef8ef5f774fa7125131d8a5dd72710">Optimizer</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1ObjectiveFunction.html">ObjectiveFunction</a> &gt; a_objf, const <a class="el" href="structeonc_1_1OptimizerConfig.html">OptimizerConfig</a> &amp;a_config)</td></tr>
+<tr class="memitem:af5e38a77399147106fd57aced5092a71 inherit pub_methods_classeonc_1_1Optimizer" id="r_af5e38a77399147106fd57aced5092a71"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#af5e38a77399147106fd57aced5092a71">Optimizer</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1ObjectiveFunction.html">ObjectiveFunction</a> &gt; a_objf, <a class="el" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">OptType</a> a_optype, const <a class="el" href="structeonc_1_1OptimizerConfig.html">OptimizerConfig</a> &amp;a_config)</td></tr>
+<tr class="memitem:a7359cf3da3da63ba17b3564de5428e18 inherit pub_methods_classeonc_1_1Optimizer" id="r_a7359cf3da3da63ba17b3564de5428e18"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#a7359cf3da3da63ba17b3564de5428e18">Optimizer</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1ObjectiveFunction.html">ObjectiveFunction</a> &gt; a_objf, const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;a_params)</td></tr>
+<tr class="memitem:a0799f30a0b8940646966008020d93e6d inherit pub_methods_classeonc_1_1Optimizer" id="r_a0799f30a0b8940646966008020d93e6d"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#a0799f30a0b8940646966008020d93e6d">Optimizer</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1ObjectiveFunction.html">ObjectiveFunction</a> &gt; a_objf, <a class="el" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">OptType</a> a_optype, const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;a_params)</td></tr>
+<tr class="memitem:ae94c246f1e45f8f7b8f906667951543c inherit pub_methods_classeonc_1_1Optimizer" id="r_ae94c246f1e45f8f7b8f906667951543c"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#ae94c246f1e45f8f7b8f906667951543c">~Optimizer</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a4c35607672825155d0cda735ae84e118" id="r_a4c35607672825155d0cda735ae84e118"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a4c35607672825155d0cda735ae84e118">ensureSolver</a> (double a_maxMove)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a8d21e066da8018dce977cd483ebd2399" id="r_a8d21e066da8018dce977cd483ebd2399"><td class="memItemLeft">xts_solver_t *&#160;</td><td class="memItemRight"><a class="el" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a> {nullptr}</td></tr>
+<tr class="memitem:a5854cdd11934a6f03d601c140b38563f" id="r_a5854cdd11934a6f03d601c140b38563f"><td class="memItemLeft">Eigen::VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a5854cdd11934a6f03d601c140b38563f">m_cached_x</a></td></tr>
+<tr class="memitem:a92eeff22e2007615935c6de6fb9983b7" id="r_a92eeff22e2007615935c6de6fb9983b7"><td class="memItemLeft">Eigen::VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pro_attribs_classeonc_1_1Optimizer"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classeonc_1_1Optimizer')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classeonc_1_1Optimizer.html">eonc::Optimizer</a></td></tr>
+<tr class="memitem:a3bfcee12036bd655e29a065e8e1c1f4d inherit pro_attribs_classeonc_1_1Optimizer" id="r_a3bfcee12036bd655e29a065e8e1c1f4d"><td class="memItemLeft">const <a class="el" href="structeonc_1_1OptimizerConfig.html">OptimizerConfig</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a></td></tr>
+<tr class="memitem:ac396cbda1caadf57ff9df7eda4db1822 inherit pro_attribs_classeonc_1_1Optimizer" id="r_ac396cbda1caadf57ff9df7eda4db1822"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classeonc_1_1ObjectiveFunction.html">ObjectiveFunction</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>xtsci-optimize backend. </p>
+<p>Newton / RFO live in Rust; this class is the <a class="el" href="classeonc_1_1ObjectiveFunction.html">ObjectiveFunction</a> + pair-Hessian waist. </p>
+
+<p class="definition">Definition at line <a class="el" href="XtsciOptimizer_8h_source.html#l00022">22</a> of file <a class="el" href="XtsciOptimizer_8h_source.html">XtsciOptimizer.h</a>.</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a7ec29a9644a5cf86a28f263164bc2936" name="a7ec29a9644a5cf86a28f263164bc2936"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ec29a9644a5cf86a28f263164bc2936">&#9670;&#160;</a></span>XtsciOptimizer() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eonc::XtsciOptimizer::XtsciOptimizer </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classeonc_1_1ObjectiveFunction.html">ObjectiveFunction</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>a_objf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>a_params</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XtsciOptimizer_8h_source.html#l00024">24</a> of file <a class="el" href="XtsciOptimizer_8h_source.html">XtsciOptimizer.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   26</span>      : <a class="code hl_function" href="classeonc_1_1Optimizer.html#a51ef8ef5f774fa7125131d8a5dd72710">Optimizer</a>(a_objf, <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a786f60c57ac658b1e2507b082736371d">OptType::XTSCI</a>,</div>
+<div class="line"><span class="lineno">   27</span>                  <a class="code hl_function" href="structeonc_1_1OptimizerConfig.html#abcfc681e415bb093ecdc44ed452e7e0d">OptimizerConfig::fromParams</a>(a_params)) {}</div>
+<div class="ttc" id="aclasseonc_1_1Optimizer_html_a51ef8ef5f774fa7125131d8a5dd72710"><div class="ttname"><a href="classeonc_1_1Optimizer.html#a51ef8ef5f774fa7125131d8a5dd72710">eonc::Optimizer::Optimizer</a></div><div class="ttdeci">Optimizer(std::shared_ptr&lt; ObjectiveFunction &gt; a_objf, const OptimizerConfig &amp;a_config)</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00073">Optimizer.h:73</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56a786f60c57ac658b1e2507b082736371d"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a786f60c57ac658b1e2507b082736371d">eonc::OptType::XTSCI</a></div><div class="ttdeci">@ XTSCI</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00111">BaseStructures.h:111</a></div></div>
+<div class="ttc" id="astructeonc_1_1OptimizerConfig_html_abcfc681e415bb093ecdc44ed452e7e0d"><div class="ttname"><a href="structeonc_1_1OptimizerConfig.html#abcfc681e415bb093ecdc44ed452e7e0d">eonc::OptimizerConfig::fromParams</a></div><div class="ttdeci">static OptimizerConfig fromParams(const Parameters &amp;p)</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00057">Optimizer.h:57</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a4c5185aaff94e1b79547580288d95e0d" name="a4c5185aaff94e1b79547580288d95e0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c5185aaff94e1b79547580288d95e0d">&#9670;&#160;</a></span>~XtsciOptimizer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eonc::XtsciOptimizer::~XtsciOptimizer </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XtsciOptimizer_8cpp_source.html#l00246">246</a> of file <a class="el" href="XtsciOptimizer_8cpp_source.html">XtsciOptimizer.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  246</span>{ xts_solver_free(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>); }</div>
+<div class="ttc" id="aclasseonc_1_1XtsciOptimizer_html_a8d21e066da8018dce977cd483ebd2399"><div class="ttname"><a href="#a8d21e066da8018dce977cd483ebd2399">eonc::XtsciOptimizer::m_solver</a></div><div class="ttdeci">xts_solver_t * m_solver</div><div class="ttdef"><b>Definition</b> <a href="XtsciOptimizer_8h_source.html#l00038">XtsciOptimizer.h:38</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ace475c05a05056ee374e9f93762f1ba3" name="ace475c05a05056ee374e9f93762f1ba3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace475c05a05056ee374e9f93762f1ba3">&#9670;&#160;</a></span>XtsciOptimizer() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eonc::XtsciOptimizer::XtsciOptimizer </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classXtsciOptimizer.html">XtsciOptimizer</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a4c35607672825155d0cda735ae84e118" name="a4c35607672825155d0cda735ae84e118"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c35607672825155d0cda735ae84e118">&#9670;&#160;</a></span>ensureSolver()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::XtsciOptimizer::ensureSolver </td>
+          <td>(</td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>a_maxMove</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XtsciOptimizer_8cpp_source.html#l00248">248</a> of file <a class="el" href="XtsciOptimizer_8cpp_source.html">XtsciOptimizer.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  248</span>                                                  {</div>
+<div class="line"><span class="lineno">  249</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a> != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  250</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  251</span>  }</div>
+<div class="line"><span class="lineno">  252</span>  <span class="keyword">const</span> <span class="keyword">auto</span> dim = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;degreesOfFreedom());</div>
+<div class="line"><span class="lineno">  253</span>  <span class="keywordflow">if</span> (dim == 0) {</div>
+<div class="line"><span class="lineno">  254</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  255</span>  }</div>
+<div class="line"><span class="lineno">  256</span>  <span class="keyword">const</span> <span class="keyword">auto</span> stamp = xts_abi_stamp();</div>
+<div class="line"><span class="lineno">  257</span>  <span class="keywordflow">if</span> (xts_abi_compatible(&amp;stamp) == 0) {</div>
+<div class="line"><span class="lineno">  258</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;incompatible xtsci-optimize ABI&quot;</span>);</div>
+<div class="line"><span class="lineno">  259</span>  }</div>
+<div class="line"><span class="lineno">  260</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;lbfgs = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs;</div>
+<div class="line"><span class="lineno">  261</span>  <span class="keyword">const</span> xts_method_t method = method_from_name(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.xtsci.method);</div>
+<div class="line"><span class="lineno">  262</span>  <span class="keywordtype">double</span> istep = std::max(a_maxMove, 1.0e-12);</div>
+<div class="line"><span class="lineno">  263</span>  <span class="keywordflow">if</span> (method == XTS_FIRE || method == XTS_FIRE2) {</div>
+<div class="line"><span class="lineno">  264</span>    istep = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.time_step;</div>
+<div class="line"><span class="lineno">  265</span>    <span class="keywordflow">if</span> (istep &lt;= 0.0) {</div>
+<div class="line"><span class="lineno">  266</span>      istep = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.time_step_input;</div>
+<div class="line"><span class="lineno">  267</span>    }</div>
+<div class="line"><span class="lineno">  268</span>    <span class="keywordflow">if</span> (istep &lt;= 0.0) {</div>
+<div class="line"><span class="lineno">  269</span>      istep = 0.1;</div>
+<div class="line"><span class="lineno">  270</span>    }</div>
+<div class="line"><span class="lineno">  271</span>  }</div>
+<div class="line"><span class="lineno">  272</span>  xts_control_t control{</div>
+<div class="line"><span class="lineno">  273</span>      <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(std::max&lt;long&gt;(1, <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.max_iterations)),</div>
+<div class="line"><span class="lineno">  274</span>      <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.converged_force,</div>
+<div class="line"><span class="lineno">  275</span>      istep,</div>
+<div class="line"><span class="lineno">  276</span>      <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(std::max&lt;long&gt;(0, lbfgs.memory)),</div>
+<div class="line"><span class="lineno">  277</span>      0.0,</div>
+<div class="line"><span class="lineno">  278</span>  };</div>
+<div class="line"><span class="lineno">  279</span>  <a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a> = xts_solver_create(method, &amp;control, dim);</div>
+<div class="line"><span class="lineno">  280</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a> == <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  281</span>    <span class="keywordflow">throw</span> std::runtime_error(xts_last_error());</div>
+<div class="line"><span class="lineno">  282</span>  }</div>
+<div class="line"><span class="lineno">  283</span>  <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_function" href="#ac8fa0e20cc86e1240da7e50af7ccd249">step</a> = resolved_qn_step(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts);</div>
+<div class="line"><span class="lineno">  284</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="#ac8fa0e20cc86e1240da7e50af7ccd249">step</a> == <span class="stringliteral">&quot;newton&quot;</span>) {</div>
+<div class="line"><span class="lineno">  285</span>    xts_solver_set_qn_step(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_QN_NEWTON);</div>
+<div class="line"><span class="lineno">  286</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_function" href="#ac8fa0e20cc86e1240da7e50af7ccd249">step</a> == <span class="stringliteral">&quot;rfo&quot;</span>) {</div>
+<div class="line"><span class="lineno">  287</span>    xts_solver_set_qn_step(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_QN_RFO);</div>
+<div class="line"><span class="lineno">  288</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  289</span>    xts_solver_set_qn_step(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_QN_LBFGS);</div>
+<div class="line"><span class="lineno">  290</span>  }</div>
+<div class="line"><span class="lineno">  291</span>  <span class="keyword">const</span> <span class="keyword">auto</span> accept = resolved_accept(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts);</div>
+<div class="line"><span class="lineno">  292</span>  <span class="keywordflow">if</span> (accept == <span class="stringliteral">&quot;energy&quot;</span>) {</div>
+<div class="line"><span class="lineno">  293</span>    xts_solver_set_accept(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_ACCEPT_ENERGY);</div>
+<div class="line"><span class="lineno">  294</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (accept == <span class="stringliteral">&quot;nonmonotone&quot;</span>) {</div>
+<div class="line"><span class="lineno">  295</span>    xts_solver_set_accept(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_ACCEPT_NONMONOTONE);</div>
+<div class="line"><span class="lineno">  296</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  297</span>    xts_solver_set_accept(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_ACCEPT_NONE);</div>
+<div class="line"><span class="lineno">  298</span>  }</div>
+<div class="line"><span class="lineno">  299</span>  xts_solver_set_project_rigid(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, lbfgs.project_rigid ? 1 : 0);</div>
+<div class="line"><span class="lineno">  300</span>  xts_solver_set_extra_updates(</div>
+<div class="line"><span class="lineno">  301</span>      <a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(std::max&lt;long&gt;(0, lbfgs.extra_updates)));</div>
+<div class="line"><span class="lineno">  302</span>  <span class="keywordflow">if</span> (lbfgs.curvature == <span class="stringliteral">&quot;cautious&quot;</span>) {</div>
+<div class="line"><span class="lineno">  303</span>    xts_solver_set_cautious(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, lbfgs.cautious_eps, lbfgs.cautious_alpha);</div>
+<div class="line"><span class="lineno">  304</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  305</span>    xts_solver_set_cautious(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, 0.0, lbfgs.cautious_alpha);</div>
+<div class="line"><span class="lineno">  306</span>  }</div>
+<div class="line"><span class="lineno">  307</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.xtsci.highs) {</div>
+<div class="line"><span class="lineno">  308</span>    <span class="keywordflow">if</span> (xts_solver_set_highs(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, 1) != 0) {</div>
+<div class="line"><span class="lineno">  309</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  310</span>          <span class="stringliteral">&quot;Xtsci.highs needs xtsci-optimize built with --features highs&quot;</span>);</div>
+<div class="line"><span class="lineno">  311</span>    }</div>
+<div class="line"><span class="lineno">  312</span>  }</div>
+<div class="line"><span class="lineno">  313</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;mani = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.xtsci.manifold;</div>
+<div class="line"><span class="lineno">  314</span>  <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;so3&quot;</span> &amp;&amp; dim != 9) {</div>
+<div class="line"><span class="lineno">  315</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  316</span>        <span class="stringliteral">&quot;Xtsci.manifold=so3 needs length 9; a 3N cluster is &quot;</span></div>
+<div class="line"><span class="lineno">  317</span>        <span class="stringliteral">&quot;rigid_quotient (Sella R^{3N}/SE(3)), not a packed rotation&quot;</span>);</div>
+<div class="line"><span class="lineno">  318</span>  }</div>
+<div class="line"><span class="lineno">  319</span>  <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;se3&quot;</span> &amp;&amp; dim != 12) {</div>
+<div class="line"><span class="lineno">  320</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  321</span>        <span class="stringliteral">&quot;Xtsci.manifold=se3 needs length 12; a 3N cluster is &quot;</span></div>
+<div class="line"><span class="lineno">  322</span>        <span class="stringliteral">&quot;rigid_quotient (Sella R^{3N}/SE(3)), not an SE(3) prefix&quot;</span>);</div>
+<div class="line"><span class="lineno">  323</span>  }</div>
+<div class="line"><span class="lineno">  324</span>  <span class="keywordflow">if</span> ((mani == <span class="stringliteral">&quot;rigid_quotient&quot;</span> || mani == <span class="stringliteral">&quot;mw_rigid&quot;</span> || mani == <span class="stringliteral">&quot;sella&quot;</span> ||</div>
+<div class="line"><span class="lineno">  325</span>       mani == <span class="stringliteral">&quot;eckart&quot;</span> || mani == <span class="stringliteral">&quot;irc&quot;</span>) &amp;&amp;</div>
+<div class="line"><span class="lineno">  326</span>      (dim &lt; 6 || dim % 3 != 0)) {</div>
+<div class="line"><span class="lineno">  327</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Xtsci.manifold=&quot;</span> + mani +</div>
+<div class="line"><span class="lineno">  328</span>                             <span class="stringliteral">&quot; needs 3N Cartesians with N &gt;= 2&quot;</span>);</div>
+<div class="line"><span class="lineno">  329</span>  }</div>
+<div class="line"><span class="lineno">  330</span>  <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;sphere&quot;</span>) {</div>
+<div class="line"><span class="lineno">  331</span>    xts_solver_set_manifold(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_MANIFOLD_SPHERE);</div>
+<div class="line"><span class="lineno">  332</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;so3&quot;</span>) {</div>
+<div class="line"><span class="lineno">  333</span>    xts_solver_set_manifold(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_MANIFOLD_SO3);</div>
+<div class="line"><span class="lineno">  334</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;stiefel&quot;</span>) {</div>
+<div class="line"><span class="lineno">  335</span>    xts_solver_set_manifold(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_MANIFOLD_STIEFEL);</div>
+<div class="line"><span class="lineno">  336</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;se3&quot;</span>) {</div>
+<div class="line"><span class="lineno">  337</span>    xts_solver_set_manifold(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_MANIFOLD_SE3);</div>
+<div class="line"><span class="lineno">  338</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;rigid_quotient&quot;</span> || mani == <span class="stringliteral">&quot;sella&quot;</span>) {</div>
+<div class="line"><span class="lineno">  339</span>    xts_solver_set_manifold(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_MANIFOLD_RIGID_QUOTIENT);</div>
+<div class="line"><span class="lineno">  340</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;mw_rigid&quot;</span> || mani == <span class="stringliteral">&quot;eckart&quot;</span> || mani == <span class="stringliteral">&quot;irc&quot;</span>) {</div>
+<div class="line"><span class="lineno">  341</span>    xts_solver_set_manifold(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_MANIFOLD_MW_RIGID);</div>
+<div class="line"><span class="lineno">  342</span>    <span class="keyword">const</span> <span class="keyword">auto</span> masses = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getMasses();</div>
+<div class="line"><span class="lineno">  343</span>    <span class="keywordflow">if</span> (masses.size() &gt; 0) {</div>
+<div class="line"><span class="lineno">  344</span>      xts_solver_set_masses(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, masses.data(),</div>
+<div class="line"><span class="lineno">  345</span>                            <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(masses.size()));</div>
+<div class="line"><span class="lineno">  346</span>    }</div>
+<div class="line"><span class="lineno">  347</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  348</span>    xts_solver_set_manifold(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, XTS_MANIFOLD_EUCLIDEAN);</div>
+<div class="line"><span class="lineno">  349</span>  }</div>
+<div class="line"><span class="lineno">  350</span>  <span class="keywordflow">if</span> (mani == <span class="stringliteral">&quot;rigid_quotient&quot;</span> || mani == <span class="stringliteral">&quot;mw_rigid&quot;</span> || mani == <span class="stringliteral">&quot;sella&quot;</span> ||</div>
+<div class="line"><span class="lineno">  351</span>      mani == <span class="stringliteral">&quot;eckart&quot;</span> || mani == <span class="stringliteral">&quot;irc&quot;</span>) {</div>
+<div class="line"><span class="lineno">  352</span>    xts_solver_set_periodic(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getPeriodic() ? 1 : 0);</div>
+<div class="line"><span class="lineno">  353</span>  }</div>
+<div class="line"><span class="lineno">  354</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Optimizer_html_a3bfcee12036bd655e29a065e8e1c1f4d"><div class="ttname"><a href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">eonc::Optimizer::m_optConfig</a></div><div class="ttdeci">const OptimizerConfig m_optConfig</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00069">Optimizer.h:69</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Optimizer_html_ac396cbda1caadf57ff9df7eda4db1822"><div class="ttname"><a href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">eonc::Optimizer::m_objf</a></div><div class="ttdeci">std::shared_ptr&lt; ObjectiveFunction &gt; m_objf</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00070">Optimizer.h:70</a></div></div>
+<div class="ttc" id="aclasseonc_1_1XtsciOptimizer_html_ac8fa0e20cc86e1240da7e50af7ccd249"><div class="ttname"><a href="#ac8fa0e20cc86e1240da7e50af7ccd249">eonc::XtsciOptimizer::step</a></div><div class="ttdeci">int step(double a_maxMove) override</div><div class="ttdef"><b>Definition</b> <a href="XtsciOptimizer_8cpp_source.html#l00356">XtsciOptimizer.cpp:356</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a87d98e09bd1a2d61a62892b4b08b0602" name="a87d98e09bd1a2d61a62892b4b08b0602"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87d98e09bd1a2d61a62892b4b08b0602">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classXtsciOptimizer.html">XtsciOptimizer</a> &amp; eonc::XtsciOptimizer::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classXtsciOptimizer.html">XtsciOptimizer</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4928929091c0d1f588e04ac29a8a86b4" name="a4928929091c0d1f588e04ac29a8a86b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4928929091c0d1f588e04ac29a8a86b4">&#9670;&#160;</a></span>run()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eonc::XtsciOptimizer::run </td>
+          <td>(</td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>a_maxIterations</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>a_maxMove</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classeonc_1_1Optimizer.html#a94dd8b89c732857574c03586efa25273">eonc::Optimizer</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="XtsciOptimizer_8cpp_source.html#l00407">407</a> of file <a class="el" href="XtsciOptimizer_8cpp_source.html">XtsciOptimizer.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  407</span>                                                                {</div>
+<div class="line"><span class="lineno">  408</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;degreesOfFreedom() &lt;= 0 || a_maxIterations == 0) {</div>
+<div class="line"><span class="lineno">  409</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">  410</span>  }</div>
+<div class="line"><span class="lineno">  411</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; a_maxIterations; ++i) {</div>
+<div class="line"><span class="lineno">  412</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="#ac8fa0e20cc86e1240da7e50af7ccd249">step</a>(a_maxMove) != 0) {</div>
+<div class="line"><span class="lineno">  413</span>      <span class="keywordflow">return</span> 1;</div>
+<div class="line"><span class="lineno">  414</span>    }</div>
+<div class="line"><span class="lineno">  415</span>  }</div>
+<div class="line"><span class="lineno">  416</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">  417</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac8fa0e20cc86e1240da7e50af7ccd249" name="ac8fa0e20cc86e1240da7e50af7ccd249"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8fa0e20cc86e1240da7e50af7ccd249">&#9670;&#160;</a></span>step()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eonc::XtsciOptimizer::step </td>
+          <td>(</td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>a_maxMove</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classeonc_1_1Optimizer.html#aa66365f3f15e6d4b9829e555cfc9f2b5">eonc::Optimizer</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="XtsciOptimizer_8cpp_source.html#l00356">356</a> of file <a class="el" href="XtsciOptimizer_8cpp_source.html">XtsciOptimizer.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  356</span>                                         {</div>
+<div class="line"><span class="lineno">  357</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;degreesOfFreedom() &lt;= 0) {</div>
+<div class="line"><span class="lineno">  358</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">  359</span>  }</div>
+<div class="line"><span class="lineno">  360</span>  <a class="code hl_function" href="#a4c35607672825155d0cda735ae84e118">ensureSolver</a>(a_maxMove);</div>
+<div class="line"><span class="lineno">  361</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a> == <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  362</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">  363</span>  }</div>
+<div class="line"><span class="lineno">  364</span>  <span class="comment">// Native LBFGS clips by the largest per-atom move, not ||d||_2.</span></div>
+<div class="line"><span class="lineno">  365</span>  xts_solver_set_maxmove(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, 0.0);</div>
+<div class="line"><span class="lineno">  366</span>  xts_solver_set_atom_maxmove(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, std::max(a_maxMove, 0.0));</div>
+<div class="line"><span class="lineno">  367</span> </div>
+<div class="line"><span class="lineno">  368</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.size() == 0) {</div>
+<div class="line"><span class="lineno">  369</span>    <a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a> = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getPositions();</div>
+<div class="line"><span class="lineno">  370</span>  }</div>
+<div class="line"><span class="lineno">  371</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.size() != <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;degreesOfFreedom()) {</div>
+<div class="line"><span class="lineno">  372</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;xtsci objective position dimension mismatch&quot;</span>);</div>
+<div class="line"><span class="lineno">  373</span>  }</div>
+<div class="line"><span class="lineno">  374</span>  <span class="keyword">auto</span> *tensor =</div>
+<div class="line"><span class="lineno">  375</span>      xts_tensor_borrow_cpu_f64(<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.data(), <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a92eeff22e2007615935c6de6fb9983b7">m_x</a>.size()));</div>
+<div class="line"><span class="lineno">  376</span>  <span class="keywordflow">if</span> (tensor == <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  377</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;could not allocate xtsci objective tensor&quot;</span>);</div>
+<div class="line"><span class="lineno">  378</span>  }</div>
+<div class="line"><span class="lineno">  379</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;lbfgs = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.lbfgs;</div>
+<div class="line"><span class="lineno">  380</span>  std::string precon = resolved_precon(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts);</div>
+<div class="line"><span class="lineno">  381</span>  <span class="keyword">const</span> xts_method_t method = method_from_name(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.xtsci.method);</div>
+<div class="line"><span class="lineno">  382</span>  <span class="keywordflow">if</span> (method == XTS_DOGLEG &amp;&amp; !is_host_precon(precon)) {</div>
+<div class="line"><span class="lineno">  383</span>    precon = <span class="stringliteral">&quot;pair&quot;</span>;</div>
+<div class="line"><span class="lineno">  384</span>  }</div>
+<div class="line"><span class="lineno">  385</span>  XtsObjectiveContext context{</div>
+<div class="line"><span class="lineno">  386</span>      <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>.get(),    <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.potential, precon,      lbfgs.precon_A,</div>
+<div class="line"><span class="lineno">  387</span>      lbfgs.precon_mu, lbfgs.precon_rcut,     &amp;<a class="code hl_variable" href="#a5854cdd11934a6f03d601c140b38563f">m_cached_x</a>,</div>
+<div class="line"><span class="lineno">  388</span>  };</div>
+<div class="line"><span class="lineno">  389</span>  xts_report_t report{};</div>
+<div class="line"><span class="lineno">  390</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> want_hess = method == XTS_NEWTON || method == XTS_RFO ||</div>
+<div class="line"><span class="lineno">  391</span>                         method == XTS_DOGLEG || is_host_precon(precon);</div>
+<div class="line"><span class="lineno">  392</span>  xts_status_t status;</div>
+<div class="line"><span class="lineno">  393</span>  <span class="keywordflow">if</span> (want_hess) {</div>
+<div class="line"><span class="lineno">  394</span>    status = xts_solver_step_hess_fg(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, evaluate_gradient, hessian,</div>
+<div class="line"><span class="lineno">  395</span>                                     &amp;context, tensor, &amp;report);</div>
+<div class="line"><span class="lineno">  396</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  397</span>    status = xts_solver_step_fg(<a class="code hl_variable" href="#a8d21e066da8018dce977cd483ebd2399">m_solver</a>, evaluate_gradient, &amp;context, tensor,</div>
+<div class="line"><span class="lineno">  398</span>                                &amp;report);</div>
+<div class="line"><span class="lineno">  399</span>  }</div>
+<div class="line"><span class="lineno">  400</span>  xts_tensor_free(tensor);</div>
+<div class="line"><span class="lineno">  401</span>  <span class="keywordflow">if</span> (status != XTS_SUCCESS) {</div>
+<div class="line"><span class="lineno">  402</span>    <span class="keywordflow">throw</span> std::runtime_error(xts_last_error());</div>
+<div class="line"><span class="lineno">  403</span>  }</div>
+<div class="line"><span class="lineno">  404</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">  405</span>}</div>
+<div class="ttc" id="aclasseonc_1_1XtsciOptimizer_html_a4c35607672825155d0cda735ae84e118"><div class="ttname"><a href="#a4c35607672825155d0cda735ae84e118">eonc::XtsciOptimizer::ensureSolver</a></div><div class="ttdeci">void ensureSolver(double a_maxMove)</div><div class="ttdef"><b>Definition</b> <a href="XtsciOptimizer_8cpp_source.html#l00248">XtsciOptimizer.cpp:248</a></div></div>
+<div class="ttc" id="aclasseonc_1_1XtsciOptimizer_html_a5854cdd11934a6f03d601c140b38563f"><div class="ttname"><a href="#a5854cdd11934a6f03d601c140b38563f">eonc::XtsciOptimizer::m_cached_x</a></div><div class="ttdeci">Eigen::VectorXd m_cached_x</div><div class="ttdef"><b>Definition</b> <a href="XtsciOptimizer_8h_source.html#l00041">XtsciOptimizer.h:41</a></div></div>
+<div class="ttc" id="aclasseonc_1_1XtsciOptimizer_html_a92eeff22e2007615935c6de6fb9983b7"><div class="ttname"><a href="#a92eeff22e2007615935c6de6fb9983b7">eonc::XtsciOptimizer::m_x</a></div><div class="ttdeci">Eigen::VectorXd m_x</div><div class="ttdef"><b>Definition</b> <a href="XtsciOptimizer_8h_source.html#l00044">XtsciOptimizer.h:44</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a5854cdd11934a6f03d601c140b38563f" name="a5854cdd11934a6f03d601c140b38563f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5854cdd11934a6f03d601c140b38563f">&#9670;&#160;</a></span>m_cached_x</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd eonc::XtsciOptimizer::m_cached_x</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XtsciOptimizer_8h_source.html#l00041">41</a> of file <a class="el" href="XtsciOptimizer_8h_source.html">XtsciOptimizer.h</a>.</p>
+
+</div>
+</div>
+<a id="a8d21e066da8018dce977cd483ebd2399" name="a8d21e066da8018dce977cd483ebd2399"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d21e066da8018dce977cd483ebd2399">&#9670;&#160;</a></span>m_solver</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">xts_solver_t* eonc::XtsciOptimizer::m_solver {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XtsciOptimizer_8h_source.html#l00038">38</a> of file <a class="el" href="XtsciOptimizer_8h_source.html">XtsciOptimizer.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   38</span>{<span class="keyword">nullptr</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a92eeff22e2007615935c6de6fb9983b7" name="a92eeff22e2007615935c6de6fb9983b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92eeff22e2007615935c6de6fb9983b7">&#9670;&#160;</a></span>m_x</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd eonc::XtsciOptimizer::m_x</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XtsciOptimizer_8h_source.html#l00044">44</a> of file <a class="el" href="XtsciOptimizer_8h_source.html">XtsciOptimizer.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/<a class="el" href="XtsciOptimizer_8h_source.html">XtsciOptimizer.h</a></li>
+<li>/home/runner/work/eOn/eOn/client/<a class="el" href="XtsciOptimizer_8cpp_source.html">XtsciOptimizer.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="namespaceeonc.html">eonc</a></li><li class="navelem"><a href="classeonc_1_1XtsciOptimizer.html">XtsciOptimizer</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

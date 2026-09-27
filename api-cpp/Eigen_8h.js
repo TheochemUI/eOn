@@ -7,6 +7,7 @@ var Eigen_8h =
     [ "MatrixXd", "Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30", null ],
     [ "RotationMatrix", "Eigen_8h.html#a0ce991ec8b4bfd6bccc9a2ebd756f9c7", null ],
     [ "eonc::from_fortran_layout_vector", "namespaceeonc.html#ada70d43381d96fa3a4f09a6fdfe9ad36", null ],
+    [ "eonc::lattice_rows_to_fortran_box", "namespaceeonc.html#afbde0a233976150fadc6895653dc3cd0", null ],
     [ "matDot", "Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5", null ],
     [ "eOnStorageOrder", "Eigen_8h.html#aca5a7114b82cccf6349468e3d78c3c77", null ]
 ];

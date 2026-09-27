@@ -265,10 +265,10 @@ Public Attributes</h2></td></tr>
 <div class="line">    QUILL_LOG_INFO(m_log, <span class="stringliteral">&quot;iteration {}&quot;</span>, iter);</div>
 <div class="line">  }</div>
 <div class="line">};</div>
-<div class="ttc" id="aclasseonc_1_1Optimizer_html"><div class="ttname"><a href="classeonc_1_1Optimizer.html">eonc::Optimizer</a></div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00062">Optimizer.h:62</a></div></div>
-<div class="ttc" id="astructeonc_1_1log_1_1FileScoped_html"><div class="ttname"><a href="structeonc_1_1log_1_1FileScoped.html">eonc::log::FileScoped</a></div><div class="ttdoc">RAII helper for file-based logging in a class.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00208">EonLogger.h:208</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Optimizer_html"><div class="ttname"><a href="classeonc_1_1Optimizer.html">eonc::Optimizer</a></div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00064">Optimizer.h:64</a></div></div>
+<div class="ttc" id="astructeonc_1_1log_1_1FileScoped_html"><div class="ttname"><a href="structeonc_1_1log_1_1FileScoped.html">eonc::log::FileScoped</a></div><div class="ttdoc">RAII helper for file-based logging in a class.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00207">EonLogger.h:207</a></div></div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00208">208</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00207">207</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a29d0ed39e8f11503859e027d02833f35" name="a29d0ed39e8f11503859e027d02833f35"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a29d0ed39e8f11503859e027d02833f35">&#9670;&#160;</a></span>FileScoped()</h2>
@@ -302,10 +302,10 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00211">211</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  213</span>      : <a class="code hl_variable" href="#a0c4b4a04861ab442087b15ff77b6a853">logger</a>(<a class="code hl_function" href="namespaceeonc_1_1log.html#aff0d15e3bdf5c743643dd8b921bf360d">get_file</a>(name, filename, pattern)) {}</div>
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00210">210</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  212</span>      : <a class="code hl_variable" href="#a0c4b4a04861ab442087b15ff77b6a853">logger</a>(<a class="code hl_function" href="namespaceeonc_1_1log.html#aff0d15e3bdf5c743643dd8b921bf360d">get_file</a>(name, filename, pattern)) {}</div>
 <div class="ttc" id="anamespaceeonc_1_1log_html_aff0d15e3bdf5c743643dd8b921bf360d"><div class="ttname"><a href="namespaceeonc_1_1log.html#aff0d15e3bdf5c743643dd8b921bf360d">eonc::log::get_file</a></div><div class="ttdeci">quill::Logger * get_file(std::string_view name, std::string_view filename, std::string_view pattern=&quot;%(message)&quot;)</div><div class="ttdoc">Get or create a named logger with a file sink.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00111">EonLogger.h:111</a></div></div>
-<div class="ttc" id="astructeonc_1_1log_1_1FileScoped_html_a0c4b4a04861ab442087b15ff77b6a853"><div class="ttname"><a href="#a0c4b4a04861ab442087b15ff77b6a853">eonc::log::FileScoped::logger</a></div><div class="ttdeci">quill::Logger * logger</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00209">EonLogger.h:209</a></div></div>
+<div class="ttc" id="astructeonc_1_1log_1_1FileScoped_html_a0c4b4a04861ab442087b15ff77b6a853"><div class="ttname"><a href="#a0c4b4a04861ab442087b15ff77b6a853">eonc::log::FileScoped::logger</a></div><div class="ttdeci">quill::Logger * logger</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00208">EonLogger.h:208</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -333,8 +333,8 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00215">215</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  215</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a0c4b4a04861ab442087b15ff77b6a853">logger</a>; }</div>
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00214">214</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  214</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a0c4b4a04861ab442087b15ff77b6a853">logger</a>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -361,8 +361,8 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00217">217</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  217</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a0c4b4a04861ab442087b15ff77b6a853">logger</a>; }</div>
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00216">216</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  216</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a0c4b4a04861ab442087b15ff77b6a853">logger</a>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -389,11 +389,11 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00218">218</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  218</span>                                               {</div>
-<div class="line"><span class="lineno">  219</span>    <a class="code hl_variable" href="#a0c4b4a04861ab442087b15ff77b6a853">logger</a> = l;</div>
-<div class="line"><span class="lineno">  220</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">  221</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00217">217</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  217</span>                                               {</div>
+<div class="line"><span class="lineno">  218</span>    <a class="code hl_variable" href="#a0c4b4a04861ab442087b15ff77b6a853">logger</a> = l;</div>
+<div class="line"><span class="lineno">  219</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">  220</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -420,8 +420,8 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00222">222</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  222</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a0c4b4a04861ab442087b15ff77b6a853">logger</a>; }</div>
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00221">221</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  221</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a0c4b4a04861ab442087b15ff77b6a853">logger</a>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -438,8 +438,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00209">209</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  209</span>{<span class="keyword">nullptr</span>};</div>
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00208">208</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  208</span>{<span class="keyword">nullptr</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>

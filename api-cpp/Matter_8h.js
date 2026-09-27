@@ -1,7 +1,6 @@
 var Matter_8h =
 [
     [ "eonc::Matter", "classeonc_1_1Matter.html", "classeonc_1_1Matter" ],
-    [ "Matter", "classMatter.html", "classMatter" ],
     [ "eonc::PbcConvention", "namespaceeonc.html#a80ab802e9396a8f80486e4ee8a309a8f", [
       [ "eonc::PbcConvention::Legacy", "namespaceeonc.html#a80ab802e9396a8f80486e4ee8a309a8fa0cc0a0507cf3d31e5089f420a4cf8b4b", null ],
       [ "eonc::PbcConvention::MinimumImage", "namespaceeonc.html#a80ab802e9396a8f80486e4ee8a309a8faeade0e772b3c124d07c314e12a036f12", null ]

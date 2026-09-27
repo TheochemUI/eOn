@@ -1,7 +1,8 @@
 var searchData=
 [
-  ['file_5ffn_0',['file_fn',['../classeonc_1_1LammpsLoader.html#ae40b9d0b68d0f2f9cec0e292fcc0b58f',1,'eonc::LammpsLoader']]],
-  ['fixexternalfnptr_1',['FixExternalFnPtr',['../library_8h.html#a38f369494b0be77168b8d52184c30fcb',1,'library.h']]],
-  ['force_5ffn_2',['force_fn',['../classeonc_1_1MetatomicLoader.html#af6b05d350aa6d7cc6d289d5e8b177442',1,'eonc::MetatomicLoader::force_fn'],['../classMetatomicEngineLoader.html#a82ceec26d2837613c27f366f59ec13c5',1,'MetatomicEngineLoader::force_fn'],['../classXTBEngineLoader.html#ae0bdc20d1c35a89e58c367e07ece2e45',1,'XTBEngineLoader::force_fn']]],
-  ['forcecallback_3',['ForceCallback',['../namespaceeonc.html#ab88f72c22b1653b9d6d3068512d0aa6f',1,'eonc::ForceCallback'],['../ServeRpcServer_8h.html#ab88f72c22b1653b9d6d3068512d0aa6f',1,'ForceCallback:&#160;ServeRpcServer.h']]]
+  ['eigenmodestrategy_0',['EigenmodeStrategy',['../namespaceeonc.html#a2ccaf2c1835c240d5fff93174bd0a416',1,'eonc']]],
+  ['eonmtaconfig_1',['EonMtaConfig',['../Metatomic_2metatomic__c__abi_8h.html#a01d91317426276b3c54b25ff57201c8d',1,'metatomic_c_abi.h']]],
+  ['eonmtapot_2',['EonMtaPot',['../Metatomic_2metatomic__c__abi_8h.html#a15ff1ef5c3013cf3bc6f7e3f495d1ab7',1,'metatomic_c_abi.h']]],
+  ['expr_5foptions_5ft_3',['expr_options_t',['../classeonc_1_1Parameters.html#ac74151e89f4dc33700b7756341e1d42a',1,'eonc::Parameters']]],
+  ['extract_5fvar_5ffn_4',['extract_var_fn',['../classeonc_1_1ILammpsLoader.html#a3955061d6a1785626df22405088c9add',1,'eonc::ILammpsLoader']]]
 ];

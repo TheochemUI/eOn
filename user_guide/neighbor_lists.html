@@ -139,6 +139,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="communicator.html">Communicator</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="debug.html">Debug</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="paths.html">Paths</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="stdpar.html">nvc++ stdpar (NEB image forces)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="kdb.html">Kinetic database</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_integration.html">rgpot integration (three roles)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_pot.html">RgpotPot (direct in-process rgpot)</a></li>
@@ -150,6 +151,10 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/testing.html">Tests</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/parallel-potentials.html">Parallel force evaluation</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/library-api.html">Library API</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/in-process.html">In-process jobs (no file IPC)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/abi-surface.html">Public C++ surface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/rgpot-migration.html">rgpot kernel inventory</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/docbuild.html">Working with the documentation</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn.html">Subversion</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn-migration.html">Migrating from SVN</a></li>
@@ -168,49 +173,54 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.geometry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.pbc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.concorpus.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.concorpus</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.params_ssot.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.params_ssot</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.structure.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.structure</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.params_ssot.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.params_ssot</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.process_id.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.structure.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.structure</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.process_id.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.3.0/index.html">[v3.3.0] - 2026-09-15</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.3.0/release-notes.html">eOn 3.3.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.2.1/index.html">[v3.2.1] - 2026-09-13</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v3.2.1/release-notes.html">eOn 3.2.1</a></li>
 </ul>
@@ -445,18 +455,23 @@ owns that step. New pair finding goes through vesin.</p>
 </section>
 <section id="python">
 <h2>Python<a class="headerlink" href="#python" title="Link to this heading">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">eon.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">neighbor_list</span><span class="p">,</span> <span class="n">neighbor_list_linkcell</span><span class="p">,</span> <span class="n">pbc</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">eon.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">neighbor_list</span><span class="p">,</span> <span class="n">neighbor_list_linkcell</span><span class="p">,</span> <span class="n">neighbor_list_pairs</span><span class="p">,</span> <span class="n">pbc</span>
 </span><span data-line="2"><span class="n">nl</span> <span class="o">=</span> <span class="n">neighbor_list</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">4.0</span><span class="p">)</span>
+</span><span data-line="3"><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">S</span> <span class="o">=</span> <span class="n">neighbor_list_pairs</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">4.0</span><span class="p">)</span>
 </span></pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">brute=True</span></code> exists for API compatibility. The production algorithm is
-always vesin.</p>
+always vesin. <code class="docutils literal notranslate"><span class="pre">neighbor_list</span></code> unique-indexes atoms (historical eOn
+adjacency). <code class="docutils literal notranslate"><span class="pre">neighbor_list_pairs</span></code> keeps every atom-image row
+(<code class="docutils literal notranslate"><span class="pre">i</span></code>, <code class="docutils literal notranslate"><span class="pre">j</span></code>, cell shift <code class="docutils literal notranslate"><span class="pre">S</span></code>), the vesin/tonari pair contract.
+Displacement is <code class="docutils literal notranslate"><span class="pre">r[j]</span> <span class="pre">-</span> <span class="pre">r[i]</span> <span class="pre">+</span> <span class="pre">S</span> <span class="pre">&#64;</span> <span class="pre">box</span></code>.</p>
 <section id="minimage">
 <h3>minimage<a class="headerlink" href="#minimage" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code> applies the minimum-image wrap. When
 <a class="reference external" href="https://github.com/HaoZeke/minimage">minimage</a> is installed it uses
 <code class="docutils literal notranslate"><span class="pre">minimage.Cell.from_vesin</span></code> (the same wrap <a class="reference external" href="https://github.com/HaoZeke/linkcell">linkcell</a>
-uses). Without that extra the numpy path (<code class="docutils literal notranslate"><span class="pre">pbc_eon_legacy</span></code>) runs.</p>
+uses) and <code class="docutils literal notranslate"><span class="pre">Cell.wrap_many</span></code> for packed <code class="docutils literal notranslate"><span class="pre">(N,</span> <span class="pre">3)</span></code> rows. Without that extra
+the numpy path (<code class="docutils literal notranslate"><span class="pre">pbc_eon_legacy</span></code>) runs.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">eon.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">pbc</span>
 </span><span data-line="2"><span class="n">dr</span> <span class="o">=</span> <span class="n">pbc</span><span class="p">(</span><span class="n">r_j</span> <span class="o">-</span> <span class="n">r_i</span><span class="p">,</span> <span class="n">box</span><span class="p">)</span>
 </span></pre></div>
@@ -468,7 +483,7 @@ uses). Without that extra the numpy path (<code class="docutils literal notransl
 <code class="docutils literal notranslate"><span class="pre">linkcell.knearest</span></code> (which itself uses minimage) and compares pair
 sets to vesin. Production <code class="docutils literal notranslate"><span class="pre">neighbor_list</span></code> does not call it.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">eon.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">neighbor_list_linkcell</span>
-</span><span data-line="2"><span class="n">pairs</span> <span class="o">=</span> <span class="n">neighbor_list_linkcell</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="n">box</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">4.0</span><span class="p">)</span>
+</span><span data-line="2"><span class="n">pairs</span> <span class="o">=</span> <span class="n">neighbor_list_linkcell</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">4.0</span><span class="p">)</span>
 </span></pre></div>
 </div>
 <p>Install extras: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">minimage</span> <span class="pre">linkcell</span></code>. Tests skip when those
@@ -696,7 +711,7 @@ neighbour-table cell convention are in
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=eb155f5e"></script>
+      <script src="../_static/documentation_options.js?v=b5dcbc37"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

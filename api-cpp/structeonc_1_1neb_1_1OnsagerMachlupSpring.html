@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('structeonc_1_1
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a54a4166719db13f004669057c4d071f7" id="r_a54a4166719db13f004669057c4d071f7"><td class="memItemLeft"><a class="el" href="structeonc_1_1neb_1_1SpringResult.html">SpringResult</a>&#160;</td><td class="memItemRight"><a class="el" href="#a54a4166719db13f004669057c4d071f7">compute</a> (long i, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;tangent, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;posNext, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;posPrev, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;pos, const std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &amp;image) const</td></tr>
+<tr class="memitem:a54a4166719db13f004669057c4d071f7" id="r_a54a4166719db13f004669057c4d071f7"><td class="memItemLeft"><a class="el" href="structeonc_1_1neb_1_1SpringResult.html">SpringResult</a>&#160;</td><td class="memItemRight"><a class="el" href="#a54a4166719db13f004669057c4d071f7">compute</a> (long i, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;tangent, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;posNext, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;posPrev, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;pos, const std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &amp;image) const</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -291,24 +291,24 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>image</em></span>&#160;) const</td>
+          <td class="paramtype">const std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>image</em></span>&#160;) const</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NEBSpringForce_8cpp_source.html#l00046">46</a> of file <a class="el" href="NEBSpringForce_8cpp_source.html">NEBSpringForce.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   49</span>                                                                        {</div>
-<div class="line"><span class="lineno">   50</span>  <span class="comment">// Mandelli Eq. 13: k * ( R(i+1) + R(i-1) - 2R(i) + L(i+1) - L(i) )</span></div>
-<div class="line"><span class="lineno">   51</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> diff =</div>
-<div class="line"><span class="lineno">   52</span>      image-&gt;pbc(posNext + posPrev - 2.0 * pos + <a class="code hl_variable" href="#acf35d44b9d0458a3d15543045505acbd">L_vecs</a>[i + 1] - <a class="code hl_variable" href="#acf35d44b9d0458a3d15543045505acbd">L_vecs</a>[i]);</div>
-<div class="line"><span class="lineno">   53</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> f_om_vec = <a class="code hl_variable" href="#acf3e3732760c0e39e4e19488eee15660">base_k</a> * diff;</div>
-<div class="line"><span class="lineno">   54</span> </div>
-<div class="line"><span class="lineno">   55</span>  <span class="comment">// Mandelli Eq. 15: Project onto tangent</span></div>
-<div class="line"><span class="lineno">   56</span>  SpringResult result;</div>
-<div class="line"><span class="lineno">   57</span>  result.forceSpringPar = <a class="code hl_function" href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a>(f_om_vec, tangent) * tangent;</div>
-<div class="line"><span class="lineno">   58</span>  result.forceSpring = AtomMatrix::Zero(tangent.rows(), tangent.cols());</div>
-<div class="line"><span class="lineno">   59</span>  <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">   60</span>}</div>
+<p class="definition">Definition at line <a class="el" href="NEBSpringForce_8cpp_source.html#l00052">52</a> of file <a class="el" href="NEBSpringForce_8cpp_source.html">NEBSpringForce.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   55</span>                                                                        {</div>
+<div class="line"><span class="lineno">   56</span>  <span class="comment">// Mandelli Eq. 13: k * ( R(i+1) + R(i-1) - 2R(i) + L(i+1) - L(i) )</span></div>
+<div class="line"><span class="lineno">   57</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> diff =</div>
+<div class="line"><span class="lineno">   58</span>      image-&gt;pbc(posNext + posPrev - 2.0 * pos + <a class="code hl_variable" href="#acf35d44b9d0458a3d15543045505acbd">L_vecs</a>[i + 1] - <a class="code hl_variable" href="#acf35d44b9d0458a3d15543045505acbd">L_vecs</a>[i]);</div>
+<div class="line"><span class="lineno">   59</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> f_om_vec = <a class="code hl_variable" href="#acf3e3732760c0e39e4e19488eee15660">base_k</a> * diff;</div>
+<div class="line"><span class="lineno">   60</span> </div>
+<div class="line"><span class="lineno">   61</span>  <span class="comment">// Mandelli Eq. 15: Project onto tangent</span></div>
+<div class="line"><span class="lineno">   62</span>  SpringResult result;</div>
+<div class="line"><span class="lineno">   63</span>  result.forceSpringPar = <a class="code hl_function" href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a>(f_om_vec, tangent) * tangent;</div>
+<div class="line"><span class="lineno">   64</span>  result.forceSpring = AtomMatrix::Zero(tangent.rows(), tangent.cols());</div>
+<div class="line"><span class="lineno">   65</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">   66</span>}</div>
 <div class="ttc" id="aEigen_8h_html_a427ffeef0bf8105f9563078d30c121e5"><div class="ttname"><a href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a></div><div class="ttdeci">double matDot(const AtomMatrix &amp;a, const AtomMatrix &amp;b)</div><div class="ttdoc">SIMD-optimized dot product for contiguous Eigen matrices.</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00050">Eigen.h:50</a></div></div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
 <div class="ttc" id="astructeonc_1_1neb_1_1OnsagerMachlupSpring_html_acf35d44b9d0458a3d15543045505acbd"><div class="ttname"><a href="#acf35d44b9d0458a3d15543045505acbd">eonc::neb::OnsagerMachlupSpring::L_vecs</a></div><div class="ttdeci">std::vector&lt; AtomMatrix &gt; L_vecs</div><div class="ttdef"><b>Definition</b> <a href="NEBSpringForce_8h_source.html#l00050">NEBSpringForce.h:50</a></div></div>

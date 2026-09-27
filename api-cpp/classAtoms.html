@@ -258,7 +258,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a3830c2699ced729d323210992563ad52" id="r_a3830c2699ced729d323210992563ad52"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a3830c2699ced729d323210992563ad52">Atoms</a> (const <a class="el" href="classVec.html">Vec</a> *p, int n, <a class="el" href="classSuperCell.html">SuperCell</a> *s)</td></tr>
 <tr class="memdesc:a3830c2699ced729d323210992563ad52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct <a class="el" href="classAtoms.html" title="The main list of atoms class.">Atoms</a> from array of positions, number of elements and a <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a>.  <br /></td></tr>
 <tr class="memitem:acfd53a3f553d84b522e1d018499af19c" id="r_acfd53a3f553d84b522e1d018499af19c"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="#acfd53a3f553d84b522e1d018499af19c">~Atoms</a> ()</td></tr>
-<tr class="memdesc:acfd53a3f553d84b522e1d018499af19c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the atoms. Does not delete <a class="el" href="classPotential.html">Potential</a> or <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a>.  <br /></td></tr>
+<tr class="memdesc:acfd53a3f553d84b522e1d018499af19c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the atoms. Does not delete Potential or <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a>.  <br /></td></tr>
 <tr class="memitem:a43bedf6781873746d21d3f4e1b88defa" id="r_a43bedf6781873746d21d3f4e1b88defa"><td class="memItemLeft">virtual <a class="el" href="classSuperCell.html">SuperCell</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a43bedf6781873746d21d3f4e1b88defa">GetSuperCell</a> () const</td></tr>
 <tr class="memdesc:a43bedf6781873746d21d3f4e1b88defa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a pointer to the <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a> object.  <br /></td></tr>
 <tr class="memitem:a55fea530f92978447476cc768e33c672" id="r_a55fea530f92978447476cc768e33c672"><td class="memItemLeft">virtual const <a class="el" href="classVec.html">Vec</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a55fea530f92978447476cc768e33c672">GetUnitCell</a> () const</td></tr>
@@ -266,9 +266,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8af24754359632f68d66fd64d0d088fb" id="r_a8af24754359632f68d66fd64d0d088fb"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a8af24754359632f68d66fd64d0d088fb">SetUnitCell</a> (const <a class="el" href="classVec.html">Vec</a> newbasis[3], bool fix)</td></tr>
 <tr class="memdesc:a8af24754359632f68d66fd64d0d088fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a new unit cell, rescaling the positions unless fix is true.  <br /></td></tr>
 <tr class="memitem:ad780d71a08da3198ddc635a1f90462ea" id="r_ad780d71a08da3198ddc635a1f90462ea"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ad780d71a08da3198ddc635a1f90462ea">SetCalculator</a> (<a class="el" href="classAsapPotential.html">AsapPotential</a> *potential)</td></tr>
-<tr class="memdesc:ad780d71a08da3198ddc635a1f90462ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a <a class="el" href="classPotential.html">Potential</a>. An eventual old <a class="el" href="classPotential.html">Potential</a> is not deallocated.  <br /></td></tr>
+<tr class="memdesc:ad780d71a08da3198ddc635a1f90462ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a Potential. An eventual old Potential is not deallocated.  <br /></td></tr>
 <tr class="memitem:a4fbac9c95a2f2864a8a2cca7d8395f5a" id="r_a4fbac9c95a2f2864a8a2cca7d8395f5a"><td class="memItemLeft"><a class="el" href="classAsapPotential.html">AsapPotential</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a4fbac9c95a2f2864a8a2cca7d8395f5a">GetPotential</a> () const</td></tr>
-<tr class="memdesc:a4fbac9c95a2f2864a8a2cca7d8395f5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the <a class="el" href="classPotential.html">Potential</a>.  <br /></td></tr>
+<tr class="memdesc:a4fbac9c95a2f2864a8a2cca7d8395f5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the Potential.  <br /></td></tr>
 <tr class="memitem:ac1896c340b2fc97e482929a3b19cf89b" id="r_ac1896c340b2fc97e482929a3b19cf89b"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ac1896c340b2fc97e482929a3b19cf89b">MarkChanged</a> ()</td></tr>
 <tr class="memdesc:ac1896c340b2fc97e482929a3b19cf89b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the change pointer.  <br /></td></tr>
 <tr class="memitem:a2773d22154be5032f0b07fa176ebb898" id="r_a2773d22154be5032f0b07fa176ebb898"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a2773d22154be5032f0b07fa176ebb898">GetChangeCounter</a> () const</td></tr>
@@ -337,7 +337,7 @@ Protected Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The main list of atoms class. </p>
-<p>The <a class="el" href="classAtoms.html" title="The main list of atoms class.">Atoms</a> class stores the coordinates and atomic numbers of the atoms. Coordinates are stored as Cartesian coordinates. <a class="el" href="classAtoms.html" title="The main list of atoms class.">Atoms</a> has a reference to a <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a> object containing the unitcell of the simulation, and a pointer to a <a class="el" href="classPotential.html">Potential</a> object responsible of force calculations. Other information about atoms (such as velocities and forces) are not stored in the C++ code but live in Python. </p>
+<p>The <a class="el" href="classAtoms.html" title="The main list of atoms class.">Atoms</a> class stores the coordinates and atomic numbers of the atoms. Coordinates are stored as Cartesian coordinates. <a class="el" href="classAtoms.html" title="The main list of atoms class.">Atoms</a> has a reference to a <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a> object containing the unitcell of the simulation, and a pointer to a Potential object responsible of force calculations. Other information about atoms (such as velocities and forces) are not stored in the C++ code but live in Python. </p>
 
 <p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00036">36</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
@@ -392,7 +392,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Deletes the atoms. Does not delete <a class="el" href="classPotential.html">Potential</a> or <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a>. </p>
+<p>Deletes the atoms. Does not delete Potential or <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a>. </p>
 
 <p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00043">43</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">   43</span>{};</div>
@@ -730,7 +730,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Get a pointer to the <a class="el" href="classPotential.html">Potential</a>. </p>
+<p>Get a pointer to the Potential. </p>
 
 <p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00058">58</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">   58</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#ae5251c7774ea40f06a117cb2deccb482">potential</a>; }</div>
@@ -993,7 +993,7 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Apply periodic boundary conditions to the positions. </p>
-<p>Does NOT call MarkChanged ! Normalize the positions, i.e. translate the atoms back into the supercell if there are periodic boundary conditions. This does not count as changing the atoms, so the change counter is NOT updated. The actual work is done by the <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a>. This method should be called by the <a class="el" href="classPotential.html">Potential</a>, which may (should?) delegate it to the <a class="el" href="classNeighborList.html" title="&quot;Half&quot; neighbor lists for atoms.">NeighborList</a>. </p>
+<p>Does NOT call MarkChanged ! Normalize the positions, i.e. translate the atoms back into the supercell if there are periodic boundary conditions. This does not count as changing the atoms, so the change counter is NOT updated. The actual work is done by the <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a>. This method should be called by the Potential, which may (should?) delegate it to the <a class="el" href="classNeighborList.html" title="&quot;Half&quot; neighbor lists for atoms.">NeighborList</a>. </p>
 
 </div>
 </div>
@@ -1078,7 +1078,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Set a <a class="el" href="classPotential.html">Potential</a>. An eventual old <a class="el" href="classPotential.html">Potential</a> is not deallocated. </p>
+<p>Set a Potential. An eventual old Potential is not deallocated. </p>
 
 </div>
 </div>

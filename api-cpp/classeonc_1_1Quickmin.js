@@ -2,8 +2,8 @@ var classeonc_1_1Quickmin =
 [
     [ "Quickmin", "classeonc_1_1Quickmin.html#a190e46af2be89154a4b8ac6c7a89afb4", null ],
     [ "~Quickmin", "classeonc_1_1Quickmin.html#ab1aa8787f86984656ae1a96a98d352c7", null ],
-    [ "run", "classeonc_1_1Quickmin.html#ac0effad0edd9e5aa32f6f58fe90d1e6e", null ],
-    [ "step", "classeonc_1_1Quickmin.html#a58ed8590551bf5566e40422e823fc0fe", null ],
+    [ "run", "classeonc_1_1Quickmin.html#a42e74a22eb7bc1c0454bb394247de999", null ],
+    [ "step", "classeonc_1_1Quickmin.html#ac942fb24ad8b7d97641dfbc63a7ab670", null ],
     [ "m_dt", "classeonc_1_1Quickmin.html#a20c9239afea0d5ef032e370f875573fc", null ],
     [ "m_dt_max", "classeonc_1_1Quickmin.html#adc66c02fbf4d5a91987e4ab67bb7cf76", null ],
     [ "m_iteration", "classeonc_1_1Quickmin.html#aa26f05207cf4d21b5fb13c9915f61311", null ],

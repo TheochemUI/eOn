@@ -243,6 +243,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('Job_8cpp.html'
 <code>#include &quot;<a class="el" href="FiniteDifferenceJob_8h_source.html">eon/FiniteDifferenceJob.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="GlobalOptimizationJob_8h_source.html">eon/GlobalOptimizationJob.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="HessianJob_8h_source.html">eon/HessianJob.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="JobRegistry_8h_source.html">eon/JobRegistry.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="MinimizationJob_8h_source.html">eon/MinimizationJob.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="MonteCarloJob_8h_source.html">eon/MonteCarloJob.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="NudgedElasticBandJob_8h_source.html">eon/NudgedElasticBandJob.h</a>&quot;</code><br />
@@ -258,6 +259,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('Job_8cpp.html'
 <code>#include &quot;<a class="el" href="StructureComparisonJob_8h_source.html">eon/StructureComparisonJob.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="TADJob_8h_source.html">eon/TADJob.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="TestJob_8h_source.html">eon/TestJob.h</a>&quot;</code><br />
+<code>#include &lt;memory&gt;</code><br />
 </div>
 <p><a href="Job_8cpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -265,12 +267,57 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('Job_8cpp.html'
 Namespaces</h2></td></tr>
 <tr class="memitem:eonc" id="r_eonc"><td class="memItemLeft">namespace &#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html">eonc</a></td></tr>
 <tr class="memdesc:namespaceeonc"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII resource manager for the ARTn C library with global synchronization. <br /></td></tr>
-<tr class="memitem:eonc_3A_3Ahelpers" id="r_eonc_3A_3Ahelpers"><td class="memItemLeft">namespace &#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1helpers.html">eonc::helpers</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-define-members" class="groupheader"><a id="define-members" name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:adc511ff33c638bf6a73527f7d33cb02b" id="r_adc511ff33c638bf6a73527f7d33cb02b"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#adc511ff33c638bf6a73527f7d33cb02b">EON_REG_JOB</a>(TYPE,  CLS)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a9c381333c273bde2e2ed47adefca7db3" id="r_a9c381333c273bde2e2ed47adefca7db3"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classJob.html">Job</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1helpers.html#a9c381333c273bde2e2ed47adefca7db3">eonc::helpers::makeJob</a> (std::unique_ptr&lt; <a class="el" href="classParameters.html">Parameters</a> &gt; params)</td></tr>
+<tr class="memitem:a639209af6a7105d7eaf94f0dbee199c4" id="r_a639209af6a7105d7eaf94f0dbee199c4"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a639209af6a7105d7eaf94f0dbee199c4">eonc::forceJobRegistration</a> ()</td></tr>
 </table>
+<a name="doc-define-members" id="doc-define-members"></a><h2 id="header-doc-define-members" class="groupheader">Macro Definition Documentation</h2>
+<a id="adc511ff33c638bf6a73527f7d33cb02b" name="adc511ff33c638bf6a73527f7d33cb02b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc511ff33c638bf6a73527f7d33cb02b">&#9670;&#160;</a></span>EON_REG_JOB</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EON_REG_JOB</td>
+          <td>(</td>
+          <td class="paramtype"></td>          <td class="paramname"><span class="paramname"><em>TYPE</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"></td>          <td class="paramname"><span class="paramname"><em>CLS</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">const</span> <span class="keywordtype">bool</span> eon_reg_##CLS = [] {                                              \</div>
+<div class="line">  eonc::registerJob(                                                         \</div>
+<div class="line">      eonc::JobType::TYPE,                                                   \</div>
+<div class="line">      [](std::unique_ptr&lt;eonc::Parameters&gt; p, <a class="code hl_class" href="classeonc_1_1Runtime.html">eonc::Runtime</a> &amp;rt) {           \</div>
+<div class="line">        <span class="keywordflow">return</span> std::make_unique&lt;eonc::CLS&gt;(std::move(p), rt);                \</div>
+<div class="line">      });                                                                    \</div>
+<div class="line">  <span class="keywordflow">return</span> <span class="keyword">true</span>;                                                               \</div>
+<div class="line">}()</div>
+<div class="ttc" id="aclasseonc_1_1Runtime_html"><div class="ttname"><a href="classeonc_1_1Runtime.html">eonc::Runtime</a></div><div class="ttdoc">Move-only composition root for process resources (dlopen loaders and the potential registry).</div><div class="ttdef"><b>Definition</b> <a href="Runtime_8h_source.html#l00027">Runtime.h:27</a></div></div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="Job_8cpp_source.html#l00049">49</a> of file <a class="el" href="Job_8cpp_source.html">Job.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   49</span><span class="preprocessor">#define EON_REG_JOB(TYPE, CLS)                                                 \</span></div>
+<div class="line"><span class="lineno">   50</span><span class="preprocessor">  const bool eon_reg_##CLS = [] {                                              \</span></div>
+<div class="line"><span class="lineno">   51</span><span class="preprocessor">    eonc::registerJob(                                                         \</span></div>
+<div class="line"><span class="lineno">   52</span><span class="preprocessor">        eonc::JobType::TYPE,                                                   \</span></div>
+<div class="line"><span class="lineno">   53</span><span class="preprocessor">        [](std::unique_ptr&lt;eonc::Parameters&gt; p, eonc::Runtime &amp;rt) {           \</span></div>
+<div class="line"><span class="lineno">   54</span><span class="preprocessor">          return std::make_unique&lt;eonc::CLS&gt;(std::move(p), rt);                \</span></div>
+<div class="line"><span class="lineno">   55</span><span class="preprocessor">        });                                                                    \</span></div>
+<div class="line"><span class="lineno">   56</span><span class="preprocessor">    return true;                                                               \</span></div>
+<div class="line"><span class="lineno">   57</span><span class="preprocessor">  }()</span></div>
+</div><!-- fragment -->
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

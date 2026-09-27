@@ -1,6 +1,6 @@
 var classRgpotPot =
 [
-    [ "RgpotPot", "classRgpotPot.html#a553a959e72f1d7f3c4bad0c8978ca0d1", null ],
+    [ "RgpotPot", "classRgpotPot.html#a0e61ce6dfd22a75d94fdfaf26ce0017c", null ],
     [ "~RgpotPot", "classRgpotPot.html#ab47130e2a40ebf25f43da66a190a8ae9", null ],
     [ "RgpotPot", "classRgpotPot.html#a05f803143dd2bba1c0c8149061f88151", null ],
     [ "backend", "classRgpotPot.html#a983a98a576d9890e34930d3200927e04", null ],

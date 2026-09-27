@@ -238,8 +238,12 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('RgpotAdapter_8
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;stdexcept&gt;</code><br />
+<code>#include &lt;type_traits&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
+<code>#include &quot;<a class="el" href="Parameters_8h_source.html">eon/Parameters.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Potential_8h_source.html">eon/Potential.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="PluginLoader_8h_source.html">eon/potentials/PluginLoader.h</a>&quot;</code><br />
 <code>#include &quot;rgpot/ForceStructs.hpp&quot;</code><br />
 <code>#include &quot;rgpot/pot_caps.hpp&quot;</code><br />
 </div>
@@ -248,20 +252,20 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('RgpotAdapter_8
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:RgpotAdapter_3C_20RPot_20_3E" id="r_RgpotAdapter_3C_20RPot_20_3E"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classRgpotAdapter.html">RgpotAdapter&lt; RPot &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wraps one rgpot kernel as an eOn <a class="el" href="classPotential.html">Potential</a>.  <a href="classRgpotAdapter.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wraps one rgpot kernel as an eOn Potential.  <a href="classRgpotAdapter.html#details">More...</a><br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:aa77f33eb3ce403c8767ed4e5bfc27169" id="r_aa77f33eb3ce403c8767ed4e5bfc27169"><td class="memTemplParams" colspan="2">template&lt;class RPot&gt; </td></tr>
-<tr class="memitem:aa77f33eb3ce403c8767ed4e5bfc27169 template"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#aa77f33eb3ce403c8767ed4e5bfc27169">makeRgpotDefault</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> ptype, const <a class="el" href="classParameters.html">Parameters</a> &amp;params)</td></tr>
-<tr class="memdesc:aa77f33eb3ce403c8767ed4e5bfc27169"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factory arm helper for kernels whose parameters are fixed tabulated data with no eOn-side configuration surface.  <br /></td></tr>
-<tr class="memitem:a14a3d64521fb59b7e566f2a793a420e1" id="r_a14a3d64521fb59b7e566f2a793a420e1"><td class="memTemplParams" colspan="2">template&lt;class RPot, class Cfg&gt; </td></tr>
-<tr class="memitem:a14a3d64521fb59b7e566f2a793a420e1 template"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a14a3d64521fb59b7e566f2a793a420e1">makeRgpot</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> ptype, const <a class="el" href="classParameters.html">Parameters</a> &amp;params, const Cfg &amp;cfg)</td></tr>
-<tr class="memdesc:a14a3d64521fb59b7e566f2a793a420e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factory arm helper: construct the kernel from its config and wrap it.  <br /></td></tr>
+<tr class="memitem:a474fb1e55b338ad2367151acab7e1ceb" id="r_a474fb1e55b338ad2367151acab7e1ceb"><td class="memTemplParams" colspan="2">template&lt;class RPot&gt; </td></tr>
+<tr class="memitem:a474fb1e55b338ad2367151acab7e1ceb template"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a474fb1e55b338ad2367151acab7e1ceb">makeRgpotDefault</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">eonc::PotType</a> ptype, const <a class="el" href="classeonc_1_1Parameters.html">eonc::Parameters</a> &amp;params)</td></tr>
+<tr class="memdesc:a474fb1e55b338ad2367151acab7e1ceb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factory arm helper for kernels whose parameters are fixed tabulated data with no eOn-side configuration surface.  <br /></td></tr>
+<tr class="memitem:add1615bda9f00434e010abd15774e832" id="r_add1615bda9f00434e010abd15774e832"><td class="memTemplParams" colspan="2">template&lt;class RPot, class Cfg&gt; </td></tr>
+<tr class="memitem:add1615bda9f00434e010abd15774e832 template"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#add1615bda9f00434e010abd15774e832">makeRgpot</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">eonc::PotType</a> ptype, const <a class="el" href="classeonc_1_1Parameters.html">eonc::Parameters</a> &amp;params, const Cfg &amp;cfg)</td></tr>
+<tr class="memdesc:add1615bda9f00434e010abd15774e832"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factory arm helper: construct the kernel from its config and wrap it.  <br /></td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
-<a id="a14a3d64521fb59b7e566f2a793a420e1" name="a14a3d64521fb59b7e566f2a793a420e1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a14a3d64521fb59b7e566f2a793a420e1">&#9670;&#160;</a></span>makeRgpot()</h2>
+<a id="add1615bda9f00434e010abd15774e832" name="add1615bda9f00434e010abd15774e832"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add1615bda9f00434e010abd15774e832">&#9670;&#160;</a></span>makeRgpot()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -269,14 +273,14 @@ Functions</h2></td></tr>
 template&lt;class RPot, class Cfg&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt; makeRgpot </td>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a> &gt; makeRgpot </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a></td>          <td class="paramname"><span class="paramname"><em>ptype</em></span>, </td>
+          <td class="paramtype"><a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">eonc::PotType</a></td>          <td class="paramname"><span class="paramname"><em>ptype</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span>, </td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">eonc::Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -288,15 +292,15 @@ template&lt;class RPot, class Cfg&gt; </div>
 
 <p>Factory arm helper: construct the kernel from its config and wrap it. </p>
 
-<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00124">124</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  125</span>                                                     {</div>
-<div class="line"><span class="lineno">  126</span>  <span class="keywordflow">return</span> std::make_shared&lt;RgpotAdapter&lt;RPot&gt;&gt;(ptype, params, cfg);</div>
-<div class="line"><span class="lineno">  127</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00180">180</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  180</span>                                                                           {</div>
+<div class="line"><span class="lineno">  181</span>  <span class="keywordflow">return</span> std::make_shared&lt;RgpotAdapter&lt;RPot&gt;&gt;(ptype, params, cfg);</div>
+<div class="line"><span class="lineno">  182</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="aa77f33eb3ce403c8767ed4e5bfc27169" name="aa77f33eb3ce403c8767ed4e5bfc27169"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa77f33eb3ce403c8767ed4e5bfc27169">&#9670;&#160;</a></span>makeRgpotDefault()</h2>
+<a id="a474fb1e55b338ad2367151acab7e1ceb" name="a474fb1e55b338ad2367151acab7e1ceb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a474fb1e55b338ad2367151acab7e1ceb">&#9670;&#160;</a></span>makeRgpotDefault()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -304,24 +308,24 @@ template&lt;class RPot, class Cfg&gt; </div>
 template&lt;class RPot&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt; makeRgpotDefault </td>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a> &gt; makeRgpotDefault </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a></td>          <td class="paramname"><span class="paramname"><em>ptype</em></span>, </td>
+          <td class="paramtype"><a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">eonc::PotType</a></td>          <td class="paramname"><span class="paramname"><em>ptype</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span>&#160;)</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">eonc::Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Factory arm helper for kernels whose parameters are fixed tabulated data with no eOn-side configuration surface. </p>
 
-<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00117">117</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  118</span>                                                                      {</div>
-<div class="line"><span class="lineno">  119</span>  <span class="keywordflow">return</span> std::make_shared&lt;RgpotAdapter&lt;RPot&gt;&gt;(ptype, params);</div>
-<div class="line"><span class="lineno">  120</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00173">173</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  173</span>                                                                  {</div>
+<div class="line"><span class="lineno">  174</span>  <span class="keywordflow">return</span> std::make_shared&lt;RgpotAdapter&lt;RPot&gt;&gt;(ptype, params);</div>
+<div class="line"><span class="lineno">  175</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

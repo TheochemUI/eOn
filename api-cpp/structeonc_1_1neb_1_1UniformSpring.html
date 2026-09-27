@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('structeonc_1_1
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5a80789263303f368f5cecc79325a967" id="r_a5a80789263303f368f5cecc79325a967"><td class="memItemLeft"><a class="el" href="structeonc_1_1neb_1_1SpringResult.html">SpringResult</a>&#160;</td><td class="memItemRight"><a class="el" href="#a5a80789263303f368f5cecc79325a967">compute</a> (long i, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;tangent, double distNext, double distPrev, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;posDiffNext, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;posDiffPrev, const std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &amp;image) const</td></tr>
+<tr class="memitem:a5a80789263303f368f5cecc79325a967" id="r_a5a80789263303f368f5cecc79325a967"><td class="memItemLeft"><a class="el" href="structeonc_1_1neb_1_1SpringResult.html">SpringResult</a>&#160;</td><td class="memItemRight"><a class="el" href="#a5a80789263303f368f5cecc79325a967">compute</a> (long i, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;tangent, double distNext, double distPrev, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;posDiffNext, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;posDiffPrev, const std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &amp;image) const</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -295,18 +295,18 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>image</em></span>&#160;) const</td>
+          <td class="paramtype">const std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>image</em></span>&#160;) const</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NEBSpringForce_8cpp_source.html#l00019">19</a> of file <a class="el" href="NEBSpringForce_8cpp_source.html">NEBSpringForce.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   22</span>                                                                 {</div>
-<div class="line"><span class="lineno">   23</span>  SpringResult result;</div>
-<div class="line"><span class="lineno">   24</span>  result.forceSpringPar = <a class="code hl_variable" href="#a727a317587c6c59cd4f967153418d900">ksp</a> * (distNext - distPrev) * tangent;</div>
-<div class="line"><span class="lineno">   25</span>  result.forceSpring = <a class="code hl_variable" href="#a727a317587c6c59cd4f967153418d900">ksp</a> * image-&gt;pbc((posDiffNext) - (posDiffPrev));</div>
-<div class="line"><span class="lineno">   26</span>  <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">   27</span>}</div>
+<p class="definition">Definition at line <a class="el" href="NEBSpringForce_8cpp_source.html#l00021">21</a> of file <a class="el" href="NEBSpringForce_8cpp_source.html">NEBSpringForce.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   24</span>                                                                 {</div>
+<div class="line"><span class="lineno">   25</span>  SpringResult result;</div>
+<div class="line"><span class="lineno">   26</span>  result.forceSpringPar = <a class="code hl_variable" href="#a727a317587c6c59cd4f967153418d900">ksp</a> * (distNext - distPrev) * tangent;</div>
+<div class="line"><span class="lineno">   27</span>  result.forceSpring = <a class="code hl_variable" href="#a727a317587c6c59cd4f967153418d900">ksp</a> * image-&gt;pbc((posDiffNext) - (posDiffPrev));</div>
+<div class="line"><span class="lineno">   28</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">   29</span>}</div>
 <div class="ttc" id="astructeonc_1_1neb_1_1UniformSpring_html_a727a317587c6c59cd4f967153418d900"><div class="ttname"><a href="#a727a317587c6c59cd4f967153418d900">eonc::neb::UniformSpring::ksp</a></div><div class="ttdeci">double ksp</div><div class="ttdef"><b>Definition</b> <a href="NEBSpringForce_8h_source.html#l00031">NEBSpringForce.h:31</a></div></div>
 </div><!-- fragment -->
 </div>

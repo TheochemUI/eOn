@@ -247,13 +247,26 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('ServeRpcServer
 <code>#include &lt;capnp/ez-rpc.h&gt;</code><br />
 <code>#include &lt;kj/debug.h&gt;</code><br />
 <code>#include &lt;mutex&gt;</code><br />
-<code>#include &quot;Potentials.capnp.h&quot;</code><br />
+<code>#include &quot;rgpot/rpc/Potentials.capnp.h&quot;</code><br />
 </div>
 <p><a href="ServeRpcServer_8cpp_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-namespaces" class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:eonc" id="r_eonc"><td class="memItemLeft">namespace &#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html">eonc</a></td></tr>
+<tr class="memdesc:namespaceeonc"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII resource manager for the ARTn C library with global synchronization. <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ae73698d7590f300d12636be26b8e0ea7" id="r_ae73698d7590f300d12636be26b8e0ea7"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#ae73698d7590f300d12636be26b8e0ea7">eonc::startRpcServer</a> (<a class="el" href="namespaceeonc.html#ab88f72c22b1653b9d6d3068512d0aa6f">ForceCallback</a> callback, const std::string &amp;host, uint16_t port)</td></tr>
+<tr class="memdesc:ae73698d7590f300d12636be26b8e0ea7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a blocking Cap'n Proto RPC server using a force callback.  <br /></td></tr>
+<tr class="memitem:abde34b2d6455f233f19867a3e220b56c" id="r_abde34b2d6455f233f19867a3e220b56c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#abde34b2d6455f233f19867a3e220b56c">eonc::startPooledRpcServer</a> (std::vector&lt; <a class="el" href="namespaceeonc.html#ab88f72c22b1653b9d6d3068512d0aa6f">ForceCallback</a> &gt; pool, const std::string &amp;host, uint16_t port)</td></tr>
+<tr class="memdesc:abde34b2d6455f233f19867a3e220b56c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a blocking Cap'n Proto RPC server backed by a pool of force callbacks dispatched round-robin.  <br /></td></tr>
+</table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Cap'n Proto RPC server using flat-array force callbacks. </p>
-<p>This translation unit does NOT include eOn's Potential.h to avoid naming collision with the capnp-generated <span class="tt"><a class="el" href="classPotential.html">Potential</a></span> interface class.</p>
-<p>Uses a <a class="el" href="namespaceeonc.html#ab88f72c22b1653b9d6d3068512d0aa6f" title="Callback type for potential energy/force evaluation.">ForceCallback</a> (std::function taking flat arrays) instead of rgpot::PotentialBase to avoid the <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> type collision between eOn's Eigen-based <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> and rgpot's custom <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>. </p>
+<p>This translation unit does NOT include eOn's Potential.h to avoid naming collision with the capnp-generated <span class="tt">Potential</span> interface class.</p>
+<p>Uses a ForceCallback (std::function taking flat arrays) instead of rgpot::PotentialBase to avoid the <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> type collision between eOn's Eigen-based <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> and rgpot's custom <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>. </p>
 
 <p class="definition">Definition in file <a class="el" href="ServeRpcServer_8cpp_source.html">ServeRpcServer.cpp</a>.</p>
 </div></div><!-- contents -->

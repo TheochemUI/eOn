@@ -1,10 +1,11 @@
 var classExtPot =
 [
-    [ "ExtPot", "classExtPot.html#a2718aa5416c2838035ebdedf85ed366e", null ],
+    [ "ExtPot", "classExtPot.html#a87c38b689fc28412bec753309f8bce66", null ],
     [ "~ExtPot", "classExtPot.html#a2d898d1a81da51526ec97f378ac89464", null ],
     [ "cleanMemory", "classExtPot.html#a3968c3afab345f55071ea7eb3e349891", null ],
     [ "force", "classExtPot.html#af0d92ad67010d7bb75348b00dd0d7a6d", null ],
     [ "isThreadSafe", "classExtPot.html#a70ea3e4ecd4d90fa063d4d15acc6a316", null ],
+    [ "layoutFlags", "classExtPot.html#a07e9a81ce759322f12b66f895f33b544", null ],
     [ "needsPerImageInstance", "classExtPot.html#ac4356ad3ff646bc6129de6a2adcc5718", null ],
     [ "passToSystem", "classExtPot.html#af017f45bc31544e8540c6f0c6bbfcc68", null ],
     [ "prepareExchangeDir", "classExtPot.html#a138944541276a68ec597d956c4c06282", null ],

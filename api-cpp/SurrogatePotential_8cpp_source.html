@@ -241,24 +241,34 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('SurrogatePoten
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">*/</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="SurrogatePotential_8h.html">eon/SurrogatePotential.h</a>&quot;</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>std::tuple&lt;double, AtomMatrix, double&gt;</div>
-<div class="foldopen" id="foldopen00015" data-start="{" data-end="}">
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="classeonc_1_1SurrogatePotential.html#af30a4cbe8b9d73ea261486ddc37805b8">   15</a></span><a class="code hl_function" href="classSurrogatePotential.html#af30a4cbe8b9d73ea261486ddc37805b8">SurrogatePotential::get_ef_var</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos, <span class="keyword">const</span> VectorXi atmnrs,</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>                               <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> box) {</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>  <span class="keywordtype">double</span> energy{std::numeric_limits&lt;double&gt;::infinity()};</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>  <span class="keywordtype">long</span> nAtoms = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(pos.rows());</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forces{MatrixXd::Zero(nAtoms, 3)};</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>  <span class="keywordtype">double</span> var{0};</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>  this-&gt;<a class="code hl_function" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">force</a>(nAtoms, pos.data(), atmnrs.data(), forces.data(), &amp;energy, &amp;var,</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>              box.data());</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>  <span class="keywordflow">return</span> std::make_tuple(energy, forces, var);</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>};</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;span&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc.html">eonc</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>std::tuple&lt;double, AtomMatrix, double&gt;</div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="}">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classeonc_1_1SurrogatePotential.html#a8d6165a948697b81287133036bd95689">   19</a></span><a class="code hl_function" href="classeonc_1_1SurrogatePotential.html#a8d6165a948697b81287133036bd95689">SurrogatePotential::get_ef_var</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos, <span class="keyword">const</span> VectorXi atmnrs,</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>                               <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> box) {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>  <span class="keywordtype">double</span> energy{std::numeric_limits&lt;double&gt;::infinity()};</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>  <span class="keywordtype">long</span> nAtoms = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(pos.rows());</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forces{MatrixXd::Zero(nAtoms, 3)};</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>  <span class="keywordtype">double</span> var{0};</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>  <span class="keyword">const</span> <span class="keyword">auto</span> n = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nAtoms);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>  this-&gt;<a class="code hl_function" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">force</a>(std::span&lt;const double&gt;(pos.data(), n * 3),</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>              std::span&lt;const int&gt;(atmnrs.data(), n),</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>              std::span&lt;double&gt;(forces.data(), n * 3), &amp;energy, &amp;var,</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>              std::span&lt;const double&gt;(box.data(), 9));</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>  <span class="keywordflow">return</span> std::make_tuple(energy, forces, var);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>}</div>
 </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>} <span class="comment">// namespace eonc</span></div>
 <div class="ttc" id="aEigen_8h_html_a5a21583e98df78e5b867b370291714d0"><div class="ttname"><a href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 3, 3, eOnStorageOrder &gt; Matrix3d</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00035">Eigen.h:35</a></div></div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
 <div class="ttc" id="aSurrogatePotential_8h_html"><div class="ttname"><a href="SurrogatePotential_8h.html">SurrogatePotential.h</a></div></div>
-<div class="ttc" id="aclassSurrogatePotential_html_af30a4cbe8b9d73ea261486ddc37805b8"><div class="ttname"><a href="classSurrogatePotential.html#af30a4cbe8b9d73ea261486ddc37805b8">SurrogatePotential::get_ef_var</a></div><div class="ttdeci">std::tuple&lt; double, AtomMatrix, double &gt; get_ef_var(const AtomMatrix pos, const VectorXi atmnrs, const Matrix3d box)</div><div class="ttdef"><b>Definition</b> <a href="#l00015">SurrogatePotential.cpp:15</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Potential_html_a51a8f3110935f320fe1bfca4efa3bbb3"><div class="ttname"><a href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">eonc::Potential::force</a></div><div class="ttdeci">virtual void force(long nAtoms, const double *positions, const int *atomicNrs, double *forces, double *energy, double *variance, const double *box)=0</div></div>
+<div class="ttc" id="aclasseonc_1_1SurrogatePotential_html_a8d6165a948697b81287133036bd95689"><div class="ttname"><a href="classeonc_1_1SurrogatePotential.html#a8d6165a948697b81287133036bd95689">eonc::SurrogatePotential::get_ef_var</a></div><div class="ttdeci">std::tuple&lt; double, AtomMatrix, double &gt; get_ef_var(const AtomMatrix pos, const VectorXi atmnrs, const Matrix3d box)</div><div class="ttdef"><b>Definition</b> <a href="#l00019">SurrogatePotential.cpp:19</a></div></div>
+<div class="ttc" id="anamespaceeonc_html"><div class="ttname"><a href="namespaceeonc.html">eonc</a></div><div class="ttdoc">RAII resource manager for the ARTn C library with global synchronization.</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00023">ARTnSaddleSearch.cpp:23</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->

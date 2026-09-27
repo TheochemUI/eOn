@@ -139,6 +139,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="communicator.html">Communicator</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="debug.html">Debug</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="paths.html">Paths</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="stdpar.html">nvc++ stdpar (NEB image forces)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="kdb.html">Kinetic database</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_integration.html">rgpot integration (three roles)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_pot.html">RgpotPot (direct in-process rgpot)</a></li>
@@ -150,6 +151,10 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/testing.html">Tests</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/parallel-potentials.html">Parallel force evaluation</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/library-api.html">Library API</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/in-process.html">In-process jobs (no file IPC)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/abi-surface.html">Public C++ surface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/rgpot-migration.html">rgpot kernel inventory</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/docbuild.html">Working with the documentation</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn.html">Subversion</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn-migration.html">Migrating from SVN</a></li>
@@ -168,49 +173,54 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.geometry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.pbc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.concorpus.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.concorpus</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.params_ssot.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.params_ssot</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.structure.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.structure</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.params_ssot.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.params_ssot</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.process_id.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.structure.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.structure</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.process_id.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.3.0/index.html">[v3.3.0] - 2026-09-15</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.3.0/release-notes.html">eOn 3.3.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.2.1/index.html">[v3.2.1] - 2026-09-13</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v3.2.1/release-notes.html">eOn 3.2.1</a></li>
 </ul>
@@ -438,7 +448,7 @@ convergence panels. For two endpoints, use <strong>separate</strong> landscape p
 <tbody>
 <tr class="row-even"><td><p><strong>LBFGS</strong> (default)</p></td>
 <td><p>Most minimizations, fast convergence near minima</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">lbfgs_memory</span></code> (default 20)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">lbfgs_memory</span></code> (default 20); optional <code class="docutils literal notranslate"><span class="pre">lbfgs_secant</span></code> / <code class="docutils literal notranslate"><span class="pre">lbfgs_precon</span></code> / <code class="docutils literal notranslate"><span class="pre">lbfgs_curvature</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>FIRE</strong></p></td>
 <td><p>Systems far from equilibrium, tolerant of bad initial guesses</p></td>
@@ -462,12 +472,92 @@ convergence panels. For two endpoints, use <strong>separate</strong> landscape p
 </section>
 <section id="convergence">
 <h2>Convergence<a class="headerlink" href="#convergence" title="Link to this heading">¶</a></h2>
-<p>The minimization converges when the force criterion is met. Three metrics are
-available via <code class="docutils literal notranslate"><span class="pre">convergence_metric</span></code>:</p>
+<p>The minimization converges when <code class="docutils literal notranslate"><span class="pre">converged_force</span></code> is met. The number is
+always in eV/A; <code class="docutils literal notranslate"><span class="pre">convergence_metric</span></code> chooses <strong>which</strong> force scalar is
+compared. The default is eOn’s historical <code class="docutils literal notranslate"><span class="pre">norm</span></code>, not OPTIM’s RMS.</p>
 <ul class="simple">
-<li><p><strong>norm</strong> (default): root-mean-square force across all free atoms</p></li>
-<li><p><strong>max_atom</strong>: maximum force on any single atom</p></li>
-<li><p><strong>max_component</strong>: maximum force component (x, y, or z)</p></li>
+<li><p><strong>norm</strong> (default): Euclidean <code class="docutils literal notranslate"><span class="pre">||F||_2</span></code> of the free-atom force vector
+(<code class="docutils literal notranslate"><span class="pre">sqrt(sum_i</span> <span class="pre">F_i^2)</span></code>). This is <strong>not</strong> an RMS: it grows with system
+size. Chill / OPTIM <code class="docutils literal notranslate"><span class="pre">||F||</span> <span class="pre">&lt;</span> <span class="pre">1e-2</span></code> is a different scalar.</p></li>
+<li><p><strong>rms</strong>: <code class="docutils literal notranslate"><span class="pre">||F||_2</span> <span class="pre">/</span> <span class="pre">sqrt(3</span> <span class="pre">N_free)</span></code>, matching OPTIM MYLBFGS
+(<code class="docutils literal notranslate"><span class="pre">SQRT(SUM(VNEW**2)/(3*NATOMS))</span></code>). Opt-in for an OPTIM-comparable
+stop; it is not the eOn default.</p></li>
+<li><p><strong>max_atom</strong>: maximum <code class="docutils literal notranslate"><span class="pre">||F||</span></code> on any single free atom</p></li>
+<li><p><strong>max_component</strong>: maximum Cartesian component of any free-atom force</p></li>
+</ul>
+<p>L-BFGS memory updates are controlled by <code class="docutils literal notranslate"><span class="pre">lbfgs_curvature</span></code> (default
+<code class="docutils literal notranslate"><span class="pre">reset</span></code>, the ASE wipe). <code class="docutils literal notranslate"><span class="pre">skip</span></code> drops a pair when <code class="docutils literal notranslate"><span class="pre">s·y</span> <span class="pre">&lt;</span> <span class="pre">0.2</span> <span class="pre">sᵀB0s</span></code>.
+<code class="docutils literal notranslate"><span class="pre">damped</span></code> is Powell’s 1978 replacement <code class="docutils literal notranslate"><span class="pre">ŷ</span> <span class="pre">=</span> <span class="pre">θ</span> <span class="pre">y</span> <span class="pre">+</span> <span class="pre">(1-θ)</span> <span class="pre">B0</span> <span class="pre">s</span></code> with
+<code class="docutils literal notranslate"><span class="pre">θ</span> <span class="pre">=</span> <span class="pre">0.8</span> <span class="pre">sᵀB0s</span> <span class="pre">/</span> <span class="pre">(sᵀB0s</span> <span class="pre">−</span> <span class="pre">sᵀy)</span></code> when <code class="docutils literal notranslate"><span class="pre">sᵀy</span> <span class="pre">&lt;</span> <span class="pre">0.2</span> <span class="pre">sᵀB0s</span></code> (Nocedal
+and Wright, <em>Numerical Optimization</em>, §18.3). <code class="docutils literal notranslate"><span class="pre">cautious</span></code> is the
+Li–Fukushima (2001) rule: keep the pair only if
+<code class="docutils literal notranslate"><span class="pre">s·y</span> <span class="pre">≥</span> <span class="pre">ε</span> <span class="pre">||s||²</span> <span class="pre">||g||^α</span></code>. Isolated clusters can set
+<code class="docutils literal notranslate"><span class="pre">lbfgs_project_rigid</span> <span class="pre">=</span> <span class="pre">true</span></code> to remove the six rigid-body modes
+from the force and the step (those modes are Hessian-null; they
+should not enter the limited-memory pairs).</p>
+<p>Further L-BFGS knobs, all optional and off by default:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lbfgs_secant</span> <span class="pre">=</span> <span class="pre">zhangxu</span></code> replaces <code class="docutils literal notranslate"><span class="pre">y</span></code> by the Zhang–Deng–Chen /
+Zhang–Xu modified secant, which folds the two function values into
+the pair (JOTA 1999 / 2001). No extra potential call. On
+Lennard-Jones and Morse pair potentials this pair inflates the
+force-call count; leave it at <code class="docutils literal notranslate"><span class="pre">standard</span></code> there.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lbfgs_precon</span></code> selects the two-loop <code class="docutils literal notranslate"><span class="pre">H0</span></code> metric.
+<code class="docutils literal notranslate"><span class="pre">none</span></code> is <code class="docutils literal notranslate"><span class="pre">H0</span> <span class="pre">I</span></code>.
+<code class="docutils literal notranslate"><span class="pre">exp</span></code> / <code class="docutils literal notranslate"><span class="pre">c1</span></code> is the Packwood–Kermode–Csanyi pair Laplacian
+(J. Chem. Phys. 2016, doi:10.1063/1.4947024). ASE falls back
+below about 100 atoms; <code class="docutils literal notranslate"><span class="pre">exp</span></code> on LJ38 costs force calls.
+<code class="docutils literal notranslate"><span class="pre">lindh</span></code> is the Lindh stretch model Hessian
+(Chem. Phys. Lett. 1995, doi:10.1016/0009-2614(95)00646-L):
+<code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">=</span> <span class="pre">μ</span> <span class="pre">exp(α</span> <span class="pre">(r_nn²</span> <span class="pre">-</span> <span class="pre">r²))</span></code> along each pair, <code class="docutils literal notranslate"><span class="pre">α</span> <span class="pre">=</span> <span class="pre">lbfgs_precon_A</span></code>.
+<code class="docutils literal notranslate"><span class="pre">pair</span></code> is the Mones–Ortner–Csanyi positive-definite pair Hessian
+(Sci. Rep. 2018, doi:10.1038/s41598-018-32105-x) of the running
+potential: analytic <code class="docutils literal notranslate"><span class="pre">V''</span></code> and <code class="docutils literal notranslate"><span class="pre">V'/r</span></code> of LJ (<code class="docutils literal notranslate"><span class="pre">4ε[(σ/r)¹²-(σ/r)⁶]</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ε=σ=1</span></code>) or Morse_Pt (<code class="docutils literal notranslate"><span class="pre">D=0.7102</span></code>, <code class="docutils literal notranslate"><span class="pre">α=1.6047</span></code>, <code class="docutils literal notranslate"><span class="pre">r0=2.897</span></code>), with
+negative pieces dropped. That is the right metric when the
+energy is itself a pair potential (Morse bulk). <code class="docutils literal notranslate"><span class="pre">pair_abs</span></code> uses
+<code class="docutils literal notranslate"><span class="pre">|V''|</span></code> and <code class="docutils literal notranslate"><span class="pre">|V'/r|</span></code> so attractive LJ neighbours still contribute;
+on LJ38 it does not beat an unpreconditioned two-loop.
+<code class="docutils literal notranslate"><span class="pre">lindh_full</span></code> adds Lindh bend and torsion blocks (<code class="docutils literal notranslate"><span class="pre">B^T</span> <span class="pre">k</span> <span class="pre">B</span></code>).
+<code class="docutils literal notranslate"><span class="pre">fischer</span></code> is the Fischer-Almlof 1992 model Hessian
+(doi:10.1021/j100203a036). <code class="docutils literal notranslate"><span class="pre">schlegel</span></code> is the Schlegel 1984
+estimated Hessian (doi:10.1007/BF00554788). <code class="docutils literal notranslate"><span class="pre">swart</span></code> is the
+Swart-Bickelhaupt strong/weak screen of Lindh
+(doi:10.1002/qua.21049). All four are host Cartesian matrices;
+<code class="docutils literal notranslate"><span class="pre">[Xtsci]</span> <span class="pre">precon</span></code> takes the same tokens.</p></li>
+</ul>
+<p>Newton and RFO are not L-BFGS. They live in
+<a class="reference external" href="https://github.com/HaoZeke/xtsci-optimize">xtsci-optimize</a> as
+<code class="docutils literal notranslate"><span class="pre">Method::Newton</span></code>. Build eOn with <code class="docutils literal notranslate"><span class="pre">-Dwith_xtsci=true</span></code> and select them
+from the INI:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Optimizer]</span>
+</span><span data-line="2"><span class="na">opt_method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">xtsci</span>
+</span><span data-line="3"><span class="na">converged_force</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0.01</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="k">[Xtsci]</span>
+</span><span data-line="6"><span class="na">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">newton</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="k">[LBFGS]</span>
+</span><span data-line="9"><span class="na">lbfgs_precon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">pair</span>
+</span></pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">[Xtsci]</span> <span class="pre">highs</span> <span class="pre">=</span> <span class="pre">true</span></code> asks HiGHS for the step (Newton QP on the
+host pair matrix, or two-loop plus boxes). Build xtsci-optimize
+with <code class="docutils literal notranslate"><span class="pre">--features</span> <span class="pre">capi,highs</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">rfo</span></code> is Banerjee RFO. The pair Hessian is still built in eOn
+(<code class="docutils literal notranslate"><span class="pre">lbfgs_precon</span></code>) and handed to Rust through <code class="docutils literal notranslate"><span class="pre">xts_minimize_hess</span></code>. The
+engine also runs the other xtsci-optimize methods (<code class="docutils literal notranslate"><span class="pre">lbfgs</span></code>, <code class="docutils literal notranslate"><span class="pre">bfgs</span></code>,
+<code class="docutils literal notranslate"><span class="pre">sr1</span></code>, <code class="docutils literal notranslate"><span class="pre">sr2</span></code>, <code class="docutils literal notranslate"><span class="pre">steepest</span></code>, <code class="docutils literal notranslate"><span class="pre">adam</span></code>, <code class="docutils literal notranslate"><span class="pre">pso</span></code>, and the NLCG conjugacies).</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lbfgs_h0</span> <span class="pre">=</span> <span class="pre">sy_yy</span></code> (Nocedal–Wright 7.20), <code class="docutils literal notranslate"><span class="pre">ss_sy</span></code> (Barzilai–Borwein
+2), or <code class="docutils literal notranslate"><span class="pre">adaptive</span></code> (the smaller of the two when both are positive).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lbfgs_accept</span> <span class="pre">=</span> <span class="pre">none</span></code> (default) takes the two-loop step, matching
+ASE and historical eOn. <code class="docutils literal notranslate"><span class="pre">energy</span></code> refuses a rise (OPTIM-style
+shrink; each trial is a potential call). <code class="docutils literal notranslate"><span class="pre">nonmonotone</span></code> is the
+Grippo–Lampariello–Lucidi window of the last five energies
+(SIAM J. Numer. Anal. 1986).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lbfgs_extra_updates</span> <span class="pre">=</span> <span class="pre">p</span></code> reuses the newest pair <code class="docutils literal notranslate"><span class="pre">p</span></code> extra times
+in the two-loop recursion (Al-Baali, 2000/2014).</p></li>
 </ul>
 </section>
 <section id="refinement">
@@ -622,7 +712,7 @@ structured JSON metadata in the second CON header line via <code class="docutils
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=eb155f5e"></script>
+      <script src="../_static/documentation_options.js?v=b5dcbc37"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

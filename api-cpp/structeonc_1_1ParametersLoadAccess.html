@@ -1,0 +1,2884 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: eonc::ParametersLoadAccess Struct Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn 3.2.0</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('structeonc_1_1ParametersLoadAccess.html','','structeonc_1_1ParametersLoadAccess-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">eonc::ParametersLoadAccess Struct Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Write hole for INI/JSON loaders and nanobind property setters.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Parameters_8h_source.html">Parameters.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a5ad7026592972621be6d0658d3e289e6" id="r_a5ad7026592972621be6d0658d3e289e6"><td class="memItemLeft">static <a class="el" href="structeonc_1_1constants__t.html">constants_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a5ad7026592972621be6d0658d3e289e6">constants</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a0ee4922bda1317eac2718800ad7423e6" id="r_a0ee4922bda1317eac2718800ad7423e6"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1constants__t.html">constants_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a0ee4922bda1317eac2718800ad7423e6">constants</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a2010f756f673b2c0205867e6ba55e3e2" id="r_a2010f756f673b2c0205867e6ba55e3e2"><td class="memItemLeft">static <a class="el" href="structeonc_1_1main__options__t.html">main_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a2010f756f673b2c0205867e6ba55e3e2">main_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a03444e34edc1bc74d51255c0efece9ea" id="r_a03444e34edc1bc74d51255c0efece9ea"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1main__options__t.html">main_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a03444e34edc1bc74d51255c0efece9ea">main_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:aeed4f257ac8c809eb6e50686d2b41932" id="r_aeed4f257ac8c809eb6e50686d2b41932"><td class="memItemLeft">static <a class="el" href="structeonc_1_1potential__options__t.html">potential_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#aeed4f257ac8c809eb6e50686d2b41932">potential_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:af2a70c4d560104c31d2c467c4a6ae2ea" id="r_af2a70c4d560104c31d2c467c4a6ae2ea"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1potential__options__t.html">potential_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#af2a70c4d560104c31d2c467c4a6ae2ea">potential_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:adeb0e05fa547a31c016cf2a3f1fb9cc5" id="r_adeb0e05fa547a31c016cf2a3f1fb9cc5"><td class="memItemLeft">static <a class="el" href="structeonc_1_1ams__options__t.html">ams_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#adeb0e05fa547a31c016cf2a3f1fb9cc5">ams_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a303fcda7bce1d5b28e66aae45f59ff40" id="r_a303fcda7bce1d5b28e66aae45f59ff40"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1ams__options__t.html">ams_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a303fcda7bce1d5b28e66aae45f59ff40">ams_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a77babb92bddf396fff21c573193921c1" id="r_a77babb92bddf396fff21c573193921c1"><td class="memItemLeft">static <a class="el" href="structeonc_1_1xtb__options__t.html">xtb_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a77babb92bddf396fff21c573193921c1">xtb_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a63a4f9ac550142b25dedaf7690c98b60" id="r_a63a4f9ac550142b25dedaf7690c98b60"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1xtb__options__t.html">xtb_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a63a4f9ac550142b25dedaf7690c98b60">xtb_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a10028711edb5246624c8bd92e0e268c0" id="r_a10028711edb5246624c8bd92e0e268c0"><td class="memItemLeft">static <a class="el" href="structeonc_1_1zbl__options__t.html">zbl_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a10028711edb5246624c8bd92e0e268c0">zbl_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:ac9e9906b80e10afd5527879a6684beeb" id="r_ac9e9906b80e10afd5527879a6684beeb"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1zbl__options__t.html">zbl_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#ac9e9906b80e10afd5527879a6684beeb">zbl_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a5f13d6de752b2894ec78559b0fc264ee" id="r_a5f13d6de752b2894ec78559b0fc264ee"><td class="memItemLeft">static <a class="el" href="structeonc_1_1dftd__options__t.html">dftd_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a5f13d6de752b2894ec78559b0fc264ee">dftd_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a55e3a0998233a14709aa2f3828c37a88" id="r_a55e3a0998233a14709aa2f3828c37a88"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1dftd__options__t.html">dftd_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a55e3a0998233a14709aa2f3828c37a88">dftd_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:af91df73e593b238ab3b15a7579f55ade" id="r_af91df73e593b238ab3b15a7579f55ade"><td class="memItemLeft">static <a class="el" href="structeonc_1_1expr__options__t.html">expr_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#af91df73e593b238ab3b15a7579f55ade">expr_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:af2bcebb1b4e8e5bc1a3a4eeaebfc112e" id="r_af2bcebb1b4e8e5bc1a3a4eeaebfc112e"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1expr__options__t.html">expr_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#af2bcebb1b4e8e5bc1a3a4eeaebfc112e">expr_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a09f879d0a6e3e97141fb145522b36b08" id="r_a09f879d0a6e3e97141fb145522b36b08"><td class="memItemLeft">static <a class="el" href="structeonc_1_1mopac__options__t.html">mopac_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a09f879d0a6e3e97141fb145522b36b08">mopac_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:ab9f997dcda4bd32dbbc2a2ba1a234132" id="r_ab9f997dcda4bd32dbbc2a2ba1a234132"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1mopac__options__t.html">mopac_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#ab9f997dcda4bd32dbbc2a2ba1a234132">mopac_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a4d9bbe7bd4ab3d19906f0fa68d9d8f01" id="r_a4d9bbe7bd4ab3d19906f0fa68d9d8f01"><td class="memItemLeft">static <a class="el" href="structeonc_1_1socket__nwchem__options__t.html">socket_nwchem_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a4d9bbe7bd4ab3d19906f0fa68d9d8f01">socket_nwchem_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:abb9069909a8a33bc202bbe857fcc106c" id="r_abb9069909a8a33bc202bbe857fcc106c"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1socket__nwchem__options__t.html">socket_nwchem_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#abb9069909a8a33bc202bbe857fcc106c">socket_nwchem_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:ab30fdf1ca509d5473678efd5c69c0d13" id="r_ab30fdf1ca509d5473678efd5c69c0d13"><td class="memItemLeft">static <a class="el" href="structeonc_1_1rgpot__options__t.html">rgpot_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#ab30fdf1ca509d5473678efd5c69c0d13">rgpot_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a338efebcd9facfecaf4be201546c6727" id="r_a338efebcd9facfecaf4be201546c6727"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1rgpot__options__t.html">rgpot_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a338efebcd9facfecaf4be201546c6727">rgpot_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a12859c7ce343ec8de91acfb960e95264" id="r_a12859c7ce343ec8de91acfb960e95264"><td class="memItemLeft">static <a class="el" href="namespaceeonc.html#a212f2d1f7e3dba9a689478884b514c7e">structure_comparison_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a12859c7ce343ec8de91acfb960e95264">structure_comparison_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:ad3ca240e9455c4d7c8585b39156f4163" id="r_ad3ca240e9455c4d7c8585b39156f4163"><td class="memItemLeft">static const <a class="el" href="namespaceeonc.html#a212f2d1f7e3dba9a689478884b514c7e">structure_comparison_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#ad3ca240e9455c4d7c8585b39156f4163">structure_comparison_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:aee74a08dfe65aa9d9da0a6d913a80295" id="r_aee74a08dfe65aa9d9da0a6d913a80295"><td class="memItemLeft">static <a class="el" href="structeonc_1_1process__search__options__t.html">process_search_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#aee74a08dfe65aa9d9da0a6d913a80295">process_search_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a753623f94c3430804d0a8c8c8caa851a" id="r_a753623f94c3430804d0a8c8c8caa851a"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1process__search__options__t.html">process_search_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a753623f94c3430804d0a8c8c8caa851a">process_search_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a139052813c740d9a759148b91847124d" id="r_a139052813c740d9a759148b91847124d"><td class="memItemLeft">static <a class="el" href="structeonc_1_1saddle__search__options__t.html">saddle_search_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a139052813c740d9a759148b91847124d">saddle_search_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a8f678c9fe2323906cc33f5c70b46b80a" id="r_a8f678c9fe2323906cc33f5c70b46b80a"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1saddle__search__options__t.html">saddle_search_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a8f678c9fe2323906cc33f5c70b46b80a">saddle_search_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:ab64eec9eb60431f7eca18fd178a58bdc" id="r_ab64eec9eb60431f7eca18fd178a58bdc"><td class="memItemLeft">static <a class="el" href="structeonc_1_1optimizer__options__t.html">optimizer_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#ab64eec9eb60431f7eca18fd178a58bdc">optimizer_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:afff46912930c4be0b00012a8cf09b334" id="r_afff46912930c4be0b00012a8cf09b334"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1optimizer__options__t.html">optimizer_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#afff46912930c4be0b00012a8cf09b334">optimizer_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a7f725788d53ba7d3bd614fd06b5583b5" id="r_a7f725788d53ba7d3bd614fd06b5583b5"><td class="memItemLeft">static <a class="el" href="structeonc_1_1dimer__options__t.html">dimer_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a7f725788d53ba7d3bd614fd06b5583b5">dimer_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:af39c2e0a4e4ce937550e503bdbd9f6d4" id="r_af39c2e0a4e4ce937550e503bdbd9f6d4"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1dimer__options__t.html">dimer_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#af39c2e0a4e4ce937550e503bdbd9f6d4">dimer_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a5f2aed137acab9e4a8ec32526cae8868" id="r_a5f2aed137acab9e4a8ec32526cae8868"><td class="memItemLeft">static <a class="el" href="structeonc_1_1gpr__dimer__options__t.html">gpr_dimer_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a5f2aed137acab9e4a8ec32526cae8868">gpr_dimer_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a87a085c06a3b7de52d62b7536e4d91b6" id="r_a87a085c06a3b7de52d62b7536e4d91b6"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1gpr__dimer__options__t.html">gpr_dimer_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a87a085c06a3b7de52d62b7536e4d91b6">gpr_dimer_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:ac15d8d44e5631f0e263de06653aa38c1" id="r_ac15d8d44e5631f0e263de06653aa38c1"><td class="memItemLeft">static <a class="el" href="structeonc_1_1gp__surrogate__options__t.html">gp_surrogate_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#ac15d8d44e5631f0e263de06653aa38c1">gp_surrogate_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a0938ac154c19d6e7b4e64073ff9b5a35" id="r_a0938ac154c19d6e7b4e64073ff9b5a35"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1gp__surrogate__options__t.html">gp_surrogate_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a0938ac154c19d6e7b4e64073ff9b5a35">gp_surrogate_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a6dd6462aba322f0297359d616b7d08e6" id="r_a6dd6462aba322f0297359d616b7d08e6"><td class="memItemLeft">static <a class="el" href="structeonc_1_1catlearn__options__t.html">catlearn_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a6dd6462aba322f0297359d616b7d08e6">catlearn_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:af20c8a2667d088f6a9e07ac0708cf030" id="r_af20c8a2667d088f6a9e07ac0708cf030"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1catlearn__options__t.html">catlearn_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#af20c8a2667d088f6a9e07ac0708cf030">catlearn_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:adf476b0e7e69467e179e88424462febb" id="r_adf476b0e7e69467e179e88424462febb"><td class="memItemLeft">static <a class="el" href="structeonc_1_1ase__orca__options__t.html">ase_orca_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#adf476b0e7e69467e179e88424462febb">ase_orca_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a2e60a7063b1d5492e8d14ee17cf231b4" id="r_a2e60a7063b1d5492e8d14ee17cf231b4"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1ase__orca__options__t.html">ase_orca_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a2e60a7063b1d5492e8d14ee17cf231b4">ase_orca_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a191cde67ab205f80483f2c4d260c6a5e" id="r_a191cde67ab205f80483f2c4d260c6a5e"><td class="memItemLeft">static <a class="el" href="structeonc_1_1ase__nwchem__options__t.html">ase_nwchem_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a191cde67ab205f80483f2c4d260c6a5e">ase_nwchem_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a964602fe4329369b38592ca6186f9c53" id="r_a964602fe4329369b38592ca6186f9c53"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1ase__nwchem__options__t.html">ase_nwchem_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a964602fe4329369b38592ca6186f9c53">ase_nwchem_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a0f1e232988495876d076b2430450bae1" id="r_a0f1e232988495876d076b2430450bae1"><td class="memItemLeft">static <a class="el" href="structeonc_1_1metatomic__options__t.html">metatomic_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a0f1e232988495876d076b2430450bae1">metatomic_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a1eb16a9dbd75295cbb9cc6d176914828" id="r_a1eb16a9dbd75295cbb9cc6d176914828"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1metatomic__options__t.html">metatomic_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a1eb16a9dbd75295cbb9cc6d176914828">metatomic_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a2c7b0553d8fc8b813425da3ce18514b7" id="r_a2c7b0553d8fc8b813425da3ce18514b7"><td class="memItemLeft">static <a class="el" href="structeonc_1_1lanczos__options__t.html">lanczos_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a2c7b0553d8fc8b813425da3ce18514b7">lanczos_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a7881e678bbaf4c82c732e5fc2fb116bc" id="r_a7881e678bbaf4c82c732e5fc2fb116bc"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1lanczos__options__t.html">lanczos_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a7881e678bbaf4c82c732e5fc2fb116bc">lanczos_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a68ba5fca3833f0dc450a8818faddc6d5" id="r_a68ba5fca3833f0dc450a8818faddc6d5"><td class="memItemLeft">static <a class="el" href="structeonc_1_1davidson__options__t.html">davidson_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a68ba5fca3833f0dc450a8818faddc6d5">davidson_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a52857f9a46c699c98e07841d57fd363e" id="r_a52857f9a46c699c98e07841d57fd363e"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1davidson__options__t.html">davidson_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a52857f9a46c699c98e07841d57fd363e">davidson_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a2dfec147488654051fa846ace3dbddd5" id="r_a2dfec147488654051fa846ace3dbddd5"><td class="memItemLeft">static <a class="el" href="structeonc_1_1prefactor__options__t.html">prefactor_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a2dfec147488654051fa846ace3dbddd5">prefactor_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a9b615a118287d2c08b12a374de7b222d" id="r_a9b615a118287d2c08b12a374de7b222d"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1prefactor__options__t.html">prefactor_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a9b615a118287d2c08b12a374de7b222d">prefactor_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a6ffb4843438fabd263c12035e9529ae1" id="r_a6ffb4843438fabd263c12035e9529ae1"><td class="memItemLeft">static <a class="el" href="structeonc_1_1hessian__options__t.html">hessian_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a6ffb4843438fabd263c12035e9529ae1">hessian_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:aaa369e418bf81b95c658918ac5728441" id="r_aaa369e418bf81b95c658918ac5728441"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1hessian__options__t.html">hessian_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#aaa369e418bf81b95c658918ac5728441">hessian_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:af5bb2888dd1af01a63e978ab000509b2" id="r_af5bb2888dd1af01a63e978ab000509b2"><td class="memItemLeft">static <a class="el" href="structeonc_1_1neb__options__t.html">neb_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#af5bb2888dd1af01a63e978ab000509b2">neb_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a70de1a74d234a78055a4657e8f7bd90c" id="r_a70de1a74d234a78055a4657e8f7bd90c"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1neb__options__t.html">neb_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a70de1a74d234a78055a4657e8f7bd90c">neb_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:af2efc07763aa0a658ff0a7b7e85fd29b" id="r_af2efc07763aa0a658ff0a7b7e85fd29b"><td class="memItemLeft">static <a class="el" href="structeonc_1_1dynamics__options__t.html">dynamics_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#af2efc07763aa0a658ff0a7b7e85fd29b">dynamics_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a8bc6bbdb31f24890a665bebf9c27a7b2" id="r_a8bc6bbdb31f24890a665bebf9c27a7b2"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1dynamics__options__t.html">dynamics_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a8bc6bbdb31f24890a665bebf9c27a7b2">dynamics_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a99634c33d4951768784ea83a9b1a63ef" id="r_a99634c33d4951768784ea83a9b1a63ef"><td class="memItemLeft">static <a class="el" href="structeonc_1_1parallel__replica__options__t.html">parallel_replica_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a99634c33d4951768784ea83a9b1a63ef">parallel_replica_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:ad0637d941f6ffaa986360846892c3e7e" id="r_ad0637d941f6ffaa986360846892c3e7e"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1parallel__replica__options__t.html">parallel_replica_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#ad0637d941f6ffaa986360846892c3e7e">parallel_replica_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a99c4fdd51927cab836826b68ca14c1c0" id="r_a99c4fdd51927cab836826b68ca14c1c0"><td class="memItemLeft">static <a class="el" href="structeonc_1_1tad__options__t.html">tad_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a99c4fdd51927cab836826b68ca14c1c0">tad_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a8a3e2a116552b8dac5de645280eb0126" id="r_a8a3e2a116552b8dac5de645280eb0126"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1tad__options__t.html">tad_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a8a3e2a116552b8dac5de645280eb0126">tad_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a9c75d9cf2778b2991606c60f8f387bdc" id="r_a9c75d9cf2778b2991606c60f8f387bdc"><td class="memItemLeft">static <a class="el" href="structeonc_1_1thermostat__options__t.html">thermostat_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a9c75d9cf2778b2991606c60f8f387bdc">thermostat_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:ad98cc8adfadb38530659c629e90b4ceb" id="r_ad98cc8adfadb38530659c629e90b4ceb"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1thermostat__options__t.html">thermostat_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#ad98cc8adfadb38530659c629e90b4ceb">thermostat_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a784797f54da73a808d64a3a7a745b867" id="r_a784797f54da73a808d64a3a7a745b867"><td class="memItemLeft">static <a class="el" href="structeonc_1_1replica__exchange__options__t.html">replica_exchange_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a784797f54da73a808d64a3a7a745b867">replica_exchange_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a07f968dfd98a21b9a952e4e2cd82fd80" id="r_a07f968dfd98a21b9a952e4e2cd82fd80"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1replica__exchange__options__t.html">replica_exchange_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a07f968dfd98a21b9a952e4e2cd82fd80">replica_exchange_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a09413a6f34bed1b1d4061d114a5979b6" id="r_a09413a6f34bed1b1d4061d114a5979b6"><td class="memItemLeft">static <a class="el" href="structeonc_1_1hyperdynamics__options__t.html">hyperdynamics_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a09413a6f34bed1b1d4061d114a5979b6">hyperdynamics_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a70fc44feef8171e3ef2954a87358fb39" id="r_a70fc44feef8171e3ef2954a87358fb39"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1hyperdynamics__options__t.html">hyperdynamics_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a70fc44feef8171e3ef2954a87358fb39">hyperdynamics_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a29d4382892b6ce8f1a4a6fcbdb8815b2" id="r_a29d4382892b6ce8f1a4a6fcbdb8815b2"><td class="memItemLeft">static <a class="el" href="structeonc_1_1basin__hopping__options__t.html">basin_hopping_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a29d4382892b6ce8f1a4a6fcbdb8815b2">basin_hopping_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:adcd6ba8f1b7e2768ef00e35507dc3718" id="r_adcd6ba8f1b7e2768ef00e35507dc3718"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1basin__hopping__options__t.html">basin_hopping_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#adcd6ba8f1b7e2768ef00e35507dc3718">basin_hopping_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a0ca530614983a41a2095666b76a0cc8f" id="r_a0ca530614983a41a2095666b76a0cc8f"><td class="memItemLeft">static <a class="el" href="structeonc_1_1global__optimization__options__t.html">global_optimization_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a0ca530614983a41a2095666b76a0cc8f">global_optimization_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a14d354bcb2d4d51f394e5a88f5ace5a8" id="r_a14d354bcb2d4d51f394e5a88f5ace5a8"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1global__optimization__options__t.html">global_optimization_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a14d354bcb2d4d51f394e5a88f5ace5a8">global_optimization_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:aa44e3001f04c48a7d088562d5b45f08b" id="r_aa44e3001f04c48a7d088562d5b45f08b"><td class="memItemLeft">static <a class="el" href="structeonc_1_1monte__carlo__options__t.html">monte_carlo_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#aa44e3001f04c48a7d088562d5b45f08b">monte_carlo_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:ab60d747ee690a9ed95e5e362eb4f3a0a" id="r_ab60d747ee690a9ed95e5e362eb4f3a0a"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1monte__carlo__options__t.html">monte_carlo_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#ab60d747ee690a9ed95e5e362eb4f3a0a">monte_carlo_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:abc79bc2af895fde195662f82bf12bde6" id="r_abc79bc2af895fde195662f82bf12bde6"><td class="memItemLeft">static <a class="el" href="structeonc_1_1bgsd__options__t.html">bgsd_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#abc79bc2af895fde195662f82bf12bde6">bgsd_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:ad9b6024491dca9f4331e0aa943f0f5e7" id="r_ad9b6024491dca9f4331e0aa943f0f5e7"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1bgsd__options__t.html">bgsd_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#ad9b6024491dca9f4331e0aa943f0f5e7">bgsd_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a2fea2458ae10d1a307dcb7bda55863ee" id="r_a2fea2458ae10d1a307dcb7bda55863ee"><td class="memItemLeft">static <a class="el" href="structeonc_1_1serve__options__t.html">serve_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a2fea2458ae10d1a307dcb7bda55863ee">serve_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a5974e17e63a4f7b4f86081fa8d73c165" id="r_a5974e17e63a4f7b4f86081fa8d73c165"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1serve__options__t.html">serve_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a5974e17e63a4f7b4f86081fa8d73c165">serve_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a097fb2ce79aa3c79aa7703d1a63c0cb6" id="r_a097fb2ce79aa3c79aa7703d1a63c0cb6"><td class="memItemLeft">static <a class="el" href="structeonc_1_1artn__options__t.html">artn_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a097fb2ce79aa3c79aa7703d1a63c0cb6">artn_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a369ccb4af741f6a973d735ad7e83f730" id="r_a369ccb4af741f6a973d735ad7e83f730"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1artn__options__t.html">artn_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a369ccb4af741f6a973d735ad7e83f730">artn_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a01e38554ee0fc9e6bf05461a01412b8c" id="r_a01e38554ee0fc9e6bf05461a01412b8c"><td class="memItemLeft">static <a class="el" href="structeonc_1_1ira__options__t.html">ira_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a01e38554ee0fc9e6bf05461a01412b8c">ira_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a19d1f1296cb0a2332a068a1d56a58e12" id="r_a19d1f1296cb0a2332a068a1d56a58e12"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1ira__options__t.html">ira_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a19d1f1296cb0a2332a068a1d56a58e12">ira_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a663d26475f0f2c83173d575b17c01e33" id="r_a663d26475f0f2c83173d575b17c01e33"><td class="memItemLeft">static <a class="el" href="structeonc_1_1debug__options__t.html">debug_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a663d26475f0f2c83173d575b17c01e33">debug_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:af2eced32bba0f3035825d98c61c3c7b7" id="r_af2eced32bba0f3035825d98c61c3c7b7"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1debug__options__t.html">debug_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#af2eced32bba0f3035825d98c61c3c7b7">debug_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a14bf6c525a9fc166ff20d30bd142ddb3" id="r_a14bf6c525a9fc166ff20d30bd142ddb3"><td class="memItemLeft">static <a class="el" href="structeonc_1_1oh__tst__options__t.html">oh_tst_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a14bf6c525a9fc166ff20d30bd142ddb3">oh_tst_options</a> (<a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a7105c221a9025f737234ec604e64484d" id="r_a7105c221a9025f737234ec604e64484d"><td class="memItemLeft">static const <a class="el" href="structeonc_1_1oh__tst__options__t.html">oh_tst_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a7105c221a9025f737234ec604e64484d">oh_tst_options</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Write hole for INI/JSON loaders and nanobind property setters. </p>
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00253">253</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+</div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a303fcda7bce1d5b28e66aae45f59ff40" name="a303fcda7bce1d5b28e66aae45f59ff40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a303fcda7bce1d5b28e66aae45f59ff40">&#9670;&#160;</a></span>ams_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1ams__options__t.html">ams_options_t</a> &amp; eonc::ParametersLoadAccess::ams_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00269">269</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  269</span>                                                               {</div>
+<div class="line"><span class="lineno">  270</span>    <span class="keywordflow">return</span> p.ams_options_;</div>
+<div class="line"><span class="lineno">  271</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="adeb0e05fa547a31c016cf2a3f1fb9cc5" name="adeb0e05fa547a31c016cf2a3f1fb9cc5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adeb0e05fa547a31c016cf2a3f1fb9cc5">&#9670;&#160;</a></span>ams_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1ams__options__t.html">ams_options_t</a> &amp; eonc::ParametersLoadAccess::ams_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00268">268</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  268</span>{ <span class="keywordflow">return</span> p.ams_options_; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a369ccb4af741f6a973d735ad7e83f730" name="a369ccb4af741f6a973d735ad7e83f730"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a369ccb4af741f6a973d735ad7e83f730">&#9670;&#160;</a></span>artn_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1artn__options__t.html">artn_options_t</a> &amp; eonc::ParametersLoadAccess::artn_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00475">475</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  475</span>                                                                 {</div>
+<div class="line"><span class="lineno">  476</span>    <span class="keywordflow">return</span> p.artn_options_;</div>
+<div class="line"><span class="lineno">  477</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a097fb2ce79aa3c79aa7703d1a63c0cb6" name="a097fb2ce79aa3c79aa7703d1a63c0cb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a097fb2ce79aa3c79aa7703d1a63c0cb6">&#9670;&#160;</a></span>artn_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1artn__options__t.html">artn_options_t</a> &amp; eonc::ParametersLoadAccess::artn_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00474">474</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  474</span>{ <span class="keywordflow">return</span> p.artn_options_; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a964602fe4329369b38592ca6186f9c53" name="a964602fe4329369b38592ca6186f9c53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a964602fe4329369b38592ca6186f9c53">&#9670;&#160;</a></span>ase_nwchem_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1ase__nwchem__options__t.html">ase_nwchem_options_t</a> &amp; eonc::ParametersLoadAccess::ase_nwchem_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00369">369</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  369</span>                                                                             {</div>
+<div class="line"><span class="lineno">  370</span>    <span class="keywordflow">return</span> p.ase_nwchem_options_;</div>
+<div class="line"><span class="lineno">  371</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a191cde67ab205f80483f2c4d260c6a5e" name="a191cde67ab205f80483f2c4d260c6a5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a191cde67ab205f80483f2c4d260c6a5e">&#9670;&#160;</a></span>ase_nwchem_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1ase__nwchem__options__t.html">ase_nwchem_options_t</a> &amp; eonc::ParametersLoadAccess::ase_nwchem_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00366">366</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  366</span>                                                                 {</div>
+<div class="line"><span class="lineno">  367</span>    <span class="keywordflow">return</span> p.ase_nwchem_options_;</div>
+<div class="line"><span class="lineno">  368</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2e60a7063b1d5492e8d14ee17cf231b4" name="a2e60a7063b1d5492e8d14ee17cf231b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e60a7063b1d5492e8d14ee17cf231b4">&#9670;&#160;</a></span>ase_orca_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1ase__orca__options__t.html">ase_orca_options_t</a> &amp; eonc::ParametersLoadAccess::ase_orca_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00363">363</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  363</span>                                                                         {</div>
+<div class="line"><span class="lineno">  364</span>    <span class="keywordflow">return</span> p.ase_orca_options_;</div>
+<div class="line"><span class="lineno">  365</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="adf476b0e7e69467e179e88424462febb" name="adf476b0e7e69467e179e88424462febb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf476b0e7e69467e179e88424462febb">&#9670;&#160;</a></span>ase_orca_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1ase__orca__options__t.html">ase_orca_options_t</a> &amp; eonc::ParametersLoadAccess::ase_orca_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00360">360</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  360</span>                                                             {</div>
+<div class="line"><span class="lineno">  361</span>    <span class="keywordflow">return</span> p.ase_orca_options_;</div>
+<div class="line"><span class="lineno">  362</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="adcd6ba8f1b7e2768ef00e35507dc3718" name="adcd6ba8f1b7e2768ef00e35507dc3718"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcd6ba8f1b7e2768ef00e35507dc3718">&#9670;&#160;</a></span>basin_hopping_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1basin__hopping__options__t.html">basin_hopping_options_t</a> &amp; eonc::ParametersLoadAccess::basin_hopping_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00447">447</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  447</span>                                             {</div>
+<div class="line"><span class="lineno">  448</span>    <span class="keywordflow">return</span> p.basin_hopping_options_;</div>
+<div class="line"><span class="lineno">  449</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a29d4382892b6ce8f1a4a6fcbdb8815b2" name="a29d4382892b6ce8f1a4a6fcbdb8815b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29d4382892b6ce8f1a4a6fcbdb8815b2">&#9670;&#160;</a></span>basin_hopping_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1basin__hopping__options__t.html">basin_hopping_options_t</a> &amp; eonc::ParametersLoadAccess::basin_hopping_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00443">443</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  443</span>                                                                       {</div>
+<div class="line"><span class="lineno">  444</span>    <span class="keywordflow">return</span> p.basin_hopping_options_;</div>
+<div class="line"><span class="lineno">  445</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad9b6024491dca9f4331e0aa943f0f5e7" name="ad9b6024491dca9f4331e0aa943f0f5e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9b6024491dca9f4331e0aa943f0f5e7">&#9670;&#160;</a></span>bgsd_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1bgsd__options__t.html">bgsd_options_t</a> &amp; eonc::ParametersLoadAccess::bgsd_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00465">465</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  465</span>                                                                 {</div>
+<div class="line"><span class="lineno">  466</span>    <span class="keywordflow">return</span> p.bgsd_options_;</div>
+<div class="line"><span class="lineno">  467</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="abc79bc2af895fde195662f82bf12bde6" name="abc79bc2af895fde195662f82bf12bde6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc79bc2af895fde195662f82bf12bde6">&#9670;&#160;</a></span>bgsd_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1bgsd__options__t.html">bgsd_options_t</a> &amp; eonc::ParametersLoadAccess::bgsd_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00464">464</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  464</span>{ <span class="keywordflow">return</span> p.bgsd_options_; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af20c8a2667d088f6a9e07ac0708cf030" name="af20c8a2667d088f6a9e07ac0708cf030"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af20c8a2667d088f6a9e07ac0708cf030">&#9670;&#160;</a></span>catlearn_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1catlearn__options__t.html">catlearn_options_t</a> &amp; eonc::ParametersLoadAccess::catlearn_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00357">357</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  357</span>                                                                         {</div>
+<div class="line"><span class="lineno">  358</span>    <span class="keywordflow">return</span> p.catlearn_options_;</div>
+<div class="line"><span class="lineno">  359</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a6dd6462aba322f0297359d616b7d08e6" name="a6dd6462aba322f0297359d616b7d08e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6dd6462aba322f0297359d616b7d08e6">&#9670;&#160;</a></span>catlearn_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1catlearn__options__t.html">catlearn_options_t</a> &amp; eonc::ParametersLoadAccess::catlearn_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00354">354</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  354</span>                                                             {</div>
+<div class="line"><span class="lineno">  355</span>    <span class="keywordflow">return</span> p.catlearn_options_;</div>
+<div class="line"><span class="lineno">  356</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0ee4922bda1317eac2718800ad7423e6" name="a0ee4922bda1317eac2718800ad7423e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ee4922bda1317eac2718800ad7423e6">&#9670;&#160;</a></span>constants() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1constants__t.html">constants_t</a> &amp; eonc::ParametersLoadAccess::constants </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00255">255</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  255</span>                                                           {</div>
+<div class="line"><span class="lineno">  256</span>    <span class="keywordflow">return</span> p.constants_;</div>
+<div class="line"><span class="lineno">  257</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a5ad7026592972621be6d0658d3e289e6" name="a5ad7026592972621be6d0658d3e289e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ad7026592972621be6d0658d3e289e6">&#9670;&#160;</a></span>constants() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1constants__t.html">constants_t</a> &amp; eonc::ParametersLoadAccess::constants </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00254">254</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  254</span>{ <span class="keywordflow">return</span> p.constants_; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a52857f9a46c699c98e07841d57fd363e" name="a52857f9a46c699c98e07841d57fd363e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52857f9a46c699c98e07841d57fd363e">&#9670;&#160;</a></span>davidson_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1davidson__options__t.html">davidson_options_t</a> &amp; eonc::ParametersLoadAccess::davidson_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00387">387</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  387</span>                                                                         {</div>
+<div class="line"><span class="lineno">  388</span>    <span class="keywordflow">return</span> p.davidson_options_;</div>
+<div class="line"><span class="lineno">  389</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a68ba5fca3833f0dc450a8818faddc6d5" name="a68ba5fca3833f0dc450a8818faddc6d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68ba5fca3833f0dc450a8818faddc6d5">&#9670;&#160;</a></span>davidson_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1davidson__options__t.html">davidson_options_t</a> &amp; eonc::ParametersLoadAccess::davidson_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00384">384</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  384</span>                                                             {</div>
+<div class="line"><span class="lineno">  385</span>    <span class="keywordflow">return</span> p.davidson_options_;</div>
+<div class="line"><span class="lineno">  386</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af2eced32bba0f3035825d98c61c3c7b7" name="af2eced32bba0f3035825d98c61c3c7b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2eced32bba0f3035825d98c61c3c7b7">&#9670;&#160;</a></span>debug_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1debug__options__t.html">debug_options_t</a> &amp; eonc::ParametersLoadAccess::debug_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00485">485</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  485</span>                                                                   {</div>
+<div class="line"><span class="lineno">  486</span>    <span class="keywordflow">return</span> p.debug_options_;</div>
+<div class="line"><span class="lineno">  487</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a663d26475f0f2c83173d575b17c01e33" name="a663d26475f0f2c83173d575b17c01e33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a663d26475f0f2c83173d575b17c01e33">&#9670;&#160;</a></span>debug_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1debug__options__t.html">debug_options_t</a> &amp; eonc::ParametersLoadAccess::debug_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00482">482</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  482</span>                                                       {</div>
+<div class="line"><span class="lineno">  483</span>    <span class="keywordflow">return</span> p.debug_options_;</div>
+<div class="line"><span class="lineno">  484</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a55e3a0998233a14709aa2f3828c37a88" name="a55e3a0998233a14709aa2f3828c37a88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55e3a0998233a14709aa2f3828c37a88">&#9670;&#160;</a></span>dftd_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1dftd__options__t.html">dftd_options_t</a> &amp; eonc::ParametersLoadAccess::dftd_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00281">281</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  281</span>                                                                 {</div>
+<div class="line"><span class="lineno">  282</span>    <span class="keywordflow">return</span> p.dftd_options_;</div>
+<div class="line"><span class="lineno">  283</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a5f13d6de752b2894ec78559b0fc264ee" name="a5f13d6de752b2894ec78559b0fc264ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f13d6de752b2894ec78559b0fc264ee">&#9670;&#160;</a></span>dftd_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1dftd__options__t.html">dftd_options_t</a> &amp; eonc::ParametersLoadAccess::dftd_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00280">280</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  280</span>{ <span class="keywordflow">return</span> p.dftd_options_; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af39c2e0a4e4ce937550e503bdbd9f6d4" name="af39c2e0a4e4ce937550e503bdbd9f6d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af39c2e0a4e4ce937550e503bdbd9f6d4">&#9670;&#160;</a></span>dimer_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1dimer__options__t.html">dimer_options_t</a> &amp; eonc::ParametersLoadAccess::dimer_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00338">338</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  338</span>                                                                   {</div>
+<div class="line"><span class="lineno">  339</span>    <span class="keywordflow">return</span> p.dimer_options_;</div>
+<div class="line"><span class="lineno">  340</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7f725788d53ba7d3bd614fd06b5583b5" name="a7f725788d53ba7d3bd614fd06b5583b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f725788d53ba7d3bd614fd06b5583b5">&#9670;&#160;</a></span>dimer_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1dimer__options__t.html">dimer_options_t</a> &amp; eonc::ParametersLoadAccess::dimer_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00335">335</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  335</span>                                                       {</div>
+<div class="line"><span class="lineno">  336</span>    <span class="keywordflow">return</span> p.dimer_options_;</div>
+<div class="line"><span class="lineno">  337</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8bc6bbdb31f24890a665bebf9c27a7b2" name="a8bc6bbdb31f24890a665bebf9c27a7b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bc6bbdb31f24890a665bebf9c27a7b2">&#9670;&#160;</a></span>dynamics_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1dynamics__options__t.html">dynamics_options_t</a> &amp; eonc::ParametersLoadAccess::dynamics_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00409">409</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  409</span>                                                                         {</div>
+<div class="line"><span class="lineno">  410</span>    <span class="keywordflow">return</span> p.dynamics_options_;</div>
+<div class="line"><span class="lineno">  411</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af2efc07763aa0a658ff0a7b7e85fd29b" name="af2efc07763aa0a658ff0a7b7e85fd29b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2efc07763aa0a658ff0a7b7e85fd29b">&#9670;&#160;</a></span>dynamics_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1dynamics__options__t.html">dynamics_options_t</a> &amp; eonc::ParametersLoadAccess::dynamics_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00406">406</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  406</span>                                                             {</div>
+<div class="line"><span class="lineno">  407</span>    <span class="keywordflow">return</span> p.dynamics_options_;</div>
+<div class="line"><span class="lineno">  408</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af2bcebb1b4e8e5bc1a3a4eeaebfc112e" name="af2bcebb1b4e8e5bc1a3a4eeaebfc112e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2bcebb1b4e8e5bc1a3a4eeaebfc112e">&#9670;&#160;</a></span>expr_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1expr__options__t.html">expr_options_t</a> &amp; eonc::ParametersLoadAccess::expr_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00285">285</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  285</span>                                                                 {</div>
+<div class="line"><span class="lineno">  286</span>    <span class="keywordflow">return</span> p.expr_options_;</div>
+<div class="line"><span class="lineno">  287</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af91df73e593b238ab3b15a7579f55ade" name="af91df73e593b238ab3b15a7579f55ade"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af91df73e593b238ab3b15a7579f55ade">&#9670;&#160;</a></span>expr_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1expr__options__t.html">expr_options_t</a> &amp; eonc::ParametersLoadAccess::expr_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00284">284</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  284</span>{ <span class="keywordflow">return</span> p.expr_options_; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a14d354bcb2d4d51f394e5a88f5ace5a8" name="a14d354bcb2d4d51f394e5a88f5ace5a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14d354bcb2d4d51f394e5a88f5ace5a8">&#9670;&#160;</a></span>global_optimization_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1global__optimization__options__t.html">global_optimization_options_t</a> &amp; eonc::ParametersLoadAccess::global_optimization_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00455">455</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  455</span>                                                   {</div>
+<div class="line"><span class="lineno">  456</span>    <span class="keywordflow">return</span> p.global_optimization_options_;</div>
+<div class="line"><span class="lineno">  457</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0ca530614983a41a2095666b76a0cc8f" name="a0ca530614983a41a2095666b76a0cc8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ca530614983a41a2095666b76a0cc8f">&#9670;&#160;</a></span>global_optimization_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1global__optimization__options__t.html">global_optimization_options_t</a> &amp; eonc::ParametersLoadAccess::global_optimization_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00451">451</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  451</span>                                             {</div>
+<div class="line"><span class="lineno">  452</span>    <span class="keywordflow">return</span> p.global_optimization_options_;</div>
+<div class="line"><span class="lineno">  453</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0938ac154c19d6e7b4e64073ff9b5a35" name="a0938ac154c19d6e7b4e64073ff9b5a35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0938ac154c19d6e7b4e64073ff9b5a35">&#9670;&#160;</a></span>gp_surrogate_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1gp__surrogate__options__t.html">gp_surrogate_options_t</a> &amp; eonc::ParametersLoadAccess::gp_surrogate_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00351">351</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  351</span>                                            {</div>
+<div class="line"><span class="lineno">  352</span>    <span class="keywordflow">return</span> p.gp_surrogate_options_;</div>
+<div class="line"><span class="lineno">  353</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac15d8d44e5631f0e263de06653aa38c1" name="ac15d8d44e5631f0e263de06653aa38c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac15d8d44e5631f0e263de06653aa38c1">&#9670;&#160;</a></span>gp_surrogate_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1gp__surrogate__options__t.html">gp_surrogate_options_t</a> &amp; eonc::ParametersLoadAccess::gp_surrogate_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00347">347</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  347</span>                                                                     {</div>
+<div class="line"><span class="lineno">  348</span>    <span class="keywordflow">return</span> p.gp_surrogate_options_;</div>
+<div class="line"><span class="lineno">  349</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a87a085c06a3b7de52d62b7536e4d91b6" name="a87a085c06a3b7de52d62b7536e4d91b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87a085c06a3b7de52d62b7536e4d91b6">&#9670;&#160;</a></span>gpr_dimer_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1gpr__dimer__options__t.html">gpr_dimer_options_t</a> &amp; eonc::ParametersLoadAccess::gpr_dimer_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00344">344</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  344</span>                                                                           {</div>
+<div class="line"><span class="lineno">  345</span>    <span class="keywordflow">return</span> p.gpr_dimer_options_;</div>
+<div class="line"><span class="lineno">  346</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a5f2aed137acab9e4a8ec32526cae8868" name="a5f2aed137acab9e4a8ec32526cae8868"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f2aed137acab9e4a8ec32526cae8868">&#9670;&#160;</a></span>gpr_dimer_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1gpr__dimer__options__t.html">gpr_dimer_options_t</a> &amp; eonc::ParametersLoadAccess::gpr_dimer_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00341">341</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  341</span>                                                               {</div>
+<div class="line"><span class="lineno">  342</span>    <span class="keywordflow">return</span> p.gpr_dimer_options_;</div>
+<div class="line"><span class="lineno">  343</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aaa369e418bf81b95c658918ac5728441" name="aaa369e418bf81b95c658918ac5728441"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa369e418bf81b95c658918ac5728441">&#9670;&#160;</a></span>hessian_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1hessian__options__t.html">hessian_options_t</a> &amp; eonc::ParametersLoadAccess::hessian_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00399">399</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  399</span>                                                                       {</div>
+<div class="line"><span class="lineno">  400</span>    <span class="keywordflow">return</span> p.hessian_options_;</div>
+<div class="line"><span class="lineno">  401</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a6ffb4843438fabd263c12035e9529ae1" name="a6ffb4843438fabd263c12035e9529ae1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ffb4843438fabd263c12035e9529ae1">&#9670;&#160;</a></span>hessian_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1hessian__options__t.html">hessian_options_t</a> &amp; eonc::ParametersLoadAccess::hessian_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00396">396</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  396</span>                                                           {</div>
+<div class="line"><span class="lineno">  397</span>    <span class="keywordflow">return</span> p.hessian_options_;</div>
+<div class="line"><span class="lineno">  398</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a70fc44feef8171e3ef2954a87358fb39" name="a70fc44feef8171e3ef2954a87358fb39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70fc44feef8171e3ef2954a87358fb39">&#9670;&#160;</a></span>hyperdynamics_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1hyperdynamics__options__t.html">hyperdynamics_options_t</a> &amp; eonc::ParametersLoadAccess::hyperdynamics_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00440">440</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  440</span>                                             {</div>
+<div class="line"><span class="lineno">  441</span>    <span class="keywordflow">return</span> p.hyperdynamics_options_;</div>
+<div class="line"><span class="lineno">  442</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a09413a6f34bed1b1d4061d114a5979b6" name="a09413a6f34bed1b1d4061d114a5979b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09413a6f34bed1b1d4061d114a5979b6">&#9670;&#160;</a></span>hyperdynamics_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1hyperdynamics__options__t.html">hyperdynamics_options_t</a> &amp; eonc::ParametersLoadAccess::hyperdynamics_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00436">436</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  436</span>                                                                       {</div>
+<div class="line"><span class="lineno">  437</span>    <span class="keywordflow">return</span> p.hyperdynamics_options_;</div>
+<div class="line"><span class="lineno">  438</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a19d1f1296cb0a2332a068a1d56a58e12" name="a19d1f1296cb0a2332a068a1d56a58e12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19d1f1296cb0a2332a068a1d56a58e12">&#9670;&#160;</a></span>ira_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1ira__options__t.html">ira_options_t</a> &amp; eonc::ParametersLoadAccess::ira_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00479">479</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  479</span>                                                               {</div>
+<div class="line"><span class="lineno">  480</span>    <span class="keywordflow">return</span> p.ira_options_;</div>
+<div class="line"><span class="lineno">  481</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a01e38554ee0fc9e6bf05461a01412b8c" name="a01e38554ee0fc9e6bf05461a01412b8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01e38554ee0fc9e6bf05461a01412b8c">&#9670;&#160;</a></span>ira_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1ira__options__t.html">ira_options_t</a> &amp; eonc::ParametersLoadAccess::ira_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00478">478</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  478</span>{ <span class="keywordflow">return</span> p.ira_options_; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7881e678bbaf4c82c732e5fc2fb116bc" name="a7881e678bbaf4c82c732e5fc2fb116bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7881e678bbaf4c82c732e5fc2fb116bc">&#9670;&#160;</a></span>lanczos_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1lanczos__options__t.html">lanczos_options_t</a> &amp; eonc::ParametersLoadAccess::lanczos_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00381">381</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  381</span>                                                                       {</div>
+<div class="line"><span class="lineno">  382</span>    <span class="keywordflow">return</span> p.lanczos_options_;</div>
+<div class="line"><span class="lineno">  383</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2c7b0553d8fc8b813425da3ce18514b7" name="a2c7b0553d8fc8b813425da3ce18514b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c7b0553d8fc8b813425da3ce18514b7">&#9670;&#160;</a></span>lanczos_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1lanczos__options__t.html">lanczos_options_t</a> &amp; eonc::ParametersLoadAccess::lanczos_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00378">378</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  378</span>                                                           {</div>
+<div class="line"><span class="lineno">  379</span>    <span class="keywordflow">return</span> p.lanczos_options_;</div>
+<div class="line"><span class="lineno">  380</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a03444e34edc1bc74d51255c0efece9ea" name="a03444e34edc1bc74d51255c0efece9ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03444e34edc1bc74d51255c0efece9ea">&#9670;&#160;</a></span>main_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1main__options__t.html">main_options_t</a> &amp; eonc::ParametersLoadAccess::main_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00259">259</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  259</span>                                                                 {</div>
+<div class="line"><span class="lineno">  260</span>    <span class="keywordflow">return</span> p.main_options_;</div>
+<div class="line"><span class="lineno">  261</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2010f756f673b2c0205867e6ba55e3e2" name="a2010f756f673b2c0205867e6ba55e3e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2010f756f673b2c0205867e6ba55e3e2">&#9670;&#160;</a></span>main_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1main__options__t.html">main_options_t</a> &amp; eonc::ParametersLoadAccess::main_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00258">258</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  258</span>{ <span class="keywordflow">return</span> p.main_options_; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a1eb16a9dbd75295cbb9cc6d176914828" name="a1eb16a9dbd75295cbb9cc6d176914828"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1eb16a9dbd75295cbb9cc6d176914828">&#9670;&#160;</a></span>metatomic_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1metatomic__options__t.html">metatomic_options_t</a> &amp; eonc::ParametersLoadAccess::metatomic_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00375">375</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  375</span>                                                                           {</div>
+<div class="line"><span class="lineno">  376</span>    <span class="keywordflow">return</span> p.metatomic_options_;</div>
+<div class="line"><span class="lineno">  377</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0f1e232988495876d076b2430450bae1" name="a0f1e232988495876d076b2430450bae1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f1e232988495876d076b2430450bae1">&#9670;&#160;</a></span>metatomic_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1metatomic__options__t.html">metatomic_options_t</a> &amp; eonc::ParametersLoadAccess::metatomic_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00372">372</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  372</span>                                                               {</div>
+<div class="line"><span class="lineno">  373</span>    <span class="keywordflow">return</span> p.metatomic_options_;</div>
+<div class="line"><span class="lineno">  374</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ab60d747ee690a9ed95e5e362eb4f3a0a" name="ab60d747ee690a9ed95e5e362eb4f3a0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab60d747ee690a9ed95e5e362eb4f3a0a">&#9670;&#160;</a></span>monte_carlo_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1monte__carlo__options__t.html">monte_carlo_options_t</a> &amp; eonc::ParametersLoadAccess::monte_carlo_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00461">461</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  461</span>                                                                               {</div>
+<div class="line"><span class="lineno">  462</span>    <span class="keywordflow">return</span> p.monte_carlo_options_;</div>
+<div class="line"><span class="lineno">  463</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aa44e3001f04c48a7d088562d5b45f08b" name="aa44e3001f04c48a7d088562d5b45f08b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa44e3001f04c48a7d088562d5b45f08b">&#9670;&#160;</a></span>monte_carlo_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1monte__carlo__options__t.html">monte_carlo_options_t</a> &amp; eonc::ParametersLoadAccess::monte_carlo_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00458">458</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  458</span>                                                                   {</div>
+<div class="line"><span class="lineno">  459</span>    <span class="keywordflow">return</span> p.monte_carlo_options_;</div>
+<div class="line"><span class="lineno">  460</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ab9f997dcda4bd32dbbc2a2ba1a234132" name="ab9f997dcda4bd32dbbc2a2ba1a234132"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9f997dcda4bd32dbbc2a2ba1a234132">&#9670;&#160;</a></span>mopac_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1mopac__options__t.html">mopac_options_t</a> &amp; eonc::ParametersLoadAccess::mopac_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00291">291</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  291</span>                                                                   {</div>
+<div class="line"><span class="lineno">  292</span>    <span class="keywordflow">return</span> p.mopac_options_;</div>
+<div class="line"><span class="lineno">  293</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a09f879d0a6e3e97141fb145522b36b08" name="a09f879d0a6e3e97141fb145522b36b08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09f879d0a6e3e97141fb145522b36b08">&#9670;&#160;</a></span>mopac_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1mopac__options__t.html">mopac_options_t</a> &amp; eonc::ParametersLoadAccess::mopac_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00288">288</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  288</span>                                                       {</div>
+<div class="line"><span class="lineno">  289</span>    <span class="keywordflow">return</span> p.mopac_options_;</div>
+<div class="line"><span class="lineno">  290</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a70de1a74d234a78055a4657e8f7bd90c" name="a70de1a74d234a78055a4657e8f7bd90c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70de1a74d234a78055a4657e8f7bd90c">&#9670;&#160;</a></span>neb_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1neb__options__t.html">neb_options_t</a> &amp; eonc::ParametersLoadAccess::neb_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00403">403</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  403</span>                                                               {</div>
+<div class="line"><span class="lineno">  404</span>    <span class="keywordflow">return</span> p.neb_options_;</div>
+<div class="line"><span class="lineno">  405</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af5bb2888dd1af01a63e978ab000509b2" name="af5bb2888dd1af01a63e978ab000509b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5bb2888dd1af01a63e978ab000509b2">&#9670;&#160;</a></span>neb_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1neb__options__t.html">neb_options_t</a> &amp; eonc::ParametersLoadAccess::neb_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00402">402</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  402</span>{ <span class="keywordflow">return</span> p.neb_options_; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7105c221a9025f737234ec604e64484d" name="a7105c221a9025f737234ec604e64484d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7105c221a9025f737234ec604e64484d">&#9670;&#160;</a></span>oh_tst_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1oh__tst__options__t.html">oh_tst_options_t</a> &amp; eonc::ParametersLoadAccess::oh_tst_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00491">491</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  491</span>                                                                     {</div>
+<div class="line"><span class="lineno">  492</span>    <span class="keywordflow">return</span> p.oh_tst_options_;</div>
+<div class="line"><span class="lineno">  493</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a14bf6c525a9fc166ff20d30bd142ddb3" name="a14bf6c525a9fc166ff20d30bd142ddb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14bf6c525a9fc166ff20d30bd142ddb3">&#9670;&#160;</a></span>oh_tst_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1oh__tst__options__t.html">oh_tst_options_t</a> &amp; eonc::ParametersLoadAccess::oh_tst_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00488">488</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  488</span>                                                         {</div>
+<div class="line"><span class="lineno">  489</span>    <span class="keywordflow">return</span> p.oh_tst_options_;</div>
+<div class="line"><span class="lineno">  490</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="afff46912930c4be0b00012a8cf09b334" name="afff46912930c4be0b00012a8cf09b334"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afff46912930c4be0b00012a8cf09b334">&#9670;&#160;</a></span>optimizer_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1optimizer__options__t.html">optimizer_options_t</a> &amp; eonc::ParametersLoadAccess::optimizer_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00332">332</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  332</span>                                                                           {</div>
+<div class="line"><span class="lineno">  333</span>    <span class="keywordflow">return</span> p.optimizer_options_;</div>
+<div class="line"><span class="lineno">  334</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ab64eec9eb60431f7eca18fd178a58bdc" name="ab64eec9eb60431f7eca18fd178a58bdc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab64eec9eb60431f7eca18fd178a58bdc">&#9670;&#160;</a></span>optimizer_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1optimizer__options__t.html">optimizer_options_t</a> &amp; eonc::ParametersLoadAccess::optimizer_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00329">329</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  329</span>                                                               {</div>
+<div class="line"><span class="lineno">  330</span>    <span class="keywordflow">return</span> p.optimizer_options_;</div>
+<div class="line"><span class="lineno">  331</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad0637d941f6ffaa986360846892c3e7e" name="ad0637d941f6ffaa986360846892c3e7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0637d941f6ffaa986360846892c3e7e">&#9670;&#160;</a></span>parallel_replica_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1parallel__replica__options__t.html">parallel_replica_options_t</a> &amp; eonc::ParametersLoadAccess::parallel_replica_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00416">416</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  416</span>                                                {</div>
+<div class="line"><span class="lineno">  417</span>    <span class="keywordflow">return</span> p.parallel_replica_options_;</div>
+<div class="line"><span class="lineno">  418</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a99634c33d4951768784ea83a9b1a63ef" name="a99634c33d4951768784ea83a9b1a63ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99634c33d4951768784ea83a9b1a63ef">&#9670;&#160;</a></span>parallel_replica_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1parallel__replica__options__t.html">parallel_replica_options_t</a> &amp; eonc::ParametersLoadAccess::parallel_replica_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00412">412</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  412</span>                                                                             {</div>
+<div class="line"><span class="lineno">  413</span>    <span class="keywordflow">return</span> p.parallel_replica_options_;</div>
+<div class="line"><span class="lineno">  414</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af2a70c4d560104c31d2c467c4a6ae2ea" name="af2a70c4d560104c31d2c467c4a6ae2ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2a70c4d560104c31d2c467c4a6ae2ea">&#9670;&#160;</a></span>potential_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1potential__options__t.html">potential_options_t</a> &amp; eonc::ParametersLoadAccess::potential_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00265">265</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  265</span>                                                                           {</div>
+<div class="line"><span class="lineno">  266</span>    <span class="keywordflow">return</span> p.potential_options_;</div>
+<div class="line"><span class="lineno">  267</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aeed4f257ac8c809eb6e50686d2b41932" name="aeed4f257ac8c809eb6e50686d2b41932"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeed4f257ac8c809eb6e50686d2b41932">&#9670;&#160;</a></span>potential_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1potential__options__t.html">potential_options_t</a> &amp; eonc::ParametersLoadAccess::potential_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00262">262</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  262</span>                                                               {</div>
+<div class="line"><span class="lineno">  263</span>    <span class="keywordflow">return</span> p.potential_options_;</div>
+<div class="line"><span class="lineno">  264</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a9b615a118287d2c08b12a374de7b222d" name="a9b615a118287d2c08b12a374de7b222d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b615a118287d2c08b12a374de7b222d">&#9670;&#160;</a></span>prefactor_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1prefactor__options__t.html">prefactor_options_t</a> &amp; eonc::ParametersLoadAccess::prefactor_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00393">393</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  393</span>                                                                           {</div>
+<div class="line"><span class="lineno">  394</span>    <span class="keywordflow">return</span> p.prefactor_options_;</div>
+<div class="line"><span class="lineno">  395</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2dfec147488654051fa846ace3dbddd5" name="a2dfec147488654051fa846ace3dbddd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2dfec147488654051fa846ace3dbddd5">&#9670;&#160;</a></span>prefactor_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1prefactor__options__t.html">prefactor_options_t</a> &amp; eonc::ParametersLoadAccess::prefactor_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00390">390</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  390</span>                                                               {</div>
+<div class="line"><span class="lineno">  391</span>    <span class="keywordflow">return</span> p.prefactor_options_;</div>
+<div class="line"><span class="lineno">  392</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a753623f94c3430804d0a8c8c8caa851a" name="a753623f94c3430804d0a8c8c8caa851a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a753623f94c3430804d0a8c8c8caa851a">&#9670;&#160;</a></span>process_search_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1process__search__options__t.html">process_search_options_t</a> &amp; eonc::ParametersLoadAccess::process_search_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00319">319</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  319</span>                                              {</div>
+<div class="line"><span class="lineno">  320</span>    <span class="keywordflow">return</span> p.process_search_options_;</div>
+<div class="line"><span class="lineno">  321</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aee74a08dfe65aa9d9da0a6d913a80295" name="aee74a08dfe65aa9d9da0a6d913a80295"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee74a08dfe65aa9d9da0a6d913a80295">&#9670;&#160;</a></span>process_search_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1process__search__options__t.html">process_search_options_t</a> &amp; eonc::ParametersLoadAccess::process_search_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00315">315</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  315</span>                                                                         {</div>
+<div class="line"><span class="lineno">  316</span>    <span class="keywordflow">return</span> p.process_search_options_;</div>
+<div class="line"><span class="lineno">  317</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a07f968dfd98a21b9a952e4e2cd82fd80" name="a07f968dfd98a21b9a952e4e2cd82fd80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07f968dfd98a21b9a952e4e2cd82fd80">&#9670;&#160;</a></span>replica_exchange_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1replica__exchange__options__t.html">replica_exchange_options_t</a> &amp; eonc::ParametersLoadAccess::replica_exchange_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00433">433</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  433</span>                                                {</div>
+<div class="line"><span class="lineno">  434</span>    <span class="keywordflow">return</span> p.replica_exchange_options_;</div>
+<div class="line"><span class="lineno">  435</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a784797f54da73a808d64a3a7a745b867" name="a784797f54da73a808d64a3a7a745b867"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a784797f54da73a808d64a3a7a745b867">&#9670;&#160;</a></span>replica_exchange_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1replica__exchange__options__t.html">replica_exchange_options_t</a> &amp; eonc::ParametersLoadAccess::replica_exchange_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00429">429</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  429</span>                                                                             {</div>
+<div class="line"><span class="lineno">  430</span>    <span class="keywordflow">return</span> p.replica_exchange_options_;</div>
+<div class="line"><span class="lineno">  431</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a338efebcd9facfecaf4be201546c6727" name="a338efebcd9facfecaf4be201546c6727"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a338efebcd9facfecaf4be201546c6727">&#9670;&#160;</a></span>rgpot_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1rgpot__options__t.html">rgpot_options_t</a> &amp; eonc::ParametersLoadAccess::rgpot_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00304">304</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  304</span>                                                                   {</div>
+<div class="line"><span class="lineno">  305</span>    <span class="keywordflow">return</span> p.rgpot_options_;</div>
+<div class="line"><span class="lineno">  306</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ab30fdf1ca509d5473678efd5c69c0d13" name="ab30fdf1ca509d5473678efd5c69c0d13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab30fdf1ca509d5473678efd5c69c0d13">&#9670;&#160;</a></span>rgpot_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1rgpot__options__t.html">rgpot_options_t</a> &amp; eonc::ParametersLoadAccess::rgpot_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00301">301</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  301</span>                                                       {</div>
+<div class="line"><span class="lineno">  302</span>    <span class="keywordflow">return</span> p.rgpot_options_;</div>
+<div class="line"><span class="lineno">  303</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8f678c9fe2323906cc33f5c70b46b80a" name="a8f678c9fe2323906cc33f5c70b46b80a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f678c9fe2323906cc33f5c70b46b80a">&#9670;&#160;</a></span>saddle_search_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1saddle__search__options__t.html">saddle_search_options_t</a> &amp; eonc::ParametersLoadAccess::saddle_search_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00326">326</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  326</span>                                             {</div>
+<div class="line"><span class="lineno">  327</span>    <span class="keywordflow">return</span> p.saddle_search_options_;</div>
+<div class="line"><span class="lineno">  328</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a139052813c740d9a759148b91847124d" name="a139052813c740d9a759148b91847124d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a139052813c740d9a759148b91847124d">&#9670;&#160;</a></span>saddle_search_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1saddle__search__options__t.html">saddle_search_options_t</a> &amp; eonc::ParametersLoadAccess::saddle_search_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00322">322</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  322</span>                                                                       {</div>
+<div class="line"><span class="lineno">  323</span>    <span class="keywordflow">return</span> p.saddle_search_options_;</div>
+<div class="line"><span class="lineno">  324</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a5974e17e63a4f7b4f86081fa8d73c165" name="a5974e17e63a4f7b4f86081fa8d73c165"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5974e17e63a4f7b4f86081fa8d73c165">&#9670;&#160;</a></span>serve_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1serve__options__t.html">serve_options_t</a> &amp; eonc::ParametersLoadAccess::serve_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00471">471</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  471</span>                                                                   {</div>
+<div class="line"><span class="lineno">  472</span>    <span class="keywordflow">return</span> p.serve_options_;</div>
+<div class="line"><span class="lineno">  473</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2fea2458ae10d1a307dcb7bda55863ee" name="a2fea2458ae10d1a307dcb7bda55863ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fea2458ae10d1a307dcb7bda55863ee">&#9670;&#160;</a></span>serve_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1serve__options__t.html">serve_options_t</a> &amp; eonc::ParametersLoadAccess::serve_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00468">468</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  468</span>                                                       {</div>
+<div class="line"><span class="lineno">  469</span>    <span class="keywordflow">return</span> p.serve_options_;</div>
+<div class="line"><span class="lineno">  470</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="abb9069909a8a33bc202bbe857fcc106c" name="abb9069909a8a33bc202bbe857fcc106c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb9069909a8a33bc202bbe857fcc106c">&#9670;&#160;</a></span>socket_nwchem_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1socket__nwchem__options__t.html">socket_nwchem_options_t</a> &amp; eonc::ParametersLoadAccess::socket_nwchem_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00298">298</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  298</span>                                             {</div>
+<div class="line"><span class="lineno">  299</span>    <span class="keywordflow">return</span> p.socket_nwchem_options_;</div>
+<div class="line"><span class="lineno">  300</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a4d9bbe7bd4ab3d19906f0fa68d9d8f01" name="a4d9bbe7bd4ab3d19906f0fa68d9d8f01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d9bbe7bd4ab3d19906f0fa68d9d8f01">&#9670;&#160;</a></span>socket_nwchem_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1socket__nwchem__options__t.html">socket_nwchem_options_t</a> &amp; eonc::ParametersLoadAccess::socket_nwchem_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00294">294</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  294</span>                                                                       {</div>
+<div class="line"><span class="lineno">  295</span>    <span class="keywordflow">return</span> p.socket_nwchem_options_;</div>
+<div class="line"><span class="lineno">  296</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad3ca240e9455c4d7c8585b39156f4163" name="ad3ca240e9455c4d7c8585b39156f4163"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3ca240e9455c4d7c8585b39156f4163">&#9670;&#160;</a></span>structure_comparison_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="namespaceeonc.html#a212f2d1f7e3dba9a689478884b514c7e">structure_comparison_options_t</a> &amp; eonc::ParametersLoadAccess::structure_comparison_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00312">312</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  312</span>                                                    {</div>
+<div class="line"><span class="lineno">  313</span>    <span class="keywordflow">return</span> p.structure_comparison_options_;</div>
+<div class="line"><span class="lineno">  314</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a12859c7ce343ec8de91acfb960e95264" name="a12859c7ce343ec8de91acfb960e95264"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12859c7ce343ec8de91acfb960e95264">&#9670;&#160;</a></span>structure_comparison_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeonc.html#a212f2d1f7e3dba9a689478884b514c7e">structure_comparison_options_t</a> &amp; eonc::ParametersLoadAccess::structure_comparison_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00308">308</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  308</span>                                              {</div>
+<div class="line"><span class="lineno">  309</span>    <span class="keywordflow">return</span> p.structure_comparison_options_;</div>
+<div class="line"><span class="lineno">  310</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8a3e2a116552b8dac5de645280eb0126" name="a8a3e2a116552b8dac5de645280eb0126"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a3e2a116552b8dac5de645280eb0126">&#9670;&#160;</a></span>tad_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1tad__options__t.html">tad_options_t</a> &amp; eonc::ParametersLoadAccess::tad_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00420">420</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  420</span>                                                               {</div>
+<div class="line"><span class="lineno">  421</span>    <span class="keywordflow">return</span> p.tad_options_;</div>
+<div class="line"><span class="lineno">  422</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a99c4fdd51927cab836826b68ca14c1c0" name="a99c4fdd51927cab836826b68ca14c1c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99c4fdd51927cab836826b68ca14c1c0">&#9670;&#160;</a></span>tad_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1tad__options__t.html">tad_options_t</a> &amp; eonc::ParametersLoadAccess::tad_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00419">419</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  419</span>{ <span class="keywordflow">return</span> p.tad_options_; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad98cc8adfadb38530659c629e90b4ceb" name="ad98cc8adfadb38530659c629e90b4ceb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad98cc8adfadb38530659c629e90b4ceb">&#9670;&#160;</a></span>thermostat_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1thermostat__options__t.html">thermostat_options_t</a> &amp; eonc::ParametersLoadAccess::thermostat_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00426">426</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  426</span>                                                                             {</div>
+<div class="line"><span class="lineno">  427</span>    <span class="keywordflow">return</span> p.thermostat_options_;</div>
+<div class="line"><span class="lineno">  428</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a9c75d9cf2778b2991606c60f8f387bdc" name="a9c75d9cf2778b2991606c60f8f387bdc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c75d9cf2778b2991606c60f8f387bdc">&#9670;&#160;</a></span>thermostat_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1thermostat__options__t.html">thermostat_options_t</a> &amp; eonc::ParametersLoadAccess::thermostat_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00423">423</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  423</span>                                                                 {</div>
+<div class="line"><span class="lineno">  424</span>    <span class="keywordflow">return</span> p.thermostat_options_;</div>
+<div class="line"><span class="lineno">  425</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a63a4f9ac550142b25dedaf7690c98b60" name="a63a4f9ac550142b25dedaf7690c98b60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63a4f9ac550142b25dedaf7690c98b60">&#9670;&#160;</a></span>xtb_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1xtb__options__t.html">xtb_options_t</a> &amp; eonc::ParametersLoadAccess::xtb_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00273">273</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  273</span>                                                               {</div>
+<div class="line"><span class="lineno">  274</span>    <span class="keywordflow">return</span> p.xtb_options_;</div>
+<div class="line"><span class="lineno">  275</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a77babb92bddf396fff21c573193921c1" name="a77babb92bddf396fff21c573193921c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77babb92bddf396fff21c573193921c1">&#9670;&#160;</a></span>xtb_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1xtb__options__t.html">xtb_options_t</a> &amp; eonc::ParametersLoadAccess::xtb_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00272">272</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  272</span>{ <span class="keywordflow">return</span> p.xtb_options_; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac9e9906b80e10afd5527879a6684beeb" name="ac9e9906b80e10afd5527879a6684beeb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9e9906b80e10afd5527879a6684beeb">&#9670;&#160;</a></span>zbl_options() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeonc_1_1zbl__options__t.html">zbl_options_t</a> &amp; eonc::ParametersLoadAccess::zbl_options </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00277">277</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  277</span>                                                               {</div>
+<div class="line"><span class="lineno">  278</span>    <span class="keywordflow">return</span> p.zbl_options_;</div>
+<div class="line"><span class="lineno">  279</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a10028711edb5246624c8bd92e0e268c0" name="a10028711edb5246624c8bd92e0e268c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10028711edb5246624c8bd92e0e268c0">&#9670;&#160;</a></span>zbl_options() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1zbl__options__t.html">zbl_options_t</a> &amp; eonc::ParametersLoadAccess::zbl_options </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00276">276</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  276</span>{ <span class="keywordflow">return</span> p.zbl_options_; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/<a class="el" href="Parameters_8h_source.html">Parameters.h</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="namespaceeonc.html">eonc</a></li><li class="navelem"><a href="structeonc_1_1ParametersLoadAccess.html">ParametersLoadAccess</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

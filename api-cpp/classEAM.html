@@ -259,16 +259,25 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a478560c7c419f62f0f73930becb989c0" id="r_a478560c7c419f62f0f73930becb989c0"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a478560c7c419f62f0f73930becb989c0">EAM</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;params)</td></tr>
+<tr class="memitem:ab3c567bbb4cc8c86f1b1abd8face6ee5" id="r_ab3c567bbb4cc8c86f1b1abd8face6ee5"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#ab3c567bbb4cc8c86f1b1abd8face6ee5">EAM</a> (const <a class="el" href="classeonc_1_1Parameters.html">eonc::Parameters</a> &amp;params)</td></tr>
 <tr class="memitem:a281a60486cb275addabc18f69681446d" id="r_a281a60486cb275addabc18f69681446d"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a281a60486cb275addabc18f69681446d">~EAM</a> () override=default</td></tr>
 <tr class="memitem:ace6248f3ce70c9e65f9ec59a9cdb8744" id="r_ace6248f3ce70c9e65f9ec59a9cdb8744"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ace6248f3ce70c9e65f9ec59a9cdb8744">cleanMemory</a> ()</td></tr>
 <tr class="memitem:ad3dae1a4f620bc02ea4205ccae927ee6" id="r_ad3dae1a4f620bc02ea4205ccae927ee6"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ad3dae1a4f620bc02ea4205ccae927ee6">force</a> (long N, const double *R, const int *atomicNrs, double *F, double *U, double *variance, const double *fullbox) override</td></tr>
+<tr class="memitem:abcf5da2c9e16e8367fb1a6ac99495030" id="r_abcf5da2c9e16e8367fb1a6ac99495030"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#abcf5da2c9e16e8367fb1a6ac99495030">isSharedInstanceThreadSafe</a> () const noexcept override</td></tr>
+<tr class="memdesc:abcf5da2c9e16e8367fb1a6ac99495030"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cell lists live on the instance; two threads cannot share one <a class="el" href="classEAM.html" title="EAM (Embedded Atom Method) potential with cell list neighbor finding.">EAM</a>.  <br /></td></tr>
 <tr class="inherit_header pub_methods_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
 <tr class="memitem:af81acd9a6775ff13fab861a51fb9ba95 inherit pub_methods_classeonc_1_1Potential" id="r_af81acd9a6775ff13fab861a51fb9ba95"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> a_ptype)</td></tr>
-<tr class="memitem:a2aaa7956f073f9db72277909e51c40c9 inherit pub_methods_classeonc_1_1Potential" id="r_a2aaa7956f073f9db72277909e51c40c9"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a2aaa7956f073f9db72277909e51c40c9">Potential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> a_ptype, const <a class="el" href="classParameters.html">Parameters</a> &amp;)</td></tr>
-<tr class="memitem:ac908414bc07e7c33019e01abb4a7d9ee inherit pub_methods_classeonc_1_1Potential" id="r_ac908414bc07e7c33019e01abb4a7d9ee"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac908414bc07e7c33019e01abb4a7d9ee">Potential</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;a_params)</td></tr>
+<tr class="memdesc:af81acd9a6775ff13fab861a51fb9ba95 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Production default: construction-scope registry, else <a class="el" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b" title="Process-lifetime singleton.">PotRegistry::get()</a>.  <br /></td></tr>
+<tr class="memitem:a4e175c0617f001c818b78cc147a32172 inherit pub_methods_classeonc_1_1Potential" id="r_a4e175c0617f001c818b78cc147a32172"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a4e175c0617f001c818b78cc147a32172">Potential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> a_ptype, <a class="el" href="classeonc_1_1IPotRegistry.html">IPotRegistry</a> &amp;registry)</td></tr>
+<tr class="memdesc:a4e175c0617f001c818b78cc147a32172 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test seam: injected registry, no process-default get() counters.  <br /></td></tr>
+<tr class="memitem:ac02d0eefd5dd48d49d5bee0ce3298184 inherit pub_methods_classeonc_1_1Potential" id="r_ac02d0eefd5dd48d49d5bee0ce3298184"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac02d0eefd5dd48d49d5bee0ce3298184">Potential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> a_ptype, const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:ac908414bc07e7c33019e01abb4a7d9ee inherit pub_methods_classeonc_1_1Potential" id="r_ac908414bc07e7c33019e01abb4a7d9ee"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac908414bc07e7c33019e01abb4a7d9ee">Potential</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;a_params)</td></tr>
 <tr class="memitem:a57af1d92eeff9618f873a0241e390de2 inherit pub_methods_classeonc_1_1Potential" id="r_a57af1d92eeff9618f873a0241e390de2"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a57af1d92eeff9618f873a0241e390de2">~Potential</a> ()</td></tr>
-<tr class="memitem:ac00fe80dcbd4f5887da244047aaf63f5 inherit pub_methods_classeonc_1_1Potential" id="r_ac00fe80dcbd4f5887da244047aaf63f5"><td class="memItemLeft">std::tuple&lt; double, <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac00fe80dcbd4f5887da244047aaf63f5">get_ef</a> (const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;pos, const VectorXi &amp;atmnrs, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;box)</td></tr>
+<tr class="memitem:a57832183eb8dec7c2f1442363d1f7994 inherit pub_methods_classeonc_1_1Potential" id="r_a57832183eb8dec7c2f1442363d1f7994"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a57832183eb8dec7c2f1442363d1f7994">force</a> (std::span&lt; const double &gt; positions, std::span&lt; const int &gt; atomicNrs, std::span&lt; double &gt; forces, double *energy, double *variance, std::span&lt; const double &gt; box)</td></tr>
+<tr class="memdesc:a57832183eb8dec7c2f1442363d1f7994 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">C++ call site: size-checked view over the raw FFI <a class="el" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">force()</a>.  <br /></td></tr>
+<tr class="memitem:af63f26dc7fdff78a6613961ea860f3a1 inherit pub_methods_classeonc_1_1Potential" id="r_af63f26dc7fdff78a6613961ea860f3a1"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#af63f26dc7fdff78a6613961ea860f3a1">setFixedMask</a> (long nAtoms, const double *isFixed)</td></tr>
+<tr class="memdesc:af63f26dc7fdff78a6613961ea860f3a1 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional frozen-atom mask (nAtoms*3, 1.0 = fixed).  <br /></td></tr>
+<tr class="memitem:aa2f4f152a44aa2827a6ca08bdd40da81 inherit pub_methods_classeonc_1_1Potential" id="r_aa2f4f152a44aa2827a6ca08bdd40da81"><td class="memItemLeft">std::tuple&lt; double, <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#aa2f4f152a44aa2827a6ca08bdd40da81">get_ef</a> (const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;pos, const VectorXi &amp;atmnrs, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;box)</td></tr>
 <tr class="memitem:a4f0274548044ab1f714e4801352c4547 inherit pub_methods_classeonc_1_1Potential" id="r_a4f0274548044ab1f714e4801352c4547"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a4f0274548044ab1f714e4801352c4547">getType</a> () const</td></tr>
 <tr class="memitem:a85b0a3456f6528d8c464ab4b5774878e inherit pub_methods_classeonc_1_1Potential" id="r_a85b0a3456f6528d8c464ab4b5774878e"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a85b0a3456f6528d8c464ab4b5774878e">isSurrogate</a> () const noexcept</td></tr>
 <tr class="memdesc:a85b0a3456f6528d8c464ab4b5774878e inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this is a surrogate (GP) potential.  <br /></td></tr>
@@ -276,10 +285,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ac4c9e9deaa0e73fa27ff97b6d6acad98 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">True for molecular QM / non-PBC backends (NWChem socket, <a class="el" href="classASE.html">ASE</a> ORCA/NWChem, …).  <br /></td></tr>
 <tr class="memitem:af6c385eb52d3764246416ea389c84131 inherit pub_methods_classeonc_1_1Potential" id="r_af6c385eb52d3764246416ea389c84131"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#af6c385eb52d3764246416ea389c84131">isThreadSafe</a> () const noexcept</td></tr>
 <tr class="memdesc:af6c385eb52d3764246416ea389c84131 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this potential's <a class="el" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">force()</a> can be called from multiple threads on the SAME instance.  <br /></td></tr>
-<tr class="memitem:a8065b9661fcb0b025d397928243c987c inherit pub_methods_classeonc_1_1Potential" id="r_a8065b9661fcb0b025d397928243c987c"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a8065b9661fcb0b025d397928243c987c">isSharedInstanceThreadSafe</a> () const noexcept</td></tr>
-<tr class="memdesc:a8065b9661fcb0b025d397928243c987c inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conservative gate for sharing one <a class="el" href="classeonc_1_1Potential.html">Potential</a> instance across threads.  <br /></td></tr>
+<tr class="memitem:ac0b6310014f5d95811c5e0ec451568ba inherit pub_methods_classeonc_1_1Potential" id="r_ac0b6310014f5d95811c5e0ec451568ba"><td class="memItemLeft">virtual unsigned&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac0b6310014f5d95811c5e0ec451568ba">layoutFlags</a> () const noexcept</td></tr>
 <tr class="memitem:a8b83745c9898990f848daafa4c351c2f inherit pub_methods_classeonc_1_1Potential" id="r_a8b83745c9898990f848daafa4c351c2f"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a8b83745c9898990f848daafa4c351c2f">needsPerImageInstance</a> () const noexcept</td></tr>
 <tr class="memdesc:a8b83745c9898990f848daafa4c351c2f inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether NEB should create separate <a class="el" href="classeonc_1_1Potential.html">Potential</a> instances per image for true parallel force evaluation.  <br /></td></tr>
+<tr class="memitem:a59bc4af33d113751d3804054b79a4872 inherit pub_methods_classeonc_1_1Potential" id="r_a59bc4af33d113751d3804054b79a4872"><td class="memItemLeft">virtual std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a59bc4af33d113751d3804054b79a4872">clonePotential</a> () const</td></tr>
+<tr class="memdesc:a59bc4af33d113751d3804054b79a4872 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Independent instance that does not reload from disk.  <br /></td></tr>
 <tr class="memitem:a2d8781e3cbea888f88b7523c5d00bc43 inherit pub_methods_classeonc_1_1Potential" id="r_a2d8781e3cbea888f88b7523c5d00bc43"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a2d8781e3cbea888f88b7523c5d00bc43">supportsBatchEvaluation</a> () const noexcept</td></tr>
 <tr class="memdesc:a2d8781e3cbea888f88b7523c5d00bc43 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this potential supports batched evaluation of N systems in a single call.  <br /></td></tr>
 <tr class="memitem:aa66e1416134ff55639a6d20a34e3c1c1 inherit pub_methods_classeonc_1_1Potential" id="r_aa66e1416134ff55639a6d20a34e3c1c1"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#aa66e1416134ff55639a6d20a34e3c1c1">forceBatch</a> (long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes)</td></tr>
@@ -312,6 +322,12 @@ Static Private Attributes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_types_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_types_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Types inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
+<tr class="memitem:a6a35357f6786a54c47eceedf6eab2056 inherit pub_types_classeonc_1_1Potential" id="r_a6a35357f6786a54c47eceedf6eab2056"><td class="memItemLeft">enum class &#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a6a35357f6786a54c47eceedf6eab2056">PotLayout</a> : unsigned { <a class="el" href="classeonc_1_1Potential.html#a6a35357f6786a54c47eceedf6eab2056a651a693296d758550ddc034a389ef058">InProcess</a> = 1u &lt;&lt; 0
+, <a class="el" href="classeonc_1_1Potential.html#a6a35357f6786a54c47eceedf6eab2056a7c188dee6d54a1cb92a7c95534b34e93">NeedsWorkingDirectory</a> = 1u &lt;&lt; 1
+, <a class="el" href="classeonc_1_1Potential.html#a6a35357f6786a54c47eceedf6eab2056aacfc9fac11fea7710fbe22b6ba4b3a9e">Subprocess</a> = 1u &lt;&lt; 2
+ }</td></tr>
+<tr class="memdesc:a6a35357f6786a54c47eceedf6eab2056"><td class="mdescLeft">&#160;</td><td class="mdescRight">How the pot is executed (eOn-12x7). Combine with bitwise or.  <a href="classeonc_1_1Potential.html#a6a35357f6786a54c47eceedf6eab2056">More...</a><br /></td></tr>
 <tr class="inherit_header pub_attribs_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
 <tr class="memitem:a2ae7cca425e3d69d2825c58d1c7704eb inherit pub_attribs_classeonc_1_1Potential" id="r_a2ae7cca425e3d69d2825c58d1c7704eb"><td class="memItemLeft">std::atomic&lt; size_t &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">forceCallCounter</a></td></tr>
 <tr class="inherit_header pro_attribs_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
@@ -322,8 +338,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="EAM_8h_source.html#l00023">23</a> of file <a class="el" href="EAM_8h_source.html">EAM.h</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a478560c7c419f62f0f73930becb989c0" name="a478560c7c419f62f0f73930becb989c0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a478560c7c419f62f0f73930becb989c0">&#9670;&#160;</a></span>EAM()</h2>
+<a id="ab3c567bbb4cc8c86f1b1abd8face6ee5" name="ab3c567bbb4cc8c86f1b1abd8face6ee5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3c567bbb4cc8c86f1b1abd8face6ee5">&#9670;&#160;</a></span>EAM()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -334,7 +350,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">EAM::EAM </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">eonc::Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -346,10 +362,8 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="EAM_8h_source.html#l00029">29</a> of file <a class="el" href="EAM_8h_source.html">EAM.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   30</span>      : <a class="code hl_function" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a>(<a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ab65e908410eb266ddc3a2ebd0823d20e">PotType::EAM_AL</a>, params),</div>
-<div class="line"><span class="lineno">   31</span>        <a class="code hl_variable" href="#a9df9baa12a7d5218e011bea74a816986">rc_</a>{6.0, 6.0, 6.0} {}</div>
-<div class="ttc" id="aclassEAM_html_a9df9baa12a7d5218e011bea74a816986"><div class="ttname"><a href="#a9df9baa12a7d5218e011bea74a816986">EAM::rc_</a></div><div class="ttdeci">std::array&lt; double, 3 &gt; rc_</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00056">EAM.h:56</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Potential_html_af81acd9a6775ff13fab861a51fb9ba95"><div class="ttname"><a href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">eonc::Potential::Potential</a></div><div class="ttdeci">Potential(PotType a_ptype)</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00035">Potential.h:35</a></div></div>
+<div class="fragment"><div class="line"><span class="lineno">   30</span>      : eonc::Potential(<a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ab65e908410eb266ddc3a2ebd0823d20e">eonc::PotType::EAM_AL</a>, params), <a class="code hl_variable" href="#a9df9baa12a7d5218e011bea74a816986">rc_</a>{6.0, 6.0, 6.0} {}</div>
+<div class="ttc" id="aclassEAM_html_a9df9baa12a7d5218e011bea74a816986"><div class="ttname"><a href="#a9df9baa12a7d5218e011bea74a816986">EAM::rc_</a></div><div class="ttdeci">std::array&lt; double, 3 &gt; rc_</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00060">EAM.h:60</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2ab65e908410eb266ddc3a2ebd0823d20e"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ab65e908410eb266ddc3a2ebd0823d20e">eonc::PotType::EAM_AL</a></div><div class="ttdeci">@ EAM_AL</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00049">BaseStructures.h:49</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -427,112 +441,112 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EAM_8cpp_source.html#l00125">125</a> of file <a class="el" href="EAM_8cpp_source.html">EAM.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  126</span>                                                   {</div>
-<div class="line"><span class="lineno">  127</span>  std::vector&lt;double&gt; drho_dr(3 * N);</div>
-<div class="line"><span class="lineno">  128</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt; 3 * N; k++) {</div>
-<div class="line"><span class="lineno">  129</span>    F[k] = 0.0;</div>
-<div class="line"><span class="lineno">  130</span>  }</div>
-<div class="line"><span class="lineno">  131</span>  *U = 0;</div>
-<div class="line"><span class="lineno">  132</span> </div>
-<div class="line"><span class="lineno">  133</span>  <span class="comment">// Pre-compute half-box for PBC</span></div>
-<div class="line"><span class="lineno">  134</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> halfBox0 = box[0] * 0.5;</div>
-<div class="line"><span class="lineno">  135</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> halfBox1 = box[1] * 0.5;</div>
-<div class="line"><span class="lineno">  136</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> halfBox2 = box[2] * 0.5;</div>
+<p class="definition">Definition at line <a class="el" href="EAM_8cpp_source.html#l00130">130</a> of file <a class="el" href="EAM_8cpp_source.html">EAM.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  131</span>                                                   {</div>
+<div class="line"><span class="lineno">  132</span>  std::vector&lt;double&gt; drho_dr(3 * N);</div>
+<div class="line"><span class="lineno">  133</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt; 3 * N; k++) {</div>
+<div class="line"><span class="lineno">  134</span>    F[k] = 0.0;</div>
+<div class="line"><span class="lineno">  135</span>  }</div>
+<div class="line"><span class="lineno">  136</span>  *U = 0;</div>
 <div class="line"><span class="lineno">  137</span> </div>
-<div class="line"><span class="lineno">  138</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; N; i++) {</div>
-<div class="line"><span class="lineno">  139</span>    std::fill(drho_dr.begin(), drho_dr.end(), 0.0);</div>
-<div class="line"><span class="lineno">  140</span>    <a class="code hl_struct" href="structEAM_1_1element__parameters.html">element_parameters</a> epar = <a class="code hl_function" href="#a78eae113fb7e473ff654ac7c9b5f0da3">get_element_parameters</a>(atomicNrs[i]);</div>
-<div class="line"><span class="lineno">  141</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> cutoff2 = epar.r_cut * epar.r_cut;</div>
+<div class="line"><span class="lineno">  138</span>  <span class="comment">// Pre-compute half-box for PBC</span></div>
+<div class="line"><span class="lineno">  139</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> halfBox0 = box[0] * 0.5;</div>
+<div class="line"><span class="lineno">  140</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> halfBox1 = box[1] * 0.5;</div>
+<div class="line"><span class="lineno">  141</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> halfBox2 = box[2] * 0.5;</div>
 <div class="line"><span class="lineno">  142</span> </div>
-<div class="line"><span class="lineno">  143</span>    <span class="keywordtype">double</span> dens = 0.0;</div>
-<div class="line"><span class="lineno">  144</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> xi = R[3 * i];</div>
-<div class="line"><span class="lineno">  145</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> yi = R[3 * i + 1];</div>
-<div class="line"><span class="lineno">  146</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> zi = R[3 * i + 2];</div>
+<div class="line"><span class="lineno">  143</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; N; i++) {</div>
+<div class="line"><span class="lineno">  144</span>    std::fill(drho_dr.begin(), drho_dr.end(), 0.0);</div>
+<div class="line"><span class="lineno">  145</span>    <a class="code hl_struct" href="structEAM_1_1element__parameters.html">element_parameters</a> epar = <a class="code hl_function" href="#a78eae113fb7e473ff654ac7c9b5f0da3">get_element_parameters</a>(atomicNrs[i]);</div>
+<div class="line"><span class="lineno">  146</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> cutoff2 = epar.r_cut * epar.r_cut;</div>
 <div class="line"><span class="lineno">  147</span> </div>
-<div class="line"><span class="lineno">  148</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; N; j++) {</div>
-<div class="line"><span class="lineno">  149</span>      <span class="keywordflow">if</span> (i == j)</div>
-<div class="line"><span class="lineno">  150</span>        <span class="keywordflow">continue</span>;</div>
-<div class="line"><span class="lineno">  151</span> </div>
-<div class="line"><span class="lineno">  152</span>      <span class="keywordtype">double</span> dx = xi - R[3 * j];</div>
-<div class="line"><span class="lineno">  153</span>      <span class="keywordtype">double</span> dy = yi - R[3 * j + 1];</div>
-<div class="line"><span class="lineno">  154</span>      <span class="keywordtype">double</span> dz = zi - R[3 * j + 2];</div>
-<div class="line"><span class="lineno">  155</span> </div>
-<div class="line"><span class="lineno">  156</span>      <span class="comment">// Minimum image convention</span></div>
-<div class="line"><span class="lineno">  157</span>      <span class="keywordflow">if</span> (dx &gt; halfBox0)</div>
-<div class="line"><span class="lineno">  158</span>        dx -= box[0];</div>
-<div class="line"><span class="lineno">  159</span>      <span class="keywordflow">else</span> <span class="keywordflow">if</span> (dx &lt; -halfBox0)</div>
-<div class="line"><span class="lineno">  160</span>        dx += box[0];</div>
-<div class="line"><span class="lineno">  161</span>      <span class="keywordflow">if</span> (dy &gt; halfBox1)</div>
-<div class="line"><span class="lineno">  162</span>        dy -= box[1];</div>
-<div class="line"><span class="lineno">  163</span>      <span class="keywordflow">else</span> <span class="keywordflow">if</span> (dy &lt; -halfBox1)</div>
-<div class="line"><span class="lineno">  164</span>        dy += box[1];</div>
-<div class="line"><span class="lineno">  165</span>      <span class="keywordflow">if</span> (dz &gt; halfBox2)</div>
-<div class="line"><span class="lineno">  166</span>        dz -= box[2];</div>
-<div class="line"><span class="lineno">  167</span>      <span class="keywordflow">else</span> <span class="keywordflow">if</span> (dz &lt; -halfBox2)</div>
-<div class="line"><span class="lineno">  168</span>        dz += box[2];</div>
-<div class="line"><span class="lineno">  169</span> </div>
-<div class="line"><span class="lineno">  170</span>      <span class="keywordtype">double</span> r2 = dx * dx + dy * dy + dz * dz;</div>
-<div class="line"><span class="lineno">  171</span>      <span class="comment">// r^2 cutoff avoids sqrt for far pairs</span></div>
-<div class="line"><span class="lineno">  172</span>      <span class="keywordflow">if</span> (r2 &gt; cutoff2)</div>
-<div class="line"><span class="lineno">  173</span>        <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  148</span>    <span class="keywordtype">double</span> dens = 0.0;</div>
+<div class="line"><span class="lineno">  149</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> xi = R[3 * i];</div>
+<div class="line"><span class="lineno">  150</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> yi = R[3 * i + 1];</div>
+<div class="line"><span class="lineno">  151</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> zi = R[3 * i + 2];</div>
+<div class="line"><span class="lineno">  152</span> </div>
+<div class="line"><span class="lineno">  153</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; N; j++) {</div>
+<div class="line"><span class="lineno">  154</span>      <span class="keywordflow">if</span> (i == j)</div>
+<div class="line"><span class="lineno">  155</span>        <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  156</span> </div>
+<div class="line"><span class="lineno">  157</span>      <span class="keywordtype">double</span> dx = xi - R[3 * j];</div>
+<div class="line"><span class="lineno">  158</span>      <span class="keywordtype">double</span> dy = yi - R[3 * j + 1];</div>
+<div class="line"><span class="lineno">  159</span>      <span class="keywordtype">double</span> dz = zi - R[3 * j + 2];</div>
+<div class="line"><span class="lineno">  160</span> </div>
+<div class="line"><span class="lineno">  161</span>      <span class="comment">// Minimum image convention</span></div>
+<div class="line"><span class="lineno">  162</span>      <span class="keywordflow">if</span> (dx &gt; halfBox0)</div>
+<div class="line"><span class="lineno">  163</span>        dx -= box[0];</div>
+<div class="line"><span class="lineno">  164</span>      <span class="keywordflow">else</span> <span class="keywordflow">if</span> (dx &lt; -halfBox0)</div>
+<div class="line"><span class="lineno">  165</span>        dx += box[0];</div>
+<div class="line"><span class="lineno">  166</span>      <span class="keywordflow">if</span> (dy &gt; halfBox1)</div>
+<div class="line"><span class="lineno">  167</span>        dy -= box[1];</div>
+<div class="line"><span class="lineno">  168</span>      <span class="keywordflow">else</span> <span class="keywordflow">if</span> (dy &lt; -halfBox1)</div>
+<div class="line"><span class="lineno">  169</span>        dy += box[1];</div>
+<div class="line"><span class="lineno">  170</span>      <span class="keywordflow">if</span> (dz &gt; halfBox2)</div>
+<div class="line"><span class="lineno">  171</span>        dz -= box[2];</div>
+<div class="line"><span class="lineno">  172</span>      <span class="keywordflow">else</span> <span class="keywordflow">if</span> (dz &lt; -halfBox2)</div>
+<div class="line"><span class="lineno">  173</span>        dz += box[2];</div>
 <div class="line"><span class="lineno">  174</span> </div>
-<div class="line"><span class="lineno">  175</span>      <span class="keywordtype">double</span> r = std::sqrt(r2);</div>
-<div class="line"><span class="lineno">  176</span> </div>
-<div class="line"><span class="lineno">  177</span>      <span class="comment">// r^6 = (r^2)^3 instead of pow(r, 6)</span></div>
-<div class="line"><span class="lineno">  178</span>      <span class="keywordtype">double</span> r6 = r2 * r2 * r2;</div>
-<div class="line"><span class="lineno">  179</span>      <span class="keywordtype">double</span> exp_b1 = std::exp(-epar.beta1 * r);</div>
-<div class="line"><span class="lineno">  180</span>      <span class="keywordtype">double</span> exp_b2 = std::exp(-2.0 * epar.beta2 * r);</div>
-<div class="line"><span class="lineno">  181</span>      <span class="keywordtype">double</span> rho_pair = exp_b1 + 512.0 * exp_b2;</div>
-<div class="line"><span class="lineno">  182</span> </div>
-<div class="line"><span class="lineno">  183</span>      dens += r6 * rho_pair;</div>
-<div class="line"><span class="lineno">  184</span> </div>
-<div class="line"><span class="lineno">  185</span>      <span class="comment">// r^5 = r^4 * r = (r^2)^2 * r instead of pow(r, 5)</span></div>
-<div class="line"><span class="lineno">  186</span>      <span class="keywordtype">double</span> r5 = r2 * r2 * r;</div>
-<div class="line"><span class="lineno">  187</span>      <span class="keywordtype">double</span> mag_force_den =</div>
-<div class="line"><span class="lineno">  188</span>          6.0 * r5 * rho_pair +</div>
-<div class="line"><span class="lineno">  189</span>          r6 * (-epar.beta1 * exp_b1 - 1024.0 * epar.beta2 * exp_b2);</div>
-<div class="line"><span class="lineno">  190</span> </div>
-<div class="line"><span class="lineno">  191</span>      <span class="keywordtype">double</span> invR = 1.0 / r;</div>
-<div class="line"><span class="lineno">  192</span>      <span class="keywordtype">double</span> fscale = -mag_force_den * invR;</div>
-<div class="line"><span class="lineno">  193</span>      drho_dr[3 * i] += fscale * dx;</div>
-<div class="line"><span class="lineno">  194</span>      drho_dr[3 * i + 1] += fscale * dy;</div>
-<div class="line"><span class="lineno">  195</span>      drho_dr[3 * i + 2] += fscale * dz;</div>
-<div class="line"><span class="lineno">  196</span>      drho_dr[3 * j] -= fscale * dx;</div>
-<div class="line"><span class="lineno">  197</span>      drho_dr[3 * j + 1] -= fscale * dy;</div>
-<div class="line"><span class="lineno">  198</span>      drho_dr[3 * j + 2] -= fscale * dz;</div>
-<div class="line"><span class="lineno">  199</span> </div>
-<div class="line"><span class="lineno">  200</span>      <span class="keywordflow">if</span> (j &gt; i) {</div>
-<div class="line"><span class="lineno">  201</span>        <span class="comment">// Morse pair portion: simplify exp chain</span></div>
-<div class="line"><span class="lineno">  202</span>        <span class="keywordtype">double</span> expArg = std::exp(-epar.alphaM * (r - epar.Rm));</div>
-<div class="line"><span class="lineno">  203</span>        <span class="keywordtype">double</span> d = 1.0 - expArg;</div>
-<div class="line"><span class="lineno">  204</span>        <span class="keywordtype">double</span> phi_r = epar.Dm * d * d - epar.Dm;</div>
-<div class="line"><span class="lineno">  205</span>        <span class="comment">// Force: 2*Dm*alpha*d*(d-1) =</span></div>
-<div class="line"><span class="lineno">  206</span>        <span class="comment">// 2*Dm*alpha*exp(-a*(r-re))*(1-exp(-a*(r-re)))</span></div>
-<div class="line"><span class="lineno">  207</span>        <span class="keywordtype">double</span> mag_force = 2.0 * epar.alphaM * epar.Dm * d * (d - 1.0);</div>
-<div class="line"><span class="lineno">  208</span> </div>
-<div class="line"><span class="lineno">  209</span>        <span class="keywordtype">double</span> fcomp_scale = mag_force * invR;</div>
-<div class="line"><span class="lineno">  210</span>        F[3 * i] -= fcomp_scale * dx;</div>
-<div class="line"><span class="lineno">  211</span>        F[3 * i + 1] -= fcomp_scale * dy;</div>
-<div class="line"><span class="lineno">  212</span>        F[3 * i + 2] -= fcomp_scale * dz;</div>
-<div class="line"><span class="lineno">  213</span>        F[3 * j] += fcomp_scale * dx;</div>
-<div class="line"><span class="lineno">  214</span>        F[3 * j + 1] += fcomp_scale * dy;</div>
-<div class="line"><span class="lineno">  215</span>        F[3 * j + 2] += fcomp_scale * dz;</div>
-<div class="line"><span class="lineno">  216</span>        *U += phi_r;</div>
-<div class="line"><span class="lineno">  217</span>      }</div>
-<div class="line"><span class="lineno">  218</span>    }</div>
-<div class="line"><span class="lineno">  219</span> </div>
-<div class="line"><span class="lineno">  220</span>    *U += <a class="code hl_function" href="#ae28a02b52f540bf0c1131e3601310aa0">embedding_function</a>(epar.func_coeff, dens);</div>
-<div class="line"><span class="lineno">  221</span>    <span class="keywordtype">double</span> dF_drho = <a class="code hl_function" href="#ab4af281fcc9359cd9aa85f0c5f7059bc">embedding_force</a>(epar.func_coeff, dens);</div>
-<div class="line"><span class="lineno">  222</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt; 3 * N; k++) {</div>
-<div class="line"><span class="lineno">  223</span>      F[k] -= dF_drho * drho_dr[k];</div>
-<div class="line"><span class="lineno">  224</span>    }</div>
-<div class="line"><span class="lineno">  225</span>  }</div>
-<div class="line"><span class="lineno">  226</span>}</div>
-<div class="ttc" id="aclassEAM_html_a78eae113fb7e473ff654ac7c9b5f0da3"><div class="ttname"><a href="#a78eae113fb7e473ff654ac7c9b5f0da3">EAM::get_element_parameters</a></div><div class="ttdeci">element_parameters get_element_parameters(int atomic_number)</div><div class="ttdef"><b>Definition</b> <a href="EAM_8cpp_source.html#l00116">EAM.cpp:116</a></div></div>
-<div class="ttc" id="aclassEAM_html_ab4af281fcc9359cd9aa85f0c5f7059bc"><div class="ttname"><a href="#ab4af281fcc9359cd9aa85f0c5f7059bc">EAM::embedding_force</a></div><div class="ttdeci">static double embedding_force(const double *func_coeff, double rho)</div><div class="ttdef"><b>Definition</b> <a href="EAM_8cpp_source.html#l00358">EAM.cpp:358</a></div></div>
-<div class="ttc" id="aclassEAM_html_ae28a02b52f540bf0c1131e3601310aa0"><div class="ttname"><a href="#ae28a02b52f540bf0c1131e3601310aa0">EAM::embedding_function</a></div><div class="ttdeci">static double embedding_function(const double *func_coeff, double rho)</div><div class="ttdef"><b>Definition</b> <a href="EAM_8cpp_source.html#l00349">EAM.cpp:349</a></div></div>
-<div class="ttc" id="astructEAM_1_1element__parameters_html"><div class="ttname"><a href="structEAM_1_1element__parameters.html">EAM::element_parameters</a></div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00040">EAM.h:40</a></div></div>
+<div class="line"><span class="lineno">  175</span>      <span class="keywordtype">double</span> r2 = dx * dx + dy * dy + dz * dz;</div>
+<div class="line"><span class="lineno">  176</span>      <span class="comment">// r^2 cutoff avoids sqrt for far pairs</span></div>
+<div class="line"><span class="lineno">  177</span>      <span class="keywordflow">if</span> (r2 &gt; cutoff2)</div>
+<div class="line"><span class="lineno">  178</span>        <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  179</span> </div>
+<div class="line"><span class="lineno">  180</span>      <span class="keywordtype">double</span> r = std::sqrt(r2);</div>
+<div class="line"><span class="lineno">  181</span> </div>
+<div class="line"><span class="lineno">  182</span>      <span class="comment">// r^6 = (r^2)^3 instead of pow(r, 6)</span></div>
+<div class="line"><span class="lineno">  183</span>      <span class="keywordtype">double</span> r6 = r2 * r2 * r2;</div>
+<div class="line"><span class="lineno">  184</span>      <span class="keywordtype">double</span> exp_b1 = std::exp(-epar.beta1 * r);</div>
+<div class="line"><span class="lineno">  185</span>      <span class="keywordtype">double</span> exp_b2 = std::exp(-2.0 * epar.beta2 * r);</div>
+<div class="line"><span class="lineno">  186</span>      <span class="keywordtype">double</span> rho_pair = exp_b1 + 512.0 * exp_b2;</div>
+<div class="line"><span class="lineno">  187</span> </div>
+<div class="line"><span class="lineno">  188</span>      dens += r6 * rho_pair;</div>
+<div class="line"><span class="lineno">  189</span> </div>
+<div class="line"><span class="lineno">  190</span>      <span class="comment">// r^5 = r^4 * r = (r^2)^2 * r instead of pow(r, 5)</span></div>
+<div class="line"><span class="lineno">  191</span>      <span class="keywordtype">double</span> r5 = r2 * r2 * r;</div>
+<div class="line"><span class="lineno">  192</span>      <span class="keywordtype">double</span> mag_force_den =</div>
+<div class="line"><span class="lineno">  193</span>          6.0 * r5 * rho_pair +</div>
+<div class="line"><span class="lineno">  194</span>          r6 * (-epar.beta1 * exp_b1 - 1024.0 * epar.beta2 * exp_b2);</div>
+<div class="line"><span class="lineno">  195</span> </div>
+<div class="line"><span class="lineno">  196</span>      <span class="keywordtype">double</span> invR = 1.0 / r;</div>
+<div class="line"><span class="lineno">  197</span>      <span class="keywordtype">double</span> fscale = -mag_force_den * invR;</div>
+<div class="line"><span class="lineno">  198</span>      drho_dr[3 * i] += fscale * dx;</div>
+<div class="line"><span class="lineno">  199</span>      drho_dr[3 * i + 1] += fscale * dy;</div>
+<div class="line"><span class="lineno">  200</span>      drho_dr[3 * i + 2] += fscale * dz;</div>
+<div class="line"><span class="lineno">  201</span>      drho_dr[3 * j] -= fscale * dx;</div>
+<div class="line"><span class="lineno">  202</span>      drho_dr[3 * j + 1] -= fscale * dy;</div>
+<div class="line"><span class="lineno">  203</span>      drho_dr[3 * j + 2] -= fscale * dz;</div>
+<div class="line"><span class="lineno">  204</span> </div>
+<div class="line"><span class="lineno">  205</span>      <span class="keywordflow">if</span> (j &gt; i) {</div>
+<div class="line"><span class="lineno">  206</span>        <span class="comment">// Morse pair portion: simplify exp chain</span></div>
+<div class="line"><span class="lineno">  207</span>        <span class="keywordtype">double</span> expArg = std::exp(-epar.alphaM * (r - epar.Rm));</div>
+<div class="line"><span class="lineno">  208</span>        <span class="keywordtype">double</span> d = 1.0 - expArg;</div>
+<div class="line"><span class="lineno">  209</span>        <span class="keywordtype">double</span> phi_r = epar.Dm * d * d - epar.Dm;</div>
+<div class="line"><span class="lineno">  210</span>        <span class="comment">// Force: 2*Dm*alpha*d*(d-1) =</span></div>
+<div class="line"><span class="lineno">  211</span>        <span class="comment">// 2*Dm*alpha*exp(-a*(r-re))*(1-exp(-a*(r-re)))</span></div>
+<div class="line"><span class="lineno">  212</span>        <span class="keywordtype">double</span> mag_force = 2.0 * epar.alphaM * epar.Dm * d * (d - 1.0);</div>
+<div class="line"><span class="lineno">  213</span> </div>
+<div class="line"><span class="lineno">  214</span>        <span class="keywordtype">double</span> fcomp_scale = mag_force * invR;</div>
+<div class="line"><span class="lineno">  215</span>        F[3 * i] -= fcomp_scale * dx;</div>
+<div class="line"><span class="lineno">  216</span>        F[3 * i + 1] -= fcomp_scale * dy;</div>
+<div class="line"><span class="lineno">  217</span>        F[3 * i + 2] -= fcomp_scale * dz;</div>
+<div class="line"><span class="lineno">  218</span>        F[3 * j] += fcomp_scale * dx;</div>
+<div class="line"><span class="lineno">  219</span>        F[3 * j + 1] += fcomp_scale * dy;</div>
+<div class="line"><span class="lineno">  220</span>        F[3 * j + 2] += fcomp_scale * dz;</div>
+<div class="line"><span class="lineno">  221</span>        *U += phi_r;</div>
+<div class="line"><span class="lineno">  222</span>      }</div>
+<div class="line"><span class="lineno">  223</span>    }</div>
+<div class="line"><span class="lineno">  224</span> </div>
+<div class="line"><span class="lineno">  225</span>    *U += <a class="code hl_function" href="#ae28a02b52f540bf0c1131e3601310aa0">embedding_function</a>(epar.func_coeff, dens);</div>
+<div class="line"><span class="lineno">  226</span>    <span class="keywordtype">double</span> dF_drho = <a class="code hl_function" href="#ab4af281fcc9359cd9aa85f0c5f7059bc">embedding_force</a>(epar.func_coeff, dens);</div>
+<div class="line"><span class="lineno">  227</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt; 3 * N; k++) {</div>
+<div class="line"><span class="lineno">  228</span>      F[k] -= dF_drho * drho_dr[k];</div>
+<div class="line"><span class="lineno">  229</span>    }</div>
+<div class="line"><span class="lineno">  230</span>  }</div>
+<div class="line"><span class="lineno">  231</span>}</div>
+<div class="ttc" id="aclassEAM_html_a78eae113fb7e473ff654ac7c9b5f0da3"><div class="ttname"><a href="#a78eae113fb7e473ff654ac7c9b5f0da3">EAM::get_element_parameters</a></div><div class="ttdeci">element_parameters get_element_parameters(int atomic_number)</div><div class="ttdef"><b>Definition</b> <a href="EAM_8cpp_source.html#l00121">EAM.cpp:121</a></div></div>
+<div class="ttc" id="aclassEAM_html_ab4af281fcc9359cd9aa85f0c5f7059bc"><div class="ttname"><a href="#ab4af281fcc9359cd9aa85f0c5f7059bc">EAM::embedding_force</a></div><div class="ttdeci">static double embedding_force(const double *func_coeff, double rho)</div><div class="ttdef"><b>Definition</b> <a href="EAM_8cpp_source.html#l00363">EAM.cpp:363</a></div></div>
+<div class="ttc" id="aclassEAM_html_ae28a02b52f540bf0c1131e3601310aa0"><div class="ttname"><a href="#ae28a02b52f540bf0c1131e3601310aa0">EAM::embedding_function</a></div><div class="ttdeci">static double embedding_function(const double *func_coeff, double rho)</div><div class="ttdef"><b>Definition</b> <a href="EAM_8cpp_source.html#l00354">EAM.cpp:354</a></div></div>
+<div class="ttc" id="astructEAM_1_1element__parameters_html"><div class="ttname"><a href="structEAM_1_1element__parameters.html">EAM::element_parameters</a></div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00044">EAM.h:44</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -583,80 +597,80 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EAM_8cpp_source.html#l00250">250</a> of file <a class="el" href="EAM_8cpp_source.html">EAM.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  252</span>                                             {</div>
-<div class="line"><span class="lineno">  253</span>  <span class="keywordtype">long</span> num_cells = num_axis[0] * num_axis[1] * num_axis[2];</div>
-<div class="line"><span class="lineno">  254</span> </div>
-<div class="line"><span class="lineno">  255</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; N * (N + 1); i++) {</div>
-<div class="line"><span class="lineno">  256</span>    neigh_list[i] = -1;</div>
-<div class="line"><span class="lineno">  257</span>  }</div>
-<div class="line"><span class="lineno">  258</span> </div>
-<div class="line"><span class="lineno">  259</span>  std::vector&lt;long&gt; neighbors(N + 1);</div>
-<div class="line"><span class="lineno">  260</span>  std::vector&lt;long&gt; cell_list_copy(num_cells * (N + 1));</div>
-<div class="line"><span class="lineno">  261</span> </div>
-<div class="line"><span class="lineno">  262</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; num_axis[0]; j++) {</div>
-<div class="line"><span class="lineno">  263</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j1 = 0; j1 &lt; num_axis[1]; j1++) {</div>
-<div class="line"><span class="lineno">  264</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j2 = 0; j2 &lt; num_axis[2]; j2++) {</div>
-<div class="line"><span class="lineno">  265</span>        std::fill(neighbors.begin(), neighbors.end(), -1);</div>
+<p class="definition">Definition at line <a class="el" href="EAM_8cpp_source.html#l00255">255</a> of file <a class="el" href="EAM_8cpp_source.html">EAM.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  257</span>                                             {</div>
+<div class="line"><span class="lineno">  258</span>  <span class="keywordtype">long</span> num_cells = num_axis[0] * num_axis[1] * num_axis[2];</div>
+<div class="line"><span class="lineno">  259</span> </div>
+<div class="line"><span class="lineno">  260</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; N * (N + 1); i++) {</div>
+<div class="line"><span class="lineno">  261</span>    neigh_list[i] = -1;</div>
+<div class="line"><span class="lineno">  262</span>  }</div>
+<div class="line"><span class="lineno">  263</span> </div>
+<div class="line"><span class="lineno">  264</span>  std::vector&lt;long&gt; neighbors(N + 1);</div>
+<div class="line"><span class="lineno">  265</span>  std::vector&lt;long&gt; cell_list_copy(num_cells * (N + 1));</div>
 <div class="line"><span class="lineno">  266</span> </div>
-<div class="line"><span class="lineno">  267</span>        <span class="keywordtype">long</span> cur_index = j * num_axis[1] * num_axis[2] + j1 * num_axis[2] + j2;</div>
-<div class="line"><span class="lineno">  268</span> </div>
-<div class="line"><span class="lineno">  269</span>        std::copy(celllist_new, celllist_new + num_cells * (N + 1),</div>
-<div class="line"><span class="lineno">  270</span>                  cell_list_copy.begin());</div>
+<div class="line"><span class="lineno">  267</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; num_axis[0]; j++) {</div>
+<div class="line"><span class="lineno">  268</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j1 = 0; j1 &lt; num_axis[1]; j1++) {</div>
+<div class="line"><span class="lineno">  269</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j2 = 0; j2 &lt; num_axis[2]; j2++) {</div>
+<div class="line"><span class="lineno">  270</span>        std::fill(neighbors.begin(), neighbors.end(), -1);</div>
 <div class="line"><span class="lineno">  271</span> </div>
-<div class="line"><span class="lineno">  272</span>        <span class="keywordflow">if</span> (cell_list_copy[cur_index * (N + 1) + N] == 0) {</div>
-<div class="line"><span class="lineno">  273</span>          <span class="keywordflow">continue</span>;</div>
-<div class="line"><span class="lineno">  274</span>        }</div>
-<div class="line"><span class="lineno">  275</span> </div>
-<div class="line"><span class="lineno">  276</span>        <span class="keywordflow">for</span> (<span class="keywordtype">long</span> d1 = -1; d1 &lt; 2; d1++) {</div>
-<div class="line"><span class="lineno">  277</span>          <span class="keywordflow">for</span> (<span class="keywordtype">long</span> d2 = -1; d2 &lt; 2; d2++) {</div>
-<div class="line"><span class="lineno">  278</span>            <span class="keywordflow">for</span> (<span class="keywordtype">long</span> d3 = -1; d3 &lt; 2; d3++) {</div>
-<div class="line"><span class="lineno">  279</span>              std::array&lt;long, 3&gt; pos = {j - d1, j1 - d2, j2 - d3};</div>
-<div class="line"><span class="lineno">  280</span>              <span class="comment">// Periodic wrapping</span></div>
-<div class="line"><span class="lineno">  281</span>              <span class="keywordflow">for</span> (<span class="keywordtype">long</span> y = 0; y &lt; 3; y++) {</div>
-<div class="line"><span class="lineno">  282</span>                <span class="keywordflow">if</span> (pos[y] &lt; 0)</div>
-<div class="line"><span class="lineno">  283</span>                  pos[y] = num_axis[y] - 1;</div>
-<div class="line"><span class="lineno">  284</span>                <span class="keywordflow">else</span> <span class="keywordflow">if</span> (pos[y] &gt;= num_axis[y])</div>
-<div class="line"><span class="lineno">  285</span>                  pos[y] = 0;</div>
-<div class="line"><span class="lineno">  286</span>              }</div>
-<div class="line"><span class="lineno">  287</span>              <span class="keywordtype">long</span> neigh_index = pos[0] * num_axis[1] * num_axis[2] +</div>
-<div class="line"><span class="lineno">  288</span>                                 pos[1] * num_axis[2] + pos[2];</div>
-<div class="line"><span class="lineno">  289</span> </div>
-<div class="line"><span class="lineno">  290</span>              <span class="keywordtype">long</span> num = cell_list_copy[neigh_index * (N + 1) + N];</div>
-<div class="line"><span class="lineno">  291</span>              <span class="keywordflow">for</span> (<span class="keywordtype">long</span> y = 0; y &lt; num; y++) {</div>
-<div class="line"><span class="lineno">  292</span>                <span class="keywordtype">long</span> candidate = cell_list_copy[neigh_index * (N + 1) + y];</div>
-<div class="line"><span class="lineno">  293</span>                <span class="comment">// Check not already in neighbors</span></div>
-<div class="line"><span class="lineno">  294</span>                <span class="keywordtype">bool</span> already = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  295</span>                <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt;= neighbors[N]; k++) {</div>
-<div class="line"><span class="lineno">  296</span>                  <span class="keywordflow">if</span> (neighbors[k] == candidate) {</div>
-<div class="line"><span class="lineno">  297</span>                    already = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  298</span>                    <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  299</span>                  }</div>
-<div class="line"><span class="lineno">  300</span>                }</div>
-<div class="line"><span class="lineno">  301</span>                <span class="keywordflow">if</span> (!already) {</div>
-<div class="line"><span class="lineno">  302</span>                  neighbors[N]++;</div>
-<div class="line"><span class="lineno">  303</span>                  neighbors[neighbors[N]] = candidate;</div>
-<div class="line"><span class="lineno">  304</span>                }</div>
-<div class="line"><span class="lineno">  305</span>              }</div>
-<div class="line"><span class="lineno">  306</span>            }</div>
-<div class="line"><span class="lineno">  307</span>          }</div>
-<div class="line"><span class="lineno">  308</span>        }</div>
-<div class="line"><span class="lineno">  309</span> </div>
-<div class="line"><span class="lineno">  310</span>        <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; celllist_new[cur_index * (N + 1) + N]; i++) {</div>
-<div class="line"><span class="lineno">  311</span>          <span class="keywordtype">long</span> cur = celllist_new[cur_index * (N + 1) + i];</div>
-<div class="line"><span class="lineno">  312</span>          neigh_list[cur * (N + 1) + N] = 0;</div>
-<div class="line"><span class="lineno">  313</span>          <span class="keywordflow">for</span> (<span class="keywordtype">long</span> temp = 0; temp &lt;= neighbors[N]; temp++) {</div>
-<div class="line"><span class="lineno">  314</span>            <span class="keywordflow">if</span> (cur != neighbors[temp]) {</div>
-<div class="line"><span class="lineno">  315</span>              neigh_list[cur * (N + 1) + neigh_list[cur * (N + 1) + N]] =</div>
-<div class="line"><span class="lineno">  316</span>                  neighbors[temp];</div>
-<div class="line"><span class="lineno">  317</span>              neigh_list[cur * (N + 1) + N]++;</div>
-<div class="line"><span class="lineno">  318</span>            }</div>
-<div class="line"><span class="lineno">  319</span>          }</div>
-<div class="line"><span class="lineno">  320</span>        }</div>
-<div class="line"><span class="lineno">  321</span>      }</div>
-<div class="line"><span class="lineno">  322</span>    }</div>
-<div class="line"><span class="lineno">  323</span>  }</div>
-<div class="line"><span class="lineno">  324</span>}</div>
+<div class="line"><span class="lineno">  272</span>        <span class="keywordtype">long</span> cur_index = j * num_axis[1] * num_axis[2] + j1 * num_axis[2] + j2;</div>
+<div class="line"><span class="lineno">  273</span> </div>
+<div class="line"><span class="lineno">  274</span>        std::copy(celllist_new, celllist_new + num_cells * (N + 1),</div>
+<div class="line"><span class="lineno">  275</span>                  cell_list_copy.begin());</div>
+<div class="line"><span class="lineno">  276</span> </div>
+<div class="line"><span class="lineno">  277</span>        <span class="keywordflow">if</span> (cell_list_copy[cur_index * (N + 1) + N] == 0) {</div>
+<div class="line"><span class="lineno">  278</span>          <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  279</span>        }</div>
+<div class="line"><span class="lineno">  280</span> </div>
+<div class="line"><span class="lineno">  281</span>        <span class="keywordflow">for</span> (<span class="keywordtype">long</span> d1 = -1; d1 &lt; 2; d1++) {</div>
+<div class="line"><span class="lineno">  282</span>          <span class="keywordflow">for</span> (<span class="keywordtype">long</span> d2 = -1; d2 &lt; 2; d2++) {</div>
+<div class="line"><span class="lineno">  283</span>            <span class="keywordflow">for</span> (<span class="keywordtype">long</span> d3 = -1; d3 &lt; 2; d3++) {</div>
+<div class="line"><span class="lineno">  284</span>              std::array&lt;long, 3&gt; pos = {j - d1, j1 - d2, j2 - d3};</div>
+<div class="line"><span class="lineno">  285</span>              <span class="comment">// Periodic wrapping</span></div>
+<div class="line"><span class="lineno">  286</span>              <span class="keywordflow">for</span> (<span class="keywordtype">long</span> y = 0; y &lt; 3; y++) {</div>
+<div class="line"><span class="lineno">  287</span>                <span class="keywordflow">if</span> (pos[y] &lt; 0)</div>
+<div class="line"><span class="lineno">  288</span>                  pos[y] = num_axis[y] - 1;</div>
+<div class="line"><span class="lineno">  289</span>                <span class="keywordflow">else</span> <span class="keywordflow">if</span> (pos[y] &gt;= num_axis[y])</div>
+<div class="line"><span class="lineno">  290</span>                  pos[y] = 0;</div>
+<div class="line"><span class="lineno">  291</span>              }</div>
+<div class="line"><span class="lineno">  292</span>              <span class="keywordtype">long</span> neigh_index = pos[0] * num_axis[1] * num_axis[2] +</div>
+<div class="line"><span class="lineno">  293</span>                                 pos[1] * num_axis[2] + pos[2];</div>
+<div class="line"><span class="lineno">  294</span> </div>
+<div class="line"><span class="lineno">  295</span>              <span class="keywordtype">long</span> num = cell_list_copy[neigh_index * (N + 1) + N];</div>
+<div class="line"><span class="lineno">  296</span>              <span class="keywordflow">for</span> (<span class="keywordtype">long</span> y = 0; y &lt; num; y++) {</div>
+<div class="line"><span class="lineno">  297</span>                <span class="keywordtype">long</span> candidate = cell_list_copy[neigh_index * (N + 1) + y];</div>
+<div class="line"><span class="lineno">  298</span>                <span class="comment">// Check not already in neighbors</span></div>
+<div class="line"><span class="lineno">  299</span>                <span class="keywordtype">bool</span> already = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  300</span>                <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt;= neighbors[N]; k++) {</div>
+<div class="line"><span class="lineno">  301</span>                  <span class="keywordflow">if</span> (neighbors[k] == candidate) {</div>
+<div class="line"><span class="lineno">  302</span>                    already = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  303</span>                    <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  304</span>                  }</div>
+<div class="line"><span class="lineno">  305</span>                }</div>
+<div class="line"><span class="lineno">  306</span>                <span class="keywordflow">if</span> (!already) {</div>
+<div class="line"><span class="lineno">  307</span>                  neighbors[N]++;</div>
+<div class="line"><span class="lineno">  308</span>                  neighbors[neighbors[N]] = candidate;</div>
+<div class="line"><span class="lineno">  309</span>                }</div>
+<div class="line"><span class="lineno">  310</span>              }</div>
+<div class="line"><span class="lineno">  311</span>            }</div>
+<div class="line"><span class="lineno">  312</span>          }</div>
+<div class="line"><span class="lineno">  313</span>        }</div>
+<div class="line"><span class="lineno">  314</span> </div>
+<div class="line"><span class="lineno">  315</span>        <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; celllist_new[cur_index * (N + 1) + N]; i++) {</div>
+<div class="line"><span class="lineno">  316</span>          <span class="keywordtype">long</span> cur = celllist_new[cur_index * (N + 1) + i];</div>
+<div class="line"><span class="lineno">  317</span>          neigh_list[cur * (N + 1) + N] = 0;</div>
+<div class="line"><span class="lineno">  318</span>          <span class="keywordflow">for</span> (<span class="keywordtype">long</span> temp = 0; temp &lt;= neighbors[N]; temp++) {</div>
+<div class="line"><span class="lineno">  319</span>            <span class="keywordflow">if</span> (cur != neighbors[temp]) {</div>
+<div class="line"><span class="lineno">  320</span>              neigh_list[cur * (N + 1) + neigh_list[cur * (N + 1) + N]] =</div>
+<div class="line"><span class="lineno">  321</span>                  neighbors[temp];</div>
+<div class="line"><span class="lineno">  322</span>              neigh_list[cur * (N + 1) + N]++;</div>
+<div class="line"><span class="lineno">  323</span>            }</div>
+<div class="line"><span class="lineno">  324</span>          }</div>
+<div class="line"><span class="lineno">  325</span>        }</div>
+<div class="line"><span class="lineno">  326</span>      }</div>
+<div class="line"><span class="lineno">  327</span>    }</div>
+<div class="line"><span class="lineno">  328</span>  }</div>
+<div class="line"><span class="lineno">  329</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -675,10 +689,10 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EAM_8cpp_source.html#l00024">24</a> of file <a class="el" href="EAM_8cpp_source.html">EAM.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   24</span>                      {</div>
-<div class="line"><span class="lineno">   25</span>  <span class="comment">// RAII: vectors clean themselves. Nothing to do.</span></div>
-<div class="line"><span class="lineno">   26</span>}</div>
+<p class="definition">Definition at line <a class="el" href="EAM_8cpp_source.html#l00025">25</a> of file <a class="el" href="EAM_8cpp_source.html">EAM.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   25</span>                      {</div>
+<div class="line"><span class="lineno">   26</span>  <span class="comment">// RAII: vectors clean themselves. Nothing to do.</span></div>
+<div class="line"><span class="lineno">   27</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -709,15 +723,15 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EAM_8cpp_source.html#l00358">358</a> of file <a class="el" href="EAM_8cpp_source.html">EAM.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  358</span>                                                                {</div>
-<div class="line"><span class="lineno">  359</span>  <span class="comment">// Derivative of embedding function via Horner&#39;s method</span></div>
-<div class="line"><span class="lineno">  360</span>  <span class="keywordtype">double</span> result = func_coeff[8] * 8;</div>
-<div class="line"><span class="lineno">  361</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 7; i &gt;= 1; i--) {</div>
-<div class="line"><span class="lineno">  362</span>    result = result * rho + i * func_coeff[i];</div>
-<div class="line"><span class="lineno">  363</span>  }</div>
-<div class="line"><span class="lineno">  364</span>  <span class="keywordflow">return</span> -result;</div>
-<div class="line"><span class="lineno">  365</span>}</div>
+<p class="definition">Definition at line <a class="el" href="EAM_8cpp_source.html#l00363">363</a> of file <a class="el" href="EAM_8cpp_source.html">EAM.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  363</span>                                                                {</div>
+<div class="line"><span class="lineno">  364</span>  <span class="comment">// Derivative of embedding function via Horner&#39;s method</span></div>
+<div class="line"><span class="lineno">  365</span>  <span class="keywordtype">double</span> result = func_coeff[8] * 8;</div>
+<div class="line"><span class="lineno">  366</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 7; i &gt;= 1; i--) {</div>
+<div class="line"><span class="lineno">  367</span>    result = result * rho + i * func_coeff[i];</div>
+<div class="line"><span class="lineno">  368</span>  }</div>
+<div class="line"><span class="lineno">  369</span>  <span class="keywordflow">return</span> -result;</div>
+<div class="line"><span class="lineno">  370</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -748,15 +762,15 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EAM_8cpp_source.html#l00349">349</a> of file <a class="el" href="EAM_8cpp_source.html">EAM.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  349</span>                                                                   {</div>
-<div class="line"><span class="lineno">  350</span>  <span class="comment">// Horner&#39;s method for 8th order polynomial</span></div>
-<div class="line"><span class="lineno">  351</span>  <span class="keywordtype">double</span> result = func_coeff[8];</div>
-<div class="line"><span class="lineno">  352</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 7; i &gt;= 0; i--) {</div>
-<div class="line"><span class="lineno">  353</span>    result = result * rho + func_coeff[i];</div>
-<div class="line"><span class="lineno">  354</span>  }</div>
-<div class="line"><span class="lineno">  355</span>  <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  356</span>}</div>
+<p class="definition">Definition at line <a class="el" href="EAM_8cpp_source.html#l00354">354</a> of file <a class="el" href="EAM_8cpp_source.html">EAM.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  354</span>                                                                   {</div>
+<div class="line"><span class="lineno">  355</span>  <span class="comment">// Horner&#39;s method for 8th order polynomial</span></div>
+<div class="line"><span class="lineno">  356</span>  <span class="keywordtype">double</span> result = func_coeff[8];</div>
+<div class="line"><span class="lineno">  357</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 7; i &gt;= 0; i--) {</div>
+<div class="line"><span class="lineno">  358</span>    result = result * rho + func_coeff[i];</div>
+<div class="line"><span class="lineno">  359</span>  }</div>
+<div class="line"><span class="lineno">  360</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  361</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -814,101 +828,105 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">eonc::Potential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="EAM_8cpp_source.html#l00028">28</a> of file <a class="el" href="EAM_8cpp_source.html">EAM.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   29</span>                                                                    {</div>
-<div class="line"><span class="lineno">   30</span>  variance = <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">   31</span>  std::array&lt;double, 3&gt; box = {fullbox[0], fullbox[4], fullbox[8]};</div>
-<div class="line"><span class="lineno">   32</span> </div>
-<div class="line"><span class="lineno">   33</span>  std::array&lt;long, 3&gt; num_axis;</div>
-<div class="line"><span class="lineno">   34</span>  std::array&lt;long, 3&gt; cell_length;</div>
-<div class="line"><span class="lineno">   35</span> </div>
-<div class="line"><span class="lineno">   36</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; 3; i++) {</div>
-<div class="line"><span class="lineno">   37</span>    num_axis[i] = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(box[i] / <a class="code hl_variable" href="#a9df9baa12a7d5218e011bea74a816986">rc_</a>[i]) + 1;</div>
-<div class="line"><span class="lineno">   38</span>  }</div>
-<div class="line"><span class="lineno">   39</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; 3; i++) {</div>
-<div class="line"><span class="lineno">   40</span>    cell_length[i] = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(box[i] / (num_axis[i] - 1));</div>
-<div class="line"><span class="lineno">   41</span>  }</div>
-<div class="line"><span class="lineno">   42</span> </div>
-<div class="line"><span class="lineno">   43</span>  <span class="keywordtype">long</span> num_cells = num_axis[0] * num_axis[1] * num_axis[2];</div>
-<div class="line"><span class="lineno">   44</span> </div>
-<div class="line"><span class="lineno">   45</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a8c4f3bcd3ee144598440ce415fe730ff">initialized_</a>) {</div>
-<div class="line"><span class="lineno">   46</span>    <a class="code hl_variable" href="#a7eb5afdf64829e8295c80e8641c365df">celllist_old_</a>.assign(num_cells * (N + 1), 0);</div>
-<div class="line"><span class="lineno">   47</span>    <a class="code hl_variable" href="#ae7f11b726d877643a593aca3c6a82a40">celllist_new_</a>.assign(num_cells * (N + 1), 0);</div>
-<div class="line"><span class="lineno">   48</span>    <a class="code hl_variable" href="#a2cfc0069b7a60064775febb23c146a84">neigh_list_</a>.assign(N * (N + 1), 0);</div>
-<div class="line"><span class="lineno">   49</span>  }</div>
-<div class="line"><span class="lineno">   50</span> </div>
-<div class="line"><span class="lineno">   51</span>  *U = 0;</div>
-<div class="line"><span class="lineno">   52</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt; 3 * N; k++) {</div>
-<div class="line"><span class="lineno">   53</span>    F[k] = 0.0;</div>
+<p class="definition">Definition at line <a class="el" href="EAM_8cpp_source.html#l00029">29</a> of file <a class="el" href="EAM_8cpp_source.html">EAM.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   30</span>                                                                    {</div>
+<div class="line"><span class="lineno">   31</span>  variance = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">   32</span>  std::array&lt;double, 3&gt; box = {fullbox[0], fullbox[4], fullbox[8]};</div>
+<div class="line"><span class="lineno">   33</span> </div>
+<div class="line"><span class="lineno">   34</span>  std::array&lt;long, 3&gt; num_axis;</div>
+<div class="line"><span class="lineno">   35</span>  std::array&lt;long, 3&gt; cell_length;</div>
+<div class="line"><span class="lineno">   36</span> </div>
+<div class="line"><span class="lineno">   37</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; 3; i++) {</div>
+<div class="line"><span class="lineno">   38</span>    <span class="keywordflow">if</span> (!(box[i] &gt; 0.0) || !(<a class="code hl_variable" href="#a9df9baa12a7d5218e011bea74a816986">rc_</a>[i] &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">   39</span>      <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">   40</span>          <span class="stringliteral">&quot;EAM::force: box diagonal and cutoff must be positive&quot;</span>);</div>
+<div class="line"><span class="lineno">   41</span>    }</div>
+<div class="line"><span class="lineno">   42</span>    num_axis[i] = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(box[i] / <a class="code hl_variable" href="#a9df9baa12a7d5218e011bea74a816986">rc_</a>[i]) + 1;</div>
+<div class="line"><span class="lineno">   43</span>  }</div>
+<div class="line"><span class="lineno">   44</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; 3; i++) {</div>
+<div class="line"><span class="lineno">   45</span>    cell_length[i] = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(box[i] / (num_axis[i] - 1));</div>
+<div class="line"><span class="lineno">   46</span>  }</div>
+<div class="line"><span class="lineno">   47</span> </div>
+<div class="line"><span class="lineno">   48</span>  <span class="keywordtype">long</span> num_cells = num_axis[0] * num_axis[1] * num_axis[2];</div>
+<div class="line"><span class="lineno">   49</span> </div>
+<div class="line"><span class="lineno">   50</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a8c4f3bcd3ee144598440ce415fe730ff">initialized_</a>) {</div>
+<div class="line"><span class="lineno">   51</span>    <a class="code hl_variable" href="#a7eb5afdf64829e8295c80e8641c365df">celllist_old_</a>.assign(num_cells * (N + 1), 0);</div>
+<div class="line"><span class="lineno">   52</span>    <a class="code hl_variable" href="#ae7f11b726d877643a593aca3c6a82a40">celllist_new_</a>.assign(num_cells * (N + 1), 0);</div>
+<div class="line"><span class="lineno">   53</span>    <a class="code hl_variable" href="#a2cfc0069b7a60064775febb23c146a84">neigh_list_</a>.assign(N * (N + 1), 0);</div>
 <div class="line"><span class="lineno">   54</span>  }</div>
 <div class="line"><span class="lineno">   55</span> </div>
-<div class="line"><span class="lineno">   56</span>  <span class="comment">// Find minimum coordinates for shifting all positions to positive</span></div>
-<div class="line"><span class="lineno">   57</span>  <span class="keywordtype">double</span> xmin = std::numeric_limits&lt;double&gt;::max();</div>
-<div class="line"><span class="lineno">   58</span>  <span class="keywordtype">double</span> ymin = xmin, zmin = xmin;</div>
-<div class="line"><span class="lineno">   59</span> </div>
-<div class="line"><span class="lineno">   60</span>  std::vector&lt;double&gt; Rtemp(3 * N);</div>
-<div class="line"><span class="lineno">   61</span>  std::vector&lt;double&gt; Rnew(3 * N);</div>
-<div class="line"><span class="lineno">   62</span> </div>
-<div class="line"><span class="lineno">   63</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; 3 * N; i += 3) {</div>
-<div class="line"><span class="lineno">   64</span>    Rtemp[i] = R[i];</div>
-<div class="line"><span class="lineno">   65</span>    Rtemp[i + 1] = R[i + 1];</div>
-<div class="line"><span class="lineno">   66</span>    Rtemp[i + 2] = R[i + 2];</div>
-<div class="line"><span class="lineno">   67</span>    xmin = std::min(xmin, R[i]);</div>
-<div class="line"><span class="lineno">   68</span>    ymin = std::min(ymin, R[i + 1]);</div>
-<div class="line"><span class="lineno">   69</span>    zmin = std::min(zmin, R[i + 2]);</div>
-<div class="line"><span class="lineno">   70</span>  }</div>
-<div class="line"><span class="lineno">   71</span>  <span class="comment">// Only shift if coordinates are negative</span></div>
-<div class="line"><span class="lineno">   72</span>  <span class="keywordflow">if</span> (xmin &gt; 0)</div>
-<div class="line"><span class="lineno">   73</span>    xmin = 0;</div>
-<div class="line"><span class="lineno">   74</span>  <span class="keywordflow">if</span> (ymin &gt; 0)</div>
-<div class="line"><span class="lineno">   75</span>    ymin = 0;</div>
-<div class="line"><span class="lineno">   76</span>  <span class="keywordflow">if</span> (zmin &gt; 0)</div>
-<div class="line"><span class="lineno">   77</span>    zmin = 0;</div>
-<div class="line"><span class="lineno">   78</span> </div>
-<div class="line"><span class="lineno">   79</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; 3 * N; i += 3) {</div>
-<div class="line"><span class="lineno">   80</span>    Rtemp[i] += std::abs(xmin);</div>
-<div class="line"><span class="lineno">   81</span>    Rtemp[i + 1] += std::abs(ymin);</div>
-<div class="line"><span class="lineno">   82</span>    Rtemp[i + 2] += std::abs(zmin);</div>
-<div class="line"><span class="lineno">   83</span>  }</div>
-<div class="line"><span class="lineno">   84</span> </div>
-<div class="line"><span class="lineno">   85</span>  <span class="comment">// Enforce periodic boundary conditions</span></div>
-<div class="line"><span class="lineno">   86</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; 3 * N; i++) {</div>
-<div class="line"><span class="lineno">   87</span>    <span class="keywordflow">while</span> (Rtemp[i] &gt; box[i % 3]) {</div>
-<div class="line"><span class="lineno">   88</span>      Rtemp[i] -= box[i % 3];</div>
-<div class="line"><span class="lineno">   89</span>    }</div>
-<div class="line"><span class="lineno">   90</span>  }</div>
-<div class="line"><span class="lineno">   91</span> </div>
-<div class="line"><span class="lineno">   92</span>  std::copy(Rtemp.begin(), Rtemp.end(), Rnew.begin());</div>
-<div class="line"><span class="lineno">   93</span> </div>
-<div class="line"><span class="lineno">   94</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a8c4f3bcd3ee144598440ce415fe730ff">initialized_</a>) {</div>
-<div class="line"><span class="lineno">   95</span>    <a class="code hl_function" href="#a8158296edd3167b2c845ae45aa21707d">new_celllist</a>(N, box.data(), num_axis.data(), cell_length.data(),</div>
-<div class="line"><span class="lineno">   96</span>                 <a class="code hl_variable" href="#ae7f11b726d877643a593aca3c6a82a40">celllist_new_</a>.data(), num_cells, Rnew.data());</div>
-<div class="line"><span class="lineno">   97</span>    <a class="code hl_function" href="#a7452dea54ad21bfea5d7e82689c58dc2">cell_to_neighbor</a>(N, num_cells, num_axis.data(), cell_length.data(),</div>
-<div class="line"><span class="lineno">   98</span>                     <a class="code hl_variable" href="#ae7f11b726d877643a593aca3c6a82a40">celllist_new_</a>.data(), <a class="code hl_variable" href="#a2cfc0069b7a60064775febb23c146a84">neigh_list_</a>.data());</div>
-<div class="line"><span class="lineno">   99</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  100</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="#a1e830b5821dd96550944956d5b55046b">update_cell_list</a>(N, num_cells, num_axis.data(), cell_length.data(),</div>
-<div class="line"><span class="lineno">  101</span>                         <a class="code hl_variable" href="#a7eb5afdf64829e8295c80e8641c365df">celllist_old_</a>.data(), Rnew.data()) &gt; 0) {</div>
-<div class="line"><span class="lineno">  102</span>      <a class="code hl_function" href="#a8158296edd3167b2c845ae45aa21707d">new_celllist</a>(N, box.data(), num_axis.data(), cell_length.data(),</div>
-<div class="line"><span class="lineno">  103</span>                   <a class="code hl_variable" href="#ae7f11b726d877643a593aca3c6a82a40">celllist_new_</a>.data(), num_cells, Rnew.data());</div>
-<div class="line"><span class="lineno">  104</span>      <a class="code hl_function" href="#a7452dea54ad21bfea5d7e82689c58dc2">cell_to_neighbor</a>(N, num_cells, num_axis.data(), cell_length.data(),</div>
-<div class="line"><span class="lineno">  105</span>                       <a class="code hl_variable" href="#ae7f11b726d877643a593aca3c6a82a40">celllist_new_</a>.data(), <a class="code hl_variable" href="#a2cfc0069b7a60064775febb23c146a84">neigh_list_</a>.data());</div>
-<div class="line"><span class="lineno">  106</span>    }</div>
-<div class="line"><span class="lineno">  107</span>  }</div>
-<div class="line"><span class="lineno">  108</span> </div>
-<div class="line"><span class="lineno">  109</span>  <a class="code hl_function" href="#a761dfd8c53e42bb761ce0a4a24b8f1fa">calc_force</a>(N, Rnew.data(), atomicNrs, F, U, box.data());</div>
-<div class="line"><span class="lineno">  110</span> </div>
-<div class="line"><span class="lineno">  111</span>  std::copy(<a class="code hl_variable" href="#ae7f11b726d877643a593aca3c6a82a40">celllist_new_</a>.begin(), <a class="code hl_variable" href="#ae7f11b726d877643a593aca3c6a82a40">celllist_new_</a>.end(), <a class="code hl_variable" href="#a7eb5afdf64829e8295c80e8641c365df">celllist_old_</a>.begin());</div>
-<div class="line"><span class="lineno">  112</span> </div>
-<div class="line"><span class="lineno">  113</span>  <a class="code hl_variable" href="#a8c4f3bcd3ee144598440ce415fe730ff">initialized_</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  114</span>}</div>
-<div class="ttc" id="aclassEAM_html_a1e830b5821dd96550944956d5b55046b"><div class="ttname"><a href="#a1e830b5821dd96550944956d5b55046b">EAM::update_cell_list</a></div><div class="ttdeci">int update_cell_list(long N, long num_cells, long *num_axis, long *cell_length, long *celllist_old, double *Rnew)</div><div class="ttdef"><b>Definition</b> <a href="EAM_8cpp_source.html#l00326">EAM.cpp:326</a></div></div>
-<div class="ttc" id="aclassEAM_html_a2cfc0069b7a60064775febb23c146a84"><div class="ttname"><a href="#a2cfc0069b7a60064775febb23c146a84">EAM::neigh_list_</a></div><div class="ttdeci">std::vector&lt; long &gt; neigh_list_</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00054">EAM.h:54</a></div></div>
-<div class="ttc" id="aclassEAM_html_a7452dea54ad21bfea5d7e82689c58dc2"><div class="ttname"><a href="#a7452dea54ad21bfea5d7e82689c58dc2">EAM::cell_to_neighbor</a></div><div class="ttdeci">void cell_to_neighbor(long N, long num_of_cells, long *num_axis, long *cell_length, long *celllist_new, long *neigh_list)</div><div class="ttdef"><b>Definition</b> <a href="EAM_8cpp_source.html#l00250">EAM.cpp:250</a></div></div>
-<div class="ttc" id="aclassEAM_html_a761dfd8c53e42bb761ce0a4a24b8f1fa"><div class="ttname"><a href="#a761dfd8c53e42bb761ce0a4a24b8f1fa">EAM::calc_force</a></div><div class="ttdeci">void calc_force(long N, double *R, const int *atomicNrs, double *F, double *U, const double *box)</div><div class="ttdef"><b>Definition</b> <a href="EAM_8cpp_source.html#l00125">EAM.cpp:125</a></div></div>
-<div class="ttc" id="aclassEAM_html_a7eb5afdf64829e8295c80e8641c365df"><div class="ttname"><a href="#a7eb5afdf64829e8295c80e8641c365df">EAM::celllist_old_</a></div><div class="ttdeci">std::vector&lt; long &gt; celllist_old_</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00052">EAM.h:52</a></div></div>
-<div class="ttc" id="aclassEAM_html_a8158296edd3167b2c845ae45aa21707d"><div class="ttname"><a href="#a8158296edd3167b2c845ae45aa21707d">EAM::new_celllist</a></div><div class="ttdeci">void new_celllist(long N, const double *box, long *num_axis, long *cell_length, long *celllist_new, long num_cells, double *Rnew)</div><div class="ttdef"><b>Definition</b> <a href="EAM_8cpp_source.html#l00228">EAM.cpp:228</a></div></div>
-<div class="ttc" id="aclassEAM_html_a8c4f3bcd3ee144598440ce415fe730ff"><div class="ttname"><a href="#a8c4f3bcd3ee144598440ce415fe730ff">EAM::initialized_</a></div><div class="ttdeci">bool initialized_</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00055">EAM.h:55</a></div></div>
-<div class="ttc" id="aclassEAM_html_ae7f11b726d877643a593aca3c6a82a40"><div class="ttname"><a href="#ae7f11b726d877643a593aca3c6a82a40">EAM::celllist_new_</a></div><div class="ttdeci">std::vector&lt; long &gt; celllist_new_</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00053">EAM.h:53</a></div></div>
+<div class="line"><span class="lineno">   56</span>  *U = 0;</div>
+<div class="line"><span class="lineno">   57</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt; 3 * N; k++) {</div>
+<div class="line"><span class="lineno">   58</span>    F[k] = 0.0;</div>
+<div class="line"><span class="lineno">   59</span>  }</div>
+<div class="line"><span class="lineno">   60</span> </div>
+<div class="line"><span class="lineno">   61</span>  <span class="comment">// Find minimum coordinates for shifting all positions to positive</span></div>
+<div class="line"><span class="lineno">   62</span>  <span class="keywordtype">double</span> xmin = std::numeric_limits&lt;double&gt;::max();</div>
+<div class="line"><span class="lineno">   63</span>  <span class="keywordtype">double</span> ymin = xmin, zmin = xmin;</div>
+<div class="line"><span class="lineno">   64</span> </div>
+<div class="line"><span class="lineno">   65</span>  std::vector&lt;double&gt; Rtemp(3 * N);</div>
+<div class="line"><span class="lineno">   66</span>  std::vector&lt;double&gt; Rnew(3 * N);</div>
+<div class="line"><span class="lineno">   67</span> </div>
+<div class="line"><span class="lineno">   68</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; 3 * N; i += 3) {</div>
+<div class="line"><span class="lineno">   69</span>    Rtemp[i] = R[i];</div>
+<div class="line"><span class="lineno">   70</span>    Rtemp[i + 1] = R[i + 1];</div>
+<div class="line"><span class="lineno">   71</span>    Rtemp[i + 2] = R[i + 2];</div>
+<div class="line"><span class="lineno">   72</span>    xmin = std::min(xmin, R[i]);</div>
+<div class="line"><span class="lineno">   73</span>    ymin = std::min(ymin, R[i + 1]);</div>
+<div class="line"><span class="lineno">   74</span>    zmin = std::min(zmin, R[i + 2]);</div>
+<div class="line"><span class="lineno">   75</span>  }</div>
+<div class="line"><span class="lineno">   76</span>  <span class="comment">// Only shift if coordinates are negative</span></div>
+<div class="line"><span class="lineno">   77</span>  <span class="keywordflow">if</span> (xmin &gt; 0)</div>
+<div class="line"><span class="lineno">   78</span>    xmin = 0;</div>
+<div class="line"><span class="lineno">   79</span>  <span class="keywordflow">if</span> (ymin &gt; 0)</div>
+<div class="line"><span class="lineno">   80</span>    ymin = 0;</div>
+<div class="line"><span class="lineno">   81</span>  <span class="keywordflow">if</span> (zmin &gt; 0)</div>
+<div class="line"><span class="lineno">   82</span>    zmin = 0;</div>
+<div class="line"><span class="lineno">   83</span> </div>
+<div class="line"><span class="lineno">   84</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; 3 * N; i += 3) {</div>
+<div class="line"><span class="lineno">   85</span>    Rtemp[i] += std::abs(xmin);</div>
+<div class="line"><span class="lineno">   86</span>    Rtemp[i + 1] += std::abs(ymin);</div>
+<div class="line"><span class="lineno">   87</span>    Rtemp[i + 2] += std::abs(zmin);</div>
+<div class="line"><span class="lineno">   88</span>  }</div>
+<div class="line"><span class="lineno">   89</span> </div>
+<div class="line"><span class="lineno">   90</span>  <span class="comment">// Enforce periodic boundary conditions</span></div>
+<div class="line"><span class="lineno">   91</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; 3 * N; i++) {</div>
+<div class="line"><span class="lineno">   92</span>    <span class="keywordflow">while</span> (Rtemp[i] &gt; box[i % 3]) {</div>
+<div class="line"><span class="lineno">   93</span>      Rtemp[i] -= box[i % 3];</div>
+<div class="line"><span class="lineno">   94</span>    }</div>
+<div class="line"><span class="lineno">   95</span>  }</div>
+<div class="line"><span class="lineno">   96</span> </div>
+<div class="line"><span class="lineno">   97</span>  std::copy(Rtemp.begin(), Rtemp.end(), Rnew.begin());</div>
+<div class="line"><span class="lineno">   98</span> </div>
+<div class="line"><span class="lineno">   99</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a8c4f3bcd3ee144598440ce415fe730ff">initialized_</a>) {</div>
+<div class="line"><span class="lineno">  100</span>    <a class="code hl_function" href="#a8158296edd3167b2c845ae45aa21707d">new_celllist</a>(N, box.data(), num_axis.data(), cell_length.data(),</div>
+<div class="line"><span class="lineno">  101</span>                 <a class="code hl_variable" href="#ae7f11b726d877643a593aca3c6a82a40">celllist_new_</a>.data(), num_cells, Rnew.data());</div>
+<div class="line"><span class="lineno">  102</span>    <a class="code hl_function" href="#a7452dea54ad21bfea5d7e82689c58dc2">cell_to_neighbor</a>(N, num_cells, num_axis.data(), cell_length.data(),</div>
+<div class="line"><span class="lineno">  103</span>                     <a class="code hl_variable" href="#ae7f11b726d877643a593aca3c6a82a40">celllist_new_</a>.data(), <a class="code hl_variable" href="#a2cfc0069b7a60064775febb23c146a84">neigh_list_</a>.data());</div>
+<div class="line"><span class="lineno">  104</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  105</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="#a1e830b5821dd96550944956d5b55046b">update_cell_list</a>(N, num_cells, num_axis.data(), cell_length.data(),</div>
+<div class="line"><span class="lineno">  106</span>                         <a class="code hl_variable" href="#a7eb5afdf64829e8295c80e8641c365df">celllist_old_</a>.data(), Rnew.data()) &gt; 0) {</div>
+<div class="line"><span class="lineno">  107</span>      <a class="code hl_function" href="#a8158296edd3167b2c845ae45aa21707d">new_celllist</a>(N, box.data(), num_axis.data(), cell_length.data(),</div>
+<div class="line"><span class="lineno">  108</span>                   <a class="code hl_variable" href="#ae7f11b726d877643a593aca3c6a82a40">celllist_new_</a>.data(), num_cells, Rnew.data());</div>
+<div class="line"><span class="lineno">  109</span>      <a class="code hl_function" href="#a7452dea54ad21bfea5d7e82689c58dc2">cell_to_neighbor</a>(N, num_cells, num_axis.data(), cell_length.data(),</div>
+<div class="line"><span class="lineno">  110</span>                       <a class="code hl_variable" href="#ae7f11b726d877643a593aca3c6a82a40">celllist_new_</a>.data(), <a class="code hl_variable" href="#a2cfc0069b7a60064775febb23c146a84">neigh_list_</a>.data());</div>
+<div class="line"><span class="lineno">  111</span>    }</div>
+<div class="line"><span class="lineno">  112</span>  }</div>
+<div class="line"><span class="lineno">  113</span> </div>
+<div class="line"><span class="lineno">  114</span>  <a class="code hl_function" href="#a761dfd8c53e42bb761ce0a4a24b8f1fa">calc_force</a>(N, Rnew.data(), atomicNrs, F, U, box.data());</div>
+<div class="line"><span class="lineno">  115</span> </div>
+<div class="line"><span class="lineno">  116</span>  std::copy(<a class="code hl_variable" href="#ae7f11b726d877643a593aca3c6a82a40">celllist_new_</a>.begin(), <a class="code hl_variable" href="#ae7f11b726d877643a593aca3c6a82a40">celllist_new_</a>.end(), <a class="code hl_variable" href="#a7eb5afdf64829e8295c80e8641c365df">celllist_old_</a>.begin());</div>
+<div class="line"><span class="lineno">  117</span> </div>
+<div class="line"><span class="lineno">  118</span>  <a class="code hl_variable" href="#a8c4f3bcd3ee144598440ce415fe730ff">initialized_</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  119</span>}</div>
+<div class="ttc" id="aclassEAM_html_a1e830b5821dd96550944956d5b55046b"><div class="ttname"><a href="#a1e830b5821dd96550944956d5b55046b">EAM::update_cell_list</a></div><div class="ttdeci">int update_cell_list(long N, long num_cells, long *num_axis, long *cell_length, long *celllist_old, double *Rnew)</div><div class="ttdef"><b>Definition</b> <a href="EAM_8cpp_source.html#l00331">EAM.cpp:331</a></div></div>
+<div class="ttc" id="aclassEAM_html_a2cfc0069b7a60064775febb23c146a84"><div class="ttname"><a href="#a2cfc0069b7a60064775febb23c146a84">EAM::neigh_list_</a></div><div class="ttdeci">std::vector&lt; long &gt; neigh_list_</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00058">EAM.h:58</a></div></div>
+<div class="ttc" id="aclassEAM_html_a7452dea54ad21bfea5d7e82689c58dc2"><div class="ttname"><a href="#a7452dea54ad21bfea5d7e82689c58dc2">EAM::cell_to_neighbor</a></div><div class="ttdeci">void cell_to_neighbor(long N, long num_of_cells, long *num_axis, long *cell_length, long *celllist_new, long *neigh_list)</div><div class="ttdef"><b>Definition</b> <a href="EAM_8cpp_source.html#l00255">EAM.cpp:255</a></div></div>
+<div class="ttc" id="aclassEAM_html_a761dfd8c53e42bb761ce0a4a24b8f1fa"><div class="ttname"><a href="#a761dfd8c53e42bb761ce0a4a24b8f1fa">EAM::calc_force</a></div><div class="ttdeci">void calc_force(long N, double *R, const int *atomicNrs, double *F, double *U, const double *box)</div><div class="ttdef"><b>Definition</b> <a href="EAM_8cpp_source.html#l00130">EAM.cpp:130</a></div></div>
+<div class="ttc" id="aclassEAM_html_a7eb5afdf64829e8295c80e8641c365df"><div class="ttname"><a href="#a7eb5afdf64829e8295c80e8641c365df">EAM::celllist_old_</a></div><div class="ttdeci">std::vector&lt; long &gt; celllist_old_</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00056">EAM.h:56</a></div></div>
+<div class="ttc" id="aclassEAM_html_a8158296edd3167b2c845ae45aa21707d"><div class="ttname"><a href="#a8158296edd3167b2c845ae45aa21707d">EAM::new_celllist</a></div><div class="ttdeci">void new_celllist(long N, const double *box, long *num_axis, long *cell_length, long *celllist_new, long num_cells, double *Rnew)</div><div class="ttdef"><b>Definition</b> <a href="EAM_8cpp_source.html#l00233">EAM.cpp:233</a></div></div>
+<div class="ttc" id="aclassEAM_html_a8c4f3bcd3ee144598440ce415fe730ff"><div class="ttname"><a href="#a8c4f3bcd3ee144598440ce415fe730ff">EAM::initialized_</a></div><div class="ttdeci">bool initialized_</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00059">EAM.h:59</a></div></div>
+<div class="ttc" id="aclassEAM_html_ae7f11b726d877643a593aca3c6a82a40"><div class="ttname"><a href="#ae7f11b726d877643a593aca3c6a82a40">EAM::celllist_new_</a></div><div class="ttdeci">std::vector&lt; long &gt; celllist_new_</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00057">EAM.h:57</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -935,17 +953,51 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EAM_8cpp_source.html#l00116">116</a> of file <a class="el" href="EAM_8cpp_source.html">EAM.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  116</span>                                                                   {</div>
-<div class="line"><span class="lineno">  117</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_define" href="potentials_2EAM_2Parameters_8h.html#ae468832efa6adf5e9a96cabd8f878b47">NPARAMS</a>; i++) {</div>
-<div class="line"><span class="lineno">  118</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ada5c56635e84af8c38b56a47b1353500">el_params</a>[i].Z == atomic_number) {</div>
-<div class="line"><span class="lineno">  119</span>      <span class="keywordflow">return</span> <a class="code hl_variable" href="#ada5c56635e84af8c38b56a47b1353500">el_params</a>[i];</div>
-<div class="line"><span class="lineno">  120</span>    }</div>
-<div class="line"><span class="lineno">  121</span>  }</div>
-<div class="line"><span class="lineno">  122</span>  <span class="keywordflow">throw</span> 14324; <span class="comment">// Element not found</span></div>
-<div class="line"><span class="lineno">  123</span>}</div>
+<p class="definition">Definition at line <a class="el" href="EAM_8cpp_source.html#l00121">121</a> of file <a class="el" href="EAM_8cpp_source.html">EAM.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  121</span>                                                                   {</div>
+<div class="line"><span class="lineno">  122</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_define" href="potentials_2EAM_2Parameters_8h.html#ae468832efa6adf5e9a96cabd8f878b47">NPARAMS</a>; i++) {</div>
+<div class="line"><span class="lineno">  123</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ada5c56635e84af8c38b56a47b1353500">el_params</a>[i].Z == atomic_number) {</div>
+<div class="line"><span class="lineno">  124</span>      <span class="keywordflow">return</span> <a class="code hl_variable" href="#ada5c56635e84af8c38b56a47b1353500">el_params</a>[i];</div>
+<div class="line"><span class="lineno">  125</span>    }</div>
+<div class="line"><span class="lineno">  126</span>  }</div>
+<div class="line"><span class="lineno">  127</span>  <span class="keywordflow">throw</span> 14324; <span class="comment">// Element not found</span></div>
+<div class="line"><span class="lineno">  128</span>}</div>
 <div class="ttc" id="aclassEAM_html_ada5c56635e84af8c38b56a47b1353500"><div class="ttname"><a href="#ada5c56635e84af8c38b56a47b1353500">EAM::el_params</a></div><div class="ttdeci">static const element_parameters el_params[]</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00015">EAM.h:15</a></div></div>
 <div class="ttc" id="apotentials_2EAM_2Parameters_8h_html_ae468832efa6adf5e9a96cabd8f878b47"><div class="ttname"><a href="potentials_2EAM_2Parameters_8h.html#ae468832efa6adf5e9a96cabd8f878b47">NPARAMS</a></div><div class="ttdeci">#define NPARAMS</div><div class="ttdef"><b>Definition</b> <a href="potentials_2EAM_2Parameters_8h_source.html#l00013">Parameters.h:13</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="abcf5da2c9e16e8367fb1a6ac99495030" name="abcf5da2c9e16e8367fb1a6ac99495030"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abcf5da2c9e16e8367fb1a6ac99495030">&#9670;&#160;</a></span>isSharedInstanceThreadSafe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool EAM::isSharedInstanceThreadSafe </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cell lists live on the instance; two threads cannot share one <a class="el" href="classEAM.html" title="EAM (Embedded Atom Method) potential with cell list neighbor finding.">EAM</a>. </p>
+
+<p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#a8065b9661fcb0b025d397928243c987c">eonc::Potential</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="EAM_8h_source.html#l00039">39</a> of file <a class="el" href="EAM_8h_source.html">EAM.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   39</span>                                                                          {</div>
+<div class="line"><span class="lineno">   40</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   41</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1001,26 +1053,26 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EAM_8cpp_source.html#l00228">228</a> of file <a class="el" href="EAM_8cpp_source.html">EAM.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  230</span>                                     {</div>
-<div class="line"><span class="lineno">  231</span>  std::vector&lt;long&gt; cell_list(num_cells * (N + 1), -1);</div>
-<div class="line"><span class="lineno">  232</span>  <span class="comment">// Last slot of each cell holds atom count</span></div>
-<div class="line"><span class="lineno">  233</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; num_cells; i++) {</div>
-<div class="line"><span class="lineno">  234</span>    cell_list[i * (N + 1) + N] = 0;</div>
-<div class="line"><span class="lineno">  235</span>  }</div>
-<div class="line"><span class="lineno">  236</span> </div>
-<div class="line"><span class="lineno">  237</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; N; i++) {</div>
-<div class="line"><span class="lineno">  238</span>    <span class="keywordtype">long</span> cx = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(Rnew[3 * i] / cell_length[0]);</div>
-<div class="line"><span class="lineno">  239</span>    <span class="keywordtype">long</span> cy = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(Rnew[3 * i + 1] / cell_length[1]);</div>
-<div class="line"><span class="lineno">  240</span>    <span class="keywordtype">long</span> cz = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(Rnew[3 * i + 2] / cell_length[2]);</div>
-<div class="line"><span class="lineno">  241</span>    <span class="keywordtype">long</span> cell = cx * num_axis[1] * num_axis[2] + cy * num_axis[2] + cz;</div>
-<div class="line"><span class="lineno">  242</span> </div>
-<div class="line"><span class="lineno">  243</span>    cell_list[cell * (N + 1) + cell_list[cell * (N + 1) + N]] = i;</div>
-<div class="line"><span class="lineno">  244</span>    cell_list[cell * (N + 1) + N]++;</div>
-<div class="line"><span class="lineno">  245</span>  }</div>
-<div class="line"><span class="lineno">  246</span> </div>
-<div class="line"><span class="lineno">  247</span>  std::copy(cell_list.begin(), cell_list.end(), celllist_new);</div>
-<div class="line"><span class="lineno">  248</span>}</div>
+<p class="definition">Definition at line <a class="el" href="EAM_8cpp_source.html#l00233">233</a> of file <a class="el" href="EAM_8cpp_source.html">EAM.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  235</span>                                     {</div>
+<div class="line"><span class="lineno">  236</span>  std::vector&lt;long&gt; cell_list(num_cells * (N + 1), -1);</div>
+<div class="line"><span class="lineno">  237</span>  <span class="comment">// Last slot of each cell holds atom count</span></div>
+<div class="line"><span class="lineno">  238</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; num_cells; i++) {</div>
+<div class="line"><span class="lineno">  239</span>    cell_list[i * (N + 1) + N] = 0;</div>
+<div class="line"><span class="lineno">  240</span>  }</div>
+<div class="line"><span class="lineno">  241</span> </div>
+<div class="line"><span class="lineno">  242</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; N; i++) {</div>
+<div class="line"><span class="lineno">  243</span>    <span class="keywordtype">long</span> cx = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(Rnew[3 * i] / cell_length[0]);</div>
+<div class="line"><span class="lineno">  244</span>    <span class="keywordtype">long</span> cy = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(Rnew[3 * i + 1] / cell_length[1]);</div>
+<div class="line"><span class="lineno">  245</span>    <span class="keywordtype">long</span> cz = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(Rnew[3 * i + 2] / cell_length[2]);</div>
+<div class="line"><span class="lineno">  246</span>    <span class="keywordtype">long</span> cell = cx * num_axis[1] * num_axis[2] + cy * num_axis[2] + cz;</div>
+<div class="line"><span class="lineno">  247</span> </div>
+<div class="line"><span class="lineno">  248</span>    cell_list[cell * (N + 1) + cell_list[cell * (N + 1) + N]] = i;</div>
+<div class="line"><span class="lineno">  249</span>    cell_list[cell * (N + 1) + N]++;</div>
+<div class="line"><span class="lineno">  250</span>  }</div>
+<div class="line"><span class="lineno">  251</span> </div>
+<div class="line"><span class="lineno">  252</span>  std::copy(cell_list.begin(), cell_list.end(), celllist_new);</div>
+<div class="line"><span class="lineno">  253</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1071,28 +1123,28 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EAM_8cpp_source.html#l00326">326</a> of file <a class="el" href="EAM_8cpp_source.html">EAM.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  327</span>                                                                               {</div>
-<div class="line"><span class="lineno">  328</span>  <span class="keywordtype">int</span> changed = 0;</div>
-<div class="line"><span class="lineno">  329</span>  std::vector&lt;long&gt; table(N);</div>
-<div class="line"><span class="lineno">  330</span> </div>
-<div class="line"><span class="lineno">  331</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; num_cells; i++) {</div>
-<div class="line"><span class="lineno">  332</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; celllist_old[i * (N + 1) + N]; j++) {</div>
-<div class="line"><span class="lineno">  333</span>      table[celllist_old[i * (N + 1) + j]] = i;</div>
-<div class="line"><span class="lineno">  334</span>    }</div>
-<div class="line"><span class="lineno">  335</span>  }</div>
-<div class="line"><span class="lineno">  336</span> </div>
-<div class="line"><span class="lineno">  337</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; N; i++) {</div>
-<div class="line"><span class="lineno">  338</span>    <span class="keywordtype">long</span> cx = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(Rnew[3 * i] / cell_length[0]);</div>
-<div class="line"><span class="lineno">  339</span>    <span class="keywordtype">long</span> cy = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(Rnew[3 * i + 1] / cell_length[1]);</div>
-<div class="line"><span class="lineno">  340</span>    <span class="keywordtype">long</span> cz = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(Rnew[3 * i + 2] / cell_length[2]);</div>
-<div class="line"><span class="lineno">  341</span>    <span class="keywordtype">long</span> cell = cx * num_axis[1] * num_axis[2] + cy * num_axis[2] + cz;</div>
-<div class="line"><span class="lineno">  342</span>    <span class="keywordflow">if</span> (cell != table[i]) {</div>
-<div class="line"><span class="lineno">  343</span>      changed++;</div>
-<div class="line"><span class="lineno">  344</span>    }</div>
-<div class="line"><span class="lineno">  345</span>  }</div>
-<div class="line"><span class="lineno">  346</span>  <span class="keywordflow">return</span> changed;</div>
-<div class="line"><span class="lineno">  347</span>}</div>
+<p class="definition">Definition at line <a class="el" href="EAM_8cpp_source.html#l00331">331</a> of file <a class="el" href="EAM_8cpp_source.html">EAM.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  332</span>                                                                               {</div>
+<div class="line"><span class="lineno">  333</span>  <span class="keywordtype">int</span> changed = 0;</div>
+<div class="line"><span class="lineno">  334</span>  std::vector&lt;long&gt; table(N);</div>
+<div class="line"><span class="lineno">  335</span> </div>
+<div class="line"><span class="lineno">  336</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; num_cells; i++) {</div>
+<div class="line"><span class="lineno">  337</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; celllist_old[i * (N + 1) + N]; j++) {</div>
+<div class="line"><span class="lineno">  338</span>      table[celllist_old[i * (N + 1) + j]] = i;</div>
+<div class="line"><span class="lineno">  339</span>    }</div>
+<div class="line"><span class="lineno">  340</span>  }</div>
+<div class="line"><span class="lineno">  341</span> </div>
+<div class="line"><span class="lineno">  342</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; N; i++) {</div>
+<div class="line"><span class="lineno">  343</span>    <span class="keywordtype">long</span> cx = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(Rnew[3 * i] / cell_length[0]);</div>
+<div class="line"><span class="lineno">  344</span>    <span class="keywordtype">long</span> cy = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(Rnew[3 * i + 1] / cell_length[1]);</div>
+<div class="line"><span class="lineno">  345</span>    <span class="keywordtype">long</span> cz = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(Rnew[3 * i + 2] / cell_length[2]);</div>
+<div class="line"><span class="lineno">  346</span>    <span class="keywordtype">long</span> cell = cx * num_axis[1] * num_axis[2] + cy * num_axis[2] + cz;</div>
+<div class="line"><span class="lineno">  347</span>    <span class="keywordflow">if</span> (cell != table[i]) {</div>
+<div class="line"><span class="lineno">  348</span>      changed++;</div>
+<div class="line"><span class="lineno">  349</span>    }</div>
+<div class="line"><span class="lineno">  350</span>  }</div>
+<div class="line"><span class="lineno">  351</span>  <span class="keywordflow">return</span> changed;</div>
+<div class="line"><span class="lineno">  352</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1117,7 +1169,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EAM_8h_source.html#l00053">53</a> of file <a class="el" href="EAM_8h_source.html">EAM.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EAM_8h_source.html#l00057">57</a> of file <a class="el" href="EAM_8h_source.html">EAM.h</a>.</p>
 
 </div>
 </div>
@@ -1141,7 +1193,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EAM_8h_source.html#l00052">52</a> of file <a class="el" href="EAM_8h_source.html">EAM.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EAM_8h_source.html#l00056">56</a> of file <a class="el" href="EAM_8h_source.html">EAM.h</a>.</p>
 
 </div>
 </div>
@@ -1166,45 +1218,44 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="EAM_8h_source.html#l00015">15</a> of file <a class="el" href="EAM_8h_source.html">EAM.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   25</span>    : <span class="keyword">public</span> <a class="code hl_function" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a></div>
+<div class="fragment"><div class="line"><span class="lineno">   25</span>    : <span class="keyword">public</span> eonc::Potential</div>
 <div class="line"><span class="lineno">   26</span><span class="preprocessor">#endif</span></div>
 <div class="line"><span class="lineno">   27</span>{</div>
 <div class="line"><span class="lineno">   28</span><span class="keyword">public</span>:</div>
-<div class="line"><span class="lineno">   29</span>  <span class="keyword">explicit</span> <a class="code hl_function" href="#a478560c7c419f62f0f73930becb989c0">EAM</a>(<span class="keyword">const</span> Parameters &amp;params)</div>
-<div class="line"><span class="lineno">   30</span>      : <a class="code hl_function" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a>(<a class="code hl_enumeration" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a>::<a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ab65e908410eb266ddc3a2ebd0823d20e">EAM_AL</a>, params),</div>
-<div class="line"><span class="lineno">   31</span>        <a class="code hl_variable" href="#a9df9baa12a7d5218e011bea74a816986">rc_</a>{6.0, 6.0, 6.0} {}</div>
-<div class="line"><span class="lineno">   32</span> </div>
-<div class="line"><span class="lineno">   33</span>  <a class="code hl_function" href="#a281a60486cb275addabc18f69681446d">~EAM</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
-<div class="line"><span class="lineno">   34</span> </div>
-<div class="line"><span class="lineno">   35</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="#ace6248f3ce70c9e65f9ec59a9cdb8744">cleanMemory</a>();</div>
-<div class="line"><span class="lineno">   36</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="#ad3dae1a4f620bc02ea4205ccae927ee6">force</a>(<span class="keywordtype">long</span> N, <span class="keyword">const</span> <span class="keywordtype">double</span> *R, <span class="keyword">const</span> <span class="keywordtype">int</span> *atomicNrs, <span class="keywordtype">double</span> *F,</div>
-<div class="line"><span class="lineno">   37</span>             <span class="keywordtype">double</span> *U, <span class="keywordtype">double</span> *variance, <span class="keyword">const</span> <span class="keywordtype">double</span> *fullbox) <span class="keyword">override</span>;</div>
-<div class="line"><span class="lineno">   38</span> </div>
-<div class="line"><span class="lineno">   39</span><span class="keyword">private</span>:</div>
-<div class="line"><span class="lineno">   40</span>  <span class="keyword">struct </span><a class="code hl_struct" href="structEAM_1_1element__parameters.html">element_parameters</a> {</div>
-<div class="line"><span class="lineno">   41</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="structEAM_1_1element__parameters.html#a2f87abd734a4140c030c4fce6a58100b">Z</a>;                <span class="comment">// Atomic number</span></div>
-<div class="line"><span class="lineno">   42</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structEAM_1_1element__parameters.html#a72a57b9e5b4efd58f7379c85b250420b">Dm</a>;            <span class="comment">// Morse potential well depth</span></div>
-<div class="line"><span class="lineno">   43</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structEAM_1_1element__parameters.html#a7520f86eea718d28052f2ed446c16df9">alphaM</a>;        <span class="comment">// Curvature at Morse minimum</span></div>
-<div class="line"><span class="lineno">   44</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structEAM_1_1element__parameters.html#ae9391fe21045dc6035b19fbd437e3afe">Rm</a>;            <span class="comment">// Position of Morse minimum</span></div>
-<div class="line"><span class="lineno">   45</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structEAM_1_1element__parameters.html#a14c8bf12361aec6169e052d9330baad0">beta1</a>;         <span class="comment">// Density parameter 1</span></div>
-<div class="line"><span class="lineno">   46</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structEAM_1_1element__parameters.html#ae02c8ee6f1ed6cc3c7b7983d102dc561">beta2</a>;         <span class="comment">// Density parameter 2</span></div>
-<div class="line"><span class="lineno">   47</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structEAM_1_1element__parameters.html#a4854678a465ac83cad8118d90a4e7ba4">r_cut</a>;         <span class="comment">// Cutoff distance</span></div>
-<div class="line"><span class="lineno">   48</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structEAM_1_1element__parameters.html#af58060fedcbbd6402b5a914c759b1020">func_coeff</a>[9]; <span class="comment">// 8th order poly for embedding function</span></div>
-<div class="line"><span class="lineno">   49</span>  };</div>
-<div class="line"><span class="lineno">   50</span>  <span class="keyword">static</span> <span class="keyword">const</span> <a class="code hl_struct" href="structEAM_1_1element__parameters.html">element_parameters</a> <a class="code hl_variable" href="#ada5c56635e84af8c38b56a47b1353500">el_params</a>[];</div>
+<div class="line"><span class="lineno">   29</span>  <span class="keyword">explicit</span> <a class="code hl_function" href="#ab3c567bbb4cc8c86f1b1abd8face6ee5">EAM</a>(<span class="keyword">const</span> eonc::Parameters &amp;params)</div>
+<div class="line"><span class="lineno">   30</span>      : eonc::<a class="code hl_function" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a>(eonc::<a class="code hl_enumeration" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a>::<a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ab65e908410eb266ddc3a2ebd0823d20e">EAM_AL</a>, params), <a class="code hl_variable" href="#a9df9baa12a7d5218e011bea74a816986">rc_</a>{6.0, 6.0, 6.0} {}</div>
+<div class="line"><span class="lineno">   31</span> </div>
+<div class="line"><span class="lineno">   32</span>  <a class="code hl_function" href="#a281a60486cb275addabc18f69681446d">~EAM</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><span class="lineno">   33</span> </div>
+<div class="line"><span class="lineno">   34</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="#ace6248f3ce70c9e65f9ec59a9cdb8744">cleanMemory</a>();</div>
+<div class="line"><span class="lineno">   35</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="#ad3dae1a4f620bc02ea4205ccae927ee6">force</a>(<span class="keywordtype">long</span> N, <span class="keyword">const</span> <span class="keywordtype">double</span> *R, <span class="keyword">const</span> <span class="keywordtype">int</span> *atomicNrs, <span class="keywordtype">double</span> *F,</div>
+<div class="line"><span class="lineno">   36</span>             <span class="keywordtype">double</span> *U, <span class="keywordtype">double</span> *variance, <span class="keyword">const</span> <span class="keywordtype">double</span> *fullbox) <span class="keyword">override</span>;</div>
+<div class="line"><span class="lineno">   37</span></div>
+<div class="line"><span class="lineno">   39</span>  [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="#abcf5da2c9e16e8367fb1a6ac99495030">isSharedInstanceThreadSafe</a>() const noexcept<span class="keyword"> override </span>{</div>
+<div class="line"><span class="lineno">   40</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   41</span>  }</div>
+<div class="line"><span class="lineno">   42</span> </div>
+<div class="line"><span class="lineno">   43</span><span class="keyword">private</span>:</div>
+<div class="line"><span class="lineno">   44</span>  <span class="keyword">struct </span><a class="code hl_struct" href="structEAM_1_1element__parameters.html">element_parameters</a> {</div>
+<div class="line"><span class="lineno">   45</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="structEAM_1_1element__parameters.html#a2f87abd734a4140c030c4fce6a58100b">Z</a>;                <span class="comment">// Atomic number</span></div>
+<div class="line"><span class="lineno">   46</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structEAM_1_1element__parameters.html#a72a57b9e5b4efd58f7379c85b250420b">Dm</a>;            <span class="comment">// Morse potential well depth</span></div>
+<div class="line"><span class="lineno">   47</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structEAM_1_1element__parameters.html#a7520f86eea718d28052f2ed446c16df9">alphaM</a>;        <span class="comment">// Curvature at Morse minimum</span></div>
+<div class="line"><span class="lineno">   48</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structEAM_1_1element__parameters.html#ae9391fe21045dc6035b19fbd437e3afe">Rm</a>;            <span class="comment">// Position of Morse minimum</span></div>
+<div class="line"><span class="lineno">   49</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structEAM_1_1element__parameters.html#a14c8bf12361aec6169e052d9330baad0">beta1</a>;         <span class="comment">// Density parameter 1</span></div>
+<div class="line"><span class="lineno">   50</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="structEAM_1_1element__parameters.html#ae02c8ee6f1ed6cc3c7b7983d102dc561">beta2</a>;         <span class="comment">// Density parameter 2</span></div>
 <div class="ttc" id="aclassEAM_html_a281a60486cb275addabc18f69681446d"><div class="ttname"><a href="#a281a60486cb275addabc18f69681446d">EAM::~EAM</a></div><div class="ttdeci">~EAM() override=default</div></div>
-<div class="ttc" id="aclassEAM_html_a478560c7c419f62f0f73930becb989c0"><div class="ttname"><a href="#a478560c7c419f62f0f73930becb989c0">EAM::EAM</a></div><div class="ttdeci">EAM(const Parameters &amp;params)</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00029">EAM.h:29</a></div></div>
-<div class="ttc" id="aclassEAM_html_ace6248f3ce70c9e65f9ec59a9cdb8744"><div class="ttname"><a href="#ace6248f3ce70c9e65f9ec59a9cdb8744">EAM::cleanMemory</a></div><div class="ttdeci">void cleanMemory()</div><div class="ttdef"><b>Definition</b> <a href="EAM_8cpp_source.html#l00024">EAM.cpp:24</a></div></div>
-<div class="ttc" id="aclassEAM_html_ad3dae1a4f620bc02ea4205ccae927ee6"><div class="ttname"><a href="#ad3dae1a4f620bc02ea4205ccae927ee6">EAM::force</a></div><div class="ttdeci">void force(long N, const double *R, const int *atomicNrs, double *F, double *U, double *variance, const double *fullbox) override</div><div class="ttdef"><b>Definition</b> <a href="EAM_8cpp_source.html#l00028">EAM.cpp:28</a></div></div>
+<div class="ttc" id="aclassEAM_html_ab3c567bbb4cc8c86f1b1abd8face6ee5"><div class="ttname"><a href="#ab3c567bbb4cc8c86f1b1abd8face6ee5">EAM::EAM</a></div><div class="ttdeci">EAM(const eonc::Parameters &amp;params)</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00029">EAM.h:29</a></div></div>
+<div class="ttc" id="aclassEAM_html_abcf5da2c9e16e8367fb1a6ac99495030"><div class="ttname"><a href="#abcf5da2c9e16e8367fb1a6ac99495030">EAM::isSharedInstanceThreadSafe</a></div><div class="ttdeci">bool isSharedInstanceThreadSafe() const noexcept override</div><div class="ttdoc">Cell lists live on the instance; two threads cannot share one EAM.</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00039">EAM.h:39</a></div></div>
+<div class="ttc" id="aclassEAM_html_ace6248f3ce70c9e65f9ec59a9cdb8744"><div class="ttname"><a href="#ace6248f3ce70c9e65f9ec59a9cdb8744">EAM::cleanMemory</a></div><div class="ttdeci">void cleanMemory()</div><div class="ttdef"><b>Definition</b> <a href="EAM_8cpp_source.html#l00025">EAM.cpp:25</a></div></div>
+<div class="ttc" id="aclassEAM_html_ad3dae1a4f620bc02ea4205ccae927ee6"><div class="ttname"><a href="#ad3dae1a4f620bc02ea4205ccae927ee6">EAM::force</a></div><div class="ttdeci">void force(long N, const double *R, const int *atomicNrs, double *F, double *U, double *variance, const double *fullbox) override</div><div class="ttdef"><b>Definition</b> <a href="EAM_8cpp_source.html#l00029">EAM.cpp:29</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_af81acd9a6775ff13fab861a51fb9ba95"><div class="ttname"><a href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">eonc::Potential::Potential</a></div><div class="ttdeci">Potential(PotType a_ptype)</div><div class="ttdoc">Production default: construction-scope registry, else PotRegistry::get().</div><div class="ttdef"><b>Definition</b> <a href="PotentialParams_8cpp_source.html#l00029">PotentialParams.cpp:29</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">eonc::PotType</a></div><div class="ttdeci">PotType</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00036">BaseStructures.h:36</a></div></div>
-<div class="ttc" id="astructEAM_1_1element__parameters_html_a14c8bf12361aec6169e052d9330baad0"><div class="ttname"><a href="structEAM_1_1element__parameters.html#a14c8bf12361aec6169e052d9330baad0">EAM::element_parameters::beta1</a></div><div class="ttdeci">const double beta1</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00045">EAM.h:45</a></div></div>
-<div class="ttc" id="astructEAM_1_1element__parameters_html_a2f87abd734a4140c030c4fce6a58100b"><div class="ttname"><a href="structEAM_1_1element__parameters.html#a2f87abd734a4140c030c4fce6a58100b">EAM::element_parameters::Z</a></div><div class="ttdeci">const int Z</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00041">EAM.h:41</a></div></div>
-<div class="ttc" id="astructEAM_1_1element__parameters_html_a4854678a465ac83cad8118d90a4e7ba4"><div class="ttname"><a href="structEAM_1_1element__parameters.html#a4854678a465ac83cad8118d90a4e7ba4">EAM::element_parameters::r_cut</a></div><div class="ttdeci">const double r_cut</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00047">EAM.h:47</a></div></div>
-<div class="ttc" id="astructEAM_1_1element__parameters_html_a72a57b9e5b4efd58f7379c85b250420b"><div class="ttname"><a href="structEAM_1_1element__parameters.html#a72a57b9e5b4efd58f7379c85b250420b">EAM::element_parameters::Dm</a></div><div class="ttdeci">const double Dm</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00042">EAM.h:42</a></div></div>
-<div class="ttc" id="astructEAM_1_1element__parameters_html_a7520f86eea718d28052f2ed446c16df9"><div class="ttname"><a href="structEAM_1_1element__parameters.html#a7520f86eea718d28052f2ed446c16df9">EAM::element_parameters::alphaM</a></div><div class="ttdeci">const double alphaM</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00043">EAM.h:43</a></div></div>
-<div class="ttc" id="astructEAM_1_1element__parameters_html_ae02c8ee6f1ed6cc3c7b7983d102dc561"><div class="ttname"><a href="structEAM_1_1element__parameters.html#ae02c8ee6f1ed6cc3c7b7983d102dc561">EAM::element_parameters::beta2</a></div><div class="ttdeci">const double beta2</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00046">EAM.h:46</a></div></div>
-<div class="ttc" id="astructEAM_1_1element__parameters_html_ae9391fe21045dc6035b19fbd437e3afe"><div class="ttname"><a href="structEAM_1_1element__parameters.html#ae9391fe21045dc6035b19fbd437e3afe">EAM::element_parameters::Rm</a></div><div class="ttdeci">const double Rm</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00044">EAM.h:44</a></div></div>
-<div class="ttc" id="astructEAM_1_1element__parameters_html_af58060fedcbbd6402b5a914c759b1020"><div class="ttname"><a href="structEAM_1_1element__parameters.html#af58060fedcbbd6402b5a914c759b1020">EAM::element_parameters::func_coeff</a></div><div class="ttdeci">const double func_coeff[9]</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00048">EAM.h:48</a></div></div>
+<div class="ttc" id="astructEAM_1_1element__parameters_html_a14c8bf12361aec6169e052d9330baad0"><div class="ttname"><a href="structEAM_1_1element__parameters.html#a14c8bf12361aec6169e052d9330baad0">EAM::element_parameters::beta1</a></div><div class="ttdeci">const double beta1</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00049">EAM.h:49</a></div></div>
+<div class="ttc" id="astructEAM_1_1element__parameters_html_a2f87abd734a4140c030c4fce6a58100b"><div class="ttname"><a href="structEAM_1_1element__parameters.html#a2f87abd734a4140c030c4fce6a58100b">EAM::element_parameters::Z</a></div><div class="ttdeci">const int Z</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00045">EAM.h:45</a></div></div>
+<div class="ttc" id="astructEAM_1_1element__parameters_html_a72a57b9e5b4efd58f7379c85b250420b"><div class="ttname"><a href="structEAM_1_1element__parameters.html#a72a57b9e5b4efd58f7379c85b250420b">EAM::element_parameters::Dm</a></div><div class="ttdeci">const double Dm</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00046">EAM.h:46</a></div></div>
+<div class="ttc" id="astructEAM_1_1element__parameters_html_a7520f86eea718d28052f2ed446c16df9"><div class="ttname"><a href="structEAM_1_1element__parameters.html#a7520f86eea718d28052f2ed446c16df9">EAM::element_parameters::alphaM</a></div><div class="ttdeci">const double alphaM</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00047">EAM.h:47</a></div></div>
+<div class="ttc" id="astructEAM_1_1element__parameters_html_ae02c8ee6f1ed6cc3c7b7983d102dc561"><div class="ttname"><a href="structEAM_1_1element__parameters.html#ae02c8ee6f1ed6cc3c7b7983d102dc561">EAM::element_parameters::beta2</a></div><div class="ttdeci">const double beta2</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00050">EAM.h:50</a></div></div>
+<div class="ttc" id="astructEAM_1_1element__parameters_html_ae9391fe21045dc6035b19fbd437e3afe"><div class="ttname"><a href="structEAM_1_1element__parameters.html#ae9391fe21045dc6035b19fbd437e3afe">EAM::element_parameters::Rm</a></div><div class="ttdeci">const double Rm</div><div class="ttdef"><b>Definition</b> <a href="EAM_8h_source.html#l00048">EAM.h:48</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1228,8 +1279,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EAM_8h_source.html#l00055">55</a> of file <a class="el" href="EAM_8h_source.html">EAM.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   55</span>{<span class="keyword">false</span>};</div>
+<p class="definition">Definition at line <a class="el" href="EAM_8h_source.html#l00059">59</a> of file <a class="el" href="EAM_8h_source.html">EAM.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   59</span>{<span class="keyword">false</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1253,7 +1304,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EAM_8h_source.html#l00054">54</a> of file <a class="el" href="EAM_8h_source.html">EAM.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EAM_8h_source.html#l00058">58</a> of file <a class="el" href="EAM_8h_source.html">EAM.h</a>.</p>
 
 </div>
 </div>
@@ -1277,7 +1328,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EAM_8h_source.html#l00056">56</a> of file <a class="el" href="EAM_8h_source.html">EAM.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EAM_8h_source.html#l00060">60</a> of file <a class="el" href="EAM_8h_source.html">EAM.h</a>.</p>
 
 </div>
 </div>

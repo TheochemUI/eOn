@@ -263,12 +263,12 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00327">327</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  327</span>                                                               {</div>
-<div class="line"><span class="lineno">  328</span>  assert(data.cols() == newrow.size());</div>
-<div class="line"><span class="lineno">  329</span>  data.conservativeResize(data.rows() + 1, data.cols());</div>
-<div class="line"><span class="lineno">  330</span>  data.row(data.rows() - 1) = newrow;</div>
-<div class="line"><span class="lineno">  331</span>}</div>
+<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00339">339</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  339</span>                                                               {</div>
+<div class="line"><span class="lineno">  340</span>  assert(data.cols() == newrow.size());</div>
+<div class="line"><span class="lineno">  341</span>  data.conservativeResize(data.rows() + 1, data.cols());</div>
+<div class="line"><span class="lineno">  342</span>  data.row(data.rows() - 1) = newrow;</div>
+<div class="line"><span class="lineno">  343</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -291,13 +291,13 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00321">321</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  321</span>                                                         {</div>
-<div class="line"><span class="lineno">  322</span>  assert(m1.cols() == m2.cols());</div>
-<div class="line"><span class="lineno">  323</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> res(m1.rows() + m2.rows(), m2.cols());</div>
-<div class="line"><span class="lineno">  324</span>  res &lt;&lt; m1, m2;</div>
-<div class="line"><span class="lineno">  325</span>  <span class="keywordflow">return</span> res;</div>
-<div class="line"><span class="lineno">  326</span>}</div>
+<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00333">333</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  333</span>                                                         {</div>
+<div class="line"><span class="lineno">  334</span>  assert(m1.cols() == m2.cols());</div>
+<div class="line"><span class="lineno">  335</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> res(m1.rows() + m2.rows(), m2.cols());</div>
+<div class="line"><span class="lineno">  336</span>  res &lt;&lt; m1, m2;</div>
+<div class="line"><span class="lineno">  337</span>  <span class="keywordflow">return</span> res;</div>
+<div class="line"><span class="lineno">  338</span>}</div>
 <div class="ttc" id="aEigen_8h_html_a45bb4cbce093fca4dfb193d3f649da30"><div class="ttname"><a href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, eOnStorageOrder &gt; MatrixXd</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00033">Eigen.h:33</a></div></div>
 </div><!-- fragment -->
 </div>

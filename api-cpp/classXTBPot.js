@@ -6,7 +6,7 @@ var classXTBPot =
       [ "GFN1xTB", "classXTBPot.html#a202ab44bad464d4739df0b3360507a47ad9d8be1a4b5713c231cd308f0960e1fe", null ],
       [ "GFN2xTB", "classXTBPot.html#a202ab44bad464d4739df0b3360507a47a59557bd48038c4ff9241df156c8774a6", null ]
     ] ],
-    [ "XTBPot", "classXTBPot.html#a04d1167de2db4d046bafeb68530b19aa", null ],
+    [ "XTBPot", "classXTBPot.html#a708af4e3505b9cf9c11e91bad3fa807e", null ],
     [ "~XTBPot", "classXTBPot.html#a12b3e0fbefc963769ad974bf1bf756b3", null ],
     [ "XTBPot", "classXTBPot.html#a84d54f5eb710c2f3393347337bdf1fda", null ],
     [ "cleanMemory", "classXTBPot.html#af7f12d12b8a3f72f38b039e0049f27d1", null ],

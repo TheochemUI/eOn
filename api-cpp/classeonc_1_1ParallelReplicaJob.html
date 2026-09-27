@@ -253,35 +253,54 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classeonc_1_1P
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aa5ffc1425a4628717727076cc3831472" id="r_aa5ffc1425a4628717727076cc3831472"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#aa5ffc1425a4628717727076cc3831472">~ParallelReplicaJob</a> ()=default</td></tr>
-<tr class="memitem:a7645c8b6a62d1b609864b30a283fc60e" id="r_a7645c8b6a62d1b609864b30a283fc60e"><td class="memItemLeft">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a7645c8b6a62d1b609864b30a283fc60e">run</a> () override</td></tr>
-<tr class="memdesc:a7645c8b6a62d1b609864b30a283fc60e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual run; used solely for dynamic dispatch.  <br /></td></tr>
-<tr class="memitem:ae1d02eb23e002aec140cf4d2b2fb341f" id="r_ae1d02eb23e002aec140cf4d2b2fb341f"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ae1d02eb23e002aec140cf4d2b2fb341f">runFromMatter</a> (std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; initial)</td></tr>
-<tr class="memdesc:ae1d02eb23e002aec140cf4d2b2fb341f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Matter-first entry; returns final trajectory <a class="el" href="classeonc_1_1Matter.html">Matter</a>.  <br /></td></tr>
-<tr class="memitem:a4e0abe180a33539a0e8d264775f34a42" id="r_a4e0abe180a33539a0e8d264775f34a42"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a4e0abe180a33539a0e8d264775f34a42">Job</a> (std::unique_ptr&lt; <a class="el" href="classParameters.html">Parameters</a> &gt; parameters)</td></tr>
-<tr class="memitem:a7a1103c1eb84772e3bf681e5e53104a6" id="r_a7a1103c1eb84772e3bf681e5e53104a6"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a7a1103c1eb84772e3bf681e5e53104a6">Job</a> (std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt; potPassed, const <a class="el" href="classParameters.html">Parameters</a> &amp;parameters)</td></tr>
+<tr class="memitem:a02f95bf6bc2d4d1d8c34532da63407ae" id="r_a02f95bf6bc2d4d1d8c34532da63407ae"><td class="memItemLeft">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a02f95bf6bc2d4d1d8c34532da63407ae">run</a> () override</td></tr>
+<tr class="memdesc:a02f95bf6bc2d4d1d8c34532da63407ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual run; used solely for dynamic dispatch.  <br /></td></tr>
+<tr class="memitem:aaaec7fc20361b8762d900a03efebdc2a" id="r_aaaec7fc20361b8762d900a03efebdc2a"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#aaaec7fc20361b8762d900a03efebdc2a">runFromMatter</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; initial)</td></tr>
+<tr class="memdesc:aaaec7fc20361b8762d900a03efebdc2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Matter-first entry; returns final trajectory <a class="el" href="classeonc_1_1Matter.html">Matter</a>.  <br /></td></tr>
+<tr class="memitem:a048903796c5d81f4425e1392e1bcea8d" id="r_a048903796c5d81f4425e1392e1bcea8d"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a048903796c5d81f4425e1392e1bcea8d">Job</a> (std::unique_ptr&lt; <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &gt; parameters, <a class="el" href="classeonc_1_1Runtime.html">Runtime</a> &amp;rt)</td></tr>
+<tr class="memdesc:a048903796c5d81f4425e1392e1bcea8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow: caller keeps <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a> alive (CLI stack / Python Session).  <br /></td></tr>
+<tr class="memitem:a2481fd95219c1c47a79e44e34d482207" id="r_a2481fd95219c1c47a79e44e34d482207"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a2481fd95219c1c47a79e44e34d482207">Job</a> (std::unique_ptr&lt; <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &gt; parameters, std::unique_ptr&lt; <a class="el" href="classeonc_1_1Runtime.html">Runtime</a> &gt; rt)</td></tr>
+<tr class="memdesc:a2481fd95219c1c47a79e44e34d482207"><td class="mdescLeft">&#160;</td><td class="mdescRight">Own a <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a> (one-shot makeJob / rvalue).  <br /></td></tr>
+<tr class="memitem:a4e0abe180a33539a0e8d264775f34a42" id="r_a4e0abe180a33539a0e8d264775f34a42"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a4e0abe180a33539a0e8d264775f34a42">Job</a> (std::unique_ptr&lt; <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &gt; parameters)</td></tr>
+<tr class="memdesc:a4e0abe180a33539a0e8d264775f34a42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Own a default-constructed <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a>.  <br /></td></tr>
+<tr class="memitem:a7a1103c1eb84772e3bf681e5e53104a6" id="r_a7a1103c1eb84772e3bf681e5e53104a6"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a7a1103c1eb84772e3bf681e5e53104a6">Job</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt; potPassed, const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;parameters)</td></tr>
 <tr class="inherit_header pub_methods_classeonc_1_1Job"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1Job')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1Job.html">eonc::Job</a></td></tr>
-<tr class="memitem:a4e0abe180a33539a0e8d264775f34a42 inherit pub_methods_classeonc_1_1Job" id="r_a4e0abe180a33539a0e8d264775f34a42"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a4e0abe180a33539a0e8d264775f34a42">Job</a> (std::unique_ptr&lt; <a class="el" href="classParameters.html">Parameters</a> &gt; parameters)</td></tr>
-<tr class="memitem:a7a1103c1eb84772e3bf681e5e53104a6 inherit pub_methods_classeonc_1_1Job" id="r_a7a1103c1eb84772e3bf681e5e53104a6"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a7a1103c1eb84772e3bf681e5e53104a6">Job</a> (std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt; potPassed, const <a class="el" href="classParameters.html">Parameters</a> &amp;parameters)</td></tr>
+<tr class="memitem:a2106aabb046a746647151b5e46180631 inherit pub_methods_classeonc_1_1Job" id="r_a2106aabb046a746647151b5e46180631"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a2106aabb046a746647151b5e46180631">adoptRuntime</a> (std::unique_ptr&lt; <a class="el" href="classeonc_1_1Runtime.html">Runtime</a> &gt; rt)</td></tr>
+<tr class="memdesc:a2106aabb046a746647151b5e46180631 inherit pub_methods_classeonc_1_1Job"><td class="mdescLeft">&#160;</td><td class="mdescRight">Take ownership of a <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a> previously passed as <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a>&amp;.  <br /></td></tr>
+<tr class="memitem:a048903796c5d81f4425e1392e1bcea8d inherit pub_methods_classeonc_1_1Job" id="r_a048903796c5d81f4425e1392e1bcea8d"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a048903796c5d81f4425e1392e1bcea8d">Job</a> (std::unique_ptr&lt; <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &gt; parameters, <a class="el" href="classeonc_1_1Runtime.html">Runtime</a> &amp;rt)</td></tr>
+<tr class="memdesc:a048903796c5d81f4425e1392e1bcea8d inherit pub_methods_classeonc_1_1Job"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow: caller keeps <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a> alive (CLI stack / Python Session).  <br /></td></tr>
+<tr class="memitem:a2481fd95219c1c47a79e44e34d482207 inherit pub_methods_classeonc_1_1Job" id="r_a2481fd95219c1c47a79e44e34d482207"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a2481fd95219c1c47a79e44e34d482207">Job</a> (std::unique_ptr&lt; <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &gt; parameters, std::unique_ptr&lt; <a class="el" href="classeonc_1_1Runtime.html">Runtime</a> &gt; rt)</td></tr>
+<tr class="memdesc:a2481fd95219c1c47a79e44e34d482207 inherit pub_methods_classeonc_1_1Job"><td class="mdescLeft">&#160;</td><td class="mdescRight">Own a <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a> (one-shot makeJob / rvalue).  <br /></td></tr>
+<tr class="memitem:a4e0abe180a33539a0e8d264775f34a42 inherit pub_methods_classeonc_1_1Job" id="r_a4e0abe180a33539a0e8d264775f34a42"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a4e0abe180a33539a0e8d264775f34a42">Job</a> (std::unique_ptr&lt; <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &gt; parameters)</td></tr>
+<tr class="memdesc:a4e0abe180a33539a0e8d264775f34a42 inherit pub_methods_classeonc_1_1Job"><td class="mdescLeft">&#160;</td><td class="mdescRight">Own a default-constructed <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a>.  <br /></td></tr>
+<tr class="memitem:a7a1103c1eb84772e3bf681e5e53104a6 inherit pub_methods_classeonc_1_1Job" id="r_a7a1103c1eb84772e3bf681e5e53104a6"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a7a1103c1eb84772e3bf681e5e53104a6">Job</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt; potPassed, const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;parameters)</td></tr>
 <tr class="memitem:a4ba6ee96636fdbc95059c67a10900ea7 inherit pub_methods_classeonc_1_1Job" id="r_a4ba6ee96636fdbc95059c67a10900ea7"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a4ba6ee96636fdbc95059c67a10900ea7">~Job</a> ()=default</td></tr>
 <tr class="memitem:a6a8f2fa4c5209bee4d243fec7b9db59e inherit pub_methods_classeonc_1_1Job" id="r_a6a8f2fa4c5209bee4d243fec7b9db59e"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379">JobType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a6a8f2fa4c5209bee4d243fec7b9db59e">getType</a> ()</td></tr>
+<tr class="memitem:a03a40b0e3f078b9e284220c71567e644 inherit pub_methods_classeonc_1_1Job" id="r_a03a40b0e3f078b9e284220c71567e644"><td class="memItemLeft"><a class="el" href="classeonc_1_1PotRegistry.html">PotRegistry</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a03a40b0e3f078b9e284220c71567e644">pots</a> () noexcept</td></tr>
+<tr class="memitem:acdb29769b15353b093288278a05bff3c inherit pub_methods_classeonc_1_1Job" id="r_acdb29769b15353b093288278a05bff3c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#acdb29769b15353b093288278a05bff3c">releasePotential</a> ()</td></tr>
+<tr class="memdesc:acdb29769b15353b093288278a05bff3c inherit pub_methods_classeonc_1_1Job"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop the <a class="el" href="classeonc_1_1Potential.html">Potential</a> so on_destroyed is recorded before <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a> dies.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:a5e2aa49456c510c4d4e9b718ac1ecbe2" id="r_a5e2aa49456c510c4d4e9b718ac1ecbe2"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a5e2aa49456c510c4d4e9b718ac1ecbe2">dephase</a> (<a class="el" href="classMatter.html">Matter</a> &amp;trajectory)</td></tr>
-<tr class="memitem:a3ecdf476a14cf3609c9f88562915c214" id="r_a3ecdf476a14cf3609c9f88562915c214"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a3ecdf476a14cf3609c9f88562915c214">refineTransition</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;snapshots, bool fake=false)</td></tr>
+<tr class="memitem:a4642cf1863a8bf8101b0c3f5be036c65" id="r_a4642cf1863a8bf8101b0c3f5be036c65"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a4642cf1863a8bf8101b0c3f5be036c65">dephase</a> (<a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;trajectory, <a class="el" href="classeonc_1_1BondBoost.html">BondBoost</a> *bias)</td></tr>
+<tr class="memitem:aedfc5d030082329c8d7fc64975366260" id="r_aedfc5d030082329c8d7fc64975366260"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#aedfc5d030082329c8d7fc64975366260">refineTransition</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &gt; &amp;snapshots, bool fake=false)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
 <tr class="memitem:a00c7502718210468240e5e1d94430f64" id="r_a00c7502718210468240e5e1d94430f64"><td class="memItemLeft">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a00c7502718210468240e5e1d94430f64">returnFiles</a></td></tr>
-<tr class="memitem:a2b02d9fc96c682eb7fbb244134b61faf" id="r_a2b02d9fc96c682eb7fbb244134b61faf"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a></td></tr>
+<tr class="memitem:a2b02d9fc96c682eb7fbb244134b61faf" id="r_a2b02d9fc96c682eb7fbb244134b61faf"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a></td></tr>
 <tr class="memitem:a1b2a0c39c40283b86aee3778e3681c11" id="r_a1b2a0c39c40283b86aee3778e3681c11"><td class="memItemLeft"><a class="el" href="structeonc_1_1log_1_1Scoped.html">eonc::log::Scoped</a>&#160;</td><td class="memItemRight"><a class="el" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_attribs_classeonc_1_1Job"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classeonc_1_1Job')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classeonc_1_1Job.html">eonc::Job</a></td></tr>
 <tr class="memitem:a90e97e92096c7c2ea7dec3d9c49f485f inherit pro_attribs_classeonc_1_1Job" id="r_a90e97e92096c7c2ea7dec3d9c49f485f"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379">JobType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a90e97e92096c7c2ea7dec3d9c49f485f">jtype</a></td></tr>
-<tr class="memitem:a9f0bfab75a98f383ba58f1c592fd2500 inherit pro_attribs_classeonc_1_1Job" id="r_a9f0bfab75a98f383ba58f1c592fd2500"><td class="memItemLeft"><a class="el" href="classParameters.html">Parameters</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a></td></tr>
-<tr class="memitem:a948da0de6ec2575bd6ac975fedaad0c9 inherit pro_attribs_classeonc_1_1Job" id="r_a948da0de6ec2575bd6ac975fedaad0c9"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a></td></tr>
+<tr class="memitem:a9f0bfab75a98f383ba58f1c592fd2500 inherit pro_attribs_classeonc_1_1Job" id="r_a9f0bfab75a98f383ba58f1c592fd2500"><td class="memItemLeft"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a></td></tr>
+<tr class="memitem:a79f4bf70ec1c7e3e08a0a5c0ff5ee965 inherit pro_attribs_classeonc_1_1Job" id="r_a79f4bf70ec1c7e3e08a0a5c0ff5ee965"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classeonc_1_1Runtime.html">Runtime</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a79f4bf70ec1c7e3e08a0a5c0ff5ee965">owned_runtime_</a></td></tr>
+<tr class="memdesc:a79f4bf70ec1c7e3e08a0a5c0ff5ee965 inherit pro_attribs_classeonc_1_1Job"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-null when this <a class="el" href="classeonc_1_1Job.html" title="Declaration of job class.">Job</a> owns the composition root (one-shot makeJob).  <br /></td></tr>
+<tr class="memitem:add247a8d4ae4bb5e59ec85ecfcf1bd37 inherit pro_attribs_classeonc_1_1Job" id="r_add247a8d4ae4bb5e59ec85ecfcf1bd37"><td class="memItemLeft"><a class="el" href="classeonc_1_1Runtime.html">Runtime</a> *&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#add247a8d4ae4bb5e59ec85ecfcf1bd37">runtime_</a></td></tr>
+<tr class="memdesc:add247a8d4ae4bb5e59ec85ecfcf1bd37 inherit pro_attribs_classeonc_1_1Job"><td class="mdescLeft">&#160;</td><td class="mdescRight">Always valid: either owned_runtime_.get() or a caller-owned <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a>.  <br /></td></tr>
+<tr class="memitem:a948da0de6ec2575bd6ac975fedaad0c9 inherit pro_attribs_classeonc_1_1Job" id="r_a948da0de6ec2575bd6ac975fedaad0c9"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
@@ -313,8 +332,8 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a5e2aa49456c510c4d4e9b718ac1ecbe2" name="a5e2aa49456c510c4d4e9b718ac1ecbe2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5e2aa49456c510c4d4e9b718ac1ecbe2">&#9670;&#160;</a></span>dephase()</h2>
+<a id="a4642cf1863a8bf8101b0c3f5be036c65" name="a4642cf1863a8bf8101b0c3f5be036c65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4642cf1863a8bf8101b0c3f5be036c65">&#9670;&#160;</a></span>dephase()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -323,10 +342,14 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void ParallelReplicaJob::dephase </td>
+          <td class="memname">void eonc::ParallelReplicaJob::dephase </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>trajectory</em></span></td><td>)</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>trajectory</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1BondBoost.html">BondBoost</a> *</td>          <td class="paramname"><span class="paramname"><em>bias</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -336,51 +359,56 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParallelReplicaJob_8cpp_source.html#l00275">275</a> of file <a class="el" href="ParallelReplicaJob_8cpp_source.html">ParallelReplicaJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  275</span>                                                   {</div>
-<div class="line"><span class="lineno">  276</span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a405d9a69e5139b9df0df6b66e18fc9e2">Dynamics</a> dynamics(&amp;trajectory, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  277</span> </div>
-<div class="line"><span class="lineno">  278</span>  <span class="keywordtype">int</span> dephaseSteps =</div>
-<div class="line"><span class="lineno">  279</span>      <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::floor(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options.dephase_time /</div>
-<div class="line"><span class="lineno">  280</span>                                      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.time_step +</div>
-<div class="line"><span class="lineno">  281</span>                                  0.5));</div>
-<div class="line"><span class="lineno">  282</span>  <span class="keywordflow">if</span> (dephaseSteps &lt; 1)</div>
-<div class="line"><span class="lineno">  283</span>    dephaseSteps = 1;</div>
-<div class="line"><span class="lineno">  284</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> maxLoops =</div>
-<div class="line"><span class="lineno">  285</span>      std::max(1L, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options.dephase_loop_max);</div>
-<div class="line"><span class="lineno">  286</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;[ParallelReplica] Dephasing: {} steps (max {} loops)&quot;</span>,</div>
-<div class="line"><span class="lineno">  287</span>                  dephaseSteps, maxLoops);</div>
-<div class="line"><span class="lineno">  288</span> </div>
-<div class="line"><span class="lineno">  289</span>  Matter initial(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  290</span>  initial = trajectory;</div>
-<div class="line"><span class="lineno">  291</span> </div>
-<div class="line"><span class="lineno">  292</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> loop = 0; loop &lt; maxLoops; ++loop) {</div>
-<div class="line"><span class="lineno">  293</span>    trajectory = initial;</div>
-<div class="line"><span class="lineno">  294</span>    dynamics.setThermalVelocity();</div>
-<div class="line"><span class="lineno">  295</span> </div>
-<div class="line"><span class="lineno">  296</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> step = 1; step &lt;= dephaseSteps; step++) {</div>
-<div class="line"><span class="lineno">  297</span>      dynamics.oneStep(step);</div>
-<div class="line"><span class="lineno">  298</span>    }</div>
-<div class="line"><span class="lineno">  299</span> </div>
-<div class="line"><span class="lineno">  300</span>    Matter minimized(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  301</span>    minimized = trajectory;</div>
-<div class="line"><span class="lineno">  302</span>    minimized.<a class="code hl_function" href="classeonc_1_1Matter.html#a9d360a92ec06c45c9d46691b31ab9b4f">relax</a>();</div>
-<div class="line"><span class="lineno">  303</span> </div>
-<div class="line"><span class="lineno">  304</span>    <span class="keywordflow">if</span> (minimized.compare(*<a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a>)) {</div>
-<div class="line"><span class="lineno">  305</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;[ParallelReplica] Dephasing successful&quot;</span>);</div>
-<div class="line"><span class="lineno">  306</span>      <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  307</span>    }</div>
-<div class="line"><span class="lineno">  308</span>    QUILL_LOG_DEBUG(</div>
-<div class="line"><span class="lineno">  309</span>        <a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>,</div>
-<div class="line"><span class="lineno">  310</span>        <span class="stringliteral">&quot;[ParallelReplica] Transition occured during dephasing; Restarting&quot;</span>);</div>
-<div class="line"><span class="lineno">  311</span>  }</div>
-<div class="line"><span class="lineno">  312</span>  <span class="comment">// Exhausted retries: keep last dephased trajectory rather than hang.</span></div>
-<div class="line"><span class="lineno">  313</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>,</div>
-<div class="line"><span class="lineno">  314</span>                  <span class="stringliteral">&quot;[ParallelReplica] Dephase loop max reached; continuing&quot;</span>);</div>
-<div class="line"><span class="lineno">  315</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Job_html_a948da0de6ec2575bd6ac975fedaad0c9"><div class="ttname"><a href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">eonc::Job::pot</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; pot</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00055">Job.h:55</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Job_html_a9f0bfab75a98f383ba58f1c592fd2500"><div class="ttname"><a href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">eonc::Job::params</a></div><div class="ttdeci">Parameters params</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00054">Job.h:54</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_a9d360a92ec06c45c9d46691b31ab9b4f"><div class="ttname"><a href="classeonc_1_1Matter.html#a9d360a92ec06c45c9d46691b31ab9b4f">eonc::Matter::relax</a></div><div class="ttdeci">bool relax(bool quiet=false, bool writeMovie=false, bool checkpoint=false, std::string prefixMovie=std::string(), std::string prefixCheckpoint=std::string(), bool retainMovieFrames=false)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00259">Matter.cpp:259</a></div></div>
+<p class="definition">Definition at line <a class="el" href="ParallelReplicaJob_8cpp_source.html#l00291">291</a> of file <a class="el" href="ParallelReplicaJob_8cpp_source.html">ParallelReplicaJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  291</span>                                                                    {</div>
+<div class="line"><span class="lineno">  292</span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a405d9a69e5139b9df0df6b66e18fc9e2">Dynamics</a> dynamics(&amp;trajectory, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  293</span>  <span class="comment">// The boost object names this Matter. Attach it here, and reset the</span></div>
+<div class="line"><span class="lineno">  294</span>  <span class="comment">// trajectory with assignKeepingBias so each dephase loop keeps it.</span></div>
+<div class="line"><span class="lineno">  295</span>  trajectory.setBiasPotential(bias);</div>
+<div class="line"><span class="lineno">  296</span> </div>
+<div class="line"><span class="lineno">  297</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> dt = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options().time_step;</div>
+<div class="line"><span class="lineno">  298</span>  <span class="keywordflow">if</span> (!(dt &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  299</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">  300</span>        <span class="stringliteral">&quot;ParallelReplicaJob::dephase: time_step must be positive&quot;</span>);</div>
+<div class="line"><span class="lineno">  301</span>  }</div>
+<div class="line"><span class="lineno">  302</span>  <span class="keywordtype">int</span> dephaseSteps = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(</div>
+<div class="line"><span class="lineno">  303</span>      std::floor(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options().dephase_time / dt + 0.5));</div>
+<div class="line"><span class="lineno">  304</span>  <span class="keywordflow">if</span> (dephaseSteps &lt; 1)</div>
+<div class="line"><span class="lineno">  305</span>    dephaseSteps = 1;</div>
+<div class="line"><span class="lineno">  306</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> maxLoops =</div>
+<div class="line"><span class="lineno">  307</span>      std::max(1L, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options().dephase_loop_max);</div>
+<div class="line"><span class="lineno">  308</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;[ParallelReplica] Dephasing: {} steps (max {} loops)&quot;</span>,</div>
+<div class="line"><span class="lineno">  309</span>                  dephaseSteps, maxLoops);</div>
+<div class="line"><span class="lineno">  310</span> </div>
+<div class="line"><span class="lineno">  311</span>  Matter initial(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  312</span>  initial = trajectory;</div>
+<div class="line"><span class="lineno">  313</span> </div>
+<div class="line"><span class="lineno">  314</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> loop = 0; loop &lt; maxLoops; ++loop) {</div>
+<div class="line"><span class="lineno">  315</span>    trajectory.assignKeepingBias(initial);</div>
+<div class="line"><span class="lineno">  316</span>    dynamics.setThermalVelocity();</div>
+<div class="line"><span class="lineno">  317</span> </div>
+<div class="line"><span class="lineno">  318</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> step = 1; step &lt;= dephaseSteps; step++) {</div>
+<div class="line"><span class="lineno">  319</span>      dynamics.oneStep(step);</div>
+<div class="line"><span class="lineno">  320</span>    }</div>
+<div class="line"><span class="lineno">  321</span> </div>
+<div class="line"><span class="lineno">  322</span>    Matter minimized(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  323</span>    minimized = trajectory;</div>
+<div class="line"><span class="lineno">  324</span>    minimized.relax();</div>
+<div class="line"><span class="lineno">  325</span> </div>
+<div class="line"><span class="lineno">  326</span>    <span class="keywordflow">if</span> (minimized.compare(*<a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a>)) {</div>
+<div class="line"><span class="lineno">  327</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;[ParallelReplica] Dephasing successful&quot;</span>);</div>
+<div class="line"><span class="lineno">  328</span>      <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  329</span>    }</div>
+<div class="line"><span class="lineno">  330</span>    QUILL_LOG_DEBUG(</div>
+<div class="line"><span class="lineno">  331</span>        <a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>,</div>
+<div class="line"><span class="lineno">  332</span>        <span class="stringliteral">&quot;[ParallelReplica] Transition occured during dephasing; Restarting&quot;</span>);</div>
+<div class="line"><span class="lineno">  333</span>  }</div>
+<div class="line"><span class="lineno">  334</span>  <span class="comment">// Exhausted retries: keep last dephased trajectory rather than hang.</span></div>
+<div class="line"><span class="lineno">  335</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>,</div>
+<div class="line"><span class="lineno">  336</span>                  <span class="stringliteral">&quot;[ParallelReplica] Dephase loop max reached; continuing&quot;</span>);</div>
+<div class="line"><span class="lineno">  337</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Job_html_a948da0de6ec2575bd6ac975fedaad0c9"><div class="ttname"><a href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">eonc::Job::pot</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; pot</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00063">Job.h:63</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Job_html_a9f0bfab75a98f383ba58f1c592fd2500"><div class="ttname"><a href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">eonc::Job::params</a></div><div class="ttdeci">Parameters params</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00058">Job.h:58</a></div></div>
 <div class="ttc" id="aclasseonc_1_1ParallelReplicaJob_html_a1b2a0c39c40283b86aee3778e3681c11"><div class="ttname"><a href="#a1b2a0c39c40283b86aee3778e3681c11">eonc::ParallelReplicaJob::log</a></div><div class="ttdeci">eonc::log::Scoped log</div><div class="ttdef"><b>Definition</b> <a href="ParallelReplicaJob_8h_source.html#l00038">ParallelReplicaJob.h:38</a></div></div>
 <div class="ttc" id="aclasseonc_1_1ParallelReplicaJob_html_a2b02d9fc96c682eb7fbb244134b61faf"><div class="ttname"><a href="#a2b02d9fc96c682eb7fbb244134b61faf">eonc::ParallelReplicaJob::reactant</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; reactant</div><div class="ttdef"><b>Definition</b> <a href="ParallelReplicaJob_8h_source.html#l00033">ParallelReplicaJob.h:33</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a405d9a69e5139b9df0df6b66e18fc9e2"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a405d9a69e5139b9df0df6b66e18fc9e2">eonc::JobType::Dynamics</a></div><div class="ttdeci">@ Dynamics</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00092">BaseStructures.h:92</a></div></div>
@@ -388,7 +416,7 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <a id="a7a1103c1eb84772e3bf681e5e53104a6" name="a7a1103c1eb84772e3bf681e5e53104a6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7a1103c1eb84772e3bf681e5e53104a6">&#9670;&#160;</a></span>Job() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a1103c1eb84772e3bf681e5e53104a6">&#9670;&#160;</a></span>Job() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -397,14 +425,14 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classeonc_1_1Job.html#a4e0abe180a33539a0e8d264775f34a42">eonc::Job::Job</a> </td>
+          <td class="memname"><a class="el" href="classeonc_1_1Job.html#a048903796c5d81f4425e1392e1bcea8d">eonc::Job::Job</a> </td>
           <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>potPassed</em></span>, </td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>potPassed</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>parameters</em></span>&#160;)</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>parameters</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -414,18 +442,20 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Job_8h_source.html#l00063">63</a> of file <a class="el" href="Job_8h_source.html">Job.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   64</span>      : <a class="code hl_variable" href="classeonc_1_1Job.html#a90e97e92096c7c2ea7dec3d9c49f485f">jtype</a>{parameters.<a class="code hl_variable" href="classeonc_1_1Parameters.html#afd8b76ca52c432bb56efd1a73ebf8234">main_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1main__options__t.html#a3b0c080415611d16523e196ab127d846">job</a>},</div>
-<div class="line"><span class="lineno">   65</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>{parameters},</div>
-<div class="line"><span class="lineno">   66</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>{potPassed} {}</div>
-<div class="ttc" id="aclasseonc_1_1Job_html_a90e97e92096c7c2ea7dec3d9c49f485f"><div class="ttname"><a href="classeonc_1_1Job.html#a90e97e92096c7c2ea7dec3d9c49f485f">eonc::Job::jtype</a></div><div class="ttdeci">JobType jtype</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00053">Job.h:53</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Parameters_html_afd8b76ca52c432bb56efd1a73ebf8234"><div class="ttname"><a href="classeonc_1_1Parameters.html#afd8b76ca52c432bb56efd1a73ebf8234">eonc::Parameters::main_options</a></div><div class="ttdeci">struct eonc::Parameters::main_options_t main_options</div></div>
-<div class="ttc" id="astructeonc_1_1Parameters_1_1main__options__t_html_a3b0c080415611d16523e196ab127d846"><div class="ttname"><a href="structeonc_1_1Parameters_1_1main__options__t.html#a3b0c080415611d16523e196ab127d846">eonc::Parameters::main_options_t::job</a></div><div class="ttdeci">JobType job</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00047">Parameters.h:47</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Job_8h_source.html#l00091">91</a> of file <a class="el" href="Job_8h_source.html">Job.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   92</span>      : <a class="code hl_variable" href="classeonc_1_1Job.html#a90e97e92096c7c2ea7dec3d9c49f485f">jtype</a>{parameters.main_options().job},</div>
+<div class="line"><span class="lineno">   93</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>{parameters},</div>
+<div class="line"><span class="lineno">   94</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a79f4bf70ec1c7e3e08a0a5c0ff5ee965">owned_runtime_</a>{std::make_unique&lt;Runtime&gt;()},</div>
+<div class="line"><span class="lineno">   95</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#add247a8d4ae4bb5e59ec85ecfcf1bd37">runtime_</a>{<a class="code hl_variable" href="classeonc_1_1Job.html#a79f4bf70ec1c7e3e08a0a5c0ff5ee965">owned_runtime_</a>.get()},</div>
+<div class="line"><span class="lineno">   96</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>{potPassed} {}</div>
+<div class="ttc" id="aclasseonc_1_1Job_html_a79f4bf70ec1c7e3e08a0a5c0ff5ee965"><div class="ttname"><a href="classeonc_1_1Job.html#a79f4bf70ec1c7e3e08a0a5c0ff5ee965">eonc::Job::owned_runtime_</a></div><div class="ttdeci">std::unique_ptr&lt; Runtime &gt; owned_runtime_</div><div class="ttdoc">Non-null when this Job owns the composition root (one-shot makeJob).</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00060">Job.h:60</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Job_html_a90e97e92096c7c2ea7dec3d9c49f485f"><div class="ttname"><a href="classeonc_1_1Job.html#a90e97e92096c7c2ea7dec3d9c49f485f">eonc::Job::jtype</a></div><div class="ttdeci">JobType jtype</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00057">Job.h:57</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Job_html_add247a8d4ae4bb5e59ec85ecfcf1bd37"><div class="ttname"><a href="classeonc_1_1Job.html#add247a8d4ae4bb5e59ec85ecfcf1bd37">eonc::Job::runtime_</a></div><div class="ttdeci">Runtime * runtime_</div><div class="ttdoc">Always valid: either owned_runtime_.get() or a caller-owned Runtime.</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00062">Job.h:62</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
 <a id="a4e0abe180a33539a0e8d264775f34a42" name="a4e0abe180a33539a0e8d264775f34a42"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4e0abe180a33539a0e8d264775f34a42">&#9670;&#160;</a></span>Job() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e0abe180a33539a0e8d264775f34a42">&#9670;&#160;</a></span>Job() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -434,30 +464,29 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classeonc_1_1Job.html#a4e0abe180a33539a0e8d264775f34a42">eonc::Job::Job</a> </td>
+          <td class="memname"><a class="el" href="classeonc_1_1Job.html#a048903796c5d81f4425e1392e1bcea8d">eonc::Job::Job</a> </td>
           <td>(</td>
-          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classParameters.html">Parameters</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>parameters</em></span></td><td>)</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>parameters</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel explicit">explicit</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Job_8h_source.html#l00058">58</a> of file <a class="el" href="Job_8h_source.html">Job.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   59</span>      : <a class="code hl_variable" href="classeonc_1_1Job.html#a90e97e92096c7c2ea7dec3d9c49f485f">jtype</a>{parameters-&gt;main_options.job},</div>
-<div class="line"><span class="lineno">   60</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>{*std::move(parameters)},</div>
-<div class="line"><span class="lineno">   61</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>{<a class="code hl_function" href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">helpers::makePotential</a>(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.potential_options.potential,</div>
-<div class="line"><span class="lineno">   62</span>                                   <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>)} {}</div>
-<div class="ttc" id="anamespaceeonc_1_1helpers_html_ad3c8668c89bd3ffae898307b0890f1ff"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">eonc::helpers::makePotential</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; makePotential(const Parameters &amp;params)</div><div class="ttdef"><b>Definition</b> <a href="Potential_8cpp_source.html#l00239">Potential.cpp:239</a></div></div>
+<p>Own a default-constructed <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="Job_8h_source.html#l00089">89</a> of file <a class="el" href="Job_8h_source.html">Job.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   90</span>      : <a class="code hl_function" href="#a048903796c5d81f4425e1392e1bcea8d">Job</a>(std::move(parameters), std::make_unique&lt;Runtime&gt;()) {}</div>
+<div class="ttc" id="aclasseonc_1_1ParallelReplicaJob_html_a048903796c5d81f4425e1392e1bcea8d"><div class="ttname"><a href="#a048903796c5d81f4425e1392e1bcea8d">eonc::ParallelReplicaJob::Job</a></div><div class="ttdeci">Job(std::unique_ptr&lt; Parameters &gt; parameters, Runtime &amp;rt)</div><div class="ttdoc">Borrow: caller keeps Runtime alive (CLI stack / Python Session).</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00076">Job.h:76</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="a3ecdf476a14cf3609c9f88562915c214" name="a3ecdf476a14cf3609c9f88562915c214"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3ecdf476a14cf3609c9f88562915c214">&#9670;&#160;</a></span>refineTransition()</h2>
+<a id="a048903796c5d81f4425e1392e1bcea8d" name="a048903796c5d81f4425e1392e1bcea8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a048903796c5d81f4425e1392e1bcea8d">&#9670;&#160;</a></span>Job() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -466,9 +495,86 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int ParallelReplicaJob::refineTransition </td>
+          <td class="memname"><a class="el" href="classeonc_1_1Job.html#a048903796c5d81f4425e1392e1bcea8d">eonc::Job::Job</a> </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>snapshots</em></span>, </td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>parameters</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Runtime.html">Runtime</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>rt</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow: caller keeps <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a> alive (CLI stack / Python Session). </p>
+
+<p class="definition">Definition at line <a class="el" href="Job_8h_source.html#l00076">76</a> of file <a class="el" href="Job_8h_source.html">Job.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   77</span>      : <a class="code hl_variable" href="classeonc_1_1Job.html#a90e97e92096c7c2ea7dec3d9c49f485f">jtype</a>{parameters-&gt;main_options().job},</div>
+<div class="line"><span class="lineno">   78</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>{*std::move(parameters)},</div>
+<div class="line"><span class="lineno">   79</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a79f4bf70ec1c7e3e08a0a5c0ff5ee965">owned_runtime_</a>{},</div>
+<div class="line"><span class="lineno">   80</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#add247a8d4ae4bb5e59ec85ecfcf1bd37">runtime_</a>{&amp;rt},</div>
+<div class="line"><span class="lineno">   81</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>{<a class="code hl_function" href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">helpers::makePotential</a>(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.potential_options().potential, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>,</div>
+<div class="line"><span class="lineno">   82</span>                                   rt)} {}</div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_ad3c8668c89bd3ffae898307b0890f1ff"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">eonc::helpers::makePotential</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; makePotential(const Parameters &amp;params)</div><div class="ttdef"><b>Definition</b> <a href="Potential_8cpp_source.html#l00246">Potential.cpp:246</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2481fd95219c1c47a79e44e34d482207" name="a2481fd95219c1c47a79e44e34d482207"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2481fd95219c1c47a79e44e34d482207">&#9670;&#160;</a></span>Job() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeonc_1_1Job.html#a048903796c5d81f4425e1392e1bcea8d">eonc::Job::Job</a> </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>parameters</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classeonc_1_1Runtime.html">Runtime</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>rt</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Own a <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a> (one-shot makeJob / rvalue). </p>
+
+<p class="definition">Definition at line <a class="el" href="Job_8h_source.html#l00084">84</a> of file <a class="el" href="Job_8h_source.html">Job.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   85</span>      : <a class="code hl_function" href="#a048903796c5d81f4425e1392e1bcea8d">Job</a>(std::move(parameters), *rt) {</div>
+<div class="line"><span class="lineno">   86</span>    <a class="code hl_function" href="classeonc_1_1Job.html#a2106aabb046a746647151b5e46180631">adoptRuntime</a>(std::move(rt));</div>
+<div class="line"><span class="lineno">   87</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1Job_html_a2106aabb046a746647151b5e46180631"><div class="ttname"><a href="classeonc_1_1Job.html#a2106aabb046a746647151b5e46180631">eonc::Job::adoptRuntime</a></div><div class="ttdeci">void adoptRuntime(std::unique_ptr&lt; Runtime &gt; rt)</div><div class="ttdoc">Take ownership of a Runtime previously passed as Runtime&amp;.</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00067">Job.h:67</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aedfc5d030082329c8d7fc64975366260" name="aedfc5d030082329c8d7fc64975366260"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aedfc5d030082329c8d7fc64975366260">&#9670;&#160;</a></span>refineTransition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eonc::ParallelReplicaJob::refineTransition </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>snapshots</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -483,38 +589,38 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParallelReplicaJob_8cpp_source.html#l00317">317</a> of file <a class="el" href="ParallelReplicaJob_8cpp_source.html">ParallelReplicaJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  318</span>                                                                  {</div>
-<div class="line"><span class="lineno">  319</span>  <span class="keywordtype">int</span> lo = 0;</div>
-<div class="line"><span class="lineno">  320</span>  <span class="keywordtype">int</span> hi = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(snapshots.size()) - 1;</div>
-<div class="line"><span class="lineno">  321</span> </div>
-<div class="line"><span class="lineno">  322</span>  <span class="keywordflow">while</span> ((hi - lo) &gt; 1) {</div>
-<div class="line"><span class="lineno">  323</span>    <span class="keywordtype">int</span> mid = lo + (hi - lo) / 2;</div>
-<div class="line"><span class="lineno">  324</span>    Matter snapshot(*snapshots[mid]);</div>
-<div class="line"><span class="lineno">  325</span>    snapshot.relax(<span class="keyword">true</span>);</div>
-<div class="line"><span class="lineno">  326</span> </div>
-<div class="line"><span class="lineno">  327</span>    <span class="keywordtype">bool</span> stillReactant;</div>
-<div class="line"><span class="lineno">  328</span>    <span class="keywordflow">if</span> (!fake) {</div>
-<div class="line"><span class="lineno">  329</span>      stillReactant = snapshot.compare(*<a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a>);</div>
-<div class="line"><span class="lineno">  330</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  331</span>      stillReactant = <span class="keyword">static_cast&lt;</span><span class="keywordtype">bool</span><span class="keyword">&gt;</span>(<a class="code hl_function" href="namespaceeonc_1_1helpers.html#a5e8caf65ab4c88babd709b38d410927c">eonc::helpers::randomInt</a>(0, 1));</div>
-<div class="line"><span class="lineno">  332</span>    }</div>
-<div class="line"><span class="lineno">  333</span> </div>
-<div class="line"><span class="lineno">  334</span>    <span class="keywordflow">if</span> (stillReactant) {</div>
-<div class="line"><span class="lineno">  335</span>      lo = mid;</div>
-<div class="line"><span class="lineno">  336</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  337</span>      hi = mid;</div>
-<div class="line"><span class="lineno">  338</span>    }</div>
-<div class="line"><span class="lineno">  339</span>  }</div>
-<div class="line"><span class="lineno">  340</span> </div>
-<div class="line"><span class="lineno">  341</span>  <span class="keywordflow">return</span> (lo + hi) / 2 + 1;</div>
-<div class="line"><span class="lineno">  342</span>}</div>
-<div class="ttc" id="anamespaceeonc_1_1helpers_html_a5e8caf65ab4c88babd709b38d410927c"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a5e8caf65ab4c88babd709b38d410927c">eonc::helpers::randomInt</a></div><div class="ttdeci">long randomInt(int lower, int upper)</div><div class="ttdef"><b>Definition</b> <a href="RandomNumbers_8cpp_source.html#l00040">RandomNumbers.cpp:76</a></div></div>
+<p class="definition">Definition at line <a class="el" href="ParallelReplicaJob_8cpp_source.html#l00339">339</a> of file <a class="el" href="ParallelReplicaJob_8cpp_source.html">ParallelReplicaJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  340</span>                                                                  {</div>
+<div class="line"><span class="lineno">  341</span>  <span class="keywordtype">int</span> lo = 0;</div>
+<div class="line"><span class="lineno">  342</span>  <span class="keywordtype">int</span> hi = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(snapshots.size()) - 1;</div>
+<div class="line"><span class="lineno">  343</span> </div>
+<div class="line"><span class="lineno">  344</span>  <span class="keywordflow">while</span> ((hi - lo) &gt; 1) {</div>
+<div class="line"><span class="lineno">  345</span>    <span class="keywordtype">int</span> mid = lo + (hi - lo) / 2;</div>
+<div class="line"><span class="lineno">  346</span>    Matter snapshot(*snapshots[mid]);</div>
+<div class="line"><span class="lineno">  347</span>    snapshot.relax(<span class="keyword">true</span>);</div>
+<div class="line"><span class="lineno">  348</span> </div>
+<div class="line"><span class="lineno">  349</span>    <span class="keywordtype">bool</span> stillReactant;</div>
+<div class="line"><span class="lineno">  350</span>    <span class="keywordflow">if</span> (!fake) {</div>
+<div class="line"><span class="lineno">  351</span>      stillReactant = snapshot.compare(*<a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a>);</div>
+<div class="line"><span class="lineno">  352</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  353</span>      stillReactant = <span class="keyword">static_cast&lt;</span><span class="keywordtype">bool</span><span class="keyword">&gt;</span>(<a class="code hl_function" href="namespaceeonc_1_1rng.html#a5e8caf65ab4c88babd709b38d410927c">eonc::rng::randomInt</a>(0, 1));</div>
+<div class="line"><span class="lineno">  354</span>    }</div>
+<div class="line"><span class="lineno">  355</span> </div>
+<div class="line"><span class="lineno">  356</span>    <span class="keywordflow">if</span> (stillReactant) {</div>
+<div class="line"><span class="lineno">  357</span>      lo = mid;</div>
+<div class="line"><span class="lineno">  358</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  359</span>      hi = mid;</div>
+<div class="line"><span class="lineno">  360</span>    }</div>
+<div class="line"><span class="lineno">  361</span>  }</div>
+<div class="line"><span class="lineno">  362</span> </div>
+<div class="line"><span class="lineno">  363</span>  <span class="keywordflow">return</span> (lo + hi) / 2 + 1;</div>
+<div class="line"><span class="lineno">  364</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1rng_html_a5e8caf65ab4c88babd709b38d410927c"><div class="ttname"><a href="namespaceeonc_1_1rng.html#a5e8caf65ab4c88babd709b38d410927c">eonc::rng::randomInt</a></div><div class="ttdeci">long randomInt(int lower, int upper)</div><div class="ttdef"><b>Definition</b> <a href="RandomNumbers_8cpp_source.html#l00086">RandomNumbers.cpp:86</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="a7645c8b6a62d1b609864b30a283fc60e" name="a7645c8b6a62d1b609864b30a283fc60e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7645c8b6a62d1b609864b30a283fc60e">&#9670;&#160;</a></span>run()</h2>
+<a id="a02f95bf6bc2d4d1d8c34532da63407ae" name="a02f95bf6bc2d4d1d8c34532da63407ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02f95bf6bc2d4d1d8c34532da63407ae">&#9670;&#160;</a></span>run()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -523,7 +629,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; std::string &gt; ParallelReplicaJob::run </td>
+          <td class="memname">std::vector&lt; std::string &gt; eonc::ParallelReplicaJob::run </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -540,37 +646,37 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1Job.html#ac23db10c6a90d5c6cc8a3a49d7b0dace">eonc::Job</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ParallelReplicaJob_8cpp_source.html#l00025">25</a> of file <a class="el" href="ParallelReplicaJob_8cpp_source.html">ParallelReplicaJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   25</span>                                             {</div>
-<div class="line"><span class="lineno">   26</span>  <a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">   27</span>  {</div>
-<div class="line"><span class="lineno">   28</span>    <span class="keyword">const</span> <span class="keyword">auto</span> posIn =</div>
-<div class="line"><span class="lineno">   29</span>        <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a88842482b7248fc0ffd60260a522bdca">eonc::helpers::getRelevantFile</a>(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options.conFilename);</div>
-<div class="line"><span class="lineno">   30</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a>-&gt;con2matter(posIn))) {</div>
-<div class="line"><span class="lineno">   31</span>      QUILL_LOG_CRITICAL(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;Failed to load {}&quot;</span>, posIn);</div>
-<div class="line"><span class="lineno">   32</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;failed to load &quot;</span> + posIn);</div>
-<div class="line"><span class="lineno">   33</span>    }</div>
-<div class="line"><span class="lineno">   34</span>  }</div>
-<div class="line"><span class="lineno">   35</span>  (void)<a class="code hl_function" href="#ae1d02eb23e002aec140cf4d2b2fb341f">runFromMatter</a>(<a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a>);</div>
-<div class="line"><span class="lineno">   36</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a00c7502718210468240e5e1d94430f64">returnFiles</a>;</div>
-<div class="line"><span class="lineno">   37</span>}</div>
+<p class="definition">Definition at line <a class="el" href="ParallelReplicaJob_8cpp_source.html#l00028">28</a> of file <a class="el" href="ParallelReplicaJob_8cpp_source.html">ParallelReplicaJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   28</span>                                             {</div>
+<div class="line"><span class="lineno">   29</span>  <a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">   30</span>  {</div>
+<div class="line"><span class="lineno">   31</span>    <span class="keyword">const</span> <span class="keyword">auto</span> posIn =</div>
+<div class="line"><span class="lineno">   32</span>        <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a561b68f975ecb734266063b428d6f2f2">eonc::helpers::getRelevantFile</a>(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options().conFilename);</div>
+<div class="line"><span class="lineno">   33</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a>-&gt;con2matter(posIn))) {</div>
+<div class="line"><span class="lineno">   34</span>      QUILL_LOG_CRITICAL(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;Failed to load {}&quot;</span>, posIn);</div>
+<div class="line"><span class="lineno">   35</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;failed to load &quot;</span> + posIn);</div>
+<div class="line"><span class="lineno">   36</span>    }</div>
+<div class="line"><span class="lineno">   37</span>  }</div>
+<div class="line"><span class="lineno">   38</span>  (void)<a class="code hl_function" href="#aaaec7fc20361b8762d900a03efebdc2a">runFromMatter</a>(<a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a>);</div>
+<div class="line"><span class="lineno">   39</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a00c7502718210468240e5e1d94430f64">returnFiles</a>;</div>
+<div class="line"><span class="lineno">   40</span>}</div>
 <div class="ttc" id="aclasseonc_1_1ParallelReplicaJob_html_a00c7502718210468240e5e1d94430f64"><div class="ttname"><a href="#a00c7502718210468240e5e1d94430f64">eonc::ParallelReplicaJob::returnFiles</a></div><div class="ttdeci">std::vector&lt; std::string &gt; returnFiles</div><div class="ttdef"><b>Definition</b> <a href="ParallelReplicaJob_8h_source.html#l00032">ParallelReplicaJob.h:32</a></div></div>
-<div class="ttc" id="aclasseonc_1_1ParallelReplicaJob_html_ae1d02eb23e002aec140cf4d2b2fb341f"><div class="ttname"><a href="#ae1d02eb23e002aec140cf4d2b2fb341f">eonc::ParallelReplicaJob::runFromMatter</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; runFromMatter(std::shared_ptr&lt; Matter &gt; initial)</div><div class="ttdoc">Matter-first entry; returns final trajectory Matter.</div><div class="ttdef"><b>Definition</b> <a href="ParallelReplicaJob_8cpp_source.html#l00040">ParallelReplicaJob.cpp:40</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1helpers_html_a88842482b7248fc0ffd60260a522bdca"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a88842482b7248fc0ffd60260a522bdca">eonc::helpers::getRelevantFile</a></div><div class="ttdeci">std::string getRelevantFile(std::string filename)</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00076">HelperFunctions.cpp:76</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ParallelReplicaJob_html_aaaec7fc20361b8762d900a03efebdc2a"><div class="ttname"><a href="#aaaec7fc20361b8762d900a03efebdc2a">eonc::ParallelReplicaJob::runFromMatter</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; runFromMatter(std::shared_ptr&lt; Matter &gt; initial)</div><div class="ttdoc">Matter-first entry; returns final trajectory Matter.</div><div class="ttdef"><b>Definition</b> <a href="ParallelReplicaJob_8cpp_source.html#l00043">ParallelReplicaJob.cpp:43</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_a561b68f975ecb734266063b428d6f2f2"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a561b68f975ecb734266063b428d6f2f2">eonc::helpers::getRelevantFile</a></div><div class="ttdeci">std::string getRelevantFile(std::string filename)</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00122">HelperFunctions.cpp:122</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_af66b2723d892a4095754f9b0354b4f78"><div class="ttname"><a href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a></div><div class="ttdeci">constexpr bool io_ok(IoStatus s) noexcept</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00038">ConFileIO.h:38</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="ae1d02eb23e002aec140cf4d2b2fb341f" name="ae1d02eb23e002aec140cf4d2b2fb341f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae1d02eb23e002aec140cf4d2b2fb341f">&#9670;&#160;</a></span>runFromMatter()</h2>
+<a id="aaaec7fc20361b8762d900a03efebdc2a" name="aaaec7fc20361b8762d900a03efebdc2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaaec7fc20361b8762d900a03efebdc2a">&#9670;&#160;</a></span>runFromMatter()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; ParallelReplicaJob::runFromMatter </td>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; eonc::ParallelReplicaJob::runFromMatter </td>
           <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>initial</em></span></td><td>)</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>initial</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -578,245 +684,258 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Matter-first entry; returns final trajectory <a class="el" href="classeonc_1_1Matter.html">Matter</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="ParallelReplicaJob_8cpp_source.html#l00040">40</a> of file <a class="el" href="ParallelReplicaJob_8cpp_source.html">ParallelReplicaJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   40</span>                                                               {</div>
-<div class="line"><span class="lineno">   41</span>  <span class="keywordflow">if</span> (!initial) {</div>
-<div class="line"><span class="lineno">   42</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;ParallelReplicaJob::runFromMatter: null Matter&quot;</span>);</div>
-<div class="line"><span class="lineno">   43</span>  }</div>
-<div class="line"><span class="lineno">   44</span>  <a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a> = initial;</div>
-<div class="line"><span class="lineno">   45</span>  <a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a>-&gt;setPotential(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>);</div>
-<div class="line"><span class="lineno">   46</span> </div>
-<div class="line"><span class="lineno">   47</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;[ParallelReplica] Minimizing initial position&quot;</span>);</div>
-<div class="line"><span class="lineno">   48</span>  <a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a>-&gt;relax();</div>
-<div class="line"><span class="lineno">   49</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a>-&gt;matter2con(<span class="stringliteral">&quot;reactant.con&quot;</span>))) {</div>
-<div class="line"><span class="lineno">   50</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;Failed to write reactant.con&quot;</span>);</div>
-<div class="line"><span class="lineno">   51</span>  }</div>
-<div class="line"><span class="lineno">   52</span> </div>
-<div class="line"><span class="lineno">   53</span>  <span class="keyword">auto</span> trajectory = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">   54</span>  *trajectory = *<a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a>;</div>
-<div class="line"><span class="lineno">   55</span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a405d9a69e5139b9df0df6b66e18fc9e2">Dynamics</a> dynamics(trajectory.get(), <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">   56</span>  BondBoost bondBoost(trajectory.get(), <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">   57</span> </div>
-<div class="line"><span class="lineno">   58</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.hyperdynamics_options.bias_potential ==</div>
-<div class="line"><span class="lineno">   59</span>      <a class="code hl_variable" href="classeonc_1_1Hyperdynamics.html#adbca2af34c822863352a02aa998fb53e">Hyperdynamics::BOND_BOOST</a>) {</div>
-<div class="line"><span class="lineno">   60</span>    bondBoost.initialize();</div>
-<div class="line"><span class="lineno">   61</span>    trajectory-&gt;setBiasPotential(&amp;bondBoost);</div>
-<div class="line"><span class="lineno">   62</span>  }</div>
-<div class="line"><span class="lineno">   63</span> </div>
-<div class="line"><span class="lineno">   64</span>  <a class="code hl_function" href="#a5e2aa49456c510c4d4e9b718ac1ecbe2">dephase</a>(*trajectory);</div>
-<div class="line"><span class="lineno">   65</span> </div>
-<div class="line"><span class="lineno">   66</span>  <span class="keywordtype">int</span> stateCheckInterval = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(</div>
-<div class="line"><span class="lineno">   67</span>      std::floor(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options.state_check_interval /</div>
-<div class="line"><span class="lineno">   68</span>                     <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.time_step +</div>
-<div class="line"><span class="lineno">   69</span>                 0.5));</div>
-<div class="line"><span class="lineno">   70</span>  <span class="keywordtype">int</span> recordInterval = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(</div>
-<div class="line"><span class="lineno">   71</span>      std::floor(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options.record_interval /</div>
-<div class="line"><span class="lineno">   72</span>                     <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.time_step +</div>
-<div class="line"><span class="lineno">   73</span>                 0.5));</div>
-<div class="line"><span class="lineno">   74</span>  <span class="keywordflow">if</span> (stateCheckInterval &lt; 1)</div>
-<div class="line"><span class="lineno">   75</span>    stateCheckInterval = 1;</div>
-<div class="line"><span class="lineno">   76</span>  <span class="keywordflow">if</span> (recordInterval &lt; 1)</div>
-<div class="line"><span class="lineno">   77</span>    recordInterval = 1;</div>
-<div class="line"><span class="lineno">   78</span> </div>
-<div class="line"><span class="lineno">   79</span>  std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; mdSnapshots;</div>
-<div class="line"><span class="lineno">   80</span>  std::vector&lt;double&gt; mdTimes;</div>
-<div class="line"><span class="lineno">   81</span>  <span class="keywordtype">double</span> transitionTime = 0;</div>
-<div class="line"><span class="lineno">   82</span>  Matter transitionStructure(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">   83</span>  <span class="keywordtype">size_t</span> refineForceCalls = 0;</div>
-<div class="line"><span class="lineno">   84</span> </div>
-<div class="line"><span class="lineno">   85</span>  <span class="keywordtype">double</span> simulationTime = 0.0;</div>
-<div class="line"><span class="lineno">   86</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.hyperdynamics_options.bias_potential == <a class="code hl_variable" href="classeonc_1_1Hyperdynamics.html#abd8e9f13c4c8040b19db13d3258ee604">Hyperdynamics::NONE</a>) {</div>
-<div class="line"><span class="lineno">   87</span>    QUILL_LOG_DEBUG(</div>
-<div class="line"><span class="lineno">   88</span>        <a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;[ParallelReplica] {:&gt;8} {:&gt;12} {:&gt;10} {:&gt;12} {:&gt;12} {:&gt;10}&quot;</span>,</div>
-<div class="line"><span class="lineno">   89</span>        <span class="stringliteral">&quot;Step&quot;</span>, <span class="stringliteral">&quot;Time (s)&quot;</span>, <span class="stringliteral">&quot;KE&quot;</span>, <span class="stringliteral">&quot;PE&quot;</span>, <span class="stringliteral">&quot;TE&quot;</span>, <span class="stringliteral">&quot;KinT&quot;</span>);</div>
-<div class="line"><span class="lineno">   90</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">   91</span>    QUILL_LOG_DEBUG(</div>
-<div class="line"><span class="lineno">   92</span>        <a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>,</div>
-<div class="line"><span class="lineno">   93</span>        <span class="stringliteral">&quot;[ParallelReplica] {:&gt;8} {:&gt;12} {:&gt;10} {:&gt;10} {:&gt;12} {:&gt;12} {:&gt;10}&quot;</span>,</div>
-<div class="line"><span class="lineno">   94</span>        <span class="stringliteral">&quot;Step&quot;</span>, <span class="stringliteral">&quot;Time (s)&quot;</span>, <span class="stringliteral">&quot;Boost&quot;</span>, <span class="stringliteral">&quot;KE&quot;</span>, <span class="stringliteral">&quot;PE&quot;</span>, <span class="stringliteral">&quot;TE&quot;</span>, <span class="stringliteral">&quot;KinT&quot;</span>);</div>
-<div class="line"><span class="lineno">   95</span>  }</div>
-<div class="line"><span class="lineno">   96</span> </div>
-<div class="line"><span class="lineno">   97</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> step = 1; step &lt;= <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.steps; step++) {</div>
-<div class="line"><span class="lineno">   98</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.hyperdynamics_options.bias_potential ==</div>
-<div class="line"><span class="lineno">   99</span>        <a class="code hl_variable" href="classeonc_1_1Hyperdynamics.html#adbca2af34c822863352a02aa998fb53e">Hyperdynamics::BOND_BOOST</a>) {</div>
-<div class="line"><span class="lineno">  100</span>      <span class="comment">// oneStep() evaluates accelerations (and therefore boost()) more than</span></div>
-<div class="line"><span class="lineno">  101</span>      <span class="comment">// once. Advance the equilibration counter here, once per MD step, so</span></div>
-<div class="line"><span class="lineno">  102</span>      <span class="comment">// ParallelReplica and SafeHyper share the same rmd_time schedule.</span></div>
-<div class="line"><span class="lineno">  103</span>      bondBoost.advance();</div>
-<div class="line"><span class="lineno">  104</span>    }</div>
-<div class="line"><span class="lineno">  105</span>    dynamics.oneStep();</div>
-<div class="line"><span class="lineno">  106</span>    <span class="keywordtype">double</span> boost = 1.0;</div>
-<div class="line"><span class="lineno">  107</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.hyperdynamics_options.bias_potential ==</div>
-<div class="line"><span class="lineno">  108</span>        <a class="code hl_variable" href="classeonc_1_1Hyperdynamics.html#adbca2af34c822863352a02aa998fb53e">Hyperdynamics::BOND_BOOST</a>) {</div>
-<div class="line"><span class="lineno">  109</span>      <span class="keywordtype">double</span> boostPotential = bondBoost.boost();</div>
-<div class="line"><span class="lineno">  110</span>      <span class="keywordtype">double</span> kB = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants.kB;</div>
-<div class="line"><span class="lineno">  111</span>      boost = std::exp(boostPotential / kB / <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options.temperature);</div>
-<div class="line"><span class="lineno">  112</span>      simulationTime += <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.time_step * boost;</div>
-<div class="line"><span class="lineno">  113</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  114</span>      simulationTime += <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.time_step;</div>
-<div class="line"><span class="lineno">  115</span>    }</div>
-<div class="line"><span class="lineno">  116</span> </div>
-<div class="line"><span class="lineno">  117</span>    <span class="keywordtype">double</span> kinE = trajectory-&gt;getKineticEnergy();</div>
-<div class="line"><span class="lineno">  118</span>    <span class="keywordtype">double</span> potE = trajectory-&gt;getPotentialEnergy();</div>
-<div class="line"><span class="lineno">  119</span>    <span class="keywordtype">double</span> kinT = (2.0 * kinE / (trajectory-&gt;numberOfFreeAtoms() * 3) /</div>
-<div class="line"><span class="lineno">  120</span>                   <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants.kB);</div>
+<p class="definition">Definition at line <a class="el" href="ParallelReplicaJob_8cpp_source.html#l00043">43</a> of file <a class="el" href="ParallelReplicaJob_8cpp_source.html">ParallelReplicaJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   43</span>                                                               {</div>
+<div class="line"><span class="lineno">   44</span>  <span class="keywordflow">if</span> (!initial) {</div>
+<div class="line"><span class="lineno">   45</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;ParallelReplicaJob::runFromMatter: null Matter&quot;</span>);</div>
+<div class="line"><span class="lineno">   46</span>  }</div>
+<div class="line"><span class="lineno">   47</span>  <a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a> = initial;</div>
+<div class="line"><span class="lineno">   48</span>  <a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a>-&gt;setPotential(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>);</div>
+<div class="line"><span class="lineno">   49</span> </div>
+<div class="line"><span class="lineno">   50</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;[ParallelReplica] Minimizing initial position&quot;</span>);</div>
+<div class="line"><span class="lineno">   51</span>  <a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a>-&gt;relax();</div>
+<div class="line"><span class="lineno">   52</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a>-&gt;matter2con(<span class="stringliteral">&quot;reactant.con&quot;</span>))) {</div>
+<div class="line"><span class="lineno">   53</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;Failed to write reactant.con&quot;</span>);</div>
+<div class="line"><span class="lineno">   54</span>  }</div>
+<div class="line"><span class="lineno">   55</span> </div>
+<div class="line"><span class="lineno">   56</span>  <span class="keyword">auto</span> trajectory = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">   57</span>  *trajectory = *<a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a>;</div>
+<div class="line"><span class="lineno">   58</span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a405d9a69e5139b9df0df6b66e18fc9e2">Dynamics</a> dynamics(trajectory.get(), <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">   59</span>  BondBoost bondBoost(trajectory.get(), <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">   60</span> </div>
+<div class="line"><span class="lineno">   61</span>  BondBoost *bias = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">   62</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.hyperdynamics_options().bias_potential ==</div>
+<div class="line"><span class="lineno">   63</span>      <a class="code hl_variable" href="classeonc_1_1Hyperdynamics.html#a7c047d56f2b6eed95770617d534b9953">Hyperdynamics::BOND_BOOST</a>) {</div>
+<div class="line"><span class="lineno">   64</span>    bondBoost.initialize();</div>
+<div class="line"><span class="lineno">   65</span>    trajectory-&gt;setBiasPotential(&amp;bondBoost);</div>
+<div class="line"><span class="lineno">   66</span>    bias = &amp;bondBoost;</div>
+<div class="line"><span class="lineno">   67</span>  }</div>
+<div class="line"><span class="lineno">   68</span> </div>
+<div class="line"><span class="lineno">   69</span>  <a class="code hl_function" href="#a4642cf1863a8bf8101b0c3f5be036c65">dephase</a>(*trajectory, bias);</div>
+<div class="line"><span class="lineno">   70</span> </div>
+<div class="line"><span class="lineno">   71</span>  <span class="keywordtype">int</span> stateCheckInterval = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(</div>
+<div class="line"><span class="lineno">   72</span>      std::floor(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options().state_check_interval /</div>
+<div class="line"><span class="lineno">   73</span>                     <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options().time_step +</div>
+<div class="line"><span class="lineno">   74</span>                 0.5));</div>
+<div class="line"><span class="lineno">   75</span>  <span class="keywordtype">int</span> recordInterval = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(</div>
+<div class="line"><span class="lineno">   76</span>      std::floor(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options().record_interval /</div>
+<div class="line"><span class="lineno">   77</span>                     <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options().time_step +</div>
+<div class="line"><span class="lineno">   78</span>                 0.5));</div>
+<div class="line"><span class="lineno">   79</span>  <span class="keywordflow">if</span> (stateCheckInterval &lt; 1)</div>
+<div class="line"><span class="lineno">   80</span>    stateCheckInterval = 1;</div>
+<div class="line"><span class="lineno">   81</span>  <span class="keywordflow">if</span> (recordInterval &lt; 1)</div>
+<div class="line"><span class="lineno">   82</span>    recordInterval = 1;</div>
+<div class="line"><span class="lineno">   83</span> </div>
+<div class="line"><span class="lineno">   84</span>  std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; mdSnapshots;</div>
+<div class="line"><span class="lineno">   85</span>  std::vector&lt;double&gt; mdTimes;</div>
+<div class="line"><span class="lineno">   86</span>  <span class="keywordtype">double</span> transitionTime = 0;</div>
+<div class="line"><span class="lineno">   87</span>  Matter transitionStructure(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">   88</span>  <span class="keywordtype">size_t</span> refineForceCalls = 0;</div>
+<div class="line"><span class="lineno">   89</span> </div>
+<div class="line"><span class="lineno">   90</span>  <span class="keywordtype">double</span> simulationTime = 0.0;</div>
+<div class="line"><span class="lineno">   91</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.hyperdynamics_options().bias_potential == <a class="code hl_variable" href="classeonc_1_1Hyperdynamics.html#a89f1eb0a4e7304f0684570b708f4eb0a">Hyperdynamics::NONE</a>) {</div>
+<div class="line"><span class="lineno">   92</span>    QUILL_LOG_DEBUG(</div>
+<div class="line"><span class="lineno">   93</span>        <a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;[ParallelReplica] {:&gt;8} {:&gt;12} {:&gt;10} {:&gt;12} {:&gt;12} {:&gt;10}&quot;</span>,</div>
+<div class="line"><span class="lineno">   94</span>        <span class="stringliteral">&quot;Step&quot;</span>, <span class="stringliteral">&quot;Time (s)&quot;</span>, <span class="stringliteral">&quot;KE&quot;</span>, <span class="stringliteral">&quot;PE&quot;</span>, <span class="stringliteral">&quot;TE&quot;</span>, <span class="stringliteral">&quot;KinT&quot;</span>);</div>
+<div class="line"><span class="lineno">   95</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   96</span>    QUILL_LOG_DEBUG(</div>
+<div class="line"><span class="lineno">   97</span>        <a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>,</div>
+<div class="line"><span class="lineno">   98</span>        <span class="stringliteral">&quot;[ParallelReplica] {:&gt;8} {:&gt;12} {:&gt;10} {:&gt;10} {:&gt;12} {:&gt;12} {:&gt;10}&quot;</span>,</div>
+<div class="line"><span class="lineno">   99</span>        <span class="stringliteral">&quot;Step&quot;</span>, <span class="stringliteral">&quot;Time (s)&quot;</span>, <span class="stringliteral">&quot;Boost&quot;</span>, <span class="stringliteral">&quot;KE&quot;</span>, <span class="stringliteral">&quot;PE&quot;</span>, <span class="stringliteral">&quot;TE&quot;</span>, <span class="stringliteral">&quot;KinT&quot;</span>);</div>
+<div class="line"><span class="lineno">  100</span>  }</div>
+<div class="line"><span class="lineno">  101</span> </div>
+<div class="line"><span class="lineno">  102</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> step = 1; step &lt;= <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options().steps; step++) {</div>
+<div class="line"><span class="lineno">  103</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.hyperdynamics_options().bias_potential ==</div>
+<div class="line"><span class="lineno">  104</span>        <a class="code hl_variable" href="classeonc_1_1Hyperdynamics.html#a7c047d56f2b6eed95770617d534b9953">Hyperdynamics::BOND_BOOST</a>) {</div>
+<div class="line"><span class="lineno">  105</span>      <span class="comment">// oneStep() evaluates accelerations (and therefore boost()) more than</span></div>
+<div class="line"><span class="lineno">  106</span>      <span class="comment">// once. Advance the equilibration counter here, once per MD step, so</span></div>
+<div class="line"><span class="lineno">  107</span>      <span class="comment">// ParallelReplica and SafeHyper share the same rmd_time schedule.</span></div>
+<div class="line"><span class="lineno">  108</span>      bondBoost.advance();</div>
+<div class="line"><span class="lineno">  109</span>    }</div>
+<div class="line"><span class="lineno">  110</span>    dynamics.oneStep();</div>
+<div class="line"><span class="lineno">  111</span>    <span class="keywordtype">double</span> boost = 1.0;</div>
+<div class="line"><span class="lineno">  112</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.hyperdynamics_options().bias_potential ==</div>
+<div class="line"><span class="lineno">  113</span>        <a class="code hl_variable" href="classeonc_1_1Hyperdynamics.html#a7c047d56f2b6eed95770617d534b9953">Hyperdynamics::BOND_BOOST</a>) {</div>
+<div class="line"><span class="lineno">  114</span>      <span class="keywordtype">double</span> boostPotential = bondBoost.boost();</div>
+<div class="line"><span class="lineno">  115</span>      <span class="keywordtype">double</span> kB = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants().kB;</div>
+<div class="line"><span class="lineno">  116</span>      boost = std::exp(boostPotential / kB / <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options().temperature);</div>
+<div class="line"><span class="lineno">  117</span>      simulationTime += <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options().time_step * boost;</div>
+<div class="line"><span class="lineno">  118</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  119</span>      simulationTime += <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options().time_step;</div>
+<div class="line"><span class="lineno">  120</span>    }</div>
 <div class="line"><span class="lineno">  121</span> </div>
-<div class="line"><span class="lineno">  122</span>    <span class="keywordflow">if</span> (step % <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.debug_options.write_movies_interval == 0) {</div>
-<div class="line"><span class="lineno">  123</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.hyperdynamics_options.bias_potential == <a class="code hl_variable" href="classeonc_1_1Hyperdynamics.html#abd8e9f13c4c8040b19db13d3258ee604">Hyperdynamics::NONE</a>) {</div>
-<div class="line"><span class="lineno">  124</span>        QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>,</div>
-<div class="line"><span class="lineno">  125</span>                        <span class="stringliteral">&quot;[ParallelReplica] {:&gt;8} {:&gt;12.4e} {:&gt;10.4f} &quot;</span></div>
-<div class="line"><span class="lineno">  126</span>                        <span class="stringliteral">&quot;{:&gt;12.4f} {:&gt;12.4f} {:&gt;10.2f}&quot;</span>,</div>
-<div class="line"><span class="lineno">  127</span>                        step,</div>
-<div class="line"><span class="lineno">  128</span>                        simulationTime * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants.timeUnit * 1e-15,</div>
-<div class="line"><span class="lineno">  129</span>                        kinE, potE, kinE + potE, kinT);</div>
-<div class="line"><span class="lineno">  130</span>      } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  131</span>        <span class="keywordtype">double</span> boostPotential = bondBoost.boost();</div>
-<div class="line"><span class="lineno">  132</span>        QUILL_LOG_DEBUG(</div>
-<div class="line"><span class="lineno">  133</span>            <a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>,</div>
-<div class="line"><span class="lineno">  134</span>            <span class="stringliteral">&quot;[ParallelReplica] {:&gt;8} {:&gt;12.4e} {:&gt;10.3e} &quot;</span></div>
-<div class="line"><span class="lineno">  135</span>            <span class="stringliteral">&quot;{:&gt;10.4f} {:&gt;12.4f} {:&gt;12.4f} {:&gt;10.2f}&quot;</span>,</div>
-<div class="line"><span class="lineno">  136</span>            step, simulationTime * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants.timeUnit * 1e-15, boost,</div>
-<div class="line"><span class="lineno">  137</span>            kinE, potE + boostPotential, kinE + potE + boostPotential, kinT);</div>
-<div class="line"><span class="lineno">  138</span>      }</div>
-<div class="line"><span class="lineno">  139</span>    }</div>
-<div class="line"><span class="lineno">  140</span> </div>
-<div class="line"><span class="lineno">  141</span>    <span class="comment">// Snapshots for refinement</span></div>
-<div class="line"><span class="lineno">  142</span>    <span class="keywordflow">if</span> (step % recordInterval == 0 &amp;&amp;</div>
-<div class="line"><span class="lineno">  143</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options.refine_transition) {</div>
-<div class="line"><span class="lineno">  144</span>      <span class="keyword">auto</span> snap = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  145</span>      *snap = *trajectory;</div>
-<div class="line"><span class="lineno">  146</span>      mdSnapshots.push_back(std::move(snap));</div>
-<div class="line"><span class="lineno">  147</span>      mdTimes.push_back(simulationTime);</div>
-<div class="line"><span class="lineno">  148</span>    }</div>
-<div class="line"><span class="lineno">  149</span> </div>
-<div class="line"><span class="lineno">  150</span>    <span class="comment">// Check for transition</span></div>
-<div class="line"><span class="lineno">  151</span>    <span class="keywordflow">if</span> (step % stateCheckInterval == 0 ||</div>
-<div class="line"><span class="lineno">  152</span>        step == <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.steps) {</div>
-<div class="line"><span class="lineno">  153</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;[ParallelReplica] Checking for transition&quot;</span>);</div>
-<div class="line"><span class="lineno">  154</span> </div>
-<div class="line"><span class="lineno">  155</span>      Matter minimized(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  156</span>      minimized = *trajectory;</div>
-<div class="line"><span class="lineno">  157</span>      minimized.relax();</div>
-<div class="line"><span class="lineno">  158</span> </div>
-<div class="line"><span class="lineno">  159</span>      <span class="keywordflow">if</span> (!minimized.compare(*<a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a>) &amp;&amp; transitionTime == 0) {</div>
-<div class="line"><span class="lineno">  160</span>        QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;[ParallelReplica] Transition occurred&quot;</span>);</div>
-<div class="line"><span class="lineno">  161</span> </div>
-<div class="line"><span class="lineno">  162</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options.refine_transition &amp;&amp;</div>
-<div class="line"><span class="lineno">  163</span>            !mdSnapshots.empty() &amp;&amp; !mdTimes.empty()) {</div>
-<div class="line"><span class="lineno">  164</span>          QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;[ParallelReplica] Refining transition time&quot;</span>);</div>
-<div class="line"><span class="lineno">  165</span>          <span class="keywordtype">int</span> snapshotIndex;</div>
-<div class="line"><span class="lineno">  166</span>          {</div>
-<div class="line"><span class="lineno">  167</span>            eonc::ForceCallTimer timer(refineForceCalls);</div>
-<div class="line"><span class="lineno">  168</span>            snapshotIndex = <a class="code hl_function" href="#a3ecdf476a14cf3609c9f88562915c214">refineTransition</a>(mdSnapshots);</div>
-<div class="line"><span class="lineno">  169</span>          }</div>
-<div class="line"><span class="lineno">  170</span>          <span class="keywordflow">if</span> (snapshotIndex &lt; 0)</div>
-<div class="line"><span class="lineno">  171</span>            snapshotIndex = 0;</div>
-<div class="line"><span class="lineno">  172</span>          <span class="keywordflow">if</span> (snapshotIndex &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(mdSnapshots.size()))</div>
-<div class="line"><span class="lineno">  173</span>            snapshotIndex = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(mdSnapshots.size()) - 1;</div>
-<div class="line"><span class="lineno">  174</span> </div>
-<div class="line"><span class="lineno">  175</span>          transitionTime = mdTimes[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(snapshotIndex)];</div>
-<div class="line"><span class="lineno">  176</span>          transitionStructure =</div>
-<div class="line"><span class="lineno">  177</span>              *mdSnapshots[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(snapshotIndex)];</div>
-<div class="line"><span class="lineno">  178</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  179</span>          transitionStructure = *trajectory;</div>
-<div class="line"><span class="lineno">  180</span>          transitionTime = simulationTime;</div>
-<div class="line"><span class="lineno">  181</span>        }</div>
-<div class="line"><span class="lineno">  182</span>        QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;[ParallelReplica] Transition time: {:.3e} s&quot;</span>,</div>
-<div class="line"><span class="lineno">  183</span>                        transitionTime * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants.timeUnit * 1e-15);</div>
-<div class="line"><span class="lineno">  184</span> </div>
-<div class="line"><span class="lineno">  185</span>      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (step + 1 == <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.steps &amp;&amp;</div>
-<div class="line"><span class="lineno">  186</span>                 transitionTime == 0) {</div>
-<div class="line"><span class="lineno">  187</span>        <span class="comment">// Fake refinement to prevent force-call bias (only if snapshots exist)</span></div>
-<div class="line"><span class="lineno">  188</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options.refine_transition &amp;&amp;</div>
-<div class="line"><span class="lineno">  189</span>            !mdSnapshots.empty()) {</div>
-<div class="line"><span class="lineno">  190</span>          QUILL_LOG_DEBUG(</div>
-<div class="line"><span class="lineno">  191</span>              <a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>,</div>
-<div class="line"><span class="lineno">  192</span>              <span class="stringliteral">&quot;[ParallelReplica] Simulation ended without seeing a transition&quot;</span>);</div>
-<div class="line"><span class="lineno">  193</span>          QUILL_LOG_DEBUG(</div>
-<div class="line"><span class="lineno">  194</span>              <a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;[ParallelReplica] Refining anyways to prevent bias...&quot;</span>);</div>
-<div class="line"><span class="lineno">  195</span>          {</div>
-<div class="line"><span class="lineno">  196</span>            eonc::ForceCallTimer timer(refineForceCalls);</div>
-<div class="line"><span class="lineno">  197</span>            <a class="code hl_function" href="#a3ecdf476a14cf3609c9f88562915c214">refineTransition</a>(mdSnapshots, <span class="keyword">true</span>);</div>
-<div class="line"><span class="lineno">  198</span>          }</div>
-<div class="line"><span class="lineno">  199</span>        }</div>
-<div class="line"><span class="lineno">  200</span>        transitionStructure = *trajectory;</div>
-<div class="line"><span class="lineno">  201</span>      }</div>
-<div class="line"><span class="lineno">  202</span> </div>
-<div class="line"><span class="lineno">  203</span>      mdSnapshots.clear();</div>
-<div class="line"><span class="lineno">  204</span>      mdTimes.clear();</div>
-<div class="line"><span class="lineno">  205</span>    }</div>
-<div class="line"><span class="lineno">  206</span>  }</div>
-<div class="line"><span class="lineno">  207</span> </div>
-<div class="line"><span class="lineno">  208</span>  <span class="comment">// Decorrelation dynamics</span></div>
-<div class="line"><span class="lineno">  209</span>  <span class="keywordtype">int</span> decorrelationSteps =</div>
-<div class="line"><span class="lineno">  210</span>      <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::floor(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options.corr_time /</div>
-<div class="line"><span class="lineno">  211</span>                                      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.time_step +</div>
-<div class="line"><span class="lineno">  212</span>                                  0.5));</div>
-<div class="line"><span class="lineno">  213</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;[ParallelReplica] Decorrelating: {} steps&quot;</span>,</div>
-<div class="line"><span class="lineno">  214</span>                  decorrelationSteps);</div>
-<div class="line"><span class="lineno">  215</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> step = 1; step &lt;= decorrelationSteps; step++) {</div>
-<div class="line"><span class="lineno">  216</span>    dynamics.oneStep(step);</div>
-<div class="line"><span class="lineno">  217</span>  }</div>
-<div class="line"><span class="lineno">  218</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;[ParallelReplica] Decorrelation complete&quot;</span>);</div>
-<div class="line"><span class="lineno">  219</span> </div>
-<div class="line"><span class="lineno">  220</span>  <span class="comment">// Minimize final structure</span></div>
-<div class="line"><span class="lineno">  221</span>  Matter product(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  222</span>  product = *trajectory;</div>
-<div class="line"><span class="lineno">  223</span>  product.relax();</div>
-<div class="line"><span class="lineno">  224</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(product.matter2con(<span class="stringliteral">&quot;product.con&quot;</span>))) {</div>
-<div class="line"><span class="lineno">  225</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;Failed to write product.con&quot;</span>);</div>
-<div class="line"><span class="lineno">  226</span>  }</div>
-<div class="line"><span class="lineno">  227</span> </div>
-<div class="line"><span class="lineno">  228</span>  <span class="comment">// Write results</span></div>
-<div class="line"><span class="lineno">  229</span>  std::string resultsFilename(<span class="stringliteral">&quot;results.dat&quot;</span>);</div>
-<div class="line"><span class="lineno">  230</span>  <a class="code hl_variable" href="#a00c7502718210468240e5e1d94430f64">returnFiles</a>.push_back(resultsFilename);</div>
-<div class="line"><span class="lineno">  231</span>  {</div>
-<div class="line"><span class="lineno">  232</span>    std::ofstream out(resultsFilename, std::ios::binary);</div>
-<div class="line"><span class="lineno">  233</span>    <span class="keywordflow">if</span> (out) {</div>
-<div class="line"><span class="lineno">  234</span>      out &lt;&lt; std::format(</div>
-<div class="line"><span class="lineno">  235</span>          <span class="stringliteral">&quot;{} potential_type\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  236</span>          magic_enum::enum_name&lt;PotType&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.potential_options.potential));</div>
-<div class="line"><span class="lineno">  237</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{} random_seed\n&quot;</span>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options.randomSeed);</div>
-<div class="line"><span class="lineno">  238</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:f} potential_energy_reactant\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  239</span>                         <a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a>-&gt;getPotentialEnergy());</div>
-<div class="line"><span class="lineno">  240</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{} force_calls_refine\n&quot;</span>, refineForceCalls);</div>
-<div class="line"><span class="lineno">  241</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{} total_force_calls\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  242</span>                         <a class="code hl_function" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">PotRegistry::get</a>().total_force_calls());</div>
-<div class="line"><span class="lineno">  243</span> </div>
-<div class="line"><span class="lineno">  244</span>      <span class="keywordflow">if</span> (transitionTime == 0) {</div>
-<div class="line"><span class="lineno">  245</span>        out &lt;&lt; <span class="stringliteral">&quot;0 transition_found\n&quot;</span>;</div>
-<div class="line"><span class="lineno">  246</span>        out &lt;&lt; std::format(<span class="stringliteral">&quot;{:e} simulation_time_s\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  247</span>                           simulationTime * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants.timeUnit *</div>
-<div class="line"><span class="lineno">  248</span>                               1.0e-15);</div>
-<div class="line"><span class="lineno">  249</span>      } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  250</span>        out &lt;&lt; <span class="stringliteral">&quot;1 transition_found\n&quot;</span>;</div>
-<div class="line"><span class="lineno">  251</span>        out &lt;&lt; std::format(<span class="stringliteral">&quot;{:e} transition_time_s\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  252</span>                           transitionTime * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants.timeUnit *</div>
-<div class="line"><span class="lineno">  253</span>                               1.0e-15);</div>
-<div class="line"><span class="lineno">  254</span>        out &lt;&lt; std::format(<span class="stringliteral">&quot;{:e} correlation_time_s\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  255</span>                           <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options.corr_time *</div>
-<div class="line"><span class="lineno">  256</span>                               <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants.timeUnit * 1.0e-15);</div>
-<div class="line"><span class="lineno">  257</span>        out &lt;&lt; std::format(<span class="stringliteral">&quot;{:f} potential_energy_product\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  258</span>                           product.getPotentialEnergy());</div>
-<div class="line"><span class="lineno">  259</span>      }</div>
-<div class="line"><span class="lineno">  260</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:f} speedup\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  261</span>                         simulationTime / (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.steps *</div>
-<div class="line"><span class="lineno">  262</span>                                           <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.time_step));</div>
-<div class="line"><span class="lineno">  263</span>    }</div>
-<div class="line"><span class="lineno">  264</span>  }</div>
-<div class="line"><span class="lineno">  265</span> </div>
-<div class="line"><span class="lineno">  266</span>  <span class="comment">// bondBoost is a stack local of this function and setBiasPotential does not</span></div>
-<div class="line"><span class="lineno">  267</span>  <span class="comment">// own it, so the trajectory must not carry the pointer past the return.</span></div>
-<div class="line"><span class="lineno">  268</span>  <span class="comment">// getBiasForces reads a null bias potential as zero bias, which is what a</span></div>
-<div class="line"><span class="lineno">  269</span>  <span class="comment">// Matter that is no longer being boosted means.</span></div>
-<div class="line"><span class="lineno">  270</span>  trajectory-&gt;setBiasPotential(<span class="keyword">nullptr</span>);</div>
-<div class="line"><span class="lineno">  271</span> </div>
-<div class="line"><span class="lineno">  272</span>  <span class="keywordflow">return</span> trajectory;</div>
-<div class="line"><span class="lineno">  273</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Hyperdynamics_html_abd8e9f13c4c8040b19db13d3258ee604"><div class="ttname"><a href="classeonc_1_1Hyperdynamics.html#abd8e9f13c4c8040b19db13d3258ee604">eonc::Hyperdynamics::NONE</a></div><div class="ttdeci">static const char NONE[]</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00076">BondBoost.h:76</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Hyperdynamics_html_adbca2af34c822863352a02aa998fb53e"><div class="ttname"><a href="classeonc_1_1Hyperdynamics.html#adbca2af34c822863352a02aa998fb53e">eonc::Hyperdynamics::BOND_BOOST</a></div><div class="ttdeci">static const char BOND_BOOST[]</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00077">BondBoost.h:77</a></div></div>
-<div class="ttc" id="aclasseonc_1_1ParallelReplicaJob_html_a3ecdf476a14cf3609c9f88562915c214"><div class="ttname"><a href="#a3ecdf476a14cf3609c9f88562915c214">eonc::ParallelReplicaJob::refineTransition</a></div><div class="ttdeci">int refineTransition(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;snapshots, bool fake=false)</div><div class="ttdef"><b>Definition</b> <a href="ParallelReplicaJob_8cpp_source.html#l00317">ParallelReplicaJob.cpp:317</a></div></div>
-<div class="ttc" id="aclasseonc_1_1ParallelReplicaJob_html_a5e2aa49456c510c4d4e9b718ac1ecbe2"><div class="ttname"><a href="#a5e2aa49456c510c4d4e9b718ac1ecbe2">eonc::ParallelReplicaJob::dephase</a></div><div class="ttdeci">void dephase(Matter &amp;trajectory)</div><div class="ttdef"><b>Definition</b> <a href="ParallelReplicaJob_8cpp_source.html#l00275">ParallelReplicaJob.cpp:275</a></div></div>
+<div class="line"><span class="lineno">  122</span>    <span class="keywordtype">double</span> kinE = trajectory-&gt;getKineticEnergy();</div>
+<div class="line"><span class="lineno">  123</span>    <span class="keywordtype">double</span> potE = trajectory-&gt;getPotentialEnergy();</div>
+<div class="line"><span class="lineno">  124</span>    <span class="keywordtype">double</span> kinT = (2.0 * kinE / (trajectory-&gt;numberOfFreeAtoms() * 3) /</div>
+<div class="line"><span class="lineno">  125</span>                   <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants().kB);</div>
+<div class="line"><span class="lineno">  126</span> </div>
+<div class="line"><span class="lineno">  127</span>    <span class="keywordflow">if</span> (step % <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.debug_options().write_movies_interval == 0) {</div>
+<div class="line"><span class="lineno">  128</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.hyperdynamics_options().bias_potential ==</div>
+<div class="line"><span class="lineno">  129</span>          <a class="code hl_variable" href="classeonc_1_1Hyperdynamics.html#a89f1eb0a4e7304f0684570b708f4eb0a">Hyperdynamics::NONE</a>) {</div>
+<div class="line"><span class="lineno">  130</span>        QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>,</div>
+<div class="line"><span class="lineno">  131</span>                        <span class="stringliteral">&quot;[ParallelReplica] {:&gt;8} {:&gt;12.4e} {:&gt;10.4f} &quot;</span></div>
+<div class="line"><span class="lineno">  132</span>                        <span class="stringliteral">&quot;{:&gt;12.4f} {:&gt;12.4f} {:&gt;10.2f}&quot;</span>,</div>
+<div class="line"><span class="lineno">  133</span>                        step,</div>
+<div class="line"><span class="lineno">  134</span>                        simulationTime * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants().timeUnit * 1e-15,</div>
+<div class="line"><span class="lineno">  135</span>                        kinE, potE, kinE + potE, kinT);</div>
+<div class="line"><span class="lineno">  136</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  137</span>        <span class="keywordtype">double</span> boostPotential = bondBoost.boost();</div>
+<div class="line"><span class="lineno">  138</span>        QUILL_LOG_DEBUG(</div>
+<div class="line"><span class="lineno">  139</span>            <a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>,</div>
+<div class="line"><span class="lineno">  140</span>            <span class="stringliteral">&quot;[ParallelReplica] {:&gt;8} {:&gt;12.4e} {:&gt;10.3e} &quot;</span></div>
+<div class="line"><span class="lineno">  141</span>            <span class="stringliteral">&quot;{:&gt;10.4f} {:&gt;12.4f} {:&gt;12.4f} {:&gt;10.2f}&quot;</span>,</div>
+<div class="line"><span class="lineno">  142</span>            step, simulationTime * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants().timeUnit * 1e-15, boost,</div>
+<div class="line"><span class="lineno">  143</span>            kinE, potE + boostPotential, kinE + potE + boostPotential, kinT);</div>
+<div class="line"><span class="lineno">  144</span>      }</div>
+<div class="line"><span class="lineno">  145</span>    }</div>
+<div class="line"><span class="lineno">  146</span> </div>
+<div class="line"><span class="lineno">  147</span>    <span class="comment">// Snapshots for refinement</span></div>
+<div class="line"><span class="lineno">  148</span>    <span class="keywordflow">if</span> (step % recordInterval == 0 &amp;&amp;</div>
+<div class="line"><span class="lineno">  149</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options().refine_transition) {</div>
+<div class="line"><span class="lineno">  150</span>      <span class="keyword">auto</span> snap = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  151</span>      *snap = *trajectory;</div>
+<div class="line"><span class="lineno">  152</span>      mdSnapshots.push_back(std::move(snap));</div>
+<div class="line"><span class="lineno">  153</span>      mdTimes.push_back(simulationTime);</div>
+<div class="line"><span class="lineno">  154</span>    }</div>
+<div class="line"><span class="lineno">  155</span> </div>
+<div class="line"><span class="lineno">  156</span>    <span class="comment">// Check for transition</span></div>
+<div class="line"><span class="lineno">  157</span>    <span class="keywordflow">if</span> (step % stateCheckInterval == 0 ||</div>
+<div class="line"><span class="lineno">  158</span>        step == <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options().steps) {</div>
+<div class="line"><span class="lineno">  159</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;[ParallelReplica] Checking for transition&quot;</span>);</div>
+<div class="line"><span class="lineno">  160</span> </div>
+<div class="line"><span class="lineno">  161</span>      Matter minimized(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  162</span>      minimized = *trajectory;</div>
+<div class="line"><span class="lineno">  163</span>      minimized.relax();</div>
+<div class="line"><span class="lineno">  164</span> </div>
+<div class="line"><span class="lineno">  165</span>      <span class="keywordflow">if</span> (!minimized.compare(*<a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a>) &amp;&amp; transitionTime == 0) {</div>
+<div class="line"><span class="lineno">  166</span>        QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;[ParallelReplica] Transition occurred&quot;</span>);</div>
+<div class="line"><span class="lineno">  167</span> </div>
+<div class="line"><span class="lineno">  168</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options().refine_transition &amp;&amp;</div>
+<div class="line"><span class="lineno">  169</span>            !mdSnapshots.empty() &amp;&amp; !mdTimes.empty()) {</div>
+<div class="line"><span class="lineno">  170</span>          QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;[ParallelReplica] Refining transition time&quot;</span>);</div>
+<div class="line"><span class="lineno">  171</span>          <span class="keywordtype">int</span> snapshotIndex;</div>
+<div class="line"><span class="lineno">  172</span>          {</div>
+<div class="line"><span class="lineno">  173</span>            eonc::ForceCallTimer timer(refineForceCalls);</div>
+<div class="line"><span class="lineno">  174</span>            snapshotIndex = <a class="code hl_function" href="#aedfc5d030082329c8d7fc64975366260">refineTransition</a>(mdSnapshots);</div>
+<div class="line"><span class="lineno">  175</span>          }</div>
+<div class="line"><span class="lineno">  176</span>          <span class="keywordflow">if</span> (snapshotIndex &lt; 0)</div>
+<div class="line"><span class="lineno">  177</span>            snapshotIndex = 0;</div>
+<div class="line"><span class="lineno">  178</span>          <span class="keywordflow">if</span> (snapshotIndex &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(mdSnapshots.size()))</div>
+<div class="line"><span class="lineno">  179</span>            snapshotIndex = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(mdSnapshots.size()) - 1;</div>
+<div class="line"><span class="lineno">  180</span> </div>
+<div class="line"><span class="lineno">  181</span>          transitionTime = mdTimes[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(snapshotIndex)];</div>
+<div class="line"><span class="lineno">  182</span>          transitionStructure =</div>
+<div class="line"><span class="lineno">  183</span>              *mdSnapshots[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(snapshotIndex)];</div>
+<div class="line"><span class="lineno">  184</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  185</span>          transitionStructure = *trajectory;</div>
+<div class="line"><span class="lineno">  186</span>          transitionTime = simulationTime;</div>
+<div class="line"><span class="lineno">  187</span>        }</div>
+<div class="line"><span class="lineno">  188</span>        QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;[ParallelReplica] Transition time: {:.3e} s&quot;</span>,</div>
+<div class="line"><span class="lineno">  189</span>                        transitionTime * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants().timeUnit * 1e-15);</div>
+<div class="line"><span class="lineno">  190</span>        <span class="comment">// A run that keeps going after the transition keeps the bond boost</span></div>
+<div class="line"><span class="lineno">  191</span>        <span class="comment">// it started with; plain copy assignment would clear it.</span></div>
+<div class="line"><span class="lineno">  192</span>        trajectory-&gt;assignKeepingBias(transitionStructure);</div>
+<div class="line"><span class="lineno">  193</span>        <span class="comment">// A false stop_after_transition keeps the remaining dynamics steps.</span></div>
+<div class="line"><span class="lineno">  194</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options().auto_stop) {</div>
+<div class="line"><span class="lineno">  195</span>          <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  196</span>        }</div>
+<div class="line"><span class="lineno">  197</span> </div>
+<div class="line"><span class="lineno">  198</span>      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (step + 1 == <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options().steps &amp;&amp;</div>
+<div class="line"><span class="lineno">  199</span>                 transitionTime == 0) {</div>
+<div class="line"><span class="lineno">  200</span>        <span class="comment">// Fake refinement to prevent force-call bias (only if snapshots exist)</span></div>
+<div class="line"><span class="lineno">  201</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options().refine_transition &amp;&amp;</div>
+<div class="line"><span class="lineno">  202</span>            !mdSnapshots.empty()) {</div>
+<div class="line"><span class="lineno">  203</span>          QUILL_LOG_DEBUG(</div>
+<div class="line"><span class="lineno">  204</span>              <a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>,</div>
+<div class="line"><span class="lineno">  205</span>              <span class="stringliteral">&quot;[ParallelReplica] Simulation ended without seeing a transition&quot;</span>);</div>
+<div class="line"><span class="lineno">  206</span>          QUILL_LOG_DEBUG(</div>
+<div class="line"><span class="lineno">  207</span>              <a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;[ParallelReplica] Refining anyways to prevent bias...&quot;</span>);</div>
+<div class="line"><span class="lineno">  208</span>          {</div>
+<div class="line"><span class="lineno">  209</span>            eonc::ForceCallTimer timer(refineForceCalls);</div>
+<div class="line"><span class="lineno">  210</span>            <a class="code hl_function" href="#aedfc5d030082329c8d7fc64975366260">refineTransition</a>(mdSnapshots, <span class="keyword">true</span>);</div>
+<div class="line"><span class="lineno">  211</span>          }</div>
+<div class="line"><span class="lineno">  212</span>        }</div>
+<div class="line"><span class="lineno">  213</span>        transitionStructure = *trajectory;</div>
+<div class="line"><span class="lineno">  214</span>      }</div>
+<div class="line"><span class="lineno">  215</span> </div>
+<div class="line"><span class="lineno">  216</span>      mdSnapshots.clear();</div>
+<div class="line"><span class="lineno">  217</span>      mdTimes.clear();</div>
+<div class="line"><span class="lineno">  218</span>    }</div>
+<div class="line"><span class="lineno">  219</span>  }</div>
+<div class="line"><span class="lineno">  220</span> </div>
+<div class="line"><span class="lineno">  221</span>  std::unique_ptr&lt;Matter&gt; product;</div>
+<div class="line"><span class="lineno">  222</span>  <span class="keywordflow">if</span> (transitionTime != 0) {</div>
+<div class="line"><span class="lineno">  223</span>    <span class="keywordtype">int</span> decorrelationSteps = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(</div>
+<div class="line"><span class="lineno">  224</span>        std::floor(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options().corr_time /</div>
+<div class="line"><span class="lineno">  225</span>                       <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options().time_step +</div>
+<div class="line"><span class="lineno">  226</span>                   0.5));</div>
+<div class="line"><span class="lineno">  227</span>    <span class="keywordflow">if</span> (decorrelationSteps &lt; 0) {</div>
+<div class="line"><span class="lineno">  228</span>      decorrelationSteps = 0;</div>
+<div class="line"><span class="lineno">  229</span>    }</div>
+<div class="line"><span class="lineno">  230</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;[ParallelReplica] Decorrelating: {} steps&quot;</span>,</div>
+<div class="line"><span class="lineno">  231</span>                    decorrelationSteps);</div>
+<div class="line"><span class="lineno">  232</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> dstep = 1; dstep &lt;= decorrelationSteps; ++dstep) {</div>
+<div class="line"><span class="lineno">  233</span>      dynamics.oneStep(dstep);</div>
+<div class="line"><span class="lineno">  234</span>    }</div>
+<div class="line"><span class="lineno">  235</span>    product = std::make_unique&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  236</span>    *product = *trajectory;</div>
+<div class="line"><span class="lineno">  237</span>    product-&gt;relax();</div>
+<div class="line"><span class="lineno">  238</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(product-&gt;matter2con(<span class="stringliteral">&quot;product.con&quot;</span>))) {</div>
+<div class="line"><span class="lineno">  239</span>      QUILL_LOG_ERROR(<a class="code hl_variable" href="#a1b2a0c39c40283b86aee3778e3681c11">log</a>, <span class="stringliteral">&quot;Failed to write product.con&quot;</span>);</div>
+<div class="line"><span class="lineno">  240</span>    }</div>
+<div class="line"><span class="lineno">  241</span>  }</div>
+<div class="line"><span class="lineno">  242</span> </div>
+<div class="line"><span class="lineno">  243</span>  <span class="comment">// Write results</span></div>
+<div class="line"><span class="lineno">  244</span>  std::string resultsFilename(<span class="stringliteral">&quot;results.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  245</span>  <a class="code hl_variable" href="#a00c7502718210468240e5e1d94430f64">returnFiles</a>.push_back(resultsFilename);</div>
+<div class="line"><span class="lineno">  246</span>  {</div>
+<div class="line"><span class="lineno">  247</span>    std::ofstream out(resultsFilename, std::ios::binary);</div>
+<div class="line"><span class="lineno">  248</span>    <span class="keywordflow">if</span> (out) {</div>
+<div class="line"><span class="lineno">  249</span>      out &lt;&lt; std::format(</div>
+<div class="line"><span class="lineno">  250</span>          <span class="stringliteral">&quot;{} potential_type\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  251</span>          magic_enum::enum_name&lt;PotType&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.potential_options().potential));</div>
+<div class="line"><span class="lineno">  252</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{} random_seed\n&quot;</span>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options().randomSeed);</div>
+<div class="line"><span class="lineno">  253</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:f} potential_energy_reactant\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  254</span>                         <a class="code hl_variable" href="#a2b02d9fc96c682eb7fbb244134b61faf">reactant</a>-&gt;getPotentialEnergy());</div>
+<div class="line"><span class="lineno">  255</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{} force_calls_refine\n&quot;</span>, refineForceCalls);</div>
+<div class="line"><span class="lineno">  256</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{} total_force_calls\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  257</span>                         <a class="code hl_function" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">PotRegistry::get</a>().total_force_calls());</div>
+<div class="line"><span class="lineno">  258</span> </div>
+<div class="line"><span class="lineno">  259</span>      <span class="keywordflow">if</span> (transitionTime == 0) {</div>
+<div class="line"><span class="lineno">  260</span>        out &lt;&lt; <span class="stringliteral">&quot;0 transition_found\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  261</span>        out &lt;&lt; std::format(<span class="stringliteral">&quot;{:e} simulation_time_s\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  262</span>                           simulationTime * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants().timeUnit *</div>
+<div class="line"><span class="lineno">  263</span>                               1.0e-15);</div>
+<div class="line"><span class="lineno">  264</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  265</span>        out &lt;&lt; <span class="stringliteral">&quot;1 transition_found\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  266</span>        out &lt;&lt; std::format(<span class="stringliteral">&quot;{:e} transition_time_s\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  267</span>                           transitionTime * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants().timeUnit *</div>
+<div class="line"><span class="lineno">  268</span>                               1.0e-15);</div>
+<div class="line"><span class="lineno">  269</span>        out &lt;&lt; std::format(<span class="stringliteral">&quot;{:e} correlation_time_s\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  270</span>                           <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options().corr_time *</div>
+<div class="line"><span class="lineno">  271</span>                               <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants().timeUnit * 1.0e-15);</div>
+<div class="line"><span class="lineno">  272</span>        out &lt;&lt; std::format(<span class="stringliteral">&quot;{:f} potential_energy_product\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  273</span>                           product-&gt;getPotentialEnergy());</div>
+<div class="line"><span class="lineno">  274</span>      }</div>
+<div class="line"><span class="lineno">  275</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:f} speedup\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  276</span>                         simulationTime /</div>
+<div class="line"><span class="lineno">  277</span>                             (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options().steps *</div>
+<div class="line"><span class="lineno">  278</span>                              <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options().time_step));</div>
+<div class="line"><span class="lineno">  279</span>    }</div>
+<div class="line"><span class="lineno">  280</span>  }</div>
+<div class="line"><span class="lineno">  281</span> </div>
+<div class="line"><span class="lineno">  282</span>  <span class="comment">// bondBoost is a stack local of this function and setBiasPotential does not</span></div>
+<div class="line"><span class="lineno">  283</span>  <span class="comment">// own it, so the trajectory must not carry the pointer past the return.</span></div>
+<div class="line"><span class="lineno">  284</span>  <span class="comment">// getBiasForces reads a null bias potential as zero bias, which is what a</span></div>
+<div class="line"><span class="lineno">  285</span>  <span class="comment">// Matter that is no longer being boosted means.</span></div>
+<div class="line"><span class="lineno">  286</span>  trajectory-&gt;setBiasPotential(<span class="keyword">nullptr</span>);</div>
+<div class="line"><span class="lineno">  287</span> </div>
+<div class="line"><span class="lineno">  288</span>  <span class="keywordflow">return</span> trajectory;</div>
+<div class="line"><span class="lineno">  289</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Hyperdynamics_html_a7c047d56f2b6eed95770617d534b9953"><div class="ttname"><a href="classeonc_1_1Hyperdynamics.html#a7c047d56f2b6eed95770617d534b9953">eonc::Hyperdynamics::BOND_BOOST</a></div><div class="ttdeci">static const char BOND_BOOST[]</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00075">BondBoost.h:75</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Hyperdynamics_html_a89f1eb0a4e7304f0684570b708f4eb0a"><div class="ttname"><a href="classeonc_1_1Hyperdynamics.html#a89f1eb0a4e7304f0684570b708f4eb0a">eonc::Hyperdynamics::NONE</a></div><div class="ttdeci">static const char NONE[]</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00074">BondBoost.h:74</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ParallelReplicaJob_html_a4642cf1863a8bf8101b0c3f5be036c65"><div class="ttname"><a href="#a4642cf1863a8bf8101b0c3f5be036c65">eonc::ParallelReplicaJob::dephase</a></div><div class="ttdeci">void dephase(Matter &amp;trajectory, BondBoost *bias)</div><div class="ttdef"><b>Definition</b> <a href="ParallelReplicaJob_8cpp_source.html#l00291">ParallelReplicaJob.cpp:291</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ParallelReplicaJob_html_aedfc5d030082329c8d7fc64975366260"><div class="ttname"><a href="#aedfc5d030082329c8d7fc64975366260">eonc::ParallelReplicaJob::refineTransition</a></div><div class="ttdeci">int refineTransition(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;snapshots, bool fake=false)</div><div class="ttdef"><b>Definition</b> <a href="ParallelReplicaJob_8cpp_source.html#l00339">ParallelReplicaJob.cpp:339</a></div></div>
 <div class="ttc" id="aclasseonc_1_1PotRegistry_html_a5d307a4845d9c0d6d16031a5a637e23b"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">eonc::PotRegistry::get</a></div><div class="ttdeci">static PotRegistry &amp; get() noexcept</div><div class="ttdoc">Process-lifetime singleton.</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00050">PotRegistry.cpp:50</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -856,7 +975,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt;<a class="el" href="classMatter.html">Matter</a>&gt; eonc::ParallelReplicaJob::reactant</td>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classeonc_1_1Matter.html">Matter</a>&gt; eonc::ParallelReplicaJob::reactant</td>
         </tr>
       </table>
   </td>

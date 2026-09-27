@@ -1,4 +1,4 @@
 var BiasedGradientSquaredDescent_8cpp =
 [
-    [ "BGSDObjectiveFunction", "classBGSDObjectiveFunction.html", "classBGSDObjectiveFunction" ]
+    [ "eonc::BGSDObjectiveFunction", "classeonc_1_1BGSDObjectiveFunction.html", "classeonc_1_1BGSDObjectiveFunction" ]
 ];

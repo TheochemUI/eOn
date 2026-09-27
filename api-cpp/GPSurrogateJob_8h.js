@@ -1,7 +1,6 @@
 var GPSurrogateJob_8h =
 [
     [ "eonc::GPSurrogateJob", "classeonc_1_1GPSurrogateJob.html", "classeonc_1_1GPSurrogateJob" ],
-    [ "GPSurrogateJob", "classGPSurrogateJob.html", "classGPSurrogateJob" ],
     [ "eonc::helpers::surrogate::accuratePES", "namespaceeonc_1_1helpers_1_1surrogate.html#a632252aee9cda89a9e0585851bcbc53b", null ],
     [ "eonc::helpers::eigen::addVectorRow", "namespaceeonc_1_1helpers_1_1eigen.html#aeee29e62be5e7cd4e9ec8d1bfa30a5b7", null ],
     [ "eonc::helpers::surrogate::get_features", "namespaceeonc_1_1helpers_1_1surrogate.html#a3895f2fd64833fa86f60fd8864cd1a5e", null ],

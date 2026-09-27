@@ -290,7 +290,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad05ff1f1b0d23d108d367ee652150da4 inherit pub_methods_classAsapPotential" id="r_ad05ff1f1b0d23d108d367ee652150da4"><td class="memItemLeft">virtual double&#160;</td><td class="memItemRight"><a class="el" href="classAsapPotential.html#ad05ff1f1b0d23d108d367ee652150da4">GetData</a> () const</td></tr>
 <tr class="memdesc:ad05ff1f1b0d23d108d367ee652150da4 inherit pub_methods_classAsapPotential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get data used by the QuasiContinuum method.  <br /></td></tr>
 <tr class="memitem:aa476373048cae08d073c7320b821a74d inherit pub_methods_classAsapPotential" id="r_aa476373048cae08d073c7320b821a74d"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classAsapPotential.html#aa476373048cae08d073c7320b821a74d">UpdateSuperCell</a> (const <a class="el" href="classSuperCell.html">SuperCell</a> *newSuperCell)=0</td></tr>
-<tr class="memdesc:aa476373048cae08d073c7320b821a74d inherit pub_methods_classAsapPotential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tell the <a class="el" href="classPotential.html">Potential</a> that a new <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a> has been assigned to the atoms.  <br /></td></tr>
+<tr class="memdesc:aa476373048cae08d073c7320b821a74d inherit pub_methods_classAsapPotential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tell the Potential that a new <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a> has been assigned to the atoms.  <br /></td></tr>
 <tr class="memitem:a61edea066684292304cd7c7db2c29526 inherit pub_methods_classAsapPotential" id="r_a61edea066684292304cd7c7db2c29526"><td class="memItemLeft">virtual int&#160;</td><td class="memItemRight"><a class="el" href="classAsapPotential.html#a61edea066684292304cd7c7db2c29526">GetNumberOfAtoms</a> () const =0</td></tr>
 <tr class="memdesc:a61edea066684292304cd7c7db2c29526 inherit pub_methods_classAsapPotential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of atoms.  <br /></td></tr>
 </table><table class="memberdecls">
@@ -301,8 +301,8 @@ Protected Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Common base class of ParallelPotential and QCPotential. </p>
-<p><a class="el" href="classGhostPotential.html" title="Common base class of ParallelPotential and QCPotential.">GhostPotential</a> is a common base class of the functional extensions of <a class="el" href="classPotential.html">Potential</a> for extensions of <a class="el" href="classAtoms.html" title="The main list of atoms class.">Atoms</a> which have the concept of ghost atoms (ParallelAtoms and QCAtoms).</p>
-<p>A <a class="el" href="classGhostPotential.html" title="Common base class of ParallelPotential and QCPotential.">GhostPotential</a> is derived from <a class="el" href="classPotential.html">Potential</a> since it replaces the normal potential in parallel/QC simulations. It also wraps a <a class="el" href="classPotential.html">Potential</a>, namely a specific implementation of <a class="el" href="classPotential.html">Potential</a> (<a class="el" href="classEMT.html" title="The Effective Medium Theory (EMT) potential.">EMT</a>, MoPotential ...) describing the interatomic interactions. In this way both parallel and QC simulations are supported with minimal intrusion in the potentials (the specific potentials occationally need to check if the <a class="el" href="classAtoms.html" title="The main list of atoms class.">Atoms</a> are really <a class="el" href="classGhostAtoms.html">GhostAtoms</a> and then call a few helper functions). </p>
+<p><a class="el" href="classGhostPotential.html" title="Common base class of ParallelPotential and QCPotential.">GhostPotential</a> is a common base class of the functional extensions of Potential for extensions of <a class="el" href="classAtoms.html" title="The main list of atoms class.">Atoms</a> which have the concept of ghost atoms (ParallelAtoms and QCAtoms).</p>
+<p>A <a class="el" href="classGhostPotential.html" title="Common base class of ParallelPotential and QCPotential.">GhostPotential</a> is derived from Potential since it replaces the normal potential in parallel/QC simulations. It also wraps a Potential, namely a specific implementation of Potential (<a class="el" href="classEMT.html" title="The Effective Medium Theory (EMT) potential.">EMT</a>, MoPotential ...) describing the interatomic interactions. In this way both parallel and QC simulations are supported with minimal intrusion in the potentials (the specific potentials occationally need to check if the <a class="el" href="classAtoms.html" title="The main list of atoms class.">Atoms</a> are really <a class="el" href="classGhostAtoms.html">GhostAtoms</a> and then call a few helper functions). </p>
 
 <p class="definition">Definition at line <a class="el" href="GhostPotential_8h_source.html#l00023">23</a> of file <a class="el" href="GhostPotential_8h_source.html">GhostPotential.h</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
@@ -330,8 +330,8 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="GhostPotential_8h_source.html#l00025">25</a> of file <a class="el" href="GhostPotential_8h_source.html">GhostPotential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   26</span>      : <a class="code hl_variable" href="#a08b3c9f15893569610daa92156c4e820">potential</a>(p) {}</div>
-<div class="ttc" id="aclassGhostPotential_html_a08b3c9f15893569610daa92156c4e820"><div class="ttname"><a href="#a08b3c9f15893569610daa92156c4e820">GhostPotential::potential</a></div><div class="ttdeci">AsapPotential * potential</div><div class="ttdoc">Pointer to the wrapped potential.</div><div class="ttdef"><b>Definition</b> <a href="GhostPotential_8h_source.html#l00063">GhostPotential.h:63</a></div></div>
+<div class="fragment"><div class="line"><span class="lineno">   25</span>: <a class="code hl_variable" href="#a08b3c9f15893569610daa92156c4e820">potential</a>(p) {}</div>
+<div class="ttc" id="aclassGhostPotential_html_a08b3c9f15893569610daa92156c4e820"><div class="ttname"><a href="#a08b3c9f15893569610daa92156c4e820">GhostPotential::potential</a></div><div class="ttdeci">AsapPotential * potential</div><div class="ttdoc">Pointer to the wrapped potential.</div><div class="ttdef"><b>Definition</b> <a href="GhostPotential_8h_source.html#l00062">GhostPotential.h:62</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -451,8 +451,8 @@ Protected Attributes</h2></td></tr>
 
 <p>Implements <a class="el" href="classAsapPotential.html#ab5602870b4d2dd2bedbef5d21e2df5c4">AsapPotential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="GhostPotential_8h_source.html#l00057">57</a> of file <a class="el" href="GhostPotential_8h_source.html">GhostPotential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   57</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a08b3c9f15893569610daa92156c4e820">potential</a>-&gt;GetCutoffRadius(); }</div>
+<p class="definition">Definition at line <a class="el" href="GhostPotential_8h_source.html#l00056">56</a> of file <a class="el" href="GhostPotential_8h_source.html">GhostPotential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   56</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a08b3c9f15893569610daa92156c4e820">potential</a>-&gt;GetCutoffRadius(); }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -483,8 +483,8 @@ Protected Attributes</h2></td></tr>
 
 <p>Implements <a class="el" href="classAsapPotential.html#aeb5631b291c450ba4344a55f87ee5bdf">AsapPotential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="GhostPotential_8h_source.html#l00060">60</a> of file <a class="el" href="GhostPotential_8h_source.html">GhostPotential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   60</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a08b3c9f15893569610daa92156c4e820">potential</a>-&gt;GetLatticeConstant(); }</div>
+<p class="definition">Definition at line <a class="el" href="GhostPotential_8h_source.html#l00059">59</a> of file <a class="el" href="GhostPotential_8h_source.html">GhostPotential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   59</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a08b3c9f15893569610daa92156c4e820">potential</a>-&gt;GetLatticeConstant(); }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -538,7 +538,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Pointer to the wrapped potential. </p>
 
-<p class="definition">Definition at line <a class="el" href="GhostPotential_8h_source.html#l00063">63</a> of file <a class="el" href="GhostPotential_8h_source.html">GhostPotential.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GhostPotential_8h_source.html#l00062">62</a> of file <a class="el" href="GhostPotential_8h_source.html">GhostPotential.h</a>.</p>
 
 </div>
 </div>

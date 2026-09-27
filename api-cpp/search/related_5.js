@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['vaxpy_0',['Vaxpy',['../classVec.html#a5672354a53987c319eb5d9d17de25050',1,'Vec']]]
+  ['length2_0',['Length2',['../classVec.html#a209c719a5c0920e41a26f5e123664e6e',1,'Vec']]]
 ];

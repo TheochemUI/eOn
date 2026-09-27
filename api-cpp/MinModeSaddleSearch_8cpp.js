@@ -1,4 +1,4 @@
 var MinModeSaddleSearch_8cpp =
 [
-    [ "MinModeObjectiveFunction", "classMinModeObjectiveFunction.html", "classMinModeObjectiveFunction" ]
+    [ "eonc::MinModeObjectiveFunction", "classeonc_1_1MinModeObjectiveFunction.html", "classeonc_1_1MinModeObjectiveFunction" ]
 ];

@@ -1,6 +1,6 @@
 var classMPIPot =
 [
-    [ "MPIPot", "classMPIPot.html#aeef59091b1779dee678fc3ca9317ea34", null ],
+    [ "MPIPot", "classMPIPot.html#a5b079c48bed916ff8bb3d841267197f5", null ],
     [ "~MPIPot", "classMPIPot.html#ae3adc5455e3e2e3774b2480082fc9096", null ],
     [ "cleanMemory", "classMPIPot.html#a2b6dd9e6f957d4f9a6cda5ef7bd1759c", null ],
     [ "force", "classMPIPot.html#a4ff3e7f5f609fd326cb1ab81ba168f15", null ],

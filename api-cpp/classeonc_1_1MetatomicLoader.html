@@ -239,116 +239,99 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classeonc_1_1M
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="MetatomicLoader_8h_source.html">MetatomicLoader.h</a>&gt;</code></p>
+<div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for eonc::MetatomicLoader:</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+ <div class="center">
+  <img src="classeonc_1_1MetatomicLoader.png" usemap="#eonc_3A_3AMetatomicLoader_map" alt=""/>
+  <map id="eonc_3A_3AMetatomicLoader_map" name="eonc_3A_3AMetatomicLoader_map">
+<area href="classeonc_1_1IMetatomicLoader.html" alt="eonc::IMetatomicLoader" shape="rect" coords="0,0,146,24"/>
+  </map>
+</div></div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
-Public Types</h2></td></tr>
-<tr class="memitem:aad6c96b3cb6f73c615d5ff234df21751" id="r_aad6c96b3cb6f73c615d5ff234df21751"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#aad6c96b3cb6f73c615d5ff234df21751">create_fn</a> = <a class="el" href="structEonMtaPot.html">EonMtaPot</a> *(*)(const <a class="el" href="structEonMtaConfig.html">EonMtaConfig</a> *, char *, size_t)</td></tr>
-<tr class="memitem:a98af03425430b442f614c388590966ef" id="r_a98af03425430b442f614c388590966ef"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a98af03425430b442f614c388590966ef">destroy_fn</a> = void (*)(<a class="el" href="structEonMtaPot.html">EonMtaPot</a> *)</td></tr>
-<tr class="memitem:af6b05d350aa6d7cc6d289d5e8b177442" id="r_af6b05d350aa6d7cc6d289d5e8b177442"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#af6b05d350aa6d7cc6d289d5e8b177442">force_fn</a></td></tr>
-<tr class="memitem:a16780e0b466e884c535a09ff15df6cad" id="r_a16780e0b466e884c535a09ff15df6cad"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a16780e0b466e884c535a09ff15df6cad">abi_version_fn</a> = int (*)(void)</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a07daeae74a1fc57004e8e411cf0cb281" id="r_a07daeae74a1fc57004e8e411cf0cb281"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a07daeae74a1fc57004e8e411cf0cb281">try_load</a> ()</td></tr>
 <tr class="memdesc:a07daeae74a1fc57004e8e411cf0cb281"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attempt (re)load if not yet successful. Safe after potentials_path inject.  <br /></td></tr>
-<tr class="memitem:a71a6898d7c8623cab0b5eb8a2bf5543c" id="r_a71a6898d7c8623cab0b5eb8a2bf5543c"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a71a6898d7c8623cab0b5eb8a2bf5543c">is_loaded</a> () const noexcept</td></tr>
-<tr class="memitem:aedb79cf6ec26ddd3085ed3c8160b6d6a" id="r_aedb79cf6ec26ddd3085ed3c8160b6d6a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aedb79cf6ec26ddd3085ed3c8160b6d6a">require_loaded</a> ()</td></tr>
+<tr class="memitem:a7f769896c1e1d58ee1048f21ddc4302b" id="r_a7f769896c1e1d58ee1048f21ddc4302b"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a7f769896c1e1d58ee1048f21ddc4302b">is_loaded</a> () const noexcept override</td></tr>
+<tr class="memitem:a4c942aa68d1394d700278b274f46dd89" id="r_a4c942aa68d1394d700278b274f46dd89"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a4c942aa68d1394d700278b274f46dd89">require_loaded</a> () override</td></tr>
+<tr class="memdesc:a4c942aa68d1394d700278b274f46dd89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load on first use, then throw if libmetatomic_pot is not available.  <br /></td></tr>
+<tr class="memitem:a8a4c8fd297f6085f9021158da6beca17" id="r_a8a4c8fd297f6085f9021158da6beca17"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a8a4c8fd297f6085f9021158da6beca17">~MetatomicLoader</a> () override</td></tr>
 <tr class="memitem:a703b26074aa1772088a5de24f54860b4" id="r_a703b26074aa1772088a5de24f54860b4"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a703b26074aa1772088a5de24f54860b4">MetatomicLoader</a> (const MetatomicLoader &amp;)=delete</td></tr>
 <tr class="memitem:a1645783f2e53d8ac4b8c97f812a922d1" id="r_a1645783f2e53d8ac4b8c97f812a922d1"><td class="memItemLeft"><a class="el" href="#a703b26074aa1772088a5de24f54860b4">MetatomicLoader</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a1645783f2e53d8ac4b8c97f812a922d1">operator=</a> (const <a class="el" href="#a703b26074aa1772088a5de24f54860b4">MetatomicLoader</a> &amp;)=delete</td></tr>
+<tr class="inherit_header pub_methods_classeonc_1_1IMetatomicLoader"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1IMetatomicLoader')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1IMetatomicLoader.html">eonc::IMetatomicLoader</a></td></tr>
+<tr class="memitem:a06bba6ef337448ed0209c7a4b436718b inherit pub_methods_classeonc_1_1IMetatomicLoader" id="r_a06bba6ef337448ed0209c7a4b436718b"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IMetatomicLoader.html#a06bba6ef337448ed0209c7a4b436718b">~IMetatomicLoader</a> ()=default</td></tr>
+<tr class="memitem:a8e4db3eef6c45fd05e64a7de89681f67 inherit pub_methods_classeonc_1_1IMetatomicLoader" id="r_a8e4db3eef6c45fd05e64a7de89681f67"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IMetatomicLoader.html#a8e4db3eef6c45fd05e64a7de89681f67">IMetatomicLoader</a> (const IMetatomicLoader &amp;)=delete</td></tr>
+<tr class="memitem:aa7a30e4b9f53f0a54949b39d8a5af22e inherit pub_methods_classeonc_1_1IMetatomicLoader" id="r_aa7a30e4b9f53f0a54949b39d8a5af22e"><td class="memItemLeft"><a class="el" href="classeonc_1_1IMetatomicLoader.html#a8e4db3eef6c45fd05e64a7de89681f67">IMetatomicLoader</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IMetatomicLoader.html#aa7a30e4b9f53f0a54949b39d8a5af22e">operator=</a> (const <a class="el" href="classeonc_1_1IMetatomicLoader.html#a8e4db3eef6c45fd05e64a7de89681f67">IMetatomicLoader</a> &amp;)=delete</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a2ec41289daa8badf818949a47a410978" id="r_a2ec41289daa8badf818949a47a410978"><td class="memItemLeft">static <a class="el" href="#a703b26074aa1772088a5de24f54860b4">MetatomicLoader</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a2ec41289daa8badf818949a47a410978">instance</a> ()</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
-<tr class="memitem:af26c656bfe7ddb7e805b6c07ce28724b" id="r_af26c656bfe7ddb7e805b6c07ce28724b"><td class="memItemLeft"><a class="el" href="#aad6c96b3cb6f73c615d5ff234df21751">create_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#af26c656bfe7ddb7e805b6c07ce28724b">create</a> {nullptr}</td></tr>
-<tr class="memitem:af190c31648f9ec6e2bceb9585f8a0d98" id="r_af190c31648f9ec6e2bceb9585f8a0d98"><td class="memItemLeft"><a class="el" href="#a98af03425430b442f614c388590966ef">destroy_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#af190c31648f9ec6e2bceb9585f8a0d98">destroy</a> {nullptr}</td></tr>
-<tr class="memitem:a6371375e2c0936fb38c2475b21b8c5b5" id="r_a6371375e2c0936fb38c2475b21b8c5b5"><td class="memItemLeft"><a class="el" href="#af6b05d350aa6d7cc6d289d5e8b177442">force_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a6371375e2c0936fb38c2475b21b8c5b5">force</a> {nullptr}</td></tr>
-<tr class="memitem:ada770633390c450401683e3fc399b638" id="r_ada770633390c450401683e3fc399b638"><td class="memItemLeft"><a class="el" href="#a16780e0b466e884c535a09ff15df6cad">abi_version_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#ada770633390c450401683e3fc399b638">abi_version</a> {nullptr}</td></tr>
+<tr class="memdesc:a2ec41289daa8badf818949a47a410978"><td class="mdescLeft">&#160;</td><td class="mdescRight">Thread-safe singleton accessor (Meyer's pattern). Does not dlopen.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
 <tr class="memitem:a573dddb8fa1165afbaef2ebe95e870bf" id="r_a573dddb8fa1165afbaef2ebe95e870bf"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a573dddb8fa1165afbaef2ebe95e870bf">MetatomicLoader</a> ()=default</td></tr>
-<tr class="memitem:a2a230d0810d07a373879264541dc7776" id="r_a2a230d0810d07a373879264541dc7776"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a2a230d0810d07a373879264541dc7776">~MetatomicLoader</a> ()</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
 <tr class="memitem:aee618626b677b7e2b9972c03164d8f86" id="r_aee618626b677b7e2b9972c03164d8f86"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#aee618626b677b7e2b9972c03164d8f86">m_loaded</a> {false}</td></tr>
 <tr class="memitem:aae865a18a9d5591f0ab980a3b47fd1cb" id="r_aae865a18a9d5591f0ab980a3b47fd1cb"><td class="memItemLeft"><a class="el" href="namespaceeonc_1_1dynlib.html#a77fed09f5c75a2dc000c73773884df69">dynlib::Handle</a>&#160;</td><td class="memItemRight"><a class="el" href="#aae865a18a9d5591f0ab980a3b47fd1cb">m_handle</a> {}</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-friends" class="groupheader"><a id="friends" name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:af3d14e26ba8af9e6cc5a32aad8446de7" id="r_af3d14e26ba8af9e6cc5a32aad8446de7"><td class="memItemLeft">class&#160;</td><td class="memItemRight"><a class="el" href="#af3d14e26ba8af9e6cc5a32aad8446de7">Runtime</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_types_classeonc_1_1IMetatomicLoader"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_types_classeonc_1_1IMetatomicLoader')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Types inherited from <a class="el" href="classeonc_1_1IMetatomicLoader.html">eonc::IMetatomicLoader</a></td></tr>
+<tr class="memitem:a2a0a9dd374f0be5c63db555b8f9d994f inherit pub_types_classeonc_1_1IMetatomicLoader" id="r_a2a0a9dd374f0be5c63db555b8f9d994f"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IMetatomicLoader.html#a2a0a9dd374f0be5c63db555b8f9d994f">create_fn</a> = <a class="el" href="structEonMtaPot.html">EonMtaPot</a> *(*)(const <a class="el" href="structEonMtaConfig.html">EonMtaConfig</a> *, char *, size_t)</td></tr>
+<tr class="memitem:a4a669a1e17f488900e091fb70d0b3480 inherit pub_types_classeonc_1_1IMetatomicLoader" id="r_a4a669a1e17f488900e091fb70d0b3480"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IMetatomicLoader.html#a4a669a1e17f488900e091fb70d0b3480">destroy_fn</a> = void (*)(<a class="el" href="structEonMtaPot.html">EonMtaPot</a> *)</td></tr>
+<tr class="memitem:a21dc416adf1e2f905515ed3e5cc8b310 inherit pub_types_classeonc_1_1IMetatomicLoader" id="r_a21dc416adf1e2f905515ed3e5cc8b310"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IMetatomicLoader.html#a21dc416adf1e2f905515ed3e5cc8b310">force_fn</a></td></tr>
+<tr class="memitem:a100c8cc73d256c98c1bedf4e81829b9e inherit pub_types_classeonc_1_1IMetatomicLoader" id="r_a100c8cc73d256c98c1bedf4e81829b9e"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IMetatomicLoader.html#a100c8cc73d256c98c1bedf4e81829b9e">abi_version_fn</a> = int (*)(void)</td></tr>
+<tr class="inherit_header pub_attribs_classeonc_1_1IMetatomicLoader"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_classeonc_1_1IMetatomicLoader')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="classeonc_1_1IMetatomicLoader.html">eonc::IMetatomicLoader</a></td></tr>
+<tr class="memitem:a534a213bae00e34dcb4b49a1173f7782 inherit pub_attribs_classeonc_1_1IMetatomicLoader" id="r_a534a213bae00e34dcb4b49a1173f7782"><td class="memItemLeft"><a class="el" href="classeonc_1_1IMetatomicLoader.html#a2a0a9dd374f0be5c63db555b8f9d994f">create_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IMetatomicLoader.html#a534a213bae00e34dcb4b49a1173f7782">create</a> {nullptr}</td></tr>
+<tr class="memitem:a254a0d7988ba7b2d7617366e72637ac2 inherit pub_attribs_classeonc_1_1IMetatomicLoader" id="r_a254a0d7988ba7b2d7617366e72637ac2"><td class="memItemLeft"><a class="el" href="classeonc_1_1IMetatomicLoader.html#a4a669a1e17f488900e091fb70d0b3480">destroy_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IMetatomicLoader.html#a254a0d7988ba7b2d7617366e72637ac2">destroy</a> {nullptr}</td></tr>
+<tr class="memitem:a73e85de5d5a6b71aee9359628dfc1cfc inherit pub_attribs_classeonc_1_1IMetatomicLoader" id="r_a73e85de5d5a6b71aee9359628dfc1cfc"><td class="memItemLeft"><a class="el" href="classeonc_1_1IMetatomicLoader.html#a21dc416adf1e2f905515ed3e5cc8b310">force_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IMetatomicLoader.html#a73e85de5d5a6b71aee9359628dfc1cfc">force</a> {nullptr}</td></tr>
+<tr class="memitem:a97dbadabaf8ad91a155bd0e246b7e56f inherit pub_attribs_classeonc_1_1IMetatomicLoader" id="r_a97dbadabaf8ad91a155bd0e246b7e56f"><td class="memItemLeft"><a class="el" href="classeonc_1_1IMetatomicLoader.html#a100c8cc73d256c98c1bedf4e81829b9e">abi_version_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IMetatomicLoader.html#a97dbadabaf8ad91a155bd0e246b7e56f">abi_version</a> {nullptr}</td></tr>
+<tr class="inherit_header pro_methods_classeonc_1_1IMetatomicLoader"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classeonc_1_1IMetatomicLoader')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classeonc_1_1IMetatomicLoader.html">eonc::IMetatomicLoader</a></td></tr>
+<tr class="memitem:a49b968d623b1b84edb4c3415084451c6 inherit pro_methods_classeonc_1_1IMetatomicLoader" id="r_a49b968d623b1b84edb4c3415084451c6"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1IMetatomicLoader.html#a49b968d623b1b84edb4c3415084451c6">IMetatomicLoader</a> ()=default</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="MetatomicLoader_8h_source.html#l00018">18</a> of file <a class="el" href="MetatomicLoader_8h_source.html">MetatomicLoader.h</a>.</p>
-</div><a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Member Typedef Documentation</h2>
-<a id="a16780e0b466e884c535a09ff15df6cad" name="a16780e0b466e884c535a09ff15df6cad"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a16780e0b466e884c535a09ff15df6cad">&#9670;&#160;</a></span>abi_version_fn</h2>
+<p class="definition">Definition at line <a class="el" href="MetatomicLoader_8h_source.html#l00049">49</a> of file <a class="el" href="MetatomicLoader_8h_source.html">MetatomicLoader.h</a>.</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a8a4c8fd297f6085f9021158da6beca17" name="a8a4c8fd297f6085f9021158da6beca17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a4c8fd297f6085f9021158da6beca17">&#9670;&#160;</a></span>~MetatomicLoader()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="#a16780e0b466e884c535a09ff15df6cad">eonc::MetatomicLoader::abi_version_fn</a> = int (*)(void)</td>
+          <td class="memname">eonc::MetatomicLoader::~MetatomicLoader </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="MetatomicLoader_8h_source.html#l00024">24</a> of file <a class="el" href="MetatomicLoader_8h_source.html">MetatomicLoader.h</a>.</p>
-
-</div>
-</div>
-<a id="aad6c96b3cb6f73c615d5ff234df21751" name="aad6c96b3cb6f73c615d5ff234df21751"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aad6c96b3cb6f73c615d5ff234df21751">&#9670;&#160;</a></span>create_fn</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="#aad6c96b3cb6f73c615d5ff234df21751">eonc::MetatomicLoader::create_fn</a> = <a class="el" href="structEonMtaPot.html">EonMtaPot</a> *(*)(const <a class="el" href="structEonMtaConfig.html">EonMtaConfig</a> *, char *, size_t)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="MetatomicLoader_8h_source.html#l00020">20</a> of file <a class="el" href="MetatomicLoader_8h_source.html">MetatomicLoader.h</a>.</p>
-
-</div>
-</div>
-<a id="a98af03425430b442f614c388590966ef" name="a98af03425430b442f614c388590966ef"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a98af03425430b442f614c388590966ef">&#9670;&#160;</a></span>destroy_fn</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="#a98af03425430b442f614c388590966ef">eonc::MetatomicLoader::destroy_fn</a> = void (*)(<a class="el" href="structEonMtaPot.html">EonMtaPot</a> *)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="MetatomicLoader_8h_source.html#l00021">21</a> of file <a class="el" href="MetatomicLoader_8h_source.html">MetatomicLoader.h</a>.</p>
-
-</div>
-</div>
-<a id="af6b05d350aa6d7cc6d289d5e8b177442" name="af6b05d350aa6d7cc6d289d5e8b177442"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af6b05d350aa6d7cc6d289d5e8b177442">&#9670;&#160;</a></span>force_fn</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="#af6b05d350aa6d7cc6d289d5e8b177442">eonc::MetatomicLoader::force_fn</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">int (*)(<a class="code hl_struct" href="structEonMtaPot.html">EonMtaPot</a> *, long, <span class="keyword">const</span> <span class="keywordtype">double</span> *, <span class="keyword">const</span> <span class="keywordtype">int</span> *,</div>
-<div class="line">                          <span class="keywordtype">double</span> *, <span class="keywordtype">double</span> *, <span class="keywordtype">double</span> *, <span class="keyword">const</span> <span class="keywordtype">double</span> *)</div>
-<div class="ttc" id="astructEonMtaPot_html"><div class="ttname"><a href="structEonMtaPot.html">EonMtaPot</a></div><div class="ttdef"><b>Definition</b> <a href="MetatomicCAbi_8cpp_source.html#l00019">MetatomicCAbi.cpp:19</a></div></div>
+<p class="definition">Definition at line <a class="el" href="MetatomicLoader_8cpp_source.html#l00106">106</a> of file <a class="el" href="MetatomicLoader_8cpp_source.html">MetatomicLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  106</span>{ <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">dynlib::close</a>(<a class="code hl_variable" href="#aae865a18a9d5591f0ab980a3b47fd1cb">m_handle</a>); }</div>
+<div class="ttc" id="aclasseonc_1_1MetatomicLoader_html_aae865a18a9d5591f0ab980a3b47fd1cb"><div class="ttname"><a href="#aae865a18a9d5591f0ab980a3b47fd1cb">eonc::MetatomicLoader::m_handle</a></div><div class="ttdeci">dynlib::Handle m_handle</div><div class="ttdef"><b>Definition</b> <a href="MetatomicLoader_8h_source.html#l00071">MetatomicLoader.h:71</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1dynlib_html_aaaf1d7f945f57fb1f9303e58ae88d832"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">eonc::dynlib::close</a></div><div class="ttdeci">void close(Handle h) noexcept</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00077">DynLib.h:77</a></div></div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="MetatomicLoader_8h_source.html#l00022">22</a> of file <a class="el" href="MetatomicLoader_8h_source.html">MetatomicLoader.h</a>.</p>
-
 </div>
 </div>
-<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a703b26074aa1772088a5de24f54860b4" name="a703b26074aa1772088a5de24f54860b4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a703b26074aa1772088a5de24f54860b4">&#9670;&#160;</a></span>MetatomicLoader() <span class="overload">[1/2]</span></h2>
 
@@ -399,36 +382,6 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a2a230d0810d07a373879264541dc7776" name="a2a230d0810d07a373879264541dc7776"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2a230d0810d07a373879264541dc7776">&#9670;&#160;</a></span>~MetatomicLoader()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">eonc::MetatomicLoader::~MetatomicLoader </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="MetatomicLoader_8cpp_source.html#l00106">106</a> of file <a class="el" href="MetatomicLoader_8cpp_source.html">MetatomicLoader.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  106</span>{ <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">dynlib::close</a>(<a class="code hl_variable" href="#aae865a18a9d5591f0ab980a3b47fd1cb">m_handle</a>); }</div>
-<div class="ttc" id="aclasseonc_1_1MetatomicLoader_html_aae865a18a9d5591f0ab980a3b47fd1cb"><div class="ttname"><a href="#aae865a18a9d5591f0ab980a3b47fd1cb">eonc::MetatomicLoader::m_handle</a></div><div class="ttdeci">dynlib::Handle m_handle</div><div class="ttdef"><b>Definition</b> <a href="MetatomicLoader_8h_source.html#l00047">MetatomicLoader.h:47</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1dynlib_html_aaaf1d7f945f57fb1f9303e58ae88d832"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">eonc::dynlib::close</a></div><div class="ttdeci">void close(Handle h) noexcept</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00077">DynLib.h:77</a></div></div>
-</div><!-- fragment -->
-</div>
-</div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a2ec41289daa8badf818949a47a410978" name="a2ec41289daa8badf818949a47a410978"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2ec41289daa8badf818949a47a410978">&#9670;&#160;</a></span>instance()</h2>
@@ -453,6 +406,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Thread-safe singleton accessor (Meyer's pattern). Does not dlopen. </p>
+
 <p class="definition">Definition at line <a class="el" href="MetatomicLoader_8cpp_source.html#l00019">19</a> of file <a class="el" href="MetatomicLoader_8cpp_source.html">MetatomicLoader.cpp</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">   19</span>                                           {</div>
 <div class="line"><span class="lineno">   20</span>  <span class="keyword">static</span> <a class="code hl_function" href="#a703b26074aa1772088a5de24f54860b4">MetatomicLoader</a> loader;</div>
@@ -462,8 +417,8 @@ Private Attributes</h2></td></tr>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="a71a6898d7c8623cab0b5eb8a2bf5543c" name="a71a6898d7c8623cab0b5eb8a2bf5543c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a71a6898d7c8623cab0b5eb8a2bf5543c">&#9670;&#160;</a></span>is_loaded()</h2>
+<a id="a7f769896c1e1d58ee1048f21ddc4302b" name="a7f769896c1e1d58ee1048f21ddc4302b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f769896c1e1d58ee1048f21ddc4302b">&#9670;&#160;</a></span>is_loaded()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -480,14 +435,16 @@ Private Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="MetatomicLoader_8h_source.html#l00031">31</a> of file <a class="el" href="MetatomicLoader_8h_source.html">MetatomicLoader.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   31</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#aee618626b677b7e2b9972c03164d8f86">m_loaded</a>; }</div>
-<div class="ttc" id="aclasseonc_1_1MetatomicLoader_html_aee618626b677b7e2b9972c03164d8f86"><div class="ttname"><a href="#aee618626b677b7e2b9972c03164d8f86">eonc::MetatomicLoader::m_loaded</a></div><div class="ttdeci">bool m_loaded</div><div class="ttdef"><b>Definition</b> <a href="MetatomicLoader_8h_source.html#l00046">MetatomicLoader.h:46</a></div></div>
+<p>Implements <a class="el" href="classeonc_1_1IMetatomicLoader.html#a0b40655e9d4595fe79a3d7f988b0eb4d">eonc::IMetatomicLoader</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="MetatomicLoader_8h_source.html#l00057">57</a> of file <a class="el" href="MetatomicLoader_8h_source.html">MetatomicLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   57</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#aee618626b677b7e2b9972c03164d8f86">m_loaded</a>; }</div>
+<div class="ttc" id="aclasseonc_1_1MetatomicLoader_html_aee618626b677b7e2b9972c03164d8f86"><div class="ttname"><a href="#aee618626b677b7e2b9972c03164d8f86">eonc::MetatomicLoader::m_loaded</a></div><div class="ttdeci">bool m_loaded</div><div class="ttdef"><b>Definition</b> <a href="MetatomicLoader_8h_source.html#l00070">MetatomicLoader.h:70</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -516,11 +473,14 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="aedb79cf6ec26ddd3085ed3c8160b6d6a" name="aedb79cf6ec26ddd3085ed3c8160b6d6a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aedb79cf6ec26ddd3085ed3c8160b6d6a">&#9670;&#160;</a></span>require_loaded()</h2>
+<a id="a4c942aa68d1394d700278b274f46dd89" name="a4c942aa68d1394d700278b274f46dd89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c942aa68d1394d700278b274f46dd89">&#9670;&#160;</a></span>require_loaded()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void eonc::MetatomicLoader::require_loaded </td>
@@ -529,7 +489,16 @@ Private Attributes</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
+
+<p>Load on first use, then throw if libmetatomic_pot is not available. </p>
+
+<p>Implements <a class="el" href="classeonc_1_1IMetatomicLoader.html#af7155cecfd3f465656b81654417c5579">eonc::IMetatomicLoader</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="MetatomicLoader_8cpp_source.html#l00108">108</a> of file <a class="el" href="MetatomicLoader_8cpp_source.html">MetatomicLoader.cpp</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">  108</span>                                     {</div>
@@ -612,43 +581,43 @@ Private Attributes</h2></td></tr>
 <div class="line"><span class="lineno">   70</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aae865a18a9d5591f0ab980a3b47fd1cb">m_handle</a>)</div>
 <div class="line"><span class="lineno">   71</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><span class="lineno">   72</span> </div>
-<div class="line"><span class="lineno">   73</span>  <a class="code hl_variable" href="#af26c656bfe7ddb7e805b6c07ce28724b">create</a> = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aef33f6c06053a92bd50e4aca3a326b58">dynlib::loadSym&lt;create_fn&gt;</a>(<a class="code hl_variable" href="#aae865a18a9d5591f0ab980a3b47fd1cb">m_handle</a>, <span class="stringliteral">&quot;eon_mta_pot_create&quot;</span>);</div>
-<div class="line"><span class="lineno">   74</span>  <a class="code hl_variable" href="#af190c31648f9ec6e2bceb9585f8a0d98">destroy</a> = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aef33f6c06053a92bd50e4aca3a326b58">dynlib::loadSym&lt;destroy_fn&gt;</a>(<a class="code hl_variable" href="#aae865a18a9d5591f0ab980a3b47fd1cb">m_handle</a>, <span class="stringliteral">&quot;eon_mta_pot_destroy&quot;</span>);</div>
-<div class="line"><span class="lineno">   75</span>  <a class="code hl_variable" href="#a6371375e2c0936fb38c2475b21b8c5b5">force</a> = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aef33f6c06053a92bd50e4aca3a326b58">dynlib::loadSym&lt;force_fn&gt;</a>(<a class="code hl_variable" href="#aae865a18a9d5591f0ab980a3b47fd1cb">m_handle</a>, <span class="stringliteral">&quot;eon_mta_pot_force&quot;</span>);</div>
-<div class="line"><span class="lineno">   76</span>  <a class="code hl_variable" href="#ada770633390c450401683e3fc399b638">abi_version</a> =</div>
+<div class="line"><span class="lineno">   73</span>  <a class="code hl_variable" href="classeonc_1_1IMetatomicLoader.html#a534a213bae00e34dcb4b49a1173f7782">create</a> = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aef33f6c06053a92bd50e4aca3a326b58">dynlib::loadSym&lt;create_fn&gt;</a>(<a class="code hl_variable" href="#aae865a18a9d5591f0ab980a3b47fd1cb">m_handle</a>, <span class="stringliteral">&quot;eon_mta_pot_create&quot;</span>);</div>
+<div class="line"><span class="lineno">   74</span>  <a class="code hl_variable" href="classeonc_1_1IMetatomicLoader.html#a254a0d7988ba7b2d7617366e72637ac2">destroy</a> = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aef33f6c06053a92bd50e4aca3a326b58">dynlib::loadSym&lt;destroy_fn&gt;</a>(<a class="code hl_variable" href="#aae865a18a9d5591f0ab980a3b47fd1cb">m_handle</a>, <span class="stringliteral">&quot;eon_mta_pot_destroy&quot;</span>);</div>
+<div class="line"><span class="lineno">   75</span>  <a class="code hl_variable" href="classeonc_1_1IMetatomicLoader.html#a73e85de5d5a6b71aee9359628dfc1cfc">force</a> = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aef33f6c06053a92bd50e4aca3a326b58">dynlib::loadSym&lt;force_fn&gt;</a>(<a class="code hl_variable" href="#aae865a18a9d5591f0ab980a3b47fd1cb">m_handle</a>, <span class="stringliteral">&quot;eon_mta_pot_force&quot;</span>);</div>
+<div class="line"><span class="lineno">   76</span>  <a class="code hl_variable" href="classeonc_1_1IMetatomicLoader.html#a97dbadabaf8ad91a155bd0e246b7e56f">abi_version</a> =</div>
 <div class="line"><span class="lineno">   77</span>      <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aef33f6c06053a92bd50e4aca3a326b58">dynlib::loadSym&lt;abi_version_fn&gt;</a>(<a class="code hl_variable" href="#aae865a18a9d5591f0ab980a3b47fd1cb">m_handle</a>, <span class="stringliteral">&quot;eon_mta_abi_version&quot;</span>);</div>
 <div class="line"><span class="lineno">   78</span> </div>
-<div class="line"><span class="lineno">   79</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#af26c656bfe7ddb7e805b6c07ce28724b">create</a> || !<a class="code hl_variable" href="#af190c31648f9ec6e2bceb9585f8a0d98">destroy</a> || !<a class="code hl_variable" href="#a6371375e2c0936fb38c2475b21b8c5b5">force</a> || !<a class="code hl_variable" href="#ada770633390c450401683e3fc399b638">abi_version</a>) {</div>
+<div class="line"><span class="lineno">   79</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="classeonc_1_1IMetatomicLoader.html#a534a213bae00e34dcb4b49a1173f7782">create</a> || !<a class="code hl_variable" href="classeonc_1_1IMetatomicLoader.html#a254a0d7988ba7b2d7617366e72637ac2">destroy</a> || !<a class="code hl_variable" href="classeonc_1_1IMetatomicLoader.html#a73e85de5d5a6b71aee9359628dfc1cfc">force</a> || !<a class="code hl_variable" href="classeonc_1_1IMetatomicLoader.html#a97dbadabaf8ad91a155bd0e246b7e56f">abi_version</a>) {</div>
 <div class="line"><span class="lineno">   80</span>    std::cerr &lt;&lt; <span class="stringliteral">&quot;[Metatomic] libmetatomic_pot loaded but missing C ABI &quot;</span></div>
 <div class="line"><span class="lineno">   81</span>                 <span class="stringliteral">&quot;symbols\n&quot;</span>;</div>
 <div class="line"><span class="lineno">   82</span>    <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">dynlib::close</a>(<a class="code hl_variable" href="#aae865a18a9d5591f0ab980a3b47fd1cb">m_handle</a>);</div>
 <div class="line"><span class="lineno">   83</span>    <a class="code hl_variable" href="#aae865a18a9d5591f0ab980a3b47fd1cb">m_handle</a> = {};</div>
-<div class="line"><span class="lineno">   84</span>    <a class="code hl_variable" href="#af26c656bfe7ddb7e805b6c07ce28724b">create</a> = <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">   85</span>    <a class="code hl_variable" href="#af190c31648f9ec6e2bceb9585f8a0d98">destroy</a> = <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">   86</span>    <a class="code hl_variable" href="#a6371375e2c0936fb38c2475b21b8c5b5">force</a> = <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">   87</span>    <a class="code hl_variable" href="#ada770633390c450401683e3fc399b638">abi_version</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">   84</span>    <a class="code hl_variable" href="classeonc_1_1IMetatomicLoader.html#a534a213bae00e34dcb4b49a1173f7782">create</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">   85</span>    <a class="code hl_variable" href="classeonc_1_1IMetatomicLoader.html#a254a0d7988ba7b2d7617366e72637ac2">destroy</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">   86</span>    <a class="code hl_variable" href="classeonc_1_1IMetatomicLoader.html#a73e85de5d5a6b71aee9359628dfc1cfc">force</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">   87</span>    <a class="code hl_variable" href="classeonc_1_1IMetatomicLoader.html#a97dbadabaf8ad91a155bd0e246b7e56f">abi_version</a> = <span class="keyword">nullptr</span>;</div>
 <div class="line"><span class="lineno">   88</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><span class="lineno">   89</span>  }</div>
-<div class="line"><span class="lineno">   90</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> ver = <a class="code hl_variable" href="#ada770633390c450401683e3fc399b638">abi_version</a>();</div>
+<div class="line"><span class="lineno">   90</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> ver = <a class="code hl_variable" href="classeonc_1_1IMetatomicLoader.html#a97dbadabaf8ad91a155bd0e246b7e56f">abi_version</a>();</div>
 <div class="line"><span class="lineno">   91</span>  <span class="keywordflow">if</span> (ver != <a class="code hl_define" href="Metatomic_2metatomic__c__abi_8h.html#ad1c253b7bcfaacf75b187da3bd448c87">EON_MTA_ABI_VERSION</a>) {</div>
 <div class="line"><span class="lineno">   92</span>    std::cerr &lt;&lt; <span class="stringliteral">&quot;[Metatomic] ABI version mismatch: library=&quot;</span> &lt;&lt; ver</div>
 <div class="line"><span class="lineno">   93</span>              &lt;&lt; <span class="stringliteral">&quot; host=&quot;</span> &lt;&lt; <a class="code hl_define" href="Metatomic_2metatomic__c__abi_8h.html#ad1c253b7bcfaacf75b187da3bd448c87">EON_MTA_ABI_VERSION</a> &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
 <div class="line"><span class="lineno">   94</span>    <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">dynlib::close</a>(<a class="code hl_variable" href="#aae865a18a9d5591f0ab980a3b47fd1cb">m_handle</a>);</div>
 <div class="line"><span class="lineno">   95</span>    <a class="code hl_variable" href="#aae865a18a9d5591f0ab980a3b47fd1cb">m_handle</a> = {};</div>
-<div class="line"><span class="lineno">   96</span>    <a class="code hl_variable" href="#af26c656bfe7ddb7e805b6c07ce28724b">create</a> = <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">   97</span>    <a class="code hl_variable" href="#af190c31648f9ec6e2bceb9585f8a0d98">destroy</a> = <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">   98</span>    <a class="code hl_variable" href="#a6371375e2c0936fb38c2475b21b8c5b5">force</a> = <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">   99</span>    <a class="code hl_variable" href="#ada770633390c450401683e3fc399b638">abi_version</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">   96</span>    <a class="code hl_variable" href="classeonc_1_1IMetatomicLoader.html#a534a213bae00e34dcb4b49a1173f7782">create</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">   97</span>    <a class="code hl_variable" href="classeonc_1_1IMetatomicLoader.html#a254a0d7988ba7b2d7617366e72637ac2">destroy</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">   98</span>    <a class="code hl_variable" href="classeonc_1_1IMetatomicLoader.html#a73e85de5d5a6b71aee9359628dfc1cfc">force</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">   99</span>    <a class="code hl_variable" href="classeonc_1_1IMetatomicLoader.html#a97dbadabaf8ad91a155bd0e246b7e56f">abi_version</a> = <span class="keyword">nullptr</span>;</div>
 <div class="line"><span class="lineno">  100</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><span class="lineno">  101</span>  }</div>
 <div class="line"><span class="lineno">  102</span>  <a class="code hl_variable" href="#aee618626b677b7e2b9972c03164d8f86">m_loaded</a> = <span class="keyword">true</span>;</div>
 <div class="line"><span class="lineno">  103</span>  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><span class="lineno">  104</span>}</div>
 <div class="ttc" id="aMetatomic_2metatomic__c__abi_8h_html_ad1c253b7bcfaacf75b187da3bd448c87"><div class="ttname"><a href="Metatomic_2metatomic__c__abi_8h.html#ad1c253b7bcfaacf75b187da3bd448c87">EON_MTA_ABI_VERSION</a></div><div class="ttdeci">#define EON_MTA_ABI_VERSION</div><div class="ttdef"><b>Definition</b> <a href="Metatomic_2metatomic__c__abi_8h_source.html#l00079">metatomic_c_abi.h:79</a></div></div>
-<div class="ttc" id="aclasseonc_1_1MetatomicLoader_html_a6371375e2c0936fb38c2475b21b8c5b5"><div class="ttname"><a href="#a6371375e2c0936fb38c2475b21b8c5b5">eonc::MetatomicLoader::force</a></div><div class="ttdeci">force_fn force</div><div class="ttdef"><b>Definition</b> <a href="MetatomicLoader_8h_source.html#l00036">MetatomicLoader.h:36</a></div></div>
-<div class="ttc" id="aclasseonc_1_1MetatomicLoader_html_ada770633390c450401683e3fc399b638"><div class="ttname"><a href="#ada770633390c450401683e3fc399b638">eonc::MetatomicLoader::abi_version</a></div><div class="ttdeci">abi_version_fn abi_version</div><div class="ttdef"><b>Definition</b> <a href="MetatomicLoader_8h_source.html#l00037">MetatomicLoader.h:37</a></div></div>
-<div class="ttc" id="aclasseonc_1_1MetatomicLoader_html_af190c31648f9ec6e2bceb9585f8a0d98"><div class="ttname"><a href="#af190c31648f9ec6e2bceb9585f8a0d98">eonc::MetatomicLoader::destroy</a></div><div class="ttdeci">destroy_fn destroy</div><div class="ttdef"><b>Definition</b> <a href="MetatomicLoader_8h_source.html#l00035">MetatomicLoader.h:35</a></div></div>
-<div class="ttc" id="aclasseonc_1_1MetatomicLoader_html_af26c656bfe7ddb7e805b6c07ce28724b"><div class="ttname"><a href="#af26c656bfe7ddb7e805b6c07ce28724b">eonc::MetatomicLoader::create</a></div><div class="ttdeci">create_fn create</div><div class="ttdef"><b>Definition</b> <a href="MetatomicLoader_8h_source.html#l00034">MetatomicLoader.h:34</a></div></div>
+<div class="ttc" id="aclasseonc_1_1IMetatomicLoader_html_a254a0d7988ba7b2d7617366e72637ac2"><div class="ttname"><a href="classeonc_1_1IMetatomicLoader.html#a254a0d7988ba7b2d7617366e72637ac2">eonc::IMetatomicLoader::destroy</a></div><div class="ttdeci">destroy_fn destroy</div><div class="ttdef"><b>Definition</b> <a href="MetatomicLoader_8h_source.html#l00030">MetatomicLoader.h:30</a></div></div>
+<div class="ttc" id="aclasseonc_1_1IMetatomicLoader_html_a534a213bae00e34dcb4b49a1173f7782"><div class="ttname"><a href="classeonc_1_1IMetatomicLoader.html#a534a213bae00e34dcb4b49a1173f7782">eonc::IMetatomicLoader::create</a></div><div class="ttdeci">create_fn create</div><div class="ttdef"><b>Definition</b> <a href="MetatomicLoader_8h_source.html#l00029">MetatomicLoader.h:29</a></div></div>
+<div class="ttc" id="aclasseonc_1_1IMetatomicLoader_html_a73e85de5d5a6b71aee9359628dfc1cfc"><div class="ttname"><a href="classeonc_1_1IMetatomicLoader.html#a73e85de5d5a6b71aee9359628dfc1cfc">eonc::IMetatomicLoader::force</a></div><div class="ttdeci">force_fn force</div><div class="ttdef"><b>Definition</b> <a href="MetatomicLoader_8h_source.html#l00031">MetatomicLoader.h:31</a></div></div>
+<div class="ttc" id="aclasseonc_1_1IMetatomicLoader_html_a97dbadabaf8ad91a155bd0e246b7e56f"><div class="ttname"><a href="classeonc_1_1IMetatomicLoader.html#a97dbadabaf8ad91a155bd0e246b7e56f">eonc::IMetatomicLoader::abi_version</a></div><div class="ttdeci">abi_version_fn abi_version</div><div class="ttdef"><b>Definition</b> <a href="MetatomicLoader_8h_source.html#l00032">MetatomicLoader.h:32</a></div></div>
 <div class="ttc" id="aclasseonc_1_1PluginLoader_html_a808ed27cbe75f94d1f953a47badee475"><div class="ttname"><a href="classeonc_1_1PluginLoader.html#a808ed27cbe75f94d1f953a47badee475">eonc::PluginLoader::instance</a></div><div class="ttdeci">static PluginLoader &amp; instance()</div><div class="ttdoc">Thread-safe singleton accessor (Meyer&#39;s pattern).</div><div class="ttdef"><b>Definition</b> <a href="PluginLoader_8cpp_source.html#l00020">PluginLoader.cpp:20</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1dynlib_html_a77fed09f5c75a2dc000c73773884df69"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#a77fed09f5c75a2dc000c73773884df69">eonc::dynlib::Handle</a></div><div class="ttdeci">void * Handle</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00060">DynLib.h:60</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1dynlib_html_a93da3d2fc737506fa3ef45cf3c3a6a10"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#a93da3d2fc737506fa3ef45cf3c3a6a10">eonc::dynlib::open</a></div><div class="ttdeci">Handle open(const char *name) noexcept</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00062">DynLib.h:62</a></div></div>
@@ -656,75 +625,32 @@ Private Attributes</h2></td></tr>
 </div><!-- fragment -->
 </div>
 </div>
+<a name="doc-related-members" id="doc-related-members"></a><h2 id="header-doc-related-members" class="groupheader">Friends And Related Symbol Documentation</h2>
+<a id="af3d14e26ba8af9e6cc5a32aad8446de7" name="af3d14e26ba8af9e6cc5a32aad8446de7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3d14e26ba8af9e6cc5a32aad8446de7">&#9670;&#160;</a></span>Runtime</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class Runtime</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel friend">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicLoader_8h_source.html#l00068">68</a> of file <a class="el" href="MetatomicLoader_8h_source.html">MetatomicLoader.h</a>.</p>
+
+</div>
+</div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
-<a id="ada770633390c450401683e3fc399b638" name="ada770633390c450401683e3fc399b638"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ada770633390c450401683e3fc399b638">&#9670;&#160;</a></span>abi_version</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="#a16780e0b466e884c535a09ff15df6cad">abi_version_fn</a> eonc::MetatomicLoader::abi_version {nullptr}</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="MetatomicLoader_8h_source.html#l00037">37</a> of file <a class="el" href="MetatomicLoader_8h_source.html">MetatomicLoader.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   37</span>{<span class="keyword">nullptr</span>};</div>
-</div><!-- fragment -->
-</div>
-</div>
-<a id="af26c656bfe7ddb7e805b6c07ce28724b" name="af26c656bfe7ddb7e805b6c07ce28724b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af26c656bfe7ddb7e805b6c07ce28724b">&#9670;&#160;</a></span>create</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="#aad6c96b3cb6f73c615d5ff234df21751">create_fn</a> eonc::MetatomicLoader::create {nullptr}</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="MetatomicLoader_8h_source.html#l00034">34</a> of file <a class="el" href="MetatomicLoader_8h_source.html">MetatomicLoader.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   34</span>{<span class="keyword">nullptr</span>};</div>
-</div><!-- fragment -->
-</div>
-</div>
-<a id="af190c31648f9ec6e2bceb9585f8a0d98" name="af190c31648f9ec6e2bceb9585f8a0d98"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af190c31648f9ec6e2bceb9585f8a0d98">&#9670;&#160;</a></span>destroy</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="#a98af03425430b442f614c388590966ef">destroy_fn</a> eonc::MetatomicLoader::destroy {nullptr}</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="MetatomicLoader_8h_source.html#l00035">35</a> of file <a class="el" href="MetatomicLoader_8h_source.html">MetatomicLoader.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   35</span>{<span class="keyword">nullptr</span>};</div>
-</div><!-- fragment -->
-</div>
-</div>
-<a id="a6371375e2c0936fb38c2475b21b8c5b5" name="a6371375e2c0936fb38c2475b21b8c5b5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6371375e2c0936fb38c2475b21b8c5b5">&#9670;&#160;</a></span>force</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="#af6b05d350aa6d7cc6d289d5e8b177442">force_fn</a> eonc::MetatomicLoader::force {nullptr}</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="MetatomicLoader_8h_source.html#l00036">36</a> of file <a class="el" href="MetatomicLoader_8h_source.html">MetatomicLoader.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   36</span>{<span class="keyword">nullptr</span>};</div>
-</div><!-- fragment -->
-</div>
-</div>
 <a id="aae865a18a9d5591f0ab980a3b47fd1cb" name="aae865a18a9d5591f0ab980a3b47fd1cb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aae865a18a9d5591f0ab980a3b47fd1cb">&#9670;&#160;</a></span>m_handle</h2>
 
@@ -745,8 +671,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="MetatomicLoader_8h_source.html#l00047">47</a> of file <a class="el" href="MetatomicLoader_8h_source.html">MetatomicLoader.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   47</span>{};</div>
+<p class="definition">Definition at line <a class="el" href="MetatomicLoader_8h_source.html#l00071">71</a> of file <a class="el" href="MetatomicLoader_8h_source.html">MetatomicLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   71</span>{};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -770,8 +696,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="MetatomicLoader_8h_source.html#l00046">46</a> of file <a class="el" href="MetatomicLoader_8h_source.html">MetatomicLoader.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   46</span>{<span class="keyword">false</span>};</div>
+<p class="definition">Definition at line <a class="el" href="MetatomicLoader_8h_source.html#l00070">70</a> of file <a class="el" href="MetatomicLoader_8h_source.html">MetatomicLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   70</span>{<span class="keyword">false</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>

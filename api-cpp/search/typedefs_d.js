@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['scatter_5fatoms_5ffn_0',['scatter_atoms_fn',['../classeonc_1_1LammpsLoader.html#a46f3a5d7c0faad82dd300556180a284f',1,'eonc::LammpsLoader']]],
-  ['set_5fparam_5ffn_1',['set_param_fn',['../classeonc_1_1ARTnResource.html#a62fa949465328ec78d9fb812589f7755',1,'eonc::ARTnResource']]],
-  ['setup_5fartn_5ffn_2',['setup_artn_fn',['../classeonc_1_1ARTnResource.html#a58836e6aad681dd66b71494bf40fb7e3',1,'eonc::ARTnResource']]],
-  ['springstrategy_3',['SpringStrategy',['../namespaceeonc_1_1neb.html#a62931aadc8e669c0d5e43769b70318a1',1,'eonc::neb']]],
-  ['symtensor_4',['symTensor',['../potentials_2EMT_2Asap_2Potential_8h.html#a46c4f0a0c486fad7b2847c30f64a891b',1,'Potential.h']]]
+  ['oh_5ftst_5foptions_5ft_0',['oh_tst_options_t',['../classeonc_1_1Parameters.html#a254b4f2aa1efee05fd0826fcada920a3',1,'eonc::Parameters']]],
+  ['open_5fno_5fmpi_5ffn_1',['open_no_mpi_fn',['../classeonc_1_1ILammpsLoader.html#a93b78ac46b7752ae4732e288e0cc238f',1,'eonc::ILammpsLoader']]],
+  ['optimizer_5foptions_5ft_2',['optimizer_options_t',['../classeonc_1_1Parameters.html#a8fa3b6eaa62feac2a614a71cce101751',1,'eonc::Parameters']]]
 ];

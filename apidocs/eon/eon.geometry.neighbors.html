@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="teal" data-content_root="../../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>eon.geometry.neighbors - eOn</title><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="eon.geometry.cell" href="eon.geometry.cell.html" /><link rel="prev" title="eon.geometry.pbc" href="eon.geometry.pbc.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>eon.geometry.neighbors - eOn</title><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="eon.concorpus" href="eon.concorpus.html" /><link rel="prev" title="eon.geometry.process" href="eon.geometry.process.html" />
       <link rel="canonical" href="https://eondocs.org/apidocs/eon/eon.geometry.neighbors.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
@@ -139,6 +139,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/communicator.html">Communicator</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/debug.html">Debug</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/paths.html">Paths</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/stdpar.html">nvc++ stdpar (NEB image forces)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/kdb.html">Kinetic database</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/rgpot_integration.html">rgpot integration (three roles)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/rgpot_pot.html">RgpotPot (direct in-process rgpot)</a></li>
@@ -150,6 +151,10 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/testing.html">Tests</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/parallel-potentials.html">Parallel force evaluation</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/library-api.html">Library API</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/in-process.html">In-process jobs (no file IPC)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/abi-surface.html">Public C++ surface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/rgpot-migration.html">rgpot kernel inventory</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/docbuild.html">Working with the documentation</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/svn.html">Subversion</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/svn-migration.html">Migrating from SVN</a></li>
@@ -168,49 +173,54 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li class="toctree-l3 current"><a class="reference internal" href="eon.geometry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry</span></code></a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="eon.geometry.pbc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.concorpus.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.concorpus</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.params_ssot.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.params_ssot</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="eon.structure.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.structure</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="eon.params_ssot.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.params_ssot</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="eon.process_id.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.structure.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.structure</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.process_id.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v3.3.0/index.html">[v3.3.0] - 2026-09-15</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v3.3.0/release-notes.html">eOn 3.3.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v3.2.1/index.html">[v3.2.1] - 2026-09-13</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v3.2.1/release-notes.html">eOn 3.2.1</a></li>
 </ul>
@@ -299,10 +309,12 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#data">Data</a></li>
 <li><a class="reference internal" href="#api">API</a><ul>
+<li><a class="reference internal" href="#eon.geometry.neighbors.PeriodicSpec"><code class="docutils literal notranslate"><span class="pre">PeriodicSpec</span></code></a></li>
 <li><a class="reference internal" href="#eon.geometry.neighbors.StructureLike"><code class="docutils literal notranslate"><span class="pre">StructureLike</span></code></a></li>
 <li><a class="reference internal" href="#eon.geometry.neighbors.neighbor_list"><code class="docutils literal notranslate"><span class="pre">neighbor_list()</span></code></a></li>
 <li><a class="reference internal" href="#eon.geometry.neighbors.brute_neighbor_list"><code class="docutils literal notranslate"><span class="pre">brute_neighbor_list()</span></code></a></li>
 <li><a class="reference internal" href="#eon.geometry.neighbors.neighbor_list_vectors"><code class="docutils literal notranslate"><span class="pre">neighbor_list_vectors()</span></code></a></li>
+<li><a class="reference internal" href="#eon.geometry.neighbors.neighbor_list_pairs"><code class="docutils literal notranslate"><span class="pre">neighbor_list_pairs()</span></code></a></li>
 <li><a class="reference internal" href="#eon.geometry.neighbors.neighbor_list_linkcell"><code class="docutils literal notranslate"><span class="pre">neighbor_list_linkcell()</span></code></a></li>
 <li><a class="reference internal" href="#eon.geometry.neighbors.coordination_numbers"><code class="docutils literal notranslate"><span class="pre">coordination_numbers()</span></code></a></li>
 <li><a class="reference internal" href="#eon.geometry.neighbors.least_coordinated"><code class="docutils literal notranslate"><span class="pre">least_coordinated()</span></code></a></li>
@@ -396,13 +408,16 @@ compatibility but no longer selects a different algorithm.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#eon.geometry.neighbors.neighbor_list_vectors" title="eon.geometry.neighbors.neighbor_list_vectors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neighbor_list_vectors</span></code></a></p></td>
 <td><p>Neighbor list with minimum-image vectors from center → neighbor.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.geometry.neighbors.neighbor_list_linkcell" title="eon.geometry.neighbors.neighbor_list_linkcell"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neighbor_list_linkcell</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.geometry.neighbors.neighbor_list_pairs" title="eon.geometry.neighbors.neighbor_list_pairs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neighbor_list_pairs</span></code></a></p></td>
+<td><p>Vesin pair list with cell shifts (ASE/tonari <code class="docutils literal notranslate"><span class="pre">ijS</span></code>).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.geometry.neighbors.neighbor_list_linkcell" title="eon.geometry.neighbors.neighbor_list_linkcell"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neighbor_list_linkcell</span></code></a></p></td>
 <td><p>Neighbor list via :func:<code class="docutils literal notranslate"><span class="pre">linkcell.knearest</span></code>, filtered to <em>cutoff</em>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.geometry.neighbors.coordination_numbers" title="eon.geometry.neighbors.coordination_numbers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">coordination_numbers</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.geometry.neighbors.coordination_numbers" title="eon.geometry.neighbors.coordination_numbers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">coordination_numbers</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.geometry.neighbors.least_coordinated" title="eon.geometry.neighbors.least_coordinated"><code class="xref py py-obj docutils literal notranslate"><span class="pre">least_coordinated</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.geometry.neighbors.least_coordinated" title="eon.geometry.neighbors.least_coordinated"><code class="xref py py-obj docutils literal notranslate"><span class="pre">least_coordinated</span></code></a></p></td>
 <td><p>Indices of free atoms with the lowest coordination number.</p></td>
 </tr>
 </tbody>
@@ -414,7 +429,10 @@ compatibility but no longer selects a different algorithm.</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-left">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.geometry.neighbors.StructureLike" title="eon.geometry.neighbors.StructureLike"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StructureLike</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.geometry.neighbors.PeriodicSpec" title="eon.geometry.neighbors.PeriodicSpec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeriodicSpec</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.geometry.neighbors.StructureLike" title="eon.geometry.neighbors.StructureLike"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StructureLike</span></code></a></p></td>
 <td></td>
 </tr>
 </tbody>
@@ -424,6 +442,12 @@ compatibility but no longer selects a different algorithm.</p>
 <section id="api">
 <h3>API<a class="headerlink" href="#api" title="Link to this heading">¶</a></h3>
 <dl class="py data">
+<dt class="sig sig-object py" id="eon.geometry.neighbors.PeriodicSpec">
+<span class="sig-prename descclassname"><span class="pre">eon.geometry.neighbors.</span></span><span class="sig-name descname"><span class="pre">PeriodicSpec</span></span><a class="headerlink" href="#eon.geometry.neighbors.PeriodicSpec" title="Link to this definition">¶</a></dt>
+<dd><p>None</p>
+</dd></dl>
+
+<dl class="py data">
 <dt class="sig sig-object py" id="eon.geometry.neighbors.StructureLike">
 <span class="sig-prename descclassname"><span class="pre">eon.geometry.neighbors.</span></span><span class="sig-name descname"><span class="pre">StructureLike</span></span><a class="headerlink" href="#eon.geometry.neighbors.StructureLike" title="Link to this definition">¶</a></dt>
 <dd><p>None</p>
@@ -431,15 +455,20 @@ compatibility but no longer selects a different algorithm.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.geometry.neighbors.neighbor_list">
-<span class="sig-prename descclassname"><span class="pre">eon.geometry.neighbors.</span></span><span class="sig-name descname"><span class="pre">neighbor_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#eon.geometry.neighbors.StructureLike" title="eon.geometry.neighbors.StructureLike"><span class="pre">eon.geometry.neighbors.StructureLike</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">brute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/eon/geometry/neighbors.html#neighbor_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.geometry.neighbors.neighbor_list" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.geometry.neighbors.</span></span><span class="sig-name descname"><span class="pre">neighbor_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#eon.geometry.neighbors.StructureLike" title="eon.geometry.neighbors.StructureLike"><span class="pre">eon.geometry.neighbors.StructureLike</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">brute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">periodic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#eon.geometry.neighbors.PeriodicSpec" title="eon.geometry.neighbors.PeriodicSpec"><span class="pre">eon.geometry.neighbors.PeriodicSpec</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/eon/geometry/neighbors.html#neighbor_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.geometry.neighbors.neighbor_list" title="Link to this definition">¶</a></dt>
 <dd><p>Return neighbors within <em>cutoff</em> for each atom (PBC, full undirected list).</p>
 <p class="rubric" id="id1">Parameters</p>
 <p>p
-Structure with <code class="docutils literal notranslate"><span class="pre">.r</span></code> (N,3) and <code class="docutils literal notranslate"><span class="pre">.box</span></code> (3,3).
+Structure with <code class="docutils literal notranslate"><span class="pre">.r</span></code> (N,3) and <code class="docutils literal notranslate"><span class="pre">.box</span></code> (3,3). Optional
+<code class="docutils literal notranslate"><span class="pre">.periodic</span></code> (bool or length-3 bools) is used when <em>periodic</em>
+is omitted.
 cutoff
 Pair cutoff distance.
 brute
-Ignored; kept so callers using <code class="docutils literal notranslate"><span class="pre">config.comp_brute_neighbors</span></code> need no change.</p>
+Ignored; kept so callers using <code class="docutils literal notranslate"><span class="pre">config.comp_brute_neighbors</span></code> need no change.
+periodic
+Passed to vesin. A single bool applies to all axes; a length-3
+sequence is per-axis. Default is <code class="docutils literal notranslate"><span class="pre">p.periodic</span></code> or all-periodic.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -452,6 +481,29 @@ Ignored; kept so callers using <code class="docutils literal notranslate"><span 
 <dt class="sig sig-object py" id="eon.geometry.neighbors.neighbor_list_vectors">
 <span class="sig-prename descclassname"><span class="pre">eon.geometry.neighbors.</span></span><span class="sig-name descname"><span class="pre">neighbor_list_vectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#eon.geometry.neighbors.StructureLike" title="eon.geometry.neighbors.StructureLike"><span class="pre">eon.geometry.neighbors.StructureLike</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">brute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/eon/geometry/neighbors.html#neighbor_list_vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.geometry.neighbors.neighbor_list_vectors" title="Link to this definition">¶</a></dt>
 <dd><p>Neighbor list with minimum-image vectors from center → neighbor.</p>
+<p>Unique-index adjacency is the historical eOn contract. Vectors are
+one MIC wrap of <code class="docutils literal notranslate"><span class="pre">r[j]</span> <span class="pre">-</span> <span class="pre">r[center]</span></code> per neighbour index, computed
+in one :func:<code class="docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code> call (minimage <code class="docutils literal notranslate"><span class="pre">wrap_many</span></code> when
+installed). Multi-image pair lists belong on</p>
+<dl class="myst field-list simple">
+<dt class="field-odd">Func<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">neighbor_list_pairs</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.geometry.neighbors.neighbor_list_pairs">
+<span class="sig-prename descclassname"><span class="pre">eon.geometry.neighbors.</span></span><span class="sig-name descname"><span class="pre">neighbor_list_pairs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#eon.geometry.neighbors.StructureLike" title="eon.geometry.neighbors.StructureLike"><span class="pre">eon.geometry.neighbors.StructureLike</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">periodic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#eon.geometry.neighbors.PeriodicSpec" title="eon.geometry.neighbors.PeriodicSpec"><span class="pre">eon.geometry.neighbors.PeriodicSpec</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/geometry/neighbors.html#neighbor_list_pairs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.geometry.neighbors.neighbor_list_pairs" title="Link to this definition">¶</a></dt>
+<dd><p>Vesin pair list with cell shifts (ASE/tonari <code class="docutils literal notranslate"><span class="pre">ijS</span></code>).</p>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">(i,</span> <span class="pre">j,</span> <span class="pre">S)</span></code> with one row per atom-image pair. Unlike</p>
+<dl class="myst field-list simple">
+<dt class="field-odd">Func<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">neighbor_list</span></code>, this does not unique-index or apply a
+minimum-image reduction. Displacement is
+<code class="docutils literal notranslate"><span class="pre">r[j]</span> <span class="pre">-</span> <span class="pre">r[i]</span> <span class="pre">+</span> <span class="pre">S</span> <span class="pre">&#64;</span> <span class="pre">box</span></code>.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -483,16 +535,16 @@ the two kernels can be compared on the same Structure.</p>
   </svg>
   <span>Back to top</span>
 </button><div class="navigation flex print:hidden"><div class="navigation-prev">
-    <a href="eon.geometry.pbc.html">
+    <a href="eon.geometry.process.html">
       <i class="i-lucide chevron-left"></i>
       <div class="page-info">
-        <span>Previous</span><div class="title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></div></div>
+        <span>Previous</span><div class="title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></div></div>
     </a>
   </div><div class="navigation-next">
-    <a href="eon.geometry.cell.html">
+    <a href="eon.concorpus.html">
       <div class="page-info">
         <span>Next</span>
-        <div class="title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></div>
+        <div class="title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.concorpus</span></code></div>
       </div>
       <i class="i-lucide chevron-right"></i>
     </a>
@@ -594,7 +646,7 @@ the two kernels can be compared on the same Structure.</p>
     </div>
   </div>
 </footer>
-      <script src="../../_static/documentation_options.js?v=eb155f5e"></script>
+      <script src="../../_static/documentation_options.js?v=b5dcbc37"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>

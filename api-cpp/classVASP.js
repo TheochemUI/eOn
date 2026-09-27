@@ -1,6 +1,6 @@
 var classVASP =
 [
-    [ "VASP", "classVASP.html#aba4b144242d9fc665dc17cf1f3719922", null ],
+    [ "VASP", "classVASP.html#af47ae4d0da03317dbf33d29364052ff1", null ],
     [ "~VASP", "classVASP.html#a6c9b3c7c69527b1276ed16070e7d9070", null ],
     [ "cleanMemory", "classVASP.html#a8253c8244127c112c78cf84ec1369250", null ],
     [ "clearHandshakeFiles", "classVASP.html#a2cd6df791bd6368a14b5cdb1e1b685df", null ],

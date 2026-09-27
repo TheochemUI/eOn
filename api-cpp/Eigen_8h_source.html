@@ -289,8 +289,18 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('Eigen_8h_sourc
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>  <span class="keywordflow">return</span> Eigen::Map&lt;const AtomMatrix&gt;(flat_colmajor.data(), nat, 3);</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>}</div>
 </div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>} <span class="comment">// namespace eonc</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span></div>
+<div class="foldopen" id="foldopen00071" data-start="{" data-end="}">
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="namespaceeonc.html#afbde0a233976150fadc6895653dc3cd0">   71</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeonc.html#afbde0a233976150fadc6895653dc3cd0">lattice_rows_to_fortran_box</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;cell, <span class="keywordtype">double</span> *box) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> vec = 0; vec &lt; 3; ++vec) {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> comp = 0; comp &lt; 3; ++comp) {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>      box[vec * 3 + comp] = cell(vec, comp);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    }</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>  }</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}</div>
+</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>} <span class="comment">// namespace eonc</span></div>
 <div class="ttc" id="aEigen_8h_html_a0ce991ec8b4bfd6bccc9a2ebd756f9c7"><div class="ttname"><a href="Eigen_8h.html#a0ce991ec8b4bfd6bccc9a2ebd756f9c7">RotationMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 3, 3, eOnStorageOrder &gt; RotationMatrix</div><div class="ttdef"><b>Definition</b> <a href="#l00038">Eigen.h:38</a></div></div>
 <div class="ttc" id="aEigen_8h_html_a427ffeef0bf8105f9563078d30c121e5"><div class="ttname"><a href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a></div><div class="ttdeci">double matDot(const AtomMatrix &amp;a, const AtomMatrix &amp;b)</div><div class="ttdoc">SIMD-optimized dot product for contiguous Eigen matrices.</div><div class="ttdef"><b>Definition</b> <a href="#l00050">Eigen.h:50</a></div></div>
 <div class="ttc" id="aEigen_8h_html_a45bb4cbce093fca4dfb193d3f649da30"><div class="ttname"><a href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, eOnStorageOrder &gt; MatrixXd</div><div class="ttdef"><b>Definition</b> <a href="#l00033">Eigen.h:33</a></div></div>
@@ -299,8 +309,9 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('Eigen_8h_sourc
 <div class="ttc" id="aEigen_8h_html_aba045fce1522d128508648c1d3c18fcc"><div class="ttname"><a href="Eigen_8h.html#aba045fce1522d128508648c1d3c18fcc">AtomMatrixF</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 3, Eigen::Dynamic, Eigen::ColMajor &gt; AtomMatrixF</div><div class="ttdef"><b>Definition</b> <a href="#l00044">Eigen.h:44</a></div></div>
 <div class="ttc" id="aEigen_8h_html_aca5a7114b82cccf6349468e3d78c3c77"><div class="ttname"><a href="Eigen_8h.html#aca5a7114b82cccf6349468e3d78c3c77">eOnStorageOrder</a></div><div class="ttdeci">constexpr int eOnStorageOrder</div><div class="ttdef"><b>Definition</b> <a href="#l00031">Eigen.h:31</a></div></div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="#l00037">Eigen.h:37</a></div></div>
-<div class="ttc" id="anamespaceeonc_html"><div class="ttname"><a href="namespaceeonc.html">eonc</a></div><div class="ttdoc">RAII resource manager for the ARTn C library with global synchronization.</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00019">ARTnSaddleSearch.cpp:19</a></div></div>
+<div class="ttc" id="anamespaceeonc_html"><div class="ttname"><a href="namespaceeonc.html">eonc</a></div><div class="ttdoc">RAII resource manager for the ARTn C library with global synchronization.</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00023">ARTnSaddleSearch.cpp:23</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_ada70d43381d96fa3a4f09a6fdfe9ad36"><div class="ttname"><a href="namespaceeonc.html#ada70d43381d96fa3a4f09a6fdfe9ad36">eonc::from_fortran_layout_vector</a></div><div class="ttdeci">AtomMatrix from_fortran_layout_vector(const std::vector&lt; double &gt; &amp;flat_colmajor, int nat)</div><div class="ttdoc">Reconstruct AtomMatrix from a flat column-major vector (e.g.</div><div class="ttdef"><b>Definition</b> <a href="#l00061">Eigen.h:61</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_afbde0a233976150fadc6895653dc3cd0"><div class="ttname"><a href="namespaceeonc.html#afbde0a233976150fadc6895653dc3cd0">eonc::lattice_rows_to_fortran_box</a></div><div class="ttdeci">void lattice_rows_to_fortran_box(const Matrix3d &amp;cell, double *box)</div><div class="ttdoc">Pack an eOn cell for pARTn artn_step.</div><div class="ttdef"><b>Definition</b> <a href="#l00071">Eigen.h:71</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->

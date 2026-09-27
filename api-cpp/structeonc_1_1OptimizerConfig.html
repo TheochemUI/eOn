@@ -245,13 +245,14 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('structeonc_1_1
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:abcfc681e415bb093ecdc44ed452e7e0d" id="r_abcfc681e415bb093ecdc44ed452e7e0d"><td class="memItemLeft">static <a class="el" href="structeonc_1_1OptimizerConfig.html">OptimizerConfig</a>&#160;</td><td class="memItemRight"><a class="el" href="#abcfc681e415bb093ecdc44ed452e7e0d">fromParams</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:abcfc681e415bb093ecdc44ed452e7e0d" id="r_abcfc681e415bb093ecdc44ed452e7e0d"><td class="memItemLeft">static <a class="el" href="structeonc_1_1OptimizerConfig.html">OptimizerConfig</a>&#160;</td><td class="memItemRight"><a class="el" href="#abcfc681e415bb093ecdc44ed452e7e0d">fromParams</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a6d6d9a8cad94b29a4074e2c4a85c873f" id="r_a6d6d9a8cad94b29a4074e2c4a85c873f"><td class="memItemLeft"><a class="el" href="structParameters_1_1optimizer__options__t.html">Parameters::optimizer_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a6d6d9a8cad94b29a4074e2c4a85c873f">opts</a></td></tr>
+<tr class="memitem:a6d6d9a8cad94b29a4074e2c4a85c873f" id="r_a6d6d9a8cad94b29a4074e2c4a85c873f"><td class="memItemLeft"><a class="el" href="classeonc_1_1Parameters.html#a8fa3b6eaa62feac2a614a71cce101751">Parameters::optimizer_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a6d6d9a8cad94b29a4074e2c4a85c873f">opts</a></td></tr>
 <tr class="memitem:adaab551a1a5994af6bab9847367658c4" id="r_adaab551a1a5994af6bab9847367658c4"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#adaab551a1a5994af6bab9847367658c4">finiteDifference</a> {0.01}</td></tr>
 <tr class="memitem:ad7d0046e24469433adf0807353c5468e" id="r_ad7d0046e24469433adf0807353c5468e"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#ad7d0046e24469433adf0807353c5468e">bowlBreakout</a> {false}</td></tr>
+<tr class="memitem:a519fd435ac409c95359a5edcada28935" id="r_a519fd435ac409c95359a5edcada28935"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a>&#160;</td><td class="memItemRight"><a class="el" href="#a519fd435ac409c95359a5edcada28935">potential</a> {<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a388d9e1171b3e4aeae9adc4e26ca15ae">PotType::LJ</a>}</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Declaration of the optimizer class. </p>
@@ -271,7 +272,7 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="structeonc_1_1OptimizerConfig.html">OptimizerConfig</a> eonc::OptimizerConfig::fromParams </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -282,17 +283,12 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00056">56</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   56</span>                                                         {</div>
-<div class="line"><span class="lineno">   57</span>    <span class="keywordflow">return</span> {p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>, p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#afd8b76ca52c432bb56efd1a73ebf8234">main_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1main__options__t.html#ab526c658d542548a060a20728af4afe9">finiteDifference</a>,</div>
-<div class="line"><span class="lineno">   58</span>            p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a9f940dfdbf98237a27dcfba042b57dd2">saddle_search_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1saddle__search__options__t.html#ad082d315dd773aad50499409b04ec5e5">confine_positive</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1saddle__search__options__t_1_1confine__positive__t.html#a75982bbc721fd24bd2fe41b962303333">bowl_breakout</a>};</div>
-<div class="line"><span class="lineno">   59</span>  }</div>
-<div class="ttc" id="aclasseonc_1_1Parameters_html_a1c3ba2cdc8f797e5ab2d8961720fe896"><div class="ttname"><a href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">eonc::Parameters::optimizer_options</a></div><div class="ttdeci">struct eonc::Parameters::optimizer_options_t optimizer_options</div></div>
-<div class="ttc" id="aclasseonc_1_1Parameters_html_a9f940dfdbf98237a27dcfba042b57dd2"><div class="ttname"><a href="classeonc_1_1Parameters.html#a9f940dfdbf98237a27dcfba042b57dd2">eonc::Parameters::saddle_search_options</a></div><div class="ttdeci">struct eonc::Parameters::saddle_search_options_t saddle_search_options</div></div>
-<div class="ttc" id="aclasseonc_1_1Parameters_html_afd8b76ca52c432bb56efd1a73ebf8234"><div class="ttname"><a href="classeonc_1_1Parameters.html#afd8b76ca52c432bb56efd1a73ebf8234">eonc::Parameters::main_options</a></div><div class="ttdeci">struct eonc::Parameters::main_options_t main_options</div></div>
-<div class="ttc" id="astructeonc_1_1Parameters_1_1main__options__t_html_ab526c658d542548a060a20728af4afe9"><div class="ttname"><a href="structeonc_1_1Parameters_1_1main__options__t.html#ab526c658d542548a060a20728af4afe9">eonc::Parameters::main_options_t::finiteDifference</a></div><div class="ttdeci">double finiteDifference</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00055">Parameters.h:55</a></div></div>
-<div class="ttc" id="astructeonc_1_1Parameters_1_1saddle__search__options__t_1_1confine__positive__t_html_a75982bbc721fd24bd2fe41b962303333"><div class="ttname"><a href="structeonc_1_1Parameters_1_1saddle__search__options__t_1_1confine__positive__t.html#a75982bbc721fd24bd2fe41b962303333">eonc::Parameters::saddle_search_options_t::confine_positive_t::bowl_breakout</a></div><div class="ttdeci">bool bowl_breakout</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00231">Parameters.h:231</a></div></div>
-<div class="ttc" id="astructeonc_1_1Parameters_1_1saddle__search__options__t_html_ad082d315dd773aad50499409b04ec5e5"><div class="ttname"><a href="structeonc_1_1Parameters_1_1saddle__search__options__t.html#ad082d315dd773aad50499409b04ec5e5">eonc::Parameters::saddle_search_options_t::confine_positive</a></div><div class="ttdeci">struct eonc::Parameters::saddle_search_options_t::confine_positive_t confine_positive</div></div>
+<p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00057">57</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   57</span>                                                         {</div>
+<div class="line"><span class="lineno">   58</span>    <span class="keywordflow">return</span> {p.optimizer_options(), p.main_options().finiteDifference,</div>
+<div class="line"><span class="lineno">   59</span>            p.saddle_search_options().confine_positive.bowl_breakout,</div>
+<div class="line"><span class="lineno">   60</span>            p.potential_options().potential};</div>
+<div class="line"><span class="lineno">   61</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -338,13 +334,31 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structParameters_1_1optimizer__options__t.html">Parameters::optimizer_options_t</a> eonc::OptimizerConfig::opts</td>
+          <td class="memname"><a class="el" href="classeonc_1_1Parameters.html#a8fa3b6eaa62feac2a614a71cce101751">Parameters::optimizer_options_t</a> eonc::OptimizerConfig::opts</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00052">52</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
 
+</div>
+</div>
+<a id="a519fd435ac409c95359a5edcada28935" name="a519fd435ac409c95359a5edcada28935"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a519fd435ac409c95359a5edcada28935">&#9670;&#160;</a></span>potential</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> eonc::OptimizerConfig::potential {<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a388d9e1171b3e4aeae9adc4e26ca15ae">PotType::LJ</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00055">55</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   55</span>{<a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a388d9e1171b3e4aeae9adc4e26ca15ae">PotType::LJ</a>};</div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a388d9e1171b3e4aeae9adc4e26ca15ae"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a388d9e1171b3e4aeae9adc4e26ca15ae">eonc::PotType::LJ</a></div><div class="ttdeci">@ LJ</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00041">BaseStructures.h:41</a></div></div>
+</div><!-- fragment -->
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>

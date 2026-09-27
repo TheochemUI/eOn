@@ -139,6 +139,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/communicator.html">Communicator</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/debug.html">Debug</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/paths.html">Paths</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/stdpar.html">nvc++ stdpar (NEB image forces)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/kdb.html">Kinetic database</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/rgpot_integration.html">rgpot integration (three roles)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/rgpot_pot.html">RgpotPot (direct in-process rgpot)</a></li>
@@ -150,6 +151,10 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/testing.html">Tests</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/parallel-potentials.html">Parallel force evaluation</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/library-api.html">Library API</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/in-process.html">In-process jobs (no file IPC)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/abi-surface.html">Public C++ surface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/rgpot-migration.html">rgpot kernel inventory</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/docbuild.html">Working with the documentation</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/svn.html">Subversion</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/svn-migration.html">Migrating from SVN</a></li>
@@ -168,49 +173,54 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.geometry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.pbc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.concorpus.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.concorpus</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.params_ssot.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.params_ssot</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.structure.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.structure</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.params_ssot.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.params_ssot</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.process_id.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.structure.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.structure</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.process_id.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v3.3.0/index.html">[v3.3.0] - 2026-09-15</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v3.3.0/release-notes.html">eOn 3.3.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v3.2.1/index.html">[v3.2.1] - 2026-09-13</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v3.2.1/release-notes.html">eOn 3.2.1</a></li>
 </ul>
@@ -363,195 +373,359 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="12"><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 </span><span data-line="13"><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 </span><span data-line="14"><span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringIO</span>
-</span><span data-line="15"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
-</span><span data-line="16">
-</span><span data-line="17"><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-</span><span data-line="18">
-</span><span data-line="19"><span class="kn">from</span><span class="w"> </span><span class="nn">eon.communicator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Communicator</span><span class="p">,</span> <span class="n">CommunicatorError</span>
-</span><span data-line="20">
-</span><span data-line="21"><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;communicator&quot;</span><span class="p">)</span>
-</span><span data-line="22">
+</span><span data-line="15"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</span><span data-line="16"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+</span><span data-line="17">
+</span><span data-line="18"><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</span><span data-line="19">
+</span><span data-line="20"><span class="kn">from</span><span class="w"> </span><span class="nn">eon.communicator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Communicator</span><span class="p">,</span> <span class="n">CommunicatorError</span>
+</span><span data-line="21">
+</span><span data-line="22"><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;communicator&quot;</span><span class="p">)</span>
 </span><span data-line="23">
-</span><span data-line="24"><span class="k">def</span><span class="w"> </span><span class="nf">_require_pyeonclient</span><span class="p">():</span>
-</span><span data-line="25">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="26">        <span class="kn">import</span><span class="w"> </span><span class="nn">pyeonclient</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pc</span>
-</span><span data-line="27">    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-</span><span data-line="28">        <span class="k">raise</span> <span class="n">CommunicatorError</span><span class="p">(</span>
-</span><span data-line="29">            <span class="s2">&quot;inprocess communicator needs pyeonclient &quot;</span>
-</span><span data-line="30">            <span class="s2">&quot;(build with -Dwith_pyeonclient=true)&quot;</span>
-</span><span data-line="31">        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
-</span><span data-line="32">    <span class="k">return</span> <span class="n">pc</span>
-</span><span data-line="33">
+</span><span data-line="24">
+</span><span data-line="25"><span class="k">def</span><span class="w"> </span><span class="nf">_require_pyeonclient</span><span class="p">():</span>
+</span><span data-line="26">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="27">        <span class="kn">import</span><span class="w"> </span><span class="nn">pyeonclient</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pc</span>
+</span><span data-line="28">    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="29">        <span class="k">raise</span> <span class="n">CommunicatorError</span><span class="p">(</span>
+</span><span data-line="30">            <span class="s2">&quot;inprocess communicator needs pyeonclient &quot;</span>
+</span><span data-line="31">            <span class="s2">&quot;(build with -Dwith_pyeonclient=true)&quot;</span>
+</span><span data-line="32">        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+</span><span data-line="33">    <span class="k">return</span> <span class="n">pc</span>
 </span><span data-line="34">
-</span><span data-line="35"><span class="k">def</span><span class="w"> </span><span class="nf">_params_from_invariants</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">invariants</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-</span><span data-line="36"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Load Parameters from config.ini bytes if present, else defaults.&quot;&quot;&quot;</span>
-</span><span data-line="37">    <span class="n">params</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">Parameters</span><span class="p">()</span>
-</span><span data-line="38">    <span class="c1"># invariants values are (StringIO, mode) or StringIO</span>
-</span><span data-line="39">    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">invariants</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span data-line="40">        <span class="n">base</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-</span><span data-line="41">        <span class="k">if</span> <span class="n">base</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;config.ini&quot;</span><span class="p">,</span> <span class="s2">&quot;config&quot;</span><span class="p">):</span>
-</span><span data-line="42">            <span class="k">continue</span>
-</span><span data-line="43">        <span class="n">content</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">val</span>
-</span><span data-line="44">        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="s2">&quot;getvalue&quot;</span><span class="p">):</span>
-</span><span data-line="45">            <span class="n">text</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
-</span><span data-line="46">        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">):</span>
-</span><span data-line="47">            <span class="n">text</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span><span data-line="48">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="49">            <span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
-</span><span data-line="50">        <span class="c1"># write temp for Parameters.load</span>
-</span><span data-line="51">        <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
-</span><span data-line="52">
-</span><span data-line="53">        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.ini&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
-</span><span data-line="54">            <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
-</span><span data-line="55">            <span class="n">path</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">name</span>
-</span><span data-line="56">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="57">            <span class="n">params</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-</span><span data-line="58">        <span class="k">finally</span><span class="p">:</span>
-</span><span data-line="59">            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-</span><span data-line="60">        <span class="k">return</span> <span class="n">params</span>
-</span><span data-line="61">    <span class="n">params</span><span class="o">.</span><span class="n">potential</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">PotType</span><span class="o">.</span><span class="n">LJ</span>
-</span><span data-line="62">    <span class="n">params</span><span class="o">.</span><span class="n">quiet</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span data-line="63">    <span class="n">params</span><span class="o">.</span><span class="n">write_log</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span data-line="64">    <span class="k">return</span> <span class="n">params</span>
-</span><span data-line="65">
-</span><span data-line="66">
-</span><span data-line="67"><span class="k">def</span><span class="w"> </span><span class="nf">_structure_from_job_con</span><span class="p">(</span><span class="n">job</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pos.con&quot;</span><span class="p">):</span>
-</span><span data-line="68">    <span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">fileio</span> <span class="k">as</span> <span class="n">io</span>
-</span><span data-line="69">
-</span><span data-line="70">    <span class="n">blob</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-</span><span data-line="71">    <span class="k">if</span> <span class="n">blob</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="72">        <span class="k">raise</span> <span class="n">CommunicatorError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;job missing </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span data-line="73">    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">blob</span><span class="p">,</span> <span class="s2">&quot;getvalue&quot;</span><span class="p">):</span>
-</span><span data-line="74">        <span class="n">text</span> <span class="o">=</span> <span class="n">blob</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
-</span><span data-line="75">    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">blob</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">):</span>
-</span><span data-line="76">        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">blob</span><span class="p">,</span> <span class="s2">&quot;seek&quot;</span><span class="p">):</span>
-</span><span data-line="77">            <span class="n">blob</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-</span><span data-line="78">        <span class="n">text</span> <span class="o">=</span> <span class="n">blob</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span><span data-line="79">    <span class="k">else</span><span class="p">:</span>
-</span><span data-line="80">        <span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">blob</span><span class="p">)</span>
-</span><span data-line="81">    <span class="k">return</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="n">StringIO</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
-</span><span data-line="82">
-</span><span data-line="83">
-</span><span data-line="84"><span class="k">def</span><span class="w"> </span><span class="nf">_results_dat</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">energy</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">force_calls</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">job_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="85">    <span class="k">return</span> <span class="p">(</span>
-</span><span data-line="86">        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2"> termination_reason</span><span class="se">\n</span><span class="s2">&quot;</span>
-</span><span data-line="87">        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;GOOD&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;FAIL&#39;</span><span class="si">}</span><span class="s2"> termination_reason_text</span><span class="se">\n</span><span class="s2">&quot;</span>
-</span><span data-line="88">        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">job_type</span><span class="si">}</span><span class="s2"> job_type</span><span class="se">\n</span><span class="s2">&quot;</span>
-</span><span data-line="89">        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">energy</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2"> potential_energy</span><span class="se">\n</span><span class="s2">&quot;</span>
-</span><span data-line="90">        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">force_calls</span><span class="si">}</span><span class="s2"> total_force_calls</span><span class="se">\n</span><span class="s2">&quot;</span>
-</span><span data-line="91">    <span class="p">)</span>
-</span><span data-line="92">
-</span><span data-line="93">
+</span><span data-line="35">
+</span><span data-line="36"><span class="k">def</span><span class="w"> </span><span class="nf">_params_from_invariants</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">invariants</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="37"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Load Parameters from config.ini bytes if present, else defaults.&quot;&quot;&quot;</span>
+</span><span data-line="38">    <span class="n">params</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">Parameters</span><span class="p">()</span>
+</span><span data-line="39">    <span class="c1"># invariants values are (StringIO, mode) or StringIO</span>
+</span><span data-line="40">    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">invariants</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span data-line="41">        <span class="n">base</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+</span><span data-line="42">        <span class="k">if</span> <span class="n">base</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;config.ini&quot;</span><span class="p">,</span> <span class="s2">&quot;config&quot;</span><span class="p">):</span>
+</span><span data-line="43">            <span class="k">continue</span>
+</span><span data-line="44">        <span class="n">content</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">val</span>
+</span><span data-line="45">        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="s2">&quot;getvalue&quot;</span><span class="p">):</span>
+</span><span data-line="46">            <span class="n">text</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+</span><span data-line="47">        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">):</span>
+</span><span data-line="48">            <span class="n">text</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span data-line="49">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="50">            <span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+</span><span data-line="51">        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">&quot;load_ini_text&quot;</span><span class="p">):</span>
+</span><span data-line="52">            <span class="n">params</span><span class="o">.</span><span class="n">load_ini_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+</span><span data-line="53">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="54">            <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+</span><span data-line="55">
+</span><span data-line="56">            <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span>
+</span><span data-line="57">                <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.ini&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span>
+</span><span data-line="58">            <span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+</span><span data-line="59">                <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+</span><span data-line="60">                <span class="n">path</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">name</span>
+</span><span data-line="61">            <span class="k">try</span><span class="p">:</span>
+</span><span data-line="62">                <span class="n">params</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="63">            <span class="k">finally</span><span class="p">:</span>
+</span><span data-line="64">                <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="65">        <span class="k">return</span> <span class="n">params</span>
+</span><span data-line="66">    <span class="n">params</span><span class="o">.</span><span class="n">potential</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">PotType</span><span class="o">.</span><span class="n">LJ</span>
+</span><span data-line="67">    <span class="n">params</span><span class="o">.</span><span class="n">quiet</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="68">    <span class="n">params</span><span class="o">.</span><span class="n">write_log</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="69">    <span class="k">return</span> <span class="n">params</span>
+</span><span data-line="70">
+</span><span data-line="71">
+</span><span data-line="72"><span class="k">def</span><span class="w"> </span><span class="nf">_structure_from_job_con</span><span class="p">(</span><span class="n">job</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pos.con&quot;</span><span class="p">):</span>
+</span><span data-line="73">    <span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">fileio</span> <span class="k">as</span> <span class="n">io</span>
+</span><span data-line="74">
+</span><span data-line="75">    <span class="n">blob</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="76">    <span class="k">if</span> <span class="n">blob</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="77">        <span class="k">raise</span> <span class="n">CommunicatorError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;job missing </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="78">    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">blob</span><span class="p">,</span> <span class="s2">&quot;getvalue&quot;</span><span class="p">):</span>
+</span><span data-line="79">        <span class="n">text</span> <span class="o">=</span> <span class="n">blob</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+</span><span data-line="80">    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">blob</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">):</span>
+</span><span data-line="81">        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">blob</span><span class="p">,</span> <span class="s2">&quot;seek&quot;</span><span class="p">):</span>
+</span><span data-line="82">            <span class="n">blob</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span data-line="83">        <span class="n">text</span> <span class="o">=</span> <span class="n">blob</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span data-line="84">    <span class="k">else</span><span class="p">:</span>
+</span><span data-line="85">        <span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">blob</span><span class="p">)</span>
+</span><span data-line="86">    <span class="k">return</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="n">StringIO</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+</span><span data-line="87">
+</span><span data-line="88">
+</span><span data-line="89"><span class="k">def</span><span class="w"> </span><span class="nf">_run_inprocess_job</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">job_kind</span><span class="p">,</span> <span class="n">matter</span><span class="p">,</span> <span class="n">pot</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span data-line="90"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Dispatch one Matter through the job type. Returns energy/status/matter.&quot;&quot;&quot;</span>
+</span><span data-line="91">    <span class="n">JT</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">JobType</span>
+</span><span data-line="92">    <span class="k">if</span> <span class="n">job_kind</span> <span class="ow">in</span> <span class="p">(</span><span class="n">JT</span><span class="o">.</span><span class="n">Minimization</span><span class="p">,</span> <span class="n">JT</span><span class="o">.</span><span class="n">Unknown</span><span class="p">):</span>
+</span><span data-line="93">        <span class="n">matter</span><span class="p">,</span> <span class="n">converged</span> <span class="o">=</span> <span class="n">matter</span><span class="o">.</span><span class="n">relax</span><span class="p">(</span>
+</span><span data-line="94">            <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">write_movie</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">checkpoint</span><span class="o">=</span><span class="kc">False</span>
+</span><span data-line="95">        <span class="p">)</span>
+</span><span data-line="96">        <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="97">            <span class="s2">&quot;matter&quot;</span><span class="p">:</span> <span class="n">matter</span><span class="p">,</span>
+</span><span data-line="98">            <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">matter</span><span class="o">.</span><span class="n">potential_energy</span><span class="p">),</span>
+</span><span data-line="99">            <span class="s2">&quot;force_calls&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">matter</span><span class="o">.</span><span class="n">force_calls</span><span class="p">),</span>
+</span><span data-line="100">            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">converged</span> <span class="k">else</span> <span class="mi">1</span><span class="p">,</span>
+</span><span data-line="101">            <span class="s2">&quot;job_type&quot;</span><span class="p">:</span> <span class="s2">&quot;minimization&quot;</span><span class="p">,</span>
+</span><span data-line="102">            <span class="s2">&quot;converged&quot;</span><span class="p">:</span> <span class="n">converged</span><span class="p">,</span>
+</span><span data-line="103">        <span class="p">}</span>
+</span><span data-line="104">    <span class="k">if</span> <span class="n">job_kind</span> <span class="o">==</span> <span class="n">JT</span><span class="o">.</span><span class="n">Point</span><span class="p">:</span>
+</span><span data-line="105">        <span class="n">energy</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">matter</span><span class="o">.</span><span class="n">potential_energy</span><span class="p">)</span>
+</span><span data-line="106">        <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="107">            <span class="s2">&quot;matter&quot;</span><span class="p">:</span> <span class="n">matter</span><span class="p">,</span>
+</span><span data-line="108">            <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="n">energy</span><span class="p">,</span>
+</span><span data-line="109">            <span class="s2">&quot;force_calls&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">matter</span><span class="o">.</span><span class="n">force_calls</span><span class="p">),</span>
+</span><span data-line="110">            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="111">            <span class="s2">&quot;job_type&quot;</span><span class="p">:</span> <span class="s2">&quot;point&quot;</span><span class="p">,</span>
+</span><span data-line="112">            <span class="s2">&quot;converged&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="113">        <span class="p">}</span>
+</span><span data-line="114">    <span class="k">if</span> <span class="n">job_kind</span> <span class="ow">in</span> <span class="p">(</span><span class="n">JT</span><span class="o">.</span><span class="n">Process_Search</span><span class="p">,</span> <span class="n">JT</span><span class="o">.</span><span class="n">Saddle_Search</span><span class="p">):</span>
+</span><span data-line="115">        <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">matter</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">matter</span><span class="p">,</span> <span class="s2">&quot;n_atoms&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span>
+</span><span data-line="116">            <span class="n">matter</span><span class="o">.</span><span class="n">positions</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span data-line="117">        <span class="p">)</span>
+</span><span data-line="118">        <span class="n">mode</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span data-line="119">        <span class="k">if</span> <span class="s2">&quot;direction.dat&quot;</span> <span class="ow">in</span> <span class="n">job</span><span class="p">:</span>
+</span><span data-line="120">            <span class="n">raw</span> <span class="o">=</span> <span class="n">job</span><span class="p">[</span><span class="s2">&quot;direction.dat&quot;</span><span class="p">]</span>
+</span><span data-line="121">            <span class="n">text</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="s2">&quot;getvalue&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+</span><span data-line="122">            <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
+</span><span data-line="123">            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">n</span><span class="p">:</span>
+</span><span data-line="124">                <span class="n">mode</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">vals</span><span class="p">[:</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">n</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</span><span data-line="125">        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="s2">&quot;ProcessSearchJob&quot;</span><span class="p">):</span>
+</span><span data-line="126">            <span class="n">job_obj</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">ProcessSearchJob</span><span class="p">(</span><span class="n">pot</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+</span><span data-line="127">            <span class="n">product</span> <span class="o">=</span> <span class="n">job_obj</span><span class="o">.</span><span class="n">run_from_matter</span><span class="p">(</span><span class="n">matter</span><span class="p">)</span>
+</span><span data-line="128">            <span class="n">saddle</span> <span class="o">=</span> <span class="n">job_obj</span><span class="o">.</span><span class="n">saddle</span>
+</span><span data-line="129">            <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="130">                <span class="s2">&quot;matter&quot;</span><span class="p">:</span> <span class="n">product</span><span class="p">,</span>
+</span><span data-line="131">                <span class="s2">&quot;saddle&quot;</span><span class="p">:</span> <span class="n">saddle</span><span class="p">,</span>
+</span><span data-line="132">                <span class="s2">&quot;min1&quot;</span><span class="p">:</span> <span class="n">job_obj</span><span class="o">.</span><span class="n">min1</span><span class="p">,</span>
+</span><span data-line="133">                <span class="s2">&quot;min2&quot;</span><span class="p">:</span> <span class="n">job_obj</span><span class="o">.</span><span class="n">min2</span><span class="p">,</span>
+</span><span data-line="134">                <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">saddle</span><span class="o">.</span><span class="n">potential_energy</span><span class="p">)</span> <span class="k">if</span> <span class="n">saddle</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="135">                <span class="s2">&quot;force_calls&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">product</span><span class="o">.</span><span class="n">force_calls</span><span class="p">)</span> <span class="k">if</span> <span class="n">product</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="136">                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="137">                <span class="s2">&quot;job_type&quot;</span><span class="p">:</span> <span class="p">(</span>
+</span><span data-line="138">                    <span class="s2">&quot;process_search&quot;</span>
+</span><span data-line="139">                    <span class="k">if</span> <span class="n">job_kind</span> <span class="o">==</span> <span class="n">JT</span><span class="o">.</span><span class="n">Process_Search</span>
+</span><span data-line="140">                    <span class="k">else</span> <span class="s2">&quot;saddle_search&quot;</span>
+</span><span data-line="141">                <span class="p">),</span>
+</span><span data-line="142">                <span class="s2">&quot;converged&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="143">            <span class="p">}</span>
+</span><span data-line="144">        <span class="n">search</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">ProcessSearch</span><span class="p">(</span><span class="n">matter</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">pot</span><span class="p">)</span>
+</span><span data-line="145">        <span class="n">reactant</span><span class="p">,</span> <span class="n">saddle</span><span class="p">,</span> <span class="n">status</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="146">        <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="147">            <span class="s2">&quot;matter&quot;</span><span class="p">:</span> <span class="n">reactant</span><span class="p">,</span>
+</span><span data-line="148">            <span class="s2">&quot;saddle&quot;</span><span class="p">:</span> <span class="n">saddle</span><span class="p">,</span>
+</span><span data-line="149">            <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">saddle</span><span class="o">.</span><span class="n">potential_energy</span><span class="p">),</span>
+</span><span data-line="150">            <span class="s2">&quot;force_calls&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">reactant</span><span class="o">.</span><span class="n">force_calls</span><span class="p">),</span>
+</span><span data-line="151">            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">status</span><span class="p">),</span>
+</span><span data-line="152">            <span class="s2">&quot;job_type&quot;</span><span class="p">:</span> <span class="p">(</span>
+</span><span data-line="153">                <span class="s2">&quot;process_search&quot;</span>
+</span><span data-line="154">                <span class="k">if</span> <span class="n">job_kind</span> <span class="o">==</span> <span class="n">JT</span><span class="o">.</span><span class="n">Process_Search</span>
+</span><span data-line="155">                <span class="k">else</span> <span class="s2">&quot;saddle_search&quot;</span>
+</span><span data-line="156">            <span class="p">),</span>
+</span><span data-line="157">            <span class="s2">&quot;converged&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">status</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="158">        <span class="p">}</span>
+</span><span data-line="159">    <span class="k">if</span> <span class="n">job_kind</span> <span class="o">==</span> <span class="n">JT</span><span class="o">.</span><span class="n">Dynamics</span><span class="p">:</span>
+</span><span data-line="160">        <span class="n">md</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">MolecularDynamics</span><span class="p">(</span><span class="n">matter</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">pot</span><span class="p">)</span>
+</span><span data-line="161">        <span class="n">matter</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="162">        <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="163">            <span class="s2">&quot;matter&quot;</span><span class="p">:</span> <span class="n">matter</span><span class="p">,</span>
+</span><span data-line="164">            <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">matter</span><span class="o">.</span><span class="n">potential_energy</span><span class="p">),</span>
+</span><span data-line="165">            <span class="s2">&quot;force_calls&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">matter</span><span class="o">.</span><span class="n">force_calls</span><span class="p">),</span>
+</span><span data-line="166">            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="167">            <span class="s2">&quot;job_type&quot;</span><span class="p">:</span> <span class="s2">&quot;dynamics&quot;</span><span class="p">,</span>
+</span><span data-line="168">            <span class="s2">&quot;converged&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="169">        <span class="p">}</span>
+</span><span data-line="170">    <span class="k">if</span> <span class="n">job_kind</span> <span class="o">==</span> <span class="n">JT</span><span class="o">.</span><span class="n">Monte_Carlo</span><span class="p">:</span>
+</span><span data-line="171">        <span class="n">mc</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">MonteCarlo</span><span class="p">(</span><span class="n">matter</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">pot</span><span class="p">)</span>
+</span><span data-line="172">        <span class="n">matter</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="173">        <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="174">            <span class="s2">&quot;matter&quot;</span><span class="p">:</span> <span class="n">matter</span><span class="p">,</span>
+</span><span data-line="175">            <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">matter</span><span class="o">.</span><span class="n">potential_energy</span><span class="p">),</span>
+</span><span data-line="176">            <span class="s2">&quot;force_calls&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">matter</span><span class="o">.</span><span class="n">force_calls</span><span class="p">),</span>
+</span><span data-line="177">            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="178">            <span class="s2">&quot;job_type&quot;</span><span class="p">:</span> <span class="s2">&quot;monte_carlo&quot;</span><span class="p">,</span>
+</span><span data-line="179">            <span class="s2">&quot;converged&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="180">        <span class="p">}</span>
+</span><span data-line="181">    <span class="k">if</span> <span class="n">job_kind</span> <span class="o">==</span> <span class="n">JT</span><span class="o">.</span><span class="n">Basin_Hopping</span><span class="p">:</span>
+</span><span data-line="182">        <span class="n">bh</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">BasinHopping</span><span class="p">(</span><span class="n">matter</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">pot</span><span class="p">)</span>
+</span><span data-line="183">        <span class="n">matter</span> <span class="o">=</span> <span class="n">bh</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="184">        <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="185">            <span class="s2">&quot;matter&quot;</span><span class="p">:</span> <span class="n">matter</span><span class="p">,</span>
+</span><span data-line="186">            <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">matter</span><span class="o">.</span><span class="n">potential_energy</span><span class="p">),</span>
+</span><span data-line="187">            <span class="s2">&quot;force_calls&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">matter</span><span class="o">.</span><span class="n">force_calls</span><span class="p">),</span>
+</span><span data-line="188">            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="189">            <span class="s2">&quot;job_type&quot;</span><span class="p">:</span> <span class="s2">&quot;basin_hopping&quot;</span><span class="p">,</span>
+</span><span data-line="190">            <span class="s2">&quot;converged&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="191">        <span class="p">}</span>
+</span><span data-line="192">    <span class="k">if</span> <span class="n">job_kind</span> <span class="o">==</span> <span class="n">JT</span><span class="o">.</span><span class="n">Hessian</span><span class="p">:</span>
+</span><span data-line="193">        <span class="n">energy</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">matter</span><span class="o">.</span><span class="n">potential_energy</span><span class="p">)</span>
+</span><span data-line="194">        <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="195">            <span class="s2">&quot;matter&quot;</span><span class="p">:</span> <span class="n">matter</span><span class="p">,</span>
+</span><span data-line="196">            <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="n">energy</span><span class="p">,</span>
+</span><span data-line="197">            <span class="s2">&quot;force_calls&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">matter</span><span class="o">.</span><span class="n">force_calls</span><span class="p">),</span>
+</span><span data-line="198">            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="199">            <span class="s2">&quot;job_type&quot;</span><span class="p">:</span> <span class="s2">&quot;hessian&quot;</span><span class="p">,</span>
+</span><span data-line="200">            <span class="s2">&quot;converged&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="201">        <span class="p">}</span>
+</span><span data-line="202">    <span class="k">if</span> <span class="n">job_kind</span> <span class="o">==</span> <span class="n">JT</span><span class="o">.</span><span class="n">Prefactor</span><span class="p">:</span>
+</span><span data-line="203">        <span class="n">energy</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">matter</span><span class="o">.</span><span class="n">potential_energy</span><span class="p">)</span>
+</span><span data-line="204">        <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="205">            <span class="s2">&quot;matter&quot;</span><span class="p">:</span> <span class="n">matter</span><span class="p">,</span>
+</span><span data-line="206">            <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="n">energy</span><span class="p">,</span>
+</span><span data-line="207">            <span class="s2">&quot;force_calls&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">matter</span><span class="o">.</span><span class="n">force_calls</span><span class="p">),</span>
+</span><span data-line="208">            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="209">            <span class="s2">&quot;job_type&quot;</span><span class="p">:</span> <span class="s2">&quot;prefactor&quot;</span><span class="p">,</span>
+</span><span data-line="210">            <span class="s2">&quot;converged&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="211">        <span class="p">}</span>
+</span><span data-line="212">    <span class="k">if</span> <span class="n">job_kind</span> <span class="o">==</span> <span class="n">JT</span><span class="o">.</span><span class="n">Finite_Difference</span><span class="p">:</span>
+</span><span data-line="213">        <span class="n">energy</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">matter</span><span class="o">.</span><span class="n">potential_energy</span><span class="p">)</span>
+</span><span data-line="214">        <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="215">            <span class="s2">&quot;matter&quot;</span><span class="p">:</span> <span class="n">matter</span><span class="p">,</span>
+</span><span data-line="216">            <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="n">energy</span><span class="p">,</span>
+</span><span data-line="217">            <span class="s2">&quot;force_calls&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">matter</span><span class="o">.</span><span class="n">force_calls</span><span class="p">),</span>
+</span><span data-line="218">            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="219">            <span class="s2">&quot;job_type&quot;</span><span class="p">:</span> <span class="s2">&quot;finite_difference&quot;</span><span class="p">,</span>
+</span><span data-line="220">            <span class="s2">&quot;converged&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="221">        <span class="p">}</span>
+</span><span data-line="222">    <span class="k">raise</span> <span class="n">CommunicatorError</span><span class="p">(</span>
+</span><span data-line="223">        <span class="sa">f</span><span class="s2">&quot;inprocess communicator has no dispatch for job type </span><span class="si">{</span><span class="n">job_kind</span><span class="si">!r}</span><span class="s2">&quot;</span>
+</span><span data-line="224">    <span class="p">)</span>
+</span><span data-line="225">
+</span><span data-line="226">
+</span><span data-line="227"><span class="k">def</span><span class="w"> </span><span class="nf">_results_dat</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">energy</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">force_calls</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">job_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="228">    <span class="k">return</span> <span class="p">(</span>
+</span><span data-line="229">        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2"> termination_reason</span><span class="se">\n</span><span class="s2">&quot;</span>
+</span><span data-line="230">        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;GOOD&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;FAIL&#39;</span><span class="si">}</span><span class="s2"> termination_reason_text</span><span class="se">\n</span><span class="s2">&quot;</span>
+</span><span data-line="231">        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">job_type</span><span class="si">}</span><span class="s2"> job_type</span><span class="se">\n</span><span class="s2">&quot;</span>
+</span><span data-line="232">        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">energy</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2"> potential_energy</span><span class="se">\n</span><span class="s2">&quot;</span>
+</span><span data-line="233">        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">force_calls</span><span class="si">}</span><span class="s2"> total_force_calls</span><span class="se">\n</span><span class="s2">&quot;</span>
+</span><span data-line="234">    <span class="p">)</span>
+</span><span data-line="235">
+</span><span data-line="236">
+</span><span data-line="237"><span class="k">class</span><span class="w"> </span><span class="nc">_LazyCon</span><span class="p">:</span>
+</span><span data-line="238"><span class="w">    </span><span class="sd">&quot;&quot;&quot;CON text only if a caller reads it (eOn-uwvr).&quot;&quot;&quot;</span>
+</span><span data-line="239">
+</span><span data-line="240">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">):</span>
+</span><span data-line="241">        <span class="bp">self</span><span class="o">.</span><span class="n">_structure</span> <span class="o">=</span> <span class="n">structure</span>
+</span><span data-line="242">        <span class="bp">self</span><span class="o">.</span><span class="n">_text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="243">
+</span><span data-line="244">    <span class="k">def</span><span class="w"> </span><span class="nf">_materialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="245">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_text</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="246">            <span class="kn">import</span><span class="w"> </span><span class="nn">eon.fileio</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fio</span>
+</span><span data-line="247">
+</span><span data-line="248">            <span class="n">buf</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+</span><span data-line="249">            <span class="n">fio</span><span class="o">.</span><span class="n">savecon</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_structure</span><span class="p">)</span>
+</span><span data-line="250">            <span class="bp">self</span><span class="o">.</span><span class="n">_text</span> <span class="o">=</span> <span class="n">buf</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+</span><span data-line="251">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_text</span>
+</span><span data-line="252">
+</span><span data-line="253">    <span class="k">def</span><span class="w"> </span><span class="nf">getvalue</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="254">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_materialize</span><span class="p">()</span>
+</span><span data-line="255">
+</span><span data-line="256">    <span class="k">def</span><span class="w"> </span><span class="nf">seek</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span><span data-line="257">        <span class="k">return</span> <span class="mi">0</span>
+</span><span data-line="258">
+</span><span data-line="259">    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="260">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_materialize</span><span class="p">()</span>
+</span><span data-line="261">
+</span><span data-line="262">
 <div class="viewcode-block" id="LocalInProcess">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator_inprocess.html#eon.communicator_inprocess.LocalInProcess">[docs]</a>
-</span><span data-line="94"><span class="k">class</span><span class="w"> </span><span class="nc">LocalInProcess</span><span class="p">(</span><span class="n">Communicator</span><span class="p">):</span>
-</span><span data-line="95"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Run client work in-process via Matter (nanobind), not a subprocess.&quot;&quot;&quot;</span>
-</span><span data-line="96">
-</span><span data-line="97">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scratchpath</span><span class="p">,</span> <span class="n">bundle_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-</span><span data-line="98">        <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="99">            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;LocalInProcess requires a ConfigClass instance&quot;</span><span class="p">)</span>
-</span><span data-line="100">        <span class="n">Communicator</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scratchpath</span><span class="p">,</span> <span class="n">bundle_size</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
-</span><span data-line="101">        <span class="bp">self</span><span class="o">.</span><span class="n">_pc</span> <span class="o">=</span> <span class="n">_require_pyeonclient</span><span class="p">()</span>
-</span><span data-line="102">        <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="103">
+</span><span data-line="263"><span class="k">class</span><span class="w"> </span><span class="nc">LocalInProcess</span><span class="p">(</span><span class="n">Communicator</span><span class="p">):</span>
+</span><span data-line="264"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Run client work in-process via Matter (nanobind), not a subprocess.&quot;&quot;&quot;</span>
+</span><span data-line="265">
+</span><span data-line="266">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scratchpath</span><span class="p">,</span> <span class="n">bundle_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span data-line="267">        <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="268">            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;LocalInProcess requires a ConfigClass instance&quot;</span><span class="p">)</span>
+</span><span data-line="269">        <span class="n">Communicator</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scratchpath</span><span class="p">,</span> <span class="n">bundle_size</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+</span><span data-line="270">        <span class="bp">self</span><span class="o">.</span><span class="n">_pc</span> <span class="o">=</span> <span class="n">_require_pyeonclient</span><span class="p">()</span>
+</span><span data-line="271">        <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="272">
 <div class="viewcode-block" id="LocalInProcess.get_queue_size">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator_inprocess.html#eon.communicator_inprocess.LocalInProcess.get_queue_size">[docs]</a>
-</span><span data-line="104">    <span class="k">def</span><span class="w"> </span><span class="nf">get_queue_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="105">        <span class="k">return</span> <span class="mi">0</span></div>
+</span><span data-line="273">    <span class="k">def</span><span class="w"> </span><span class="nf">get_queue_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="274">        <span class="k">return</span> <span class="mi">0</span></div>
 
-</span><span data-line="106">
+</span><span data-line="275">
 <div class="viewcode-block" id="LocalInProcess.get_number_in_progress">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator_inprocess.html#eon.communicator_inprocess.LocalInProcess.get_number_in_progress">[docs]</a>
-</span><span data-line="107">    <span class="k">def</span><span class="w"> </span><span class="nf">get_number_in_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="108">        <span class="k">return</span> <span class="mi">0</span></div>
+</span><span data-line="276">    <span class="k">def</span><span class="w"> </span><span class="nf">get_number_in_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="277">        <span class="k">return</span> <span class="mi">0</span></div>
 
-</span><span data-line="109">
+</span><span data-line="278">
 <div class="viewcode-block" id="LocalInProcess.cancel_state">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator_inprocess.html#eon.communicator_inprocess.LocalInProcess.cancel_state">[docs]</a>
-</span><span data-line="110">    <span class="k">def</span><span class="w"> </span><span class="nf">cancel_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
-</span><span data-line="111">        <span class="k">return</span> <span class="mi">0</span></div>
+</span><span data-line="279">    <span class="k">def</span><span class="w"> </span><span class="nf">cancel_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+</span><span data-line="280">        <span class="k">return</span> <span class="mi">0</span></div>
 
-</span><span data-line="112">
+</span><span data-line="281">
 <div class="viewcode-block" id="LocalInProcess.submit_jobs">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator_inprocess.html#eon.communicator_inprocess.LocalInProcess.submit_jobs">[docs]</a>
-</span><span data-line="113">    <span class="k">def</span><span class="w"> </span><span class="nf">submit_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">invariants</span><span class="p">):</span>
-</span><span data-line="114"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Run each job dict in-process. Supports minimization-like jobs.</span>
-</span><span data-line="115">
-</span><span data-line="116"><span class="sd">        Job dict keys (legacy file names kept for explorer compatibility):</span>
-</span><span data-line="117"><span class="sd">          * pos.con — reactant structure (StringIO of .con text)</span>
-</span><span data-line="118"><span class="sd">          * id — job id string</span>
-</span><span data-line="119"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="120">        <span class="n">pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pc</span>
-</span><span data-line="121">        <span class="n">params</span> <span class="o">=</span> <span class="n">_params_from_invariants</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">invariants</span><span class="p">)</span>
-</span><span data-line="122">        <span class="n">pot</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">make_potential</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-</span><span data-line="123">
-</span><span data-line="124">        <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-</span><span data-line="125">            <span class="n">jid</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;job&quot;</span><span class="p">)</span>
-</span><span data-line="126">            <span class="k">try</span><span class="p">:</span>
-</span><span data-line="127">                <span class="n">structure</span> <span class="o">=</span> <span class="n">_structure_from_job_con</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="s2">&quot;pos.con&quot;</span><span class="p">)</span>
-</span><span data-line="128">            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-</span><span data-line="129">                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;inprocess: failed to parse pos.con for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">jid</span><span class="p">)</span>
-</span><span data-line="130">                <span class="k">raise</span> <span class="n">CommunicatorError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
-</span><span data-line="131">
-</span><span data-line="132">            <span class="kn">from</span><span class="w"> </span><span class="nn">pyeonclient.bridge</span><span class="w"> </span><span class="kn">import</span> <span class="n">structure_to_matter</span><span class="p">,</span> <span class="n">matter_to_structure</span>
-</span><span data-line="133">
-</span><span data-line="134">            <span class="n">matter</span> <span class="o">=</span> <span class="n">structure_to_matter</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">pot</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
-</span><span data-line="135">            <span class="c1"># Default job for in-process path: minimize (Matter.relax).</span>
-</span><span data-line="136">            <span class="c1"># Full JobType dispatch lands as more C++ entry points are bound.</span>
-</span><span data-line="137">            <span class="c1"># relax returns (Matter, converged: bool); default is non-inplace.</span>
-</span><span data-line="138">            <span class="n">matter</span><span class="p">,</span> <span class="n">converged</span> <span class="o">=</span> <span class="n">matter</span><span class="o">.</span><span class="n">relax</span><span class="p">(</span>
-</span><span data-line="139">                <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">write_movie</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">checkpoint</span><span class="o">=</span><span class="kc">False</span>
-</span><span data-line="140">            <span class="p">)</span>
-</span><span data-line="141">            <span class="n">out</span> <span class="o">=</span> <span class="n">matter_to_structure</span><span class="p">(</span><span class="n">matter</span><span class="p">)</span>
-</span><span data-line="142">
-</span><span data-line="143">            <span class="kn">import</span><span class="w"> </span><span class="nn">eon.fileio</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fio</span>
-</span><span data-line="144">
-</span><span data-line="145">            <span class="n">min_io</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
-</span><span data-line="146">            <span class="n">fio</span><span class="o">.</span><span class="n">savecon</span><span class="p">(</span><span class="n">min_io</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
-</span><span data-line="147">            <span class="n">min_io</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-</span><span data-line="148">
-</span><span data-line="149">            <span class="n">energy</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">matter</span><span class="o">.</span><span class="n">potential_energy</span><span class="p">)</span>
-</span><span data-line="150">            <span class="n">fcalls</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">matter</span><span class="o">.</span><span class="n">force_calls</span><span class="p">)</span>
-</span><span data-line="151">            <span class="n">status</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">converged</span> <span class="k">else</span> <span class="mi">1</span>
-</span><span data-line="152">            <span class="n">results</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span>
-</span><span data-line="153">                <span class="n">_results_dat</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">energy</span><span class="p">,</span> <span class="n">fcalls</span><span class="p">,</span> <span class="s2">&quot;minimization&quot;</span><span class="p">)</span>
-</span><span data-line="154">            <span class="p">)</span>
-</span><span data-line="155">
-</span><span data-line="156">            <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-</span><span data-line="157">                <span class="p">{</span>
-</span><span data-line="158">                    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">jid</span><span class="p">,</span>
-</span><span data-line="159">                    <span class="c1"># Bundle index within the job, as the file-based</span>
-</span><span data-line="160">                    <span class="c1"># communicators set it; one task per job here.</span>
-</span><span data-line="161">                    <span class="s2">&quot;number&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-</span><span data-line="162">                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">jid</span><span class="p">),</span>
-</span><span data-line="163">                    <span class="s2">&quot;min.con&quot;</span><span class="p">:</span> <span class="n">min_io</span><span class="p">,</span>
-</span><span data-line="164">                    <span class="s2">&quot;results.dat&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">,</span>
-</span><span data-line="165">                    <span class="c1"># also expose Matter for callers that want zero re-parse</span>
-</span><span data-line="166">                    <span class="s2">&quot;_matter&quot;</span><span class="p">:</span> <span class="n">matter</span><span class="p">,</span>
-</span><span data-line="167">                    <span class="s2">&quot;_structure&quot;</span><span class="p">:</span> <span class="n">out</span><span class="p">,</span>
-</span><span data-line="168">                    <span class="s2">&quot;_energy&quot;</span><span class="p">:</span> <span class="n">energy</span><span class="p">,</span>
-</span><span data-line="169">                    <span class="s2">&quot;_converged&quot;</span><span class="p">:</span> <span class="n">converged</span><span class="p">,</span>
-</span><span data-line="170">                <span class="p">}</span>
-</span><span data-line="171">            <span class="p">)</span>
-</span><span data-line="172">            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-</span><span data-line="173">                <span class="s2">&quot;inprocess job </span><span class="si">%s</span><span class="s2">: converged=</span><span class="si">%s</span><span class="s2"> E=</span><span class="si">%.6f</span><span class="s2"> fcalls=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-</span><span data-line="174">                <span class="n">jid</span><span class="p">,</span>
-</span><span data-line="175">                <span class="n">converged</span><span class="p">,</span>
-</span><span data-line="176">                <span class="n">energy</span><span class="p">,</span>
-</span><span data-line="177">                <span class="n">fcalls</span><span class="p">,</span>
-</span><span data-line="178">            <span class="p">)</span></div>
+</span><span data-line="282">    <span class="k">def</span><span class="w"> </span><span class="nf">submit_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">invariants</span><span class="p">):</span>
+</span><span data-line="283"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Run each job dict in-process. Supports minimization-like jobs.</span>
+</span><span data-line="284">
+</span><span data-line="285"><span class="sd">        Job dict keys (legacy file names kept for explorer compatibility):</span>
+</span><span data-line="286"><span class="sd">          * pos.con — reactant structure (StringIO of .con text)</span>
+</span><span data-line="287"><span class="sd">          * id — job id string</span>
+</span><span data-line="288"><span class="sd">        Dispatch follows Parameters.job (minimization, point, process_search,</span>
+</span><span data-line="289"><span class="sd">        saddle_search). Other types raise CommunicatorError.</span>
+</span><span data-line="290"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="291">        <span class="n">pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pc</span>
+</span><span data-line="292">        <span class="n">params</span> <span class="o">=</span> <span class="n">_params_from_invariants</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">invariants</span><span class="p">)</span>
+</span><span data-line="293">        <span class="n">pot</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">make_potential</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+</span><span data-line="294">        <span class="n">job_kind</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">&quot;job&quot;</span><span class="p">,</span> <span class="n">pc</span><span class="o">.</span><span class="n">JobType</span><span class="o">.</span><span class="n">Minimization</span><span class="p">)</span>
+</span><span data-line="295">
+</span><span data-line="296">        <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+</span><span data-line="297">            <span class="n">jid</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;job&quot;</span><span class="p">)</span>
+</span><span data-line="298">            <span class="k">try</span><span class="p">:</span>
+</span><span data-line="299">                <span class="n">structure</span> <span class="o">=</span> <span class="n">_structure_from_job_con</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="s2">&quot;pos.con&quot;</span><span class="p">)</span>
+</span><span data-line="300">            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="301">                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;inprocess: failed to parse pos.con for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">jid</span><span class="p">)</span>
+</span><span data-line="302">                <span class="k">raise</span> <span class="n">CommunicatorError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+</span><span data-line="303">
+</span><span data-line="304">            <span class="kn">from</span><span class="w"> </span><span class="nn">pyeonclient.bridge</span><span class="w"> </span><span class="kn">import</span> <span class="n">structure_to_matter</span><span class="p">,</span> <span class="n">matter_to_structure</span>
+</span><span data-line="305">
+</span><span data-line="306">            <span class="n">matter</span> <span class="o">=</span> <span class="n">structure_to_matter</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">pot</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+</span><span data-line="307">            <span class="n">payload</span> <span class="o">=</span> <span class="n">_run_inprocess_job</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">job_kind</span><span class="p">,</span> <span class="n">matter</span><span class="p">,</span> <span class="n">pot</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">job</span><span class="p">)</span>
+</span><span data-line="308">            <span class="n">matter</span> <span class="o">=</span> <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;matter&quot;</span><span class="p">]</span>
+</span><span data-line="309">            <span class="n">out</span> <span class="o">=</span> <span class="n">matter_to_structure</span><span class="p">(</span><span class="n">matter</span><span class="p">)</span>
+</span><span data-line="310">
+</span><span data-line="311">            <span class="n">energy</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">payload</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">])</span>
+</span><span data-line="312">            <span class="n">fcalls</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">payload</span><span class="p">[</span><span class="s2">&quot;force_calls&quot;</span><span class="p">])</span>
+</span><span data-line="313">            <span class="n">status</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">payload</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">])</span>
+</span><span data-line="314">            <span class="n">jname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">payload</span><span class="p">[</span><span class="s2">&quot;job_type&quot;</span><span class="p">])</span>
+</span><span data-line="315">            <span class="n">results</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">_results_dat</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">energy</span><span class="p">,</span> <span class="n">fcalls</span><span class="p">,</span> <span class="n">jname</span><span class="p">))</span>
+</span><span data-line="316">
+</span><span data-line="317">            <span class="n">rec</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="318">                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">jid</span><span class="p">,</span>
+</span><span data-line="319">                <span class="s2">&quot;number&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="320">                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">jid</span><span class="p">),</span>
+</span><span data-line="321">                <span class="s2">&quot;_structure&quot;</span><span class="p">:</span> <span class="n">out</span><span class="p">,</span>
+</span><span data-line="322">                <span class="s2">&quot;min.con&quot;</span><span class="p">:</span> <span class="n">_LazyCon</span><span class="p">(</span><span class="n">out</span><span class="p">),</span>
+</span><span data-line="323">                <span class="s2">&quot;results.dat&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">,</span>
+</span><span data-line="324">                <span class="s2">&quot;_matter&quot;</span><span class="p">:</span> <span class="n">matter</span><span class="p">,</span>
+</span><span data-line="325">                <span class="s2">&quot;_structure&quot;</span><span class="p">:</span> <span class="n">out</span><span class="p">,</span>
+</span><span data-line="326">                <span class="s2">&quot;_energy&quot;</span><span class="p">:</span> <span class="n">energy</span><span class="p">,</span>
+</span><span data-line="327">                <span class="s2">&quot;_converged&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;converged&quot;</span><span class="p">,</span> <span class="n">status</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)),</span>
+</span><span data-line="328">            <span class="p">}</span>
+</span><span data-line="329">            <span class="k">if</span> <span class="n">payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;saddle&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="330">                <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;_saddle&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;saddle&quot;</span><span class="p">]</span>
+</span><span data-line="331">                <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;saddle.con&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_LazyCon</span><span class="p">(</span>
+</span><span data-line="332">                    <span class="n">matter_to_structure</span><span class="p">(</span><span class="n">payload</span><span class="p">[</span><span class="s2">&quot;saddle&quot;</span><span class="p">])</span>
+</span><span data-line="333">                <span class="p">)</span>
+</span><span data-line="334">            <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
+</span><span data-line="335">            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+</span><span data-line="336">                <span class="s2">&quot;inprocess job </span><span class="si">%s</span><span class="s2"> type=</span><span class="si">%s</span><span class="s2"> status=</span><span class="si">%s</span><span class="s2"> E=</span><span class="si">%.6f</span><span class="s2"> fcalls=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span data-line="337">                <span class="n">jid</span><span class="p">,</span>
+</span><span data-line="338">                <span class="n">jname</span><span class="p">,</span>
+</span><span data-line="339">                <span class="n">status</span><span class="p">,</span>
+</span><span data-line="340">                <span class="n">energy</span><span class="p">,</span>
+</span><span data-line="341">                <span class="n">fcalls</span><span class="p">,</span>
+</span><span data-line="342">            <span class="p">)</span></div>
 
-</span><span data-line="179">
+</span><span data-line="343">
 <div class="viewcode-block" id="LocalInProcess.get_results">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator_inprocess.html#eon.communicator_inprocess.LocalInProcess.get_results">[docs]</a>
-</span><span data-line="180">    <span class="k">def</span><span class="w"> </span><span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resultspath</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_result</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-</span><span data-line="181"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return finished job dicts (legacy StringIO + Matter fields).&quot;&quot;&quot;</span>
-</span><span data-line="182">        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span>
-</span><span data-line="183">        <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="184">        <span class="c1"># Compatibility: some callers expect a list of lists from unbundle</span>
-</span><span data-line="185">        <span class="k">if</span> <span class="ow">not</span> <span class="n">out</span><span class="p">:</span>
-</span><span data-line="186">            <span class="k">return</span> <span class="p">[]</span>
-</span><span data-line="187">        <span class="k">return</span> <span class="n">out</span></div>
+</span><span data-line="344">    <span class="k">def</span><span class="w"> </span><span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resultspath</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_result</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span data-line="345"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return finished job dicts (legacy StringIO + Matter fields).&quot;&quot;&quot;</span>
+</span><span data-line="346">        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span>
+</span><span data-line="347">        <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="348">        <span class="c1"># Compatibility: some callers expect a list of lists from unbundle</span>
+</span><span data-line="349">        <span class="k">if</span> <span class="ow">not</span> <span class="n">out</span><span class="p">:</span>
+</span><span data-line="350">            <span class="k">return</span> <span class="p">[]</span>
+</span><span data-line="351">        <span class="k">return</span> <span class="n">out</span></div>
 </div>
 
 </span></pre></div>
@@ -658,7 +832,7 @@ data-aria-dark="Switch to auto color mode">
     </div>
   </div>
 </footer>
-      <script src="../../_static/documentation_options.js?v=eb155f5e"></script>
+      <script src="../../_static/documentation_options.js?v=b5dcbc37"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>

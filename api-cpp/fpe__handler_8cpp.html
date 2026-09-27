@@ -240,11 +240,17 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('fpe__handler_8
 <div class="textblock"><code>#include &quot;<a class="el" href="fpe__handler_8h_source.html">eon/fpe_handler.h</a>&quot;</code><br />
 <code>#include &lt;cfenv&gt;</code><br />
 <code>#include &lt;csignal&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
 <code>#include &lt;cstdio&gt;</code><br />
 <code>#include &lt;unistd.h&gt;</code><br />
 </div>
 <p><a href="fpe__handler_8cpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:eonc_3A_3ADecodedDiv" id="r_eonc_3A_3ADecodedDiv"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1DecodedDiv.html">eonc::DecodedDiv</a></td></tr>
+<tr class="memitem:eonc_3A_3AX86DivRegs" id="r_eonc_3A_3AX86DivRegs"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1X86DivRegs.html">eonc::X86DivRegs</a></td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-namespaces" class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:eonc" id="r_eonc"><td class="memItemLeft">namespace &#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html">eonc</a></td></tr>
@@ -252,6 +258,10 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ae6b4d913cbbc345faa8f1b014fbe4eff" id="r_ae6b4d913cbbc345faa8f1b014fbe4eff"><td class="memItemLeft">static <a class="el" href="structeonc_1_1DecodedDiv.html">DecodedDiv</a>&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#ae6b4d913cbbc345faa8f1b014fbe4eff">eonc::decode_div_insn</a> (const unsigned char *code, bool long_mode)</td></tr>
+<tr class="memitem:ad83e2871aa2250db953026f298a24f24" id="r_ad83e2871aa2250db953026f298a24f24"><td class="memItemLeft">static <a class="el" href="structeonc_1_1X86DivRegs.html">X86DivRegs</a>&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#ad83e2871aa2250db953026f298a24f24">eonc::x86_div_regs</a> (void *scp)</td></tr>
+<tr class="memitem:a99e3825ace306ac0d92510fe8a6eab47" id="r_a99e3825ace306ac0d92510fe8a6eab47"><td class="memItemLeft">static bool&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a99e3825ace306ac0d92510fe8a6eab47">eonc::advance_integer_div</a> (void *scp)</td></tr>
+<tr class="memitem:a16bcdf7c9726cafa769e1a7b99b8048e" id="r_a16bcdf7c9726cafa769e1a7b99b8048e"><td class="memItemLeft">static void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a16bcdf7c9726cafa769e1a7b99b8048e">eonc::write_fault_rip</a> (void *scp)</td></tr>
 <tr class="memitem:a51919213af54512d30570d7053b3a8a3" id="r_a51919213af54512d30570d7053b3a8a3"><td class="memItemLeft">static void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a51919213af54512d30570d7053b3a8a3">eonc::fpe_signal_handler</a> (int sig, siginfo_t *sip, void *scp)</td></tr>
 <tr class="memitem:ac546b01c933b83b114fa0e53ff93ed9d" id="r_ac546b01c933b83b114fa0e53ff93ed9d"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#ac546b01c933b83b114fa0e53ff93ed9d">eonc::enableFPE</a> ()</td></tr>
 <tr class="memitem:af1498c1ea50b21c6c40b704ff85d867c" id="r_af1498c1ea50b21c6c40b704ff85d867c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#af1498c1ea50b21c6c40b704ff85d867c">eonc::disableFPE</a> ()</td></tr>

@@ -1,9 +1,11 @@
 var classSocketNWChemPot =
 [
-    [ "SocketNWChemPot", "classSocketNWChemPot.html#abfdced3d3b950691fad19cb98b327c92", null ],
+    [ "SocketNWChemPot", "classSocketNWChemPot.html#ae8b1ca5d862bdd8b468d128e02d5e243", null ],
     [ "~SocketNWChemPot", "classSocketNWChemPot.html#a1363323fdfd2f4bd6f9d0399e048bc8d", null ],
     [ "accept_connection", "classSocketNWChemPot.html#adbdd7fd9ee94aa095ac8ebeab8d95a23", null ],
+    [ "drop_connection", "classSocketNWChemPot.html#aceab721040534b74e7ba44b180715089", null ],
     [ "force", "classSocketNWChemPot.html#acb7244cf6eebf04c3281f29bec72ef3a", null ],
+    [ "forceOnce", "classSocketNWChemPot.html#af427d30239468667d8373b61bea65477", null ],
     [ "isThreadSafe", "classSocketNWChemPot.html#a1c3d7d3852d7bffa52051833c1f018e7", null ],
     [ "recv_exact", "classSocketNWChemPot.html#a292c257368501d85ff6196bda2f69d42", null ],
     [ "recv_header", "classSocketNWChemPot.html#a7ecdffb2e62b8558799819acad409d93", null ],

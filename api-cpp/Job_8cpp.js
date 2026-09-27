@@ -1,4 +1,5 @@
 var Job_8cpp =
 [
-    [ "eonc::helpers::makeJob", "namespaceeonc_1_1helpers.html#a9c381333c273bde2e2ed47adefca7db3", null ]
+    [ "EON_REG_JOB", "Job_8cpp.html#adc511ff33c638bf6a73527f7d33cb02b", null ],
+    [ "eonc::forceJobRegistration", "namespaceeonc.html#a639209af6a7105d7eaf94f0dbee199c4", null ]
 ];

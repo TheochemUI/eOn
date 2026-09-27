@@ -240,12 +240,12 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('namespacehelpe
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a8eba452b38ecf185a69a5a38fe692dba" id="r_a8eba452b38ecf185a69a5a38fe692dba"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
-<tr class="memitem:a8eba452b38ecf185a69a5a38fe692dba template"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classSurrogatePotential.html">SurrogatePotential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a8eba452b38ecf185a69a5a38fe692dba">makeSurrogatePotential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> a_ptype, const <a class="el" href="classParameters.html">Parameters</a> &amp;a_params, Args &amp;&amp;...a_args)</td></tr>
+<tr class="memitem:aeaf85e03354f1952d1355e96eb7c3764" id="r_aeaf85e03354f1952d1355e96eb7c3764"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
+<tr class="memitem:aeaf85e03354f1952d1355e96eb7c3764 template"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classeonc_1_1SurrogatePotential.html">eonc::SurrogatePotential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#aeaf85e03354f1952d1355e96eb7c3764">makeSurrogatePotential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">eonc::PotType</a> a_ptype, const <a class="el" href="classeonc_1_1Parameters.html">eonc::Parameters</a> &amp;a_params, Args &amp;&amp;...a_args)</td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
-<a id="a8eba452b38ecf185a69a5a38fe692dba" name="a8eba452b38ecf185a69a5a38fe692dba"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8eba452b38ecf185a69a5a38fe692dba">&#9670;&#160;</a></span>makeSurrogatePotential()</h2>
+<a id="aeaf85e03354f1952d1355e96eb7c3764" name="aeaf85e03354f1952d1355e96eb7c3764"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeaf85e03354f1952d1355e96eb7c3764">&#9670;&#160;</a></span>makeSurrogatePotential()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -253,14 +253,14 @@ Functions</h2></td></tr>
 template&lt;typename... Args&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt; <a class="el" href="classSurrogatePotential.html">SurrogatePotential</a> &gt; helpers::create::makeSurrogatePotential </td>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="classeonc_1_1SurrogatePotential.html">eonc::SurrogatePotential</a> &gt; helpers::create::makeSurrogatePotential </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a></td>          <td class="paramname"><span class="paramname"><em>a_ptype</em></span>, </td>
+          <td class="paramtype"><a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">eonc::PotType</a></td>          <td class="paramname"><span class="paramname"><em>a_ptype</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>a_params</em></span>, </td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">eonc::Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>a_params</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -275,7 +275,7 @@ template&lt;typename... Args&gt; </div>
 <div class="line"><span class="lineno">   24</span>  <span class="keywordflow">switch</span> (a_ptype) {</div>
 <div class="line"><span class="lineno">   25</span>    <span class="comment">// TODO: Every potential must know their own type</span></div>
 <div class="line"><span class="lineno">   26</span><span class="preprocessor">#ifdef WITH_CATLEARN</span></div>
-<div class="line"><span class="lineno">   27</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a77af44909b5b423b7eb348c87d14112d">PotType::CatLearn</a>: {</div>
+<div class="line"><span class="lineno">   27</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a77af44909b5b423b7eb348c87d14112d">eonc::PotType::CatLearn</a>: {</div>
 <div class="line"><span class="lineno">   28</span>    <span class="keywordflow">return</span> (std::make_shared&lt;CatLearnPot&gt;(a_params));</div>
 <div class="line"><span class="lineno">   29</span>    <span class="keywordflow">break</span>;</div>
 <div class="line"><span class="lineno">   30</span>  }</div>

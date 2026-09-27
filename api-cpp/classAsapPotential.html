@@ -281,14 +281,14 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aeb5631b291c450ba4344a55f87ee5bdf" id="r_aeb5631b291c450ba4344a55f87ee5bdf"><td class="memItemLeft">virtual double&#160;</td><td class="memItemRight"><a class="el" href="#aeb5631b291c450ba4344a55f87ee5bdf">GetLatticeConstant</a> () const =0</td></tr>
 <tr class="memdesc:aeb5631b291c450ba4344a55f87ee5bdf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the lattice constant of the material, if well-defined.  <br /></td></tr>
 <tr class="memitem:aa476373048cae08d073c7320b821a74d" id="r_aa476373048cae08d073c7320b821a74d"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#aa476373048cae08d073c7320b821a74d">UpdateSuperCell</a> (const <a class="el" href="classSuperCell.html">SuperCell</a> *newSuperCell)=0</td></tr>
-<tr class="memdesc:aa476373048cae08d073c7320b821a74d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tell the <a class="el" href="classPotential.html">Potential</a> that a new <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a> has been assigned to the atoms.  <br /></td></tr>
+<tr class="memdesc:aa476373048cae08d073c7320b821a74d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tell the Potential that a new <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a> has been assigned to the atoms.  <br /></td></tr>
 <tr class="memitem:a61edea066684292304cd7c7db2c29526" id="r_a61edea066684292304cd7c7db2c29526"><td class="memItemLeft">virtual int&#160;</td><td class="memItemRight"><a class="el" href="#a61edea066684292304cd7c7db2c29526">GetNumberOfAtoms</a> () const =0</td></tr>
 <tr class="memdesc:a61edea066684292304cd7c7db2c29526"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of atoms.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Abstract base class of all potentials. </p>
-<p>A <a class="el" href="classPotential.html">Potential</a> calculates forces, energies and stresses for a list of atoms. A given instance of a <a class="el" href="classPotential.html">Potential</a> is associated with a specific <a class="el" href="classAtoms.html" title="The main list of atoms class.">Atoms</a> object on a one-to-one bases, this is established when <a class="el" href="classAtoms.html#ad780d71a08da3198ddc635a1f90462ea" title="Set a Potential. An eventual old Potential is not deallocated.">Atoms.SetCalculator()</a> is called.</p>
-<p>Two types of classes are derived from <a class="el" href="classPotential.html">Potential</a>.</p><ul>
+<p>A Potential calculates forces, energies and stresses for a list of atoms. A given instance of a Potential is associated with a specific <a class="el" href="classAtoms.html" title="The main list of atoms class.">Atoms</a> object on a one-to-one bases, this is established when <a class="el" href="classAtoms.html#ad780d71a08da3198ddc635a1f90462ea" title="Set a Potential. An eventual old Potential is not deallocated.">Atoms.SetCalculator()</a> is called.</p>
+<p>Two types of classes are derived from Potential.</p><ul>
 <li>Concrete implementations of potentials, such as <a class="el" href="classEMT.html" title="The Effective Medium Theory (EMT) potential.">EMT</a> and MoPotential.</li>
 <li>Potentials wrapping concrete implementations, but providing special functionalily, such as ParallelPotential (implementing parallel simulations) or QCPotential (implementing the QuasiContinuum method). </li>
 </ul>
@@ -752,7 +752,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Tell the <a class="el" href="classPotential.html">Potential</a> that a new <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a> has been assigned to the atoms. </p>
+<p>Tell the Potential that a new <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a> has been assigned to the atoms. </p>
 
 <p>Implemented in <a class="el" href="classEMT.html#a352c3d0d14fa977614e016ddf5c362ba">EMT</a>.</p>
 

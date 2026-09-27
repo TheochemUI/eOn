@@ -246,10 +246,10 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classeonc_1_1O
  <div class="center">
   <img src="classeonc_1_1ObjectiveFunction.png" usemap="#eonc_3A_3AObjectiveFunction_map" alt=""/>
   <map id="eonc_3A_3AObjectiveFunction_map" name="eonc_3A_3AObjectiveFunction_map">
-<area href="classBGSDObjectiveFunction.html" alt="BGSDObjectiveFunction" shape="rect" coords="0,56,233,80"/>
-<area href="classMinModeObjectiveFunction.html" alt="MinModeObjectiveFunction" shape="rect" coords="243,56,476,80"/>
-<area href="classeonc_1_1CollectiveIDPPObjectiveFunction.html" alt="eonc::CollectiveIDPPObjectiveFunction" shape="rect" coords="486,56,719,80"/>
-<area href="classeonc_1_1IDPPObjectiveFunction.html" alt="eonc::IDPPObjectiveFunction" shape="rect" coords="729,56,962,80"/>
+<area href="classeonc_1_1BGSDObjectiveFunction.html" alt="eonc::BGSDObjectiveFunction" shape="rect" coords="0,56,233,80"/>
+<area href="classeonc_1_1CollectiveIDPPObjectiveFunction.html" alt="eonc::CollectiveIDPPObjectiveFunction" shape="rect" coords="243,56,476,80"/>
+<area href="classeonc_1_1IDPPObjectiveFunction.html" alt="eonc::IDPPObjectiveFunction" shape="rect" coords="486,56,719,80"/>
+<area href="classeonc_1_1MinModeObjectiveFunction.html" alt="eonc::MinModeObjectiveFunction" shape="rect" coords="729,56,962,80"/>
 <area href="classeonc_1_1NEBObjectiveFunction.html" alt="eonc::NEBObjectiveFunction" shape="rect" coords="972,56,1205,80"/>
 <area href="classeonc_1_1ZBLRepulsiveIDPPObjective.html" alt="eonc::ZBLRepulsiveIDPPObjective" shape="rect" coords="1215,56,1448,80"/>
   </map>
@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classeonc_1_1O
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7539f6688c5b9e68654bf0a8762e8c34" id="r_a7539f6688c5b9e68654bf0a8762e8c34"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a7539f6688c5b9e68654bf0a8762e8c34">ObjectiveFunction</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;paramsPassed)</td></tr>
+<tr class="memitem:a7539f6688c5b9e68654bf0a8762e8c34" id="r_a7539f6688c5b9e68654bf0a8762e8c34"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a7539f6688c5b9e68654bf0a8762e8c34">ObjectiveFunction</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;paramsPassed)</td></tr>
 <tr class="memitem:a2757b1b7f7d80d47c033ee32adb8d667" id="r_a2757b1b7f7d80d47c033ee32adb8d667"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="#a2757b1b7f7d80d47c033ee32adb8d667">~ObjectiveFunction</a> ()</td></tr>
 <tr class="memitem:ac33d8c01a468c94e97e46add563a21c2" id="r_ac33d8c01a468c94e97e46add563a21c2"><td class="memItemLeft">virtual double&#160;</td><td class="memItemRight"><a class="el" href="#ac33d8c01a468c94e97e46add563a21c2">getEnergy</a> ()=0</td></tr>
 <tr class="memitem:a2cde804855ed7d58658f912636254352" id="r_a2cde804855ed7d58658f912636254352"><td class="memItemLeft">virtual VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a2cde804855ed7d58658f912636254352">getGradient</a> (bool fdstep=false)=0</td></tr>
@@ -267,10 +267,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a90d7874f2d2686d628c9d6057f841925" id="r_a90d7874f2d2686d628c9d6057f841925"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a90d7874f2d2686d628c9d6057f841925">isConverged</a> ()=0</td></tr>
 <tr class="memitem:adb5aa05d56bdb3f5eca741688f4f4e2d" id="r_adb5aa05d56bdb3f5eca741688f4f4e2d"><td class="memItemLeft">virtual double&#160;</td><td class="memItemRight"><a class="el" href="#adb5aa05d56bdb3f5eca741688f4f4e2d">getConvergence</a> ()=0</td></tr>
 <tr class="memitem:a71d9f4b931fccd6ae74a054a92ab1fa9" id="r_a71d9f4b931fccd6ae74a054a92ab1fa9"><td class="memItemLeft">virtual VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a71d9f4b931fccd6ae74a054a92ab1fa9">difference</a> (const VectorXd &amp;a, const VectorXd &amp;b)=0</td></tr>
+<tr class="memitem:af3271abcddd3c2ec4808a5b3f25e4b77" id="r_af3271abcddd3c2ec4808a5b3f25e4b77"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#af3271abcddd3c2ec4808a5b3f25e4b77">minimumImage</a> (Eigen::Ref&lt; Eigen::Vector3d &gt;) const</td></tr>
+<tr class="memitem:a8f2672688adbd931070f00fa29b72be8" id="r_a8f2672688adbd931070f00fa29b72be8"><td class="memItemLeft">virtual VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a8f2672688adbd931070f00fa29b72be8">getMasses</a> () const</td></tr>
+<tr class="memitem:a9026e74111d5f55078d5c5f8a47501aa" id="r_a9026e74111d5f55078d5c5f8a47501aa"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a9026e74111d5f55078d5c5f8a47501aa">getPeriodic</a> () const</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a9d74eea28a1c17f36202adff592ca871" id="r_a9d74eea28a1c17f36202adff592ca871"><td class="memItemLeft">const <a class="el" href="classParameters.html">Parameters</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a9d74eea28a1c17f36202adff592ca871">params</a></td></tr>
+<tr class="memitem:a9d74eea28a1c17f36202adff592ca871" id="r_a9d74eea28a1c17f36202adff592ca871"><td class="memItemLeft">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a9d74eea28a1c17f36202adff592ca871">params</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
@@ -288,7 +291,7 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="memname">eonc::ObjectiveFunction::ObjectiveFunction </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>paramsPassed</em></span></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>paramsPassed</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -300,7 +303,7 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00023">23</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   24</span>      : <a class="code hl_variable" href="#a9d74eea28a1c17f36202adff592ca871">params</a>{paramsPassed} {}</div>
+<div class="fragment"><div class="line"><span class="lineno">   23</span>: <a class="code hl_variable" href="#a9d74eea28a1c17f36202adff592ca871">params</a>{paramsPassed} {}</div>
 <div class="ttc" id="aclasseonc_1_1ObjectiveFunction_html_a9d74eea28a1c17f36202adff592ca871"><div class="ttname"><a href="#a9d74eea28a1c17f36202adff592ca871">eonc::ObjectiveFunction::params</a></div><div class="ttdeci">const Parameters &amp; params</div><div class="ttdef"><b>Definition</b> <a href="ObjectiveFunction_8h_source.html#l00020">ObjectiveFunction.h:20</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -328,8 +331,8 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00025">25</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   25</span>{}</div>
+<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00024">24</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   24</span>{}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -357,7 +360,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classBGSDObjectiveFunction.html#a0a51bd99424b95d6c3b768148fb0f680">BGSDObjectiveFunction</a>, <a class="el" href="classCollectiveIDPPObjectiveFunction.html#a6ff974cc9d2eb6cdde24300f3fc97547">CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a6ff974cc9d2eb6cdde24300f3fc97547">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1IDPPObjectiveFunction.html#af122751dbfc3a322ea3734b8e473bb51">eonc::IDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#a92ed948a28008df6b03cafd75b4eef7c">eonc::NEBObjectiveFunction</a>, <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a2db7b0646c93dd8f037aacce32bc2bac">eonc::ZBLRepulsiveIDPPObjective</a>, <a class="el" href="classIDPPObjectiveFunction.html#af122751dbfc3a322ea3734b8e473bb51">IDPPObjectiveFunction</a>, <a class="el" href="classMinModeObjectiveFunction.html#a73e89f58d6346a89041667afb68eaaaa">MinModeObjectiveFunction</a>, <a class="el" href="classNEBObjectiveFunction.html#a92ed948a28008df6b03cafd75b4eef7c">NEBObjectiveFunction</a>, and <a class="el" href="classZBLRepulsiveIDPPObjective.html#a2db7b0646c93dd8f037aacce32bc2bac">ZBLRepulsiveIDPPObjective</a>.</p>
+<p>Implemented in <a class="el" href="classeonc_1_1BGSDObjectiveFunction.html#aaa49dbb934dea5d2c809f02e3036d48d">eonc::BGSDObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a6ff974cc9d2eb6cdde24300f3fc97547">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1IDPPObjectiveFunction.html#af122751dbfc3a322ea3734b8e473bb51">eonc::IDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1MinModeObjectiveFunction.html#a61906eb047a60894ec776d64b05e2573">eonc::MinModeObjectiveFunction</a>, <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#a92ed948a28008df6b03cafd75b4eef7c">eonc::NEBObjectiveFunction</a>, and <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a2db7b0646c93dd8f037aacce32bc2bac">eonc::ZBLRepulsiveIDPPObjective</a>.</p>
 
 </div>
 </div>
@@ -388,7 +391,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classBGSDObjectiveFunction.html#a5ba8998b09ce17ff031e44e0cdb868c2">BGSDObjectiveFunction</a>, <a class="el" href="classCollectiveIDPPObjectiveFunction.html#ad496eb626fec44af03540624e2ae653f">CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad496eb626fec44af03540624e2ae653f">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1IDPPObjectiveFunction.html#aae8432293c167a5114b824d4e37e56a4">eonc::IDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#a851585537077d6e16539cce87b5b697f">eonc::NEBObjectiveFunction</a>, <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a7419c7080be96e36b654b3615928b5ac">eonc::ZBLRepulsiveIDPPObjective</a>, <a class="el" href="classIDPPObjectiveFunction.html#aae8432293c167a5114b824d4e37e56a4">IDPPObjectiveFunction</a>, <a class="el" href="classMinModeObjectiveFunction.html#ab683416163509dda5ea8cd95281f2da1">MinModeObjectiveFunction</a>, <a class="el" href="classNEBObjectiveFunction.html#a851585537077d6e16539cce87b5b697f">NEBObjectiveFunction</a>, and <a class="el" href="classZBLRepulsiveIDPPObjective.html#a7419c7080be96e36b654b3615928b5ac">ZBLRepulsiveIDPPObjective</a>.</p>
+<p>Implemented in <a class="el" href="classeonc_1_1BGSDObjectiveFunction.html#a83ad2a6b760c7dacbaccf2733e4c5ca1">eonc::BGSDObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad496eb626fec44af03540624e2ae653f">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1IDPPObjectiveFunction.html#aae8432293c167a5114b824d4e37e56a4">eonc::IDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1MinModeObjectiveFunction.html#a916915d7c2933667ade677719a6f1b38">eonc::MinModeObjectiveFunction</a>, <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#a851585537077d6e16539cce87b5b697f">eonc::NEBObjectiveFunction</a>, and <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a7419c7080be96e36b654b3615928b5ac">eonc::ZBLRepulsiveIDPPObjective</a>.</p>
 
 </div>
 </div>
@@ -415,7 +418,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classBGSDObjectiveFunction.html#ab75f0e178460199cf854e3e3b9fe64e0">BGSDObjectiveFunction</a>, <a class="el" href="classCollectiveIDPPObjectiveFunction.html#a0d1bde2e35ef4c8f90e6a1b05c1744bf">CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a0d1bde2e35ef4c8f90e6a1b05c1744bf">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1IDPPObjectiveFunction.html#a5da0083f895fd849c7a970af605c7ea8">eonc::IDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#a3c6538fb4e9f395a56f17a4f093f41c3">eonc::NEBObjectiveFunction</a>, <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a43c5d668894a2a81bfa76d82f3f491e3">eonc::ZBLRepulsiveIDPPObjective</a>, <a class="el" href="classIDPPObjectiveFunction.html#a5da0083f895fd849c7a970af605c7ea8">IDPPObjectiveFunction</a>, <a class="el" href="classMinModeObjectiveFunction.html#acced82cf0f99dcb458467e1052455f2d">MinModeObjectiveFunction</a>, <a class="el" href="classNEBObjectiveFunction.html#a3c6538fb4e9f395a56f17a4f093f41c3">NEBObjectiveFunction</a>, and <a class="el" href="classZBLRepulsiveIDPPObjective.html#a43c5d668894a2a81bfa76d82f3f491e3">ZBLRepulsiveIDPPObjective</a>.</p>
+<p>Implemented in <a class="el" href="classeonc_1_1BGSDObjectiveFunction.html#a1e1104c1d6c9e36c404c038eed487a65">eonc::BGSDObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a0d1bde2e35ef4c8f90e6a1b05c1744bf">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1IDPPObjectiveFunction.html#a5da0083f895fd849c7a970af605c7ea8">eonc::IDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1MinModeObjectiveFunction.html#a963ad1146a73f8907d6f02bb4adff35d">eonc::MinModeObjectiveFunction</a>, <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#a3c6538fb4e9f395a56f17a4f093f41c3">eonc::NEBObjectiveFunction</a>, and <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a43c5d668894a2a81bfa76d82f3f491e3">eonc::ZBLRepulsiveIDPPObjective</a>.</p>
 
 </div>
 </div>
@@ -442,7 +445,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classBGSDObjectiveFunction.html#a30afca03ae4469bbe20c17138684e99c">BGSDObjectiveFunction</a>, <a class="el" href="classCollectiveIDPPObjectiveFunction.html#af41aeccb67babc20d5b59683cb3cedd3">CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#af41aeccb67babc20d5b59683cb3cedd3">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1IDPPObjectiveFunction.html#ace53feb4396c0274de88abe943f37315">eonc::IDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#a4c10ff48dedb06d2aa7929b6c56c8f4f">eonc::NEBObjectiveFunction</a>, <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a260d15f235d06ae312d14edebedad6c7">eonc::ZBLRepulsiveIDPPObjective</a>, <a class="el" href="classIDPPObjectiveFunction.html#ace53feb4396c0274de88abe943f37315">IDPPObjectiveFunction</a>, <a class="el" href="classMinModeObjectiveFunction.html#a9177def85e4054c262b6690a599385dd">MinModeObjectiveFunction</a>, <a class="el" href="classNEBObjectiveFunction.html#a4c10ff48dedb06d2aa7929b6c56c8f4f">NEBObjectiveFunction</a>, and <a class="el" href="classZBLRepulsiveIDPPObjective.html#a260d15f235d06ae312d14edebedad6c7">ZBLRepulsiveIDPPObjective</a>.</p>
+<p>Implemented in <a class="el" href="classeonc_1_1BGSDObjectiveFunction.html#a1215b3cf0c3b8ba3da629f2f54ea64fd">eonc::BGSDObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#af41aeccb67babc20d5b59683cb3cedd3">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1IDPPObjectiveFunction.html#a8b69059fe89dfe51d50ad612a9c3153d">eonc::IDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1MinModeObjectiveFunction.html#acd9a980aff0ce3eefa9aef08d40aa5af">eonc::MinModeObjectiveFunction</a>, <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#a4c10ff48dedb06d2aa7929b6c56c8f4f">eonc::NEBObjectiveFunction</a>, and <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a260d15f235d06ae312d14edebedad6c7">eonc::ZBLRepulsiveIDPPObjective</a>.</p>
 
 </div>
 </div>
@@ -469,8 +472,64 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classBGSDObjectiveFunction.html#ad21cb446c1c52effef1f407af7d0f641">BGSDObjectiveFunction</a>, <a class="el" href="classCollectiveIDPPObjectiveFunction.html#afc82432c0649dc23c15ad5c565fb5314">CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#afc82432c0649dc23c15ad5c565fb5314">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1IDPPObjectiveFunction.html#abe8e4e80bbdd4d3cd903eaee50419a44">eonc::IDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#a01941b334921107d573ae0f8f5ad7e1f">eonc::NEBObjectiveFunction</a>, <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#ad74a5737ea8d57236b8b5e0ac4221ebd">eonc::ZBLRepulsiveIDPPObjective</a>, <a class="el" href="classIDPPObjectiveFunction.html#abe8e4e80bbdd4d3cd903eaee50419a44">IDPPObjectiveFunction</a>, <a class="el" href="classMinModeObjectiveFunction.html#abdc6a96910257eb987081eb836c067f1">MinModeObjectiveFunction</a>, <a class="el" href="classNEBObjectiveFunction.html#a01941b334921107d573ae0f8f5ad7e1f">NEBObjectiveFunction</a>, and <a class="el" href="classZBLRepulsiveIDPPObjective.html#ad74a5737ea8d57236b8b5e0ac4221ebd">ZBLRepulsiveIDPPObjective</a>.</p>
+<p>Implemented in <a class="el" href="classeonc_1_1BGSDObjectiveFunction.html#ac803ae722f445829f476b060dded12aa">eonc::BGSDObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ae56376728840b0ce19ab0ebbc02dae89">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1IDPPObjectiveFunction.html#af9ff6bc659b9161a28d757518834137f">eonc::IDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1MinModeObjectiveFunction.html#a6d66337710dadc9e124e7ed7f553164f">eonc::MinModeObjectiveFunction</a>, <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#a01941b334921107d573ae0f8f5ad7e1f">eonc::NEBObjectiveFunction</a>, and <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#ad74a5737ea8d57236b8b5e0ac4221ebd">eonc::ZBLRepulsiveIDPPObjective</a>.</p>
 
+</div>
+</div>
+<a id="a8f2672688adbd931070f00fa29b72be8" name="a8f2672688adbd931070f00fa29b72be8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f2672688adbd931070f00fa29b72be8">&#9670;&#160;</a></span>getMasses()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual VectorXd eonc::ObjectiveFunction::getMasses </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00037">37</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   37</span>{ <span class="keywordflow">return</span> VectorXd(); }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a9026e74111d5f55078d5c5f8a47501aa" name="a9026e74111d5f55078d5c5f8a47501aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9026e74111d5f55078d5c5f8a47501aa">&#9670;&#160;</a></span>getPeriodic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eonc::ObjectiveFunction::getPeriodic </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00039">39</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   39</span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="aa06776d23dd7b6ffa23db1555d657261" name="aa06776d23dd7b6ffa23db1555d657261"></a>
@@ -496,7 +555,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classBGSDObjectiveFunction.html#a2bd5f424b9c4487a696bdd5e17a0ecdd">BGSDObjectiveFunction</a>, <a class="el" href="classCollectiveIDPPObjectiveFunction.html#ad7ce828dd4a5e7d148638c537720d071">CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad7ce828dd4a5e7d148638c537720d071">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1IDPPObjectiveFunction.html#ab769bf2e33f5735eb5cc36c9708f23ca">eonc::IDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#a03dab0f040cd499a6a3ef38e82b668e9">eonc::NEBObjectiveFunction</a>, <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#ade4690f7ad170f9285ccee04fe5b9924">eonc::ZBLRepulsiveIDPPObjective</a>, <a class="el" href="classIDPPObjectiveFunction.html#ab769bf2e33f5735eb5cc36c9708f23ca">IDPPObjectiveFunction</a>, <a class="el" href="classMinModeObjectiveFunction.html#a48956dda4b2c0cd441b5c82c966ebd5c">MinModeObjectiveFunction</a>, <a class="el" href="classNEBObjectiveFunction.html#a03dab0f040cd499a6a3ef38e82b668e9">NEBObjectiveFunction</a>, and <a class="el" href="classZBLRepulsiveIDPPObjective.html#ade4690f7ad170f9285ccee04fe5b9924">ZBLRepulsiveIDPPObjective</a>.</p>
+<p>Implemented in <a class="el" href="classeonc_1_1BGSDObjectiveFunction.html#aafdd30e603e34e75b6e7cf1fa3e6db54">eonc::BGSDObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad7ce828dd4a5e7d148638c537720d071">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1IDPPObjectiveFunction.html#ab769bf2e33f5735eb5cc36c9708f23ca">eonc::IDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1MinModeObjectiveFunction.html#a523005401d15fffade0c67624844bdd9">eonc::MinModeObjectiveFunction</a>, <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#a03dab0f040cd499a6a3ef38e82b668e9">eonc::NEBObjectiveFunction</a>, and <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#ade4690f7ad170f9285ccee04fe5b9924">eonc::ZBLRepulsiveIDPPObjective</a>.</p>
 
 </div>
 </div>
@@ -523,8 +582,36 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classBGSDObjectiveFunction.html#a283be5ff8d511a719f507e1d477d57d3">BGSDObjectiveFunction</a>, <a class="el" href="classCollectiveIDPPObjectiveFunction.html#ad14619c344e18ab9d89134de660af44e">CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad14619c344e18ab9d89134de660af44e">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1IDPPObjectiveFunction.html#a0ddcd5dcc47f8cec5eb25ea4a851b25c">eonc::IDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#a8e752fbd1e367a9c573239cb20e01341">eonc::NEBObjectiveFunction</a>, <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#ace18e728f5424264c53ac7b9e7a84d73">eonc::ZBLRepulsiveIDPPObjective</a>, <a class="el" href="classIDPPObjectiveFunction.html#a0ddcd5dcc47f8cec5eb25ea4a851b25c">IDPPObjectiveFunction</a>, <a class="el" href="classMinModeObjectiveFunction.html#a57750409237b175e6ce8b06541de1262">MinModeObjectiveFunction</a>, <a class="el" href="classNEBObjectiveFunction.html#a8e752fbd1e367a9c573239cb20e01341">NEBObjectiveFunction</a>, and <a class="el" href="classZBLRepulsiveIDPPObjective.html#ace18e728f5424264c53ac7b9e7a84d73">ZBLRepulsiveIDPPObjective</a>.</p>
+<p>Implemented in <a class="el" href="classeonc_1_1BGSDObjectiveFunction.html#ab7896a8618a0ffc78cb01085d4d2d55f">eonc::BGSDObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad14619c344e18ab9d89134de660af44e">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1IDPPObjectiveFunction.html#a0ddcd5dcc47f8cec5eb25ea4a851b25c">eonc::IDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1MinModeObjectiveFunction.html#ae78b175b373a4f92d7e4cb2dce0577f7">eonc::MinModeObjectiveFunction</a>, <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#a8e752fbd1e367a9c573239cb20e01341">eonc::NEBObjectiveFunction</a>, and <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#ace18e728f5424264c53ac7b9e7a84d73">eonc::ZBLRepulsiveIDPPObjective</a>.</p>
 
+</div>
+</div>
+<a id="af3271abcddd3c2ec4808a5b3f25e4b77" name="af3271abcddd3c2ec4808a5b3f25e4b77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3271abcddd3c2ec4808a5b3f25e4b77">&#9670;&#160;</a></span>minimumImage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eonc::ObjectiveFunction::minimumImage </td>
+          <td>(</td>
+          <td class="paramtype">Eigen::Ref&lt; Eigen::Vector3d &gt;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00035">35</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   35</span>{}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="ab285e512e05c11a1438a93d72a0ec527" name="ab285e512e05c11a1438a93d72a0ec527"></a>
@@ -550,7 +637,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classBGSDObjectiveFunction.html#a9e147ba63f38cdc283f3f539e62b8091">BGSDObjectiveFunction</a>, <a class="el" href="classCollectiveIDPPObjectiveFunction.html#a074596ff89086f0b6c4c4735031d53d0">CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a074596ff89086f0b6c4c4735031d53d0">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1IDPPObjectiveFunction.html#ae7bb7895f4dc995b9eafbc0b8625746e">eonc::IDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#af16aa1b71afc9ded3769415a31aad88b">eonc::NEBObjectiveFunction</a>, <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a40a01577f1935accb593eca541e0653a">eonc::ZBLRepulsiveIDPPObjective</a>, <a class="el" href="classIDPPObjectiveFunction.html#ae7bb7895f4dc995b9eafbc0b8625746e">IDPPObjectiveFunction</a>, <a class="el" href="classMinModeObjectiveFunction.html#a927bcf7c89e5f046eb187ef7d930b040">MinModeObjectiveFunction</a>, <a class="el" href="classNEBObjectiveFunction.html#af16aa1b71afc9ded3769415a31aad88b">NEBObjectiveFunction</a>, and <a class="el" href="classZBLRepulsiveIDPPObjective.html#a40a01577f1935accb593eca541e0653a">ZBLRepulsiveIDPPObjective</a>.</p>
+<p>Implemented in <a class="el" href="classeonc_1_1BGSDObjectiveFunction.html#a4efa21aa4c35e9ad297d488c8cea091e">eonc::BGSDObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a074596ff89086f0b6c4c4735031d53d0">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1IDPPObjectiveFunction.html#ae7bb7895f4dc995b9eafbc0b8625746e">eonc::IDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1MinModeObjectiveFunction.html#ae5821ab7860f4d031604c92eecc99138">eonc::MinModeObjectiveFunction</a>, <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#af16aa1b71afc9ded3769415a31aad88b">eonc::NEBObjectiveFunction</a>, and <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a40a01577f1935accb593eca541e0653a">eonc::ZBLRepulsiveIDPPObjective</a>.</p>
 
 </div>
 </div>
@@ -565,7 +652,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classParameters.html">Parameters</a>&amp; eonc::ObjectiveFunction::params</td>
+          <td class="memname">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a>&amp; eonc::ObjectiveFunction::params</td>
         </tr>
       </table>
   </td>

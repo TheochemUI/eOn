@@ -246,10 +246,14 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('structeonc_1_1
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a43d4ee0213cf4529722fdf5f18b477db" id="r_a43d4ee0213cf4529722fdf5f18b477db"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>&#160;</td><td class="memItemRight"><a class="el" href="#a43d4ee0213cf4529722fdf5f18b477db">project</a> (const <a class="el" href="structeonc_1_1neb_1_1ImageForceData.html">ImageForceData</a> &amp;d) const</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a86794cbde0892504923b7b8770150265" id="r_a86794cbde0892504923b7b8770150265"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a86794cbde0892504923b7b8770150265">use_switching</a> {false}</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Trygubenko &amp; Wales, JCP 120:2082, 2004. </p>
-<p>Doubly-nudged elastic band: NEB projection + perpendicular spring correction. </p>
+<p>Doubly-nudged elastic band: NEB projection + perpendicular spring correction. use_switching is spring.doubly_nudged_switching. </p>
 
 <p class="definition">Definition at line <a class="el" href="NEBProjection_8h_source.html#l00045">45</a> of file <a class="el" href="NEBProjection_8h_source.html">NEBProjection.h</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
@@ -271,13 +275,32 @@ Public Member Functions</h2></td></tr>
 <p class="definition">Definition at line <a class="el" href="NEBProjection_8cpp_source.html#l00026">26</a> of file <a class="el" href="NEBProjection_8cpp_source.html">NEBProjection.cpp</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">   26</span>                                                                 {</div>
 <div class="line"><span class="lineno">   27</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> fPerp = <a class="code hl_function" href="namespaceeonc_1_1neb.html#ad4e735e3316d7c7c1adee860f3092b45">eonc::neb::forcePerp</a>(d.force, d.tangent);</div>
-<div class="line"><span class="lineno">   28</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forceDNEB =</div>
-<div class="line"><span class="lineno">   29</span>      <a class="code hl_function" href="namespaceeonc_1_1neb.html#abaf8edd7dc5a548e472a9a077696be7f">computeDNEBComponent</a>(d.springResult.forceSpring, d.tangent, fPerp);</div>
+<div class="line"><span class="lineno">   28</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forceDNEB = <a class="code hl_function" href="namespaceeonc_1_1neb.html#a219ac765ff3a73d04605b5711a5926a6">computeDNEBComponent</a>(d.springResult.forceSpring,</div>
+<div class="line"><span class="lineno">   29</span>                                              d.tangent, fPerp, <a class="code hl_variable" href="#a86794cbde0892504923b7b8770150265">use_switching</a>);</div>
 <div class="line"><span class="lineno">   30</span>  <span class="keywordflow">return</span> d.springResult.forceSpringPar + fPerp + forceDNEB;</div>
 <div class="line"><span class="lineno">   31</span>}</div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1neb_html_abaf8edd7dc5a548e472a9a077696be7f"><div class="ttname"><a href="namespaceeonc_1_1neb.html#abaf8edd7dc5a548e472a9a077696be7f">eonc::neb::computeDNEBComponent</a></div><div class="ttdeci">AtomMatrix computeDNEBComponent(const AtomMatrix &amp;forceSpring, const AtomMatrix &amp;tangent, const AtomMatrix &amp;fPerp)</div><div class="ttdoc">Compute the DNEB force component for a given image.</div><div class="ttdef"><b>Definition</b> <a href="NEBProjection_8cpp_source.html#l00047">NEBProjection.cpp:47</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1neb_html_a219ac765ff3a73d04605b5711a5926a6"><div class="ttname"><a href="namespaceeonc_1_1neb.html#a219ac765ff3a73d04605b5711a5926a6">eonc::neb::computeDNEBComponent</a></div><div class="ttdeci">AtomMatrix computeDNEBComponent(const AtomMatrix &amp;forceSpring, const AtomMatrix &amp;tangent, const AtomMatrix &amp;fPerp, bool useSwitching)</div><div class="ttdoc">Compute the DNEB force component for a given image.</div><div class="ttdef"><b>Definition</b> <a href="NEBProjection_8cpp_source.html#l00048">NEBProjection.cpp:48</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1neb_html_ad4e735e3316d7c7c1adee860f3092b45"><div class="ttname"><a href="namespaceeonc_1_1neb.html#ad4e735e3316d7c7c1adee860f3092b45">eonc::neb::forcePerp</a></div><div class="ttdeci">AtomMatrix forcePerp(const AtomMatrix &amp;force, const AtomMatrix &amp;tangent)</div><div class="ttdoc">Compute the perpendicular component of force relative to the tangent.</div><div class="ttdef"><b>Definition</b> <a href="NEBForceProjection_8cpp_source.html#l00069">NEBForceProjection.cpp:69</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb_1_1DNEB__Projection_html_a86794cbde0892504923b7b8770150265"><div class="ttname"><a href="#a86794cbde0892504923b7b8770150265">eonc::neb::DNEB_Projection::use_switching</a></div><div class="ttdeci">bool use_switching</div><div class="ttdef"><b>Definition</b> <a href="NEBProjection_8h_source.html#l00046">NEBProjection.h:46</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a86794cbde0892504923b7b8770150265" name="a86794cbde0892504923b7b8770150265"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86794cbde0892504923b7b8770150265">&#9670;&#160;</a></span>use_switching</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::neb::DNEB_Projection::use_switching {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBProjection_8h_source.html#l00046">46</a> of file <a class="el" href="NEBProjection_8h_source.html">NEBProjection.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   46</span>{<span class="keyword">false</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>

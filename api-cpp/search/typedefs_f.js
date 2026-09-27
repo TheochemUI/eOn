@@ -1,7 +1,10 @@
 var searchData=
 [
-  ['xtb_5ftcalculator_0',['xtb_TCalculator',['../xtb_8h.html#a1addcca86f44e692bb6f1164c36d8ec5',1,'xtb.h']]],
-  ['xtb_5ftenvironment_1',['xtb_TEnvironment',['../xtb_8h.html#a3e459ec98eb99f93b639bee1f067e487',1,'xtb.h']]],
-  ['xtb_5ftmolecule_2',['xtb_TMolecule',['../xtb_8h.html#a5be621396eff41e0ed5e01f8881468be',1,'xtb.h']]],
-  ['xtb_5ftresults_3',['xtb_TResults',['../xtb_8h.html#ae7e66e63839df3ba108dfded47c8a7e5',1,'xtb.h']]]
+  ['replica_5fexchange_5foptions_5ft_0',['replica_exchange_options_t',['../classeonc_1_1Parameters.html#a2b6996c7f97e7bf2acffb21446d1cbd3',1,'eonc::Parameters']]],
+  ['rgpot_5foptions_5ft_1',['rgpot_options_t',['../classeonc_1_1Parameters.html#a4dbfcd27a969d454b10077d89ba251a0',1,'eonc::Parameters']]],
+  ['rgpotmtaconfig_2',['RgpotMtaConfig',['../Rgpot_2metatomic__c__abi_8h.html#a5f3ddc99188390e16bcefecd044cd132',1,'metatomic_c_abi.h']]],
+  ['rgpotmtapot_3',['RgpotMtaPot',['../Rgpot_2metatomic__c__abi_8h.html#a0b390572334b63f7e4a35cee4c75df64',1,'metatomic_c_abi.h']]],
+  ['rgpotxtbconfig_4',['RgpotXtbConfig',['../xtb__c__abi_8h.html#a1786d9f1df089ee1d5b41e1389567afe',1,'xtb_c_abi.h']]],
+  ['rgpotxtbpot_5',['RgpotXtbPot',['../xtb__c__abi_8h.html#a37b502b1326e503b40aced0b4726dffb',1,'xtb_c_abi.h']]],
+  ['rotationmatrix_6',['RotationMatrix',['../Eigen_8h.html#a0ce991ec8b4bfd6bccc9a2ebd756f9c7',1,'Eigen.h']]]
 ];

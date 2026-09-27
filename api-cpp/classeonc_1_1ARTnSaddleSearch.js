@@ -9,6 +9,7 @@ var classeonc_1_1ARTnSaddleSearch =
     [ "getIterationCount", "classeonc_1_1ARTnSaddleSearch.html#af77451859061c286ed91220d3f675b3c", null ],
     [ "getStatus", "classeonc_1_1ARTnSaddleSearch.html#ae78593c43ac10a6fcfa5529bc8e91f43", null ],
     [ "run", "classeonc_1_1ARTnSaddleSearch.html#a595c87426f4699d89a9c2dbd840581cd", null ],
+    [ "run", "classeonc_1_1ARTnSaddleSearch.html#a33f46bb39ce377746aa75f9174d3e617", null ],
     [ "eigenvalue", "classeonc_1_1ARTnSaddleSearch.html#a37c24d15e124d9d26dbb836cc7bd1fcc", null ],
     [ "eigenvector", "classeonc_1_1ARTnSaddleSearch.html#a1edaae6844c4be1b4607b9903e92d9f7", null ],
     [ "forcecalls", "classeonc_1_1ARTnSaddleSearch.html#a3f5202c437244bfbbdd2258634a14af3", null ],

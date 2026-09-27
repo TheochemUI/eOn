@@ -285,8 +285,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="ForceCallTimer_8h_source.html#l00025">25</a> of file <a class="el" href="ForceCallTimer_8h_source.html">ForceCallTimer.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   26</span>      : <a class="code hl_variable" href="#aff71aa55a335f8ab78343378e9aedd15">target_</a>(target),</div>
-<div class="line"><span class="lineno">   27</span>        <a class="code hl_variable" href="#a7163b870e1e15921407c10323463a7dd">initial_</a>(<a class="code hl_function" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">PotRegistry::get</a>().total_force_calls()) {}</div>
+<div class="fragment"><div class="line"><span class="lineno">   26</span>      : <a class="code hl_variable" href="#aff71aa55a335f8ab78343378e9aedd15">target_</a>(target), <a class="code hl_variable" href="#a7163b870e1e15921407c10323463a7dd">initial_</a>(<a class="code hl_function" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">PotRegistry::get</a>().total_force_calls()) {}</div>
 <div class="ttc" id="aclasseonc_1_1ForceCallTimer_html_a7163b870e1e15921407c10323463a7dd"><div class="ttname"><a href="#a7163b870e1e15921407c10323463a7dd">eonc::ForceCallTimer::initial_</a></div><div class="ttdeci">size_t initial_</div><div class="ttdef"><b>Definition</b> <a href="ForceCallTimer_8h_source.html#l00022">ForceCallTimer.h:22</a></div></div>
 <div class="ttc" id="aclasseonc_1_1ForceCallTimer_html_aff71aa55a335f8ab78343378e9aedd15"><div class="ttname"><a href="#aff71aa55a335f8ab78343378e9aedd15">eonc::ForceCallTimer::target_</a></div><div class="ttdeci">size_t &amp; target_</div><div class="ttdef"><b>Definition</b> <a href="ForceCallTimer_8h_source.html#l00021">ForceCallTimer.h:21</a></div></div>
 <div class="ttc" id="aclasseonc_1_1PotRegistry_html_a5d307a4845d9c0d6d16031a5a637e23b"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">eonc::PotRegistry::get</a></div><div class="ttdeci">static PotRegistry &amp; get() noexcept</div><div class="ttdoc">Process-lifetime singleton.</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00050">PotRegistry.cpp:50</a></div></div>
@@ -316,10 +315,10 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ForceCallTimer_8h_source.html#l00028">28</a> of file <a class="el" href="ForceCallTimer_8h_source.html">ForceCallTimer.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   28</span>                    {</div>
-<div class="line"><span class="lineno">   29</span>    <a class="code hl_variable" href="#aff71aa55a335f8ab78343378e9aedd15">target_</a> += <a class="code hl_function" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">PotRegistry::get</a>().<a class="code hl_function" href="classeonc_1_1PotRegistry.html#a6ffd8adea58bf8682dc74e73ad97c17b">total_force_calls</a>() - <a class="code hl_variable" href="#a7163b870e1e15921407c10323463a7dd">initial_</a>;</div>
-<div class="line"><span class="lineno">   30</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="ForceCallTimer_8h_source.html#l00027">27</a> of file <a class="el" href="ForceCallTimer_8h_source.html">ForceCallTimer.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   27</span>                    {</div>
+<div class="line"><span class="lineno">   28</span>    <a class="code hl_variable" href="#aff71aa55a335f8ab78343378e9aedd15">target_</a> += <a class="code hl_function" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">PotRegistry::get</a>().<a class="code hl_function" href="classeonc_1_1PotRegistry.html#a6ffd8adea58bf8682dc74e73ad97c17b">total_force_calls</a>() - <a class="code hl_variable" href="#a7163b870e1e15921407c10323463a7dd">initial_</a>;</div>
+<div class="line"><span class="lineno">   29</span>  }</div>
 <div class="ttc" id="aclasseonc_1_1PotRegistry_html_a6ffd8adea58bf8682dc74e73ad97c17b"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a6ffd8adea58bf8682dc74e73ad97c17b">eonc::PotRegistry::total_force_calls</a></div><div class="ttdeci">size_t total_force_calls() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00098">PotRegistry.cpp:98</a></div></div>
 </div><!-- fragment -->
 </div>

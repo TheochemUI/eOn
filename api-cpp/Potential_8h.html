@@ -239,17 +239,19 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('Potential_8h.h
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Eigen_8h_source.html">Eigen.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="Parameters_8h_source.html">Parameters.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="PotRegistry_8h_source.html">PotRegistry.h</a>&quot;</code><br />
 <code>#include &lt;atomic&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;span&gt;</code><br />
+<code>#include &lt;stdexcept&gt;</code><br />
 </div>
 <p><a href="Potential_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:eonc_3A_3APotentialConstructionScope" id="r_eonc_3A_3APotentialConstructionScope"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1PotentialConstructionScope.html">eonc::PotentialConstructionScope</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII: <a class="el" href="classeonc_1_1Potential.html">Potential</a> default construction records on this registry instead of <a class="el" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b" title="Process-lifetime singleton.">PotRegistry::get()</a>.  <a href="classeonc_1_1PotentialConstructionScope.html#details">More...</a><br /></td></tr>
 <tr class="memitem:eonc_3A_3APotential" id="r_eonc_3A_3APotential"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
-<tr class="memitem:Potential" id="r_Potential"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classPotential.html">Potential</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-namespaces" class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
@@ -259,8 +261,9 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ad3c8668c89bd3ffae898307b0890f1ff" id="r_ad3c8668c89bd3ffae898307b0890f1ff"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">eonc::helpers::makePotential</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;params)</td></tr>
-<tr class="memitem:a70007fc2a6a9fbbdd3d31b2780f1470b" id="r_a70007fc2a6a9fbbdd3d31b2780f1470b"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1helpers.html#a70007fc2a6a9fbbdd3d31b2780f1470b">eonc::helpers::makePotential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> ptype, const <a class="el" href="classParameters.html">Parameters</a> &amp;params)</td></tr>
+<tr class="memitem:ad3c8668c89bd3ffae898307b0890f1ff" id="r_ad3c8668c89bd3ffae898307b0890f1ff"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">eonc::helpers::makePotential</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;params)</td></tr>
+<tr class="memitem:a70007fc2a6a9fbbdd3d31b2780f1470b" id="r_a70007fc2a6a9fbbdd3d31b2780f1470b"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1helpers.html#a70007fc2a6a9fbbdd3d31b2780f1470b">eonc::helpers::makePotential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> ptype, const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;params)</td></tr>
+<tr class="memitem:a0dd5203b9b5778a163fdd2a2e68489f0" id="r_a0dd5203b9b5778a163fdd2a2e68489f0"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1helpers.html#a0dd5203b9b5778a163fdd2a2e68489f0">eonc::helpers::makePotential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> ptype, const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;params, <a class="el" href="classeonc_1_1Runtime.html">Runtime</a> &amp;runtime)</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

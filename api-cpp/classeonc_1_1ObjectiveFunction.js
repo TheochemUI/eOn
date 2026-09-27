@@ -7,8 +7,11 @@ var classeonc_1_1ObjectiveFunction =
     [ "getConvergence", "classeonc_1_1ObjectiveFunction.html#adb5aa05d56bdb3f5eca741688f4f4e2d", null ],
     [ "getEnergy", "classeonc_1_1ObjectiveFunction.html#ac33d8c01a468c94e97e46add563a21c2", null ],
     [ "getGradient", "classeonc_1_1ObjectiveFunction.html#a2cde804855ed7d58658f912636254352", null ],
+    [ "getMasses", "classeonc_1_1ObjectiveFunction.html#a8f2672688adbd931070f00fa29b72be8", null ],
+    [ "getPeriodic", "classeonc_1_1ObjectiveFunction.html#a9026e74111d5f55078d5c5f8a47501aa", null ],
     [ "getPositions", "classeonc_1_1ObjectiveFunction.html#aa06776d23dd7b6ffa23db1555d657261", null ],
     [ "isConverged", "classeonc_1_1ObjectiveFunction.html#a90d7874f2d2686d628c9d6057f841925", null ],
+    [ "minimumImage", "classeonc_1_1ObjectiveFunction.html#af3271abcddd3c2ec4808a5b3f25e4b77", null ],
     [ "setPositions", "classeonc_1_1ObjectiveFunction.html#ab285e512e05c11a1438a93d72a0ec527", null ],
     [ "params", "classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871", null ]
 ];

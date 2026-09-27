@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['eonc_3a_3aneb_3a_3aocinebcontroller_0',['eonc::neb::OCINEBController',['../classeonc_1_1NudgedElasticBand.html#ad06a6a6a48476850eeef7320dd548231',1,'eonc::NudgedElasticBand::OCINEBController()'],['../classNudgedElasticBand.html#ad06a6a6a48476850eeef7320dd548231',1,'NudgedElasticBand::OCINEBController()']]]
+  ['basinhoppingdisplaceaccess_0',['BasinHoppingDisplaceAccess',['../classeonc_1_1BasinHoppingJob.html#a6ccf325b7b9bc00cf53d3d4e47654afc',1,'eonc::BasinHoppingJob']]],
+  ['basinhoppingelementstest_1',['BasinHoppingElementsTest',['../classeonc_1_1BasinHoppingJob.html#a12cb4c508bbdd42929fe34d40823a621',1,'eonc::BasinHoppingJob']]]
 ];

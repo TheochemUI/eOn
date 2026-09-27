@@ -243,27 +243,28 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('ParametersJSON
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;nlohmann/json.hpp&gt;</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc.html">eonc</a> {</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">class </span><a class="code hl_class" href="classeonc_1_1Parameters.html">Parameters</a>;</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc_1_1config.html">config</a> {</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>nlohmann::json <a class="code hl_function" href="namespaceeonc_1_1config.html#a77aada85affc5e6c5eec9ee1a63504c9">to_json</a>(<span class="keyword">const</span> Parameters &amp;params);</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeonc_1_1config.html#a08d600d5bede9078a28d87326272213a">from_json</a>(<span class="keyword">const</span> nlohmann::json &amp;j, Parameters &amp;params);</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span></div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keywordtype">int</span> <a class="code hl_function" href="namespaceeonc_1_1config.html#aaa0bdd2c5a5baa30a3ccb3a5b82441b2">load_json</a>(<span class="keyword">const</span> std::string &amp;json_str, Parameters &amp;params);</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>} <span class="comment">// namespace config</span></div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>} <span class="comment">// namespace eonc</span></div>
-<div class="ttc" id="aclasseonc_1_1Parameters_html"><div class="ttname"><a href="classeonc_1_1Parameters.html">eonc::Parameters</a></div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00028">Parameters.h:28</a></div></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc.html">eonc</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">class </span><a class="code hl_class" href="classeonc_1_1Parameters.html">Parameters</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc_1_1config.html">config</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>nlohmann::json <a class="code hl_function" href="namespaceeonc_1_1config.html#a77aada85affc5e6c5eec9ee1a63504c9">to_json</a>(<span class="keyword">const</span> Parameters &amp;params);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeonc_1_1config.html#a08d600d5bede9078a28d87326272213a">from_json</a>(<span class="keyword">const</span> nlohmann::json &amp;j, Parameters &amp;params);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keywordtype">int</span> <a class="code hl_function" href="namespaceeonc_1_1config.html#a5718e3ce02ab2c35e2c1dfa43f1d4e36">load_json</a>(std::string_view json_str, Parameters &amp;params);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>} <span class="comment">// namespace config</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>} <span class="comment">// namespace eonc</span></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html"><div class="ttname"><a href="classeonc_1_1Parameters.html">eonc::Parameters</a></div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00035">Parameters.h:35</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1config_html"><div class="ttname"><a href="namespaceeonc_1_1config.html">eonc::config</a></div><div class="ttdef"><b>Definition</b> <a href="ParametersINI_8cpp_source.html#l00040">ParametersINI.cpp:40</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1config_html_a08d600d5bede9078a28d87326272213a"><div class="ttname"><a href="namespaceeonc_1_1config.html#a08d600d5bede9078a28d87326272213a">eonc::config::from_json</a></div><div class="ttdeci">void from_json(const json &amp;j, Parameters &amp;p)</div><div class="ttdoc">Deserialize JSON into Parameters, then resolve computed fields.</div><div class="ttdef"><b>Definition</b> <a href="ParametersJSON_8cpp_source.html#l00211">ParametersJSON.cpp:211</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1config_html_a08d600d5bede9078a28d87326272213a"><div class="ttname"><a href="namespaceeonc_1_1config.html#a08d600d5bede9078a28d87326272213a">eonc::config::from_json</a></div><div class="ttdeci">void from_json(const json &amp;j, Parameters &amp;p)</div><div class="ttdoc">Deserialize JSON into Parameters, then resolve computed fields.</div><div class="ttdef"><b>Definition</b> <a href="ParametersJSON_8cpp_source.html#l00290">ParametersJSON.cpp:290</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1config_html_a5718e3ce02ab2c35e2c1dfa43f1d4e36"><div class="ttname"><a href="namespaceeonc_1_1config.html#a5718e3ce02ab2c35e2c1dfa43f1d4e36">eonc::config::load_json</a></div><div class="ttdeci">int load_json(std::string_view json_str, Parameters &amp;params)</div><div class="ttdoc">Load Parameters from a JSON string. Returns 0 on success.</div><div class="ttdef"><b>Definition</b> <a href="ParametersJSON_8cpp_source.html#l00572">ParametersJSON.cpp:572</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1config_html_a77aada85affc5e6c5eec9ee1a63504c9"><div class="ttname"><a href="namespaceeonc_1_1config.html#a77aada85affc5e6c5eec9ee1a63504c9">eonc::config::to_json</a></div><div class="ttdeci">json to_json(const Parameters &amp;p)</div><div class="ttdoc">Serialize all Parameters to JSON.</div><div class="ttdef"><b>Definition</b> <a href="ParametersJSON_8cpp_source.html#l00046">ParametersJSON.cpp:46</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1config_html_aaa0bdd2c5a5baa30a3ccb3a5b82441b2"><div class="ttname"><a href="namespaceeonc_1_1config.html#aaa0bdd2c5a5baa30a3ccb3a5b82441b2">eonc::config::load_json</a></div><div class="ttdeci">int load_json(const std::string &amp;json_str, Parameters &amp;params)</div><div class="ttdoc">Load Parameters from a JSON string. Returns 0 on success.</div><div class="ttdef"><b>Definition</b> <a href="ParametersJSON_8cpp_source.html#l00389">ParametersJSON.cpp:389</a></div></div>
-<div class="ttc" id="anamespaceeonc_html"><div class="ttname"><a href="namespaceeonc.html">eonc</a></div><div class="ttdoc">RAII resource manager for the ARTn C library with global synchronization.</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00019">ARTnSaddleSearch.cpp:19</a></div></div>
+<div class="ttc" id="anamespaceeonc_html"><div class="ttname"><a href="namespaceeonc.html">eonc</a></div><div class="ttdoc">RAII resource manager for the ARTn C library with global synchronization.</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00023">ARTnSaddleSearch.cpp:23</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->

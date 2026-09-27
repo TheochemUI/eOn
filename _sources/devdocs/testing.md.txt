@@ -37,6 +37,13 @@ All tests are registered via meson's array iteration pattern and run with
 | `test_confileio` | `ConFileIOTest.cpp` | `neb_morse` | CON file round-trip I/O |
 | `test_socket_nwchem` | `SocketNWChemPotTest.cpp` | `nwchem_test` | NWChem socket potential (needs nwchem) |
 
+## Baker subset (05 / 17 / 19 / 20)
+
+Full Baker is an overnight campaign. The reduced set used for client
+parameter checks is Baker **05, 17, 19, 20** (claisen-class + two
+small organics). Run those four before changing saddle defaults.
+Do not substitute a looser tolerance to finish the table.
+
 Optional tests (enabled by build flags):
 - `test_ase_pot` (with_ase): ASE Python calculator
 - `test_mta` (with_metatomic): Metatomic ML potential

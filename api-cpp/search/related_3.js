@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['length2_0',['Length2',['../classVec.html#a209c719a5c0920e41a26f5e123664e6e',1,'Vec']]]
+  ['eonc_3a_3aneb_3a_3aocinebcontroller_0',['OCINEBController',['../classeonc_1_1NudgedElasticBand.html#ad06a6a6a48476850eeef7320dd548231',1,'eonc::NudgedElasticBand']]]
 ];

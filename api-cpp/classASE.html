@@ -252,30 +252,40 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classASE.html'
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a85554da4750d7dbdfad87abdd76ec530" id="r_a85554da4750d7dbdfad87abdd76ec530"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a85554da4750d7dbdfad87abdd76ec530">ASE</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;a_params)</td></tr>
+<tr class="memitem:ace7ebec9d217d29cecbf5db5fee67014" id="r_ace7ebec9d217d29cecbf5db5fee67014"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#ace7ebec9d217d29cecbf5db5fee67014">ASE</a> (const <a class="el" href="classeonc_1_1Parameters.html">eonc::Parameters</a> &amp;a_params)</td></tr>
 <tr class="memitem:a2506cfbbabe7aa05b4ccc47a42676e0b" id="r_a2506cfbbabe7aa05b4ccc47a42676e0b"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="#a2506cfbbabe7aa05b4ccc47a42676e0b">~ASE</a> ()</td></tr>
 <tr class="memitem:a76e329778602bb3421e16cacce8a4fbe" id="r_a76e329778602bb3421e16cacce8a4fbe"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a76e329778602bb3421e16cacce8a4fbe">force</a> (long nAtoms, const double *R, const int *atomicNrs, double *F, double *U, double *variance, const double *box) override</td></tr>
 <tr class="memitem:a87de4a795d2e4cc8167b58f9ee57b816" id="r_a87de4a795d2e4cc8167b58f9ee57b816"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a87de4a795d2e4cc8167b58f9ee57b816">isThreadSafe</a> () const noexcept override</td></tr>
 <tr class="memdesc:a87de4a795d2e4cc8167b58f9ee57b816"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this potential's <a class="el" href="#a76e329778602bb3421e16cacce8a4fbe">force()</a> can be called from multiple threads on the SAME instance.  <br /></td></tr>
 <tr class="memitem:a010bef6241727643231ce39ee1a9274c" id="r_a010bef6241727643231ce39ee1a9274c"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a010bef6241727643231ce39ee1a9274c">needsPerImageInstance</a> () const noexcept override</td></tr>
 <tr class="memdesc:a010bef6241727643231ce39ee1a9274c"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classASE.html">ASE</a> calculators are independent objects.  <br /></td></tr>
+<tr class="memitem:a6cc801cfb55242aede7b55034117ccd5" id="r_a6cc801cfb55242aede7b55034117ccd5"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a6cc801cfb55242aede7b55034117ccd5">supportsBatchEvaluation</a> () const noexcept override</td></tr>
+<tr class="memdesc:a6cc801cfb55242aede7b55034117ccd5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this potential supports batched evaluation of N systems in a single call.  <br /></td></tr>
+<tr class="memitem:a8f19bffa4b531c4e8b1033362da43311" id="r_a8f19bffa4b531c4e8b1033362da43311"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a8f19bffa4b531c4e8b1033362da43311">forceBatch</a> (long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes) override</td></tr>
+<tr class="memdesc:a8f19bffa4b531c4e8b1033362da43311"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate forces for N systems in a single call.  <br /></td></tr>
 <tr class="inherit_header pub_methods_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
 <tr class="memitem:af81acd9a6775ff13fab861a51fb9ba95 inherit pub_methods_classeonc_1_1Potential" id="r_af81acd9a6775ff13fab861a51fb9ba95"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> a_ptype)</td></tr>
-<tr class="memitem:a2aaa7956f073f9db72277909e51c40c9 inherit pub_methods_classeonc_1_1Potential" id="r_a2aaa7956f073f9db72277909e51c40c9"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a2aaa7956f073f9db72277909e51c40c9">Potential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> a_ptype, const <a class="el" href="classParameters.html">Parameters</a> &amp;)</td></tr>
-<tr class="memitem:ac908414bc07e7c33019e01abb4a7d9ee inherit pub_methods_classeonc_1_1Potential" id="r_ac908414bc07e7c33019e01abb4a7d9ee"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac908414bc07e7c33019e01abb4a7d9ee">Potential</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;a_params)</td></tr>
+<tr class="memdesc:af81acd9a6775ff13fab861a51fb9ba95 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Production default: construction-scope registry, else <a class="el" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b" title="Process-lifetime singleton.">PotRegistry::get()</a>.  <br /></td></tr>
+<tr class="memitem:a4e175c0617f001c818b78cc147a32172 inherit pub_methods_classeonc_1_1Potential" id="r_a4e175c0617f001c818b78cc147a32172"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a4e175c0617f001c818b78cc147a32172">Potential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> a_ptype, <a class="el" href="classeonc_1_1IPotRegistry.html">IPotRegistry</a> &amp;registry)</td></tr>
+<tr class="memdesc:a4e175c0617f001c818b78cc147a32172 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test seam: injected registry, no process-default get() counters.  <br /></td></tr>
+<tr class="memitem:ac02d0eefd5dd48d49d5bee0ce3298184 inherit pub_methods_classeonc_1_1Potential" id="r_ac02d0eefd5dd48d49d5bee0ce3298184"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac02d0eefd5dd48d49d5bee0ce3298184">Potential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> a_ptype, const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:ac908414bc07e7c33019e01abb4a7d9ee inherit pub_methods_classeonc_1_1Potential" id="r_ac908414bc07e7c33019e01abb4a7d9ee"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac908414bc07e7c33019e01abb4a7d9ee">Potential</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;a_params)</td></tr>
 <tr class="memitem:a57af1d92eeff9618f873a0241e390de2 inherit pub_methods_classeonc_1_1Potential" id="r_a57af1d92eeff9618f873a0241e390de2"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a57af1d92eeff9618f873a0241e390de2">~Potential</a> ()</td></tr>
-<tr class="memitem:ac00fe80dcbd4f5887da244047aaf63f5 inherit pub_methods_classeonc_1_1Potential" id="r_ac00fe80dcbd4f5887da244047aaf63f5"><td class="memItemLeft">std::tuple&lt; double, <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac00fe80dcbd4f5887da244047aaf63f5">get_ef</a> (const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;pos, const VectorXi &amp;atmnrs, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;box)</td></tr>
+<tr class="memitem:a57832183eb8dec7c2f1442363d1f7994 inherit pub_methods_classeonc_1_1Potential" id="r_a57832183eb8dec7c2f1442363d1f7994"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a57832183eb8dec7c2f1442363d1f7994">force</a> (std::span&lt; const double &gt; positions, std::span&lt; const int &gt; atomicNrs, std::span&lt; double &gt; forces, double *energy, double *variance, std::span&lt; const double &gt; box)</td></tr>
+<tr class="memdesc:a57832183eb8dec7c2f1442363d1f7994 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">C++ call site: size-checked view over the raw FFI <a class="el" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">force()</a>.  <br /></td></tr>
+<tr class="memitem:af63f26dc7fdff78a6613961ea860f3a1 inherit pub_methods_classeonc_1_1Potential" id="r_af63f26dc7fdff78a6613961ea860f3a1"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#af63f26dc7fdff78a6613961ea860f3a1">setFixedMask</a> (long nAtoms, const double *isFixed)</td></tr>
+<tr class="memdesc:af63f26dc7fdff78a6613961ea860f3a1 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional frozen-atom mask (nAtoms*3, 1.0 = fixed).  <br /></td></tr>
+<tr class="memitem:aa2f4f152a44aa2827a6ca08bdd40da81 inherit pub_methods_classeonc_1_1Potential" id="r_aa2f4f152a44aa2827a6ca08bdd40da81"><td class="memItemLeft">std::tuple&lt; double, <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#aa2f4f152a44aa2827a6ca08bdd40da81">get_ef</a> (const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;pos, const VectorXi &amp;atmnrs, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;box)</td></tr>
 <tr class="memitem:a4f0274548044ab1f714e4801352c4547 inherit pub_methods_classeonc_1_1Potential" id="r_a4f0274548044ab1f714e4801352c4547"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a4f0274548044ab1f714e4801352c4547">getType</a> () const</td></tr>
 <tr class="memitem:a85b0a3456f6528d8c464ab4b5774878e inherit pub_methods_classeonc_1_1Potential" id="r_a85b0a3456f6528d8c464ab4b5774878e"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a85b0a3456f6528d8c464ab4b5774878e">isSurrogate</a> () const noexcept</td></tr>
 <tr class="memdesc:a85b0a3456f6528d8c464ab4b5774878e inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this is a surrogate (GP) potential.  <br /></td></tr>
 <tr class="memitem:ac4c9e9deaa0e73fa27ff97b6d6acad98 inherit pub_methods_classeonc_1_1Potential" id="r_ac4c9e9deaa0e73fa27ff97b6d6acad98"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac4c9e9deaa0e73fa27ff97b6d6acad98">requiresIsolatedMoleculeLayout</a> () const noexcept</td></tr>
 <tr class="memdesc:ac4c9e9deaa0e73fa27ff97b6d6acad98 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">True for molecular QM / non-PBC backends (NWChem socket, <a class="el" href="classASE.html">ASE</a> ORCA/NWChem, …).  <br /></td></tr>
+<tr class="memitem:ac0b6310014f5d95811c5e0ec451568ba inherit pub_methods_classeonc_1_1Potential" id="r_ac0b6310014f5d95811c5e0ec451568ba"><td class="memItemLeft">virtual unsigned&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac0b6310014f5d95811c5e0ec451568ba">layoutFlags</a> () const noexcept</td></tr>
 <tr class="memitem:a8065b9661fcb0b025d397928243c987c inherit pub_methods_classeonc_1_1Potential" id="r_a8065b9661fcb0b025d397928243c987c"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a8065b9661fcb0b025d397928243c987c">isSharedInstanceThreadSafe</a> () const noexcept</td></tr>
 <tr class="memdesc:a8065b9661fcb0b025d397928243c987c inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conservative gate for sharing one <a class="el" href="classeonc_1_1Potential.html">Potential</a> instance across threads.  <br /></td></tr>
-<tr class="memitem:a2d8781e3cbea888f88b7523c5d00bc43 inherit pub_methods_classeonc_1_1Potential" id="r_a2d8781e3cbea888f88b7523c5d00bc43"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a2d8781e3cbea888f88b7523c5d00bc43">supportsBatchEvaluation</a> () const noexcept</td></tr>
-<tr class="memdesc:a2d8781e3cbea888f88b7523c5d00bc43 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this potential supports batched evaluation of N systems in a single call.  <br /></td></tr>
-<tr class="memitem:aa66e1416134ff55639a6d20a34e3c1c1 inherit pub_methods_classeonc_1_1Potential" id="r_aa66e1416134ff55639a6d20a34e3c1c1"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#aa66e1416134ff55639a6d20a34e3c1c1">forceBatch</a> (long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes)</td></tr>
-<tr class="memdesc:aa66e1416134ff55639a6d20a34e3c1c1 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate forces for N systems in a single call.  <br /></td></tr>
+<tr class="memitem:a59bc4af33d113751d3804054b79a4872 inherit pub_methods_classeonc_1_1Potential" id="r_a59bc4af33d113751d3804054b79a4872"><td class="memItemLeft">virtual std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a59bc4af33d113751d3804054b79a4872">clonePotential</a> () const</td></tr>
+<tr class="memdesc:a59bc4af33d113751d3804054b79a4872 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Independent instance that does not reload from disk.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -283,9 +293,17 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a81491b7344885e1fd6317112ff95ac5c" id="r_a81491b7344885e1fd6317112ff95ac5c"><td class="memItemLeft">py::module_&#160;</td><td class="memItemRight"><a class="el" href="#a81491b7344885e1fd6317112ff95ac5c">py_module</a></td></tr>
 <tr class="memitem:a43439499be69e26cde587dfb73932825" id="r_a43439499be69e26cde587dfb73932825"><td class="memItemLeft">py::object&#160;</td><td class="memItemRight"><a class="el" href="#a43439499be69e26cde587dfb73932825">calculator</a></td></tr>
 <tr class="memitem:ab2b826f3e99150d32a20e9eddc77801e" id="r_ab2b826f3e99150d32a20e9eddc77801e"><td class="memItemLeft">py::object&#160;</td><td class="memItemRight"><a class="el" href="#ab2b826f3e99150d32a20e9eddc77801e">_calculate</a></td></tr>
+<tr class="memitem:a03a86653a0a73bca51cc760d525d8fc6" id="r_a03a86653a0a73bca51cc760d525d8fc6"><td class="memItemLeft">py::object&#160;</td><td class="memItemRight"><a class="el" href="#a03a86653a0a73bca51cc760d525d8fc6">batch_calculate_</a></td></tr>
+<tr class="memitem:a2bec677c372d3617db5de09cc1a368d7" id="r_a2bec677c372d3617db5de09cc1a368d7"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a2bec677c372d3617db5de09cc1a368d7">has_batch_</a> {false}</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_types_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_types_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Types inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
+<tr class="memitem:a6a35357f6786a54c47eceedf6eab2056 inherit pub_types_classeonc_1_1Potential" id="r_a6a35357f6786a54c47eceedf6eab2056"><td class="memItemLeft">enum class &#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a6a35357f6786a54c47eceedf6eab2056">PotLayout</a> : unsigned { <a class="el" href="classeonc_1_1Potential.html#a6a35357f6786a54c47eceedf6eab2056a651a693296d758550ddc034a389ef058">InProcess</a> = 1u &lt;&lt; 0
+, <a class="el" href="classeonc_1_1Potential.html#a6a35357f6786a54c47eceedf6eab2056a7c188dee6d54a1cb92a7c95534b34e93">NeedsWorkingDirectory</a> = 1u &lt;&lt; 1
+, <a class="el" href="classeonc_1_1Potential.html#a6a35357f6786a54c47eceedf6eab2056aacfc9fac11fea7710fbe22b6ba4b3a9e">Subprocess</a> = 1u &lt;&lt; 2
+ }</td></tr>
+<tr class="memdesc:a6a35357f6786a54c47eceedf6eab2056"><td class="mdescLeft">&#160;</td><td class="mdescRight">How the pot is executed (eOn-12x7). Combine with bitwise or.  <a href="classeonc_1_1Potential.html#a6a35357f6786a54c47eceedf6eab2056">More...</a><br /></td></tr>
 <tr class="inherit_header pub_attribs_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
 <tr class="memitem:a2ae7cca425e3d69d2825c58d1c7704eb inherit pub_attribs_classeonc_1_1Potential" id="r_a2ae7cca425e3d69d2825c58d1c7704eb"><td class="memItemLeft">std::atomic&lt; size_t &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">forceCallCounter</a></td></tr>
 <tr class="inherit_header pro_attribs_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
@@ -295,8 +313,8 @@ Additional Inherited Members</h2></td></tr>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="ASE_8h_source.html#l00019">19</a> of file <a class="el" href="ASE_8h_source.html">ASE.h</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a85554da4750d7dbdfad87abdd76ec530" name="a85554da4750d7dbdfad87abdd76ec530"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a85554da4750d7dbdfad87abdd76ec530">&#9670;&#160;</a></span>ASE()</h2>
+<a id="ace7ebec9d217d29cecbf5db5fee67014" name="ace7ebec9d217d29cecbf5db5fee67014"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace7ebec9d217d29cecbf5db5fee67014">&#9670;&#160;</a></span>ASE()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -304,60 +322,65 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">ASE::ASE </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>a_params</em></span></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">eonc::Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>a_params</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ASE_8cpp_source.html#l00026">26</a> of file <a class="el" href="ASE_8cpp_source.html">ASE.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   27</span>    : <a class="code hl_function" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a>(<a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a0fe688b082b0929fe3f6cf195d7d371d">PotType::ASE_POT</a>, a_params) {</div>
-<div class="line"><span class="lineno">   28</span>  <a class="code hl_function" href="namespaceeonc.html#a3f9b51a0a8d8a0d0075699d7830db0bf">eonc::ensure_interpreter</a>();</div>
-<div class="line"><span class="lineno">   29</span>  <a class="code hl_variable" href="#aafc2c1607f256fb7d54562879fe9d8e8">counter</a> = 1;</div>
-<div class="line"><span class="lineno">   30</span>  std::string py_file = a_params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">potential_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1potential__options__t.html#acaed7dcc30ec1af72ef09ebbbca88db5">extPotPath</a>;</div>
-<div class="line"><span class="lineno">   31</span> </div>
-<div class="line"><span class="lineno">   32</span>  <span class="comment">// import</span></div>
-<div class="line"><span class="lineno">   33</span>  <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">   34</span>    <span class="comment">// must briefly disable FPE because Python packages like Numpy causes it</span></div>
-<div class="line"><span class="lineno">   35</span>    <span class="comment">// during import</span></div>
-<div class="line"><span class="lineno">   36</span>    eonc::FPEHandler fpeh;</div>
-<div class="line"><span class="lineno">   37</span>    fpeh.<a class="code hl_function" href="classeonc_1_1FPEHandler.html#afd34f29eda64117a665d8340a5b43a1c">eat_fpe</a>();</div>
-<div class="line"><span class="lineno">   38</span> </div>
-<div class="line"><span class="lineno">   39</span>    <span class="comment">// Create a Python script to use importlib.util to load the module</span></div>
-<div class="line"><span class="lineno">   40</span>    py::exec(R<span class="stringliteral">&quot;(</span></div>
-<div class="line"><span class="lineno">   41</span><span class="stringliteral">            import sys</span></div>
-<div class="line"><span class="lineno">   42</span><span class="stringliteral">            import importlib.util</span></div>
-<div class="line"><span class="lineno">   43</span><span class="stringliteral"></span> </div>
-<div class="line"><span class="lineno">   44</span><span class="stringliteral">            def load_module_from_path(module_name, file_path):</span></div>
-<div class="line"><span class="lineno">   45</span><span class="stringliteral">                spec = importlib.util.spec_from_file_location(module_name, file_path)</span></div>
-<div class="line"><span class="lineno">   46</span><span class="stringliteral">                module = importlib.util.module_from_spec(spec)</span></div>
-<div class="line"><span class="lineno">   47</span><span class="stringliteral">                sys.modules[module_name] = module</span></div>
-<div class="line"><span class="lineno">   48</span><span class="stringliteral">                spec.loader.exec_module(module)</span></div>
-<div class="line"><span class="lineno">   49</span><span class="stringliteral">                return module</span></div>
-<div class="line"><span class="lineno">   50</span><span class="stringliteral">        )&quot;);</span></div>
-<div class="line"><span class="lineno">   51</span><span class="stringliteral"></span> </div>
-<div class="line"><span class="lineno">   52</span><span class="stringliteral">    </span><span class="comment">// Prepare the module name and file path</span></div>
-<div class="line"><span class="lineno">   53</span>    std::string module_name = <span class="stringliteral">&quot;ase_eon&quot;</span>;</div>
-<div class="line"><span class="lineno">   54</span>    py::object load_module = py::globals()[<span class="stringliteral">&quot;load_module_from_path&quot;</span>];</div>
-<div class="line"><span class="lineno">   55</span>    <a class="code hl_variable" href="#a81491b7344885e1fd6317112ff95ac5c">py_module</a> = load_module(module_name, py_file);</div>
-<div class="line"><span class="lineno">   56</span> </div>
-<div class="line"><span class="lineno">   57</span>    fpeh.<a class="code hl_function" href="classeonc_1_1FPEHandler.html#abce91443c8e3c366d6932a457145540a">restore_fpe</a>();</div>
-<div class="line"><span class="lineno">   58</span> </div>
-<div class="line"><span class="lineno">   59</span>    <a class="code hl_variable" href="#a43439499be69e26cde587dfb73932825">calculator</a> = <a class="code hl_variable" href="#a81491b7344885e1fd6317112ff95ac5c">py_module</a>.attr(<span class="stringliteral">&quot;ase_calc&quot;</span>)();</div>
-<div class="line"><span class="lineno">   60</span>    <a class="code hl_variable" href="#ab2b826f3e99150d32a20e9eddc77801e">_calculate</a> = <a class="code hl_variable" href="#a81491b7344885e1fd6317112ff95ac5c">py_module</a>.attr(<span class="stringliteral">&quot;_calculate&quot;</span>);</div>
+<p class="definition">Definition at line <a class="el" href="ASE_8cpp_source.html#l00029">29</a> of file <a class="el" href="ASE_8cpp_source.html">ASE.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   30</span>    : eonc::Potential(<a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a0fe688b082b0929fe3f6cf195d7d371d">eonc::PotType::ASE_POT</a>, a_params) {</div>
+<div class="line"><span class="lineno">   31</span>  <a class="code hl_function" href="namespaceeonc.html#a3f9b51a0a8d8a0d0075699d7830db0bf">eonc::ensure_interpreter</a>();</div>
+<div class="line"><span class="lineno">   32</span>  <a class="code hl_variable" href="#aafc2c1607f256fb7d54562879fe9d8e8">counter</a> = 1;</div>
+<div class="line"><span class="lineno">   33</span>  std::string py_file = a_params.<a class="code hl_function" href="classeonc_1_1Parameters.html#a84794a90638bc99e38d1308ea75c971a">potential_options</a>().<a class="code hl_variable" href="structeonc_1_1potential__options__t.html#af2d628521f966cc4022af4f2c31ffdfd">extPotPath</a>;</div>
+<div class="line"><span class="lineno">   34</span> </div>
+<div class="line"><span class="lineno">   35</span>  <span class="comment">// import</span></div>
+<div class="line"><span class="lineno">   36</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">   37</span>    <span class="comment">// must briefly disable FPE because Python packages like Numpy causes it</span></div>
+<div class="line"><span class="lineno">   38</span>    <span class="comment">// during import</span></div>
+<div class="line"><span class="lineno">   39</span>    eonc::FPEHandler fpeh;</div>
+<div class="line"><span class="lineno">   40</span>    fpeh.<a class="code hl_function" href="classeonc_1_1FPEHandler.html#afd34f29eda64117a665d8340a5b43a1c">eat_fpe</a>();</div>
+<div class="line"><span class="lineno">   41</span> </div>
+<div class="line"><span class="lineno">   42</span>    <span class="comment">// Create a Python script to use importlib.util to load the module</span></div>
+<div class="line"><span class="lineno">   43</span>    py::exec(R<span class="stringliteral">&quot;(</span></div>
+<div class="line"><span class="lineno">   44</span><span class="stringliteral">            import sys</span></div>
+<div class="line"><span class="lineno">   45</span><span class="stringliteral">            import importlib.util</span></div>
+<div class="line"><span class="lineno">   46</span><span class="stringliteral"></span> </div>
+<div class="line"><span class="lineno">   47</span><span class="stringliteral">            def load_module_from_path(module_name, file_path):</span></div>
+<div class="line"><span class="lineno">   48</span><span class="stringliteral">                spec = importlib.util.spec_from_file_location(module_name, file_path)</span></div>
+<div class="line"><span class="lineno">   49</span><span class="stringliteral">                module = importlib.util.module_from_spec(spec)</span></div>
+<div class="line"><span class="lineno">   50</span><span class="stringliteral">                sys.modules[module_name] = module</span></div>
+<div class="line"><span class="lineno">   51</span><span class="stringliteral">                spec.loader.exec_module(module)</span></div>
+<div class="line"><span class="lineno">   52</span><span class="stringliteral">                return module</span></div>
+<div class="line"><span class="lineno">   53</span><span class="stringliteral">        )&quot;);</span></div>
+<div class="line"><span class="lineno">   54</span><span class="stringliteral"></span> </div>
+<div class="line"><span class="lineno">   55</span><span class="stringliteral">    </span><span class="comment">// Prepare the module name and file path</span></div>
+<div class="line"><span class="lineno">   56</span>    std::string module_name = <span class="stringliteral">&quot;ase_eon&quot;</span>;</div>
+<div class="line"><span class="lineno">   57</span>    py::object load_module = py::globals()[<span class="stringliteral">&quot;load_module_from_path&quot;</span>];</div>
+<div class="line"><span class="lineno">   58</span>    <a class="code hl_variable" href="#a81491b7344885e1fd6317112ff95ac5c">py_module</a> = load_module(module_name, py_file);</div>
+<div class="line"><span class="lineno">   59</span> </div>
+<div class="line"><span class="lineno">   60</span>    fpeh.<a class="code hl_function" href="classeonc_1_1FPEHandler.html#abce91443c8e3c366d6932a457145540a">restore_fpe</a>();</div>
 <div class="line"><span class="lineno">   61</span> </div>
-<div class="line"><span class="lineno">   62</span>  } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
+<div class="line"><span class="lineno">   62</span>    <a class="code hl_variable" href="#a43439499be69e26cde587dfb73932825">calculator</a> = <a class="code hl_variable" href="#a81491b7344885e1fd6317112ff95ac5c">py_module</a>.attr(<span class="stringliteral">&quot;ase_calc&quot;</span>)();</div>
+<div class="line"><span class="lineno">   63</span>    <a class="code hl_variable" href="#ab2b826f3e99150d32a20e9eddc77801e">_calculate</a> = <a class="code hl_variable" href="#a81491b7344885e1fd6317112ff95ac5c">py_module</a>.attr(<span class="stringliteral">&quot;_calculate&quot;</span>);</div>
+<div class="line"><span class="lineno">   64</span>    <a class="code hl_variable" href="#a2bec677c372d3617db5de09cc1a368d7">has_batch_</a> = py::hasattr(<a class="code hl_variable" href="#a81491b7344885e1fd6317112ff95ac5c">py_module</a>, <span class="stringliteral">&quot;batch_calculate&quot;</span>);</div>
+<div class="line"><span class="lineno">   65</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a2bec677c372d3617db5de09cc1a368d7">has_batch_</a>) {</div>
+<div class="line"><span class="lineno">   66</span>      <a class="code hl_variable" href="#a03a86653a0a73bca51cc760d525d8fc6">batch_calculate_</a> = <a class="code hl_variable" href="#a81491b7344885e1fd6317112ff95ac5c">py_module</a>.attr(<span class="stringliteral">&quot;batch_calculate&quot;</span>);</div>
+<div class="line"><span class="lineno">   67</span>    }</div>
+<div class="line"><span class="lineno">   68</span> </div>
+<div class="line"><span class="lineno">   69</span>  } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
+<div class="ttc" id="aclassASE_html_a03a86653a0a73bca51cc760d525d8fc6"><div class="ttname"><a href="#a03a86653a0a73bca51cc760d525d8fc6">ASE::batch_calculate_</a></div><div class="ttdeci">py::object batch_calculate_</div><div class="ttdef"><b>Definition</b> <a href="ASE_8h_source.html#l00027">ASE.h:27</a></div></div>
+<div class="ttc" id="aclassASE_html_a2bec677c372d3617db5de09cc1a368d7"><div class="ttname"><a href="#a2bec677c372d3617db5de09cc1a368d7">ASE::has_batch_</a></div><div class="ttdeci">bool has_batch_</div><div class="ttdef"><b>Definition</b> <a href="ASE_8h_source.html#l00028">ASE.h:28</a></div></div>
 <div class="ttc" id="aclassASE_html_a43439499be69e26cde587dfb73932825"><div class="ttname"><a href="#a43439499be69e26cde587dfb73932825">ASE::calculator</a></div><div class="ttdeci">py::object calculator</div><div class="ttdef"><b>Definition</b> <a href="ASE_8h_source.html#l00024">ASE.h:24</a></div></div>
 <div class="ttc" id="aclassASE_html_a81491b7344885e1fd6317112ff95ac5c"><div class="ttname"><a href="#a81491b7344885e1fd6317112ff95ac5c">ASE::py_module</a></div><div class="ttdeci">py::module_ py_module</div><div class="ttdef"><b>Definition</b> <a href="ASE_8h_source.html#l00023">ASE.h:23</a></div></div>
 <div class="ttc" id="aclassASE_html_aafc2c1607f256fb7d54562879fe9d8e8"><div class="ttname"><a href="#aafc2c1607f256fb7d54562879fe9d8e8">ASE::counter</a></div><div class="ttdeci">size_t counter</div><div class="ttdef"><b>Definition</b> <a href="ASE_8h_source.html#l00022">ASE.h:22</a></div></div>
 <div class="ttc" id="aclassASE_html_ab2b826f3e99150d32a20e9eddc77801e"><div class="ttname"><a href="#ab2b826f3e99150d32a20e9eddc77801e">ASE::_calculate</a></div><div class="ttdeci">py::object _calculate</div><div class="ttdef"><b>Definition</b> <a href="ASE_8h_source.html#l00025">ASE.h:25</a></div></div>
-<div class="ttc" id="aclasseonc_1_1FPEHandler_html_abce91443c8e3c366d6932a457145540a"><div class="ttname"><a href="classeonc_1_1FPEHandler.html#abce91443c8e3c366d6932a457145540a">eonc::FPEHandler::restore_fpe</a></div><div class="ttdeci">void restore_fpe()</div><div class="ttdef"><b>Definition</b> <a href="fpe__handler_8cpp_source.html#l00251">fpe_handler.cpp:251</a></div></div>
-<div class="ttc" id="aclasseonc_1_1FPEHandler_html_afd34f29eda64117a665d8340a5b43a1c"><div class="ttname"><a href="classeonc_1_1FPEHandler.html#afd34f29eda64117a665d8340a5b43a1c">eonc::FPEHandler::eat_fpe</a></div><div class="ttdeci">void eat_fpe()</div><div class="ttdef"><b>Definition</b> <a href="fpe__handler_8cpp_source.html#l00246">fpe_handler.cpp:246</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Parameters_html_a75c3a463dab97989d367d624e455606c"><div class="ttname"><a href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">eonc::Parameters::potential_options</a></div><div class="ttdeci">struct eonc::Parameters::potential_options_t potential_options</div></div>
-<div class="ttc" id="aclasseonc_1_1Potential_html_af81acd9a6775ff13fab861a51fb9ba95"><div class="ttname"><a href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">eonc::Potential::Potential</a></div><div class="ttdeci">Potential(PotType a_ptype)</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00035">Potential.h:35</a></div></div>
+<div class="ttc" id="aclasseonc_1_1FPEHandler_html_abce91443c8e3c366d6932a457145540a"><div class="ttname"><a href="classeonc_1_1FPEHandler.html#abce91443c8e3c366d6932a457145540a">eonc::FPEHandler::restore_fpe</a></div><div class="ttdeci">void restore_fpe()</div><div class="ttdef"><b>Definition</b> <a href="fpe__handler_8cpp_source.html#l00561">fpe_handler.cpp:561</a></div></div>
+<div class="ttc" id="aclasseonc_1_1FPEHandler_html_afd34f29eda64117a665d8340a5b43a1c"><div class="ttname"><a href="classeonc_1_1FPEHandler.html#afd34f29eda64117a665d8340a5b43a1c">eonc::FPEHandler::eat_fpe</a></div><div class="ttdeci">void eat_fpe()</div><div class="ttdef"><b>Definition</b> <a href="fpe__handler_8cpp_source.html#l00556">fpe_handler.cpp:556</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_a84794a90638bc99e38d1308ea75c971a"><div class="ttname"><a href="classeonc_1_1Parameters.html#a84794a90638bc99e38d1308ea75c971a">eonc::Parameters::potential_options</a></div><div class="ttdeci">const potential_options_t &amp; potential_options() const</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00116">Parameters.h:116</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a0fe688b082b0929fe3f6cf195d7d371d"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a0fe688b082b0929fe3f6cf195d7d371d">eonc::PotType::ASE_POT</a></div><div class="ttdeci">@ ASE_POT</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00065">BaseStructures.h:65</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a3f9b51a0a8d8a0d0075699d7830db0bf"><div class="ttname"><a href="namespaceeonc.html#a3f9b51a0a8d8a0d0075699d7830db0bf">eonc::ensure_interpreter</a></div><div class="ttdeci">void ensure_interpreter()</div><div class="ttdef"><b>Definition</b> <a href="NbGuard_8h_source.html#l00021">NbGuard.h:21</a></div></div>
-<div class="ttc" id="astructeonc_1_1Parameters_1_1potential__options__t_html_acaed7dcc30ec1af72ef09ebbbca88db5"><div class="ttname"><a href="structeonc_1_1Parameters_1_1potential__options__t.html#acaed7dcc30ec1af72ef09ebbbca88db5">eonc::Parameters::potential_options_t::extPotPath</a></div><div class="ttdeci">std::string extPotPath</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00073">Parameters.h:73</a></div></div>
+<div class="ttc" id="astructeonc_1_1potential__options__t_html_af2d628521f966cc4022af4f2c31ffdfd"><div class="ttname"><a href="structeonc_1_1potential__options__t.html#af2d628521f966cc4022af4f2c31ffdfd">eonc::potential_options_t::extPotPath</a></div><div class="ttdeci">std::string extPotPath</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00060">ParametersOptions.h:60</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -384,11 +407,11 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ASE_8h_source.html#l00030">30</a> of file <a class="el" href="ASE_8h_source.html">ASE.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   30</span>                 {</div>
-<div class="line"><span class="lineno">   31</span>    QUILL_LOG_INFO(<a class="code hl_function" href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a>(), <span class="stringliteral">&quot;[ASE] called potential {} times&quot;</span>,</div>
-<div class="line"><span class="lineno">   32</span>                   <a class="code hl_variable" href="#aafc2c1607f256fb7d54562879fe9d8e8">counter</a>);</div>
-<div class="line"><span class="lineno">   33</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="ASE_8h_source.html#l00032">32</a> of file <a class="el" href="ASE_8h_source.html">ASE.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   32</span>                 {</div>
+<div class="line"><span class="lineno">   33</span>    QUILL_LOG_INFO(<a class="code hl_function" href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a>(), <span class="stringliteral">&quot;[ASE] called potential {} times&quot;</span>,</div>
+<div class="line"><span class="lineno">   34</span>                   <a class="code hl_variable" href="#aafc2c1607f256fb7d54562879fe9d8e8">counter</a>);</div>
+<div class="line"><span class="lineno">   35</span>  }</div>
 <div class="ttc" id="anamespaceeonc_1_1log_html_a4e7c8b5e4189cf657384f1c4bbf14dab"><div class="ttname"><a href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a></div><div class="ttdeci">quill::Logger * get() noexcept</div><div class="ttdoc">Get or create the default &quot;combi&quot; logger.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00044">EonLogger.h:44</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -448,45 +471,171 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">eonc::Potential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ASE_8cpp_source.html#l00064">64</a> of file <a class="el" href="ASE_8cpp_source.html">ASE.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   64</span>                           : Exception during Python module <span class="keyword">import</span>: %s\n&quot;,</div>
-<div class="line"><span class="lineno">   65</span>            e.what());</div>
-<div class="line"><span class="lineno">   66</span>    fprintf(stderr, &quot;%s should exist and have no errors on the Python side.\n<span class="stringliteral">&quot;,</span></div>
-<div class="line"><span class="lineno">   67</span><span class="stringliteral">            py_file.c_str());</span></div>
-<div class="line"><span class="lineno">   68</span><span class="stringliteral">    throw std::runtime_error(std::string(&quot;</span><a class="code hl_function" href="#a85554da4750d7dbdfad87abdd76ec530">ASE</a> <a class="code hl_variable" href="#a43439499be69e26cde587dfb73932825">calculator</a> <span class="keyword">import</span> failed: &quot;) +</div>
-<div class="line"><span class="lineno">   69</span>                             e.what());</div>
-<div class="line"><span class="lineno">   70</span>  }</div>
-<div class="line"><span class="lineno">   71</span>  return;</div>
-<div class="line"><span class="lineno">   72</span>}</div>
-<div class="line"><span class="lineno">   73</span> </div>
-<div class="line"><span class="lineno">   74</span>void ASE::force(long nAtoms, const double *R, const int *atomicNrs, double *F,</div>
-<div class="line"><span class="lineno">   75</span>                double *U, double *variance, const double *box) {</div>
-<div class="line"><span class="lineno">   76</span>  variance = nullptr;</div>
-<div class="line"><span class="lineno">   77</span>  py::gil_scoped_acquire gil;</div>
-<div class="line"><span class="lineno">   78</span>  try {</div>
-<div class="line"><span class="lineno">   79</span>    <span class="comment">// TODO(rg): This is easier on the type system if Eigen::Map is used like in</span></div>
-<div class="line"><span class="lineno">   80</span>    <span class="comment">// ASE_ORCA convert arrays to Numpy arrays</span></div>
-<div class="line"><span class="lineno">   81</span>    std::vector&lt;size_t&gt; R_shape = {<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nAtoms), 3};</div>
-<div class="line"><span class="lineno">   82</span>    py::array_t&lt;double&gt; R_np(R_shape, R);</div>
-<div class="line"><span class="lineno">   83</span>    py::array_t&lt;int&gt; atomicNrs_np(nAtoms, atomicNrs);</div>
-<div class="line"><span class="lineno">   84</span>    py::array_t&lt;double&gt; box_np({3, 3}, box);</div>
-<div class="line"><span class="lineno">   85</span> </div>
-<div class="line"><span class="lineno">   86</span>    <span class="comment">// get energy and forces (in this order) from Python</span></div>
-<div class="line"><span class="lineno">   87</span>    std::tuple&lt;double, py::array_t&lt;double&gt;&gt; py_result =</div>
-<div class="line"><span class="lineno">   88</span>        <a class="code hl_variable" href="#ab2b826f3e99150d32a20e9eddc77801e">_calculate</a>(R_np, atomicNrs_np, box_np, <a class="code hl_variable" href="#a43439499be69e26cde587dfb73932825">calculator</a>)</div>
-<div class="line"><span class="lineno">   89</span>            .cast&lt;std::tuple&lt;double, py::array_t&lt;double&gt;&gt;&gt;();</div>
-<div class="line"><span class="lineno">   90</span> </div>
-<div class="line"><span class="lineno">   91</span>    <span class="comment">// copy the results to the output arrays</span></div>
-<div class="line"><span class="lineno">   92</span>    *U = std::get&lt;0&gt;(py_result);</div>
-<div class="line"><span class="lineno">   93</span>    py::array_t&lt;double&gt; forces = std::get&lt;1&gt;(py_result);</div>
-<div class="line"><span class="lineno">   94</span>    <span class="keyword">auto</span> buffer = forces.request();</div>
-<div class="line"><span class="lineno">   95</span>    <span class="keywordtype">double</span> *ptr = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(buffer.ptr);</div>
-<div class="line"><span class="lineno">   96</span>    std::copy(ptr, ptr + buffer.size, F);</div>
-<div class="line"><span class="lineno">   97</span> </div>
-<div class="line"><span class="lineno">   98</span>  } <span class="keywordflow">catch</span> (py::error_already_set &amp;e) {</div>
-<div class="line"><span class="lineno">   99</span>    fprintf(stderr, <span class="stringliteral">&quot;ASE calculator: Python error: %s\n&quot;</span>, e.what());</div>
-<div class="line"><span class="lineno">  100</span>    <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;ASE calculator Python error: &quot;</span>) +</div>
-<div class="ttc" id="aclassASE_html_a85554da4750d7dbdfad87abdd76ec530"><div class="ttname"><a href="#a85554da4750d7dbdfad87abdd76ec530">ASE::ASE</a></div><div class="ttdeci">ASE(const Parameters &amp;a_params)</div><div class="ttdef"><b>Definition</b> <a href="ASE_8cpp_source.html#l00026">ASE.cpp:26</a></div></div>
+<p class="definition">Definition at line <a class="el" href="ASE_8cpp_source.html#l00071">71</a> of file <a class="el" href="ASE_8cpp_source.html">ASE.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   71</span>                           : Exception during Python module <span class="keyword">import</span>: %s\n&quot;,</div>
+<div class="line"><span class="lineno">   72</span>            e.what());</div>
+<div class="line"><span class="lineno">   73</span>    fprintf(stderr, &quot;%s should exist and have no errors on the Python side.\n<span class="stringliteral">&quot;,</span></div>
+<div class="line"><span class="lineno">   74</span><span class="stringliteral">            py_file.c_str());</span></div>
+<div class="line"><span class="lineno">   75</span><span class="stringliteral">    throw std::runtime_error(std::string(&quot;</span><a class="code hl_function" href="#ace7ebec9d217d29cecbf5db5fee67014">ASE</a> <a class="code hl_variable" href="#a43439499be69e26cde587dfb73932825">calculator</a> <span class="keyword">import</span> failed: &quot;) +</div>
+<div class="line"><span class="lineno">   76</span>                             e.what());</div>
+<div class="line"><span class="lineno">   77</span>  }</div>
+<div class="line"><span class="lineno">   78</span>  return;</div>
+<div class="line"><span class="lineno">   79</span>}</div>
+<div class="line"><span class="lineno">   80</span> </div>
+<div class="line"><span class="lineno">   81</span>void ASE::force(long nAtoms, const double *R, const int *atomicNrs, double *F,</div>
+<div class="line"><span class="lineno">   82</span>                double *U, double *variance, const double *box) {</div>
+<div class="line"><span class="lineno">   83</span>  variance = nullptr;</div>
+<div class="line"><span class="lineno">   84</span>  py::gil_scoped_acquire gil;</div>
+<div class="line"><span class="lineno">   85</span>  try {</div>
+<div class="line"><span class="lineno">   86</span>    AtomMatrix positions = AtomMatrix::Map(const_cast&lt;double *&gt;(R), nAtoms, 3);</div>
+<div class="line"><span class="lineno">   87</span>    <a class="code hl_typedef" href="Eigen_8h.html#a0ce991ec8b4bfd6bccc9a2ebd756f9c7">RotationMatrix</a> boxx = RotationMatrix::Map(<span class="keyword">const_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(box), 3, 3);</div>
+<div class="line"><span class="lineno">   88</span>    Eigen::Map&lt;Eigen::VectorXi&gt; atmnmrs(<span class="keyword">const_cast&lt;</span><span class="keywordtype">int</span> *<span class="keyword">&gt;</span>(atomicNrs), nAtoms);</div>
+<div class="line"><span class="lineno">   89</span> </div>
+<div class="line"><span class="lineno">   90</span>    std::tuple&lt;double, py::array_t&lt;double&gt;&gt; py_result =</div>
+<div class="line"><span class="lineno">   91</span>        <a class="code hl_variable" href="#ab2b826f3e99150d32a20e9eddc77801e">_calculate</a>(positions, atmnmrs, boxx, <a class="code hl_variable" href="#a43439499be69e26cde587dfb73932825">calculator</a>)</div>
+<div class="line"><span class="lineno">   92</span>            .cast&lt;std::tuple&lt;double, py::array_t&lt;double&gt;&gt;&gt;();</div>
+<div class="line"><span class="lineno">   93</span> </div>
+<div class="line"><span class="lineno">   94</span>    *U = std::get&lt;0&gt;(py_result);</div>
+<div class="line"><span class="lineno">   95</span>    py::array_t&lt;double&gt; forces = std::get&lt;1&gt;(py_result);</div>
+<div class="line"><span class="lineno">   96</span>    <span class="keyword">auto</span> buffer = forces.request();</div>
+<div class="line"><span class="lineno">   97</span>    <span class="keywordflow">if</span> (buffer.size &lt; nAtoms * 3) {</div>
+<div class="line"><span class="lineno">   98</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">   99</span>          <span class="stringliteral">&quot;ASE _calculate returned forces of the wrong size&quot;</span>);</div>
+<div class="line"><span class="lineno">  100</span>    }</div>
+<div class="line"><span class="lineno">  101</span>    Eigen::Map&lt;AtomMatrix&gt;(F, nAtoms, 3) = Eigen::Map&lt;const AtomMatrix&gt;(</div>
+<div class="line"><span class="lineno">  102</span>        <span class="keyword">static_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(buffer.ptr), nAtoms, 3);</div>
+<div class="line"><span class="lineno">  103</span> </div>
+<div class="line"><span class="lineno">  104</span>  } <span class="keywordflow">catch</span> (py::error_already_set &amp;e) {</div>
+<div class="line"><span class="lineno">  105</span>    fprintf(stderr, <span class="stringliteral">&quot;ASE calculator: Python error: %s\n&quot;</span>, e.what());</div>
+<div class="line"><span class="lineno">  106</span>    <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;ASE calculator Python error: &quot;</span>) +</div>
+<div class="ttc" id="aEigen_8h_html_a0ce991ec8b4bfd6bccc9a2ebd756f9c7"><div class="ttname"><a href="Eigen_8h.html#a0ce991ec8b4bfd6bccc9a2ebd756f9c7">RotationMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 3, 3, eOnStorageOrder &gt; RotationMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00038">Eigen.h:38</a></div></div>
+<div class="ttc" id="aclassASE_html_ace7ebec9d217d29cecbf5db5fee67014"><div class="ttname"><a href="#ace7ebec9d217d29cecbf5db5fee67014">ASE::ASE</a></div><div class="ttdeci">ASE(const eonc::Parameters &amp;a_params)</div><div class="ttdef"><b>Definition</b> <a href="ASE_8cpp_source.html#l00029">ASE.cpp:29</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8f19bffa4b531c4e8b1033362da43311" name="a8f19bffa4b531c4e8b1033362da43311"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f19bffa4b531c4e8b1033362da43311">&#9670;&#160;</a></span>forceBatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ASE::forceBatch </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>nSystems</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>nAtoms</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *const *</td>          <td class="paramname"><span class="paramname"><em>positions</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *const *</td>          <td class="paramname"><span class="paramname"><em>atomicNrs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *const *</td>          <td class="paramname"><span class="paramname"><em>forces</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>energies</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>variances</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *const *</td>          <td class="paramname"><span class="paramname"><em>boxes</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Evaluate forces for N systems in a single call. </p>
+<p>Default: loops over <a class="el" href="#a76e329778602bb3421e16cacce8a4fbe">force()</a>. Override in potentials that support native batching (e.g. <a class="el" href="classMetatomicPotential.html" title="A potential class that uses a metatomic model for energy and force calculations.">MetatomicPotential</a> uses a single model.forward() for all N systems). </p>
+
+<p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#aa66e1416134ff55639a6d20a34e3c1c1">eonc::Potential</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="ASE_8cpp_source.html#l00108">108</a> of file <a class="el" href="ASE_8cpp_source.html">ASE.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  108</span>                                  {</div>
+<div class="line"><span class="lineno">  109</span>    fprintf(stderr, <span class="stringliteral">&quot;ASE calculator: C++ exception: %s\n&quot;</span>, e.what());</div>
+<div class="line"><span class="lineno">  110</span>    <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;ASE calculator C++ exception: &quot;</span>) +</div>
+<div class="line"><span class="lineno">  111</span>                             e.what());</div>
+<div class="line"><span class="lineno">  112</span>  }</div>
+<div class="line"><span class="lineno">  113</span> </div>
+<div class="line"><span class="lineno">  114</span>  <a class="code hl_variable" href="#aafc2c1607f256fb7d54562879fe9d8e8">counter</a>++;</div>
+<div class="line"><span class="lineno">  115</span>  <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  116</span>}</div>
+<div class="line"><span class="lineno">  117</span> </div>
+<div class="line"><span class="lineno">  118</span><span class="keywordtype">void</span> <a class="code hl_function" href="#a8f19bffa4b531c4e8b1033362da43311">ASE::forceBatch</a>(<span class="keywordtype">long</span> nSystems, <span class="keywordtype">long</span> nAtoms, <span class="keyword">const</span> <span class="keywordtype">double</span> *<span class="keyword">const</span> *positions,</div>
+<div class="line"><span class="lineno">  119</span>                     <span class="keyword">const</span> <span class="keywordtype">int</span> *<span class="keyword">const</span> *atomicNrs, <span class="keywordtype">double</span> *<span class="keyword">const</span> *forces,</div>
+<div class="line"><span class="lineno">  120</span>                     <span class="keywordtype">double</span> *energies, <span class="keywordtype">double</span> *variances,</div>
+<div class="line"><span class="lineno">  121</span>                     <span class="keyword">const</span> <span class="keywordtype">double</span> *<span class="keyword">const</span> *boxes) {</div>
+<div class="line"><span class="lineno">  122</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a2bec677c372d3617db5de09cc1a368d7">has_batch_</a>) {</div>
+<div class="line"><span class="lineno">  123</span>    <a class="code hl_function" href="classeonc_1_1Potential.html#aa66e1416134ff55639a6d20a34e3c1c1">eonc::Potential::forceBatch</a>(nSystems, nAtoms, positions, atomicNrs, forces,</div>
+<div class="line"><span class="lineno">  124</span>                                energies, variances, boxes);</div>
+<div class="line"><span class="lineno">  125</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  126</span>  }</div>
+<div class="line"><span class="lineno">  127</span>  py::gil_scoped_acquire gil;</div>
+<div class="line"><span class="lineno">  128</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  129</span>    <span class="keyword">const</span> <span class="keyword">auto</span> ns = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nSystems);</div>
+<div class="line"><span class="lineno">  130</span>    <span class="keyword">const</span> <span class="keyword">auto</span> na = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nAtoms);</div>
+<div class="line"><span class="lineno">  131</span>    std::vector&lt;double&gt; R_data(ns * na * 3);</div>
+<div class="line"><span class="lineno">  132</span>    std::vector&lt;int&gt; Z_data(ns * na);</div>
+<div class="line"><span class="lineno">  133</span>    std::vector&lt;double&gt; box_data(ns * 9);</div>
+<div class="line"><span class="lineno">  134</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> s = 0; s &lt; nSystems; ++s) {</div>
+<div class="line"><span class="lineno">  135</span>      std::copy(positions[s], positions[s] + <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(na) * 3,</div>
+<div class="line"><span class="lineno">  136</span>                R_data.data() + <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(s) * na * 3);</div>
+<div class="line"><span class="lineno">  137</span>      std::copy(atomicNrs[s], atomicNrs[s] + nAtoms,</div>
+<div class="line"><span class="lineno">  138</span>                Z_data.data() + <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(s) * na);</div>
+<div class="line"><span class="lineno">  139</span>      std::copy(boxes[s], boxes[s] + 9,</div>
+<div class="line"><span class="lineno">  140</span>                box_data.data() + <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(s) * 9);</div>
+<div class="line"><span class="lineno">  141</span>    }</div>
+<div class="line"><span class="lineno">  142</span>    py::array_t&lt;double&gt; R_np({ns, na, <span class="keywordtype">size_t</span>{3}}, R_data.data());</div>
+<div class="line"><span class="lineno">  143</span>    py::array_t&lt;int&gt; Z_np({ns, na}, Z_data.data());</div>
+<div class="line"><span class="lineno">  144</span>    py::array_t&lt;double&gt; box_np({ns, <span class="keywordtype">size_t</span>{3}, <span class="keywordtype">size_t</span>{3}}, box_data.data());</div>
+<div class="line"><span class="lineno">  145</span>    <span class="keyword">auto</span> py_result =</div>
+<div class="line"><span class="lineno">  146</span>        <a class="code hl_variable" href="#a03a86653a0a73bca51cc760d525d8fc6">batch_calculate_</a>(R_np, Z_np, box_np, <a class="code hl_variable" href="#a43439499be69e26cde587dfb73932825">calculator</a>)</div>
+<div class="line"><span class="lineno">  147</span>            .cast&lt;std::tuple&lt;py::array_t&lt;double&gt;, py::array_t&lt;double&gt;&gt;&gt;();</div>
+<div class="line"><span class="lineno">  148</span>    py::array_t&lt;double&gt; E = std::get&lt;0&gt;(py_result);</div>
+<div class="line"><span class="lineno">  149</span>    py::array_t&lt;double&gt; F = std::get&lt;1&gt;(py_result);</div>
+<div class="line"><span class="lineno">  150</span>    <span class="keyword">auto</span> bufE = E.request();</div>
+<div class="line"><span class="lineno">  151</span>    <span class="keyword">auto</span> bufF = F.request();</div>
+<div class="line"><span class="lineno">  152</span>    <span class="keywordflow">if</span> (bufE.size &lt; nSystems || bufF.size &lt; nSystems * nAtoms * 3) {</div>
+<div class="line"><span class="lineno">  153</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  154</span>          <span class="stringliteral">&quot;ASE batch_calculate returned energies/forces of the wrong size&quot;</span>);</div>
+<div class="line"><span class="lineno">  155</span>    }</div>
+<div class="line"><span class="lineno">  156</span>    <span class="keyword">auto</span> *ePtr = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(bufE.ptr);</div>
+<div class="line"><span class="lineno">  157</span>    <span class="keyword">auto</span> *fPtr = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(bufF.ptr);</div>
+<div class="line"><span class="lineno">  158</span>    std::copy(ePtr, ePtr + nSystems, energies);</div>
+<div class="line"><span class="lineno">  159</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> s = 0; s &lt; nSystems; ++s) {</div>
+<div class="line"><span class="lineno">  160</span>      std::copy(fPtr + s * nAtoms * 3, fPtr + (s + 1) * nAtoms * 3, forces[s]);</div>
+<div class="line"><span class="lineno">  161</span>      <span class="keywordflow">if</span> (variances) {</div>
+<div class="line"><span class="lineno">  162</span>        variances[s] = 0.0;</div>
+<div class="line"><span class="lineno">  163</span>      }</div>
+<div class="line"><span class="lineno">  164</span>    }</div>
+<div class="line"><span class="lineno">  165</span>  } <span class="keywordflow">catch</span> (py::error_already_set &amp;e) {</div>
+<div class="ttc" id="aclassASE_html_a8f19bffa4b531c4e8b1033362da43311"><div class="ttname"><a href="#a8f19bffa4b531c4e8b1033362da43311">ASE::forceBatch</a></div><div class="ttdeci">void forceBatch(long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes) override</div><div class="ttdoc">Evaluate forces for N systems in a single call.</div><div class="ttdef"><b>Definition</b> <a href="ASE_8cpp_source.html#l00108">ASE.cpp:108</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_aa66e1416134ff55639a6d20a34e3c1c1"><div class="ttname"><a href="classeonc_1_1Potential.html#aa66e1416134ff55639a6d20a34e3c1c1">eonc::Potential::forceBatch</a></div><div class="ttdeci">virtual void forceBatch(long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes)</div><div class="ttdoc">Evaluate forces for N systems in a single call.</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00168">Potential.h:168</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -518,8 +667,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#af6c385eb52d3764246416ea389c84131">eonc::Potential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ASE_8h_source.html#l00037">37</a> of file <a class="el" href="ASE_8h_source.html">ASE.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   37</span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
+<p class="definition">Definition at line <a class="el" href="ASE_8h_source.html#l00039">39</a> of file <a class="el" href="ASE_8h_source.html">ASE.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   39</span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -551,10 +700,45 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#a8b83745c9898990f848daafa4c351c2f">eonc::Potential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ASE_8h_source.html#l00040">40</a> of file <a class="el" href="ASE_8h_source.html">ASE.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   40</span>                                                                     {</div>
-<div class="line"><span class="lineno">   41</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">   42</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="ASE_8h_source.html#l00042">42</a> of file <a class="el" href="ASE_8h_source.html">ASE.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   42</span>                                                                     {</div>
+<div class="line"><span class="lineno">   43</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   44</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a6cc801cfb55242aede7b55034117ccd5" name="a6cc801cfb55242aede7b55034117ccd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cc801cfb55242aede7b55034117ccd5">&#9670;&#160;</a></span>supportsBatchEvaluation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ASE::supportsBatchEvaluation </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether this potential supports batched evaluation of N systems in a single call. </p>
+<p>When true, callers (NEB, Dimer) should use <a class="el" href="#a8f19bffa4b531c4e8b1033362da43311" title="Evaluate forces for N systems in a single call.">forceBatch()</a> instead of N individual <a class="el" href="#a76e329778602bb3421e16cacce8a4fbe">force()</a> calls for better GPU utilization. </p>
+
+<p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#a2d8781e3cbea888f88b7523c5d00bc43">eonc::Potential</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="ASE_8h_source.html#l00045">45</a> of file <a class="el" href="ASE_8h_source.html">ASE.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   45</span>                                                                       {</div>
+<div class="line"><span class="lineno">   46</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a2bec677c372d3617db5de09cc1a368d7">has_batch_</a>;</div>
+<div class="line"><span class="lineno">   47</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -580,6 +764,30 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="ASE_8h_source.html#l00025">25</a> of file <a class="el" href="ASE_8h_source.html">ASE.h</a>.</p>
+
+</div>
+</div>
+<a id="a03a86653a0a73bca51cc760d525d8fc6" name="a03a86653a0a73bca51cc760d525d8fc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03a86653a0a73bca51cc760d525d8fc6">&#9670;&#160;</a></span>batch_calculate_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">py::object ASE::batch_calculate_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ASE_8h_source.html#l00027">27</a> of file <a class="el" href="ASE_8h_source.html">ASE.h</a>.</p>
 
 </div>
 </div>
@@ -629,6 +837,31 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="ASE_8h_source.html#l00022">22</a> of file <a class="el" href="ASE_8h_source.html">ASE.h</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">   22</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2bec677c372d3617db5de09cc1a368d7" name="a2bec677c372d3617db5de09cc1a368d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bec677c372d3617db5de09cc1a368d7">&#9670;&#160;</a></span>has_batch_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ASE::has_batch_ {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ASE_8h_source.html#l00028">28</a> of file <a class="el" href="ASE_8h_source.html">ASE.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   28</span>{<span class="keyword">false</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>

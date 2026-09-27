@@ -242,7 +242,11 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('Job_8h.html','
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="Parameters_8h_source.html">Parameters.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Potential_8h_source.html">Potential.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Runtime_8h_source.html">Runtime.h</a>&quot;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;stdexcept&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 </div>
 <p><a href="Job_8h_source.html">Go to the source code of this file.</a></p>
@@ -251,8 +255,6 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('Job_8h.html','
 Classes</h2></td></tr>
 <tr class="memitem:eonc_3A_3AJob" id="r_eonc_3A_3AJob"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html">eonc::Job</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declaration of job class.  <a href="classeonc_1_1Job.html#details">More...</a><br /></td></tr>
-<tr class="memitem:Job" id="r_Job"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classJob.html">Job</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declaration of job class.  <a href="classJob.html#details">More...</a><br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-namespaces" class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
@@ -262,7 +264,14 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a9c381333c273bde2e2ed47adefca7db3" id="r_a9c381333c273bde2e2ed47adefca7db3"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classJob.html">Job</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1helpers.html#a9c381333c273bde2e2ed47adefca7db3">eonc::helpers::makeJob</a> (std::unique_ptr&lt; <a class="el" href="classParameters.html">Parameters</a> &gt; params)</td></tr>
+<tr class="memitem:a9c381333c273bde2e2ed47adefca7db3" id="r_a9c381333c273bde2e2ed47adefca7db3"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classeonc_1_1Job.html">Job</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1helpers.html#a9c381333c273bde2e2ed47adefca7db3">eonc::helpers::makeJob</a> (std::unique_ptr&lt; <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &gt; params)</td></tr>
+<tr class="memdesc:a9c381333c273bde2e2ed47adefca7db3"><td class="mdescLeft">&#160;</td><td class="mdescRight">One-shot: <a class="el" href="classeonc_1_1Job.html" title="Declaration of job class.">Job</a> owns a default <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a>.  <br /></td></tr>
+<tr class="memitem:acca5ce570486141f2b6485a454f3ee00" id="r_acca5ce570486141f2b6485a454f3ee00"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classeonc_1_1Job.html">Job</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1helpers.html#acca5ce570486141f2b6485a454f3ee00">eonc::helpers::makeJob</a> (std::unique_ptr&lt; <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &gt; params, <a class="el" href="classeonc_1_1Runtime.html">Runtime</a> &amp;runtime)</td></tr>
+<tr class="memdesc:acca5ce570486141f2b6485a454f3ee00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow: caller keeps <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a> alive.  <br /></td></tr>
+<tr class="memitem:a353d254b2b4e3b09c3fdf1786d3a6cec" id="r_a353d254b2b4e3b09c3fdf1786d3a6cec"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classeonc_1_1Job.html">Job</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1helpers.html#a353d254b2b4e3b09c3fdf1786d3a6cec">eonc::helpers::makeJob</a> (std::unique_ptr&lt; <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &gt; params, <a class="el" href="classeonc_1_1Runtime.html">Runtime</a> &amp;&amp;runtime)</td></tr>
+<tr class="memdesc:a353d254b2b4e3b09c3fdf1786d3a6cec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Own the rvalue <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a>.  <br /></td></tr>
+<tr class="memitem:a9358432e7689e1d9d4b33fab2aaece52" id="r_a9358432e7689e1d9d4b33fab2aaece52"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classeonc_1_1Job.html">Job</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1helpers.html#a9358432e7689e1d9d4b33fab2aaece52">eonc::helpers::makeJob</a> (std::unique_ptr&lt; <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &gt; params, std::unique_ptr&lt; <a class="el" href="classeonc_1_1Runtime.html">Runtime</a> &gt; runtime)</td></tr>
+<tr class="memdesc:a9358432e7689e1d9d4b33fab2aaece52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Own the unique_ptr <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a>.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The job class is used to serve as an abstract class for all jobs, as well as to call a job at runtime based off of the passed in parameters. </p>

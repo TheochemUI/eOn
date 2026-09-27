@@ -252,7 +252,7 @@ Private Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="fpe__handler_8h_source.html#l00025">25</a> of file <a class="el" href="fpe__handler_8h_source.html">fpe_handler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fpe__handler_8h_source.html#l00034">34</a> of file <a class="el" href="fpe__handler_8h_source.html">fpe_handler.h</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="afd34f29eda64117a665d8340a5b43a1c" name="afd34f29eda64117a665d8340a5b43a1c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#afd34f29eda64117a665d8340a5b43a1c">&#9670;&#160;</a></span>eat_fpe()</h2>
@@ -269,13 +269,13 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="fpe__handler_8cpp_source.html#l00246">246</a> of file <a class="el" href="fpe__handler_8cpp_source.html">fpe_handler.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  246</span>                         {</div>
-<div class="line"><span class="lineno">  247</span>  std::lock_guard&lt;std::mutex&gt; lock(<a class="code hl_variable" href="#a1ebfa7b9e181e2081d60c6df205bbc7f">mutex_</a>);</div>
-<div class="line"><span class="lineno">  248</span>  feholdexcept(&amp;<a class="code hl_variable" href="#a2957ac61a86f83eecdeb088de33a2b92">orig_feenv</a>);</div>
-<div class="line"><span class="lineno">  249</span>}</div>
-<div class="ttc" id="aclasseonc_1_1FPEHandler_html_a1ebfa7b9e181e2081d60c6df205bbc7f"><div class="ttname"><a href="#a1ebfa7b9e181e2081d60c6df205bbc7f">eonc::FPEHandler::mutex_</a></div><div class="ttdeci">std::mutex mutex_</div><div class="ttdef"><b>Definition</b> <a href="fpe__handler_8h_source.html#l00034">fpe_handler.h:34</a></div></div>
-<div class="ttc" id="aclasseonc_1_1FPEHandler_html_a2957ac61a86f83eecdeb088de33a2b92"><div class="ttname"><a href="#a2957ac61a86f83eecdeb088de33a2b92">eonc::FPEHandler::orig_feenv</a></div><div class="ttdeci">fenv_t orig_feenv</div><div class="ttdef"><b>Definition</b> <a href="fpe__handler_8h_source.html#l00033">fpe_handler.h:33</a></div></div>
+<p class="definition">Definition at line <a class="el" href="fpe__handler_8cpp_source.html#l00556">556</a> of file <a class="el" href="fpe__handler_8cpp_source.html">fpe_handler.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  556</span>                         {</div>
+<div class="line"><span class="lineno">  557</span>  std::lock_guard&lt;std::mutex&gt; lock(<a class="code hl_variable" href="#a1ebfa7b9e181e2081d60c6df205bbc7f">mutex_</a>);</div>
+<div class="line"><span class="lineno">  558</span>  feholdexcept(&amp;<a class="code hl_variable" href="#a2957ac61a86f83eecdeb088de33a2b92">orig_feenv</a>);</div>
+<div class="line"><span class="lineno">  559</span>}</div>
+<div class="ttc" id="aclasseonc_1_1FPEHandler_html_a1ebfa7b9e181e2081d60c6df205bbc7f"><div class="ttname"><a href="#a1ebfa7b9e181e2081d60c6df205bbc7f">eonc::FPEHandler::mutex_</a></div><div class="ttdeci">std::mutex mutex_</div><div class="ttdef"><b>Definition</b> <a href="fpe__handler_8h_source.html#l00043">fpe_handler.h:43</a></div></div>
+<div class="ttc" id="aclasseonc_1_1FPEHandler_html_a2957ac61a86f83eecdeb088de33a2b92"><div class="ttname"><a href="#a2957ac61a86f83eecdeb088de33a2b92">eonc::FPEHandler::orig_feenv</a></div><div class="ttdeci">fenv_t orig_feenv</div><div class="ttdef"><b>Definition</b> <a href="fpe__handler_8h_source.html#l00042">fpe_handler.h:42</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -294,11 +294,11 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="fpe__handler_8cpp_source.html#l00251">251</a> of file <a class="el" href="fpe__handler_8cpp_source.html">fpe_handler.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  251</span>                             {</div>
-<div class="line"><span class="lineno">  252</span>  std::lock_guard&lt;std::mutex&gt; lock(<a class="code hl_variable" href="#a1ebfa7b9e181e2081d60c6df205bbc7f">mutex_</a>);</div>
-<div class="line"><span class="lineno">  253</span>  fesetenv(&amp;<a class="code hl_variable" href="#a2957ac61a86f83eecdeb088de33a2b92">orig_feenv</a>);</div>
-<div class="line"><span class="lineno">  254</span>}</div>
+<p class="definition">Definition at line <a class="el" href="fpe__handler_8cpp_source.html#l00561">561</a> of file <a class="el" href="fpe__handler_8cpp_source.html">fpe_handler.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  561</span>                             {</div>
+<div class="line"><span class="lineno">  562</span>  std::lock_guard&lt;std::mutex&gt; lock(<a class="code hl_variable" href="#a1ebfa7b9e181e2081d60c6df205bbc7f">mutex_</a>);</div>
+<div class="line"><span class="lineno">  563</span>  fesetenv(&amp;<a class="code hl_variable" href="#a2957ac61a86f83eecdeb088de33a2b92">orig_feenv</a>);</div>
+<div class="line"><span class="lineno">  564</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -323,7 +323,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="fpe__handler_8h_source.html#l00034">34</a> of file <a class="el" href="fpe__handler_8h_source.html">fpe_handler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fpe__handler_8h_source.html#l00043">43</a> of file <a class="el" href="fpe__handler_8h_source.html">fpe_handler.h</a>.</p>
 
 </div>
 </div>
@@ -347,7 +347,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="fpe__handler_8h_source.html#l00033">33</a> of file <a class="el" href="fpe__handler_8h_source.html">fpe_handler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fpe__handler_8h_source.html#l00042">42</a> of file <a class="el" href="fpe__handler_8h_source.html">fpe_handler.h</a>.</p>
 
 </div>
 </div>

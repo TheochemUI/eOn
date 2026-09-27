@@ -1,9 +1,10 @@
 var classEffectiveMediumTheory =
 [
-    [ "EffectiveMediumTheory", "classEffectiveMediumTheory.html#a08ae48bf994c6be7cddf7477270be607", null ],
+    [ "EffectiveMediumTheory", "classEffectiveMediumTheory.html#ae61089e6c39cfd1c181ce673843a77ce", null ],
     [ "~EffectiveMediumTheory", "classEffectiveMediumTheory.html#aa63a66606598c1e2ab20a5b5c7fdaac2", null ],
     [ "cleanMemory", "classEffectiveMediumTheory.html#ad5fb025ce49e16e973f4eac276d593e6", null ],
     [ "force", "classEffectiveMediumTheory.html#a08dcd66fc62f9b34e86cbe0b92dca8f0", null ],
+    [ "isSharedInstanceThreadSafe", "classEffectiveMediumTheory.html#a1e73d72949d8a6dc5ff037505d7371c5", null ],
     [ "AtomsObj", "classEffectiveMediumTheory.html#a00a681debacd563ae0f10349419b859c", null ],
     [ "EMTObj", "classEffectiveMediumTheory.html#aeae9370c7cdfe622f7616cffb5dcbe39", null ],
     [ "EMTParameterObj", "classEffectiveMediumTheory.html#ae94934620d2963ed2e5b4d99dd1486a4", null ],

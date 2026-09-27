@@ -342,44 +342,44 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">   39</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
 <div class="line"><span class="lineno">   40</span>  }</div>
 <div class="line"><span class="lineno">   41</span>  <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">   42</span>    <a class="code hl_class" href="classeonc_1_1Parameters.html">Parameters</a> params;</div>
-<div class="line"><span class="lineno">   43</span>    params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">potential_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1potential__options__t.html#a8c62d8e8c2374eff1672e72ec2bae1c8">potential</a> = PotType::METATOMIC;</div>
-<div class="line"><span class="lineno">   44</span>    <span class="keyword">auto</span> &amp;o = params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#abe39c95c9363fce1a030dc4c55634705">metatomic_options</a>;</div>
-<div class="line"><span class="lineno">   45</span>    o.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1metatomic__options__t.html#ad28a5a1a6541070a781ec8a7e044c262">model_path</a> = cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a3ea6e19137feff0625ca9e12f7ee5247">model_path</a>;</div>
-<div class="line"><span class="lineno">   46</span>    o.device = <a class="code hl_function" href="#a6560fd88de4ee3cb0ad11596138b42c7">nz</a>(cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a06607c0b0e45874facf96b7785f3c647">device</a>)[0] ? cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a06607c0b0e45874facf96b7785f3c647">device</a> : <span class="stringliteral">&quot;cpu&quot;</span>;</div>
-<div class="line"><span class="lineno">   47</span>    o.length_unit = <a class="code hl_function" href="#a6560fd88de4ee3cb0ad11596138b42c7">nz</a>(cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a6b03e2746d8269bd077aadafb5880d5c">length_unit</a>)[0] ? cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a6b03e2746d8269bd077aadafb5880d5c">length_unit</a> : <span class="stringliteral">&quot;angstrom&quot;</span>;</div>
-<div class="line"><span class="lineno">   48</span>    o.extensions_directory = <a class="code hl_function" href="#a6560fd88de4ee3cb0ad11596138b42c7">nz</a>(cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a1366e6bff4be28e6e44a5ddf8cb0a0da">extensions_directory</a>);</div>
-<div class="line"><span class="lineno">   49</span>    o.check_consistency = cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a75eac8f4db8f5d4269db4b01b1c1d6e0">check_consistency</a> != 0;</div>
-<div class="line"><span class="lineno">   50</span>    o.uncertainty_threshold = cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#aff8c969c2f9bc223cdcc08562e65fc6a">uncertainty_threshold</a>;</div>
-<div class="line"><span class="lineno">   51</span>    o.energy_output = <a class="code hl_function" href="#a6560fd88de4ee3cb0ad11596138b42c7">nz</a>(cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a8b8ed7d74b39eb87627ab43d29491df3">energy_output</a>);</div>
-<div class="line"><span class="lineno">   52</span>    o.energy_uncertainty_output = <a class="code hl_function" href="#a6560fd88de4ee3cb0ad11596138b42c7">nz</a>(cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#ac4c16346edf9c222528b8ad2e98dcc99">energy_uncertainty_output</a>);</div>
-<div class="line"><span class="lineno">   53</span>    o.force_output = <a class="code hl_function" href="#a6560fd88de4ee3cb0ad11596138b42c7">nz</a>(cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a99d2ab3858504e3b26985a0069332560">force_output</a>);</div>
-<div class="line"><span class="lineno">   54</span>    o.non_conservative = cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a7537a6181bb9325927f5ed17bb13803e">non_conservative</a> != 0;</div>
-<div class="line"><span class="lineno">   55</span>    o.random_rotation = cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a14798a29c58d310add5f7bc2169e46b8">random_rotation</a> != 0;</div>
-<div class="line"><span class="lineno">   56</span>    o.n_symmetry_rotations = cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a722b45eaa688ab167e1770899148280e">n_symmetry_rotations</a>;</div>
-<div class="line"><span class="lineno">   57</span>    o.deterministic = cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a93c5c658c162451d82b39e85f8ceb6f4">deterministic</a> != 0;</div>
-<div class="line"><span class="lineno">   58</span>    o.deterministic_strict = cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#ab3333cf1d7ac3a759e734d724e73df03">deterministic_strict</a> != 0;</div>
-<div class="line"><span class="lineno">   59</span>    o.variant.base = <a class="code hl_function" href="#a6560fd88de4ee3cb0ad11596138b42c7">nz</a>(cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#aa87d41e5cc8d881bc53161c9ca61b978">variant_base</a>);</div>
-<div class="line"><span class="lineno">   60</span>    o.variant.energy = <a class="code hl_function" href="#a6560fd88de4ee3cb0ad11596138b42c7">nz</a>(cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#af4d2f7a928281542ed654c29452ddcf7">variant_energy</a>);</div>
-<div class="line"><span class="lineno">   61</span>    o.variant.energy_uncertainty = <a class="code hl_function" href="#a6560fd88de4ee3cb0ad11596138b42c7">nz</a>(cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#afc8736f51f0cb2c96cf69ff223a2ca92">variant_energy_uncertainty</a>);</div>
-<div class="line"><span class="lineno">   62</span>    o.variant.force = <a class="code hl_function" href="#a6560fd88de4ee3cb0ad11596138b42c7">nz</a>(cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a305896438223f9550691b6fb13eef8dd">variant_force</a>);</div>
-<div class="line"><span class="lineno">   63</span> </div>
-<div class="line"><span class="lineno">   64</span>    <span class="keyword">auto</span> pot = std::make_unique&lt;EonMtaPot&gt;();</div>
-<div class="line"><span class="lineno">   65</span>    pot-&gt;impl = std::make_unique&lt;MetatomicPotential&gt;(params);</div>
-<div class="line"><span class="lineno">   66</span>    <span class="keywordflow">return</span> pot.release();</div>
-<div class="line"><span class="lineno">   67</span>  } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
-<div class="line"><span class="lineno">   68</span>    <a class="code hl_function" href="#a3cbaa0d62282e2faf4f8f8267c065187">set_err</a>(errbuf, errlen, e.what());</div>
-<div class="line"><span class="lineno">   69</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">   70</span>  } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><span class="lineno">   71</span>    <a class="code hl_function" href="#a3cbaa0d62282e2faf4f8f8267c065187">set_err</a>(errbuf, errlen, <span class="stringliteral">&quot;eon_mta_pot_create: unknown exception&quot;</span>);</div>
-<div class="line"><span class="lineno">   72</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">   73</span>  }</div>
-<div class="line"><span class="lineno">   74</span>}</div>
+<div class="line"><span class="lineno">   42</span>    <a class="code hl_class" href="classeonc_1_1Parameters.html">eonc::Parameters</a> params;</div>
+<div class="line"><span class="lineno">   43</span>    <a class="code hl_function" href="structeonc_1_1ParametersLoadAccess.html#aeed4f257ac8c809eb6e50686d2b41932">eonc::ParametersLoadAccess::potential_options</a>(params).<a class="code hl_variable" href="structeonc_1_1potential__options__t.html#a9cdc33bdbae47475f3a71c8e39c0ee78">potential</a> =</div>
+<div class="line"><span class="lineno">   44</span>        <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a2da9f88c4946c305ed6794006f56e8f3">eonc::PotType::METATOMIC</a>;</div>
+<div class="line"><span class="lineno">   45</span>    <span class="keyword">auto</span> &amp;o = <a class="code hl_function" href="structeonc_1_1ParametersLoadAccess.html#a0f1e232988495876d076b2430450bae1">eonc::ParametersLoadAccess::metatomic_options</a>(params);</div>
+<div class="line"><span class="lineno">   46</span>    o.model_path = cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a3ea6e19137feff0625ca9e12f7ee5247">model_path</a>;</div>
+<div class="line"><span class="lineno">   47</span>    o.device = <a class="code hl_function" href="#a6560fd88de4ee3cb0ad11596138b42c7">nz</a>(cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a06607c0b0e45874facf96b7785f3c647">device</a>)[0] ? cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a06607c0b0e45874facf96b7785f3c647">device</a> : <span class="stringliteral">&quot;cpu&quot;</span>;</div>
+<div class="line"><span class="lineno">   48</span>    o.length_unit = <a class="code hl_function" href="#a6560fd88de4ee3cb0ad11596138b42c7">nz</a>(cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a6b03e2746d8269bd077aadafb5880d5c">length_unit</a>)[0] ? cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a6b03e2746d8269bd077aadafb5880d5c">length_unit</a> : <span class="stringliteral">&quot;angstrom&quot;</span>;</div>
+<div class="line"><span class="lineno">   49</span>    o.extensions_directory = <a class="code hl_function" href="#a6560fd88de4ee3cb0ad11596138b42c7">nz</a>(cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a1366e6bff4be28e6e44a5ddf8cb0a0da">extensions_directory</a>);</div>
+<div class="line"><span class="lineno">   50</span>    o.check_consistency = cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a75eac8f4db8f5d4269db4b01b1c1d6e0">check_consistency</a> != 0;</div>
+<div class="line"><span class="lineno">   51</span>    o.uncertainty_threshold = cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#aff8c969c2f9bc223cdcc08562e65fc6a">uncertainty_threshold</a>;</div>
+<div class="line"><span class="lineno">   52</span>    o.energy_output = <a class="code hl_function" href="#a6560fd88de4ee3cb0ad11596138b42c7">nz</a>(cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a8b8ed7d74b39eb87627ab43d29491df3">energy_output</a>);</div>
+<div class="line"><span class="lineno">   53</span>    o.energy_uncertainty_output = <a class="code hl_function" href="#a6560fd88de4ee3cb0ad11596138b42c7">nz</a>(cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#ac4c16346edf9c222528b8ad2e98dcc99">energy_uncertainty_output</a>);</div>
+<div class="line"><span class="lineno">   54</span>    o.force_output = <a class="code hl_function" href="#a6560fd88de4ee3cb0ad11596138b42c7">nz</a>(cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a99d2ab3858504e3b26985a0069332560">force_output</a>);</div>
+<div class="line"><span class="lineno">   55</span>    o.non_conservative = cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a7537a6181bb9325927f5ed17bb13803e">non_conservative</a> != 0;</div>
+<div class="line"><span class="lineno">   56</span>    o.random_rotation = cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a14798a29c58d310add5f7bc2169e46b8">random_rotation</a> != 0;</div>
+<div class="line"><span class="lineno">   57</span>    o.n_symmetry_rotations = cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a722b45eaa688ab167e1770899148280e">n_symmetry_rotations</a>;</div>
+<div class="line"><span class="lineno">   58</span>    o.deterministic = cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a93c5c658c162451d82b39e85f8ceb6f4">deterministic</a> != 0;</div>
+<div class="line"><span class="lineno">   59</span>    o.deterministic_strict = cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#ab3333cf1d7ac3a759e734d724e73df03">deterministic_strict</a> != 0;</div>
+<div class="line"><span class="lineno">   60</span>    o.variant.base = <a class="code hl_function" href="#a6560fd88de4ee3cb0ad11596138b42c7">nz</a>(cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#aa87d41e5cc8d881bc53161c9ca61b978">variant_base</a>);</div>
+<div class="line"><span class="lineno">   61</span>    o.variant.energy = <a class="code hl_function" href="#a6560fd88de4ee3cb0ad11596138b42c7">nz</a>(cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#af4d2f7a928281542ed654c29452ddcf7">variant_energy</a>);</div>
+<div class="line"><span class="lineno">   62</span>    o.variant.energy_uncertainty = <a class="code hl_function" href="#a6560fd88de4ee3cb0ad11596138b42c7">nz</a>(cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#afc8736f51f0cb2c96cf69ff223a2ca92">variant_energy_uncertainty</a>);</div>
+<div class="line"><span class="lineno">   63</span>    o.variant.force = <a class="code hl_function" href="#a6560fd88de4ee3cb0ad11596138b42c7">nz</a>(cfg-&gt;<a class="code hl_variable" href="structEonMtaConfig.html#a305896438223f9550691b6fb13eef8dd">variant_force</a>);</div>
+<div class="line"><span class="lineno">   64</span> </div>
+<div class="line"><span class="lineno">   65</span>    <span class="keyword">auto</span> pot = std::make_unique&lt;EonMtaPot&gt;();</div>
+<div class="line"><span class="lineno">   66</span>    pot-&gt;impl = std::make_unique&lt;MetatomicPotential&gt;(params);</div>
+<div class="line"><span class="lineno">   67</span>    <span class="keywordflow">return</span> pot.release();</div>
+<div class="line"><span class="lineno">   68</span>  } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
+<div class="line"><span class="lineno">   69</span>    <a class="code hl_function" href="#a3cbaa0d62282e2faf4f8f8267c065187">set_err</a>(errbuf, errlen, e.what());</div>
+<div class="line"><span class="lineno">   70</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">   71</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">   72</span>    <a class="code hl_function" href="#a3cbaa0d62282e2faf4f8f8267c065187">set_err</a>(errbuf, errlen, <span class="stringliteral">&quot;eon_mta_pot_create: unknown exception&quot;</span>);</div>
+<div class="line"><span class="lineno">   73</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">   74</span>  }</div>
+<div class="line"><span class="lineno">   75</span>}</div>
 <div class="ttc" id="aMetatomicCAbi_8cpp_html_a3cbaa0d62282e2faf4f8f8267c065187"><div class="ttname"><a href="#a3cbaa0d62282e2faf4f8f8267c065187">set_err</a></div><div class="ttdeci">static void set_err(char *errbuf, size_t errlen, const char *msg)</div><div class="ttdef"><b>Definition</b> <a href="MetatomicCAbi_8cpp_source.html#l00025">MetatomicCAbi.cpp:25</a></div></div>
 <div class="ttc" id="aMetatomicCAbi_8cpp_html_a6560fd88de4ee3cb0ad11596138b42c7"><div class="ttname"><a href="#a6560fd88de4ee3cb0ad11596138b42c7">nz</a></div><div class="ttdeci">static const char * nz(const char *s)</div><div class="ttdef"><b>Definition</b> <a href="MetatomicCAbi_8cpp_source.html#l00023">MetatomicCAbi.cpp:23</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Parameters_html"><div class="ttname"><a href="classeonc_1_1Parameters.html">eonc::Parameters</a></div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00028">Parameters.h:28</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Parameters_html_a75c3a463dab97989d367d624e455606c"><div class="ttname"><a href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">eonc::Parameters::potential_options</a></div><div class="ttdeci">struct eonc::Parameters::potential_options_t potential_options</div></div>
-<div class="ttc" id="aclasseonc_1_1Parameters_html_abe39c95c9363fce1a030dc4c55634705"><div class="ttname"><a href="classeonc_1_1Parameters.html#abe39c95c9363fce1a030dc4c55634705">eonc::Parameters::metatomic_options</a></div><div class="ttdeci">struct eonc::Parameters::metatomic_options_t metatomic_options</div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html"><div class="ttname"><a href="classeonc_1_1Parameters.html">eonc::Parameters</a></div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00035">Parameters.h:35</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a2da9f88c4946c305ed6794006f56e8f3"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a2da9f88c4946c305ed6794006f56e8f3">eonc::PotType::METATOMIC</a></div><div class="ttdeci">@ METATOMIC</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00067">BaseStructures.h:67</a></div></div>
 <div class="ttc" id="astructEonMtaConfig_html_a06607c0b0e45874facf96b7785f3c647"><div class="ttname"><a href="structEonMtaConfig.html#a06607c0b0e45874facf96b7785f3c647">EonMtaConfig::device</a></div><div class="ttdeci">const char * device</div><div class="ttdef"><b>Definition</b> <a href="Metatomic_2metatomic__c__abi_8h_source.html#l00039">metatomic_c_abi.h:39</a></div></div>
 <div class="ttc" id="astructEonMtaConfig_html_a1366e6bff4be28e6e44a5ddf8cb0a0da"><div class="ttname"><a href="structEonMtaConfig.html#a1366e6bff4be28e6e44a5ddf8cb0a0da">EonMtaConfig::extensions_directory</a></div><div class="ttdeci">const char * extensions_directory</div><div class="ttdef"><b>Definition</b> <a href="Metatomic_2metatomic__c__abi_8h_source.html#l00041">metatomic_c_abi.h:41</a></div></div>
 <div class="ttc" id="astructEonMtaConfig_html_a14798a29c58d310add5f7bc2169e46b8"><div class="ttname"><a href="structEonMtaConfig.html#a14798a29c58d310add5f7bc2169e46b8">EonMtaConfig::random_rotation</a></div><div class="ttdeci">int random_rotation</div><div class="ttdef"><b>Definition</b> <a href="Metatomic_2metatomic__c__abi_8h_source.html#l00048">metatomic_c_abi.h:48</a></div></div>
@@ -398,8 +398,9 @@ Functions</h2></td></tr>
 <div class="ttc" id="astructEonMtaConfig_html_af4d2f7a928281542ed654c29452ddcf7"><div class="ttname"><a href="structEonMtaConfig.html#af4d2f7a928281542ed654c29452ddcf7">EonMtaConfig::variant_energy</a></div><div class="ttdeci">const char * variant_energy</div><div class="ttdef"><b>Definition</b> <a href="Metatomic_2metatomic__c__abi_8h_source.html#l00053">metatomic_c_abi.h:53</a></div></div>
 <div class="ttc" id="astructEonMtaConfig_html_afc8736f51f0cb2c96cf69ff223a2ca92"><div class="ttname"><a href="structEonMtaConfig.html#afc8736f51f0cb2c96cf69ff223a2ca92">EonMtaConfig::variant_energy_uncertainty</a></div><div class="ttdeci">const char * variant_energy_uncertainty</div><div class="ttdef"><b>Definition</b> <a href="Metatomic_2metatomic__c__abi_8h_source.html#l00054">metatomic_c_abi.h:54</a></div></div>
 <div class="ttc" id="astructEonMtaConfig_html_aff8c969c2f9bc223cdcc08562e65fc6a"><div class="ttname"><a href="structEonMtaConfig.html#aff8c969c2f9bc223cdcc08562e65fc6a">EonMtaConfig::uncertainty_threshold</a></div><div class="ttdeci">double uncertainty_threshold</div><div class="ttdef"><b>Definition</b> <a href="Metatomic_2metatomic__c__abi_8h_source.html#l00043">metatomic_c_abi.h:43</a></div></div>
-<div class="ttc" id="astructeonc_1_1Parameters_1_1metatomic__options__t_html_ad28a5a1a6541070a781ec8a7e044c262"><div class="ttname"><a href="structeonc_1_1Parameters_1_1metatomic__options__t.html#ad28a5a1a6541070a781ec8a7e044c262">eonc::Parameters::metatomic_options_t::model_path</a></div><div class="ttdeci">std::string model_path</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00398">Parameters.h:398</a></div></div>
-<div class="ttc" id="astructeonc_1_1Parameters_1_1potential__options__t_html_a8c62d8e8c2374eff1672e72ec2bae1c8"><div class="ttname"><a href="structeonc_1_1Parameters_1_1potential__options__t.html#a8c62d8e8c2374eff1672e72ec2bae1c8">eonc::Parameters::potential_options_t::potential</a></div><div class="ttdeci">PotType potential</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00067">Parameters.h:67</a></div></div>
+<div class="ttc" id="astructeonc_1_1ParametersLoadAccess_html_a0f1e232988495876d076b2430450bae1"><div class="ttname"><a href="structeonc_1_1ParametersLoadAccess.html#a0f1e232988495876d076b2430450bae1">eonc::ParametersLoadAccess::metatomic_options</a></div><div class="ttdeci">static metatomic_options_t &amp; metatomic_options(Parameters &amp;p)</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00372">Parameters.h:372</a></div></div>
+<div class="ttc" id="astructeonc_1_1ParametersLoadAccess_html_aeed4f257ac8c809eb6e50686d2b41932"><div class="ttname"><a href="structeonc_1_1ParametersLoadAccess.html#aeed4f257ac8c809eb6e50686d2b41932">eonc::ParametersLoadAccess::potential_options</a></div><div class="ttdeci">static potential_options_t &amp; potential_options(Parameters &amp;p)</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00262">Parameters.h:262</a></div></div>
+<div class="ttc" id="astructeonc_1_1potential__options__t_html_a9cdc33bdbae47475f3a71c8e39c0ee78"><div class="ttname"><a href="structeonc_1_1potential__options__t.html#a9cdc33bdbae47475f3a71c8e39c0ee78">eonc::potential_options_t::potential</a></div><div class="ttdeci">PotType potential</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00051">ParametersOptions.h:51</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -418,8 +419,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="MetatomicCAbi_8cpp_source.html#l00076">76</a> of file <a class="el" href="MetatomicCAbi_8cpp_source.html">MetatomicCAbi.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   76</span>{ <span class="keyword">delete</span> pot; }</div>
+<p class="definition">Definition at line <a class="el" href="MetatomicCAbi_8cpp_source.html#l00077">77</a> of file <a class="el" href="MetatomicCAbi_8cpp_source.html">MetatomicCAbi.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   77</span>{ <span class="keyword">delete</span> pot; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -475,21 +476,21 @@ Functions</h2></td></tr>
 <p>Evaluate energy + forces. </p>
 <p>Returns 0 on success, nonzero on failure. variance may be NULL. </p>
 
-<p class="definition">Definition at line <a class="el" href="MetatomicCAbi_8cpp_source.html#l00078">78</a> of file <a class="el" href="MetatomicCAbi_8cpp_source.html">MetatomicCAbi.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   80</span>                                                           {</div>
-<div class="line"><span class="lineno">   81</span>  <span class="keywordflow">if</span> (!pot || !pot-&gt;<a class="code hl_variable" href="structEonMtaPot.html#a3cd7e4ffa7d99c8cd0979882edcf0b53">impl</a> || !positions || !atomicNrs || !forces || !energy ||</div>
-<div class="line"><span class="lineno">   82</span>      !box) {</div>
-<div class="line"><span class="lineno">   83</span>    <span class="keywordflow">return</span> 1;</div>
-<div class="line"><span class="lineno">   84</span>  }</div>
-<div class="line"><span class="lineno">   85</span>  <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">   86</span>    pot-&gt;<a class="code hl_variable" href="structEonMtaPot.html#a3cd7e4ffa7d99c8cd0979882edcf0b53">impl</a>-&gt;<a class="code hl_function" href="classMetatomicPotential.html#a06640aa432a3e8994c6074a60cb92a92">force</a>(nAtoms, positions, atomicNrs, forces, energy, variance,</div>
-<div class="line"><span class="lineno">   87</span>                     box);</div>
-<div class="line"><span class="lineno">   88</span>    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><span class="lineno">   89</span>  } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><span class="lineno">   90</span>    <span class="keywordflow">return</span> 2;</div>
-<div class="line"><span class="lineno">   91</span>  }</div>
-<div class="line"><span class="lineno">   92</span>}</div>
-<div class="ttc" id="aclassMetatomicPotential_html_a06640aa432a3e8994c6074a60cb92a92"><div class="ttname"><a href="classMetatomicPotential.html#a06640aa432a3e8994c6074a60cb92a92">MetatomicPotential::force</a></div><div class="ttdeci">void force(long nAtoms, const double *positions, const int *atomicNrs, double *forces, double *energy, double *variance, const double *box) override</div><div class="ttdoc">Calculates the energy and forces for a given atomic configuration.</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8cpp_source.html#l00320">MetatomicPotential.cpp:320</a></div></div>
+<p class="definition">Definition at line <a class="el" href="MetatomicCAbi_8cpp_source.html#l00079">79</a> of file <a class="el" href="MetatomicCAbi_8cpp_source.html">MetatomicCAbi.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   81</span>                                                           {</div>
+<div class="line"><span class="lineno">   82</span>  <span class="keywordflow">if</span> (!pot || !pot-&gt;<a class="code hl_variable" href="structEonMtaPot.html#a3cd7e4ffa7d99c8cd0979882edcf0b53">impl</a> || !positions || !atomicNrs || !forces || !energy ||</div>
+<div class="line"><span class="lineno">   83</span>      !box) {</div>
+<div class="line"><span class="lineno">   84</span>    <span class="keywordflow">return</span> 1;</div>
+<div class="line"><span class="lineno">   85</span>  }</div>
+<div class="line"><span class="lineno">   86</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">   87</span>    pot-&gt;<a class="code hl_variable" href="structEonMtaPot.html#a3cd7e4ffa7d99c8cd0979882edcf0b53">impl</a>-&gt;<a class="code hl_function" href="classMetatomicPotential.html#a06640aa432a3e8994c6074a60cb92a92">force</a>(nAtoms, positions, atomicNrs, forces, energy, variance,</div>
+<div class="line"><span class="lineno">   88</span>                     box);</div>
+<div class="line"><span class="lineno">   89</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">   90</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">   91</span>    <span class="keywordflow">return</span> 2;</div>
+<div class="line"><span class="lineno">   92</span>  }</div>
+<div class="line"><span class="lineno">   93</span>}</div>
+<div class="ttc" id="aclassMetatomicPotential_html_a06640aa432a3e8994c6074a60cb92a92"><div class="ttname"><a href="classMetatomicPotential.html#a06640aa432a3e8994c6074a60cb92a92">MetatomicPotential::force</a></div><div class="ttdeci">void force(long nAtoms, const double *positions, const int *atomicNrs, double *forces, double *energy, double *variance, const double *box) override</div><div class="ttdoc">Calculates the energy and forces for a given atomic configuration.</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8cpp_source.html#l00352">MetatomicPotential.cpp:352</a></div></div>
 <div class="ttc" id="astructEonMtaPot_html_a3cd7e4ffa7d99c8cd0979882edcf0b53"><div class="ttname"><a href="structEonMtaPot.html#a3cd7e4ffa7d99c8cd0979882edcf0b53">EonMtaPot::impl</a></div><div class="ttdeci">std::unique_ptr&lt; MetatomicPotential &gt; impl</div><div class="ttdef"><b>Definition</b> <a href="MetatomicCAbi_8cpp_source.html#l00020">MetatomicCAbi.cpp:20</a></div></div>
 </div><!-- fragment -->
 </div>

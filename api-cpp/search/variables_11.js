@@ -1,9 +1,10 @@
 var searchData=
 [
-  ['qcut_0',['qcut',['../structeonc_1_1Parameters_1_1hyperdynamics__options__t.html#a085335324e5e5070835151947177f097',1,'eonc::Parameters::hyperdynamics_options_t::qcut'],['../structParameters_1_1hyperdynamics__options__t.html#a085335324e5e5070835151947177f097',1,'Parameters::hyperdynamics_options_t::qcut']]],
-  ['qrr_1',['qrr',['../structeonc_1_1Parameters_1_1hyperdynamics__options__t.html#a86b89745fb688d4f7b358db54a2bdaa6',1,'eonc::Parameters::hyperdynamics_options_t::qrr'],['../structParameters_1_1hyperdynamics__options__t.html#a86b89745fb688d4f7b358db54a2bdaa6',1,'Parameters::hyperdynamics_options_t::qrr']]],
-  ['quenching_5fsteps_2',['quenching_steps',['../structeonc_1_1Parameters_1_1basin__hopping__options__t.html#a07a67165cae5aa6666b1b3e3f7d1f4f8',1,'eonc::Parameters::basin_hopping_options_t::quenching_steps'],['../structParameters_1_1basin__hopping__options__t.html#a07a67165cae5aa6666b1b3e3f7d1f4f8',1,'Parameters::basin_hopping_options_t::quenching_steps']]],
-  ['quickmin_3',['quickmin',['../structeonc_1_1Parameters_1_1optimizer__options__t.html#a2b345bbf2d16b5f4d43dbd0cc37ce681',1,'eonc::Parameters::optimizer_options_t::quickmin'],['../structParameters_1_1optimizer__options__t.html#a2b345bbf2d16b5f4d43dbd0cc37ce681',1,'Parameters::optimizer_options_t::quickmin']]],
-  ['quiet_4',['quiet',['../structeonc_1_1Parameters_1_1main__options__t.html#a92c27036ffcab9f5e5d46a1cd0c99c30',1,'eonc::Parameters::main_options_t::quiet'],['../structParameters_1_1main__options__t.html#a92c27036ffcab9f5e5d46a1cd0c99c30',1,'Parameters::main_options_t::quiet']]],
-  ['quit_5fearly_5',['quit_early',['../structeonc_1_1Parameters_1_1lanczos__options__t.html#adcfde0910b6325073df1a995f7c61414',1,'eonc::Parameters::lanczos_options_t::quit_early'],['../structParameters_1_1lanczos__options__t.html#adcfde0910b6325073df1a995f7c61414',1,'Parameters::lanczos_options_t::quit_early']]]
+  ['qcut_0',['qcut',['../structeonc_1_1hyperdynamics__options__t.html#a5251101ae168e82921bc8c3ca59776fc',1,'eonc::hyperdynamics_options_t']]],
+  ['qn_5fstep_1',['qn_step',['../structeonc_1_1optimizer__options__t_1_1xtsci__t.html#afcfffb55747c5b18617f3cbcffc21f5f',1,'eonc::optimizer_options_t::xtsci_t']]],
+  ['qrr_2',['qrr',['../structeonc_1_1hyperdynamics__options__t.html#a560e81c37bebd8c3f602b7159ece3001',1,'eonc::hyperdynamics_options_t']]],
+  ['quenching_5fsteps_3',['quenching_steps',['../structeonc_1_1basin__hopping__options__t.html#aa93c625a13ea9d55954e850492759424',1,'eonc::basin_hopping_options_t']]],
+  ['quickmin_4',['quickmin',['../structeonc_1_1optimizer__options__t.html#a79840317b2bb77bb57f8883242f3f3bc',1,'eonc::optimizer_options_t']]],
+  ['quiet_5',['quiet',['../structeonc_1_1main__options__t.html#a9908a3dbe63335438de873d544b59751',1,'eonc::main_options_t']]],
+  ['quit_5fearly_6',['quit_early',['../structeonc_1_1lanczos__options__t.html#a3031876bf633b7e22ff4f6423526736f',1,'eonc::lanczos_options_t']]]
 ];

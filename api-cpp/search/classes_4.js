@@ -8,13 +8,13 @@ var searchData=
   ['emtdefaultparameterprovider_5',['EMTDefaultParameterProvider',['../classEMTDefaultParameterProvider.html',1,'']]],
   ['emtparameterprovider_6',['EMTParameterProvider',['../classEMTParameterProvider.html',1,'']]],
   ['emtrasmussenparameterprovider_7',['EMTRasmussenParameterProvider',['../classEMTRasmussenParameterProvider.html',1,'']]],
-  ['endpoint_5foptions_5ft_8',['endpoint_options_t',['../structeonc_1_1Parameters_1_1neb__options__t_1_1endpoint__options__t.html',1,'eonc::Parameters::neb_options_t::endpoint_options_t'],['../structParameters_1_1neb__options__t_1_1endpoint__options__t.html',1,'Parameters::neb_options_t::endpoint_options_t']]],
-  ['energy_5fweighting_5ft_9',['energy_weighting_t',['../structeonc_1_1Parameters_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t.html',1,'eonc::Parameters::neb_options_t::spring_options_t::energy_weighting_t'],['../structParameters_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t.html',1,'Parameters::neb_options_t::spring_options_t::energy_weighting_t']]],
-  ['env_5ft_10',['env_t',['../structeonc_1_1Parameters_1_1ams__options__t_1_1env__t.html',1,'eonc::Parameters::ams_options_t::env_t'],['../structParameters_1_1ams__options__t_1_1env__t.html',1,'Parameters::ams_options_t::env_t']]],
+  ['endpoint_5foptions_5ft_8',['endpoint_options_t',['../structeonc_1_1neb__options__t_1_1endpoint__options__t.html',1,'eonc::neb_options_t']]],
+  ['energy_5fweighting_5ft_9',['energy_weighting_t',['../structeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t.html',1,'eonc::neb_options_t::spring_options_t']]],
+  ['env_5ft_10',['env_t',['../structeonc_1_1ams__options__t_1_1env__t.html',1,'eonc::ams_options_t']]],
   ['eonmtaconfig_11',['EonMtaConfig',['../structEonMtaConfig.html',1,'']]],
   ['eonmtapot_12',['EonMtaPot',['../structEonMtaPot.html',1,'']]],
   ['exception_13',['Exception',['../classException.html',1,'']]],
-  ['expr_5foptions_5ft_14',['expr_options_t',['../structeonc_1_1Parameters_1_1expr__options__t.html',1,'eonc::Parameters::expr_options_t'],['../structParameters_1_1expr__options__t.html',1,'Parameters::expr_options_t']]],
+  ['expr_5foptions_5ft_14',['expr_options_t',['../structeonc_1_1expr__options__t.html',1,'eonc']]],
   ['extpot_15',['ExtPot',['../classExtPot.html',1,'']]],
   ['extremaresult_16',['ExtremaResult',['../structeonc_1_1neb_1_1ExtremaResult.html',1,'eonc::neb']]]
 ];

@@ -165,6 +165,7 @@ hyperdynamics
 communicator
 debug
 paths
+stdpar
 ```
 
 ## Miscellaneous

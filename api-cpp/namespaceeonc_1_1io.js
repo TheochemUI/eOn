@@ -1,8 +1,8 @@
 var namespaceeonc_1_1io =
 [
-    [ "ConMetadataValue", "structeonc_1_1io_1_1ConMetadataValue.html", "structeonc_1_1io_1_1ConMetadataValue" ],
-    [ "ConMetadataText", "structeonc_1_1io_1_1ConMetadataText.html", "structeonc_1_1io_1_1ConMetadataText" ],
     [ "ConFrameMetadata", "structeonc_1_1io_1_1ConFrameMetadata.html", "structeonc_1_1io_1_1ConFrameMetadata" ],
+    [ "ConMetadataText", "structeonc_1_1io_1_1ConMetadataText.html", "structeonc_1_1io_1_1ConMetadataText" ],
+    [ "ConMetadataValue", "structeonc_1_1io_1_1ConMetadataValue.html", "structeonc_1_1io_1_1ConMetadataValue" ],
     [ "IoStatus", "namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9", [
       [ "Ok", "namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9aa60852f204ed8028c1c58808b746d115", null ],
       [ "ReadError", "namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9adf9be6f7af7c3f7196c5c3e731de0a87", null ],
@@ -23,6 +23,7 @@ var namespaceeonc_1_1io =
     [ "matter2xyz", "namespaceeonc_1_1io.html#a92edb1d2a6c8cbe12752056317c5b889", null ],
     [ "matterToConFrame", "namespaceeonc_1_1io.html#ad199f826cc24bd9826a30c68005ddd45", null ],
     [ "metadata_from_frame", "namespaceeonc_1_1io.html#a525b12eff16ef9d00847fc3482745e38", null ],
+    [ "mirror_con_corpus", "namespaceeonc_1_1io.html#abc75e22aaffd22817956f2c37fac7bac", null ],
     [ "resetConAppendState", "namespaceeonc_1_1io.html#a43ddd666235e811420f7a04d00419e1a", null ],
     [ "set_write_con_forces", "namespaceeonc_1_1io.html#ac1282d2f253eb7c3c17e948e7e663cf8", null ],
     [ "write_con_forces", "namespaceeonc_1_1io.html#a5d3959d80e4c17d49bbbd72e0ac2967f", null ],

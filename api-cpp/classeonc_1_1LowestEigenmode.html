@@ -234,7 +234,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classeonc_1_1L
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">eonc::LowestEigenmode Class Reference</div></div>
+  <div class="headertitle"><div class="title">eonc::LowestEigenmode Class Reference<span class="mlabels"><span class="mlabel abstract">abstract</span></span></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -260,8 +260,11 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classeonc_1_1L
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:af5c7e532e7e02cb38d6f27c348c52473" id="r_af5c7e532e7e02cb38d6f27c348c52473"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#af5c7e532e7e02cb38d6f27c348c52473">LowestEigenmode</a> (std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt; potPassed, const <a class="el" href="classParameters.html">Parameters</a> &amp;parameters)</td></tr>
-<tr class="memitem:a73b0774f28b1f9646b329332ab261426" id="r_a73b0774f28b1f9646b329332ab261426"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a73b0774f28b1f9646b329332ab261426">~LowestEigenmode</a> ()=default</td></tr>
+<tr class="memitem:af5c7e532e7e02cb38d6f27c348c52473" id="r_af5c7e532e7e02cb38d6f27c348c52473"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#af5c7e532e7e02cb38d6f27c348c52473">LowestEigenmode</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt; potPassed, const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;parameters)</td></tr>
+<tr class="memitem:a381aa32bbba8b6eb8cab60ec17a9bd0a" id="r_a381aa32bbba8b6eb8cab60ec17a9bd0a"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="#a381aa32bbba8b6eb8cab60ec17a9bd0a">~LowestEigenmode</a> ()=default</td></tr>
+<tr class="memitem:a072cd9d6badc02cea8db64823324e757" id="r_a072cd9d6badc02cea8db64823324e757"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a072cd9d6badc02cea8db64823324e757">compute</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; matter, <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> initialDirection)=0</td></tr>
+<tr class="memitem:a6fffec92e8e345dc32dd8a46e689b4ab" id="r_a6fffec92e8e345dc32dd8a46e689b4ab"><td class="memItemLeft">virtual double&#160;</td><td class="memItemRight"><a class="el" href="#a6fffec92e8e345dc32dd8a46e689b4ab">getEigenvalue</a> ()=0</td></tr>
+<tr class="memitem:af3f08bac4c99061f6fe82c75edd6417d" id="r_af3f08bac4c99061f6fe82c75edd6417d"><td class="memItemLeft">virtual <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>&#160;</td><td class="memItemRight"><a class="el" href="#af3f08bac4c99061f6fe82c75edd6417d">getEigenvector</a> ()=0</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -274,21 +277,21 @@ Public Attributes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:ac00c88de9f1b794fe951d0326653da22" id="r_ac00c88de9f1b794fe951d0326653da22"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="#ac00c88de9f1b794fe951d0326653da22">MINMODE_DIMER</a> [] = &quot;dimer&quot;</td></tr>
-<tr class="memitem:ac5a052901220bdb1f32fad014196ddfc" id="r_ac5a052901220bdb1f32fad014196ddfc"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="#ac5a052901220bdb1f32fad014196ddfc">MINMODE_GPRDIMER</a> [] = &quot;gprdimer&quot;</td></tr>
-<tr class="memitem:add7ee32020815d66fda3b7994ff13398" id="r_add7ee32020815d66fda3b7994ff13398"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="#add7ee32020815d66fda3b7994ff13398">MINMODE_LANCZOS</a> [] = &quot;lanczos&quot;</td></tr>
-<tr class="memitem:acf5ac1a295fcabec6008ad693b8193bc" id="r_acf5ac1a295fcabec6008ad693b8193bc"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="#acf5ac1a295fcabec6008ad693b8193bc">MINMODE_DAVIDSON</a> [] = &quot;davidson&quot;</td></tr>
+<tr class="memitem:a4ddf3e59de723dc31d810ef8f8cf4c7d" id="r_a4ddf3e59de723dc31d810ef8f8cf4c7d"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="#a4ddf3e59de723dc31d810ef8f8cf4c7d">MINMODE_DIMER</a> [] = &quot;dimer&quot;</td></tr>
+<tr class="memitem:a14617f4b0ae6355cdbd54882065b0534" id="r_a14617f4b0ae6355cdbd54882065b0534"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="#a14617f4b0ae6355cdbd54882065b0534">MINMODE_GPRDIMER</a> [] = &quot;gprdimer&quot;</td></tr>
+<tr class="memitem:a545a60db6d74011ce08833f1935f1ea0" id="r_a545a60db6d74011ce08833f1935f1ea0"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="#a545a60db6d74011ce08833f1935f1ea0">MINMODE_LANCZOS</a> [] = &quot;lanczos&quot;</td></tr>
+<tr class="memitem:a827baff84ad96c6917f2029ed0e2b86b" id="r_a827baff84ad96c6917f2029ed0e2b86b"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="#a827baff84ad96c6917f2029ed0e2b86b">MINMODE_DAVIDSON</a> [] = &quot;davidson&quot;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a37333ab6591b41d3d0e0a5e5f0481300" id="r_a37333ab6591b41d3d0e0a5e5f0481300"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a37333ab6591b41d3d0e0a5e5f0481300">pot</a></td></tr>
-<tr class="memitem:a372b0c7160716051cd847072498d8322" id="r_a372b0c7160716051cd847072498d8322"><td class="memItemLeft">const <a class="el" href="classParameters.html">Parameters</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a372b0c7160716051cd847072498d8322">params</a></td></tr>
+<tr class="memitem:a37333ab6591b41d3d0e0a5e5f0481300" id="r_a37333ab6591b41d3d0e0a5e5f0481300"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a37333ab6591b41d3d0e0a5e5f0481300">pot</a></td></tr>
+<tr class="memitem:a372b0c7160716051cd847072498d8322" id="r_a372b0c7160716051cd847072498d8322"><td class="memItemLeft">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a372b0c7160716051cd847072498d8322">params</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Base for eigenmode solvers. </p>
-<p>Holds shared state (pot, params, stats). Concrete classes (<a class="el" href="classeonc_1_1Dimer.html" title="Classic dimer method to find the lowest curvature mode.">Dimer</a>, <a class="el" href="classeonc_1_1ImprovedDimer.html">ImprovedDimer</a>, <a class="el" href="classeonc_1_1Lanczos.html">Lanczos</a>, <a class="el" href="classeonc_1_1AtomicGPDimer.html">AtomicGPDimer</a>) inherit this and provide compute(), getEigenvalue(), getEigenvector() as regular (non-virtual) member functions. Dispatch is via std::variant (<a class="el" href="namespaceeonc.html#ae12bf1108d97000e0f36f746d2fcf16e">EigenmodeStrategy</a>) rather than virtual dispatch. </p>
+<p>Holds shared state (pot, params, stats). Dispatch is virtual so <a class="el" href="namespaceeonc.html#a2ccaf2c1835c240d5fff93174bd0a416" title="Type-erased eigenmode solver. Layout is the same with or without gprd.">EigenmodeStrategy</a> does not change layout when WITH_GPRD adds <a class="el" href="classeonc_1_1AtomicGPDimer.html">AtomicGPDimer</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00025">25</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00023">23</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="af5c7e532e7e02cb38d6f27c348c52473" name="af5c7e532e7e02cb38d6f27c348c52473"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af5c7e532e7e02cb38d6f27c348c52473">&#9670;&#160;</a></span>LowestEigenmode()</h2>
@@ -302,12 +305,12 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="memname">eonc::LowestEigenmode::LowestEigenmode </td>
           <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>potPassed</em></span>, </td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>potPassed</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>parameters</em></span>&#160;)</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>parameters</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -317,16 +320,15 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00042">42</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   44</span>      : <a class="code hl_variable" href="#a37333ab6591b41d3d0e0a5e5f0481300">pot</a>{potPassed},</div>
-<div class="line"><span class="lineno">   45</span>        <a class="code hl_variable" href="#a372b0c7160716051cd847072498d8322">params</a>{parameters} {}</div>
-<div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_a372b0c7160716051cd847072498d8322"><div class="ttname"><a href="#a372b0c7160716051cd847072498d8322">eonc::LowestEigenmode::params</a></div><div class="ttdeci">const Parameters &amp; params</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00028">LowestEigenmode.h:28</a></div></div>
-<div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_a37333ab6591b41d3d0e0a5e5f0481300"><div class="ttname"><a href="#a37333ab6591b41d3d0e0a5e5f0481300">eonc::LowestEigenmode::pot</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; pot</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00027">LowestEigenmode.h:27</a></div></div>
+<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00040">40</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   42</span>      : <a class="code hl_variable" href="#a37333ab6591b41d3d0e0a5e5f0481300">pot</a>{potPassed}, <a class="code hl_variable" href="#a372b0c7160716051cd847072498d8322">params</a>{parameters} {}</div>
+<div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_a372b0c7160716051cd847072498d8322"><div class="ttname"><a href="#a372b0c7160716051cd847072498d8322">eonc::LowestEigenmode::params</a></div><div class="ttdeci">const Parameters &amp; params</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00026">LowestEigenmode.h:26</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_a37333ab6591b41d3d0e0a5e5f0481300"><div class="ttname"><a href="#a37333ab6591b41d3d0e0a5e5f0481300">eonc::LowestEigenmode::pot</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; pot</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00025">LowestEigenmode.h:25</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="a73b0774f28b1f9646b329332ab261426" name="a73b0774f28b1f9646b329332ab261426"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a73b0774f28b1f9646b329332ab261426">&#9670;&#160;</a></span>~LowestEigenmode()</h2>
+<a id="a381aa32bbba8b6eb8cab60ec17a9bd0a" name="a381aa32bbba8b6eb8cab60ec17a9bd0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a381aa32bbba8b6eb8cab60ec17a9bd0a">&#9670;&#160;</a></span>~LowestEigenmode()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -335,7 +337,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">eonc::LowestEigenmode::~LowestEigenmode </td>
+          <td class="memname">virtual eonc::LowestEigenmode::~LowestEigenmode </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -343,16 +345,102 @@ Protected Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+<span class="mlabels"><span class="mlabel virtual">virtual</span><span class="mlabel default">default</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a072cd9d6badc02cea8db64823324e757" name="a072cd9d6badc02cea8db64823324e757"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a072cd9d6badc02cea8db64823324e757">&#9670;&#160;</a></span>compute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eonc::LowestEigenmode::compute </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>matter</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></td>          <td class="paramname"><span class="paramname"><em>initialDirection</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classeonc_1_1AtomicGPDimer.html#a99dc2217edd3d5e763e1b1bac2fa520d">eonc::AtomicGPDimer</a>, <a class="el" href="classeonc_1_1Davidson.html#a8a603cb019f8b553e10da252fe02a9bc">eonc::Davidson</a>, <a class="el" href="classeonc_1_1Dimer.html#aecb2f7372c66b9d939223f9a5b5a9fd5">eonc::Dimer</a>, <a class="el" href="classeonc_1_1ImprovedDimer.html#a3660665008c8f96f7ca43e4a45d430a4">eonc::ImprovedDimer</a>, <a class="el" href="classeonc_1_1Lanczos.html#ac7da6e7accdb1d35f166e7efa02e0445">eonc::Lanczos</a>, and <a class="el" href="classeonc_1_1LORRotation.html#a112eef4f166c2237a6c1b103c001a80f">eonc::LORRotation</a>.</p>
+
+</div>
+</div>
+<a id="a6fffec92e8e345dc32dd8a46e689b4ab" name="a6fffec92e8e345dc32dd8a46e689b4ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fffec92e8e345dc32dd8a46e689b4ab">&#9670;&#160;</a></span>getEigenvalue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual double eonc::LowestEigenmode::getEigenvalue </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classeonc_1_1AtomicGPDimer.html#a1462c2befa99f19337526fb3463490f7">eonc::AtomicGPDimer</a>, <a class="el" href="classeonc_1_1Davidson.html#ada91dfdf41fb8dc41cec9eaabe999efe">eonc::Davidson</a>, <a class="el" href="classeonc_1_1Dimer.html#a5e93e4abbfe36b673f64ce52ce32c4e9">eonc::Dimer</a>, <a class="el" href="classeonc_1_1ImprovedDimer.html#ae09d5f888f897128f1c4b8a3b1944cfd">eonc::ImprovedDimer</a>, <a class="el" href="classeonc_1_1Lanczos.html#aaaa40b92233c4a7c8d7f23e8dab4fbf6">eonc::Lanczos</a>, and <a class="el" href="classeonc_1_1LORRotation.html#ac8efcb98dcf379c80a67e8442f2c6ebd">eonc::LORRotation</a>.</p>
+
+</div>
+</div>
+<a id="af3f08bac4c99061f6fe82c75edd6417d" name="af3f08bac4c99061f6fe82c75edd6417d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3f08bac4c99061f6fe82c75edd6417d">&#9670;&#160;</a></span>getEigenvector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> eonc::LowestEigenmode::getEigenvector </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classeonc_1_1AtomicGPDimer.html#a30fc3d6ef16fc492c27d7a53942ccc1c">eonc::AtomicGPDimer</a>, <a class="el" href="classeonc_1_1Davidson.html#ae56f283085715911dd5bfa66eb39dade">eonc::Davidson</a>, <a class="el" href="classeonc_1_1Dimer.html#a7d532e504027f51edb3d6ddb664eb962">eonc::Dimer</a>, <a class="el" href="classeonc_1_1ImprovedDimer.html#af8046fe7b50e7d0ca508d05652d803c6">eonc::ImprovedDimer</a>, <a class="el" href="classeonc_1_1Lanczos.html#a9b50a6ef4fdd4e7522740cdf517c2c22">eonc::Lanczos</a>, and <a class="el" href="classeonc_1_1LORRotation.html#a4a8ec2f085df6e3c38263e1418177250">eonc::LORRotation</a>.</p>
 
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
-<a id="acf5ac1a295fcabec6008ad693b8193bc" name="acf5ac1a295fcabec6008ad693b8193bc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acf5ac1a295fcabec6008ad693b8193bc">&#9670;&#160;</a></span>MINMODE_DAVIDSON</h2>
+<a id="a827baff84ad96c6917f2029ed0e2b86b" name="a827baff84ad96c6917f2029ed0e2b86b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a827baff84ad96c6917f2029ed0e2b86b">&#9670;&#160;</a></span>MINMODE_DAVIDSON</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -361,55 +449,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const char LowestEigenmode::MINMODE_DAVIDSON = &quot;davidson&quot;</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00040">40</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
-
-</div>
-</div>
-<a id="ac00c88de9f1b794fe951d0326653da22" name="ac00c88de9f1b794fe951d0326653da22"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac00c88de9f1b794fe951d0326653da22">&#9670;&#160;</a></span>MINMODE_DIMER</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const char LowestEigenmode::MINMODE_DIMER = &quot;dimer&quot;</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00037">37</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
-
-</div>
-</div>
-<a id="ac5a052901220bdb1f32fad014196ddfc" name="ac5a052901220bdb1f32fad014196ddfc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac5a052901220bdb1f32fad014196ddfc">&#9670;&#160;</a></span>MINMODE_GPRDIMER</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const char LowestEigenmode::MINMODE_GPRDIMER = &quot;gprdimer&quot;</td>
+          <td class="memname">const char eonc::LowestEigenmode::MINMODE_DAVIDSON = &quot;davidson&quot;</td>
         </tr>
       </table>
   </td>
@@ -423,8 +463,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="add7ee32020815d66fda3b7994ff13398" name="add7ee32020815d66fda3b7994ff13398"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#add7ee32020815d66fda3b7994ff13398">&#9670;&#160;</a></span>MINMODE_LANCZOS</h2>
+<a id="a4ddf3e59de723dc31d810ef8f8cf4c7d" name="a4ddf3e59de723dc31d810ef8f8cf4c7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ddf3e59de723dc31d810ef8f8cf4c7d">&#9670;&#160;</a></span>MINMODE_DIMER</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -433,7 +473,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const char LowestEigenmode::MINMODE_LANCZOS = &quot;lanczos&quot;</td>
+          <td class="memname">const char eonc::LowestEigenmode::MINMODE_DIMER = &quot;dimer&quot;</td>
         </tr>
       </table>
   </td>
@@ -443,7 +483,55 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00039">39</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00035">35</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
+
+</div>
+</div>
+<a id="a14617f4b0ae6355cdbd54882065b0534" name="a14617f4b0ae6355cdbd54882065b0534"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14617f4b0ae6355cdbd54882065b0534">&#9670;&#160;</a></span>MINMODE_GPRDIMER</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char eonc::LowestEigenmode::MINMODE_GPRDIMER = &quot;gprdimer&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00036">36</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
+
+</div>
+</div>
+<a id="a545a60db6d74011ce08833f1935f1ea0" name="a545a60db6d74011ce08833f1935f1ea0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a545a60db6d74011ce08833f1935f1ea0">&#9670;&#160;</a></span>MINMODE_LANCZOS</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char eonc::LowestEigenmode::MINMODE_LANCZOS = &quot;lanczos&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00037">37</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
 
 </div>
 </div>
@@ -457,7 +545,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classParameters.html">Parameters</a>&amp; eonc::LowestEigenmode::params</td>
+          <td class="memname">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a>&amp; eonc::LowestEigenmode::params</td>
         </tr>
       </table>
   </td>
@@ -467,7 +555,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00028">28</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00026">26</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
 
 </div>
 </div>
@@ -481,7 +569,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt;<a class="el" href="classPotential.html">Potential</a>&gt; eonc::LowestEigenmode::pot</td>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classeonc_1_1Potential.html">Potential</a>&gt; eonc::LowestEigenmode::pot</td>
         </tr>
       </table>
   </td>
@@ -491,7 +579,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00027">27</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00025">25</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
 
 </div>
 </div>
@@ -507,8 +595,8 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00034">34</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   34</span>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00032">32</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   32</span>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -524,8 +612,8 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00033">33</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   33</span>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00031">31</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   31</span>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -541,8 +629,8 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00035">35</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   35</span>{0};</div>
+<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00033">33</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   33</span>{0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -558,8 +646,8 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00032">32</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   32</span>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00030">30</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   30</span>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -575,8 +663,8 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00031">31</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   31</span>{0};</div>
+<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00029">29</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   29</span>{0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -592,8 +680,8 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00036">36</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   36</span>{0};</div>
+<p class="definition">Definition at line <a class="el" href="LowestEigenmode_8h_source.html#l00034">34</a> of file <a class="el" href="LowestEigenmode_8h_source.html">LowestEigenmode.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   34</span>{0};</div>
 </div><!-- fragment -->
 </div>
 </div>

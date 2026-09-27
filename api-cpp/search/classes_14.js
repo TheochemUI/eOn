@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['variants_5ft_0',['variants_t',['../structeonc_1_1Parameters_1_1metatomic__options__t_1_1variants__t.html',1,'eonc::Parameters::metatomic_options_t::variants_t'],['../structParameters_1_1metatomic__options__t_1_1variants__t.html',1,'Parameters::metatomic_options_t::variants_t']]],
+  ['variants_5ft_0',['variants_t',['../structeonc_1_1metatomic__options__t_1_1variants__t.html',1,'eonc::metatomic_options_t']]],
   ['vasp_1',['VASP',['../classVASP.html',1,'']]],
   ['vec_2',['Vec',['../classVec.html',1,'']]],
   ['vector_3',['vector',['../classvector.html',1,'']]],

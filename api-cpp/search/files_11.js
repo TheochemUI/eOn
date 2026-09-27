@@ -21,7 +21,8 @@ var searchData=
   ['stringhelpers_2ehpp_18',['StringHelpers.hpp',['../StringHelpers_8hpp.html',1,'']]],
   ['structurecomparisonjob_2ecpp_19',['StructureComparisonJob.cpp',['../StructureComparisonJob_8cpp.html',1,'']]],
   ['structurecomparisonjob_2eh_20',['StructureComparisonJob.h',['../StructureComparisonJob_8h.html',1,'']]],
-  ['supercell_2eh_21',['SuperCell.h',['../SuperCell_8h.html',1,'']]],
-  ['surrogatepotential_2ecpp_22',['SurrogatePotential.cpp',['../SurrogatePotential_8cpp.html',1,'']]],
-  ['surrogatepotential_2eh_23',['SurrogatePotential.h',['../SurrogatePotential_8h.html',1,'']]]
+  ['structurecomparisonoptions_2eh_21',['StructureComparisonOptions.h',['../StructureComparisonOptions_8h.html',1,'']]],
+  ['supercell_2eh_22',['SuperCell.h',['../SuperCell_8h.html',1,'']]],
+  ['surrogatepotential_2ecpp_23',['SurrogatePotential.cpp',['../SurrogatePotential_8cpp.html',1,'']]],
+  ['surrogatepotential_2eh_24',['SurrogatePotential.h',['../SurrogatePotential_8h.html',1,'']]]
 ];

@@ -237,7 +237,8 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('fpe__handler_8
   <div class="headertitle"><div class="title">fpe_handler.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;fenv.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;fenv.h&gt;</code><br />
 <code>#include &lt;mutex&gt;</code><br />
 </div>
 <p><a href="fpe__handler_8h_source.html">Go to the source code of this file.</a></p>
@@ -245,6 +246,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('fpe__handler_8
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:eonc_3A_3AFPEHandler" id="r_eonc_3A_3AFPEHandler"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1FPEHandler.html">eonc::FPEHandler</a></td></tr>
+<tr class="memitem:eonc_3A_3AFPEGuard" id="r_eonc_3A_3AFPEGuard"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1FPEGuard.html">eonc::FPEGuard</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-namespaces" class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
@@ -253,8 +255,13 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:aba46d1d8df8488b185b2ed3d7d9379eb" id="r_aba46d1d8df8488b185b2ed3d7d9379eb"><td class="memItemLeft">constexpr std::uint32_t&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#aba46d1d8df8488b185b2ed3d7d9379eb">eonc::maskWindowsMxcsrForContinue</a> (std::uint32_t mxcsr)</td></tr>
 <tr class="memitem:ac546b01c933b83b114fa0e53ff93ed9d" id="r_ac546b01c933b83b114fa0e53ff93ed9d"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#ac546b01c933b83b114fa0e53ff93ed9d">eonc::enableFPE</a> ()</td></tr>
 <tr class="memitem:af1498c1ea50b21c6c40b704ff85d867c" id="r_af1498c1ea50b21c6c40b704ff85d867c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#af1498c1ea50b21c6c40b704ff85d867c">eonc::disableFPE</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-var-members" class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a5326686c75d3fe7a05fa2a5b49bcd0ba" id="r_a5326686c75d3fe7a05fa2a5b49bcd0ba"><td class="memItemLeft">constexpr std::uint32_t&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a5326686c75d3fe7a05fa2a5b49bcd0ba">eonc::kWindowsMxcsrExceptionMasks</a> = 0x1F80u</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->
