@@ -1,1 +1,0 @@
-xtsci sessions evaluate energy and forces in one potential call. ``[Xtsci] accept`` (`none` / `energy` / `nonmonotone`) replaces a mandatory energy backtrack that spent extra force calls on every Newton / pair step.

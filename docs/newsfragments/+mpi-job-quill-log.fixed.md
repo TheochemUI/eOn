@@ -1,1 +1,0 @@
-The MPI client copies `client_quill.log` and `client_traceback.log` into the job directory before `return_files.dat` names them. Harvest keeps those logs instead of dropping names that exist only in the launch directory.

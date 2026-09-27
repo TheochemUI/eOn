@@ -1,1 +1,0 @@
-`Parameters::load`, `Parameters::load(FILE*)`, and `Parameters::load_ini_text` return failure when the INI parser reports an error, including a missing '=' or a line past the maximum line length. A partial config is not applied.

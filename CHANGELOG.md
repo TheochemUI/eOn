@@ -2,6 +2,307 @@
 
 <!-- towncrier release notes start -->
 
+## [3.3.1](https://github.com/TheochemUI/eOn/tree/3.3.1) - 2026-09-27
+
+### Removed
+
+- Drop leftover AMS debug cout dumps.
+- Drop leftover Eclipse Created-on banners from Obs, CuH2,
+  AtomsConfiguration, and GPRDimer unit tests.
+- Drop leftover Eclipse auto-generated ctor/dtor TODOs in
+  Obs, CuH2, AtomsConfiguration, and GPRDimer unit tests.
+- Drop leftover MPI Recv and Table.write debug prints.
+- Drop leftover Meantime debug stdout from each AKMC step.
+- Drop leftover Python 2 `from builtins import input` in AKMC.
+  Live reset/restart input() prompts stay.
+- Drop leftover canary `os.system` tee next to the live redirect.
+  Keep the redirect and pass/fail stdout.
+- Drop leftover commented AMS debug readFile and validate_order. Live force
+  and real TODO notes stay.
+- Drop leftover commented BasinHopping force-call and recentRatio debug dumps.
+  Live basin-hopping accept and displacement adjust stay.
+- Drop leftover commented Broken AMS `test_one_pt_ams_dimer`.
+  Live Morse `test_one_pt` stays.
+- Drop leftover commented BytesIO alias, pylab import, and Python 2
+  canary energy prints. Live StringIO I/O and pass/fail prints stay.
+- Drop leftover commented DEBUGGER recieveFromSystem and old AMS force
+  bodies. Live AMS force path stays.
+- Drop leftover commented EONC_LOG_TRACE in GPSurrogateJob. Live traces stay.
+- Drop leftover commented Matter operator==/!= and unused force/max
+  variance stubs. Live compare() and getEnergyVariance stay.
+- Drop leftover commented Matter::setPotentialEnergy stub. Live getPotentialEnergy stays.
+- Drop leftover commented MinimizationJob include, unused
+  status/returnFiles/epot_hop/earr, and fSPDLOG/fprintf debug dumps
+  in GlobalOptimizationJob.cpp. Live hop and escape path stays.
+- Drop leftover commented PR search-result and superbasin basin calls.
+  Live allocate_process_id, make_basin_from_sets, and _get_filtered_states stay.
+- Drop leftover commented Python 2 debug prints and dead max-rate
+  blocks in AKMC state connect and Water displace.
+- Drop leftover commented Python 2 prints in eon-state-stats.
+  Live table output stays.
+- Drop leftover commented dead branches in the eon server.
+  Live saddle, basin-hopping, superbasin, match, and water-displace paths stay.
+- Drop leftover commented dead statements and the rescaleVelocity
+  stub in GlobalOptimizationJob.cpp. Live hop and escape stay.
+- Drop leftover commented debug prints in ASE_NWCHEM client.py and
+  blah.py. Live socket force and energy path stays.
+- Drop leftover commented debug prints in disconnectivity_graph,
+  gpaw_sp, and mk_cuh2_vid. XXX notes stay.
+- Drop leftover commented energy and force printf dumps in
+  MPIPot.cpp. Live MPI pot send/recv path stays.
+- Drop leftover commented map_out_pes and plot helpers from the
+  extpot 2D PES test fixture. Live _calculate_landscape stays.
+- Drop leftover commented print_help/sys.exit in eon-minimize and
+  the unused compareStru body in disconnectivity_graph.
+- Drop leftover commented try/except around AKMC search-result append
+  and Main random_seed. Live append_search_result write and getint stay.
+- Drop leftover commented try/except around live dg.draw_minima
+  in disconnectivity_graph. Live draw_minima stays.
+- Drop leftover commented unit_system include and ERGS_PER_ANGSTROM2
+  notes from Water CCL and SPC/E. Unit-system fallbacks stay.
+- Drop leftover commented unused members in GlobalOptimizationJob, ReplicaExchangeJob, Hessian, and BondBoost. Live members stay.
+- Drop leftover debug stdout of cwd in akmc-gui and bh-gui.
+  GTK unused imports, pathfix, and os.fork daemonize stay.
+- Drop leftover pot rank / my_client_rank debug stdout in
+  tools/emt-sp.py. Commented GPAW constructor and live MPI rank
+  split stay.
+- Drop leftover register_process debug prints and the commented rate = cur_rate line.
+  Live rate assignment, eq-rate clamp, and process-table writes stay.
+- Drop leftover unused PoissonSolver from the GPAW import in tools/emt-sp.py. The commented GPAW constructor stays.
+- Drop leftover unused algorithm includes in Obs, CuH2,
+  AtomsConfiguration, and GPRDimer unit tests.
+- Drop leftover unused fileio cell reexport and unused imports in server, state, and superbasinscheme.
+- Drop leftover unused imports and debug prints in explorer
+  and communicator. MPI Recv and harvest stay.
+- Drop leftover unused imports in ASE_NWCHEM blah.py, client.py, and
+  server.py. Live socket energy and force path stays.
+- Drop leftover unused imports in analyze, basinhopping, config, eon.__init__, and eon_kdb.
+- Drop leftover unused imports in tools disconnectivity_graph, emt-sp, evt, eon-ini, eon-config-docs, and mk_cuh2_vid. pathfix side-effect imports and the commented GPAW constructor imports stay.
+- Drop leftover unused imports in unit tests. Keep pytest where mark, raises, approx, fixture, or importorskip is used.
+- Drop leftover unused numpy in tools/modedot.py and unused PoissonSolver plus ase.utils.devnull in tools/gpaw_sp.py.
+- Drop leftover unused sys, atoms, and numpy imports from tools.
+- Drop the leftover commented eonclient path in eon-minimize.
+  The live call is already `eonclient` on PATH.
+
+### Added
+
+- `[Xtsci] method = lbfgs` honours `[LBFGS] lbfgs_step` and `lbfgs_precon`. The pair matrix stays in eOn; xtsci applies it as \(H_0\) or as a Newton/RFO step.
+- ``[Xtsci] qn_step`` and ``precon`` are first-class (Cap'n Proto, INI, JSON, YAML, Pydantic). They drive ``xts_solver_set_qn_step`` and the host pair Hessian. Native ``[LBFGS]`` is unchanged; ``lbfgs_step`` / ``lbfgs_precon`` remain a fallback when the Xtsci fields are left at their defaults.
+- `ci_mmf_restore_unhelpful` (default false) restores the climbing image after an alignment reject or force increase. The Frontiers OCI-NEB article (doi:10.3389/fchem.2026.1807063, Algorithm 1) restores only on positive curvature; that is the default.
+- `opt_method = xtsci` selects the xtsci-optimize engine. `[Xtsci] method` picks the solver inside it (L-BFGS, BFGS, SR1/SR2, Newton, RFO, NLCG conjugacies, Adam, PSO). YAML, JSON, pydantic, and SSOT defaults carry the same catalog.
+
+### Developer
+
+- The NEB regression tests run between two real LJ13 minima joined by a saddle. The climbing-image case converges at -O2 with NDEBUG as well as at -O3.
+- The manylinux wheel build retries the Cap'n Proto download and uses the GitHub tag archive when capnproto.org drops the TLS handshake.
+- Unit tests alias eonc types, including EigenmodeStrategy, from the shared test header.
+
+### Changed
+
+- AKMC displacement sampling, eon-minimize, and GPAW
+  single-point leftover path I/O uses pathlib.
+- AKMC leftover path I/O uses pathlib. Reset and restart share
+  remove_tree_and_empty_parents and info_txt_path.
+- AKMC movie leftover path I/O uses pathlib for POSCAR, graph.dot,
+  and dynamics.txt.
+- AKMC, BH, PR, and escape-rate pass the config path into
+  `ConfigClass.init_from_cli` instead of rewriting sys.argv. Dead
+  commented RandomStructure in basin hopping is gone.
+- AKMC, PR, and escape-rate write `info.txt` through `fileio.write_info_txt`.
+  The unused CatLearnPot `variance` member is gone.
+- AKMC/BH helper leftover path I/O uses pathlib for search-stats,
+  state-neighbors, fillkdb, and GTK glade loaders.
+- AKMCState leftover path I/O uses pathlib for badprocdata,
+  jobs.tbl, search results, and saddle/mode files.
+- ARTnSaddleSearch accepts an injected IARTnResource. Production still uses the
+  process-default ARTnResource singleton.
+- AS-KMC leftover path I/O uses pathlib for askmc_data.txt,
+  askmc_processtable, and recycle_path.
+- Amsel superbasin split cache leftover path I/O uses pathlib.
+- Basin hopping leftover path I/O uses pathlib for states, wuid.dat,
+  bh.log, and the lockfile.
+- CI concurrency groups use the PR number or git ref so develop pushes cancel superseded runs.
+- CNA helpers drop the leftover unused brute argument. Importing
+  atoms no longer mutates sys.getrecursionlimit.
+- Communicator leftover path I/O uses pathlib: harvest, unbundle,
+  scratch, script submit, and client lookup.
+- Config leftover path I/O uses pathlib for config.yaml, config.ini,
+  and the PRNG state file.
+- Develop package version is 3.3.1.dev0 after the 3.3.0 release, not 3.2.1.
+- Explorer leftover path I/O uses pathlib for debug results, KDB
+  scratch, jobs.tbl, incomplete saddles, and explorer.pickle.
+- GPRHelpers remaps Matter Z to dense 0..n-1 because gpr_optim pairtype
+  is indexed that way. Stale Fortran meson and statelist TODOs are gone.
+- Helper tools leftover path I/O uses pathlib for pathfix, INI
+  dump, GTK glade paths, CNA walks, and state-stats.
+- IRACompare accepts an injected IIRAResource. Production still uses the
+  process-default IRAResource singleton.
+- In-process communicator leftover path I/O uses pathlib for
+  config.ini basename.
+- LockFile leftover path I/O uses pathlib. Stale and missing
+  locks unlink with missing_ok.
+- MetatomicDynPot accepts an injected IMetatomicLoader. Production still uses
+  the process-default MetatomicLoader singleton.
+- Parallel replica and escape-rate leftover path I/O uses pathlib.
+  info.txt goes through info_txt_path.
+- Path-based con reads and writes keep a copy in a readcon-db corpus next to the run. readcon still parses the file, and the con file remains the copy the client reads.
+- Potential accepts an injected IPotRegistry. Production still uses the
+  process-default PotRegistry::get() singleton.
+- Queue estimates use the communicator's construction-time bundle size.
+  KDB insert on a finished state writes a marker so a second explore does
+  not insert again. Table float precision is a constructor argument.
+- Replace leftover Python 2 ``file()`` in config docs and ``xrange`` in
+  mastereqn. Keep the live ``open()`` write; do not convert tools/toykmc.
+- Replace leftover Python 2 print and SafeConfigParser in tools
+  and dynamics analyze with configparser.ConfigParser and print().
+- Repo tests, get_version, and Sphinx cache leftover path I/O
+  use pathlib.
+- RgpotAdapter accepts an injected IPluginLoader. Production still uses the
+  process-default PluginLoader singleton.
+- Server leftover path I/O uses pathlib for potfiles, cwd listing,
+  and output/output_old.
+- State leftover path I/O uses pathlib for procdata, reactant,
+  processtable, and staging.
+- Superbasin and KDB path I/O uses pathlib. Dead commented
+  get_superbasins is gone.
+- Superbasin merge always archives basins to storage. The MPI client
+  stop path is STOPCAR. ASE-NWChem warns when a non-identity cell is
+  ignored.
+- Superbasin recycling leftover path I/O uses pathlib for
+  recycling_data.txt, current_sb_states, and saddle_suggestions.
+- The server package imports numpy as np. Optional annotations in modules that already postpone evaluation are written as X | None, and the config loader's section local is section_name.
+- `load_potfiles`, `make_bundles`, and the leftover reset/KDB path
+  helpers use pathlib instead of `os.path`.
+- `make_bundles` loads potfiles. `load_potfiles` skips subdirectories
+  under the pot directory, not same-named entries in the CWD.
+- clang-format wrap leftover after the GlobalOptimization debug drop.
+- eon package tests leftover path I/O uses pathlib for canaries
+  and ConfigClass injection tests.
+- eon-schema MainConfig leftover path I/O uses pathlib for
+  jobs, states, potfiles, kdb, and superbasin defaults.
+- eonc::Runtime is a move-only composition root. ClientEON constructs one and moves it into Job; Job builds the Potential from runtime.pots() rather than PotRegistry::get(). Catch2 uses a local Runtime. NEB image-force std::execution::par is unchanged.
+- fileio leftover path I/O uses pathlib for atomic_write, savecon,
+  Dynamics, and Table.
+- gitversion and wheel-repair leftover path I/O uses pathlib.
+  os.path.relpath stays for the meson dist printout.
+- gitversion leftover meson-dist printout uses Path.relative_to.
+- pyeonclient Session uniquely owns Runtime. make_job(params, session) borrows it with nanobind keep_alive so Jobs cannot outlive the Session. write_potcall_summary uses session.pots(); CLI Job borrows a stack Runtime. Stock nanobind, not jaxlib nb_class_ptr.
+
+### Fixed
+
+- NEB now rejects reactant and product structures with different atom counts before the Eigen path interpolation, instead of aborting inside the subtract. ([#540](https://github.com/TheochemUI/eOn/issues/540))
+- A blank or non-integer `nperp_limitation` token returns an ARTn error and calls `artn_destroy` instead of throwing out of the search.
+- AKMC movie fastest_path(full=True) sorts graph nodes with a
+  Python 3 key instead of a Python 2 cmp.
+- ARTn sends each lattice row to pARTn as a box column. A non-orthogonal cell is no longer transposed, so the periodic minimum image uses the cell eOn stored.
+- ARTnSaddleSearch::run returns an error when has_sad is set but tau_sad was not retrieved, so the pre-convergence geometry is not recorded as the saddle.
+- AtomicGPDimer restores floating-point traps if execute throws, so a saddle search that catches the failure does not leave later force calls running with traps masked.
+- AtomicGPDimer::compute copies the Matter it is given before it builds the GP midpoint. A saddle search that moves the geometry after the solver is constructed is the geometry that is searched and written back.
+- Basin hopping `total_normal_displacement_steps` subtracts only quench displacements that ran. A `stop_energy` break no longer counts configured `quenching_steps` that never executed, which could make that total negative.
+- Basin hopping includes the last interior NEB image when it chooses the climb and when it writes ``neb_initial_band.con``. An image count below two no longer reads the bead before the reactant.
+- Basin hopping keeps the minimized energy as the Metropolis reference when a jump does not relax. With significant_structure off, the raw jump energy is no longer stored and that geometry is not saved as the global minimum.
+- Basin hopping linear and quadratic displacement keeps the configured step when every atom sits at the center, instead of dividing by a zero radius.
+- Basin hopping skips displacement adjustment when adjust_period is zero, instead of taking the Monte Carlo step modulo that period.
+- Basin hopping takes the dimer direction from the minimum-image of (r_3 - r_1) / 2. A bead that crosses the cell no longer starts the climb along a full box jump.
+- BasinHoppingJob::getElements records atomic number 118 instead of writing past the element table.
+- BasinHoppingJob::run applies exp(-dE/(kB T)) only when the hop is uphill and temperature is positive. Temperature at or below zero rejects that hop instead of dividing by temperature.
+- BasinHoppingSaddleSearch::describeStatus labels a Metropolis rejection as Basin hop rejected instead of Initialized.
+- BasinHoppingSaddleSearch::run applies `exp(-dE/(kB T))` only when the quenched hop is uphill and temperature is positive. Temperature at or below zero rejects that hop instead of dividing by temperature before the test.
+- BasinHoppingSaddleSearch::run returns the min-mode climb status, so an unconverged or aborted climb is no longer reported as a good saddle.
+- Bond-boost forces follow the minimum-image bond from distance(), so the stored bias force is the gradient of the bias energy in a non-orthogonal cell.
+- Classic dimer no longer applies `rotation_angle` after the torque check accepts a direction, so `Dimer::compute` returns that orientation with the curvature measured there.
+- Classic dimer rotation rejects non-finite `forceBatch` energies and forces in `Dimer::calcRotationalForceReturnCurvature` before `setComputedPotential`. A NaN torque no longer skips every exit check in that loop.
+- ClientEON starts the wall clock at each job, so `time_seconds` is that job's duration instead of the time since the process began.
+- Default L-BFGS takes the two-loop step (ASE). Energy and Grippo accept are opt-in.
+- Doubly nudged projection now leaves the perpendicular spring remainder unscaled unless doubly_nudged_switching is set.
+- Drop leftover dead rotation comments and the TShacked marker
+  in atoms.py. point_energy_match returns False on mismatch.
+- Dynamics saddle search keeps the detecting configuration when refineTransition has no MD snapshots, instead of indexing an empty list.
+- Dynamics saddle search no longer takes a modulus of a state-check interval that rounds to zero steps. The interval is at least one dynamics step, so the state check still runs.
+- Dynamics saddle search with bias_potential set to bond_boost now calls setBiasPotential and BondBoost::advance once per MD step, so the trajectory includes the bond-boost force.
+- DynamicsSaddleSearch::refineTransition returns the first snapshot that does not minimize to the reactant. The reported transition time stays at or after the preceding reactant frame.
+- Energy-weighted NEB now sets E_ref to the higher endpoint energy, so springs stay at k_min until an image rises above that minimum.
+- FiniteDifferenceJob steps only free axes from Matter::getFixed(atom, axis). A column-4 mask that freezes one axis no longer moves that axis or includes it in the normalized curvature direction.
+- Fix leftover TabError in tools/akmc-search-stats.py mixed tabs and spaces.
+- GPR dimer check_derivatives is passed to gpr_optim as the strings "true" and "false". Assigning the bool stored one character, so derivative checks never turned on.
+- GPSurrogateJob takes sub_job and linear_path_always from gp_surrogate_options and builds the surrogate with helpers::create::makeSurrogatePotential.
+  Later bands turn climbing images off with neb_options().climbing_image.enabled and restart from copied Matter images.
+- LBFGS compiles again: leftover OCINEB helpers::maxAtomMotionAppliedV calls now use eonc::geometry:: like FIRE, CG, SD, and Quickmin.
+- Langevin dynamics no longer moves a coordinate frozen on only one axis.
+  `Dynamics::langevinVerlet` applies noise and the position step per free axis, not only when the whole atom is fixed.
+- MSVC Cap'n Proto builds force-include a guard that undefines
+  windows.h `interface` after Meson's cl.exe sanity check.
+- Matter passes a zero cell into ``force()`` when periodic boundaries are
+  off. GFN2 treats a stored .con box as PBC and dies on multipoles.
+- MonteCarloJob lists out.con once. Bundling can rename that file instead of failing on a second copy that is already gone.
+- NEB L-BFGS no longer runs the auto_scale finite-difference H0 probe. That probe treats the projected band force as a potential gradient and never built memory. The LJ13 job fixtures also pin climbing_image off, matching the unit tests.
+- NEB `minimize_endpoints` defaults to false, matching SVN and the
+  pyeonclient NEB API. The old true default added endpoint relaxations
+  to `total_force_calls` on fixtures that never asked for them.
+- NEB file initialization keeps the endpoint structures passed to NudgedElasticBand. Frames listed in initial_path_in still fill the interior images, and minimize_endpoints_for_ipath is no longer overwritten by those files.
+- NEB peak modes on the first and last spline intervals now use the geometric endpoint tangent. setup_mmf_peaks no longer writes the neighboring interior tangent or a zero mode for those peaks.
+- Nose-Hoover (`noseHooverVerlet`) counts each unfixed Cartesian axis in `nFreeCoords`. A partly fixed atom is no longer thermostatted as three degrees of freedom.
+- OCINEB restores a climbing image that finishes a min-mode walk at positive curvature before a band force under force_tolerance can mark the NEB converged.
+- OCINEB scores MMF help on the walked image so a CI-index hop cannot rewind a finished saddle step.
+- OH-TST `planes_used` now counts every sampled plane, including the plane where the progression converges.
+- OH-TST keeps the unwrapped free coordinates in `samplePlane` when the next hyperplane is loaded. A reload after `setPositionsFreeV` shifted a coordinate by a lattice vector, and the projection then left the constrained restart.
+- OH-TST symmetry products now minimum-image and remove rigid drift with the same fixed point as the primary guideline. `symmetryReflect` compares those rays in one frame.
+- OHTSTJob::symmetryReflect measures distance to each product half-line, so a configuration behind the reactant uses the distance back to that endpoint instead of the perpendicular distance to the infinite line.
+- On Apple x86_64, the SIGFPE handler now sets MXCSR exception masks in the saved context, and disableFPE writes those masks back instead of restoring the unmasked environment from enableFPE.
+- PMF scan places OH-TST planes on a uniform grid from the reactant to the product. The scan no longer starts at s_init and then steps backward.
+- Parallel replica dephase keeps the bond-boost pointer when it copy-assigns the trajectory back to the saved state. Later dynamics steps still apply that bias while the boosted clock advances.
+- Parallel replica keeps its bond boost across the copies it makes of the trajectory: the dephase reset and, when ``stop_after_transition`` is false, the transition structure. ``Matter::assignKeepingBias`` does the copy.
+- Parallel replica reads `stop_after_transition`. When it is false, the dynamics keep the full step count after the first new state instead of stopping.
+- PotentialBase::computePt includes a platinum Lennard-Jones pair when one atom is fixed, so the fixed atom still contributes energy and force on its movable neighbor.
+- Same-size ``Matter::resize`` keeps .con column-5 atom ids. A leftover
+  duplicate resize body was resetting them to ``0..N-1``.
+- Session supports Python weak references, so a Job that borrows it keeps the Session alive after the Python name is dropped. The installed ARTn saddle header no longer names the feature build flag.
+- Shared plugin TUs include Parameters.h so accessors compile when
+  Potential.h only forward-declares Parameters. Potential constructors
+  that take Parameters live in eoncbase so plugin .so files do not need
+  eonclib. Duplicate leftover field-style option blocks are gone.
+  readcon is resolved before plugin subdirs so SocketNWChem links rkr_*.
+- The MPI build links the MPI potential against MPI.
+- The MPI client copies `client_quill.log` and `client_traceback.log` into the job directory before `return_files.dat` names them. Harvest keeps those logs instead of dropping names that exist only in the launch directory.
+- The MPI client stops when `enterJobDirectory` cannot enter the job directory. It no longer runs that job in the launch directory or sends the path back as a finished job.
+- The MPI client waits for the job-path send to finish before that buffer is released.
+- The NEB no longer puts a projected force on fixed atoms. When the endpoints placed a fixed atom differently, the spring force along the tangent leaked onto it, and the norm convergence metric counted it.
+- The Windows floating-point exception filter stores the exception-mask bits in ContextRecord->MxCsr before EXCEPTION_CONTINUE_EXECUTION. _controlfp_s alone does not survive that restore, so the faulting instruction trapped again.
+- The Zhang-Xu LBFGS quadratic test writes optimizer options through ParametersLoadAccess, matching the private Parameters layout.
+- The release dry-run accepts a development version when pyproject.toml and pixi.toml match. A .devN tip does not need a changelog section yet.
+- Wheel and sdist builds pin nanobind to ``>=2.2,<3``, matching pixi.
+  Unconstrained ``pip install -U nanobind`` pulled 3.0, which dropped
+  ``nb::detail::keep_alive`` used by pyeonclient ``tie_lifetime``.
+- Wheel repair searches for ``librgpot.so*`` next to ``libreadcon_core``,
+  so pyeonclient can import without a host ``librgpot.so.3``.
+- When NEB `max_iterations` is not positive, `DynamicsSaddleSearch::run` passes the initial-band tangent to `MinModeSaddleSearch` instead of an empty mode.
+- With no equilibration samples (hyperdynamics rmd_time of zero), BondBoost::advance and BondBoost::boost measure the current tagged-bond lengths before BondSelect. The bias is no longer stuck at dvmax, so a stretched bond can turn the hypertime factor off.
+- `AtomicGPDimer` passes a zero cell into the GP force box when
+  `Matter::getPeriodic` is false. XTB no longer treats a stored .con box
+  as periodic boundaries on those force calls.
+- `ConjugateGradients::line_search` clamps a negative max move by its length, so a forward secant step stays forward when bowl breakout passes that value.
+- `Lanczos::compute` diagonalizes the current Krylov block when the residual vanishes, instead of returning the Ritz pair from the previous subspace.
+- `NudgedElasticBand::updateForces` passes a zero cell into `forceBatch` when `Matter::getPeriodic` is false. Interior images no longer look periodic to a batch evaluator that infers boundaries from the stored box.
+- `Parameters::load` accepts an AMS or AMS_IO file whose engine is DFTB with resources, or FORCEFIELD with only the engine.
+- `Parameters::load`, `Parameters::load(FILE*)`, and `Parameters::load_ini_text` return failure when the INI parser reports an error, including a missing '=' or a line past the maximum line length. A partial config is not applied.
+- ``ARTnSaddleSearch::run`` holds ``library_mutex`` from ``artn_create`` through ``artn_destroy``, including force calls between ``artn_step`` invocations, so another search cannot touch the process-global Fortran state mid-run.
+- ``structure_to_matter`` treats ``Structure.periodic`` as a 3-vector.
+  ``bool(array)`` is a ValueError; use ``np.any``.
+- `eonclient -p` no longer starts serve mode unless a serve flag is set. A structure file on that command is read as a normal client run.
+- `geometry::identical` searches for a one-to-one pairing inside distanceDifference instead of locking an index-aligned pair that blocks the only valid permutation.
+- `matter2xyz` append inserts a newline when the existing file does not end with one, so the next frame atom count starts on its own line.
+- `opt_method = xtsci` holds an `xts_solver_t` session. Each `step()` is one outer iteration, so L-BFGS pairs and NLCG conjugacy survive the host loop.
+- `pushApart` steps along the minimum-image separation. A coincident pair takes a finite step instead of dividing by zero.
+- `unbundle` restores compressed names that `bundle` writes, so `results_3.con.gz` is copied back to `results.con.gz` instead of being skipped.
+- findSplineExtrema stores one stationary point when the cubic coefficient is zero or the cubic root is repeated, instead of writing that point twice.
+- fpe_signal_handler no longer returns into an x86 integer divide. FPE_INTDIV and FPE_INTOVF step past the faulting instruction instead of only masking floating-point traps, so sigreturn does not re-execute that divide.
+- get_param and get_runparam now take a void** out pointer. pARTn allocates the value and writes that pointer through the argument, so a void* out parameter stored it at the wrong address.
+- pyeonclient wheels carry the vendored rgpot as libeon_rgpot.so.3. Under the shared librgpot.so.3 SONAME, the pip rgpot wheel bound to that copy. Importing rgpot after pyeonclient then failed on a missing rgpot::D3Pot symbol, and the metatomic engine was not found.
+- sortedR compares neighbor shells by the number of distances in the shell, not by the atom count. An identical geometry, including a homonuclear diatomic compared with itself, now matches.
+- xtsci rematch now uses the native per-atom `max_move` clip, rigid-mode projection, cautious pair filter, and extra-updates instead of a Euclidean cap on the whole 3N step.
+- xtsci sessions evaluate energy and forces in one potential call. ``[Xtsci] accept`` (`none` / `energy` / `nonmonotone`) replaces a mandatory energy backtrack that spent extra force calls on every Newton / pair step.
+
+
 ## [3.3.0](https://github.com/TheochemUI/eOn/tree/3.3.0) - 2026-09-15
 
 ### Removed

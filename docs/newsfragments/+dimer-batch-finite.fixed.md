@@ -1,1 +1,0 @@
-Classic dimer rotation rejects non-finite `forceBatch` energies and forces in `Dimer::calcRotationalForceReturnCurvature` before `setComputedPotential`. A NaN torque no longer skips every exit check in that loop.
