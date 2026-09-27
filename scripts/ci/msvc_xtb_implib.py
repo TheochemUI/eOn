@@ -21,6 +21,63 @@ def _tool(name: str) -> str:
     return found
 
 
+# The C header spells these with internal capitals. MinGW bind(C) exports
+# are lowercase, often with a trailing underscore. link.exe does not
+# case-fold, so the import library has to name the header spelling.
+CANONICAL_XTB = {
+    "xtb_newenvironment": "xtb_newEnvironment",
+    "xtb_delenvironment": "xtb_delEnvironment",
+    "xtb_releaseoutput": "xtb_releaseOutput",
+    "xtb_setverbosity": "xtb_setVerbosity",
+    "xtb_delmolecule": "xtb_delMolecule",
+    "xtb_newcalculator": "xtb_newCalculator",
+    "xtb_delcalculator": "xtb_delCalculator",
+    "xtb_newresults": "xtb_newResults",
+    "xtb_delresults": "xtb_delResults",
+    "xtb_checkenvironment": "xtb_checkEnvironment",
+    "xtb_geterror": "xtb_getError",
+    "xtb_newmolecule": "xtb_newMolecule",
+    "xtb_updatemolecule": "xtb_updateMolecule",
+    "xtb_loadgfn0xtb": "xtb_loadGFN0xTB",
+    "xtb_loadgfn1xtb": "xtb_loadGFN1xTB",
+    "xtb_loadgfn2xtb": "xtb_loadGFN2xTB",
+    "xtb_loadgfnff": "xtb_loadGFNFF",
+    "xtb_setaccuracy": "xtb_setAccuracy",
+    "xtb_setmaxiter": "xtb_setMaxIter",
+    "xtb_setelectronictemp": "xtb_setElectronicTemp",
+    "xtb_singlepoint": "xtb_singlepoint",
+    "xtb_getenergy": "xtb_getEnergy",
+    "xtb_getgradient": "xtb_getGradient",
+}
+
+
+def alias_lines(names: list[str]) -> list[str]:
+    """DEF export lines, including aliases for the C header spellings."""
+    export_set = set(names)
+    lines = list(names)
+    aliased: set[str] = set()
+
+    def add(plain: str, name: str) -> None:
+        if (
+            plain.startswith("xtb_")
+            and plain not in export_set
+            and plain not in aliased
+            and plain != name
+        ):
+            lines.append(f"{plain}={name}")
+            aliased.add(plain)
+
+    for name in names:
+        plain = name[1:] if name.startswith("_") else name
+        if plain.endswith("_"):
+            plain = plain[:-1]
+        add(plain, name)
+        canon = CANONICAL_XTB.get(plain.lower())
+        if canon is not None:
+            add(canon, name)
+    return lines
+
+
 def export_names(text: str) -> list[str]:
     names: list[str] = []
     in_table = False
@@ -64,25 +121,12 @@ def main() -> None:
     names = export_names(text)
     if not names:
         sys.exit(f"no exports in {dll}\n{text[:2000]}")
-    # MinGW gfortran often exports bind(C) names with a leading underscore.
-    # The xtb header calls the undecorated C name.
-    export_set = set(names)
-    lines = list(names)
-    aliased = set()
+    # MinGW gfortran often exports bind(C) names in lowercase with a
+    # trailing underscore. The xtb header calls the camel-case C name.
     for name in names:
-        if "Environment" in name or "environment" in name:
+        if "environment" in name.lower():
             print(f"xtb export: {name}", file=sys.stderr)
-        plain = name[1:] if name.startswith("_") else name
-        if plain.endswith("_"):
-            plain = plain[:-1]
-        if (
-            plain.startswith("xtb_")
-            and plain not in export_set
-            and plain not in aliased
-            and plain != name
-        ):
-            lines.append(f"{plain}={name}")
-            aliased.add(plain)
+    lines = alias_lines(names)
     out_lib.parent.mkdir(parents=True, exist_ok=True)
     out_def = out_lib.with_suffix(".def")
     out_def.write_text("EXPORTS\n" + "\n".join(lines) + "\n", encoding="ascii")
