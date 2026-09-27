@@ -27,18 +27,26 @@ namespace tests {
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
 
-// Helper to create an LJ Matter loaded from reactant.con (13-atom H cluster)
-static std::pair<std::shared_ptr<Matter>, Parameters> makeLJCluster() {
+// Matter stores the address of Parameters. The object must not move.
+struct LjCluster {
   Parameters params;
-  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
-  auto m = std::make_shared<Matter>(pot, params);
-  m->con2matter(std::string("reactant.con"));
-  return {m, params};
-}
+  std::shared_ptr<Matter> matter;
+  LjCluster() {
+    ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+    auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+    matter = std::make_shared<Matter>(pot, params);
+    matter->con2matter(std::string("reactant.con"));
+  }
+  LjCluster(const LjCluster &) = delete;
+  LjCluster &operator=(const LjCluster &) = delete;
+  LjCluster(LjCluster &&) = delete;
+  LjCluster &operator=(LjCluster &&) = delete;
+};
 
 TEST_CASE("TestCell", "[MatterTest]") {
-  auto [m1, params] = makeLJCluster();
+  LjCluster lj;
+  auto &m1 = lj.matter;
+  auto &params = lj.params;
   // neb_morse reactant.con has a ~102x103x103 cell
   REQUIRE(m1->getCell()(0, 0) > 100.0);
   REQUIRE(m1->getCell()(1, 1) > 100.0);
@@ -46,7 +54,9 @@ TEST_CASE("TestCell", "[MatterTest]") {
 }
 
 TEST_CASE("SetGetAtomicNrs", "[MatterTest]") {
-  auto [m1, params] = makeLJCluster();
+  LjCluster lj;
+  auto &m1 = lj.matter;
+  auto &params = lj.params;
   // 13 hydrogen atoms
   REQUIRE(m1->numberOfAtoms() == 13);
   auto nrs = m1->getAtomicNrs();
@@ -67,7 +77,9 @@ TEST_CASE("SetGetAtomicNrs", "[MatterTest]") {
 }
 
 TEST_CASE("SetPotential changes energy", "[MatterTest]") {
-  auto [m1, params] = makeLJCluster();
+  LjCluster lj;
+  auto &m1 = lj.matter;
+  auto &params = lj.params;
 
   double e_lj = m1->getPotentialEnergy();
   REQUIRE(std::isfinite(e_lj));
@@ -85,7 +97,9 @@ TEST_CASE("SetPotential changes energy", "[MatterTest]") {
 
 TEST_CASE("PBC wrapping brings displaced atom back into cell",
           "[MatterTest][pbc]") {
-  auto [m1, params] = makeLJCluster();
+  LjCluster lj;
+  auto &m1 = lj.matter;
+  auto &params = lj.params;
 
   auto cell = m1->getCell();
   auto origPos = m1->getPositions();
@@ -105,7 +119,9 @@ TEST_CASE("PBC wrapping brings displaced atom back into cell",
 
 TEST_CASE("Copy constructor preserves positions, cell, and atomic numbers",
           "[MatterTest][copy]") {
-  auto [m1, params] = makeLJCluster();
+  LjCluster lj;
+  auto &m1 = lj.matter;
+  auto &params = lj.params;
 
   Matter m2(*m1);
 
@@ -198,7 +214,9 @@ TEST_CASE("removeNetForce is skipped for a single free atom",
 }
 
 TEST_CASE("setPositions marks forces stale", "[MatterTest][force_cache]") {
-  auto [m1, params] = makeLJCluster();
+  LjCluster lj;
+  auto &m1 = lj.matter;
+  auto &params = lj.params;
 
   double e1 = m1->getPotentialEnergy();
   long calls1 = m1->getForceCalls();
@@ -215,7 +233,9 @@ TEST_CASE("setPositions marks forces stale", "[MatterTest][force_cache]") {
 }
 
 TEST_CASE("getFree respects per-axis constraints", "[MatterTest][fixed]") {
-  auto [m1, params] = makeLJCluster();
+  LjCluster lj;
+  auto &m1 = lj.matter;
+  auto &params = lj.params;
   m1->setFixedMask(0, {true, false, false});
   AtomMatrix free = m1->getFree();
   REQUIRE(free(0, 0) == Catch::Approx(0.0));
@@ -227,7 +247,9 @@ TEST_CASE("getFree respects per-axis constraints", "[MatterTest][fixed]") {
 }
 
 TEST_CASE("setForces persist until positions change", "[MatterTest][hfa4]") {
-  auto [m1, params] = makeLJCluster();
+  LjCluster lj;
+  auto &m1 = lj.matter;
+  auto &params = lj.params;
   (void)m1->getPotentialEnergy();
   AtomMatrix inj = m1->getForces();
   inj.setConstant(0.123);
@@ -238,7 +260,9 @@ TEST_CASE("setForces persist until positions change", "[MatterTest][hfa4]") {
 }
 
 TEST_CASE("getForces zeroes fixed atoms", "[MatterTest][forces]") {
-  auto [m1, params] = makeLJCluster();
+  LjCluster lj;
+  auto &m1 = lj.matter;
+  auto &params = lj.params;
   m1->setFixed(0, true);
 
   auto forces = m1->getForces();
@@ -249,7 +273,9 @@ TEST_CASE("getForces zeroes fixed atoms", "[MatterTest][forces]") {
 
 TEST_CASE("getForcesFree is const and drops fixed rows",
           "[MatterTest][forces][const]") {
-  auto [m1, params] = makeLJCluster();
+  LjCluster lj;
+  auto &m1 = lj.matter;
+  auto &params = lj.params;
   m1->setFixed(0, true);
   const Matter &cref = *m1;
   AtomMatrix freeF = cref.getForcesFree();
@@ -267,7 +293,9 @@ TEST_CASE("Matter copy is independent snapshot (#135)",
           "[MatterTest][copy][dynamics_saddle]") {
   // DynamicsSaddleSearch must deep-copy Matter into mdSnapshots; shared
   // ownership would let later MD steps overwrite earlier frames.
-  auto [m1, params] = makeLJCluster();
+  LjCluster lj;
+  auto &m1 = lj.matter;
+  auto &params = lj.params;
   auto snapshot = std::make_shared<Matter>(*m1);
   auto pos = m1->getPositionsCopy();
   pos(0, 0) += 2.0;
@@ -278,7 +306,9 @@ TEST_CASE("Matter copy is independent snapshot (#135)",
 
 TEST_CASE("setPositionsFree applies PBC like setPositions (#171)",
           "[MatterTest][forces][pbc]") {
-  auto [m1, params] = makeLJCluster();
+  LjCluster lj;
+  auto &m1 = lj.matter;
+  auto &params = lj.params;
   m1->setFixed(0, true);
   // Displace a free atom far outside the cell along x; free-set path must wrap.
   AtomMatrix freePos = m1->getPositionsFree();
@@ -337,7 +367,9 @@ TEST_CASE("isolated molecule pot hard-fails if PBC re-enabled (#188)",
 
 TEST_CASE("MinimumImage PBC centers fractional coords",
           "[MatterTest][pbc][convention]") {
-  auto [m1, params] = makeLJCluster();
+  LjCluster lj;
+  auto &m1 = lj.matter;
+  auto &params = lj.params;
   auto cell = m1->getCell();
   auto pos = m1->getPositionsCopy();
   // Place atom 0 just past +0.5 in fractional x so Legacy keeps it in [0,1)
@@ -366,7 +398,9 @@ TEST_CASE("MinimumImage PBC centers fractional coords",
 }
 
 TEST_CASE("getForcesRaw includes fixed atoms", "[MatterTest][forces]") {
-  auto [m1, params] = makeLJCluster();
+  LjCluster lj;
+  auto &m1 = lj.matter;
+  auto &params = lj.params;
   m1->setFixed(0, true);
 
   auto rawForces = m1->getForcesRaw();
@@ -377,7 +411,9 @@ TEST_CASE("getForcesRaw includes fixed atoms", "[MatterTest][forces]") {
 
 TEST_CASE("copy construct zeros biasPotential so getBiasForces is defined",
           "[MatterTest][copy]") {
-  auto [m1, params] = makeLJCluster();
+  LjCluster lj;
+  auto &m1 = lj.matter;
+  auto &params = lj.params;
   // Copy ctor delegates to copy-assign. A garbage biasPotential here is
   // what made pytest on main die at this=0x2020202020200a44.
   Matter copy(*m1);
@@ -390,7 +426,9 @@ TEST_CASE("copy construct zeros biasPotential so getBiasForces is defined",
 }
 
 TEST_CASE("distanceTo computes correct distance", "[MatterTest]") {
-  auto [m1, params] = makeLJCluster();
+  LjCluster lj;
+  auto &m1 = lj.matter;
+  auto &params = lj.params;
   Matter m2(*m1);
 
   // Same positions = zero distance
@@ -404,7 +442,9 @@ TEST_CASE("distanceTo computes correct distance", "[MatterTest]") {
 }
 
 TEST_CASE("compare identifies identical structures", "[MatterTest]") {
-  auto [m1, params] = makeLJCluster();
+  LjCluster lj;
+  auto &m1 = lj.matter;
+  auto &params = lj.params;
   Matter m2(*m1);
 
   REQUIRE(m1->compare(m2) == true);
@@ -417,7 +457,9 @@ TEST_CASE("compare identifies identical structures", "[MatterTest]") {
 }
 
 TEST_CASE("getKineticEnergy returns finite value", "[MatterTest]") {
-  auto [m1, params] = makeLJCluster();
+  LjCluster lj;
+  auto &m1 = lj.matter;
+  auto &params = lj.params;
   double KE = m1->getKineticEnergy();
   REQUIRE(std::isfinite(KE));
   REQUIRE(KE >= 0.0); // kinetic energy is non-negative
@@ -449,7 +491,9 @@ TEST_CASE("relax converges LJ cluster", "[MatterTest][relax]") {
 }
 
 TEST_CASE("setMasses and distanceTo reject size mismatch", "[MatterTest]") {
-  auto [m1, params] = makeLJCluster();
+  LjCluster lj;
+  auto &m1 = lj.matter;
+  auto &params = lj.params;
   VectorXd shortMasses(2);
   shortMasses.setConstant(1.0);
   REQUIRE_THROWS_AS(m1->setMasses(shortMasses), std::invalid_argument);
@@ -461,7 +505,9 @@ TEST_CASE("setMasses and distanceTo reject size mismatch", "[MatterTest]") {
 }
 
 TEST_CASE("getAtomicNrsFree matches free atom count", "[MatterTest]") {
-  auto [m1, params] = makeLJCluster();
+  LjCluster lj;
+  auto &m1 = lj.matter;
+  auto &params = lj.params;
   m1->setFixed(0, true);
   auto zfree = m1->getAtomicNrsFree();
   REQUIRE(zfree.size() == m1->numberOfFreeAtoms());
@@ -470,7 +516,9 @@ TEST_CASE("getAtomicNrsFree matches free atom count", "[MatterTest]") {
 
 TEST_CASE("MonteCarlo uses caller args and leaves fixed atoms still",
           "[MatterTest][montecarlo]") {
-  auto [m1, params] = makeLJCluster();
+  LjCluster lj;
+  auto &m1 = lj.matter;
+  auto &params = lj.params;
   m1->setFixed(0, true);
   const AtomMatrix before = m1->getPositions();
   const auto cwd = std::filesystem::current_path();
@@ -488,7 +536,9 @@ TEST_CASE("MonteCarlo uses caller args and leaves fixed atoms still",
 }
 
 TEST_CASE("same-size resize keeps atom ids", "[MatterTest][mtxr]") {
-  auto [m1, params] = makeLJCluster();
+  LjCluster lj;
+  auto &m1 = lj.matter;
+  auto &params = lj.params;
   const long n = m1->numberOfAtoms();
   for (long i = 0; i < n; ++i) {
     m1->setAtomIndex(i, 700 + i);
@@ -501,7 +551,9 @@ TEST_CASE("same-size resize keeps atom ids", "[MatterTest][mtxr]") {
 
 TEST_CASE("movedAtomsPct skips atoms fixed in min1",
           "[MatterTest][prefactor]") {
-  auto [min1, params] = makeLJCluster();
+  LjCluster lj;
+  auto &min1 = lj.matter;
+  auto &params = lj.params;
   auto pot = min1->getPotential();
   auto saddle = std::make_shared<Matter>(pot, params);
   *saddle = *min1;
@@ -520,6 +572,70 @@ TEST_CASE("movedAtomsPct skips atoms fixed in min1",
   for (int i = 0; i < moved.size(); ++i) {
     REQUIRE(moved[i] != 0);
   }
+}
+
+TEST_CASE("maxFreeAtomForceNorm masks fully fixed atoms",
+          "[MatterTest][maxForce][highway]") {
+  const long lengths[] = {0, 1, 2, 3, 4, 5, 7, 8, 13, 17, 31, 32, 33};
+  for (long n : lengths) {
+    std::vector<double> forces(static_cast<size_t>(3 * std::max(n, 0L)), 0.0);
+    std::vector<double> fixed(forces.size(), 0.0);
+    double expect = 0.0;
+    for (long i = 0; i < n; ++i) {
+      const double x = 0.1 * static_cast<double>((i * 3) % 7) - 0.2;
+      const double y = 0.05 * static_cast<double>(i % 5);
+      const double z = (i % 4 == 0) ? -0.3 : 0.15;
+      forces[static_cast<size_t>(3 * i)] = x;
+      forces[static_cast<size_t>(3 * i + 1)] = y;
+      forces[static_cast<size_t>(3 * i + 2)] = z;
+      if (i % 5 == 0) {
+        fixed[static_cast<size_t>(3 * i)] = 1.0;
+        fixed[static_cast<size_t>(3 * i + 1)] = 1.0;
+        fixed[static_cast<size_t>(3 * i + 2)] = 1.0;
+      } else if (i % 5 == 1) {
+        fixed[static_cast<size_t>(3 * i)] = 1.0;
+      }
+      if (i % 5 == 0) {
+        continue;
+      }
+      expect = std::max(expect, std::sqrt((x * x + y * y) + z * z));
+    }
+    const double *fdata = forces.empty() ? nullptr : forces.data();
+    const double *mdata = fixed.empty() ? nullptr : fixed.data();
+    const double got = eonc::maxFreeAtomForceNorm(fdata, mdata, n);
+    REQUIRE(got == Catch::Approx(expect).margin(1e-12));
+    const double unmasked = eonc::maxFreeAtomForceNorm(fdata, nullptr, n);
+    if (n > 0) {
+      REQUIRE(unmasked + 1e-15 >= got);
+    } else {
+      REQUIRE(unmasked == Catch::Approx(0.0).margin(0.0));
+    }
+  }
+}
+
+TEST_CASE("maxForce skips fully fixed atoms and keeps partial atoms",
+          "[MatterTest][maxForce]") {
+  LjCluster lj;
+  auto &m1 = lj.matter;
+  auto &params = lj.params;
+  const long n = m1->numberOfAtoms();
+  REQUIRE(n >= 3);
+  AtomMatrix inj = AtomMatrix::Zero(n, 3);
+  inj.row(0) << 9.0, 0.0, 0.0;
+  inj.row(1) << 3.0, 4.0, 0.0;
+  inj.row(2) << 0.0, 3.0, 4.0;
+  m1->setFixed(0, true);
+  m1->setFixedMask(1, {true, false, true});
+  m1->setForces(inj);
+  // Atom 0 is fully fixed. Atom 1 keeps only the free y component (4).
+  // Atom 2 is free with norm 5.
+  REQUIRE(m1->maxForce() == Catch::Approx(5.0).margin(1e-12));
+  AtomMatrix raw = AtomMatrix::Zero(n, 3);
+  raw.row(0) << 8.0, 0.0, 0.0;
+  raw.row(2) << 0.0, 0.0, 1.0;
+  REQUIRE(m1->maxFreeAtomForce(raw) == Catch::Approx(1.0).margin(1e-12));
+  AtomMatrix bad(n + 1, 3);
+  REQUIRE_THROWS_AS(m1->maxFreeAtomForce(bad), std::invalid_argument);
 }
 
 } /* namespace tests */
