@@ -726,6 +726,17 @@ void NudgedElasticBand::updateForces(bool ci_active) {
                                       projectionStrat_);
     }
 
+    // The spring force acts along the tangent, which has a component on a
+    // fixed atom whenever the endpoints place it differently; a fixed atom
+    // carries no force on the band.
+    if (path[i]->numberOfFreeAtoms() < path[i]->numberOfAtoms()) {
+      for (long j = 0; j < atoms; j++) {
+        if (path[i]->getFixed(j)) {
+          projectedForce[i]->row(j).setZero();
+        }
+      }
+    }
+
     eonc::neb::zeroTranslation(*projectedForce[i], path[i]->numberOfFreeAtoms(),
                                path[i]->numberOfAtoms());
   }
