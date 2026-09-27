@@ -1,1 +1,0 @@
-NEB spline extrema leave a collapsed endpoint tangent as zero instead of `normalize()` to NaN.

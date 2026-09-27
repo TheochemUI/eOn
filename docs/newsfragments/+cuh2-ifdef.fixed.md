@@ -1,1 +1,0 @@
-Removed the empty `CUH2_POT` ifdef from `Potential.cpp`.

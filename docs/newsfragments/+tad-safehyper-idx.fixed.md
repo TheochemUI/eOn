@@ -1,1 +1,0 @@
-TAD and SafeHyper rewind to `mdBuffer[0]` when refine returns 0. SafeHyper skips the boost exponential when T or kB is not positive.
