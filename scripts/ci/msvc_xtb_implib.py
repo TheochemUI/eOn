@@ -108,6 +108,11 @@ def export_names(text: str) -> list[str]:
     return names
 
 
+def def_text(dll_name: str, lines: list[str]) -> str:
+    """DEF body. LIBRARY is the DLL the loader must open, not the .lib name."""
+    return f"LIBRARY {dll_name}\nEXPORTS\n" + "\n".join(lines) + "\n"
+
+
 def main() -> None:
     if len(sys.argv) != 4:
         sys.exit(f"usage: {sys.argv[0]} DLL OUT.lib MACHINE")
@@ -141,7 +146,9 @@ def main() -> None:
         )
     out_lib.parent.mkdir(parents=True, exist_ok=True)
     out_def = out_lib.with_suffix(".def")
-    out_def.write_text("EXPORTS\n" + "\n".join(lines) + "\n", encoding="ascii")
+    # lib.exe otherwise names the DLL after the .lib. The loader then
+    # looks for xtb.dll, while conda-forge ships libxtb-6.dll.
+    out_def.write_text(def_text(dll.name, lines), encoding="ascii")
     subprocess.check_call(
         [
             lib_exe,

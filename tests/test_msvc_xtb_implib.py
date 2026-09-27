@@ -40,6 +40,12 @@ def test_export_table_uses_the_xtb_token_not_the_rva_column():
     assert mod.export_names(text) == ["xtb_newenvironment_"]
 
 
+def test_def_names_the_conda_dll_not_the_lib():
+    mod = _implib()
+    text = mod.def_text("libxtb-6.dll", ["xtb_newEnvironment"])
+    assert text.startswith("LIBRARY libxtb-6.dll\nEXPORTS\n")
+
+
 def test_existing_header_spelling_is_not_aliased():
     mod = _implib()
     lines = mod.alias_lines(["xtb_newEnvironment"])
