@@ -64,9 +64,17 @@ def main() -> None:
     names = export_names(text)
     if not names:
         sys.exit(f"no exports in {dll}\n{text[:2000]}")
+    # MinGW gfortran often exports bind(C) names with a leading underscore.
+    # The xtb header calls the undecorated C name.
+    export_set = set(names)
+    lines = list(names)
+    for name in names:
+        plain = name[1:] if name.startswith("_") else ""
+        if plain.startswith("xtb_") and plain not in export_set:
+            lines.append(f"{plain}={name}")
     out_lib.parent.mkdir(parents=True, exist_ok=True)
     out_def = out_lib.with_suffix(".def")
-    out_def.write_text("EXPORTS\n" + "\n".join(names) + "\n", encoding="ascii")
+    out_def.write_text("EXPORTS\n" + "\n".join(lines) + "\n", encoding="ascii")
     subprocess.check_call(
         [
             lib_exe,

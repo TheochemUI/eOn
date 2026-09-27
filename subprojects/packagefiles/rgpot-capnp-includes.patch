@@ -1,0 +1,11 @@
+--- a/CppCore/meson.build
++++ b/CppCore/meson.build
+@@ -517,7 +517,7 @@
+         cpmdc_fake_engine = shared_library(
+             'cpmdc_fake_engine',
+             sources: ['tests/cpmdc_fake_engine.cc'],
+-            dependencies: [ptlrpc_dep],
++            dependencies: [ptlrpc_dep, capnp_rpc_dep],
+             include_directories: _incdirs + ['.'] + include_directories(
+                 'rgpot/CPMDPot',
+             ),
