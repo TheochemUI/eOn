@@ -1,0 +1,1 @@
+The NEB no longer puts a projected force on fixed atoms. When the endpoints placed a fixed atom differently, the spring force along the tangent leaked onto it, and the norm convergence metric counted it.
