@@ -1495,7 +1495,7 @@ if get_option('with_tests')
         ['test_runtime', 'RuntimeTest.cpp', ''],
         ['test_metatomic_loader', 'MetatomicLoaderTest.cpp', ''],
         ['test_neb_lj', 'NEBMorseTest.cpp', 'neb_morse'],
-        ['test_neb_regression', 'NEBRegressionTest.cpp', 'neb_morse'],
+        ['test_neb_regression', 'NEBRegressionTest.cpp', 'neb_lj13'],
         ['test_dimer', 'DimerTest.cpp', 'neb_morse'],
         ['test_saddle', 'SaddleSearchTest.cpp', 'neb_morse'],
         ['test_confileio', 'ConFileIOTest.cpp', 'neb_morse'],

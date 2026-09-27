@@ -40,16 +40,14 @@ protected:
     reactant = std::make_shared<Matter>(pot, params);
     product = std::make_shared<Matter>(pot, params);
 
+    // Two LJ13 minima joined by one first-order saddle (barrier 1.00 eV,
+    // saddle at -38.964 eV), so the climbing image has a maximum to reach.
     reactant->con2matter(std::string("reactant.con"));
-    product->con2matter(std::string("reactant.con"));
-    auto pos = product->getPositions();
-    pos(0, 0) += 0.5;
-    pos(0, 1) -= 0.3;
-    pos(0, 2) += 0.2;
-    product->setPositions(pos);
+    product->con2matter(std::string("product.con"));
 
-    ParametersLoadAccess::optimizer_options(params).max_iterations = 5000;
-    ParametersLoadAccess::optimizer_options(params).method = OptType::LBFGS;
+    // The band reads the NEB's own iteration budget and optimizer.
+    ParametersLoadAccess::neb_options(params).max_iterations = 5000;
+    ParametersLoadAccess::neb_options(params).opt_method = OptType::LBFGS;
     ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
     ParametersLoadAccess::neb_options(params).image_count = 5;
     ParametersLoadAccess::neb_options(params).force_tolerance = 0.01;
