@@ -46,6 +46,13 @@ def test_def_names_the_conda_dll_not_the_lib():
     assert text.startswith("LIBRARY libxtb-6.dll\nEXPORTS\n")
 
 
+def test_c_export_wins_over_a_fortran_alias():
+    mod = _implib()
+    lines = mod.alias_lines(["xtb_getgradient_", "xtb_getgradient"])
+    assert "xtb_getGradient=xtb_getgradient" in lines
+    assert "xtb_getGradient=xtb_getgradient_" not in lines
+
+
 def test_existing_header_spelling_is_not_aliased():
     mod = _implib()
     lines = mod.alias_lines(["xtb_newEnvironment"])

@@ -51,9 +51,38 @@ CANONICAL_XTB = {
 }
 
 
+def _plain(name: str) -> str:
+    plain = name[1:] if name.startswith("_") else name
+    if plain.endswith("_"):
+        plain = plain[:-1]
+    return plain
+
+
+def _rank(name: str) -> tuple[int, int, int, int]:
+    """Prefer a C export over a Fortran-mangled one with the same letters."""
+    plain = _plain(name)
+    canon = CANONICAL_XTB.get(plain.lower())
+    return (
+        int(name.startswith("_") or name.endswith("_")),
+        int(name != plain),
+        0 if canon is not None and name == canon else 1,
+        len(name),
+    )
+
+
 def alias_lines(names: list[str]) -> list[str]:
-    """DEF export lines, including aliases for the C header spellings."""
+    """DEF export lines, including aliases for the C header spellings.
+
+    A trailing underscore is the Fortran binding. When the DLL also exports
+    the C name, the header spelling aliases to that C name.
+    """
     export_set = set(names)
+    best: dict[str, str] = {}
+    for name in names:
+        key = _plain(name).lower()
+        prev = best.get(key)
+        if prev is None or _rank(name) < _rank(prev):
+            best[key] = name
     lines = list(names)
     aliased: set[str] = set()
 
@@ -68,9 +97,9 @@ def alias_lines(names: list[str]) -> list[str]:
             aliased.add(plain)
 
     for name in names:
-        plain = name[1:] if name.startswith("_") else name
-        if plain.endswith("_"):
-            plain = plain[:-1]
+        if best[_plain(name).lower()] != name:
+            continue
+        plain = _plain(name)
         add(plain, name)
         canon = CANONICAL_XTB.get(plain.lower())
         if canon is not None:
@@ -137,6 +166,10 @@ def main() -> None:
         if "environment" in name.lower():
             print(f"xtb export: {name}", file=sys.stderr)
     lines = alias_lines(names)
+    for line in lines:
+        left = line.split("=", 1)[0]
+        if left in {"xtb_getGradient", "xtb_getEnergy", "xtb_singlepoint"}:
+            print(f"xtb bind: {line}", file=sys.stderr)
     exported = {line.split("=", 1)[0] for line in lines}
     if "xtb_newEnvironment" not in exported:
         shown = "\n".join(names[:80])
