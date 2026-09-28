@@ -27,8 +27,9 @@ def _lj_conframe():
 
 def _assert_product_frame(record):
     frame = record["product"]
-    assert type(frame).__name__ == "ConFrame"
-    assert "readcon" in type(frame).__module__
+    import readcon
+
+    assert isinstance(frame, readcon.ConFrame)
     assert "min.con" not in record
     assert "saddle.con" not in record
     assert "pos.con" not in record

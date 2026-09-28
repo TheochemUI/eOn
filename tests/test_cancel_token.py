@@ -34,7 +34,7 @@ def test_cancel_state_stops_the_following_job(monkeypatch):
         lambda pc, invariants: types.SimpleNamespace(job=_PC.JobType.Point),
     )
     monkeypatch.setattr(
-        "eon.communicator_inprocess._structure_from_job_con",
+        "eon.communicator_inprocess._structure_from_job",
         lambda job, key="pos.con": object(),
     )
     bridge = types.ModuleType("pyeonclient.bridge")
@@ -88,7 +88,7 @@ def test_idle_cancel_does_not_block_later_jobs(monkeypatch):
         lambda pc, invariants: types.SimpleNamespace(job=_PC.JobType.Point),
     )
     monkeypatch.setattr(
-        "eon.communicator_inprocess._structure_from_job_con",
+        "eon.communicator_inprocess._structure_from_job",
         lambda job, key="pos.con": object(),
     )
     bridge = types.ModuleType("pyeonclient.bridge")

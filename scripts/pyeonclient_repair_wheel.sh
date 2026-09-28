@@ -232,8 +232,6 @@ repair_one() {
     echo "vendor-ok: $ncap capnp libraries in wheel"
   fi
 
-  # Avoid SONAME collisions with pip rgpot (both ship a liblennard_jones.so).
-  # Rename eOn pot libs to libeon_* and rewrite NEEDED across the wheel.
   # The vendored librgpot is the wrap build, without the potentials the pip
   # rgpot wheel carries (D3Pot and others). Under the shared SONAME
   # librgpot.so.3 the copy loaded first serves both, so `import rgpot` after
@@ -242,8 +240,6 @@ repair_one() {
   # The bundled copy takes one private SONAME so both packages can load.
   local old_soname new_soname so base got dest renamed
   declare -A soname_map=(
-    [liblennard_jones.so]=libeon_lennard_jones.so
-    [liblennard_jones_cluster.so]=libeon_lennard_jones_cluster.so
     [librgpot.so.3]=libeon_rgpot.so.3
   )
   for old_soname in "${!soname_map[@]}"; do

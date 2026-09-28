@@ -78,8 +78,11 @@ def _is_structure(obj) -> bool:
 
 
 def _is_conframe(obj) -> bool:
-    cls = type(obj)
-    return cls.__name__ == "ConFrame" and "readcon" in cls.__module__
+    try:
+        import readcon
+    except ImportError:
+        return False
+    return isinstance(obj, readcon.ConFrame)
 
 
 def _is_con_text(obj) -> bool:

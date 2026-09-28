@@ -38,7 +38,10 @@ def test_parameters_h_is_the_aggregate():
     assert "using neb_options_t" in p
     assert "private:" in p
     assert "main_options_t main_options;" not in p
-    assert "main_options_t main_options_{};" in p
+    assert "struct Impl;" in p
+    assert "std::unique_ptr<Impl> impl_;" in p
+    impl = (ROOT / "client" / "ParametersImpl.h").read_text()
+    assert "main_options_t main_options_{};" in impl
 
 
 def test_parameters_options_defines_job_and_pot_structs():
