@@ -16,13 +16,24 @@ Settings come from the environment of the client job:
   CPMD_FUNCTIONAL default BLYP
 
 The wavefunction of the previous call stays in RESTART.1 in the exchange
-directory, so every call after the first starts from it.
+directory, so every call after the first starts from it. With
+CPMD_RESTART_POOL set to a shared directory, each converged call also
+publishes its RESTART.1 there, keyed by species order, cell, cutoff,
+functional and pseudopotentials, and a job's first call starts from the
+newest compatible one instead of an atomic guess. CPMDC_RESTART names the
+cpmdc-restart tool (OmniPotentRPC/cpmdc); when set, a pooled file is used
+only if `cpmdc-restart info` reports the same atom count, species counts
+and cutoff.
 """
 from __future__ import annotations
 
 import os
 import re
+import hashlib
+import json
 import shlex
+import shutil
+import tempfile
 import subprocess
 import sys
 from pathlib import Path
@@ -54,10 +65,13 @@ def species_order(atoms):
     return order
 
 
-def write_input(path: Path, cell, atoms, pps, restart: bool):
+def write_input(path: Path, cell, atoms, pps, restart: bool, pcg: bool = False):
     order = species_order(atoms)
     lines = ["&CPMD", " OPTIMIZE WAVEFUNCTION", " CONVERGENCE ORBITALS", "  1.0D-6",
-             " MAXITER", "  300", " PRINT FORCES ON", " STORE", "  1"]
+             " MAXITER", f"  {int(os.environ.get('CPMD_MAXITER', '300'))}",
+             " PRINT FORCES ON", " STORE", "  1"]
+    if pcg:
+        lines.append(" PCG MINIMIZE")
     if restart:
         lines.append(" RESTART WAVEFUNCTION LATEST")
     # CELL VECTORS takes the full cell; CPMD refuses SYMMETRY beside it.
@@ -128,23 +142,98 @@ def parse_output(text: str, work: Path, n: int, order):
     return float(energies[-1]) * HARTREE_EV, forces
 
 
+def pool_dir(cell, atoms, pps):
+    root = os.environ.get("CPMD_RESTART_POOL")
+    if not root:
+        return None
+    species = list(dict.fromkeys(a[0] for a in atoms))
+    key = json.dumps({
+        "species": [(z, sum(1 for a in atoms if a[0] == z), pps[z]) for z in species],
+        "cell": [[round(v, 6) for v in row] for row in cell],
+        "cutoff": float(os.environ.get("CPMD_CUTOFF", "30")),
+        "functional": os.environ.get("CPMD_FUNCTIONAL", "BLYP"),
+    }, sort_keys=True)
+    return Path(root) / hashlib.sha256(key.encode()).hexdigest()[:16]
+
+
+def restart_matches(path: Path, atoms) -> bool:
+    """Check a pooled RESTART.1 with cpmdc-restart info, when available."""
+    tool = os.environ.get("CPMDC_RESTART")
+    if not tool:
+        return True
+    out = subprocess.run([tool, "info", str(path)], capture_output=True, text=True)
+    if out.returncode != 0:
+        return False
+    info = out.stdout
+    m = re.search(r"coordinates:\s+(\d+)", info)
+    counts = [int(c) for c in re.findall(r"na\[\d+\]=(\d+)", info)]
+    want = [sum(1 for a in atoms if a[0] == z) for z in dict.fromkeys(a[0] for a in atoms)]
+    cut = re.search(r"ecut=([0-9.eE+-]+)", info)
+    return (m is not None and int(m.group(1)) == len(atoms) and counts == want
+            and cut is not None
+            and abs(float(cut.group(1)) - float(os.environ.get("CPMD_CUTOFF", "30"))) < 1e-9)
+
+
+def seed_from_pool(work: Path, pool, atoms) -> bool:
+    if pool is None or not (pool / "RESTART.1").exists():
+        return False
+    if not restart_matches(pool / "RESTART.1", atoms):
+        return False
+    shutil.copyfile(pool / "RESTART.1", work / "RESTART.1")
+    (work / "LATEST").write_text("./RESTART.1\n           1\n")
+    return True
+
+
+def publish_to_pool(work: Path, pool) -> None:
+    if pool is None or not (work / "RESTART.1").exists():
+        return
+    pool.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=pool, prefix=".RESTART.")
+    os.close(fd)
+    shutil.copyfile(work / "RESTART.1", tmp)
+    os.replace(tmp, pool / "RESTART.1")
+
+
 def main() -> int:
     work = Path.cwd()
     cell, atoms = read_input(work / "from_eon_to_extpot")
     pps = pp_table(os.environ["CPMD_PP"])
-    restart = (work / "RESTART.1").exists() or (work / "LATEST").exists()
-    order = write_input(work / "cpmd.inp", cell, atoms, pps, restart)
-    # A GEOMETRY left by the previous call must not pass for this one.
-    (work / "GEOMETRY").unlink(missing_ok=True)
+    pool = pool_dir(cell, atoms, pps)
+    restart = (work / "RESTART.1").exists() and (work / "LATEST").exists()
+    seeded = False
+    if not restart:
+        seeded = restart = seed_from_pool(work, pool, atoms)
     launch = shlex.split(os.environ.get("CPMD_LAUNCH", "mpirun -np 4"))
     cmd = launch + [os.environ["CPMD_BIN"], "cpmd.inp", os.environ["PP_LIBRARY_PATH"]]
-    with open(work / "cpmd.out", "w") as out:
-        rc = subprocess.run(cmd, stdout=out, stderr=subprocess.STDOUT, cwd=work).returncode
-    text = (work / "cpmd.out").read_text(errors="replace")
-    if rc != 0:
-        sys.stderr.write(text[-4000:])
-        return rc
-    energy, forces = parse_output(text, work, len(atoms), order)
+
+    def attempt(restart: bool, pcg: bool):
+        order = write_input(work / "cpmd.inp", cell, atoms, pps, restart, pcg)
+        # A GEOMETRY left by the previous call must not pass for this one.
+        (work / "GEOMETRY").unlink(missing_ok=True)
+        with open(work / "cpmd.out", "w") as out:
+            rc = subprocess.run(cmd, stdout=out, stderr=subprocess.STDOUT, cwd=work).returncode
+        text = (work / "cpmd.out").read_text(errors="replace")
+        if rc != 0:
+            sys.stderr.write(text[-4000:])
+            raise RuntimeError(f"cpmd.x exited with status {rc}")
+        return parse_output(text, work, len(atoms), order)
+
+    try:
+        energy, forces = attempt(restart, pcg=False)
+    except RuntimeError as err:
+        if "did not converge" not in str(err):
+            raise
+        # A wavefunction carried over from a distant geometry can stall the
+        # SCF. Retry once from an atomic guess with PCG before giving up.
+        sys.stderr.write(f"{err}; retrying cold with PCG MINIMIZE\n")
+        (work / "RESTART.1").unlink(missing_ok=True)
+        (work / "LATEST").unlink(missing_ok=True)
+        seeded = False
+        energy, forces = attempt(False, pcg=True)
+        (work / "retried_cold").write_text("1\n")
+    publish_to_pool(work, pool)
+    if seeded:
+        (work / "seeded_from_pool").write_text(str(pool) + "\n")
     with open(work / "from_extpot_to_eon", "w") as f:
         f.write(f"{energy:.12f}\n")
         for fx, fy, fz in forces:
