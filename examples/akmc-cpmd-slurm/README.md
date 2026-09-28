@@ -21,6 +21,29 @@ which runs a BLYP single point with `cpmd.x` on several MPI ranks.
 - Keeps `RESTART.1` in the ExtPot exchange directory, so every call after
   the first in a job starts from the previous wavefunction.
 
+## Start from a minimum
+
+`pos.con` is the vacancy cell already relaxed with this wrapper at 20 Ry
+(eOn `job = minimization`, L-BFGS to 0.01 eV/A; E = -737.740 eV). AKMC
+compares every search's endpoints with the reactant, so an unrelaxed
+reactant makes each saddle look "not connected to initial state". For a
+new system, relax first:
+
+```ini
+[Main]
+job = minimization
+
+[Potential]
+potential = ext_pot
+ext_pot_path = ./ext_pot
+
+[Optimizer]
+opt_method = lbfgs
+converged_force = 0.01
+```
+
+and use its `min.con` as `pos.con`.
+
 ## Run it
 
 ```bash
@@ -42,6 +65,11 @@ client is one process and `mpirun` starts the four CPMD ranks inside the
 allocation.
 
 ## Checked
+
+With this `pos.con`, the first process search on terra returned a
+process with a 0.029 eV barrier to a product 3.86 eV lower, from one
+Slurm job running the client and a four-rank `cpmd.x`.
+
 
 OpenCPMD was built against OpenBLAS and OpenMPI on a 32-core node. On a
 displaced Si8 cell at 20 Ry and four ranks, the wrapper gives
