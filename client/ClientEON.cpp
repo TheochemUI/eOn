@@ -280,6 +280,15 @@ static int eonClientMain(int argc, char **argv) {
   clients = number_of_clients;
 
   if (parameters.potential_options().potential == eonc::PotType::MPI) {
+    if (potentials == 0 || potentials % clients != 0) {
+      QUILL_LOG_ERROR(logger,
+                      "the MPI potential needs a nonzero number of potential "
+                      "ranks divisible by EON_NUMBER_OF_CLIENTS ({} potential "
+                      "ranks, {} clients)",
+                      potentials, clients);
+      logger->flush_log();
+      MPI_Abort(MPI_COMM_WORLD, 1);
+    }
     std::vector<int> potential_ranks(potentials);
     int j;
     for (i = 0, j = 0; i < isize; i++) {

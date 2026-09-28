@@ -1,0 +1,1 @@
+The MPI potential sends the working directory as `int` character codes, matching the `MPI_INT` it declares, and sleeps `mpi_poll_period` seconds between polls instead of spinning. A run with no potential ranks, or a rank count that does not divide by the number of clients, stops with a message.
