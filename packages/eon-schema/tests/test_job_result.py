@@ -31,6 +31,9 @@ def test_job_result_capnp_exists():
     assert "landfoldArtifacts @35 :List(LandfoldArtifact);" in text
     # Body union already owns @31-@34; the artifact list is append-only.
     assert "unset @31" in text
+    assert "forces @8 :List(Float64);" in text
+    assert "atomId @9 :List(UInt64);" in text
+    assert "fixedAxes @10 :List(UInt8);" in text
 
 
 def test_results_dat_roundtrip_scalars():

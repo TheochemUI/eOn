@@ -14,6 +14,9 @@ def test_schema_file_in_monorepo():
     assert "struct EngineCompatibility" in text
     assert "struct LandfoldArtifact" in text
     assert "landfoldArtifacts @35 :List(LandfoldArtifact);" in text
+    assert "forces @8 :List(Float64);" in text
+    assert "atomId @9 :List(UInt64);" in text
+    assert "fixedAxes @10 :List(UInt8);" in text
     vend = (
         ROOT
         / "packages"
