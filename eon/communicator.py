@@ -456,7 +456,11 @@ class MPI(Communicator):
         return n
 
     def cancel_state(self, state):
-        return self.stop_clients()
+        # Work already handed to a client cannot be recalled over this
+        # protocol; its result carries the old state number and the explorer's
+        # keep_result filter discards it. Stopping the clients here would
+        # leave the run without workers for the next state.
+        return 0
 
 
 class Local(Communicator):
@@ -490,11 +494,17 @@ class Local(Communicator):
         atexit.register(self.cleanup)
 
     def cleanup(self):
-        '''Kills the running eonclients.'''
+        '''Kills the running eonclients and everything they started.'''
+        import signal
         for job in self.joblist:
             p = job[0]
+            if p.poll() is not None:
+                continue
             try:
-                p.kill()
+                if os.name == 'posix':
+                    os.killpg(p.pid, signal.SIGKILL)
+                else:
+                    p.kill()
             except OSError:
                 pass
 
@@ -569,7 +579,10 @@ class Local(Communicator):
             # after exit. FPE floods and long client diagnostics both hit this.
             fstdout = open(Path(jobpath) / "stdout.dat", 'w')
             fstderr = open(Path(jobpath) / "stderr.dat", 'w')
-            p = Popen(self.client, cwd=jobpath, stdout=fstdout, stderr=fstderr)
+            # A session of its own lets cleanup() reach every process the
+            # client starts (ExtPot wrappers, srun, mpirun), not just the client.
+            p = Popen(self.client, cwd=jobpath, stdout=fstdout, stderr=fstderr,
+                      start_new_session=(os.name == 'posix'))
             self.joblist.append((p, jobpath, fstdout, fstderr))
 
             while len(self.joblist) == self.ncpus:
@@ -635,7 +648,7 @@ class Script(Communicator):
         # job dirs needs to map
         queued_jobs = self.get_queued_jobs()
 
-        finished_jobids = set(self.jobids.keys()) - set(self.get_queued_jobs())
+        finished_jobids = set(self.jobids.keys()) - set(queued_jobs)
 
         finished_eonids = []
         for jobid in finished_jobids:
@@ -693,26 +706,31 @@ class Script(Communicator):
             self.save_jobids()
 
     def cancel_state(self, state):
-        # cancel_job.sh jobid
-        if len(list(self.jobids.keys())) == 0:
-            return 0
-        for job_id in list(self.jobids.keys()):
-            cmd = "%s %i" % (self.cancel_job_cmd, job_id)
-            job_id_string = "%s" % (job_id)
-            p = Popen([self.cancel_job_cmd, job_id_string], stdout=PIPE, stderr=PIPE)
-            output, error = p.communicate()
-            output = output.decode()
-            error = error.decode()
-            status = p.returncode
-            self.check_command(status, output, cmd)
+        '''Cancel the jobs still in the queue and drop their directories.
 
-            if status != 0:
-                logger.warn("Job cancel failed with error: %s" % output)
-        self.jobids = {}
+        Jobs that already left the queue keep their ids and directories, so
+        the next get_results() harvests them; the explorer's keep_result
+        filter then decides whether they still count. A cancel that fails
+        (the job finished in between) is logged, not fatal. Returns the
+        number of jobs cancelled.
+        '''
+        queued = self.get_queued_jobs()
+        cancelled = 0
+        scratch = Path(self.scratchpath)
+        for job_id in queued:
+            p = Popen([self.cancel_job_cmd, str(job_id)], stdout=PIPE, stderr=PIPE)
+            output, error = p.communicate()
+            if p.returncode != 0:
+                logger.warning("cancel_job for %s failed (exit %i): %s", job_id,
+                               p.returncode, (output + error).decode().strip())
+                continue
+            eon_jobid = self.jobids.pop(job_id)
+            for path in scratch.iterdir():
+                if path.is_dir() and path.name.rsplit("_", 1)[-1] == str(eon_jobid):
+                    shutil.rmtree(path)
+            cancelled += 1
         self.save_jobids()
-        shutil.rmtree(self.config.path_scratch)
-        os.makedirs(self.config.path_scratch)
-        return len(list(self.jobids.keys()))
+        return cancelled
 
     def get_queued_jobs(self):
         p = Popen([self.queued_jobs_cmd,''], stdout=PIPE, stderr=PIPE)
