@@ -11,11 +11,11 @@
 */
 #include "eon/DynamicsSaddleSearch.h"
 #include "eon/BondBoost.h"
-#include "eon/SafeMath.h"
 #include "eon/Dynamics.h"
 #include "eon/EigenmodeStrategy.h"
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/NudgedElasticBand.h"
+#include "eon/SafeMath.h"
 
 #include <algorithm>
 #include <cmath>

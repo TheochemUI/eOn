@@ -11,7 +11,6 @@
 */
 #include "eon/NudgedElasticBand.h"
 #include "eon/BaseStructures.h"
-#include "eon/SafeMath.h"
 #include "eon/EigenmodeStrategy.h"
 #include "eon/IDPPObjectiveFunction.hpp"
 #include "eon/IRACompare.h"
@@ -25,6 +24,7 @@
 #include "eon/NEBZoom.h"
 #include "eon/Optimizer.h"
 #include "eon/PotCapabilities.h"
+#include "eon/SafeMath.h"
 #include "magic_enum/magic_enum.hpp"
 
 #include "eon/EonLogger.h"
