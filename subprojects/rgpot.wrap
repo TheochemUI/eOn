@@ -1,7 +1,8 @@
 [wrap-git]
 directory = rgpot
 url = https://github.com/OmniPotentRPC/rgpot.git
-# rgpot 3.2.0 ships MOPACPot (libmopacc, AM1 default) plus ForceBatch.
-revision = v3.2.0
+# rgpot 3.3.0: wheels that import without a system OpenBLAS or libgomp,
+# CPMD calculator groups, CPMD stress, the eindir ABI stamp.
+revision = v3.3.0
 depth = 1
 diff_files = rgpot-capnp-includes.patch

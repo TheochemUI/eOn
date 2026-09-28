@@ -294,7 +294,7 @@ jobs:
           python -m pip install -U pip
           whl=$(find wheelhouse -name 'pyeonclient-*.whl' ! -name '*+metatomic*' | head -1)
           test -n "${whl}"
-          python -m pip install "rgpot>=3.2.0" "${whl}" numpy readcon
+          python -m pip install "rgpot>=3.3.0" "${whl}" numpy readcon
           python scripts/pyeonclient_joint_import.py
 
   publish:
