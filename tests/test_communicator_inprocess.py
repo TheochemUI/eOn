@@ -25,18 +25,31 @@ def _lj_conframe():
     return _lj_structure().to_conframe()
 
 
+def _lj_con_text():
+    """The .con text the AKMC drivers send as pos.con."""
+    import eon.fileio as fio
+
+    buf = StringIO()
+    fio.savecon(buf, _lj_structure())
+    buf.seek(0)
+    return buf
+
+
 def _assert_product_frame(record):
     frame = record["product"]
     assert type(frame).__name__ == "ConFrame"
     assert "readcon" in type(frame).__module__
-    assert "min.con" not in record
     assert "saddle.con" not in record
     assert "pos.con" not in record
     from eon.structure import Structure
+    import eon.fileio as fio
 
     back = Structure.from_conframe(frame)
     assert len(back) == 2
     assert np.isfinite(back.r).all()
+    # min.con is the same geometry as .con text, for the drivers that read it.
+    legacy = fio.loadcon(StringIO(record["min.con"].getvalue()))
+    assert np.allclose(legacy.r, back.r)
 
 
 def _need_client():
@@ -44,7 +57,7 @@ def _need_client():
     pytest.importorskip("readcon")
 
 
-def test_geometry_structure_not_con_text():
+def test_geometry_structure_conframe_or_con_text():
     pytest.importorskip("readcon")
     from eon.communicator import CommunicatorError
     from eon.communicator_inprocess import _structure_from_job
@@ -53,9 +66,14 @@ def test_geometry_structure_not_con_text():
     assert _structure_from_job({"structure": s}, {}) is s
     assert _structure_from_job({"pos": s}, {}) is s
     assert _structure_from_job({}, {"reactant": s}) is s
-    with pytest.raises(CommunicatorError, match="Structure or ConFrame"):
+    # explorer sends job['pos.con'] and invariants['pos.con'] as .con text.
+    got = _structure_from_job({"pos.con": _lj_con_text()}, {})
+    assert np.allclose(got.r, s.r)
+    got = _structure_from_job({}, {"pos.con": (_lj_con_text(), 0o644)})
+    assert np.allclose(got.r, s.r)
+    with pytest.raises(CommunicatorError, match="could not read .con text"):
         _structure_from_job({"pos.con": StringIO("Lattice")}, {})
-    with pytest.raises(CommunicatorError, match="Structure or ConFrame"):
+    with pytest.raises(CommunicatorError, match="Structure, ConFrame or .con text"):
         _structure_from_job({}, {})
     with pytest.raises(CommunicatorError, match="got int"):
         _structure_from_job({"structure": 1}, {})
@@ -76,7 +94,7 @@ def test_get_communicator_inprocess(tmp_path, monkeypatch):
     assert type(c).__name__ == "LocalInProcess"
 
 
-@pytest.mark.parametrize("geometry", ["structure", "conframe"])
+@pytest.mark.parametrize("geometry", ["structure", "conframe", "con_text"])
 def test_inprocess_minimize_job(tmp_path, geometry):
     _need_client()
     from eon.communicator_inprocess import LocalInProcess
@@ -86,7 +104,11 @@ def test_inprocess_minimize_job(tmp_path, geometry):
     config.path_scratch = str(scratch)
     c = LocalInProcess(str(scratch), bundle_size=1, config=config)
 
-    geom = _lj_structure() if geometry == "structure" else _lj_conframe()
+    geom = {
+        "structure": _lj_structure,
+        "conframe": _lj_conframe,
+        "con_text": _lj_con_text,
+    }[geometry]()
     job = {"id": "t0", "pos.con": geom}
     ini = StringIO(
         "[Main]\njob = minimization\n[Potential]\npotential = lj\n"
@@ -104,7 +126,7 @@ def test_inprocess_minimize_job(tmp_path, geometry):
     assert list(scratch.rglob("*.con")) == []
 
 
-def test_inprocess_rejects_con_text(tmp_path):
+def test_inprocess_rejects_unreadable_con_text(tmp_path):
     _need_client()
     from eon.communicator import CommunicatorError
     from eon.communicator_inprocess import LocalInProcess
@@ -114,7 +136,7 @@ def test_inprocess_rejects_con_text(tmp_path):
     c = LocalInProcess(str(tmp_path / "scratch"), bundle_size=1, config=config)
     job = {"id": "bad", "pos.con": StringIO("not a structure\n")}
     ini = StringIO("[Main]\njob = point\n[Potential]\npotential = lj\n")
-    with pytest.raises(CommunicatorError, match="Structure or ConFrame"):
+    with pytest.raises(CommunicatorError, match="could not read .con text"):
         c.submit_jobs([job], {"config.ini": (ini, 0o644)})
 
 

@@ -91,12 +91,32 @@ def _is_con_text(obj) -> bool:
     )
 
 
+def _con_text_of(blob) -> str:
+    if hasattr(blob, "getvalue"):
+        return blob.getvalue()
+    if hasattr(blob, "read"):
+        if hasattr(blob, "seek"):
+            blob.seek(0)
+        return blob.read()
+    if isinstance(blob, bytes):
+        return blob.decode()
+    return str(blob)
+
+
 def _structure_from_geometry(blob, where: str):
-    """Structure or ConFrame to the numpy working set. Rejects .con text."""
+    """Structure, ConFrame or .con text to the numpy working set.
+
+    The AKMC drivers (explorer, basin hopping, escape rate, parallel replica)
+    still send ``pos.con`` as a StringIO of .con text, so text is parsed here
+    rather than refused.
+    """
     if _is_con_text(blob):
-        raise CommunicatorError(
-            f"{where} must be a Structure or ConFrame, not .con text"
-        )
+        from eon import fileio as io
+
+        try:
+            return io.loadcon(StringIO(_con_text_of(blob)))
+        except Exception as e:
+            raise CommunicatorError(f"{where}: could not read .con text ({e})") from e
     if _is_structure(blob):
         return blob
     if _is_conframe(blob):
@@ -104,7 +124,8 @@ def _structure_from_geometry(blob, where: str):
 
         return Structure.from_conframe(blob)
     raise CommunicatorError(
-        f"{where} must be a Structure or ConFrame, got {type(blob).__name__}"
+        f"{where} must be a Structure, ConFrame or .con text, "
+        f"got {type(blob).__name__}"
     )
 
 
@@ -118,16 +139,42 @@ def _structure_from_job(job: dict, invariants: dict | None):
                 continue
             val = invariants[key]
             blob = val[0] if isinstance(val, tuple) else val
-            if _is_structure(blob) or _is_conframe(blob):
+            if blob is not None:
                 return _structure_from_geometry(blob, f"invariants[{key!r}]")
     raise CommunicatorError(
-        "inprocess job needs a Structure or ConFrame "
+        "inprocess job needs a Structure, ConFrame or .con text "
         "(structure, conframe, reactant, pos, or pos.con)"
     )
 
 
 def _conframe_of(structure):
     return structure.to_conframe()
+
+
+class _LazyCon:
+    """.con text for callers that read min.con or saddle.con, built on first read."""
+
+    def __init__(self, structure):
+        self._structure = structure
+        self._text: str | None = None
+
+    def _materialize(self) -> str:
+        if self._text is None:
+            import eon.fileio as fio
+
+            buf = StringIO()
+            fio.savecon(buf, self._structure)
+            self._text = buf.getvalue()
+        return self._text
+
+    def getvalue(self) -> str:
+        return self._materialize()
+
+    def seek(self, *args, **kwargs):
+        return 0
+
+    def read(self, *args, **kwargs) -> str:
+        return self._materialize()
 
 
 def _run_inprocess_job(pc, job_kind, matter, pot, params, job: dict) -> dict:
@@ -300,11 +347,12 @@ class LocalInProcess(Communicator):
     def submit_jobs(self, data, invariants):
         """Run each job dict in-process.
 
-        Geometry is a Structure or a readcon.ConFrame on one of
+        Geometry is a Structure, a readcon.ConFrame or .con text on one of
         ``structure``, ``conframe``, ``reactant``, ``pos``, or ``pos.con``,
-        or the same objects on the invariant dict. ``.con`` text is refused.
-        The result carries ``product`` and, for a saddle search, ``saddle``
-        as ConFrames. Nothing is written to disk.
+        or the same objects on the invariant dict. The result carries
+        ``product`` and, for a saddle search, ``saddle`` as ConFrames, and
+        the same geometry as ``min.con`` and ``saddle.con`` for the drivers
+        that read .con text. Nothing is written to disk.
         """
         pc = self._pc
         params = _params_from_invariants(pc, invariants)
@@ -340,6 +388,7 @@ class LocalInProcess(Communicator):
                 "number": 0,
                 "name": str(jid),
                 "product": _conframe_of(out),
+                "min.con": _LazyCon(out),
                 "results.dat": results,
                 "_matter": matter,
                 "_structure": out,
@@ -348,7 +397,9 @@ class LocalInProcess(Communicator):
             }
             saddle = payload.get("saddle")
             if saddle is not None:
-                rec["saddle"] = _conframe_of(matter_to_structure(saddle))
+                saddle_structure = matter_to_structure(saddle)
+                rec["saddle"] = _conframe_of(saddle_structure)
+                rec["saddle.con"] = _LazyCon(saddle_structure)
                 rec["_saddle"] = saddle
             self._finished.append(rec)
             logger.info(
