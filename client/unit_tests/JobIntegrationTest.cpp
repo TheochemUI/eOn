@@ -760,12 +760,12 @@ potential = lj
 [Nudged Elastic Band]
 images = 3
 spring = 5.0
-max_iterations = 50
+max_iterations = 200
 
 [Optimizer]
 opt_method = lbfgs
 converged_force = 0.01
-max_iterations = 50
+max_iterations = 200
 max_move = 0.2
 
 [Debug]
