@@ -80,7 +80,7 @@ TEST_CASE_METHOD(PotTest, "XTB", "[PotTest]") {
   }
   SECTION("Force Matrix Check") {
     REQUIRE(f_mta.allFinite());
-    REQUIRE(f_mta.colwise().sum().norm() == Approx(0.0).margin(1e-2));
+    REQUIRE_THAT(f_mta.colwise().sum().norm(), WithinAbs(0.0, 1e-2));
     // The MinGW xtb 6.7.1 build returns a different closed force set.
 #ifndef _WIN32
     REQUIRE_THAT(f_mta,
@@ -96,7 +96,7 @@ TEST_CASE_METHOD(PotTest, "XTB", "[PotTest]") {
   }
   SECTION("Force Matrix Check") {
     REQUIRE(f_mta.allFinite());
-    REQUIRE(f_mta.colwise().sum().norm() == Approx(0.0).margin(1e-2));
+    REQUIRE_THAT(f_mta.colwise().sum().norm(), WithinAbs(0.0, 1e-2));
 #ifndef _WIN32
     REQUIRE_THAT(f_mta,
                  eonc::helpers::test::IsApprox(expected_forces, threshold));
