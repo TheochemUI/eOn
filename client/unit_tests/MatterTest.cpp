@@ -33,13 +33,16 @@ namespace tests {
 static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 // Helper to create an LJ Matter loaded from reactant.con (13-atom H cluster)
+// Matter keeps a pointer to the Parameters it was built with, so those
+// Parameters live as long as the Matter; the caller gets a copy.
 static std::pair<std::shared_ptr<Matter>, Parameters> makeLJCluster() {
-  Parameters params;
-  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
-  auto m = std::make_shared<Matter>(pot, params);
+  auto params = std::make_shared<Parameters>();
+  ParametersLoadAccess::potential_options(*params).potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, *params);
+  std::shared_ptr<Matter> m(new Matter(pot, *params),
+                            [params](Matter *owned) { delete owned; });
   m->con2matter(std::string("reactant.con"));
-  return {m, params};
+  return {m, *params};
 }
 
 TEST_CASE("TestCell", "[MatterTest]") {
