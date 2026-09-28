@@ -38,8 +38,8 @@ Displacement is `r[j] - r[i] + S @ box`.
 ### minimage
 
 `eon.geometry.pbc` applies the minimum-image wrap. When
-[minimage](https://github.com/HaoZeke/minimage) is installed it uses
-`minimage.Cell.from_vesin` (the same wrap [linkcell](https://github.com/HaoZeke/linkcell)
+[minimage](https://github.com/lode-org/minimage) is installed it uses
+`minimage.Cell.from_vesin` (the same wrap [linkcell](https://github.com/d-SEAMS/linkcell)
 uses) and `Cell.wrap_many` for packed `(N, 3)` rows. Without that extra
 the numpy path (`pbc_eon_legacy`) runs.
 
