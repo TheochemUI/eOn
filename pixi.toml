@@ -14,6 +14,9 @@ ensure_cbindgen = { cmd = "command -v cbindgen > /dev/null || cargo install --ro
 
 [dependencies]
 eigen = ">=3.4,<3.5"
+# client/meson.build prefers an installed nlohmann_json; carry it in the env
+# so CMake does not pick up a host copy and its /usr/include.
+nlohmann_json = ">=3.11,<4"
 # Pin python for torch
 python = ">=3.11.5,<3.13"
 # End manual pins
