@@ -698,7 +698,6 @@ random_seed = 42
 potential = lj
 
 [Nudged Elastic Band]
-minimize_endpoints = true
 images = 3
 spring = 5.0
 max_iterations = 200
