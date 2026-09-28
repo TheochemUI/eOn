@@ -50,8 +50,7 @@ LAMMPSPot::LAMMPSPot(const eonc::Parameters &p, eonc::ILammpsLoader &loader,
                      bool isolate_worker)
     : eonc::Potential(p),
       loader_{loader},
-      lammpsThr{p.potential_options().LAMMPSThreads},
-      lammpsLogging_{p.potential_options().LAMMPSLogging}
+      lammpsThr{p.potential_options().LAMMPSThreads}
 #ifdef EONMPI
       ,
       mpiComm{eonc::getMpiClientComm(p)}
@@ -576,13 +575,10 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
     }
   }
 
-  std::vector<const char *> lmpargs{"liblammps", "-echo", "log"};
-  if (!lammpsLogging_) {
-    lmpargs.insert(lmpargs.end(), {"-log", "none", "-screen", "none"});
-  }
 #ifdef EONMPI
-  lmpargs.insert(lmpargs.end(), {"-suffix", "omp"});
-  int lmpargc = static_cast<int>(lmpargs.size());
+  const char *lmpargv[] = {"liblammps", "-log", "none",    "-echo", "log",
+                           "-screen",   "none", "-suffix", "omp"};
+  int lmpargc = sizeof(lmpargv) / sizeof(const char *);
   if (!lmp.open_mpi) {
     throw std::runtime_error(
         "LAMMPS library found but lacks MPI support (lammps_open not found).\n"
@@ -590,12 +586,13 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
   }
   MPI_Comm inst_comm = MPI_COMM_NULL;
   MPI_Comm_dup(mpiComm, &inst_comm); // private comm per per-image instance
-  LAMMPSObj = lmp.open_mpi(lmpargc, const_cast<char **>(lmpargs.data()),
-                           inst_comm, nullptr);
+  LAMMPSObj =
+      lmp.open_mpi(lmpargc, const_cast<char **>(lmpargv), inst_comm, nullptr);
 #else
-  int lmpargc = static_cast<int>(lmpargs.size());
-  LAMMPSObj = lmp.open_no_mpi(lmpargc, const_cast<char **>(lmpargs.data()),
-                              nullptr);
+  const char *lmpargv[] = {"liblammps", "-log",    "none", "-echo",
+                           "log",       "-screen", "none"};
+  int lmpargc = sizeof(lmpargv) / sizeof(const char *);
+  LAMMPSObj = lmp.open_no_mpi(lmpargc, const_cast<char **>(lmpargv), nullptr);
 #endif
 
   if (lammpsThr > 0) {
