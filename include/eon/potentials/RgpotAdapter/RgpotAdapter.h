@@ -43,25 +43,20 @@ public:
     requires(!std::is_base_of_v<eonc::IPluginLoader, std::remove_cvref_t<Cfg>>)
   RgpotAdapter(eonc::PotType ptype, const eonc::Parameters &params,
                const Cfg &cfg, eonc::IPluginLoader &loader)
-      : eonc::Potential(ptype, params),
-        pot_(cfg),
-        loader_(loader) {
+      : eonc::Potential(ptype, params), pot_(cfg), loader_(loader) {
     finishConstruct(params);
   }
 
   /// Kernels with no configuration surface default-construct in place.
   RgpotAdapter(eonc::PotType ptype, const eonc::Parameters &params)
-      : eonc::Potential(ptype, params),
-        pot_(),
+      : eonc::Potential(ptype, params), pot_(),
         loader_(eonc::PluginLoader::instance()) {
     finishConstruct(params);
   }
   /// Test seam: injected loader, no process-default search-path mutation.
   RgpotAdapter(eonc::PotType ptype, const eonc::Parameters &params,
                eonc::IPluginLoader &loader)
-      : eonc::Potential(ptype, params),
-        pot_(),
-        loader_(loader) {
+      : eonc::Potential(ptype, params), pot_(), loader_(loader) {
     finishConstruct(params);
   }
 
@@ -73,8 +68,7 @@ public:
   /// Test seam: injected loader, no process-default search-path mutation.
   RgpotAdapter(eonc::PotType ptype, const eonc::Parameters &params,
                RPot &&kernel, eonc::IPluginLoader &loader)
-      : eonc::Potential(ptype, params),
-        pot_(std::move(kernel)),
+      : eonc::Potential(ptype, params), pot_(std::move(kernel)),
         loader_(loader) {
     finishConstruct(params);
   }

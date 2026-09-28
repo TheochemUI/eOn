@@ -36,7 +36,7 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
   AtomMatrix posA = reactant->getPositions();
 
   constexpr std::array<double, 9> dRs = {1e-7, 1e-6, 1e-5, 1e-4, 1e-3,
-                                          5e-3, 0.01, 0.05, 0.1};
+                                         5e-3, 0.01, 0.05, 0.1};
 
   AtomMatrix forceA = reactant->getForces();
 

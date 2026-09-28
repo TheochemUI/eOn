@@ -12,8 +12,8 @@
 #pragma once
 #include "ConFileIO.h"
 #include "Eigen.h"
-#include "PbcSimd.h"
 #include "EonLogger.h"
+#include "PbcSimd.h"
 #include "Potential.h"
 #include "StructureComparisonOptions.h"
 #include "SurrogatePotential.h"
@@ -42,8 +42,8 @@ namespace pbc {
 // Minimum-image on a difference vector (fractional in [-0.5, 0.5)).
 inline AtomMatrix apply(const AtomMatrix &diff, const Matrix3d &cell,
                         const Matrix3d &cellInverse) {
-  // Fractional coordinates, minimum-image wrap to [-0.5, 0.5), back to Cartesian.
-  // x - floor(x + 0.5), Highway when the build has it.
+  // Fractional coordinates, minimum-image wrap to [-0.5, 0.5), back to
+  // Cartesian. x - floor(x + 0.5), Highway when the build has it.
   AtomMatrix frac = diff * cellInverse;
   wrapMinimumImage(frac.data(), static_cast<size_t>(frac.size()));
   return frac * cell;

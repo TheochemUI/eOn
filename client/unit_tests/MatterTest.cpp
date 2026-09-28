@@ -410,8 +410,7 @@ TEST_CASE("PBC wrap matches floor and fmod on a wide matrix",
   AtomMatrix legacy_expect = diff * inv;
   for (long i = 0; i < n; ++i) {
     for (int axis = 0; axis < 3; ++axis) {
-      legacy_expect(i, axis) =
-          std::fmod(legacy_expect(i, axis) + 1.0, 1.0);
+      legacy_expect(i, axis) = std::fmod(legacy_expect(i, axis) + 1.0, 1.0);
     }
   }
   legacy_expect = legacy_expect * cell;
