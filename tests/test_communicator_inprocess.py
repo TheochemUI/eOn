@@ -36,9 +36,10 @@ def _lj_con_text():
 
 
 def _assert_product_frame(record):
+    from readcon import ConFrame
+
     frame = record["product"]
-    assert type(frame).__name__ == "ConFrame"
-    assert "readcon" in type(frame).__module__
+    assert isinstance(frame, ConFrame)
     assert "saddle.con" not in record
     assert "pos.con" not in record
     from eon.structure import Structure

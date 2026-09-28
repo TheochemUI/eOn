@@ -77,8 +77,13 @@ def _is_structure(obj) -> bool:
 
 
 def _is_conframe(obj) -> bool:
-    cls = type(obj)
-    return cls.__name__ == "ConFrame" and "readcon" in cls.__module__
+    # readcon's pyo3 class reports its module as "builtins", so match the
+    # class itself rather than a module name.
+    try:
+        from readcon import ConFrame
+    except ImportError:
+        return False
+    return isinstance(obj, ConFrame)
 
 
 def _is_con_text(obj) -> bool:
