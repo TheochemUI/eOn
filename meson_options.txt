@@ -20,7 +20,10 @@ option('gprd_linalg_backend', type: 'combo', choices: ['eigen', 'cusolver', 'kok
 option('with_metatomic', type : 'boolean', value : false)
 # --- rgpot roles (see docs/source/user_guide/rgpot_integration.md) ---
 # Direct in-process RGPOT (NWChemPot/CPMDPot dlopen) is always on except
-# Windows, where those frontends are not built. It is not a Meson option.
+# Windows, where those frontends are not built. with_rgpot is kept so
+# existing -Dwith_rgpot=... invocations still configure; its value is ignored.
+option('with_rgpot', type : 'boolean', value : true, deprecated : true,
+       description : 'Ignored. The direct in-process RGPOT arm is always built except on Windows')
 # eOn as RPC server: eonclient --serve implements rgpot Potential RPC for any pot.
 option('with_serve', type : 'boolean', value : false,
        description : 'eOn as rgpot-compatible Cap\'n Proto RPC *server* (eonclient --serve); clients connect TO eOn (NOT RGPOT pot, NOT potserv client)')
