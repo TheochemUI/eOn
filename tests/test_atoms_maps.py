@@ -68,3 +68,54 @@ def test_point_energy_match_forwards_use_identical(monkeypatch):
     monkeypatch.setattr("eon.atoms.match", fake_match)
     assert point_energy_match("a.con", 1.0, "b.con", 1.0, 0.1, 0.1, 3.0, use_identical=True)
     assert seen == {"indistinguishable": True, "use_identical": True}
+
+
+def _structure(r, names):
+    s = Structure(len(r))
+    s.r = np.asarray(r, dtype=float)
+    s.box = np.eye(3) * 50.0
+    s.names = list(names)
+    s.mass = np.ones(len(r))
+    s.free = np.ones((len(r), 3))
+    return s
+
+
+def _brute_identical(a, b, eps):
+    from itertools import permutations
+
+    from eon.atoms import per_atom_norm
+
+    ibox = np.linalg.inv(a.box)
+    n = len(a)
+    ok = np.array(
+        [
+            (per_atom_norm(a.r - b.r[i], a.box, ibox) <= eps)
+            & (np.asarray(a.names) == b.names[i])
+            for i in range(n)
+        ]
+    )
+    return any(all(ok[i, j] for i, j in enumerate(p)) for p in permutations(range(n)))
+
+
+def test_identical_agrees_with_every_permutation_on_random_clusters():
+    rng = np.random.default_rng(20260928)
+    eps = 0.3
+    seen = {True: 0, False: 0}
+    for _ in range(300):
+        n = int(rng.integers(2, 7))
+        r = rng.uniform(0.0, 2.0, size=(n, 3))
+        names = rng.choice(["Pt", "Au"], size=n)
+        perm = rng.permutation(n)
+        r2 = r[perm] + rng.normal(0.0, 0.15, size=(n, 3))
+        names2 = names[perm]
+        if rng.random() < 0.3:
+            k = int(rng.integers(n))
+            names2 = names2.copy()
+            names2[k] = "Au" if names2[k] == "Pt" else "Pt"
+        a = _structure(r, names)
+        b = _structure(r2, names2)
+        want = _brute_identical(a, b, eps)
+        assert identical(a, b, eps) == want
+        seen[want] += 1
+    # Both outcomes occur, so the comparison is not vacuous.
+    assert seen[True] > 20 and seen[False] > 20

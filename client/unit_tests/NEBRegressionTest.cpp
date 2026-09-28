@@ -21,6 +21,8 @@
 #include "eon/NudgedElasticBand.h"
 #include "eon/PotRegistry.h"
 
+#include <cmath>
+
 namespace tests {
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
@@ -86,21 +88,25 @@ TEST_CASE_METHOD(NEBRegressionFixture,
 TEST_CASE_METHOD(NEBRegressionFixture,
                  "NEB does not climb below the endpoint energies",
                  "[neb][regression][climbing_image]") {
+  const bool reverse = GENERATE(false, true);
+  // A high-energy endpoint: the LJ13 reactant with atom 0 pushed 0.5 A
+  // along x (516.0 eV). The linear band rises monotonically towards it, so
+  // its highest interior image (112.4 eV) stays below that endpoint.
+  AtomMatrix pushed = reactant->getPositions();
+  pushed(0, 0) += 0.5;
+  product->setPositions(pushed);
+  if (reverse) {
+    std::swap(reactant, product);
+  }
   ParametersLoadAccess::neb_options(params).climbing_image.enabled = true;
   auto neb =
       std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
-  // A linear LJ13 band already sits above the higher endpoint. A flat band
-  // has no interior peak, so climbing must stay off.
-  const AtomMatrix flat = neb->path.front()->getPositions();
-  for (auto &image : neb->path) {
-    image->setPositions(flat);
-  }
   neb->updateForces();
 
   const double endpointEnergy =
       std::max(neb->path.front()->getPotentialEnergy(),
                neb->path.back()->getPotentialEnergy());
-  REQUIRE(neb->path[neb->maxEnergyImage]->getPotentialEnergy() <=
+  REQUIRE(neb->path[neb->maxEnergyImage]->getPotentialEnergy() <
           endpointEnergy);
   CHECK(neb->climbingImage == 0);
 
@@ -133,6 +139,32 @@ TEST_CASE_METHOD(
   neb->path.back()->setPositions(neb->path[2]->getPositions());
   neb->updateForces();
   CHECK(neb->climbingImage == 0);
+}
+
+TEST_CASE_METHOD(NEBRegressionFixture,
+                 "Zoom NEB reports the barrier from the original reactant",
+                 "[neb][regression][zoom]") {
+  // The neb_lj13 pair: reactant -39.965352 eV, and an eonclient process
+  // search put the saddle at -38.963676 eV, a barrier of 1.001676 eV.
+  auto &neb_opts = ParametersLoadAccess::neb_options(params);
+  neb_opts.climbing_image.enabled = true;
+  neb_opts.climbing_image.trigger_force = 1e10;
+  neb_opts.climbing_image.trigger_factor = 1.0;
+  neb_opts.zoom.enabled = true;
+  neb_opts.zoom.activation_threshold = 1.0;
+  neb_opts.zoom.stability_count = 2;
+  const double reactantE = reactant->getPotentialEnergy();
+
+  auto neb =
+      std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
+  REQUIRE(neb->compute() == NudgedElasticBand::NEBStatus::GOOD);
+
+  // Zoom moved the band's first image off the reactant.
+  REQUIRE(std::abs(neb->path.front()->getPotentialEnergy() - reactantE) > 1e-3);
+  REQUIRE(neb->reactantEnergy == Catch::Approx(reactantE).margin(1e-12));
+  const double barrier = neb->path[neb->maxEnergyImage]->getPotentialEnergy() -
+                         neb->reactantEnergy;
+  REQUIRE(barrier == Catch::Approx(1.001676).margin(5e-3));
 }
 
 TEST_CASE_METHOD(NEBRegressionFixture,

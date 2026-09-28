@@ -129,7 +129,7 @@ void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
     ew = es.eigenvalues()(0);
     VectorXd y = es.eigenvectors().col(0);
     evEst = V.leftCols(subspace) * y;
-    evEst.normalize();
+    eonc::safemath::safe_normalize_inplace(evEst);
 
     VectorXd Hx = HV.leftCols(subspace) * y;
     VectorXd resid = Hx - ew * evEst;

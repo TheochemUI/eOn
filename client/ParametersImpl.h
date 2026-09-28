@@ -9,6 +9,8 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+// Private to the client build; not installed. ParametersAccess.cpp (eoncbase)
+// and Parameters.cpp (eonclib) both need the complete Impl.
 #pragma once
 
 #include "eon/Parameters.h"

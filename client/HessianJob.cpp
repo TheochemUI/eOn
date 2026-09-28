@@ -12,6 +12,7 @@
 #include "eon/HessianJob.h"
 #include "eon/BaseStructures.h"
 #include "eon/EonLogger.h"
+#include "eon/HelperFunctions.h"
 #include "eon/Hessian.h"
 #include "eon/JobResult.h"
 #include "eon/Matter.h"
@@ -28,7 +29,7 @@
 namespace eonc {
 
 std::vector<std::string> HessianJob::run(void) {
-  std::string matter_in("pos.con");
+  std::string matter_in = eonc::helpers::getRelevantFile("pos.con");
 
   std::vector<std::string> returnFiles;
 

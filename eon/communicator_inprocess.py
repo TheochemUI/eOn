@@ -16,7 +16,6 @@ from typing import Any
 
 import numpy as np
 
-from eon.cancel import CancelToken
 from eon.communicator import Communicator, CommunicatorError
 
 logger = logging.getLogger("communicator")
@@ -78,11 +77,13 @@ def _is_structure(obj) -> bool:
 
 
 def _is_conframe(obj) -> bool:
+    # readcon's pyo3 class reports its module as "builtins", so match the
+    # class itself rather than a module name.
     try:
-        import readcon
+        from readcon import ConFrame
     except ImportError:
         return False
-    return isinstance(obj, readcon.ConFrame)
+    return isinstance(obj, ConFrame)
 
 
 def _is_con_text(obj) -> bool:
@@ -95,12 +96,32 @@ def _is_con_text(obj) -> bool:
     )
 
 
+def _con_text_of(blob) -> str:
+    if hasattr(blob, "getvalue"):
+        return blob.getvalue()
+    if hasattr(blob, "read"):
+        if hasattr(blob, "seek"):
+            blob.seek(0)
+        return blob.read()
+    if isinstance(blob, bytes):
+        return blob.decode()
+    return str(blob)
+
+
 def _structure_from_geometry(blob, where: str):
-    """Structure or ConFrame to the numpy working set. Rejects .con text."""
+    """Structure, ConFrame or .con text to the numpy working set.
+
+    The AKMC drivers (explorer, basin hopping, escape rate, parallel replica)
+    still send ``pos.con`` as a StringIO of .con text, so text is parsed here
+    rather than refused.
+    """
     if _is_con_text(blob):
-        raise CommunicatorError(
-            f"{where} must be a Structure or ConFrame, not .con text"
-        )
+        from eon import fileio as io
+
+        try:
+            return io.loadcon(StringIO(_con_text_of(blob)))
+        except Exception as e:
+            raise CommunicatorError(f"{where}: could not read .con text ({e})") from e
     if _is_structure(blob):
         return blob
     if _is_conframe(blob):
@@ -108,7 +129,8 @@ def _structure_from_geometry(blob, where: str):
 
         return Structure.from_conframe(blob)
     raise CommunicatorError(
-        f"{where} must be a Structure or ConFrame, got {type(blob).__name__}"
+        f"{where} must be a Structure, ConFrame or .con text, "
+        f"got {type(blob).__name__}"
     )
 
 
@@ -122,10 +144,10 @@ def _structure_from_job(job: dict, invariants: dict | None):
                 continue
             val = invariants[key]
             blob = val[0] if isinstance(val, tuple) else val
-            if _is_structure(blob) or _is_conframe(blob):
+            if blob is not None:
                 return _structure_from_geometry(blob, f"invariants[{key!r}]")
     raise CommunicatorError(
-        "inprocess job needs a Structure or ConFrame "
+        "inprocess job needs a Structure, ConFrame or .con text "
         "(structure, conframe, reactant, pos, or pos.con)"
     )
 
@@ -134,10 +156,34 @@ def _conframe_of(structure):
     return structure.to_conframe()
 
 
-def _run_inprocess_job(pc, job_kind, matter, pot, params, job: dict, token=None) -> dict:
+class _LazyCon:
+    """.con text for callers that read min.con or saddle.con, built on first read."""
+
+    def __init__(self, structure):
+        self._structure = structure
+        self._text: str | None = None
+
+    def _materialize(self) -> str:
+        if self._text is None:
+            import eon.fileio as fio
+
+            buf = StringIO()
+            fio.savecon(buf, self._structure)
+            self._text = buf.getvalue()
+        return self._text
+
+    def getvalue(self) -> str:
+        return self._materialize()
+
+    def seek(self, *args, **kwargs):
+        return 0
+
+    def read(self, *args, **kwargs) -> str:
+        return self._materialize()
+
+
+def _run_inprocess_job(pc, job_kind, matter, pot, params, job: dict) -> dict:
     """Dispatch one Matter through the job type. Returns energy/status/matter."""
-    if token is not None:
-        token.raise_if_cancelled()
     JT = pc.JobType
     if job_kind in (JT.Minimization, JT.Unknown):
         matter, converged = matter.relax(
@@ -305,8 +351,6 @@ class LocalInProcess(Communicator):
         Communicator.__init__(self, scratchpath, bundle_size, config=config)
         self._pc = _require_pyeonclient()
         self._finished: list[dict] = []
-        self.token = CancelToken()
-        self._in_submit = False
 
     def get_queue_size(self):
         return 0
@@ -315,38 +359,26 @@ class LocalInProcess(Communicator):
         return 0
 
     def cancel_state(self, state):
-        # In-process work is synchronous. An idle cancel has no queued
-        # workunit, and the communicator is reused for the next state.
-        if not self._in_submit:
-            return 0
-        self.token.cancel()
-        return 1
+        return 0
 
     def submit_jobs(self, data, invariants):
         """Run each job dict in-process.
 
-        Geometry is a Structure or a readcon.ConFrame on one of
+        Geometry is a Structure, a readcon.ConFrame or .con text on one of
         ``structure``, ``conframe``, ``reactant``, ``pos``, or ``pos.con``,
-        or the same objects on the invariant dict. ``.con`` text is refused.
-        The result carries ``product`` and, for a saddle search, ``saddle``
-        as ConFrames. Nothing is written to disk.
+        or the same objects on the invariant dict. The result carries
+        ``product`` and, for a saddle search, ``saddle`` as ConFrames, and
+        the same geometry as ``min.con`` and ``saddle.con`` for the drivers
+        that read .con text. Nothing is written to disk.
         """
         pc = self._pc
         params = _params_from_invariants(pc, invariants)
         pot = pc.make_potential(params)
         job_kind = getattr(params, "job", pc.JobType.Minimization)
 
-        self._in_submit = True
-        try:
-            self._submit_loop(data, invariants, pc, pot, params, job_kind)
-        finally:
-            self._in_submit = False
-            self.token.reset()
-
-    def _submit_loop(self, data, invariants, pc, pot, params, job_kind):
         from pyeonclient.bridge import structure_to_matter, matter_to_structure
+
         for job in data:
-            self.token.raise_if_cancelled()
             jid = job.get("id", "job")
             try:
                 structure = _structure_from_job(job, invariants)
@@ -358,9 +390,7 @@ class LocalInProcess(Communicator):
                 raise CommunicatorError(str(e)) from e
 
             matter = structure_to_matter(structure, pot, params)
-            payload = _run_inprocess_job(
-                pc, job_kind, matter, pot, params, job, token=self.token
-            )
+            payload = _run_inprocess_job(pc, job_kind, matter, pot, params, job)
             matter = payload["matter"]
             out = matter_to_structure(matter)
 
@@ -376,6 +406,7 @@ class LocalInProcess(Communicator):
                 "number": 0,
                 "name": str(jid),
                 "product": _conframe_of(out),
+                "min.con": _LazyCon(out),
                 "job_result": job_result,
                 "results.dat": results,
                 "_matter": matter,
@@ -385,7 +416,9 @@ class LocalInProcess(Communicator):
             }
             saddle = payload.get("saddle")
             if saddle is not None:
-                rec["saddle"] = _conframe_of(matter_to_structure(saddle))
+                saddle_structure = matter_to_structure(saddle)
+                rec["saddle"] = _conframe_of(saddle_structure)
+                rec["saddle.con"] = _LazyCon(saddle_structure)
                 rec["_saddle"] = saddle
             self._finished.append(rec)
             logger.info(

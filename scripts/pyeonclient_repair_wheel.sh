@@ -238,7 +238,7 @@ repair_one() {
   # `import pyeonclient` failed with an undefined rgpot::D3Pot typeinfo.
   # pyeonclient bundles librgpot. It does not link the pip rgpot wheel.
   # The bundled copy takes one private SONAME so both packages can load.
-  local old_soname new_soname so base got dest renamed
+  local old_soname new_soname so
   declare -A soname_map=(
     [librgpot.so.3]=libeon_rgpot.so.3
   )
@@ -249,37 +249,6 @@ repair_one() {
       patchelf --set-soname "$new_soname" "$libs_dir/$new_soname"
       echo "soname: $old_soname -> $new_soname"
     fi
-    if [[ "$old_soname" != librgpot.so.3 ]]; then
-      continue
-    fi
-    while IFS= read -r -d '' so; do
-      base="$(basename "$so")"
-      got="$(readelf -d "$so" 2>/dev/null | sed -n 's/.*SONAME.*\[\(.*\)\]/\1/p' | head -1 || true)"
-      if [[ "$base" != "$old_soname" && "$got" != "$old_soname" ]]; then
-        continue
-      fi
-      patchelf --set-soname "$new_soname" "$so"
-      if [[ "$base" == "$old_soname" ]]; then
-        dest="$(dirname "$so")/$new_soname"
-        if [[ "$so" != "$dest" ]]; then
-          mv -f "$so" "$dest"
-        fi
-        echo "soname: $old_soname -> $new_soname"
-      elif [[ "$base" == librgpot.so* ]]; then
-        renamed="$(dirname "$so")/${base/librgpot/libeon_rgpot}"
-        if [[ "$so" != "$renamed" ]]; then
-          mv -f "$so" "$renamed"
-        fi
-        echo "soname: $base -> $(basename "$renamed") ($new_soname)"
-      fi
-    done < <(find "$work" -type f -name 'librgpot.so*' -print0)
-    while IFS= read -r -d '' so; do
-      dest="$(dirname "$so")/$new_soname"
-      if [[ ! -e "$dest" ]]; then
-        cp -aL "$so" "$dest"
-        echo "soname-alias: $new_soname <- $(basename "$so")"
-      fi
-    done < <(find "$work" -type f -name 'libeon_rgpot.so*' -print0)
   done
   while IFS= read -r -d '' so; do
     for old_soname in "${!soname_map[@]}"; do

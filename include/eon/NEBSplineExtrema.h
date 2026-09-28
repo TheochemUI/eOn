@@ -17,6 +17,7 @@
 #include "EonLogger.h"
 #include "Matter.h"
 #include <filesystem>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <readcon-core.hpp>
@@ -51,16 +52,20 @@ void printImageData(
     const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
     const std::vector<std::shared_ptr<EigenmodeStrategy>> &eigenmode_solvers,
     long numImages, bool estimateEigenvalues, bool writeToFile, size_t idx,
-    eonc::log::Scoped log);
+    eonc::log::Scoped log, double referenceEnergy = std::numeric_limits<double>::quiet_NaN());
 
 /// Build stamped ConFrames for a NEB band (same metadata as writePathCon).
 /// Empty on invalid path size. Does not write to disk.
+/// `referenceEnergy` is the energy relative energies are measured from; NaN
+/// means path[0]. A zoomed band passes its original reactant energy, since
+/// zoom moves path[0] to the start of its window.
 [[nodiscard]] std::vector<readcon::ConFrame> pathToConFrames(
     const std::vector<std::shared_ptr<Matter>> &path,
     const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
     const std::vector<std::shared_ptr<EigenmodeStrategy>> &eigenmode_solvers,
     long numImages, bool estimateEigenvalues,
-    std::optional<size_t> bandIndex = std::nullopt);
+    std::optional<size_t> bandIndex = std::nullopt,
+    double referenceEnergy = std::numeric_limits<double>::quiet_NaN());
 
 /// Write a NEB band as a multi-frame .con via readcon ConFrameBuilder::clone().
 [[nodiscard]] eonc::io::IoStatus writePathCon(
@@ -68,6 +73,7 @@ void printImageData(
     const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
     const std::vector<std::shared_ptr<EigenmodeStrategy>> &eigenmode_solvers,
     long numImages, bool estimateEigenvalues, std::string filename,
-    std::optional<size_t> bandIndex = std::nullopt);
+    std::optional<size_t> bandIndex = std::nullopt,
+    double referenceEnergy = std::numeric_limits<double>::quiet_NaN());
 
 } // namespace eonc::neb

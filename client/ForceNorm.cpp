@@ -12,7 +12,9 @@
 #include "eon/ForceNorm.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
+#include <limits>
 
 #ifdef WITH_HIGHWAY
 
@@ -57,15 +59,27 @@ double MaxFreeAtomForceNorm(const double *HWY_RESTRICT forces,
       hn::LoadInterleaved3(d, fixed + 3 * i, fx, fy, fz);
       const auto allFixed = hn::And(
           hn::Gt(fx, half), hn::And(hn::Gt(fy, half), hn::Gt(fz, half)));
-      vmax = hn::Max(vmax, hn::IfThenElseZero(hn::Not(allFixed), nrm));
+      const auto free = hn::IfThenElseZero(hn::Not(allFixed), nrm);
+      // hn::Max keeps or drops a NaN depending on the target (maxpd on x86,
+      // vmaxq on NEON), so a NaN is returned before it reaches the max.
+      if (!hn::AllFalse(d, hn::IsNaN(free))) {
+        return std::numeric_limits<double>::quiet_NaN();
+      }
+      vmax = hn::Max(vmax, free);
     } else {
+      if (!hn::AllFalse(d, hn::IsNaN(nrm))) {
+        return std::numeric_limits<double>::quiet_NaN();
+      }
       vmax = hn::Max(vmax, nrm);
     }
   }
 
-  return std::max(hn::ReduceMax(d, vmax),
-                  detail::maxFreeAtomForceNormScalar(
-                      forces, fixed, static_cast<long>(i), nAtoms));
+  const double tail = detail::maxFreeAtomForceNormScalar(
+      forces, fixed, static_cast<long>(i), nAtoms);
+  if (std::isnan(tail)) {
+    return tail;
+  }
+  return std::max(hn::ReduceMax(d, vmax), tail);
 }
 
 } // namespace HWY_NAMESPACE

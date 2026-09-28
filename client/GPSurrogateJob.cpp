@@ -122,7 +122,7 @@ GPSurrogateJob::runFromMatter(std::shared_ptr<Matter> initial,
     if (!eonc::io::io_ok(eonc::neb::writePathCon(
             neb->path, neb->tangent, neb->eigenmode_solvers, neb->numImages,
             params.debug_options().estimate_neb_eigenvalues, nebFilename,
-            static_cast<size_t>(n_gp)))) {
+            static_cast<size_t>(n_gp), neb->reactantEnergy))) {
       throw std::runtime_error("Failed to write file: " + nebFilename);
     }
     if (status_neb == NudgedElasticBand::NEBStatus::GOOD &&
@@ -159,15 +159,13 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
   fileResults << magic_enum::enum_name<PotType>(
                      params.potential_options().potential)
               << " potential_type\n";
-  fileResults << std::format("{:.6f} energy_reference\n",
-                             neb->path[0]->getPotentialEnergy());
+  fileResults << std::format("{:.6f} energy_reference\n", neb->reactantEnergy);
   fileResults << neb->numImages << " number_of_images\n";
 
   for (long i = 0; i <= neb->numImages + 1; i++) {
-    fileResults << std::format("{:.6f} image{}_energy\n",
-                               neb->path[i]->getPotentialEnergy() -
-                                   neb->path[0]->getPotentialEnergy(),
-                               i);
+    fileResults << std::format(
+        "{:.6f} image{}_energy\n",
+        neb->path[i]->getPotentialEnergy() - neb->reactantEnergy, i);
     fileResults << std::format("{:.6f} image{}_force\n",
                                neb->path[i]->getForces().norm(), i);
     fileResults << std::format("{:.6f} image{}_projected_force\n",
@@ -189,7 +187,8 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
 
   if (!eonc::io::io_ok(eonc::neb::writePathCon(
           neb->path, neb->tangent, neb->eigenmode_solvers, neb->numImages,
-          params.debug_options().estimate_neb_eigenvalues, nebFilename))) {
+          params.debug_options().estimate_neb_eigenvalues, nebFilename,
+          std::nullopt, neb->reactantEnergy))) {
     throw std::runtime_error("Failed to write file: " + nebFilename);
   }
 

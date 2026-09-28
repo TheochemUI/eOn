@@ -47,16 +47,16 @@ void MPIPot::force(long N, const double *R, const int *atomicNrs, double *F,
   if (variance != nullptr) {
     *variance = 0.0;
   }
-  // The peer reads 1024 MPI_INT values from this long buffer. The count and
-  // datatype stay MPI_INT so the bytes on the wire do not change.
-  std::array<long, 1024> icwd{};
+  // The peer receives the working directory as 1024 MPI_INT character
+  // codes, NUL terminated; the buffer element type must match MPI_INT.
+  std::array<int, 1024> icwd{};
   const std::string cwd = std::filesystem::current_path().string();
   if (cwd.size() >= icwd.size()) {
     throw std::runtime_error(
         "working directory path exceeds the MPI potential buffer");
   }
   for (std::size_t i = 0; i < cwd.size(); ++i) {
-    icwd[i] = static_cast<long>(static_cast<unsigned char>(cwd[i]));
+    icwd[i] = static_cast<int>(static_cast<unsigned char>(cwd[i]));
   }
   int pbc = 1;
   int failed = 0;
@@ -78,9 +78,8 @@ void MPIPot::force(long N, const double *R, const int *atomicNrs, double *F,
 
   if (poll_period > 0.0) {
     int eon_flag = 0;
-    // poll_period is divided by 1e6 before the sleep, and the result is
-    // truncated to whole microseconds, matching the previous usleep call.
-    const auto usec = static_cast<std::uint64_t>(poll_period / 1000000.0);
+    // poll_period is in seconds (mpi_poll_period, default 0.25).
+    const auto usec = static_cast<std::uint64_t>(poll_period * 1000000.0);
     mpi_check(MPI_Iprobe(potentialRank, 0, MPI_COMM_WORLD, &eon_flag,
                          MPI_STATUS_IGNORE),
               "MPI_Iprobe");

@@ -380,7 +380,8 @@ void commandLine(int argc, char **argv) {
       std::cerr << "Failed to load " << confileout << std::endl;
       std::exit(EXIT_FAILURE);
     }
-    if (matter->compare(*matter2, true)) {
+    Matter probe(*matter);
+    if (probe.compare(*matter2, true)) {
       std::cout << "Structures match\n";
     } else {
       std::cout << colorizer.error("Structures do not match\n");

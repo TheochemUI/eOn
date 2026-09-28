@@ -572,14 +572,13 @@ void bind_neb(nb::module_ &m) {
           out << std::format("{} total_force_calls\n",
                              PotRegistry::get().total_force_calls());
           out << std::format("{} force_calls_neb\n", force_calls_neb);
-          out << std::format("{:f} energy_reference\n",
-                             neb.path[0]->getPotentialEnergy());
+          out << std::format("{:f} energy_reference\n", neb.reactantEnergy);
           out << std::format("{} number_of_images\n", neb.numImages);
           for (long i = 0; i <= neb.numImages + 1; i++) {
             out << std::format(
                 "{:f} image{}_energy\n",
                 neb.path[static_cast<size_t>(i)]->getPotentialEnergy() -
-                    neb.path[0]->getPotentialEnergy(),
+                    neb.reactantEnergy,
                 i);
             out << std::format(
                 "{:f} image{}_force\n",
@@ -607,8 +606,8 @@ void bind_neb(nb::module_ &m) {
         const std::string nebFilename = "neb.con";
         if (!eonc::io::io_ok(eonc::neb::writePathCon(
                 neb.path, neb.tangent, neb.eigenmode_solvers, neb.numImages,
-                params.debug_options().estimate_neb_eigenvalues,
-                nebFilename))) {
+                params.debug_options().estimate_neb_eigenvalues, nebFilename,
+                std::nullopt, neb.reactantEnergy))) {
           throw std::runtime_error("neb_write_results: failed neb.con");
         }
         returnFiles.push_back(nebFilename);
@@ -623,8 +622,8 @@ void bind_neb(nb::module_ &m) {
         if (params.neb_options().mmf_peaks.enabled && neb.numExtrema > 0) {
           int peakCount = 0;
           for (long i = 0; i < neb.numExtrema; i++) {
-            double relativeEnergy = neb.extremumEnergy[static_cast<size_t>(i)] -
-                                    neb.path[0]->getPotentialEnergy();
+            double relativeEnergy =
+                neb.extremumEnergy[static_cast<size_t>(i)] - neb.reactantEnergy;
             if (!(neb.extremumCurvature[static_cast<size_t>(i)] < 0 &&
                   relativeEnergy > params.neb_options().mmf_peaks.tolerance))
               continue;

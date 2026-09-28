@@ -22,7 +22,8 @@ namespace eonc {
 class TestJob : public Job {
 public:
   TestJob(std::unique_ptr<Parameters> params, Runtime &rt)
-      : Job(std::move(params), rt), tolerance{0.01} {}
+      : Job(std::move(params), rt),
+        tolerance{0.01} {}
   ~TestJob() = default;
   std::vector<std::string> run();
 
