@@ -540,15 +540,17 @@ eoncbase_sources = [
     'potentials/PluginLoader.cpp',
 ]
 
-eoncbase = library(
+# Always static. A shared eoncbase cannot see Parameters::potential_options,
+# which lives in the client library, and a static install path is
+# {libdir_static}, which the wheel builder cannot map.
+eoncbase = static_library(
     'eoncbase',
     sources: eoncbase_sources,
     dependencies: _deps,
     cpp_args: _args,
     include_directories: _incdirs,
-    # A static library's install path is {libdir_static}, which the wheel
-    # builder cannot map. The client library already links these objects.
-    install: get_option('default_library') != 'static',
+    pic: true,
+    install: false,
 )
 
 _linkto += eoncbase
