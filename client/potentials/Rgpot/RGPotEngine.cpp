@@ -6,11 +6,13 @@
 #include <cctype>
 #include <cstdint>
 #include <cstdlib>
+#include <fstream>
 #include <stdexcept>
 #include <tuple>
 #include <vector>
 
 #include <capnp/message.h>
+#include <capnp/serialize.h>
 
 #include "eon/potentials/Rgpot/MetatomicEngineLoader.h"
 #include "eon/potentials/Rgpot/XTBEngineLoader.h"
@@ -21,6 +23,26 @@
 using rgpot::types::AtomMatrix;
 
 namespace {
+
+// Serialized Cap'n Proto message (standard segment framing, word-aligned) as
+// written by `capnp encode` or messageToFlatArray.
+std::vector<::capnp::word> read_params_file(const std::string &path) {
+  std::ifstream in(path, std::ios::binary | std::ios::ate);
+  if (!in)
+    throw std::runtime_error("RGPOT: cannot open params_path: " + path);
+  const std::streamsize bytes = in.tellg();
+  if (bytes <= 0 ||
+      (static_cast<size_t>(bytes) % sizeof(::capnp::word)) != 0)
+    throw std::runtime_error(
+        "RGPOT: params_path is not a capnp flat message: " + path);
+  std::vector<::capnp::word> words(static_cast<size_t>(bytes) /
+                                   sizeof(::capnp::word));
+  in.seekg(0);
+  in.read(reinterpret_cast<char *>(words.data()), bytes);
+  if (!in)
+    throw std::runtime_error("RGPOT: short read on params_path: " + path);
+  return words;
+}
 
 std::string to_lower(std::string s) {
   for (char &c : s)
@@ -131,21 +153,32 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
     backend_ = "cpmdc";
     impl_->backend = Impl::Backend::Cpmdc;
     ::capnp::MallocMessageBuilder msg;
-    auto params = msg.initRoot<::CPMDParams>();
-    params.setFunctional(opt.functional);
-    params.setCutOffRy(opt.cutoff_ry);
-    params.setCharge(opt.charge);
-    params.setMultiplicity(opt.multiplicity);
+    ::CPMDParams::Builder params = msg.initRoot<::CPMDParams>();
+    if (!opt.params_path.empty()) {
+      // The whole CPMDParams message from disk: functional, cutoff, and the
+      // inputSections (cell, symmetry, pseudopotential channels, optimizer).
+      // The keys below only place the engine and its scratch.
+      const auto words = read_params_file(opt.params_path);
+      ::capnp::FlatArrayMessageReader reader(
+          kj::arrayPtr(words.data(), words.size()));
+      msg.setRoot(reader.getRoot<::CPMDParams>());
+      params = msg.getRoot<::CPMDParams>();
+    } else {
+      params.setFunctional(opt.functional);
+      params.setCutOffRy(opt.cutoff_ry);
+      params.setCharge(opt.charge);
+      params.setMultiplicity(opt.multiplicity);
+      if (!opt.title.empty())
+        params.setTitle(opt.title);
+      if (opt.memory_mb > 0)
+        params.setMemoryMb(static_cast<uint32_t>(opt.memory_mb));
+    }
     if (!opt.engine_path.empty())
       params.setEnginePath(opt.engine_path);
     else if (!opt.engine_library.empty())
       params.setEnginePath(opt.engine_library);
     if (!opt.engine_root.empty())
       params.setCpmdRoot(opt.engine_root);
-    if (!opt.title.empty())
-      params.setTitle(opt.title);
-    if (opt.memory_mb > 0)
-      params.setMemoryMb(static_cast<uint32_t>(opt.memory_mb));
     if (!opt.scratch_dir.empty())
       params.setScratchDir(opt.scratch_dir);
     if (!opt.permanent_dir.empty())

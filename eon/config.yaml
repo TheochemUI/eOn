@@ -2103,6 +2103,10 @@ RgpotPot:
             kind: string
             default: ""
 
+        params_path:
+            kind: string
+            default: ""
+
 ################################################################################
 
 Metatomic:

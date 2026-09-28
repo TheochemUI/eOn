@@ -343,6 +343,9 @@ int load_ini(INIReader &ini, Parameters &params) {
     ParametersLoadAccess::rgpot_options(params).permanent_dir =
         ini.Get(sec, "permanent_dir",
                 ParametersLoadAccess::rgpot_options(params).permanent_dir);
+    ParametersLoadAccess::rgpot_options(params).params_path =
+        ini.Get(sec, "params_path",
+                ParametersLoadAccess::rgpot_options(params).params_path);
     ParametersLoadAccess::rgpot_options(params).model_path =
         ini.Get(sec, "model_path",
                 ParametersLoadAccess::rgpot_options(params).model_path);

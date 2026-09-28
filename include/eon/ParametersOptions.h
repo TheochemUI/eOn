@@ -152,6 +152,9 @@ struct rgpot_options_t {
   std::string scratch_dir{};
   std::string input_block{};
   std::string permanent_dir{};
+  // Serialized Cap'n Proto CPMDParams message (with inputSections); for
+  // backend=cpmdc it replaces the scalar method keys above.
+  std::string params_path{};
   // Metatomic dlopen (backend=metatomic)
   std::string model_path{};
   std::string device{"cpu"};
