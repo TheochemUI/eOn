@@ -17,6 +17,7 @@ from typing import Any
 
 import numpy as np
 
+from eon.cancel import CancelToken
 from eon.communicator import Communicator, CommunicatorError
 
 logger = logging.getLogger("communicator")
@@ -86,8 +87,10 @@ def _structure_from_job_con(job: dict, key: str = "pos.con"):
     return io.loadcon(StringIO(text))
 
 
-def _run_inprocess_job(pc, job_kind, matter, pot, params, job: dict) -> dict:
+def _run_inprocess_job(pc, job_kind, matter, pot, params, job: dict, token=None) -> dict:
     """Dispatch one Matter through the job type. Returns energy/status/matter."""
+    if token is not None:
+        token.raise_if_cancelled()
     JT = pc.JobType
     if job_kind in (JT.Minimization, JT.Unknown):
         matter, converged = matter.relax(
@@ -269,6 +272,7 @@ class LocalInProcess(Communicator):
         Communicator.__init__(self, scratchpath, bundle_size, config=config)
         self._pc = _require_pyeonclient()
         self._finished: list[dict] = []
+        self.token = CancelToken()
 
     def get_queue_size(self):
         return 0
@@ -277,7 +281,8 @@ class LocalInProcess(Communicator):
         return 0
 
     def cancel_state(self, state):
-        return 0
+        self.token.cancel()
+        return 1
 
     def submit_jobs(self, data, invariants):
         """Run each job dict in-process. Supports minimization-like jobs.
@@ -294,6 +299,7 @@ class LocalInProcess(Communicator):
         job_kind = getattr(params, "job", pc.JobType.Minimization)
 
         for job in data:
+            self.token.raise_if_cancelled()
             jid = job.get("id", "job")
             try:
                 structure = _structure_from_job_con(job, "pos.con")
@@ -304,7 +310,9 @@ class LocalInProcess(Communicator):
             from pyeonclient.bridge import structure_to_matter, matter_to_structure
 
             matter = structure_to_matter(structure, pot, params)
-            payload = _run_inprocess_job(pc, job_kind, matter, pot, params, job)
+            payload = _run_inprocess_job(
+                pc, job_kind, matter, pot, params, job, token=self.token
+            )
             matter = payload["matter"]
             out = matter_to_structure(matter)
 
