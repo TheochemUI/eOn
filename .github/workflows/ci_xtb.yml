@@ -12,11 +12,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # windows-2022: windows-latest ships VS 18 only and breaks msvc-dev-cmd.
-        # Meson writes xtb.lib from libxtb-6.dll (conda-forge ships no MSVC
-        # import library). aarch64 macOS is still out.
+        # conda-forge xtb on Windows is MinGW (libxtb-6.dll). MSVC has no
+        # import library for it. A generated xtb.lib links and returns a
+        # different gradient, so this job stays on Ubuntu.
+        # TODO(rg): Handle the aarch64 macos later too
         # TODO(rg): Macos 12 seems to hang a lot, macos-12
-        os: [ubuntu-22.04, windows-2022]
+        os: [ubuntu-22.04]
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
