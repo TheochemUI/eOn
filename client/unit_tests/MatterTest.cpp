@@ -22,6 +22,7 @@
 #include <filesystem>
 #include <memory>
 #include <stdexcept>
+#include <limits>
 #include <vector>
 
 using namespace Catch::Matchers;
@@ -610,6 +611,30 @@ TEST_CASE("maxFreeAtomForceNorm masks fully fixed atoms",
       REQUIRE(unmasked + 1e-15 >= got);
     } else {
       REQUIRE(unmasked == Catch::Approx(0.0).margin(0.0));
+    }
+  }
+}
+
+TEST_CASE("maxFreeAtomForceNorm returns NaN from any free atom",
+          "[MatterTest][maxForce][highway]") {
+  const double nan = std::numeric_limits<double>::quiet_NaN();
+  const long lengths[] = {1, 2, 3, 4, 5, 7, 8, 13, 17, 31, 32, 33};
+  for (long n : lengths) {
+    // Every position, so each SIMD lane and the scalar tail see the NaN.
+    for (long bad = 0; bad < n; ++bad) {
+      std::vector<double> forces(static_cast<size_t>(3 * n), 0.25);
+      std::vector<double> fixed(forces.size(), 0.0);
+      forces[static_cast<size_t>(3 * bad + 1)] = nan;
+      REQUIRE(std::isnan(eonc::maxFreeAtomForceNorm(forces.data(), nullptr, n)));
+      REQUIRE(std::isnan(
+          eonc::maxFreeAtomForceNorm(forces.data(), fixed.data(), n)));
+      // A NaN on a fully fixed atom is masked like any other value.
+      fixed[static_cast<size_t>(3 * bad)] = 1.0;
+      fixed[static_cast<size_t>(3 * bad + 1)] = 1.0;
+      fixed[static_cast<size_t>(3 * bad + 2)] = 1.0;
+      const double masked =
+          eonc::maxFreeAtomForceNorm(forces.data(), fixed.data(), n);
+      REQUIRE_FALSE(std::isnan(masked));
     }
   }
 }

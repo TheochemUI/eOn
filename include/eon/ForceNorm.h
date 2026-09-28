@@ -20,6 +20,8 @@ namespace detail {
 
 /// Scalar max of per-atom Euclidean norms on `[begin, nAtoms)`.
 /// Fully fixed atoms (`fixed` entries all > 0.5) contribute nothing.
+/// A NaN norm on a free atom is returned as is: std::max would drop it and
+/// let a convergence test pass on bad forces.
 inline double maxFreeAtomForceNormScalar(const double *forces,
                                          const double *fixed, long begin,
                                          long nAtoms) {
@@ -41,7 +43,11 @@ inline double maxFreeAtomForceNormScalar(const double *forces,
     const double xx = row[0] * row[0];
     const double yy = row[1] * row[1];
     const double zz = row[2] * row[2];
-    best = std::max(best, std::sqrt((xx + yy) + zz));
+    const double norm = std::sqrt((xx + yy) + zz);
+    if (std::isnan(norm)) {
+      return norm;
+    }
+    best = std::max(best, norm);
   }
   return best;
 }
@@ -51,7 +57,8 @@ inline double maxFreeAtomForceNormScalar(const double *forces,
 /// Max Euclidean norm over N x 3 row-major force rows.
 /// An atom is ignored when `fixed` is non-null and all three of its mask
 /// entries are greater than 0.5 (fully fixed). `fixed == nullptr` keeps
-/// every atom. Returns 0 when `nAtoms` is not positive.
+/// every atom. Returns 0 when `nAtoms` is not positive, and NaN when any
+/// free atom's norm is NaN, on every SIMD target.
 [[nodiscard]] double maxFreeAtomForceNorm(const double *forces,
                                           const double *fixed, long nAtoms);
 
