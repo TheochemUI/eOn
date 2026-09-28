@@ -15,6 +15,7 @@
 #include "eon/fpe_handler.h"
 #include "eon/potentials/LAMMPS/LammpsLoader.h"
 
+#include <atomic>
 #include <cmath>
 #include <cstring>
 #include <filesystem>
@@ -50,7 +51,8 @@ LAMMPSPot::LAMMPSPot(const eonc::Parameters &p, eonc::ILammpsLoader &loader,
                      bool isolate_worker)
     : eonc::Potential(p),
       loader_{loader},
-      lammpsThr{p.potential_options().LAMMPSThreads}
+      lammpsThr{p.potential_options().LAMMPSThreads},
+      lammpsLogging_{p.potential_options().LAMMPSLogging}
 #ifdef EONMPI
       ,
       mpiComm{eonc::getMpiClientComm(p)}
@@ -58,6 +60,12 @@ LAMMPSPot::LAMMPSPot(const eonc::Parameters &p, eonc::ILammpsLoader &loader,
 {
   // Fail fast if LAMMPS library not available
   loader_.require_loaded();
+  if (lammpsLogging_) {
+    static std::atomic<int> ids{0};
+    lammpsLogIndex_ = ids.fetch_add(1);
+    lammpsScreenPath_ =
+        "client_lammps-" + std::to_string(lammpsLogIndex_) + ".log";
+  }
 #if !defined(EONMPI) && !defined(IS_WINDOWS)
   if (!isolate_worker) {
     return;
@@ -77,6 +85,10 @@ LAMMPSPot::LAMMPSPot(const eonc::Parameters &p, eonc::ILammpsLoader &loader,
 LAMMPSPot::~LAMMPSPot() { cleanMemory(); }
 
 void LAMMPSPot::setFixedMask(long nAtoms, const double *isFixed) {
+  std::unique_lock<std::mutex> lock(maskMutex_, std::defer_lock);
+  if (!workerChild_) {
+    lock.lock();
+  }
   if (nAtoms <= 0 || isFixed == nullptr) {
     fixedMask_.clear();
     maskN_ = 0;
@@ -87,10 +99,18 @@ void LAMMPSPot::setFixedMask(long nAtoms, const double *isFixed) {
 }
 
 void LAMMPSPot::applySetforce(long N) {
-  if (LAMMPSObj == nullptr || maskN_ != N || fixedMask_.empty()) {
-    return;
+  std::vector<double> mask;
+  {
+    // The worker child inherits this mutex across fork. Only the parent locks.
+    std::unique_lock<std::mutex> lock(maskMutex_, std::defer_lock);
+    if (!workerChild_) {
+      lock.lock();
+    }
+    if (LAMMPSObj == nullptr || maskN_ != N || fixedMask_.empty()) {
+      return;
+    }
+    mask = fixedMask_;
   }
-  auto &lmp = loader_;
   static constexpr const char *kUnfix[] = {"unfix eon_fx", "unfix eon_fy",
                                            "unfix eon_fz", "unfix eon_freeze"};
   static constexpr const char *kUngroup[] = {
@@ -98,13 +118,13 @@ void LAMMPSPot::applySetforce(long N) {
       "group eon_frozen delete"};
   for (const char *cmd : kUnfix) {
     try {
-      lmp.command(LAMMPSObj, cmd);
+      lammpsCommand(cmd);
     } catch (...) {
     }
   }
   for (const char *cmd : kUngroup) {
     try {
-      lmp.command(LAMMPSObj, cmd);
+      lammpsCommand(cmd);
     } catch (...) {
     }
   }
@@ -113,7 +133,7 @@ void LAMMPSPot::applySetforce(long N) {
   std::string ids[3];
   for (long i = 0; i < N; ++i) {
     for (int ax = 0; ax < 3; ++ax) {
-      if (fixedMask_[static_cast<size_t>(3 * i + ax)] >= 0.5) {
+      if (mask[static_cast<size_t>(3 * i + ax)] >= 0.5) {
         ids[ax] += std::format("{} ", i + 1);
       }
     }
@@ -127,10 +147,9 @@ void LAMMPSPot::applySetforce(long N) {
     if (ids[ax].empty()) {
       continue;
     }
-    lmp.command(
-        LAMMPSObj,
+    lammpsCommand(
         ("group " + std::string(kGroup[ax]) + " id " + ids[ax]).c_str());
-    lmp.command(LAMMPSObj, kFix[ax]);
+    lammpsCommand(kFix[ax]);
   }
 }
 
@@ -139,6 +158,7 @@ void LAMMPSPot::cleanMemory() {
   stopWorker();
 #endif
   if (LAMMPSObj != nullptr) {
+    drainLammpsScreen();
     loader_.close(LAMMPSObj);
     LAMMPSObj = nullptr;
   }
@@ -217,7 +237,12 @@ void LAMMPSPot::ensureWorker() {
 
   int reqPipe[2]; // parent -> child
   int resPipe[2]; // child -> parent
-  if (pipe(reqPipe) != 0 || pipe(resPipe) != 0) {
+  if (pipe(reqPipe) != 0) {
+    throw std::runtime_error("LAMMPSPot: failed to create worker pipes");
+  }
+  if (pipe(resPipe) != 0) {
+    close(reqPipe[0]);
+    close(reqPipe[1]);
     throw std::runtime_error("LAMMPSPot: failed to create worker pipes");
   }
 
@@ -226,6 +251,10 @@ void LAMMPSPot::ensureWorker() {
   // MPI_COMM_WORLD; concurrent children never share a communicator.
   pid_t pid = fork();
   if (pid < 0) {
+    close(reqPipe[0]);
+    close(reqPipe[1]);
+    close(resPipe[0]);
+    close(resPipe[1]);
     throw std::runtime_error("LAMMPSPot: fork for worker failed");
   }
 
@@ -264,6 +293,7 @@ void LAMMPSPot::ensureWorker() {
 }
 
 void LAMMPSPot::runWorkerLoop() {
+  workerChild_ = true;
   // Running in the forked child.  Evaluate forces with an in-process LAMMPS
   // (this child's own MPI_COMM_WORLD) and stream results back to the parent.
   for (;;) {
@@ -334,7 +364,7 @@ void LAMMPSPot::stopWorker() {
     bool reaped = false;
     for (int i = 0; i < 100; ++i) { // up to ~1 s
       pid_t r = waitpid(workerPid, &st, WNOHANG);
-      if (r == workerPid || r < 0) {
+      if (eonc::lammpsWorkerReaped(r, workerPid, errno)) {
         reaped = true;
         break;
       }
@@ -342,11 +372,32 @@ void LAMMPSPot::stopWorker() {
     }
     if (!reaped) {
       kill(workerPid, SIGKILL);
-      waitpid(workerPid, &st, 0);
+      for (;;) {
+        pid_t r = waitpid(workerPid, &st, 0);
+        if (r == workerPid || (r < 0 && errno != EINTR)) {
+          break;
+        }
+      }
     }
     workerPid = -1;
   }
   workerSpawned = false;
+}
+
+bool LAMMPSPot::noteScreenGeometry(long N, const double *box) {
+  bool changed = !screenHaveGeom_ || N != screenAtoms_;
+  if (!changed) {
+    for (int i = 0; i < 9; ++i) {
+      if (screenBox_[i] != box[i]) {
+        changed = true;
+        break;
+      }
+    }
+  }
+  screenHaveGeom_ = true;
+  screenAtoms_ = N;
+  std::memcpy(screenBox_, box, sizeof(screenBox_));
+  return changed;
 }
 #endif // !EONMPI && !IS_WINDOWS
 
@@ -355,9 +406,11 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
   variance = nullptr;
 
 #ifdef EONMPI
+  std::lock_guard<std::mutex> stateLock(workerMutex);
   forceLocal(N, R, atomicNrs, F, U, box);
 #elif defined(IS_WINDOWS)
   // No fork/pipe on Windows; call forceLocal directly.
+  std::lock_guard<std::mutex> stateLock(workerMutex);
   forceLocal(N, R, atomicNrs, F, U, box);
 #else
   // Drive the dedicated worker process so this image's LAMMPS runs in its own
@@ -368,11 +421,16 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
     rejectGeometry(U, F, N);
     return;
   }
+  const bool newWorker = !workerSpawned;
   ensureWorker();
+  const bool screenRestart = newWorker || noteScreenGeometry(N, box);
 
   std::vector<double> mask(static_cast<size_t>(3 * N), 0.0);
-  if (maskN_ == N && fixedMask_.size() == static_cast<size_t>(3 * N)) {
-    mask = fixedMask_;
+  {
+    std::lock_guard<std::mutex> lock(maskMutex_);
+    if (maskN_ == N && fixedMask_.size() == static_cast<size_t>(3 * N)) {
+      mask = fixedMask_;
+    }
   }
   if (!writeExact(reqFd, &N, sizeof(N)) ||
       !writeExact(reqFd, atomicNrs, sizeof(int) * static_cast<size_t>(N)) ||
@@ -431,7 +489,11 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
     rejectGeometry(U, F, N);
     return;
   }
+  if (screenRestart) {
+    lammpsScreenRestart_ = true;
+  }
   if (status != 0) {
+    drainLammpsScreen();
     --workerRespawnsLeft;
     EONC_LOG_WARNING(
         "[LAMMPSPot] worker reported an evaluation error; {} respawns left "
@@ -441,6 +503,7 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
     rejectGeometry(U, F, N);
     return;
   }
+  drainLammpsScreen();
   // A saddle search that never terminates silently truncates the event
   // table: the KMC residence time is 1/sum_j k_j over the discovered
   // mechanisms, so a dropped search removes a term and biases the clock
@@ -501,9 +564,9 @@ void LAMMPSPot::forceLocal(long N, const double *R, const int *atomicNrs,
     // New instance / box change: rebuild neighbors. create_atoms sits at
     // the origin; pre no would evaluate on that neighbor list.
     if (newLammps) {
-      lmp.command(LAMMPSObj, "run 1 pre yes post no");
+      lammpsCommand("run 1 pre yes post no");
     } else {
-      lmp.command(LAMMPSObj, "run 1 pre no post no");
+      lammpsCommand("run 1 pre no post no");
     }
 
     auto *pe =
@@ -554,6 +617,52 @@ void LAMMPSPot::forceLocal(long N, const double *R, const int *atomicNrs,
   fpeh.restore_fpe();
 }
 
+void LAMMPSPot::drainLammpsScreen() {
+  // makeNewLAMMPS runs in the worker. The child writes the screen file and
+  // must not call the process logger; the parent copies it after the reply.
+  if (workerChild_ || !lammpsLogging_ || lammpsScreenPath_.empty()) {
+    return;
+  }
+  std::error_code ec;
+  const auto sz = std::filesystem::file_size(lammpsScreenPath_, ec);
+  if (ec) {
+    return;
+  }
+  const auto fileSize = static_cast<std::int64_t>(sz);
+  lammpsScreenPos_ = eonc::lammpsScreenCursor(lammpsScreenPos_, fileSize,
+                                              lammpsScreenRestart_);
+  lammpsScreenRestart_ = false;
+  std::ifstream in(lammpsScreenPath_, std::ios::in | std::ios::binary);
+  if (!in) {
+    return;
+  }
+  in.seekg(static_cast<std::streamoff>(lammpsScreenPos_));
+  std::string line;
+  while (std::getline(in, line)) {
+    if (!line.empty() && line.back() == '\r') {
+      line.pop_back();
+    }
+    if (!line.empty()) {
+      EONC_LOG_INFO("{}", line);
+    }
+  }
+  in.clear();
+  in.seekg(0, std::ios::end);
+  const auto end = in.tellg();
+  if (end >= 0) {
+    lammpsScreenPos_ = static_cast<std::int64_t>(end);
+  }
+}
+
+void LAMMPSPot::lammpsCommand(const char *cmd) {
+  loader_.command(LAMMPSObj, cmd);
+  // The forked worker must not call the process logger. The parent copies
+  // the screen file after the child returns the force.
+  if (!workerChild_) {
+    drainLammpsScreen();
+  }
+}
+
 void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
                               const double *box) {
   auto &lmp = loader_;
@@ -562,6 +671,7 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
   std::memcpy(oldBox, box, 9 * sizeof(double));
 
   if (LAMMPSObj != nullptr) {
+    drainLammpsScreen();
     loader_.close(LAMMPSObj);
     LAMMPSObj = nullptr;
   }
@@ -576,9 +686,15 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
   }
 
 #ifdef EONMPI
-  const char *lmpargv[] = {"liblammps", "-log", "none",    "-echo", "log",
-                           "-screen",   "none", "-suffix", "omp"};
-  int lmpargc = sizeof(lmpargv) / sizeof(const char *);
+  const std::vector<std::string> argStore =
+      eonc::lammpsOpenArgs(lammpsLogging_, true, lammpsScreenPath_);
+  std::vector<char *> argPtrs;
+  argPtrs.reserve(argStore.size());
+  for (const std::string &arg : argStore) {
+    argPtrs.push_back(const_cast<char *>(arg.c_str()));
+  }
+  int lmpargc = static_cast<int>(argPtrs.size());
+  char **lmpargv = argPtrs.data();
   if (!lmp.open_mpi) {
     throw std::runtime_error(
         "LAMMPS library found but lacks MPI support (lammps_open not found).\n"
@@ -586,18 +702,24 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
   }
   MPI_Comm inst_comm = MPI_COMM_NULL;
   MPI_Comm_dup(mpiComm, &inst_comm); // private comm per per-image instance
-  LAMMPSObj =
-      lmp.open_mpi(lmpargc, const_cast<char **>(lmpargv), inst_comm, nullptr);
+  LAMMPSObj = lmp.open_mpi(lmpargc, lmpargv, inst_comm, nullptr);
 #else
-  const char *lmpargv[] = {"liblammps", "-log",    "none", "-echo",
-                           "log",       "-screen", "none"};
-  int lmpargc = sizeof(lmpargv) / sizeof(const char *);
-  LAMMPSObj = lmp.open_no_mpi(lmpargc, const_cast<char **>(lmpargv), nullptr);
+  const std::vector<std::string> argStore =
+      eonc::lammpsOpenArgs(lammpsLogging_, false, lammpsScreenPath_);
+  std::vector<char *> argPtrs;
+  argPtrs.reserve(argStore.size());
+  for (const std::string &arg : argStore) {
+    argPtrs.push_back(const_cast<char *>(arg.c_str()));
+  }
+  int lmpargc = static_cast<int>(argPtrs.size());
+  LAMMPSObj = lmp.open_no_mpi(lmpargc, argPtrs.data(), nullptr);
 #endif
+  // -screen opens with truncation. The next copy starts at the new file.
+  lammpsScreenRestart_ = true;
 
   if (lammpsThr > 0) {
     std::string cmd = std::format("package omp {} force/neigh", lammpsThr);
-    lmp.command(LAMMPSObj, cmd.c_str());
+    lammpsCommand(cmd.c_str());
   }
 
   // Detect units from in.lammps: look for "#!units real" marker
@@ -613,6 +735,7 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
     }
   } else {
     if (LAMMPSObj != nullptr) {
+      drainLammpsScreen();
       lmp.close(LAMMPSObj);
       LAMMPSObj = nullptr;
     }
@@ -621,14 +744,14 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
   }
 
   if (realunits) {
-    lmp.command(LAMMPSObj, "units real");
+    lammpsCommand("units real");
   } else {
-    lmp.command(LAMMPSObj, "units metal");
+    lammpsCommand("units metal");
   }
 
-  lmp.command(LAMMPSObj, "atom_style charge");
-  lmp.command(LAMMPSObj, "atom_modify map array sort 0 0");
-  lmp.command(LAMMPSObj, "neigh_modify delay 1");
+  lammpsCommand("atom_style charge");
+  lammpsCommand("atom_modify map array sort 0 0");
+  lammpsCommand("neigh_modify delay 1");
 
   // LAMMPS restricted triclinic: (ax, by, cz, bx, cx, cy).
   // Row-major Matter cell also has ay, az, bz at box[1], box[2], box[5].
@@ -641,27 +764,27 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
   std::string region_cmd =
       std::format("region cell prism 0 {} 0 {} 0 {} {} {} {} units box", box[0],
                   box[4], box[8], box[3], box[6], box[7]);
-  lmp.command(LAMMPSObj, region_cmd.c_str());
+  lammpsCommand(region_cmd.c_str());
 
   std::string create_box_cmd = std::format("create_box {} cell", ntypes);
-  lmp.command(LAMMPSObj, create_box_cmd.c_str());
+  lammpsCommand(create_box_cmd.c_str());
 
   // Initialize atoms
   for (long i = 0; i < N; i++) {
     std::string atom_cmd =
         std::format("create_atoms {} single {} {} {} units box",
                     type_map[atomicNrs[i]], 0.0, 0.0, 0.0);
-    lmp.command(LAMMPSObj, atom_cmd.c_str());
+    lammpsCommand(atom_cmd.c_str());
   }
 
-  lmp.command(LAMMPSObj, "mass * 1.0");
+  lammpsCommand("mass * 1.0");
 
   // Load user LAMMPS input script
   lmp.file(LAMMPSObj, "in.lammps");
 
   // Define variables for force/energy extraction
-  lmp.command(LAMMPSObj, "variable fx atom fx");
-  lmp.command(LAMMPSObj, "variable fy atom fy");
-  lmp.command(LAMMPSObj, "variable fz atom fz");
-  lmp.command(LAMMPSObj, "variable pe equal pe");
+  lammpsCommand("variable fx atom fx");
+  lammpsCommand("variable fy atom fy");
+  lammpsCommand("variable fz atom fz");
+  lammpsCommand("variable pe equal pe");
 }
