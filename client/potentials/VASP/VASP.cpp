@@ -186,6 +186,9 @@ void VASP::spawnVASP() {
       fprintf(stderr, "error redirecting vasp output: %s\n", strerror(errno));
       _exit(1);
     }
+    if (outFd > 2) {
+      close(outFd);
+    }
     execl(scriptPath.c_str(), scriptPath.c_str(), (char *)NULL);
     // Only reached when the exec failed; _exit keeps the child out of the
     // parent's exit handlers.
@@ -203,6 +206,11 @@ bool VASP::vaspRunning() {
   }
 
   pid = waitpid(vaspPID, &status, WNOHANG);
+  // EINTR means the child is still running. Treating it as death aborts a
+  // live VASP job.
+  if (pid < 0 && errno == EINTR) {
+    return true;
+  }
 
   if (pid) {
     fprintf(stderr, "vasp died unexpectedly!\n");

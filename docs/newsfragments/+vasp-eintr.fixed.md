@@ -1,0 +1,1 @@
+A signal during ``waitpid`` no longer makes a live VASP job look dead. The child closes the extra ``vaspout`` descriptor after redirecting it.
