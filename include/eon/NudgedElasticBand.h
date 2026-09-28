@@ -73,6 +73,9 @@ public:
 
   int atoms{0};
   long numImages{0}, climbingImage{0}, numExtrema{0};
+  // Reactant energy at construction. Zoom moves path[0] to the start of its
+  // window, so reported energies are measured from this value instead.
+  double reactantEnergy{0.0};
   std::vector<std::shared_ptr<Matter>> path; // NEB images
   std::vector<std::shared_ptr<AtomMatrix>> tangent;
   std::vector<std::shared_ptr<AtomMatrix>> projectedForce;

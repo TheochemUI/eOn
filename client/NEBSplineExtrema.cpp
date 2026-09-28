@@ -50,12 +50,20 @@ storedOrEndpointTangent(const std::vector<std::shared_ptr<Matter>> &path,
   return *tangent[static_cast<size_t>(imageIndex)];
 }
 
+// NaN means path[0]; see pathToConFrames.
+double referenceOrFirst(const std::vector<std::shared_ptr<Matter>> &path,
+                        double referenceEnergy) {
+  return std::isnan(referenceEnergy) ? path[0]->getPotentialEnergy()
+                                     : referenceEnergy;
+}
+
 eonc::io::ConFrameMetadata neb_frame_metadata(
     const std::vector<std::shared_ptr<Matter>> &path,
     const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
     const std::vector<std::shared_ptr<EigenmodeStrategy>> &eigenmode_solvers,
     long numImages, bool estimateEigenvalues, long imageIndex,
-    double reactionCoordinate, std::optional<size_t> bandIndex) {
+    double reactionCoordinate, std::optional<size_t> bandIndex,
+    double referenceEnergy) {
   AtomMatrix tang;
   if (imageIndex == 0) {
     tang = path[0]->pbc(path[1]->getPositions() - path[0]->getPositions());
@@ -67,7 +75,7 @@ eonc::io::ConFrameMetadata neb_frame_metadata(
   }
   normalizeOrZero(tang);
 
-  const double reference_energy = path[0]->getPotentialEnergy();
+  const double reference_energy = referenceOrFirst(path, referenceEnergy);
   const double absolute_energy = path[imageIndex]->getPotentialEnergy();
   const double relative_energy = absolute_energy - reference_energy;
   const double parallel_force = matDot(path[imageIndex]->getForces(), tang);
@@ -218,7 +226,7 @@ void printImageData(
     const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
     const std::vector<std::shared_ptr<EigenmodeStrategy>> &eigenmode_solvers,
     long numImages, bool estimateEigenvalues, bool writeToFile, size_t idx,
-    eonc::log::Scoped log) {
+    eonc::log::Scoped log, double referenceEnergy) {
 
   double dist, distTotal = 0;
   AtomMatrix tangentStart =
@@ -254,7 +262,7 @@ void printImageData(
       fileLogger << header << "\n";
     }
   }
-  const double energy_reactant = path[0]->getPotentialEnergy();
+  const double energy_reactant = referenceOrFirst(path, referenceEnergy);
 
   for (long i = 0; i <= numImages + 1; i++) {
     if (i == 0) {
@@ -302,7 +310,8 @@ std::vector<readcon::ConFrame> pathToConFrames(
     const std::vector<std::shared_ptr<Matter>> &path,
     const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
     const std::vector<std::shared_ptr<EigenmodeStrategy>> &eigenmode_solvers,
-    long numImages, bool estimateEigenvalues, std::optional<size_t> bandIndex) {
+    long numImages, bool estimateEigenvalues, std::optional<size_t> bandIndex,
+    double referenceEnergy) {
   const size_t nframes = static_cast<size_t>(numImages) + 2;
   if (path.size() < nframes) {
     return {};
@@ -318,7 +327,7 @@ std::vector<readcon::ConFrame> pathToConFrames(
     }
     metas.push_back(neb_frame_metadata(path, tangent, eigenmode_solvers,
                                        numImages, estimateEigenvalues, i,
-                                       distTotal, bandIndex));
+                                       distTotal, bandIndex, referenceEnergy));
   }
 
   std::vector<std::shared_ptr<Matter>> band(
@@ -331,9 +340,9 @@ eonc::io::IoStatus writePathCon(
     const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
     const std::vector<std::shared_ptr<EigenmodeStrategy>> &eigenmode_solvers,
     long numImages, bool estimateEigenvalues, std::string filename,
-    std::optional<size_t> bandIndex) {
+    std::optional<size_t> bandIndex, double referenceEnergy) {
   auto frames = pathToConFrames(path, tangent, eigenmode_solvers, numImages,
-                                estimateEigenvalues, bandIndex);
+                                estimateEigenvalues, bandIndex, referenceEnergy);
   if (frames.empty()) {
     return eonc::io::IoStatus::InvalidArgument;
   }

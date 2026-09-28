@@ -200,11 +200,11 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
             : RunStatus::FAIL_MAX_ITERATIONS,
         params.potential_options().potential,
         PotRegistry::get().total_force_calls(), true,
-        neb->path[0]->getPotentialEnergy());
+        neb->reactantEnergy);
     env.job_type = "neb";
     env.extras.emplace_back("force_calls_neb", static_cast<double>(fCallsNEB));
     env.extras.emplace_back("energy_reference",
-                            neb->path[0]->getPotentialEnergy());
+                            neb->reactantEnergy);
     env.extras.emplace_back("number_of_images",
                             static_cast<double>(neb->numImages));
     env.writeResultsDat(resultsFilename);
@@ -218,7 +218,7 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
     for (long i = 0; i <= neb->numImages + 1; i++) {
       out << std::format("{:f} image{}_energy\n",
                          neb->path[i]->getPotentialEnergy() -
-                             neb->path[0]->getPotentialEnergy(),
+                             neb->reactantEnergy,
                          i);
       out << std::format("{:f} image{}_force\n",
                          neb->path[i]->getForces().norm(), i);
@@ -243,7 +243,8 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   returnFiles.push_back(nebFilename);
   if (!eonc::io::io_ok(eonc::neb::writePathCon(
           neb->path, neb->tangent, neb->eigenmode_solvers, neb->numImages,
-          params.debug_options().estimate_neb_eigenvalues, nebFilename))) {
+          params.debug_options().estimate_neb_eigenvalues, nebFilename,
+          std::nullopt, neb->reactantEnergy))) {
     QUILL_LOG_ERROR(m_log, "Failed to write {}", nebFilename);
   }
 
@@ -263,7 +264,7 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
       // Filter 2: Energy threshold (e.g., peak must be > 0.05 eV above
       // reactant)
       double relativeEnergy =
-          neb->extremumEnergy[i] - neb->path[0]->getPotentialEnergy();
+          neb->extremumEnergy[i] - neb->reactantEnergy;
 
       if (neb->extremumCurvature[i] < 0 &&
           relativeEnergy > params.neb_options().mmf_peaks.tolerance) {

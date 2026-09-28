@@ -21,6 +21,8 @@
 #include "eon/NudgedElasticBand.h"
 #include "eon/PotRegistry.h"
 
+#include <cmath>
+
 namespace tests {
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
@@ -137,6 +139,34 @@ TEST_CASE_METHOD(
   neb->path.back()->setPositions(neb->path[2]->getPositions());
   neb->updateForces();
   CHECK(neb->climbingImage == 0);
+}
+
+TEST_CASE_METHOD(NEBRegressionFixture,
+                 "Zoom NEB reports the barrier from the original reactant",
+                 "[neb][regression][zoom]") {
+  // The neb_lj13 pair: reactant -39.965352 eV, and an eonclient process
+  // search put the saddle at -38.963676 eV, a barrier of 1.001676 eV.
+  auto &neb_opts = ParametersLoadAccess::neb_options(params);
+  neb_opts.climbing_image.enabled = true;
+  neb_opts.climbing_image.trigger_force = 1e10;
+  neb_opts.climbing_image.trigger_factor = 1.0;
+  neb_opts.zoom.enabled = true;
+  neb_opts.zoom.activation_threshold = 1.0;
+  neb_opts.zoom.stability_count = 2;
+  const double reactantE = reactant->getPotentialEnergy();
+
+  auto neb =
+      std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
+  REQUIRE(neb->compute() == NudgedElasticBand::NEBStatus::GOOD);
+
+  // Zoom moved the band's first image off the reactant.
+  REQUIRE(std::abs(neb->path.front()->getPotentialEnergy() - reactantE) >
+          1e-3);
+  REQUIRE(neb->reactantEnergy == Catch::Approx(reactantE).margin(1e-12));
+  const double barrier =
+      neb->path[neb->maxEnergyImage]->getPotentialEnergy() -
+      neb->reactantEnergy;
+  REQUIRE(barrier == Catch::Approx(1.001676).margin(5e-3));
 }
 
 TEST_CASE_METHOD(NEBRegressionFixture,

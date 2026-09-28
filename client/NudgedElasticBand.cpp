@@ -219,7 +219,7 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
 
   // Common final setup
   movedAfterForceCall = true;
-  path[0]->getPotentialEnergy();
+  reactantEnergy = path[0]->getPotentialEnergy();
   path[numImages + 1]->getPotentialEnergy();
   climbingImage = 0;
 
@@ -283,7 +283,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
       if (!eonc::io::io_ok(eonc::neb::writePathCon(
               path, tangent, eigenmode_solvers, numImages,
               params.debug_options().estimate_neb_eigenvalues,
-              std::format("neb_path_{:03d}.con", iteration), iteration))) {
+              std::format("neb_path_{:03d}.con", iteration), iteration,
+              reactantEnergy))) {
         QUILL_LOG_ERROR(log, "Failed to write NEB path movie for iteration {}",
                         iteration);
       }
@@ -305,8 +306,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
       maxImageMetadata.neb_bead = static_cast<uint64_t>(maxEnergyImage);
       maxImageMetadata.neb_band = static_cast<uint64_t>(iteration);
       maxImageMetadata.scalars.push_back(
-          {"relative_energy", path[maxEnergyImage]->getPotentialEnergy() -
-                                  path[0]->getPotentialEnergy()});
+          {"relative_energy",
+           path[maxEnergyImage]->getPotentialEnergy() - reactantEnergy});
       maxImageMetadata.scalars.push_back(
           {"parallel_force",
            matDot(path[maxEnergyImage]->getForces(), maxTang)});
@@ -499,8 +500,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
 
     iteration++;
 
-    double dE = path[maxEnergyImage]->getPotentialEnergy() -
-                path[0]->getPotentialEnergy();
+    double dE = path[maxEnergyImage]->getPotentialEnergy() - reactantEnergy;
     double stepSize = eonc::geometry::maxAtomMotionV(
         path[0]->pbcV(objf->getPositions() - pos));
     QUILL_LOG_DEBUG(log, "{:>10} {:>12.4e} {:>14.4e} {:>11} {:>12.4}",
@@ -788,7 +788,7 @@ void NudgedElasticBand::updateForces(bool ci_active) {
 void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
   eonc::neb::printImageData(path, tangent, eigenmode_solvers, numImages,
                             params.debug_options().estimate_neb_eigenvalues,
-                            writeToFile, idx, log);
+                            writeToFile, idx, log, reactantEnergy);
 }
 
 void NudgedElasticBand::findExtrema() {
@@ -803,7 +803,8 @@ std::vector<readcon::ConFrame>
 NudgedElasticBand::pathFrames(std::optional<size_t> bandIndex) {
   return eonc::neb::pathToConFrames(
       path, tangent, eigenmode_solvers, numImages,
-      params.debug_options().estimate_neb_eigenvalues, bandIndex);
+      params.debug_options().estimate_neb_eigenvalues, bandIndex,
+      reactantEnergy);
 }
 
 } // namespace eonc
