@@ -22,6 +22,7 @@
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/Optimizer.h"
 #include "eon/Prefactor.h"
+#include <exception>
 #include <filesystem>
 #include <thread>
 
@@ -50,10 +51,13 @@ std::vector<std::string> ProcessSearchJob::run() {
   }
   saddle = std::make_shared<Matter>(pot, params);
   // Give min2 its own potential for parallel endpoint minimization
-  auto min2Pot =
-      (pot->needsPerImageInstance() && params.main_options().parallel)
-          ? eonc::helpers::makePotential(params)
-          : pot;
+  // A clone keeps this job's potential; makePotential rebuilds from the
+  // configuration and is the fallback for backends that cannot clone.
+  std::shared_ptr<Potential> min2Pot = pot;
+  if (pot->needsPerImageInstance() && params.main_options().parallel) {
+    auto cloned = pot->clonePotential();
+    min2Pot = cloned ? cloned : eonc::helpers::makePotential(params);
+  }
   min1 = std::make_shared<Matter>(pot, params);
   min2 = std::make_shared<Matter>(min2Pot, params);
 
@@ -183,10 +187,13 @@ ProcessSearchJob::runFromMatter(std::shared_ptr<Matter> seed) {
   }
   initial = seed;
   initial->setPotential(pot);
-  auto min2Pot =
-      (pot->needsPerImageInstance() && params.main_options().parallel)
-          ? eonc::helpers::makePotential(params)
-          : pot;
+  // A clone keeps this job's potential; makePotential rebuilds from the
+  // configuration and is the fallback for backends that cannot clone.
+  std::shared_ptr<Potential> min2Pot = pot;
+  if (pot->needsPerImageInstance() && params.main_options().parallel) {
+    auto cloned = pot->clonePotential();
+    min2Pot = cloned ? cloned : eonc::helpers::makePotential(params);
+  }
   displacement = std::make_shared<Matter>(pot, params);
   saddle = std::make_shared<Matter>(pot, params);
   min1 = std::make_shared<Matter>(pot, params);
@@ -256,7 +263,12 @@ int ProcessSearchJob::doProcessSearch() {
   AtomMatrix posSaddle = saddle->getPositions();
   AtomMatrix displacedPos;
 
+  // Matter's copy assignment copies the potential; keep each endpoint's
+  // own instance so the two minimizations can run at the same time.
+  const auto min1Pot = min1->getPotential();
+  const auto min2Pot = min2->getPotential();
   *min1 = *saddle;
+  min1->setPotential(min1Pot);
 
   displacedPos =
       posSaddle - saddleSearch->getEigenvector() *
@@ -264,6 +276,7 @@ int ProcessSearchJob::doProcessSearch() {
   min1->setPositions(displacedPos);
 
   *min2 = *saddle;
+  min2->setPotential(min2Pot);
   displacedPos =
       posSaddle + saddleSearch->getEigenvector() *
                       params.process_search_options().minimization_offset;
@@ -277,16 +290,34 @@ int ProcessSearchJob::doProcessSearch() {
   long fc1_before = min1->getPotentialCalls();
   long fc2_before = min2->getPotentialCalls();
 
-  bool canParallel =
-      eonc::potAllowsSharedInstance(*pot) || pot->needsPerImageInstance();
+  // Two threads may share an instance only when it is thread safe; a
+  // per-image potential needs the endpoints to hold distinct instances.
+  bool canParallel = eonc::potAllowsSharedInstance(*pot) ||
+                     (pot->needsPerImageInstance() &&
+                      min1->getPotential().get() != min2->getPotential().get());
   if (params.main_options().parallel && canParallel) {
+    // An exception may not leave a thread function (std::terminate), and a
+    // joinable std::thread may not be destroyed: t1 hands its error back and
+    // the caller joins before rethrowing either side's.
+    std::exception_ptr t1Error;
     std::thread t1([&] {
-      converged1 = min1->relax(false, params.debug_options().write_movies,
-                               false, "min1");
+      try {
+        converged1 = min1->relax(false, params.debug_options().write_movies,
+                                 false, "min1");
+      } catch (...) {
+        t1Error = std::current_exception();
+      }
     });
-    converged2 =
-        min2->relax(false, params.debug_options().write_movies, false, "min2");
+    try {
+      converged2 = min2->relax(false, params.debug_options().write_movies,
+                               false, "min2");
+    } catch (...) {
+      t1.join();
+      throw;
+    }
     t1.join();
+    if (t1Error)
+      std::rethrow_exception(t1Error);
   } else {
     converged1 =
         min1->relax(false, params.debug_options().write_movies, false, "min1");

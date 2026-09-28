@@ -21,6 +21,7 @@
 #include "eon/eonExceptions.hpp"
 
 #include <cmath>
+#include <exception>
 #include <thread>
 
 #include "eon/EonLogger.h"
@@ -32,13 +33,20 @@ ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
                              std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
   // Each dimer image gets its own potential for lock-free parallel evaluation
-  auto x1Pot = (pot->needsPerImageInstance() && params.main_options().parallel)
-                   ? eonc::helpers::makePotential(params)
-                   : pot;
+  // A clone keeps the caller's potential; makePotential rebuilds from the
+  // configuration and is the fallback for backends that cannot clone.
+  std::shared_ptr<Potential> x1Pot = pot;
+  if (pot->needsPerImageInstance() && params.main_options().parallel) {
+    auto cloned = pot->clonePotential();
+    x1Pot = cloned ? cloned : eonc::helpers::makePotential(params);
+  }
   x0 = std::make_shared<Matter>(pot, params);
   x1 = std::make_shared<Matter>(x1Pot, params);
+  // Matter's copy assignment copies the potential too; keep x1's own
+  // instance so the two images can be evaluated at the same time.
   *x0 = *matter;
   *x1 = *matter;
+  x1->setPotential(x1Pot);
   tau.resize(3 * matter->numberOfAtoms());
   tau.setZero();
   totalForceCalls = 0;
@@ -84,8 +92,13 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   // Reference mode tracking for OCINEB mode-switching prevention
   VectorXd referenceMode = hasFixedReference ? fixedReferenceMode : tau;
 
-  *x0 = *matter;
-  *x1 = *matter;
+  {
+    // Keep x1's per-image potential across the copy (see the constructor).
+    auto x1Pot = x1->getPotential();
+    *x0 = *matter;
+    *x1 = *matter;
+    x1->setPotential(x1Pot);
+  }
   VectorXd x0_r = x0->getPositionsV();
   bestX0Positions = x0_r;
 
@@ -158,8 +171,11 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   // Else fall back to thread-parallel when the potential is thread-safe or
   // wants per-image instances. Otherwise sequential.
   VectorXd g0, g1;
-  bool canParallel =
-      eonc::potAllowsSharedInstance(*pot) || pot->needsPerImageInstance();
+  // Two threads may share an instance only when it is thread safe; a
+  // per-image potential needs x0 and x1 to hold distinct instances.
+  bool canParallel = eonc::potAllowsSharedInstance(*pot) ||
+                     (pot->needsPerImageInstance() &&
+                      x0->getPotential().get() != x1->getPotential().get());
   if (pot->supportsBatchEvaluation()) {
     long n = x0->numberOfAtoms();
     bool x0dirty = x0->needsForceUpdate();
@@ -197,15 +213,25 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   } else if (params.main_options().parallel && canParallel) {
     // std::thread instead of std::jthread (Apple Clang libc++). Guard so an
     // exception from the foreground call still joins t0 before rethrow.
-    std::thread t0([&] { g0 = -x0->getForcesV(); });
+    // An exception may not leave a thread function (std::terminate), so t0
+    // hands its error back and the caller rethrows after the join.
+    std::exception_ptr t0Error;
+    std::thread t0([&] {
+      try {
+        g0 = -x0->getForcesV();
+      } catch (...) {
+        t0Error = std::current_exception();
+      }
+    });
     try {
       g1 = -x1->getForcesV();
     } catch (...) {
-      if (t0.joinable())
-        t0.join();
+      t0.join();
       throw;
     }
     t0.join();
+    if (t0Error)
+      std::rethrow_exception(t0Error);
   } else {
     g0 = -x0->getForcesV();
     g1 = -x1->getForcesV();
