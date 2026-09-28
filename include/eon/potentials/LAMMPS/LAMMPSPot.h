@@ -16,12 +16,52 @@
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
 
+#include <cerrno>
+#include <cstdint>
 #include <mutex>
+#include <string>
 #include <vector>
 
 #ifdef EONMPI
 #include <mpi.h>
 #endif
+
+namespace eonc {
+/// True when waitpid has collected the child. EINTR is not a collection.
+inline bool lammpsWorkerReaped(long got, long child, int err) {
+  if (got == child) {
+    return true;
+  }
+  return got < 0 && err != EINTR;
+}
+
+/// Byte offset at which to keep copying a LAMMPS screen file. A new LAMMPS
+/// open truncates that file, so a restart or a shorter file reads from the
+/// start.
+inline std::int64_t lammpsScreenCursor(std::int64_t pos, std::int64_t fileSize,
+                                       bool restarted) {
+  if (restarted || pos < 0 || fileSize < pos) {
+    return 0;
+  }
+  return pos;
+}
+
+/// LAMMPS argv. The log file stays off. A screen path is copied into the
+/// process logger by the caller.
+inline std::vector<std::string> lammpsOpenArgs(bool logging, bool with_omp,
+                                               const std::string &screen) {
+  std::vector<std::string> args{"liblammps", "-echo", "screen", "-log", "none"};
+  if (logging) {
+    args.insert(args.end(), {"-screen", screen});
+  } else {
+    args.insert(args.end(), {"-screen", "none"});
+  }
+  if (with_omp) {
+    args.insert(args.end(), {"-suffix", "omp"});
+  }
+  return args;
+}
+} // namespace eonc
 
 namespace eonc {
 class ILammpsLoader;
@@ -48,6 +88,18 @@ private:
             bool isolate_worker);
   eonc::ILammpsLoader &loader_;
   int lammpsThr{0};
+  bool lammpsLogging_{false};
+  int lammpsLogIndex_{0};
+  std::mutex maskMutex_;
+  // client_lammps-N.log. The worker child writes it. The parent, after the
+  // child has finished a force call, copies new lines into the process log.
+  // The child does not touch that logger: quill does not survive fork.
+  std::string lammpsScreenPath_;
+  std::int64_t lammpsScreenPos_{0};
+  // Consumed by drainLammpsScreen. A new LAMMPS open truncates the screen
+  // file, so the next copy starts at the beginning.
+  bool lammpsScreenRestart_{false};
+  bool workerChild_{false};
 #ifdef EONMPI
   MPI_Comm mpiComm;
 #endif
@@ -60,6 +112,10 @@ private:
   bool realunits{false};
   std::vector<double> fixedMask_;
   long maskN_{0};
+  // Covers fixedMask_ and, on the in-process paths, LAMMPSObj. The worker
+  // pipe uses the same mutex: a shared instance must not update the mask
+  // while another thread copies it or evaluates a force.
+  std::mutex workerMutex;
 
 #if !defined(EONMPI) && !defined(IS_WINDOWS)
   // Process-per-image evaluation.  NEB drives intermediate images on separate
@@ -86,14 +142,19 @@ private:
   // next send finds a closed pipe, and the worker dies, all within the first
   // three force calls of the minimisation. Uncontended when instances really
   // are per-image.
-  std::mutex workerMutex;
   int workerPid{-1};
   int reqFd{-1}; // parent writes requests here (child stdin side)
   int resFd{-1}; // parent reads results here (child stdout side)
   bool workerSpawned{false};
+  // Geometry of the last request. The child rebuilds LAMMPS, and truncates
+  // the screen file, when the atom count or the cell changes.
+  bool screenHaveGeom_{false};
+  long screenAtoms_{0};
+  double screenBox_[9]{};
 
   // Fork the worker child on first use; child enters runWorkerLoop().
   void ensureWorker();
+  bool noteScreenGeometry(long N, const double *box);
   // Child main loop: read requests, evaluate, write results; never returns.
   [[noreturn]] void runWorkerLoop();
   void stopWorker();
@@ -102,4 +163,6 @@ private:
   // inside the worker child on POSIX).
   void forceLocal(long N, const double *R, const int *atomicNrs, double *F,
                   double *U, const double *box);
+  void lammpsCommand(const char *cmd);
+  void drainLammpsScreen();
 };
