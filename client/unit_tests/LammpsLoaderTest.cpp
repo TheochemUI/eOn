@@ -108,4 +108,41 @@ TEST_CASE("LammpsLoader: require_loaded is consistent with is_loaded",
   }
 }
 
+TEST_CASE("LAMMPS worker reap ignores EINTR", "[lammps][worker]") {
+  REQUIRE(eonc::lammpsWorkerReaped(7, 7, 0));
+  REQUIRE_FALSE(eonc::lammpsWorkerReaped(-1, 7, EINTR));
+  REQUIRE(eonc::lammpsWorkerReaped(-1, 7, ECHILD));
+}
+
+TEST_CASE("LAMMPS open args honor logging", "[lammps][logging]") {
+  const auto quiet = eonc::lammpsOpenArgs(false, false, "");
+  REQUIRE(quiet[3] == "-log");
+  REQUIRE(quiet[4] == "none");
+  const auto logged = eonc::lammpsOpenArgs(true, true, "screen.tmp");
+  REQUIRE(logged[1] == "-echo");
+  bool saw_log_file = false;
+  for (const auto &arg : logged) {
+    if (arg == "log.lammps") {
+      saw_log_file = true;
+    }
+  }
+  REQUIRE_FALSE(saw_log_file);
+  bool saw_screen = false;
+  for (const auto &arg : logged) {
+    if (arg == "screen.tmp") {
+      saw_screen = true;
+    }
+  }
+  REQUIRE(saw_screen);
+  REQUIRE(logged.back() == "omp");
+}
+
+TEST_CASE("LAMMPS screen cursor rewinds when the file is replaced",
+          "[lammps][logging]") {
+  REQUIRE(eonc::lammpsScreenCursor(40, 10, false) == 0);
+  REQUIRE(eonc::lammpsScreenCursor(40, 80, true) == 0);
+  REQUIRE(eonc::lammpsScreenCursor(40, 80, false) == 40);
+  REQUIRE(eonc::lammpsScreenCursor(-1, 80, false) == 0);
+}
+
 } // namespace tests
