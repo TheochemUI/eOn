@@ -536,6 +536,7 @@ eoncbase_sources = [
     'fpe_handler.cpp',
     'PotRegistry.cpp',
     'PotentialParams.cpp',
+    'ParametersAccess.cpp',
     'VesinNeighbors.cpp',
     'potentials/PluginLoader.cpp',
 ]
