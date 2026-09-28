@@ -1,0 +1,1 @@
+Indistinguishable structure matches, rotational matches, and crystal space groups go through readcon-ops. The space-group result includes the Hall number. ``identical`` is the readcon-ops one-to-one map, and it binds ``Cell.wrap_many`` when the installed minimage only has ``displacement``.

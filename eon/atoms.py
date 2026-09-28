@@ -8,7 +8,9 @@ Storage and I/O
 Geometry kernels
     PBC, neighbor lists (vesin), and process-atom selection live under
     :mod:`eon.geometry`. This module re-exports them for compatibility and
-    keeps structure-matching / CNA helpers plus a radius/color overlay.
+    keeps CNA helpers plus a radius/color overlay. ``identical`` matches
+    one partner per atom. Rotational matches and crystal space groups go
+    through ``readcon_ops``.
 """
 import logging
 
@@ -75,6 +77,29 @@ def symbol_for_z(z):
         return str(symbol)
     raise KeyError(f"unknown Z {z!r}")
 
+
+def _bind_minimage_wrap_many():
+    """readcon_ops distances call Cell.wrap_many.
+
+    The pinned minimage build exposes displacement and not wrap_many.
+    One row uses the same origin displacement the geometry kernel uses
+    when wrap_many is absent. A Cell that already defines the method
+    keeps it.
+    """
+    import minimage
+
+    if hasattr(minimage.Cell, "wrap_many"):
+        return
+
+    def wrap_many(self, diffs):
+        rows = np.atleast_2d(np.asarray(diffs, dtype=float))
+        zero = [0.0, 0.0, 0.0]
+        return [self.displacement(zero, row.tolist()) for row in rows]
+
+    minimage.Cell.wrap_many = wrap_many
+
+
+_bind_minimage_wrap_many()
 
 # --- structure comparison / CNA (unchanged algorithms) ---
 
@@ -176,30 +201,29 @@ def points_energies_match(file_a, energy_a, files_b, energies_b, eps_e, eps_r,
     return None
 
 
+def crystal_spacegroup(structure, symprec=1e-5):
+    """International symbol, number, and Hall number for a periodic crystal.
+
+    One international number covers several settings. ``hall_number`` names
+    the setting. This is not the cluster match. Iterative Rotations and
+    Assignments answers that question.
+    """
+    from readcon_ops import spacegroup
+
+    return spacegroup(structure, atomic_number, symprec=symprec)
+
+
 def rot_match(a, b, eps_r):
     if not (a.free.all() and b.free.all()):
         logger.warning("Comparing structures with frozen atoms with rotational matching; check_rotation may be set incorrectly")
     if len(a) == 0:
         return len(b) == 0
-    try:
-        from pyeonclient import _core
+    from readcon_ops import rotational_match
 
-        ira = getattr(_core, "ira_match", None)
-        if ira is not None:
-            z1 = np.asarray([atomic_number(s) for s in a.names], dtype=np.int64)
-            z2 = np.asarray([atomic_number(s) for s in b.names], dtype=np.int64)
-            hd, err = ira(
-                np.ascontiguousarray(a.r, dtype=float),
-                z1,
-                np.ascontiguousarray(b.r, dtype=float),
-                z2,
-                float(eps_r),
-            )
-            if err == 0:
-                return hd < eps_r
-    except Exception:
-        pass
-    return _rot_match_kabsch(a, b, eps_r)
+    judged = rotational_match(a, b, eps_r, atomic_number=atomic_number)
+    if judged is None:
+        return _rot_match_kabsch(a, b, eps_r)
+    return judged
 
 
 def _rot_match_kabsch(a, b, eps_r):
