@@ -102,34 +102,64 @@ def identical(atoms1, atoms2, epsilon_r):
     ibox = np.linalg.inv(box)
 
     n = len(atoms1)
-    # One augmenting path per atom. A same-index pair is not reserved first:
-    # that reservation rejects a crossed match that is still one-to-one.
-    adj = []
-    for i in range(n):
-        pan = per_atom_norm(atoms1.r - atoms2.r[i], box, ibox)
-        cand = [
-            j
-            for j in range(n)
-            if pan[j] <= epsilon_r and atoms1.names[j] == atoms2.names[i]
-        ]
-        cand.sort(key=lambda j: pan[j])
-        adj.append(cand)
+    names1 = np.asarray(atoms1.names)
+    names2 = np.asarray(atoms2.names)
+    same = (per_atom_norm(atoms1.r - atoms2.r, box, ibox) <= epsilon_r) & (
+        names1 == names2
+    )
+    # The identity map is one-to-one, so it settles the common case.
+    if same.all():
+        return True
 
+    # Start from the same-index pairs that match and augment only from the
+    # atoms that do not. An augmenting path may still reassign a same-index
+    # pair, so a crossed match that is one-to-one is found (Berge).
+    # Candidates are computed for the atoms a path visits, closest first.
+    candidates = {}
+
+    def _candidates(i):
+        cand = candidates.get(i)
+        if cand is None:
+            pan = per_atom_norm(atoms1.r - atoms2.r[i], box, ibox)
+            ok = np.flatnonzero((pan <= epsilon_r) & (names1 == names2[i]))
+            cand = ok[np.argsort(pan[ok], kind="stable")].tolist()
+            candidates[i] = cand
+        return cand
+
+    # partner[j] is the atoms2 index matched to atoms1 atom j.
     partner = [-1] * n
+    for i in np.flatnonzero(same):
+        partner[int(i)] = int(i)
 
-    def _assign(i, seen):
-        for j in adj[i]:
-            if seen[j]:
+    def _augment(root):
+        # Iterative depth-first search, so a long path cannot reach the
+        # recursion limit.
+        seen = set()
+        frames = [[root, 0]]
+        path = []
+        while frames:
+            i, k = frames[-1]
+            cand = _candidates(i)
+            if k >= len(cand):
+                frames.pop()
+                if path:
+                    path.pop()
                 continue
-            seen[j] = True
-            prev = partner[j]
-            if prev == -1 or _assign(prev, seen):
-                partner[j] = i
+            frames[-1][1] = k + 1
+            j = cand[k]
+            if j in seen:
+                continue
+            seen.add(j)
+            path.append(j)
+            if partner[j] == -1:
+                for (fi, _), fj in zip(frames, path):
+                    partner[fj] = fi
                 return True
+            frames.append([partner[j], 0])
         return False
 
-    for i in range(n):
-        if not _assign(i, [False] * n):
+    for i in np.flatnonzero(~same):
+        if not _candidates(int(i)) or not _augment(int(i)):
             return False
     return True
 
