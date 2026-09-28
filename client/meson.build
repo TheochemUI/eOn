@@ -1634,7 +1634,7 @@ if get_option('with_tests')
     endif
     if get_option('with_xtb')
         test_array += [['test_xtb', 'XTBTest.cpp', 'sulfolene']]
-        test_array += [['test_cineb_xtb', 'CINEBXTBTest.cpp', 'cineb_xtb', 600]]
+        test_array += [['test_cineb_xtb', 'CINEBXTBTest.cpp', 'cineb_xtb', 120]]
     endif
     if get_option('with_serve')
         test_array += [['test_serve_spec', 'ServeSpecParseTest.cpp', '']]
