@@ -767,7 +767,7 @@ class ProcessSearch:
         self.data['force_calls_minimization'] += results_dat1['total_force_calls']
         self.data['force_calls_minimization'] += results_dat2['total_force_calls']
 
-        is_reactant = lambda a: atoms.match(a, self.reactant, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, False, check_rotation=self.config.comp_check_rotation, use_identical=self.config.comp_use_identical)
+        is_reactant = lambda a: atoms.match(a, self.reactant, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, False, check_rotation=self.config.comp_check_rotation, use_identical=self.config.comp_use_identical, remove_translation=self.config.comp_remove_translation)
 
         tc1 = io.parse_results(result1['results.dat'])['termination_reason']
         tc2 = io.parse_results(result2['results.dat'])['termination_reason']

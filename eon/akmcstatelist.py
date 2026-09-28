@@ -84,7 +84,7 @@ class AKMCStateList(statelist.StateList):
                     conf = product.get_process_product(id)
 
                     # The process is known but has not been accepted yet.
-                    if atoms.match(reactant_conf, conf, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, False, check_rotation=self.config.comp_check_rotation, use_identical=self.config.comp_use_identical):
+                    if atoms.match(reactant_conf, conf, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, False, check_rotation=self.config.comp_check_rotation, use_identical=self.config.comp_use_identical, remove_translation=self.config.comp_remove_translation):
 
                         # Reverse process table should be updated to ensure that the two processes (reac->prod & proc->reac) are symmetric.
                         reactant.load_process_table()
@@ -229,7 +229,7 @@ class AKMCStateList(statelist.StateList):
                     pnew = i.get_process_product(j)
                     for state in energetically_close:
                         p = state.get_reactant()
-                        if atoms.match(p, pnew, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, True, check_rotation=self.config.comp_check_rotation, use_identical=self.config.comp_use_identical):
+                        if atoms.match(p, pnew, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, True, check_rotation=self.config.comp_check_rotation, use_identical=self.config.comp_use_identical, remove_translation=self.config.comp_remove_translation):
                             # Update the reactant state to point at the new state id.
                             self.register_process(i.number, state.number, j)
 
@@ -254,7 +254,7 @@ class AKMCStateList(statelist.StateList):
                     pnew = i.get_process_product(j)
                     for state in energetically_close:
                         p = state.get_reactant()
-                        if atoms.match(p, pnew, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, True, check_rotation=self.config.comp_check_rotation, use_identical=self.config.comp_use_identical):
+                        if atoms.match(p, pnew, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, True, check_rotation=self.config.comp_check_rotation, use_identical=self.config.comp_use_identical, remove_translation=self.config.comp_remove_translation):
                             # Update the reactant state to point at the new state id.
                             self.register_process(i.number, state.number, j)
 
@@ -274,6 +274,6 @@ class AKMCStateList(statelist.StateList):
                     pnew = i.get_process_product(j)
                     for state in energetically_close:
                         p = state.get_reactant()
-                        if atoms.match(p, pnew, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, True, check_rotation=self.config.comp_check_rotation, use_identical=self.config.comp_use_identical):
+                        if atoms.match(p, pnew, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, True, check_rotation=self.config.comp_check_rotation, use_identical=self.config.comp_use_identical, remove_translation=self.config.comp_remove_translation):
                             # Update the reactant state to point at the new state id.
                             self.register_process(i.number, state.number, j)

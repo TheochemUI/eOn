@@ -186,6 +186,7 @@ def find_matching_process(product, state, config):
             True,
             check_rotation=config.comp_check_rotation,
             use_identical=config.comp_use_identical,
+            remove_translation=config.comp_remove_translation,
         ):
             return pid
     return None

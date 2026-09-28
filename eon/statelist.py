@@ -90,7 +90,7 @@ class StateList:
                 pnew = st.get_process_product(process_id)
                 for id in energetically_close:
                     p = self.get_state(id).get_reactant()
-                    if atoms.match(p, pnew, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, True, check_rotation=self.config.comp_check_rotation, use_identical=self.config.comp_use_identical):
+                    if atoms.match(p, pnew, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, True, check_rotation=self.config.comp_check_rotation, use_identical=self.config.comp_use_identical, remove_translation=self.config.comp_remove_translation):
                         if id == state_number:
                             logging.warning("State %i process %i leads back to initial state",
                                             state_number, process_id)

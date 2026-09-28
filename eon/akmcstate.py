@@ -64,7 +64,7 @@ class AKMCState(state.State):
                 p2 = io.loadcon(self.proc_saddle_path(id))
                 self.con_cache[id] = p2
 
-            if atoms.match(p1, p2, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, False, check_rotation=self.config.comp_check_rotation, use_identical=self.config.comp_use_identical):
+            if atoms.match(p1, p2, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, False, check_rotation=self.config.comp_check_rotation, use_identical=self.config.comp_use_identical, remove_translation=self.config.comp_remove_translation):
                 return id
         return None
 

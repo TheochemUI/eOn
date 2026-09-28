@@ -189,10 +189,26 @@ def identical(atoms1, atoms2, epsilon_r):
     return True
 
 
+def remove_net_translation(a, b):
+    """Copy of ``a`` shifted by its mean minimum-image displacement onto ``b``.
+
+    Mirrors the client's ``geometry::translationRemove``: with no fixed atoms
+    a periodic system can drift as a whole during a saddle search, and the
+    drifted copy is the same configuration.
+    """
+    shifted = a.copy()
+    shifted.r = a.r + np.mean(pbc(b.r - a.r, a.box), axis=0)
+    return shifted
+
+
 def match(a, b, eps_r, neighbor_cutoff, indistinguishable,
-          check_rotation=False, use_identical=False):
+          check_rotation=False, use_identical=False, remove_translation=False):
     if len(a) != len(b):
         return False
+    # Same rule as Matter::compare: translation is removed only when the
+    # first structure has no fixed atoms, and not for the rotation checks.
+    if remove_translation and not check_rotation and not a.fixed_mask().any():
+        a = remove_net_translation(a, b)
 
     if check_rotation:
         if indistinguishable and use_identical:
@@ -208,25 +224,29 @@ def match(a, b, eps_r, neighbor_cutoff, indistinguishable,
 
 
 def point_energy_match(file_a, energy_a, file_b, energy_b, eps_e, eps_r,
-                       neighbor_cutoff, check_rotation=False, use_identical=False):
+                       neighbor_cutoff, check_rotation=False, use_identical=False,
+                       remove_translation=False):
     import eon.fileio as io
     if abs(energy_a - energy_b) > eps_e:
         return False
     a = io.loadcon(file_a)
     b = io.loadcon(file_b)
     if match(a, b, eps_r, neighbor_cutoff, use_identical,
-             check_rotation=check_rotation, use_identical=use_identical):
+             check_rotation=check_rotation, use_identical=use_identical,
+             remove_translation=remove_translation):
         return True
     return False
 
 
 def points_energies_match(file_a, energy_a, files_b, energies_b, eps_e, eps_r,
-                          neighbor_cutoff, check_rotation=False, use_identical=False):
+                          neighbor_cutoff, check_rotation=False, use_identical=False,
+                          remove_translation=False):
     for i in range(len(files_b)):
         if point_energy_match(file_a, energy_a, files_b[i], energies_b[i],
                               eps_e, eps_r, neighbor_cutoff,
                               check_rotation=check_rotation,
-                              use_identical=use_identical):
+                              use_identical=use_identical,
+                              remove_translation=remove_translation):
             return i
     return None
 

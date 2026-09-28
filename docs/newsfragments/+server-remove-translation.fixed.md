@@ -1,0 +1,1 @@
+The AKMC server honours `remove_translation` the way the client does: with no fixed atoms, a saddle or state that differs only by a rigid drift of the whole periodic cell matches its earlier copy, so repeated processes count as repeats and the state confidence rises. Every repeat was counted as a new process before.
