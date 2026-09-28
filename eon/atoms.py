@@ -8,7 +8,9 @@ Storage and I/O
 Geometry kernels
     PBC, neighbor lists (vesin), and process-atom selection live under
     :mod:`eon.geometry`. This module re-exports them for compatibility and
-    keeps structure-matching / CNA helpers plus a radius/color overlay.
+    keeps CNA helpers plus a radius/color overlay. Indistinguishable
+    matching, rotational matches, and crystal space groups go through
+    ``readcon_ops``.
 """
 import logging
 
@@ -76,52 +78,32 @@ def symbol_for_z(z):
     raise KeyError(f"unknown Z {z!r}")
 
 
-# --- structure comparison / CNA (unchanged algorithms) ---
+def _bind_minimage_wrap_many():
+    """readcon_ops distances call Cell.wrap_many.
 
-def identical(atoms1, atoms2, epsilon_r):
-    """True if two structures match when same-element atoms are interchangeable.
-
-    Parameters
-    ----------
-    atoms1, atoms2 : Structure
-        Configurations to compare (same box within 1e-4).
-    epsilon_r : float
-        Max allowed MIC displacement (Å) for a pair to count as the same site.
+    The pinned minimage build exposes displacement and not wrap_many.
+    One row uses the same origin displacement the geometry kernel uses
+    when wrap_many is absent. A Cell that already defines the method
+    keeps it.
     """
-    if len(atoms1) != len(atoms2):
-        return False
+    import minimage
 
-    for i in range(3):
-        for j in range(3):
-            if abs(atoms1.box[i][j] - atoms2.box[i][j]) > 0.0001:
-                logger.warning(
-                    "Identical returned false because boxes were not the same"
-                )
-                return False
-    box = atoms1.box
-    ibox = np.linalg.inv(box)
+    if hasattr(minimage.Cell, "wrap_many"):
+        return
 
-    mismatch = []
-    pan = per_atom_norm(atoms1.r - atoms2.r, box, ibox)
-    for i in range(len(pan)):
-        if pan[i] > epsilon_r:
-            mismatch.append(i)
-        elif atoms1.names[i] != atoms2.names[i]:
-            return False
+    def wrap_many(self, diffs):
+        rows = np.atleast_2d(np.asarray(diffs, dtype=float))
+        zero = [0.0, 0.0, 0.0]
+        return [self.displacement(zero, row.tolist()) for row in rows]
 
-    for i in mismatch:
-        pan = per_atom_norm(atoms1.r - atoms2.r[i], box, ibox)
-        minpan = 1e300
-        minj = 0
-        for j in range(len(pan)):
-            if i == j:
-                continue
-            if pan[j] < minpan:
-                minpan = pan[j]
-                minj = j
-        if not (minpan < epsilon_r and atoms1.names[minj] == atoms2.names[i]):
-            return False
-    return True
+    minimage.Cell.wrap_many = wrap_many
+
+
+_bind_minimage_wrap_many()
+
+from readcon_ops.match import identical  # noqa: F401
+
+# --- structure comparison / CNA (unchanged algorithms) ---
 
 
 def match(a, b, eps_r, neighbor_cutoff, indistinguishable,
@@ -149,7 +131,7 @@ def point_energy_match(file_a, energy_a, file_b, energy_b, eps_e, eps_r,
         return False
     a = io.loadcon(file_a)
     b = io.loadcon(file_b)
-    if match(a, b, eps_r, neighbor_cutoff, False,
+    if match(a, b, eps_r, neighbor_cutoff, use_identical,
              check_rotation=check_rotation, use_identical=use_identical):
         return True
     return False
@@ -166,30 +148,29 @@ def points_energies_match(file_a, energy_a, files_b, energies_b, eps_e, eps_r,
     return None
 
 
+def crystal_spacegroup(structure, symprec=1e-5):
+    """International symbol, number, and Hall number for a periodic crystal.
+
+    One international number covers several settings. ``hall_number`` names
+    the setting. This is not the cluster match. Iterative Rotations and
+    Assignments answers that question.
+    """
+    from readcon_ops import spacegroup
+
+    return spacegroup(structure, atomic_number, symprec=symprec)
+
+
 def rot_match(a, b, eps_r):
     if not (a.free.all() and b.free.all()):
         logger.warning("Comparing structures with frozen atoms with rotational matching; check_rotation may be set incorrectly")
     if len(a) == 0:
         return len(b) == 0
-    try:
-        from pyeonclient import _core
+    from readcon_ops import rotational_match
 
-        ira = getattr(_core, "ira_match", None)
-        if ira is not None:
-            z1 = np.asarray([atomic_number(s) for s in a.names], dtype=np.int64)
-            z2 = np.asarray([atomic_number(s) for s in b.names], dtype=np.int64)
-            hd, err = ira(
-                np.ascontiguousarray(a.r, dtype=float),
-                z1,
-                np.ascontiguousarray(b.r, dtype=float),
-                z2,
-                float(eps_r),
-            )
-            if err == 0:
-                return hd < eps_r
-    except Exception:
-        pass
-    return _rot_match_kabsch(a, b, eps_r)
+    judged = rotational_match(a, b, eps_r, atomic_number=atomic_number)
+    if judged is None:
+        return _rot_match_kabsch(a, b, eps_r)
+    return judged
 
 
 def _rot_match_kabsch(a, b, eps_r):

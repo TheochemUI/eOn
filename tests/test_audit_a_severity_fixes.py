@@ -30,6 +30,21 @@ def test_identical_indistinguishable_atoms():
     assert not atoms.identical(a, b, epsilon_r=0.1)
 
 
+def test_identical_rejects_two_atoms_on_one_site():
+    from eon.structure import Structure
+    from eon import atoms
+
+    a = Structure(2)
+    a.r = np.array([[0.0, 0.0, 0.0], [5.0, 0.0, 0.0]])
+    a.box = np.eye(3) * 20.0
+    a.names = ["Cu", "Cu"]
+    b = Structure(2)
+    b.r = np.array([[0.05, 0.0, 0.0], [0.0, 0.0, 0.0]])
+    b.box = np.eye(3) * 20.0
+    b.names = ["Cu", "Cu"]
+    assert not atoms.identical(a, b, epsilon_r=0.2)
+
+
 def test_process_search_requires_config():
     from eon.explorer import ProcessSearch
     from eon.structure import Structure
