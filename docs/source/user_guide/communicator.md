@@ -121,3 +121,26 @@ type = "cluster"
 name_prefix = "al_diffusion_"
 script_path = "/home/user/eon/tools/clusters/sge6.2"
 ```
+
+The Slurm scripts in `tools/clusters/slurm` take their site options from
+the environment of the server process. `EON_SBATCH_ARGS` sets extra
+`sbatch` options (account, partition, nodes, tasks, time) and `EON_CLIENT`
+the command each job runs, `eonclient` by default:
+
+```{code-block} bash
+export EON_SBATCH_ARGS="-A myaccount -p cpu -N 1 --ntasks=48 -t 01:00:00"
+export EON_CLIENT=eonclient
+eon
+```
+
+```{code-block} ini
+[Communicator]
+type = "cluster"
+script_path = "/path/to/eon/tools/clusters/slurm"
+```
+
+A potential that needs several MPI ranks, such as CPMD behind `ext_pot`,
+starts them from its wrapper inside the job (`srun -n 48 cpmd.x ...`); the
+client itself stays one process. When a state reaches its confidence the
+server cancels only the jobs still queued. Jobs that already finished are
+harvested on the next pass and filtered by state.
