@@ -731,8 +731,12 @@ max_move = 0.2
   double e0 = std::stod(results["image0_energy"]);
   REQUIRE(e0 == Catch::Approx(0.0).margin(1e-4));
 
-  // SVN image energies (relative to reactant) are very small for this
-  // near-identical reactant/product pair. Check that images are finite.
+  // The SVN run kept both endpoints unrelaxed. The product is the reactant
+  // with atom 0 moved 0.5 A, 631.805887 eV above it; relaxing it would
+  // collapse the band onto the reactant minimum.
+  double eProduct =
+      std::stod(results["image" + std::to_string(nImages + 1) + "_energy"]);
+  REQUIRE(eProduct == Catch::Approx(631.805887).epsilon(1e-6));
   for (int i = 1; i <= nImages; i++) {
     double ei = std::stod(results["image" + std::to_string(i) + "_energy"]);
     REQUIRE(std::isfinite(ei));
