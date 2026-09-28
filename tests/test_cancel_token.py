@@ -48,7 +48,7 @@ def test_cancel_state_stops_the_following_job(monkeypatch):
     bridge.matter_to_structure = lambda matter: types.SimpleNamespace(
         to_conframe=lambda: "frame"
     )
-    sys.modules["pyeonclient.bridge"] = bridge
+    monkeypatch.setitem(sys.modules, "pyeonclient.bridge", bridge)
 
     comm = LocalInProcess("scratch", config=object())
     ran = []
@@ -102,7 +102,7 @@ def test_idle_cancel_does_not_block_later_jobs(monkeypatch):
     bridge.matter_to_structure = lambda matter: types.SimpleNamespace(
         to_conframe=lambda: "frame"
     )
-    sys.modules["pyeonclient.bridge"] = bridge
+    monkeypatch.setitem(sys.modules, "pyeonclient.bridge", bridge)
 
     comm = LocalInProcess("scratch", config=object())
     assert comm.cancel_state(3) == 0
