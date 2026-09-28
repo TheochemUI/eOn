@@ -40,7 +40,8 @@ def _assert_product_frame(record):
 
     frame = record["product"]
     assert isinstance(frame, ConFrame)
-    assert "saddle.con" not in record
+    # saddle.con accompanies a saddle, as the drivers expect.
+    assert ("saddle.con" in record) == ("saddle" in record)
     assert "pos.con" not in record
     from eon.structure import Structure
     import eon.fileio as fio
@@ -51,6 +52,10 @@ def _assert_product_frame(record):
     # min.con is the same geometry as .con text, for the drivers that read it.
     legacy = fio.loadcon(StringIO(record["min.con"].getvalue()))
     assert np.allclose(legacy.r, back.r)
+    if "saddle" in record:
+        saddle = Structure.from_conframe(record["saddle"])
+        legacy_saddle = fio.loadcon(StringIO(record["saddle.con"].getvalue()))
+        assert np.allclose(legacy_saddle.r, saddle.r)
 
 
 def _need_client():

@@ -38,7 +38,13 @@ def test_parameters_h_is_the_aggregate():
     assert "using neb_options_t" in p
     assert "private:" in p
     assert "main_options_t main_options;" not in p
-    assert "main_options_t main_options_{};" in p
+    # Option storage sits behind the Impl pointer, in the private
+    # client/ParametersImpl.h, so the public header carries no groups.
+    assert "main_options_t main_options_{};" not in p
+    assert "std::unique_ptr<Impl> impl_;" in p
+    impl = (EON.parent.parent / "client" / "ParametersImpl.h").read_text()
+    assert "struct Parameters::Impl" in impl
+    assert "main_options_t main_options_{};" in impl
 
 
 def test_parameters_options_defines_job_and_pot_structs():
