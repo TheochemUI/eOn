@@ -107,11 +107,15 @@ jobs:
             -I subprojects/rgpot/CppCore/rgpot/NWChemPot \
             subprojects/rgpot/CppCore/tests/nwchemc_fake_engine.c \
             -o libnwchemc_fake_engine.so
+          # The default pixi env holds capnproto; a bare c++ does not search
+          # its prefix unless the env's compiler flags are active.
           c++ -shared -fPIC -O2 \
             -I subprojects/rgpot/CppCore \
             -I subprojects/rgpot/CppCore/rgpot/CPMDPot \
             -I bbdir/subprojects/rgpot/CppCore \
+            -I "$CONDA_PREFIX/include" \
             subprojects/rgpot/CppCore/tests/cpmdc_fake_engine.cc \
+            -L "$CONDA_PREFIX/lib" -Wl,-rpath,"$CONDA_PREFIX/lib" \
             -lcapnp -lkj \
             -o libcpmdc_fake_engine.so
           export NWCHEMC_LIBRARY=$PWD/libnwchemc_fake_engine.so
