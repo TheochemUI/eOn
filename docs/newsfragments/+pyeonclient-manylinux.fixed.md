@@ -1,0 +1,1 @@
+pyeonclient Linux wheels are manylinux_2_28 again and import on a system without gfortran or OpenMP: the private librgpot SONAME step now rewrites RECORD and runs before auditwheel, which vendors those runtimes. A failed repair fails the build instead of shipping a `linux_x86_64` wheel.

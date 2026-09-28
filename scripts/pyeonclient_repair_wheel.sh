@@ -275,12 +275,26 @@ repair_one() {
     fi
   done < <(find "$work" -type f \( -name '*.so' -o -name '*.so.*' \) -print0)
 
-  # Repack with zip (always portable; no wheel.cli dependency)
+  # Repack with zip (always portable; no wheel.cli dependency). RECORD is
+  # rewritten from the files actually present: the rename and drop steps
+  # above change the member list, and auditwheel refuses a wheel whose
+  # RECORD names files that are gone.
   python3 - <<PY
-import zipfile
+import base64, hashlib, zipfile
 from pathlib import Path
 root = Path("$work")
 out = Path("$whl_in")
+records = sorted(root.glob("*.dist-info/RECORD"))
+assert len(records) == 1, records
+record = records[0]
+rows = []
+for p in sorted(root.rglob("*")):
+    if p.is_file() and p != record:
+        data = p.read_bytes()
+        digest = base64.urlsafe_b64encode(hashlib.sha256(data).digest()).rstrip(b"=").decode()
+        rows.append(f"{p.relative_to(root).as_posix()},sha256={digest},{len(data)}")
+rows.append(f"{record.relative_to(root).as_posix()},,")
+record.write_text("\n".join(rows) + "\n")
 # write to temp then replace
 tmp = out.with_suffix(".whl.tmp")
 with zipfile.ZipFile(tmp, "w", compression=zipfile.ZIP_DEFLATED) as z:

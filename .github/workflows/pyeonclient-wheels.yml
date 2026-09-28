@@ -199,11 +199,19 @@ jobs:
               echo "TORCH_LIB=${TORCH_LIB}"
               ls "${TORCH_LIB}"/libc10* "${TORCH_LIB}"/libtorch* 2>/dev/null | head
             fi
+          # The private-SONAME step first (it renames librgpot and rewrites
+          # RECORD), then auditwheel, which vendors the Fortran, OpenMP and
+          # Cap'n Proto runtimes and sets the manylinux tag. A failed repair
+          # fails the build: a copied linux_x86_64 wheel cannot be uploaded
+          # and does not import without the build host's libraries. Torch and
+          # metatomic stay outside the wheel; pip provides them.
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: >
-            bash -c 'export LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:${LD_LIBRARY_PATH:-};
-            auditwheel repair -w {dest_dir} {wheel} 2>/dev/null
-            || cp -f {wheel} {dest_dir}/;
-            bash scripts/pyeonclient_repair_wheel.sh {dest_dir}/pyeonclient-*.whl'
+            bash -c 'set -euo pipefail;
+            export LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:${LD_LIBRARY_PATH:-};
+            bash scripts/pyeonclient_repair_wheel.sh {wheel};
+            auditwheel repair -w {dest_dir} {wheel}
+            --exclude "libtorch*.so*" --exclude "libc10*.so*" --exclude "libshm.so*"
+            --exclude "libmetatensor*.so*" --exclude "libmetatomic*.so*"'
           CIBW_TEST_REQUIRES: ${{ matrix.variant == 'metatomic' && 'pytest numpy torch>=2.7 metatensor metatensor-torch metatomic-torch vesin' || 'pytest numpy' }}
           CIBW_TEST_COMMAND: bash {project}/scripts/pyeonclient_cibw_test.sh
 
