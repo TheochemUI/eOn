@@ -532,6 +532,7 @@ _deps += [vesin_dep]
 eoncbase_sources = [
     'fpe_handler.cpp',
     'PotRegistry.cpp',
+    'ParametersAccess.cpp',
     'PotentialParams.cpp',
     'VesinNeighbors.cpp',
     'potentials/PluginLoader.cpp',
