@@ -29,7 +29,7 @@ TEST_CASE("CI-NEB XTB regression", "[neb][xtb]") {
   ParametersLoadAccess::xtb_options(params).paramset = "GFN2xTB";
   ParametersLoadAccess::xtb_options(params).acc = 1.0;
   ParametersLoadAccess::xtb_options(params).elec_temperature = 300.0;
-  ParametersLoadAccess::xtb_options(params).maxiter = 250;
+  ParametersLoadAccess::xtb_options(params).maxiter = 2000;
 
   ParametersLoadAccess::neb_options(params).image_count = 10;
   ParametersLoadAccess::neb_options(params).spring.weighting.enabled = true;
