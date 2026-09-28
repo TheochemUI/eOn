@@ -1,0 +1,6 @@
+#!/bin/sh
+# eOn ExtPot entry point: runs cpmd_extpot.py, which drives cpmd.x on several
+# MPI ranks. eOn copies potfiles/ into every job directory, and the ExtPot
+# exchange directory sits inside it, so EON_EXTPOT_RUN_DIR finds the script.
+set -eu
+exec "${CPMD_PYTHON:-python3}" "${CPMD_WRAPPER:-$EON_EXTPOT_RUN_DIR/cpmd_extpot.py}"

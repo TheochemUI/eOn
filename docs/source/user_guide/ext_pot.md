@@ -180,6 +180,32 @@ with open("from_extpot_to_eon", "w") as f:
         f.write(f"{fx:.15f} {fy:.15f} {fz:.15f}\n")
 ```
 
+### CPMD on several MPI ranks
+
+`examples/akmc-cpmd-slurm` runs adaptive kinetic Monte Carlo on a silicon
+vacancy with CPMD. The `cluster` communicator submits each process search as
+a Slurm job (see [Communicator](project:communicator.md)), and inside the job
+`ext_pot` calls `cpmd_extpot.py`, which starts `cpmd.x` on several ranks
+with the launcher in `CPMD_LAUNCH`. The client stays one process; the ranks
+belong to CPMD alone.
+
+Three details of CPMD's output decide whether the forces are right:
+
+- The table under `GRADIENTS (-FORCES)` holds forces, not gradients:
+  `wrgeo` prints the ionic force `fion`. The first table, printed before the
+  wavefunction optimisation, is all zeros; the last one is the result.
+- That table carries three significant digits. `GEOMETRY` holds the same
+  forces in Ha/Bohr to twelve decimals in columns 4 to 6, so the wrapper
+  reads forces from `GEOMETRY` and checks them against the table.
+- CPMD lists atoms species by species. The wrapper maps them back to eOn's
+  order.
+
+The wrapper also refuses a result whose wavefunction optimisation printed
+`BUT NO CONVERGENCE`, and keeps `RESTART.1` in the exchange directory, so
+every call after the first in a job restarts from the previous wavefunction.
+`CELL VECTORS` passes eOn's cell unchanged, and CPMD refuses `SYMMETRY`
+beside it, so the deck omits `SYMMETRY`.
+
 ## Performance considerations
 
 Each force call spawns a new process and re-initializes the calculator. For
