@@ -560,7 +560,14 @@ bool Hessian::finalizeHessian(int size) {
     QUILL_LOG_DEBUG(log, "[Hessian] writing hessian\n");
   }
   {
-    std::ofstream hessfile("hessian.dat");
+    // A previous case in the same process can still hold hessian.dat on
+    // Windows. Replace it, and try once more after removing the old file.
+    std::ofstream hessfile("hessian.dat", std::ios::out | std::ios::trunc);
+    if (!hessfile) {
+      std::remove("hessian.dat");
+      hessfile.clear();
+      hessfile.open("hessian.dat", std::ios::out | std::ios::trunc);
+    }
     if (!hessfile) {
       QUILL_LOG_ERROR(log, "[Hessian] failed to open hessian.dat");
       return false;

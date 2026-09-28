@@ -459,6 +459,9 @@ if not _rgpot_pkg.found()
         # engines stay runtime dlopen; do not force fat metatomic/xtb link
         'with_xtb': false,
         'with_metatomic': false,
+        # ExprPot is a separate option. The basic build must compile it
+        # or PotType.EXPR falls through to the generic terminating error.
+        'with_expr': true,
         # SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, and TIP4P-H are
         # Fortran kernels inside librgpot.
         'with_fortran_pots': 'enabled',
@@ -543,7 +546,9 @@ eoncbase = library(
     dependencies: _deps,
     cpp_args: _args,
     include_directories: _incdirs,
-    install: true,
+    # A static library's install path is {libdir_static}, which the wheel
+    # builder cannot map. The client library already links these objects.
+    install: get_option('default_library') != 'static',
 )
 
 _linkto += eoncbase
@@ -657,6 +662,12 @@ else
             + 'Reconfigure with -Drgpot:with_fortran_pots=enabled, '
             + 'or wipe the build directory.',
         )
+    endif
+    # pkg-config puts RGPOT_HAS_* in the .pc cflags. The wrap dependency
+    # does not, so the expression potential is compiled out and
+    # makePotential throws "Terminating".
+    if _rgpot_proj.get_variable('has_expr')
+        _args += ['-DRGPOT_HAS_EXPR']
     endif
     if get_option('with_serve')
         ptlrpc_dep = _rgpot_proj.get_variable('ptlrpc_dep')
@@ -884,7 +895,60 @@ if get_option('with_xtb')
     # Try finding system 'xtb' via pkg-config or cmake.
     # Users who need to build xtb from source can place it in subprojects/
     # and Meson's implicit fallback will find it.
-    xtb_dep = dependency('xtb', required: true)
+    if host_machine.system() == 'windows' and cppc.get_id() == 'msvc'
+        # conda-forge win-64 xtb is MinGW: libxtb-6.dll and libxtb.dll.a.
+        # find_library hits that GNU import library, and link.exe then
+        # cannot see xtb_newEnvironment. Always write xtb.lib from the DLL.
+        _xtb_pc = dependency('xtb', method: 'pkg-config', required: true)
+        _xtb_prefix = _xtb_pc.get_variable(pkgconfig: 'prefix')
+        _xtb_libdir = _xtb_pc.get_variable(pkgconfig: 'libdir')
+        _xtb_dll = ''
+        foreach _cand : [
+            _xtb_prefix / 'bin' / 'libxtb-6.dll',
+            _xtb_prefix / 'bin' / 'libxtb.dll',
+            _xtb_prefix / 'Library' / 'bin' / 'libxtb-6.dll',
+            _xtb_prefix / 'Library' / 'bin' / 'libxtb.dll',
+            _xtb_libdir / 'libxtb-6.dll',
+            _xtb_libdir / 'libxtb.dll',
+            _xtb_prefix / 'bin' / 'xtb.dll',
+        ]
+            if _xtb_dll == '' and fs.exists(_cand)
+                _xtb_dll = _cand
+            endif
+        endforeach
+        if _xtb_dll == ''
+            error('MSVC xtb: libxtb DLL not found under ' + _xtb_prefix)
+        endif
+        _xtb_machine = 'x64'
+        if host_machine.cpu_family() == 'x86'
+            _xtb_machine = 'X86'
+        elif host_machine.cpu_family() == 'aarch64'
+            _xtb_machine = 'ARM64'
+        endif
+        _xtb_implib = meson.current_build_dir() / 'xtb.lib'
+        run_command(
+            py,
+            files('../scripts/ci/msvc_xtb_implib.py'),
+            _xtb_dll,
+            _xtb_implib,
+            _xtb_machine,
+            check: true,
+        )
+        # link_args on a static library do not reach the executables.
+        # find_library in the build directory does, and it is the import
+        # library just written rather than the MinGW one on the prefix.
+        xtb_dep = declare_dependency(
+            compile_args: ['-I' + _xtb_pc.get_variable(pkgconfig: 'includedir')],
+            dependencies: cppc.find_library(
+                'xtb',
+                dirs: [meson.current_build_dir()],
+                required: true,
+            ),
+            version: _xtb_pc.version(),
+        )
+    else
+        xtb_dep = dependency('xtb', required: true)
+    endif
 
     _deps += [xtb_dep]
     subdir('potentials/XTBPot')
@@ -1382,7 +1446,9 @@ eclib = library(
     install: true,
 )
 
-_linkto += eclib
+# MSVC scans static libraries once, left to right. eonclib references
+# XTBPot and the other potentials, so it has to precede them.
+_linkto = [eclib] + _linkto
 
 # RGPOT-metatomic engine (slow path); fat pot already in potentials above.
 if get_option('with_metatomic')
@@ -1442,6 +1508,18 @@ if get_option('with_pyeonclient')
     subdir('python')
 endif
 
+# Shared eonclib already contains the static base objects. Linking that
+# archive into a test as well gives macOS a second PotRegistry, so the
+# process-wide force count stays at zero.
+if get_option('default_library') == 'static'
+    test_link = _linkto
+else
+    # eclib holds the one PotRegistry. Potential archives still have to be
+    # on the link line: a test can construct LAMMPSPot even when the client
+    # library did not pull that object in.
+    test_link = [eclib] + potentials
+endif
+
 # ---------------------- Executable
 
 ec = executable(
@@ -1488,7 +1566,7 @@ if get_option('with_tests')
         dependencies: _deps,  # static lib: use _deps (no readcon link_args)
         include_directories: _incdirs,
         cpp_args: test_args,
-        link_with: _linkto,
+        link_with: test_link,
     )
     test_array = [  #
         ['test_impldim', 'ImpDimerTest.cpp', 'saddle_search'],
@@ -1633,7 +1711,7 @@ if get_option('with_tests')
                 # Include /STACK:16M (Windows) so EAM Al Fortran pots do not
                 # SIGSEGV with STATUS_STACK_OVERFLOW (default stack is 1 MB).
                 link_args: _linkargs,
-                link_with: _linkto,
+                link_with: test_link,
                 build_rpath: ':'.join(_runtime_rpath),
             ),
             workdir: meson.project_source_root() + '/client/unit_tests/data/systems/' + test.get(
@@ -1669,7 +1747,7 @@ if get_option('with_tests')
             dependencies: test_deps,
             include_directories: _incdirs,
             cpp_args: test_args,
-            link_with: _linkto,
+            link_with: test_link,
             build_rpath: ':'.join(_runtime_rpath),
             install: false,
         )
@@ -1688,7 +1766,7 @@ if get_option('with_tests')
             dependencies: test_deps,
             include_directories: _incdirs,
             cpp_args: test_args,
-            link_with: _linkto,
+            link_with: test_link,
         )
 
         test_workdir = meson.project_source_root() + '/client/unit_tests/data/systems/nwchem_test'
@@ -1720,7 +1798,7 @@ if get_option('with_tests')
             dependencies: test_deps,
             include_directories: _incdirs,
             cpp_args: test_args,
-            link_with: _linkto,
+            link_with: test_link,
         )
         _rgpot_test_env = environment()
         _rgpot_test_env.set(
@@ -1758,7 +1836,7 @@ if get_option('with_tests')
         dependencies: test_deps,
         include_directories: _incdirs,
         cpp_args: test_args,
-        link_with: _linkto,
+        link_with: test_link,
     )
     benchmark('bench_pot', bench_pot_exe,
         args: ['[.benchmark]'],

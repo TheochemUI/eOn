@@ -43,7 +43,7 @@ readcon = ">=0.14.9"
 readcon-db = ">=0.1.6"
 readcon-ops = { git = "https://github.com/lode-org/readcon-ops.git", rev = "4d7881a3cec5952143b8ec9f859f054c5eddfd6e" }
 vesin = ">=0.6.1, <0.7"
-linkcell = ">=0.3.3, <0.4"
+linkcell = ">=0.3.4, <0.4"
 nanobind = ">=2.4.0, <3"  # pyeonclient (stable ABI / free-threaded); not pybind11
 xxhash = ">=3.4.0, <4"
 # In-tree source, not the PyPI release: the authoring flow in
