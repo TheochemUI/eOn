@@ -66,9 +66,9 @@ int BasinHoppingSaddleSearch::run() {
     }
   }
   neb.compute();
-  // Interior images only. Endpoints are fixed, and a band with fewer than
-  // two images has no finite-difference tangent.
-  if (neb.numImages < 2) {
+  // Interior images only. Endpoints are fixed, and a band with no interior
+  // image has no highest image; one image already has both neighbours.
+  if (neb.numImages < 1) {
     QUILL_LOG_WARNING(log, "No interior NEB image for basin hopping");
     status = MinModeSaddleSearch::STATUS_BAD_NO_BARRIER;
     return status;
