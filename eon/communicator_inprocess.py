@@ -224,14 +224,26 @@ def _run_inprocess_job(pc, job_kind, matter, pot, params, job: dict) -> dict:
     )
 
 
+def _job_result(status: int, energy: float, force_calls: int, job_type: str) -> dict:
+    """Typed in-process result. ``results.dat`` is derived from this dict."""
+    return {
+        "termination_reason": status,
+        "termination_reason_text": "GOOD" if status == 0 else "FAIL",
+        "job_type": job_type,
+        "potential_energy": energy,
+        "total_force_calls": force_calls,
+    }
+
+
 def _results_dat(status: int, energy: float, force_calls: int, job_type: str) -> str:
-    return (
-        f"{status} termination_reason\n"
-        f"{'GOOD' if status == 0 else 'FAIL'} termination_reason_text\n"
-        f"{job_type} job_type\n"
-        f"{energy:.12e} potential_energy\n"
-        f"{force_calls} total_force_calls\n"
-    )
+    data = _job_result(status, energy, force_calls, job_type)
+    lines = []
+    for key, val in data.items():
+        if isinstance(val, float):
+            lines.append(f"{val:.12e} {key}")
+        else:
+            lines.append(f"{val} {key}")
+    return "\n".join(lines) + "\n"
 
 
 class _LazyCon:
@@ -312,6 +324,7 @@ class LocalInProcess(Communicator):
             fcalls = int(payload["force_calls"])
             status = int(payload["status"])
             jname = str(payload["job_type"])
+            job_result = _job_result(status, energy, fcalls, jname)
             results = StringIO(_results_dat(status, energy, fcalls, jname))
 
             rec = {
@@ -320,6 +333,7 @@ class LocalInProcess(Communicator):
                 "name": str(jid),
                 "_structure": out,
                 "min.con": _LazyCon(out),
+                "job_result": job_result,
                 "results.dat": results,
                 "_matter": matter,
                 "_structure": out,
