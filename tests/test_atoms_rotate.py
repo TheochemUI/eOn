@@ -5,7 +5,7 @@ import pytest
 
 pytest.importorskip("vesin")
 
-from eon.atoms import get_mappings, get_rotation_matrix, rotm
+from eon.atoms import get_mappings, get_rotation_matrix, internal_motion, rotm
 from eon.structure import Structure
 
 
@@ -19,6 +19,17 @@ def test_get_rotation_matrix_z_90():
     # rotate() left-multiplies row vectors: new_r = r @ R
     got = np.array([1.0, 0.0, 0.0]) @ R
     np.testing.assert_allclose(got, [0.0, 1.0, 0.0], atol=1e-12)
+
+
+def test_internal_motion_aligns_atom_zero_with_the_reference():
+    # A pure shift of (2, -1, 0.5). Atom 0 and the frame land on the reference.
+    a = Structure(3)
+    a.r = np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0]])
+    b = a.copy()
+    b.r = a.r + np.array([2.0, -1.0, 0.5])
+    moved = internal_motion(a, b)
+    np.testing.assert_allclose(moved.r[0], a.r[0], atol=1e-12)
+    np.testing.assert_allclose(moved.r, a.r, atol=1e-12)
 
 
 def test_get_mappings_identity():
