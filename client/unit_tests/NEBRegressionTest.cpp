@@ -87,7 +87,12 @@ TEST_CASE_METHOD(NEBRegressionFixture,
                  "NEB does not climb below the endpoint energies",
                  "[neb][regression][climbing_image]") {
   const bool reverse = GENERATE(false, true);
-  product->con2matter(std::string("product.con"));
+  // A high-energy endpoint: the LJ13 reactant with atom 0 pushed 0.5 A
+  // along x (516.0 eV). The linear band rises monotonically towards it, so
+  // its highest interior image (112.4 eV) stays below that endpoint.
+  AtomMatrix pushed = reactant->getPositions();
+  pushed(0, 0) += 0.5;
+  product->setPositions(pushed);
   if (reverse) {
     std::swap(reactant, product);
   }
