@@ -273,6 +273,7 @@ class LocalInProcess(Communicator):
         self._pc = _require_pyeonclient()
         self._finished: list[dict] = []
         self.token = CancelToken()
+        self._in_submit = False
 
     def get_queue_size(self):
         return 0
@@ -281,6 +282,10 @@ class LocalInProcess(Communicator):
         return 0
 
     def cancel_state(self, state):
+        # In-process work is synchronous. An idle cancel has no queued
+        # workunit, and the communicator is reused for the next state.
+        if not self._in_submit:
+            return 0
         self.token.cancel()
         return 1
 
@@ -298,6 +303,14 @@ class LocalInProcess(Communicator):
         pot = pc.make_potential(params)
         job_kind = getattr(params, "job", pc.JobType.Minimization)
 
+        self._in_submit = True
+        try:
+            self._submit_loop(data, pc, pot, params, job_kind)
+        finally:
+            self._in_submit = False
+            self.token.reset()
+
+    def _submit_loop(self, data, pc, pot, params, job_kind):
         for job in data:
             self.token.raise_if_cancelled()
             jid = job.get("id", "job")

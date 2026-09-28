@@ -2,7 +2,8 @@
 
 The token is polled before each job and before each in-process
 dispatch. A force-call inside a compiled relax still runs to the next
-poll. ``cancel_state`` sets the flag.
+poll. ``cancel_state`` sets the flag only while a batch is running,
+and the flag is cleared when that batch returns.
 """
 
 from __future__ import annotations
@@ -22,6 +23,10 @@ class CancelToken:
     def cancel(self) -> None:
         with self._lock:
             self._cancelled = True
+
+    def reset(self) -> None:
+        with self._lock:
+            self._cancelled = False
 
     @property
     def cancelled(self) -> bool:

@@ -55,7 +55,7 @@ def test_cancel_state_stops_the_following_job(monkeypatch):
 
     def _run(*args, **kwargs):
         ran.append(kwargs.get("token"))
-        comm.token.cancel()
+        assert comm.cancel_state("a") == 1
         return {
             "matter": _Matter(),
             "energy": -1.0,
@@ -71,5 +71,56 @@ def test_cancel_state_stops_the_following_job(monkeypatch):
         comm.submit_jobs(jobs, {})
     assert len(ran) == 1
     assert len(comm._finished) == 1
-    assert comm.cancel_state("a") == 1
-    assert comm.token.cancelled is True
+    assert comm.token.cancelled is False
+    assert comm.cancel_state("a") == 0
+
+    ran.clear()
+    comm.submit_jobs([jobs[0]], {})
+    assert len(ran) == 1
+
+
+def test_idle_cancel_does_not_block_later_jobs(monkeypatch):
+    monkeypatch.setattr(
+        "eon.communicator_inprocess._require_pyeonclient", lambda: _PC()
+    )
+    monkeypatch.setattr(
+        "eon.communicator_inprocess._params_from_invariants",
+        lambda pc, invariants: types.SimpleNamespace(job=_PC.JobType.Point),
+    )
+    monkeypatch.setattr(
+        "eon.communicator_inprocess._structure_from_job_con",
+        lambda job, key="pos.con": object(),
+    )
+    bridge = types.ModuleType("pyeonclient.bridge")
+
+    class _Matter:
+        potential_energy = 0.0
+        force_calls = 1
+        positions = None
+
+    bridge.structure_to_matter = lambda *args, **kwargs: _Matter()
+    bridge.matter_to_structure = lambda matter: types.SimpleNamespace(
+        to_conframe=lambda: "frame"
+    )
+    sys.modules["pyeonclient.bridge"] = bridge
+
+    comm = LocalInProcess("scratch", config=object())
+    assert comm.cancel_state(3) == 0
+    ran = []
+
+    def _run(*args, **kwargs):
+        ran.append(kwargs.get("token"))
+        return {
+            "matter": _Matter(),
+            "energy": -1.0,
+            "force_calls": 1,
+            "status": 0,
+            "job_type": "point",
+            "converged": True,
+        }
+
+    monkeypatch.setattr("eon.communicator_inprocess._run_inprocess_job", _run)
+    jobs = [{"id": "a", "structure": object()}, {"id": "b", "structure": object()}]
+    comm.submit_jobs(jobs, {})
+    assert len(ran) == 2
+    assert comm.token.cancelled is False

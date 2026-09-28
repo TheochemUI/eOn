@@ -1,1 +1,1 @@
-In-process jobs poll a cancel token before each job and before each dispatch. ``cancel_state`` sets that token and returns 1. A compiled relax still finishes the current call.
+In-process jobs poll a cancel token before each job and before each dispatch. ``cancel_state`` returns 1 and stops the next job only while a batch is running; an idle call returns 0 and does not stick. A compiled relax still finishes the current call.
