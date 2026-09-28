@@ -84,7 +84,11 @@ GleThermostat::GleThermostat(const MatrixXd &a_drift, double kbt,
 
 void GleThermostat::apply(VectorXd &vel, const VectorXd &masses3N,
                           const std::function<double()> &gauss) {
-  if (!m_valid || vel.size() != m_Z.cols()) {
+  if (!m_valid || vel.size() != m_Z.cols() ||
+      masses3N.size() != vel.size()) {
+    return;
+  }
+  if ((masses3N.array() <= 0.0).any()) {
     return;
   }
   const VectorXd sqrtM = masses3N.cwiseSqrt();

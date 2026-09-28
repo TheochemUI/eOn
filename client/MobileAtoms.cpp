@@ -12,6 +12,7 @@
 #include "eon/MobileAtoms.h"
 
 #include <cctype>
+#include <stdexcept>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -46,6 +47,9 @@ bool atomListMeansAll(const std::string &atomList) {
 }
 
 VectorXi freeAtomIndices(const Matter *matter) {
+  if (!matter) {
+    throw std::invalid_argument("freeAtomIndices: null Matter");
+  }
   const long n = matter->numberOfAtoms();
   std::vector<int> free;
   free.reserve(static_cast<size_t>(matter->numberOfFreeAtoms()));
@@ -62,6 +66,9 @@ VectorXi freeAtomIndices(const Matter *matter) {
 }
 
 VectorXi resolveMobileAtoms(const Matter *matter, const std::string &atomList) {
+  if (!matter) {
+    throw std::invalid_argument("resolveMobileAtoms: null Matter");
+  }
   if (atomListMeansAll(atomList)) {
     return freeAtomIndices(matter);
   }
@@ -96,6 +103,9 @@ VectorXi resolveMobileAtoms(const Matter *matter, const std::string &atomList) {
 }
 
 VectorXi resolveMobileAtoms(const Matter *matter, const VectorXi &candidates) {
+  if (!matter) {
+    throw std::invalid_argument("resolveMobileAtoms: null Matter");
+  }
   const long n = matter->numberOfAtoms();
   std::vector<int> mobile;
   std::unordered_set<int> seen;
