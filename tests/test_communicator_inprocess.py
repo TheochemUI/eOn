@@ -8,6 +8,11 @@ import numpy as np
 import pytest
 
 
+# .con text carries six decimals, so a coordinate read back from it sits
+# within half a unit of the sixth decimal of the frame it was written from.
+_CON_TEXT_ATOL = 0.5e-6
+
+
 def _lj_structure():
     """Tiny 2-atom Structure (numpy working set)."""
     from eon.structure import Structure
@@ -51,11 +56,11 @@ def _assert_product_frame(record):
     assert np.isfinite(back.r).all()
     # min.con is the same geometry as .con text, for the drivers that read it.
     legacy = fio.loadcon(StringIO(record["min.con"].getvalue()))
-    assert np.allclose(legacy.r, back.r)
+    assert np.allclose(legacy.r, back.r, rtol=0.0, atol=_CON_TEXT_ATOL)
     if "saddle" in record:
         saddle = Structure.from_conframe(record["saddle"])
         legacy_saddle = fio.loadcon(StringIO(record["saddle.con"].getvalue()))
-        assert np.allclose(legacy_saddle.r, saddle.r)
+        assert np.allclose(legacy_saddle.r, saddle.r, rtol=0.0, atol=_CON_TEXT_ATOL)
 
 
 def _need_client():
