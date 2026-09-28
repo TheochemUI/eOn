@@ -101,25 +101,35 @@ def identical(atoms1, atoms2, epsilon_r):
     box = atoms1.box
     ibox = np.linalg.inv(box)
 
-    mismatch = []
-    pan = per_atom_norm(atoms1.r - atoms2.r, box, ibox)
-    for i in range(len(pan)):
-        if pan[i] > epsilon_r:
-            mismatch.append(i)
-        elif atoms1.names[i] != atoms2.names[i]:
-            return False
-
-    for i in mismatch:
+    n = len(atoms1)
+    # One augmenting path per atom. A same-index pair is not reserved first:
+    # that reservation rejects a crossed match that is still one-to-one.
+    adj = []
+    for i in range(n):
         pan = per_atom_norm(atoms1.r - atoms2.r[i], box, ibox)
-        minpan = 1e300
-        minj = 0
-        for j in range(len(pan)):
-            if i == j:
+        cand = [
+            j
+            for j in range(n)
+            if pan[j] <= epsilon_r and atoms1.names[j] == atoms2.names[i]
+        ]
+        cand.sort(key=lambda j: pan[j])
+        adj.append(cand)
+
+    partner = [-1] * n
+
+    def _assign(i, seen):
+        for j in adj[i]:
+            if seen[j]:
                 continue
-            if pan[j] < minpan:
-                minpan = pan[j]
-                minj = j
-        if not (minpan < epsilon_r and atoms1.names[minj] == atoms2.names[i]):
+            seen[j] = True
+            prev = partner[j]
+            if prev == -1 or _assign(prev, seen):
+                partner[j] = i
+                return True
+        return False
+
+    for i in range(n):
+        if not _assign(i, [False] * n):
             return False
     return True
 
@@ -149,7 +159,7 @@ def point_energy_match(file_a, energy_a, file_b, energy_b, eps_e, eps_r,
         return False
     a = io.loadcon(file_a)
     b = io.loadcon(file_b)
-    if match(a, b, eps_r, neighbor_cutoff, False,
+    if match(a, b, eps_r, neighbor_cutoff, use_identical,
              check_rotation=check_rotation, use_identical=use_identical):
         return True
     return False
@@ -511,24 +521,45 @@ def rotate(r, axis, center, angle):
     return new_r
 
 
+def _bond_perpendicular(point, origin, axis):
+    """Component of point-origin perpendicular to a unit axis."""
+    relative = point - origin
+    return relative - np.dot(relative, axis) * axis
+
+
 def internal_motion(a, b):
     """ Takes two atoms objects and returns the motion from a to b that is
     entirely internal - no rotation or translation, in the form of a new atoms
     object. """
     b = b.copy()
-    b.r -= a.r[0] - b.r[0]
+    b.r += a.r[0] - b.r[0]
     a0a1 = (a.r[1] - a.r[0]) / np.linalg.norm(a.r[1] - a.r[0])
     b0b1 = (b.r[1] - b.r[0]) / np.linalg.norm(b.r[1] - b.r[0])
-    axis1 = np.cross(b0b1, a0a1) / np.linalg.norm(np.cross(b0b1, a0a1))
-    theta1 = np.arccos((a0a1*b0b1).sum())
-    b.r = rotate(b.r, axis1, a.r[0], theta1)
-    axis2 = (a.r[2] - a.r[0]) / np.linalg.norm(a.r[2] - a.r[0])
-    va = a.r[2] - ((a.r[2] - a.r[0]) * axis2).sum() * axis2
-    va = va / np.linalg.norm(va)
-    vb = b.r[2] - ((b.r[2] - a.r[0]) * axis2).sum() * axis2
-    vb = vb / np.linalg.norm(vb)
-    theta2 = np.arccos((va * vb).sum())
-    b.r = rotate(b.r, axis2, a.r[0], theta2)
+    cross1 = np.cross(b0b1, a0a1)
+    norm1 = np.linalg.norm(cross1)
+    dot1 = float(np.clip(np.dot(a0a1, b0b1), -1.0, 1.0))
+    if norm1 > 1e-12:
+        b.r = rotate(b.r, cross1 / norm1, a.r[0], np.arccos(dot1))
+    elif dot1 < 0.0:
+        # Antiparallel bonds have a zero cross product. A half turn about any
+        # perpendicular maps the bond onto the reference; atom 2 fixes the rest.
+        helper = (
+            np.array([1.0, 0.0, 0.0])
+            if abs(float(a0a1[0])) < 0.9
+            else np.array([0.0, 1.0, 0.0])
+        )
+        axis_pi = np.cross(a0a1, helper)
+        axis_pi = axis_pi / np.linalg.norm(axis_pi)
+        b.r = rotate(b.r, axis_pi, a.r[0], np.pi)
+    va = _bond_perpendicular(a.r[2], a.r[0], a0a1)
+    vb = _bond_perpendicular(b.r[2], a.r[0], a0a1)
+    nva = np.linalg.norm(va)
+    nvb = np.linalg.norm(vb)
+    if nva > 1e-12 and nvb > 1e-12:
+        theta2 = np.arctan2(
+            np.dot(a0a1, np.cross(vb, va)), np.dot(va, vb)
+        )
+        b.r = rotate(b.r, a0a1, a.r[0], theta2)
     return b
 
 
