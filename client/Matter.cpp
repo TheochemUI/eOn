@@ -679,7 +679,7 @@ double Matter::maxFreeAtomForce(const AtomMatrix &rows) const {
     throw std::invalid_argument(
         "Matter::maxFreeAtomForce: row count does not match atom count");
   }
-  return maxFreeAtomForceNorm(rows.data(), isFixed.data(), nAtoms);
+  return maxFreeAtomForceNorm(rows.data(), impl_->isFixed.data(), nAtoms);
 }
 
 double Matter::maxForce() const {
