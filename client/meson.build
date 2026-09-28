@@ -898,60 +898,10 @@ if get_option('with_xtb')
     # Try finding system 'xtb' via pkg-config or cmake.
     # Users who need to build xtb from source can place it in subprojects/
     # and Meson's implicit fallback will find it.
-    if host_machine.system() == 'windows' and cppc.get_id() == 'msvc'
-        # conda-forge win-64 xtb is MinGW: libxtb-6.dll and libxtb.dll.a.
-        # find_library hits that GNU import library, and link.exe then
-        # cannot see xtb_newEnvironment. Always write xtb.lib from the DLL.
-        _xtb_pc = dependency('xtb', method: 'pkg-config', required: true)
-        _xtb_prefix = _xtb_pc.get_variable(pkgconfig: 'prefix')
-        _xtb_libdir = _xtb_pc.get_variable(pkgconfig: 'libdir')
-        _xtb_dll = ''
-        foreach _cand : [
-            _xtb_prefix / 'bin' / 'libxtb-6.dll',
-            _xtb_prefix / 'bin' / 'libxtb.dll',
-            _xtb_prefix / 'Library' / 'bin' / 'libxtb-6.dll',
-            _xtb_prefix / 'Library' / 'bin' / 'libxtb.dll',
-            _xtb_libdir / 'libxtb-6.dll',
-            _xtb_libdir / 'libxtb.dll',
-            _xtb_prefix / 'bin' / 'xtb.dll',
-        ]
-            if _xtb_dll == '' and fs.exists(_cand)
-                _xtb_dll = _cand
-            endif
-        endforeach
-        if _xtb_dll == ''
-            error('MSVC xtb: libxtb DLL not found under ' + _xtb_prefix)
-        endif
-        _xtb_machine = 'x64'
-        if host_machine.cpu_family() == 'x86'
-            _xtb_machine = 'X86'
-        elif host_machine.cpu_family() == 'aarch64'
-            _xtb_machine = 'ARM64'
-        endif
-        _xtb_implib = meson.current_build_dir() / 'xtb.lib'
-        run_command(
-            py,
-            files('../scripts/ci/msvc_xtb_implib.py'),
-            _xtb_dll,
-            _xtb_implib,
-            _xtb_machine,
-            check: true,
-        )
-        # link_args on a static library do not reach the executables.
-        # find_library in the build directory does, and it is the import
-        # library just written rather than the MinGW one on the prefix.
-        xtb_dep = declare_dependency(
-            compile_args: ['-I' + _xtb_pc.get_variable(pkgconfig: 'includedir')],
-            dependencies: cppc.find_library(
-                'xtb',
-                dirs: [meson.current_build_dir()],
-                required: true,
-            ),
-            version: _xtb_pc.version(),
-        )
-    else
-        xtb_dep = dependency('xtb', required: true)
-    endif
+    # The generated MSVC import library returns a different gradient than
+    # the conda-forge import library. Windows XTB tests pass with
+    # dependency('xtb').
+    xtb_dep = dependency('xtb', required: true)
 
     _deps += [xtb_dep]
     subdir('potentials/XTBPot')
