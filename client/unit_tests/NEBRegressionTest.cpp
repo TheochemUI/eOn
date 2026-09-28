@@ -160,12 +160,10 @@ TEST_CASE_METHOD(NEBRegressionFixture,
   REQUIRE(neb->compute() == NudgedElasticBand::NEBStatus::GOOD);
 
   // Zoom moved the band's first image off the reactant.
-  REQUIRE(std::abs(neb->path.front()->getPotentialEnergy() - reactantE) >
-          1e-3);
+  REQUIRE(std::abs(neb->path.front()->getPotentialEnergy() - reactantE) > 1e-3);
   REQUIRE(neb->reactantEnergy == Catch::Approx(reactantE).margin(1e-12));
-  const double barrier =
-      neb->path[neb->maxEnergyImage]->getPotentialEnergy() -
-      neb->reactantEnergy;
+  const double barrier = neb->path[neb->maxEnergyImage]->getPotentialEnergy() -
+                         neb->reactantEnergy;
   REQUIRE(barrier == Catch::Approx(1.001676).margin(5e-3));
 }
 

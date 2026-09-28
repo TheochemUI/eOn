@@ -341,8 +341,9 @@ eonc::io::IoStatus writePathCon(
     const std::vector<std::shared_ptr<EigenmodeStrategy>> &eigenmode_solvers,
     long numImages, bool estimateEigenvalues, std::string filename,
     std::optional<size_t> bandIndex, double referenceEnergy) {
-  auto frames = pathToConFrames(path, tangent, eigenmode_solvers, numImages,
-                                estimateEigenvalues, bandIndex, referenceEnergy);
+  auto frames =
+      pathToConFrames(path, tangent, eigenmode_solvers, numImages,
+                      estimateEigenvalues, bandIndex, referenceEnergy);
   if (frames.empty()) {
     return eonc::io::IoStatus::InvalidArgument;
   }

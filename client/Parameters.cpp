@@ -46,7 +46,6 @@ bool ams_engine_name_is(std::string_view got, std::string_view name) {
 
 namespace eonc {
 
-
 Parameters::Parameters()
     : impl_(std::make_unique<Impl>()) {
   // Covered groups: defaults originate from schema/eon_params.capnp via

@@ -572,8 +572,7 @@ void bind_neb(nb::module_ &m) {
           out << std::format("{} total_force_calls\n",
                              PotRegistry::get().total_force_calls());
           out << std::format("{} force_calls_neb\n", force_calls_neb);
-          out << std::format("{:f} energy_reference\n",
-                             neb.reactantEnergy);
+          out << std::format("{:f} energy_reference\n", neb.reactantEnergy);
           out << std::format("{} number_of_images\n", neb.numImages);
           for (long i = 0; i <= neb.numImages + 1; i++) {
             out << std::format(
@@ -623,8 +622,8 @@ void bind_neb(nb::module_ &m) {
         if (params.neb_options().mmf_peaks.enabled && neb.numExtrema > 0) {
           int peakCount = 0;
           for (long i = 0; i < neb.numExtrema; i++) {
-            double relativeEnergy = neb.extremumEnergy[static_cast<size_t>(i)] -
-                                    neb.reactantEnergy;
+            double relativeEnergy =
+                neb.extremumEnergy[static_cast<size_t>(i)] - neb.reactantEnergy;
             if (!(neb.extremumCurvature[static_cast<size_t>(i)] < 0 &&
                   relativeEnergy > params.neb_options().mmf_peaks.tolerance))
               continue;

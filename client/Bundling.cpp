@@ -107,9 +107,9 @@ std::vector<std::string> unbundle(int number) {
       continue;
     }
     int bundleNumber = 0;
-    const auto parsed = std::from_chars(originalFilename.data() + numBegin,
-                                        originalFilename.data() + numEnd,
-                                        bundleNumber);
+    const auto parsed =
+        std::from_chars(originalFilename.data() + numBegin,
+                        originalFilename.data() + numEnd, bundleNumber);
     if (parsed.ec != std::errc{} ||
         parsed.ptr != originalFilename.data() + numEnd) {
       continue;

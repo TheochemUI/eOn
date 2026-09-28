@@ -199,12 +199,10 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
             ? RunStatus::GOOD
             : RunStatus::FAIL_MAX_ITERATIONS,
         params.potential_options().potential,
-        PotRegistry::get().total_force_calls(), true,
-        neb->reactantEnergy);
+        PotRegistry::get().total_force_calls(), true, neb->reactantEnergy);
     env.job_type = "neb";
     env.extras.emplace_back("force_calls_neb", static_cast<double>(fCallsNEB));
-    env.extras.emplace_back("energy_reference",
-                            neb->reactantEnergy);
+    env.extras.emplace_back("energy_reference", neb->reactantEnergy);
     env.extras.emplace_back("number_of_images",
                             static_cast<double>(neb->numImages));
     env.writeResultsDat(resultsFilename);
@@ -216,10 +214,9 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
     }
 
     for (long i = 0; i <= neb->numImages + 1; i++) {
-      out << std::format("{:f} image{}_energy\n",
-                         neb->path[i]->getPotentialEnergy() -
-                             neb->reactantEnergy,
-                         i);
+      out << std::format(
+          "{:f} image{}_energy\n",
+          neb->path[i]->getPotentialEnergy() - neb->reactantEnergy, i);
       out << std::format("{:f} image{}_force\n",
                          neb->path[i]->getForces().norm(), i);
       double proj_norm = (i >= 1 && i <= neb->numImages)
@@ -263,8 +260,7 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
       // Filter 1: Only look at maxima (negative curvature)
       // Filter 2: Energy threshold (e.g., peak must be > 0.05 eV above
       // reactant)
-      double relativeEnergy =
-          neb->extremumEnergy[i] - neb->reactantEnergy;
+      double relativeEnergy = neb->extremumEnergy[i] - neb->reactantEnergy;
 
       if (neb->extremumCurvature[i] < 0 &&
           relativeEnergy > params.neb_options().mmf_peaks.tolerance) {

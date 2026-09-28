@@ -20,9 +20,9 @@
 #include <algorithm>
 #include <cmath>
 #include <filesystem>
+#include <limits>
 #include <memory>
 #include <stdexcept>
-#include <limits>
 #include <vector>
 
 using namespace Catch::Matchers;
@@ -384,8 +384,7 @@ TEST_CASE("PBC wrap matches floor and fmod on a wide matrix",
   AtomMatrix legacy_expect = diff * inv;
   for (long i = 0; i < n; ++i) {
     for (int axis = 0; axis < 3; ++axis) {
-      legacy_expect(i, axis) =
-          std::fmod(legacy_expect(i, axis) + 1.0, 1.0);
+      legacy_expect(i, axis) = std::fmod(legacy_expect(i, axis) + 1.0, 1.0);
     }
   }
   legacy_expect = legacy_expect * cell;
@@ -628,7 +627,8 @@ TEST_CASE("maxFreeAtomForceNorm returns NaN from any free atom",
       std::vector<double> forces(static_cast<size_t>(3 * n), 0.25);
       std::vector<double> fixed(forces.size(), 0.0);
       forces[static_cast<size_t>(3 * bad + 1)] = nan;
-      REQUIRE(std::isnan(eonc::maxFreeAtomForceNorm(forces.data(), nullptr, n)));
+      REQUIRE(
+          std::isnan(eonc::maxFreeAtomForceNorm(forces.data(), nullptr, n)));
       REQUIRE(std::isnan(
           eonc::maxFreeAtomForceNorm(forces.data(), fixed.data(), n)));
       // A NaN on a fully fixed atom is masked like any other value.

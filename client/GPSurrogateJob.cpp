@@ -159,15 +159,13 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
   fileResults << magic_enum::enum_name<PotType>(
                      params.potential_options().potential)
               << " potential_type\n";
-  fileResults << std::format("{:.6f} energy_reference\n",
-                             neb->reactantEnergy);
+  fileResults << std::format("{:.6f} energy_reference\n", neb->reactantEnergy);
   fileResults << neb->numImages << " number_of_images\n";
 
   for (long i = 0; i <= neb->numImages + 1; i++) {
-    fileResults << std::format("{:.6f} image{}_energy\n",
-                               neb->path[i]->getPotentialEnergy() -
-                                   neb->reactantEnergy,
-                               i);
+    fileResults << std::format(
+        "{:.6f} image{}_energy\n",
+        neb->path[i]->getPotentialEnergy() - neb->reactantEnergy, i);
     fileResults << std::format("{:.6f} image{}_force\n",
                                neb->path[i]->getForces().norm(), i);
     fileResults << std::format("{:.6f} image{}_projected_force\n",
