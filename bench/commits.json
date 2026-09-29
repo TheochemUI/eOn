@@ -154,7 +154,12 @@
     "8260": "chore(release): merge main (v3.3.0 and its hotfixes) into develop",
     "8263": "fix(wheels): rename the vendored rgpot to libeon_rgpot.so.3",
     "8264": "fix(wheels): drop every other librgpot copy after the rename",
-    "8265": "chore(version): v3.3.1"
+    "8265": "chore(version): v3.3.1",
+    "8437": "fix(server): remove rigid translation in structure matching like the client",
+    "8438": "build(rgpot): move to rgpot 3.3.0",
+    "8439": "fix(server): read remove_translation with a default in escaperate",
+    "8440": "fix(wheels): move librgpot into the libs dir from wherever meson-python put it",
+    "8441": "chore(version): 3.4.0"
   },
   "dcbade17ecc8386a4ee5804354b4994c8ba1d6d8": "update lammps webpage",
   "292bc143343709b10fb7ed150ae5bb493748b289": "gitig: Update",
@@ -310,5 +315,10 @@
   "8c135aed269f861d74ba4a3d3117164924e859c6": "chore(release): merge main (v3.3.0 and its hotfixes) into develop",
   "497ea30c337f8628a4fbc646aa43d53691204593": "fix(wheels): rename the vendored rgpot to libeon_rgpot.so.3",
   "6daae719a4db3459940cc1af2f6b4c745ac8449e": "fix(wheels): drop every other librgpot copy after the rename",
-  "49abc464fe55dac10f7b48d4bc3b49707d098482": "chore(version): v3.3.1"
+  "49abc464fe55dac10f7b48d4bc3b49707d098482": "chore(version): v3.3.1",
+  "2ddccd39bcb2379281325657f1cf78f6d076fbd5": "fix(server): remove rigid translation in structure matching like the client",
+  "37425ffef352ff1c7b211bfdcdbff437e3579a28": "build(rgpot): move to rgpot 3.3.0",
+  "d93906df99e6f743aaa8c4d8c716c3ef34b22ac1": "fix(server): read remove_translation with a default in escaperate",
+  "a6049836c17670d635ba524630decf7ecfb2538d": "fix(wheels): move librgpot into the libs dir from wherever meson-python put it",
+  "e4b54119c6a948777a5bafaa45916d061240e5ed": "chore(version): 3.4.0"
 }
