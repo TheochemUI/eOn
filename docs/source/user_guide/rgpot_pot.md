@@ -121,6 +121,33 @@ input_block = &SYSTEM
   &END
 ```
 
+### One CPMD session per NEB image
+
+`ranks_per_image` splits the MPI world into calculator groups of that many
+ranks. Each group runs its own CPMD session on its own subcommunicator, and a
+NEB hands image *j* of each band update to group *j* mod *G*. Every rank then
+receives every image's energy and forces, so all ranks hold the same band. A
+single force call (an endpoint, a minimization, the dimer of OCI-NEB) runs on
+group 0 and is shared the same way. With as many groups as images each group
+keeps its own image's wavefunction from one iteration to the next.
+
+Launch one `eonclient` per rank, with the world a multiple of
+`ranks_per_image`; seven images on six ranks each is 42 ranks:
+
+```{code-block} ini
+[RgpotPot]
+backend = cpmdc
+ranks_per_image = 6
+```
+
+```{code-block} bash
+mpirun -np 42 eonclient
+```
+
+This needs rgpot built with MPI (`-Drgpot:with_mpi=enabled`) and a libcpmdc
+that exports `cpmdc_bind_calculator`, on an OpenCPMD with cpmdc's
+`opencpmd_mp_comm_set.patch`.
+
 Installed rgpot ≥ 2.5.0 is preferred via `pkg-config` (`dependency('rgpot')`);
 the Meson wrap is the fallback for hermetic/dev builds.
 
