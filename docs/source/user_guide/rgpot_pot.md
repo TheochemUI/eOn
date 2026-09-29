@@ -144,10 +144,14 @@ ranks_per_image = 6
 mpirun -np 42 eonclient
 ```
 
-Only CPMD's parent rank of a group holds the true forces, so with an MPI
-build of rgpot every result is broadcast from the first rank of the group
-that computed it, also without `ranks_per_image` (one calculator on the whole
-world). Every rank of an `mpirun` then takes the same optimizer step.
+Under `mpirun` only world rank 0 runs the eOn job. It broadcasts every force
+request (one structure, or a band's images as a batch) to the other ranks,
+which serve requests and never run eOn's own logic. Each result is broadcast
+from the first rank of the group that computed it, since only CPMD's parent
+rank of a group holds the true forces. This holds also without
+`ranks_per_image`, with one calculator on the whole world. At teardown rank 0
+sends a stop and every rank leaves through `MPI_Finalize`. Outputs appear only
+in rank 0's directory.
 
 This needs rgpot built with MPI (`-Drgpot:with_mpi=enabled`) and a libcpmdc
 that exports `cpmdc_bind_calculator`, on an OpenCPMD with cpmdc's
