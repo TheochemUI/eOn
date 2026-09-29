@@ -977,7 +977,9 @@ if get_option('with_mpi')
     # library() in the MPIPot subdir snapshots _deps. mpi has to be on
     # that list first or libmpipot is linked without libmpi.
     mpi_dep = dependency('mpi')
-    _deps += [mpi_dep]
+    # The server rank runs EON_SERVER_PATH through Py_Main (ClientEON.cpp),
+    # so the MPI client embeds the interpreter.
+    _deps += [mpi_dep, py.dependency(embed: true, required: true)]
     _args += ['-DEONMPI']
     subdir('potentials/MPIPot')
     potentials += [mpipot]
