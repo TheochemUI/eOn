@@ -1,1 +1,0 @@
-The direct in-process RGPOT arm is linked on every non-Windows build, and Cap'n Proto is required there. `-Dwith_rgpot` is deprecated and ignored, so existing invocations still configure. Windows builds still omit the NWChem/CPMD frontends.

@@ -1,1 +1,0 @@
-The Slurm scripts in `tools/clusters/slurm` read the account, partition and job shape from `EON_SBATCH_ARGS` and the client command from `EON_CLIENT`. `queued_jobs.sh` lists the current user's jobs and fails when `squeue` fails.

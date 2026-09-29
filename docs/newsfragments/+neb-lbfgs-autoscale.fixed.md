@@ -1,1 +1,0 @@
-NEB skips the initial L-BFGS finite-difference curvature probe while preserving automatic scaling from successive steps. Climbing-image forces apply only when an interior image exceeds both endpoint energies; paths whose highest energy lies at an endpoint retain their spring forces. The convergence tests exercise the default climbing-image setting.

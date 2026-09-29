@@ -1,1 +1,0 @@
-New example `examples/akmc-cpmd-slurm`: adaptive kinetic Monte Carlo on a silicon vacancy with CPMD on several MPI ranks behind `ext_pot`, one Slurm job per search. The ExtPot guide explains how the wrapper reads CPMD forces from `GEOMETRY`.

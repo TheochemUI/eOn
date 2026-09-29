@@ -1,1 +1,0 @@
-``lammps_logging`` keeps ``client_lammps-N.log``. The worker child writes that file. The parent copies new lines into the process log after each force call. A new LAMMPS open truncates that file, and the copy starts over. The child does not call the process logger.

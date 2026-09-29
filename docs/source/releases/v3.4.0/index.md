@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn v3.4.0, AKMC, CPMD, ext_pot, Slurm, pyeonclient, zoom-NEB, release"
 ---
 
-## [v3.4.0] - unreleased
+## [v3.4.0] - 2026-09-29
 
 Minor release on `v3.3.1`. AKMC now runs on a Slurm cluster with a
 multi-rank external code such as CPMD, one job per search. The

@@ -2,6 +2,75 @@
 
 <!-- towncrier release notes start -->
 
+## [3.4.0](https://github.com/TheochemUI/eOn/tree/3.4.0) - 2026-09-29
+
+### Added
+
+- Cutoff-colored finite differences on a four-atom line take 19 central force calls, against 25 for one column per coordinate, and match the serial matrix to 1e-8. The fourth-order stencil stays within 1e-10 of the complex-step derivative of z^4 + 0.3 z^2 at 0.8, where the central stencil is more than 1e-3 away.
+- Hessian `fd_scheme = fourth` builds the assembled Hessian, and Lanczos and Davidson products, with a real fourth-order central stencil.
+- In-process jobs poll a cancel token before each job and before each dispatch. ``cancel_state`` returns 1 and stops the next job only while a batch is running; an idle call returns 0 and does not stick. A compiled relax still finishes the current call.
+- New example `examples/akmc-cpmd-slurm`: adaptive kinetic Monte Carlo on a silicon vacancy with CPMD on several MPI ranks behind `ext_pot`, one Slurm job per search. The ExtPot guide explains how the wrapper reads CPMD forces from `GEOMETRY`.
+- The in-process record stores termination, energy, force calls, and job type on job_result. results.dat is written from that dict.
+- The production neighbor list stays on vesin. ``neighbor_list_linkcell`` compares that cutoff list with linkcell k-nearest pairs.
+- Wire Geometry carries forces, atom ids, and a per-axis fixed bitmask at ordinals 8, 9, and 10. Empty lists mean those fields are absent.
+- Zoom-NEB packs NEB images onto a window around the climbing image and keeps OCINEB available on that band.
+- `eon_schema.jobs` writes an `eon.trajectory.v1` manifest of exact frame geometry digests and the rgpot potential identity. Landfold embedding and FES inputs are read from that manifest, not from `results.dat`.
+- `opt_method = xtsci` can borrow an eindir objective when eindir-core is installed. The adapter checks the ABI stamp and the eV/angstrom descriptor, and minimization results record the optimizer name.
+
+### Developer
+
+- Docs CI minimizes the LJ13 cluster and regenerates the plt-min tutorial figures.
+- The readcon-core wrap pins v0.14.11. The v0.14.10 tag recorded its version as 0.14.9 in Cargo.toml and meson.build, so pkg-config reported 0.14.9.
+
+### Changed
+
+- Finite-difference and saddle-search jobs log through the client logger instead of printf, and the finite-difference step list is a fixed array rather than a sentinel. Monte Carlo writes its final structure once.
+- Indistinguishable structure matches, rotational matches, and crystal space groups go through readcon-ops. The space-group result includes the Hall number. ``identical`` is the readcon-ops one-to-one map, and it binds ``Cell.wrap_many`` when the installed minimage only has ``displacement``.
+- Lanczos, Hessian, prefactor, bundling, IDPP, and the BGSD and basin-hopping saddle searches use standard library parsing and drop unused helpers. Basin-hopping refuses a band that has no interior tangent, and both searches record the status they return.
+- LocalInProcess takes a Structure or ConFrame on the job and returns saddle and product as ConFrames. In-process job dicts no longer carry .con text, and those frames are not written to disk.
+- Per-atom force convergence (`Matter::maxForce` and the NEB `max_atom` metric) reduces row norms with Highway when the library is available. Fully fixed atoms stay out of the maximum.
+- Periodic wrapping uses Highway for the minimum-image floor (`x - floor(x + 0.5)`) and the legacy unit-interval wrap. Builds without Highway keep the same scalar formulas.
+- The direct in-process RGPOT arm is linked on every non-Windows build, and Cap'n Proto is required there. `-Dwith_rgpot` is deprecated and ignored, so existing invocations still configure. Windows builds still omit the NWChem/CPMD frontends.
+- ``Parameters`` stores load state and option groups in a private ``Impl``.
+  ``sizeof(Parameters)`` is that pointer. Const accessors and
+  ``ParametersLoadAccess`` are the read and write surface. Option-group
+  types stay in ``ParametersOptions.h``. ``Matter`` still exposes Eigen.
+- eOn builds against rgpot 3.3.0, and the pyeonclient wheel check installs `rgpot>=3.3.0`, the first rgpot wheel that imports without a system OpenBLAS or OpenMP runtime.
+
+### Fixed
+
+- A LAMMPS worker ``waitpid`` interrupted by a signal is retried. A failed ``fork`` closes the pipes it just opened.
+- A process search or dimer on `ext_pot` with `parallel = true` evaluated its two images on one instance at the same time, so two external programs shared one exchange directory; CPMD then read a corrupt `RESTART.1`. The images now keep separate instances, cloned from the job's potential, and a force call that fails in the second thread stops the job with its error instead of `std::terminate`.
+- A signal during ``waitpid`` no longer makes a live VASP job look dead. The child closes the extra ``vaspout`` descriptor after redirecting it.
+- GLE `apply` leaves velocities unchanged when any mass is non-positive, so a zero-mass DOF cannot write inf.
+- LAMMPSPot locks the fixed-atom mask and the in-process force call on one mutex, including the Windows and MPI paths.
+- LBFGS, conjugate gradients, and steepest descent allocate zero history vectors when the optimizer is constructed.
+- Least-coordinated AKMC displacements accept per-coordinate free masks. Atoms with at least one free coordinate remain eligible, and fully frozen atoms are excluded.
+- NEB skips the initial L-BFGS finite-difference curvature probe while preserving automatic scaling from successive steps. Climbing-image forces apply only when an interior image exceeds both endpoint energies; paths whose highest energy lies at an endpoint retain their spring forces. The convergence tests exercise the default climbing-image setting.
+- The AKMC server honours `remove_translation` the way the client does: with no fixed atoms, a saddle or state that differs only by a rigid drift of the whole periodic cell matches its earlier copy, so repeated processes count as repeats and the state confidence rises. Every repeat was counted as a new process before.
+- The Hessian job opens pos.con through getRelevantFile, so pos_cp.con and pos_in.con are honoured like the other jobs.
+- The MPI potential sends the working directory as `int` character codes, matching the `MPI_INT` it declares, and sleeps `mpi_poll_period` seconds between polls instead of spinning. A run with no potential ranks, or a rank count that does not divide by the number of clients, stops with a message.
+- The MSVC xtb import library aliases lowercase MinGW exports to the
+  camel-case names in the xtb header.
+- The NEB maximum-image tangent, the dynamics saddle search modes, and the Lanczos and Davidson eigenvectors no longer turn a collapsed vector into NaN. They stay zero.
+- The Slurm scripts in `tools/clusters/slurm` read the account, partition and job shape from `EON_SBATCH_ARGS` and the client command from `EON_CLIENT`. `queued_jobs.sh` lists the current user's jobs and fails when `squeue` fails.
+- The cluster communicator cancels only the jobs still queued when a state reaches its confidence. Finished results stay for harvest, and a failed cancel is logged instead of stopping the server. The MPI communicator no longer stops idle clients at that point.
+- The local communicator starts each client in its own session and kills the whole process group on exit, so ExtPot wrappers and the MPI launchers they start do not outlive the server.
+- The rgpot wrap builds ExprPot and the client defines RGPOT_HAS_EXPR, so PotType.EXPR works in wrap builds instead of stopping with the generic error.
+- The saddle-search job opens `pos.con` through `getRelevantFile`.
+- Windows MSVC builds of the native xtb potential link a generated xtb.lib from the conda-forge libxtb DLL instead of the MinGW import library.
+- ``identical`` keeps a one-to-one map. A crossed pair within the tolerance still matches. Two atoms cannot both match the same partner.
+- ``identical`` no longer maps two atoms onto one site. ``internal_motion`` translates atom 0 onto the reference atom. ``point_energy_match`` forwards ``use_identical`` into the match.
+- ``identical`` rematches a close index pair whose elements differ. ``internal_motion`` turns a reversed bond around and removes the rotation about that bond.
+- ``internal_motion`` places atom 0 on the reference atom before it removes the rotation.
+- ``lammps_logging`` keeps ``client_lammps-N.log``. The worker child writes that file. The parent copies new lines into the process log after each force call. A new LAMMPS open truncates that file, and the copy starts over. The child does not call the process logger.
+- `eonclient -c` compares a copy so `Matter::compare` cannot translate the first structure.
+- `resolveMobileAtoms` / `freeAtomIndices` throw on a null Matter.
+- pyeonclient Linux wheels are manylinux_2_28 again and import on a system without gfortran or OpenMP: the private librgpot SONAME step now rewrites RECORD and runs before auditwheel, which vendors those runtimes. A failed repair fails the build instead of shipping a `linux_x86_64` wheel.
+- pyeonclient wheels bundle ``librgpot`` as ``libeon_rgpot.so.3`` so a
+  side-by-side ``rgpot`` install does not share that SONAME.
+
+
 ## [3.3.1](https://github.com/TheochemUI/eOn/tree/3.3.1) - 2026-09-27
 
 ### Removed

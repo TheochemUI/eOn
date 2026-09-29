@@ -1,1 +1,0 @@
-The cluster communicator cancels only the jobs still queued when a state reaches its confidence. Finished results stay for harvest, and a failed cancel is logged instead of stopping the server. The MPI communicator no longer stops idle clients at that point.
