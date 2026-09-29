@@ -2,12 +2,14 @@
 // clash.
 #include "eon/potentials/Rgpot/RGPotEngine.h"
 
+#include <algorithm>
 #include <array>
 #include <cctype>
 #include <cstdint>
 #include <cstdlib>
 #include <fstream>
 #include <stdexcept>
+#include <string>
 #include <tuple>
 #include <vector>
 
@@ -17,6 +19,7 @@
 #include "eon/potentials/Rgpot/MetatomicEngineLoader.h"
 #include "eon/potentials/Rgpot/XTBEngineLoader.h"
 #include "rgpot/CPMDPot/CPMDPot.hpp"
+#include "rgpot/CalculatorGroup.hpp"
 #include "rgpot/NWChemPot/NWChemPot.hpp"
 #include "rgpot/rpc/Potentials.capnp.h"
 
@@ -97,6 +100,9 @@ struct RGPotEngine::Impl {
   std::unique_ptr<rgpot::CPMDPot> cpmd;
   std::unique_ptr<MetatomicEngineLoader> metatomic;
   std::unique_ptr<XTBEngineLoader> xtb;
+  // Calculator groups (cpmdc, ranks_per_image > 0). One group when off.
+  int groups{1};
+  int group{0};
 };
 
 RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
@@ -199,6 +205,23 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
       throw std::runtime_error(
           "RGPOT(cpmdc): engine not available (set CPMDC_LIBRARY / "
           "RGPOT_CPMDC_ENGINE or [RgpotPot] engine_path)");
+    if (opt.ranks_per_image > 0) {
+      // Collective on MPI_COMM_WORLD, before the first force: the engine
+      // installs the group communicator ahead of CPMD's mp_start.
+      const rgpot::CalculatorGroup g =
+          ::rgpot::bindCalculators(opt.ranks_per_image);
+      if (g.index < 0)
+        throw std::runtime_error(
+            "RGPOT(cpmdc): ranks_per_image=" +
+            std::to_string(opt.ranks_per_image) +
+            " does not divide the MPI world into calculator groups");
+      if (::rgpot::shareFromCalculator(0, nullptr, 0) == 0)
+        throw std::runtime_error(
+            "RGPOT(cpmdc): ranks_per_image needs rgpot built with MPI "
+            "(-Drgpot:with_mpi=enabled)");
+      impl_->groups = ::rgpot::calculatorCount();
+      impl_->group = g.index;
+    }
   } else if (backend_ == "metatomic" || backend_ == "mta" ||
              backend_ == "metatomicpot") {
     backend_ = "metatomic";
@@ -243,6 +266,29 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
 }
 
 RGPotEngine::~RGPotEngine() = default;
+
+int RGPotEngine::calculatorGroups() const noexcept {
+  return impl_ ? impl_->groups : 1;
+}
+
+int RGPotEngine::calculatorIndex() const noexcept {
+  return impl_ ? impl_->group : 0;
+}
+
+void RGPotEngine::shareResult(int owner, long N, double *F, double *U) const {
+  if (!impl_ || impl_->groups <= 1)
+    return;
+  std::vector<double> buf(static_cast<size_t>(3 * N + 1));
+  if (owner == impl_->group) {
+    buf[0] = *U;
+    std::copy(F, F + 3 * N, buf.begin() + 1);
+  }
+  if (::rgpot::shareFromCalculator(owner, buf.data(),
+                                   buf.size() * sizeof(double)) == 0)
+    throw std::runtime_error("RGPOT: could not share a calculator result");
+  *U = buf[0];
+  std::copy(buf.begin() + 1, buf.end(), F);
+}
 
 bool RGPotEngine::available() const {
   if (!impl_)

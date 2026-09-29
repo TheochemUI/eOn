@@ -3,6 +3,7 @@
 */
 #include "eon/potentials/Rgpot/RgpotPot.h"
 #include "eon/Parameters.h"
+#include "eon/PotRegistry.h"
 #include "eon/potentials/Rgpot/RGPotEngine.h"
 
 #include <algorithm>
@@ -33,6 +34,7 @@ RgpotPot::RgpotPot(const eonc::Parameters &p)
   opt.input_block = o.input_block;
   opt.permanent_dir = o.permanent_dir;
   opt.params_path = o.params_path;
+  opt.ranks_per_image = o.ranks_per_image;
   opt.model_path = o.model_path;
   opt.device = o.device;
   opt.length_unit = o.length_unit;
@@ -116,6 +118,42 @@ bool RgpotPot::engineAvailable() const { return impl_ && impl_->available(); }
 
 void RgpotPot::force(long N, const double *R, const int *atomicNrs, double *F,
                      double *U, double *variance, const double *box) {
-  (void)variance;
+  if (variance)
+    *variance = 0.0;
+  // A single evaluation runs on group 0 and is shared, so every rank takes
+  // the same step.
+  if (impl_->calculatorGroups() > 1) {
+    if (impl_->calculatorIndex() == 0)
+      impl_->force(N, R, atomicNrs, F, U, box);
+    impl_->shareResult(0, N, F, U);
+    return;
+  }
   impl_->force(N, R, atomicNrs, F, U, box);
+}
+
+bool RgpotPot::supportsBatchEvaluation() const noexcept {
+  return impl_ && impl_->calculatorGroups() > 1;
+}
+
+void RgpotPot::forceBatch(long nSystems, long nAtoms,
+                          const double *const *positions,
+                          const int *const *atomicNrs, double *const *forces,
+                          double *energies, double *variances,
+                          const double *const *boxes) {
+  const int groups = impl_->calculatorGroups();
+  const int mine = impl_->calculatorIndex();
+  for (long j = 0; j < nSystems; j++) {
+    if (groups <= 1 || static_cast<int>(j % groups) == mine)
+      impl_->force(nAtoms, positions[j], atomicNrs[j], forces[j], &energies[j],
+                   boxes[j]);
+  }
+  for (long j = 0; j < nSystems; j++) {
+    if (groups > 1)
+      impl_->shareResult(static_cast<int>(j % groups), nAtoms, forces[j],
+                         &energies[j]);
+    if (variances)
+      variances[j] = 0.0;
+    forceCallCounter++;
+    eonc::PotRegistry::get().on_force_call(ptype);
+  }
 }

@@ -34,6 +34,15 @@ public:
              double *U, double *variance, const double *box) override;
 
   [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
+
+  /// With cpmdc calculator groups ([RgpotPot] ranks_per_image), a batch is
+  /// spread over the groups: system j runs on group j mod G, then every
+  /// rank receives every result, so all ranks keep the same band.
+  [[nodiscard]] bool supportsBatchEvaluation() const noexcept override;
+  void forceBatch(long nSystems, long nAtoms, const double *const *positions,
+                  const int *const *atomicNrs, double *const *forces,
+                  double *energies, double *variances,
+                  const double *const *boxes) override;
   /// NWChem molecular SCF does not support PBC; CPMD may be periodic.
   [[nodiscard]] bool requiresIsolatedMoleculeLayout() const noexcept override {
     return backend_ == "nwchemc";

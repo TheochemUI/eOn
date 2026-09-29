@@ -2107,6 +2107,10 @@ RgpotPot:
             kind: string
             default: ""
 
+        ranks_per_image:
+            kind: int
+            default: 0
+
 ################################################################################
 
 Metatomic:

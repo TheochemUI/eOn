@@ -346,6 +346,10 @@ int load_ini(INIReader &ini, Parameters &params) {
     ParametersLoadAccess::rgpot_options(params).params_path =
         ini.Get(sec, "params_path",
                 ParametersLoadAccess::rgpot_options(params).params_path);
+    ParametersLoadAccess::rgpot_options(params).ranks_per_image =
+        ini.GetInteger(
+            sec, "ranks_per_image",
+            ParametersLoadAccess::rgpot_options(params).ranks_per_image);
     ParametersLoadAccess::rgpot_options(params).model_path =
         ini.Get(sec, "model_path",
                 ParametersLoadAccess::rgpot_options(params).model_path);
