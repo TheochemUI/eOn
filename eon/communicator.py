@@ -423,7 +423,7 @@ class MPI(Communicator):
             self.comm.Recv([buf, MPI.CHARACTER], source=status.source, tag=0)
             strterm = np.where(buf == b'\0')
             strindex = strterm[0][0]
-            jobdir = buf[:strindex].tostring()
+            jobdir = buf[:strindex].tobytes()
             jobdir = Path(jobdir.decode()).name
             if not (Path(self.scratchpath) / jobdir).is_dir():
                 logger.error("Client returned %s, which is not in %s; skipping",
