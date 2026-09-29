@@ -56,8 +56,12 @@ public:
   /// ranks_per_image is off) and the group this rank belongs to.
   [[nodiscard]] int calculatorGroups() const noexcept;
   [[nodiscard]] int calculatorIndex() const noexcept;
+  /// Ranks in the MPI world the groups were bound on (1 without MPI).
+  [[nodiscard]] int calculatorWorld() const noexcept;
   /// Collective on MPI_COMM_WORLD: every rank leaves with the energy and
-  /// the 3N forces computed by group `owner`.
+  /// the 3N forces computed by the first rank of group `owner`. Only
+  /// CPMD's parent rank holds the true forces, so this also keeps the
+  /// ranks of one group on the same step.
   void shareResult(int owner, long N, double *F, double *U) const;
 
 private:

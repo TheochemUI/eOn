@@ -120,9 +120,9 @@ void RgpotPot::force(long N, const double *R, const int *atomicNrs, double *F,
                      double *U, double *variance, const double *box) {
   if (variance)
     *variance = 0.0;
-  // A single evaluation runs on group 0 and is shared, so every rank takes
-  // the same step.
-  if (impl_->calculatorGroups() > 1) {
+  // A single evaluation runs on group 0 and is shared from its first rank,
+  // so every rank takes the same step.
+  if (impl_->calculatorWorld() > 1) {
     if (impl_->calculatorIndex() == 0)
       impl_->force(N, R, atomicNrs, F, U, box);
     impl_->shareResult(0, N, F, U);
@@ -148,7 +148,7 @@ void RgpotPot::forceBatch(long nSystems, long nAtoms,
                    boxes[j]);
   }
   for (long j = 0; j < nSystems; j++) {
-    if (groups > 1)
+    if (impl_->calculatorWorld() > 1)
       impl_->shareResult(static_cast<int>(j % groups), nAtoms, forces[j],
                          &energies[j]);
     if (variances)

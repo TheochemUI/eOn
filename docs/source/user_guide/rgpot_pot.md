@@ -144,6 +144,11 @@ ranks_per_image = 6
 mpirun -np 42 eonclient
 ```
 
+Only CPMD's parent rank of a group holds the true forces, so with an MPI
+build of rgpot every result is broadcast from the first rank of the group
+that computed it, also without `ranks_per_image` (one calculator on the whole
+world). Every rank of an `mpirun` then takes the same optimizer step.
+
 This needs rgpot built with MPI (`-Drgpot:with_mpi=enabled`) and a libcpmdc
 that exports `cpmdc_bind_calculator`, on an OpenCPMD with cpmdc's
 `opencpmd_mp_comm_set.patch`.
