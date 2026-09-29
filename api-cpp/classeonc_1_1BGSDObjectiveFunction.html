@@ -253,7 +253,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5f6995f2cc52512d81e206388add26c6" id="r_a5f6995f2cc52512d81e206388add26c6"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a5f6995f2cc52512d81e206388add26c6">BGSDObjectiveFunction</a> (<a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;matterRef, double reactantEnergyPassed, double bgsdAlphaPassed, const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;parametersPassed)</td></tr>
 <tr class="memitem:ac48cd6b19451302bdbbca699daf76e31" id="r_ac48cd6b19451302bdbbca699daf76e31"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#ac48cd6b19451302bdbbca699daf76e31">~BGSDObjectiveFunction</a> ()=default</td></tr>
 <tr class="memitem:a1215b3cf0c3b8ba3da629f2f54ea64fd" id="r_a1215b3cf0c3b8ba3da629f2f54ea64fd"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a1215b3cf0c3b8ba3da629f2f54ea64fd">getEnergy</a> ()</td></tr>
-<tr class="memitem:ac803ae722f445829f476b060dded12aa" id="r_ac803ae722f445829f476b060dded12aa"><td class="memItemLeft">VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#ac803ae722f445829f476b060dded12aa">getGradient</a> (bool fdstep=false)</td></tr>
+<tr class="memitem:af09b31ceef426b8ae34384f428331a70" id="r_af09b31ceef426b8ae34384f428331a70"><td class="memItemLeft">VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#af09b31ceef426b8ae34384f428331a70">getGradient</a> (bool=false)</td></tr>
 <tr class="memitem:a20fdd872accdb18b2b88341c27e5b3ab" id="r_a20fdd872accdb18b2b88341c27e5b3ab"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a20fdd872accdb18b2b88341c27e5b3ab">getGradientnorm</a> ()</td></tr>
 <tr class="memitem:a4efa21aa4c35e9ad297d488c8cea091e" id="r_a4efa21aa4c35e9ad297d488c8cea091e"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a4efa21aa4c35e9ad297d488c8cea091e">setPositions</a> (const VectorXd &amp;x)</td></tr>
 <tr class="memitem:aafdd30e603e34e75b6e7cf1fa3e6db54" id="r_aafdd30e603e34e75b6e7cf1fa3e6db54"><td class="memItemLeft">VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#aafdd30e603e34e75b6e7cf1fa3e6db54">getPositions</a> ()</td></tr>
@@ -269,6 +269,7 @@ Public Member Functions</h2></td></tr>
 <tr class="inherit_header pub_methods_classeonc_1_1ObjectiveFunction"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1ObjectiveFunction')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1ObjectiveFunction.html">eonc::ObjectiveFunction</a></td></tr>
 <tr class="memitem:a7539f6688c5b9e68654bf0a8762e8c34 inherit pub_methods_classeonc_1_1ObjectiveFunction" id="r_a7539f6688c5b9e68654bf0a8762e8c34"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ObjectiveFunction.html#a7539f6688c5b9e68654bf0a8762e8c34">ObjectiveFunction</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;paramsPassed)</td></tr>
 <tr class="memitem:a2757b1b7f7d80d47c033ee32adb8d667 inherit pub_methods_classeonc_1_1ObjectiveFunction" id="r_a2757b1b7f7d80d47c033ee32adb8d667"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ObjectiveFunction.html#a2757b1b7f7d80d47c033ee32adb8d667">~ObjectiveFunction</a> ()</td></tr>
+<tr class="memitem:a1b411c5e39f354a9ec1058e84c172e54 inherit pub_methods_classeonc_1_1ObjectiveFunction" id="r_a1b411c5e39f354a9ec1058e84c172e54"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ObjectiveFunction.html#a1b411c5e39f354a9ec1058e84c172e54">supportsFiniteDifferenceCurvature</a> () const</td></tr>
 <tr class="memitem:af3271abcddd3c2ec4808a5b3f25e4b77 inherit pub_methods_classeonc_1_1ObjectiveFunction" id="r_af3271abcddd3c2ec4808a5b3f25e4b77"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ObjectiveFunction.html#af3271abcddd3c2ec4808a5b3f25e4b77">minimumImage</a> (Eigen::Ref&lt; Eigen::Vector3d &gt;) const</td></tr>
 <tr class="memitem:a8f2672688adbd931070f00fa29b72be8 inherit pub_methods_classeonc_1_1ObjectiveFunction" id="r_a8f2672688adbd931070f00fa29b72be8"><td class="memItemLeft">virtual VectorXd&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ObjectiveFunction.html#a8f2672688adbd931070f00fa29b72be8">getMasses</a> () const</td></tr>
 <tr class="memitem:a9026e74111d5f55078d5c5f8a47501aa inherit pub_methods_classeonc_1_1ObjectiveFunction" id="r_a9026e74111d5f55078d5c5f8a47501aa"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ObjectiveFunction.html#a9026e74111d5f55078d5c5f8a47501aa">getPeriodic</a> () const</td></tr>
@@ -286,7 +287,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00029">29</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00025">25</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a5f6995f2cc52512d81e206388add26c6" name="a5f6995f2cc52512d81e206388add26c6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5f6995f2cc52512d81e206388add26c6">&#9670;&#160;</a></span>BGSDObjectiveFunction()</h2>
@@ -325,15 +326,15 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00033">33</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   36</span>      : <a class="code hl_function" href="classeonc_1_1ObjectiveFunction.html#a7539f6688c5b9e68654bf0a8762e8c34">ObjectiveFunction</a>(parametersPassed),</div>
-<div class="line"><span class="lineno">   37</span>        <a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>{matterRef} {</div>
-<div class="line"><span class="lineno">   38</span>    <a class="code hl_variable" href="#a4926beac8a80e2cb0294537ba6b80576">bgsdAlpha</a> = bgsdAlphaPassed;</div>
-<div class="line"><span class="lineno">   39</span>    <a class="code hl_variable" href="#aa2e755d304941d04f0df51e378e2c4dc">reactantEnergy</a> = reactantEnergyPassed;</div>
-<div class="line"><span class="lineno">   40</span>  }</div>
-<div class="ttc" id="aclasseonc_1_1BGSDObjectiveFunction_html_a4926beac8a80e2cb0294537ba6b80576"><div class="ttname"><a href="#a4926beac8a80e2cb0294537ba6b80576">eonc::BGSDObjectiveFunction::bgsdAlpha</a></div><div class="ttdeci">double bgsdAlpha</div><div class="ttdef"><b>Definition</b> <a href="BiasedGradientSquaredDescent_8cpp_source.html#l00105">BiasedGradientSquaredDescent.cpp:105</a></div></div>
-<div class="ttc" id="aclasseonc_1_1BGSDObjectiveFunction_html_aa2e755d304941d04f0df51e378e2c4dc"><div class="ttname"><a href="#aa2e755d304941d04f0df51e378e2c4dc">eonc::BGSDObjectiveFunction::reactantEnergy</a></div><div class="ttdeci">double reactantEnergy</div><div class="ttdef"><b>Definition</b> <a href="BiasedGradientSquaredDescent_8cpp_source.html#l00104">BiasedGradientSquaredDescent.cpp:104</a></div></div>
-<div class="ttc" id="aclasseonc_1_1BGSDObjectiveFunction_html_ad1e6ee23466905e5f243c97d66b87a6b"><div class="ttname"><a href="#ad1e6ee23466905e5f243c97d66b87a6b">eonc::BGSDObjectiveFunction::matter</a></div><div class="ttdeci">Matter &amp; matter</div><div class="ttdef"><b>Definition</b> <a href="BiasedGradientSquaredDescent_8cpp_source.html#l00030">BiasedGradientSquaredDescent.cpp:30</a></div></div>
+<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00029">29</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   32</span>      : <a class="code hl_function" href="classeonc_1_1ObjectiveFunction.html#a7539f6688c5b9e68654bf0a8762e8c34">ObjectiveFunction</a>(parametersPassed),</div>
+<div class="line"><span class="lineno">   33</span>        <a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>{matterRef} {</div>
+<div class="line"><span class="lineno">   34</span>    <a class="code hl_variable" href="#a4926beac8a80e2cb0294537ba6b80576">bgsdAlpha</a> = bgsdAlphaPassed;</div>
+<div class="line"><span class="lineno">   35</span>    <a class="code hl_variable" href="#aa2e755d304941d04f0df51e378e2c4dc">reactantEnergy</a> = reactantEnergyPassed;</div>
+<div class="line"><span class="lineno">   36</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1BGSDObjectiveFunction_html_a4926beac8a80e2cb0294537ba6b80576"><div class="ttname"><a href="#a4926beac8a80e2cb0294537ba6b80576">eonc::BGSDObjectiveFunction::bgsdAlpha</a></div><div class="ttdeci">double bgsdAlpha</div><div class="ttdef"><b>Definition</b> <a href="BiasedGradientSquaredDescent_8cpp_source.html#l00100">BiasedGradientSquaredDescent.cpp:100</a></div></div>
+<div class="ttc" id="aclasseonc_1_1BGSDObjectiveFunction_html_aa2e755d304941d04f0df51e378e2c4dc"><div class="ttname"><a href="#aa2e755d304941d04f0df51e378e2c4dc">eonc::BGSDObjectiveFunction::reactantEnergy</a></div><div class="ttdeci">double reactantEnergy</div><div class="ttdef"><b>Definition</b> <a href="BiasedGradientSquaredDescent_8cpp_source.html#l00099">BiasedGradientSquaredDescent.cpp:99</a></div></div>
+<div class="ttc" id="aclasseonc_1_1BGSDObjectiveFunction_html_ad1e6ee23466905e5f243c97d66b87a6b"><div class="ttname"><a href="#ad1e6ee23466905e5f243c97d66b87a6b">eonc::BGSDObjectiveFunction::matter</a></div><div class="ttdeci">Matter &amp; matter</div><div class="ttdef"><b>Definition</b> <a href="BiasedGradientSquaredDescent_8cpp_source.html#l00026">BiasedGradientSquaredDescent.cpp:26</a></div></div>
 <div class="ttc" id="aclasseonc_1_1ObjectiveFunction_html_a7539f6688c5b9e68654bf0a8762e8c34"><div class="ttname"><a href="classeonc_1_1ObjectiveFunction.html#a7539f6688c5b9e68654bf0a8762e8c34">eonc::ObjectiveFunction::ObjectiveFunction</a></div><div class="ttdeci">ObjectiveFunction(const Parameters &amp;paramsPassed)</div><div class="ttdef"><b>Definition</b> <a href="ObjectiveFunction_8h_source.html#l00023">ObjectiveFunction.h:23</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -389,8 +390,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#ae183480aed0570a0187cabe81bd11ffb">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00084">84</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   84</span>{ <span class="keywordflow">return</span> 3 * <a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.numberOfFreeAtoms(); }</div>
+<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00079">79</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   79</span>{ <span class="keywordflow">return</span> 3 * <a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.numberOfFreeAtoms(); }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -423,10 +424,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#a71d9f4b931fccd6ae74a054a92ab1fa9">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00099">99</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   99</span>                                                            {</div>
-<div class="line"><span class="lineno">  100</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.pbcV(a - b);</div>
-<div class="line"><span class="lineno">  101</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00094">94</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   94</span>                                                            {</div>
+<div class="line"><span class="lineno">   95</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.pbcV(a - b);</div>
+<div class="line"><span class="lineno">   96</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -455,9 +456,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#adb5aa05d56bdb3f5eca741688f4f4e2d">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00096">96</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   96</span>{ <span class="keywordflow">return</span> <a class="code hl_function" href="#ac803ae722f445829f476b060dded12aa">getGradient</a>().norm(); }</div>
-<div class="ttc" id="aclasseonc_1_1BGSDObjectiveFunction_html_ac803ae722f445829f476b060dded12aa"><div class="ttname"><a href="#ac803ae722f445829f476b060dded12aa">eonc::BGSDObjectiveFunction::getGradient</a></div><div class="ttdeci">VectorXd getGradient(bool fdstep=false)</div><div class="ttdef"><b>Definition</b> <a href="BiasedGradientSquaredDescent_8cpp_source.html#l00055">BiasedGradientSquaredDescent.cpp:55</a></div></div>
+<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00091">91</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   91</span>{ <span class="keywordflow">return</span> <a class="code hl_function" href="#af09b31ceef426b8ae34384f428331a70">getGradient</a>().norm(); }</div>
+<div class="ttc" id="aclasseonc_1_1BGSDObjectiveFunction_html_af09b31ceef426b8ae34384f428331a70"><div class="ttname"><a href="#af09b31ceef426b8ae34384f428331a70">eonc::BGSDObjectiveFunction::getGradient</a></div><div class="ttdeci">VectorXd getGradient(bool=false)</div><div class="ttdef"><b>Definition</b> <a href="BiasedGradientSquaredDescent_8cpp_source.html#l00051">BiasedGradientSquaredDescent.cpp:51</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -484,8 +485,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00097">97</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   97</span>{ <span class="keywordflow">return</span> <a class="code hl_function" href="#ac803ae722f445829f476b060dded12aa">getGradient</a>().norm(); }</div>
+<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00092">92</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   92</span>{ <span class="keywordflow">return</span> <a class="code hl_function" href="#af09b31ceef426b8ae34384f428331a70">getGradient</a>().norm(); }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -512,9 +513,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00098">98</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   98</span>{ <span class="keywordflow">return</span> <a class="code hl_function" href="#a1215b3cf0c3b8ba3da629f2f54ea64fd">getEnergy</a>(); }</div>
-<div class="ttc" id="aclasseonc_1_1BGSDObjectiveFunction_html_a1215b3cf0c3b8ba3da629f2f54ea64fd"><div class="ttname"><a href="#a1215b3cf0c3b8ba3da629f2f54ea64fd">eonc::BGSDObjectiveFunction::getEnergy</a></div><div class="ttdeci">double getEnergy()</div><div class="ttdef"><b>Definition</b> <a href="BiasedGradientSquaredDescent_8cpp_source.html#l00044">BiasedGradientSquaredDescent.cpp:44</a></div></div>
+<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00093">93</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   93</span>{ <span class="keywordflow">return</span> <a class="code hl_function" href="#a1215b3cf0c3b8ba3da629f2f54ea64fd">getEnergy</a>(); }</div>
+<div class="ttc" id="aclasseonc_1_1BGSDObjectiveFunction_html_a1215b3cf0c3b8ba3da629f2f54ea64fd"><div class="ttname"><a href="#a1215b3cf0c3b8ba3da629f2f54ea64fd">eonc::BGSDObjectiveFunction::getEnergy</a></div><div class="ttdeci">double getEnergy()</div><div class="ttdef"><b>Definition</b> <a href="BiasedGradientSquaredDescent_8cpp_source.html#l00040">BiasedGradientSquaredDescent.cpp:40</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -543,23 +544,23 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#ac33d8c01a468c94e97e46add563a21c2">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00044">44</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   44</span>                     {</div>
-<div class="line"><span class="lineno">   45</span>    VectorXd Vforce = <a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.getForcesFreeV();</div>
-<div class="line"><span class="lineno">   46</span>    <span class="keywordtype">double</span> Henergy = 0.5 * Vforce.dot(Vforce) +</div>
-<div class="line"><span class="lineno">   47</span>                     0.5 * <a class="code hl_variable" href="#a4926beac8a80e2cb0294537ba6b80576">bgsdAlpha</a> *</div>
-<div class="line"><span class="lineno">   48</span>                         (<a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.getPotentialEnergy() -</div>
-<div class="line"><span class="lineno">   49</span>                          (<a class="code hl_variable" href="#aa2e755d304941d04f0df51e378e2c4dc">reactantEnergy</a> + <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.bgsd_options().beta)) *</div>
-<div class="line"><span class="lineno">   50</span>                         (<a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.getPotentialEnergy() -</div>
-<div class="line"><span class="lineno">   51</span>                          (<a class="code hl_variable" href="#aa2e755d304941d04f0df51e378e2c4dc">reactantEnergy</a> + <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.bgsd_options().beta));</div>
-<div class="line"><span class="lineno">   52</span>    <span class="keywordflow">return</span> Henergy;</div>
-<div class="line"><span class="lineno">   53</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00040">40</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   40</span>                     {</div>
+<div class="line"><span class="lineno">   41</span>    VectorXd Vforce = <a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.getForcesFreeV();</div>
+<div class="line"><span class="lineno">   42</span>    <span class="keywordtype">double</span> Henergy = 0.5 * Vforce.dot(Vforce) +</div>
+<div class="line"><span class="lineno">   43</span>                     0.5 * <a class="code hl_variable" href="#a4926beac8a80e2cb0294537ba6b80576">bgsdAlpha</a> *</div>
+<div class="line"><span class="lineno">   44</span>                         (<a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.getPotentialEnergy() -</div>
+<div class="line"><span class="lineno">   45</span>                          (<a class="code hl_variable" href="#aa2e755d304941d04f0df51e378e2c4dc">reactantEnergy</a> + <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.bgsd_options().beta)) *</div>
+<div class="line"><span class="lineno">   46</span>                         (<a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.getPotentialEnergy() -</div>
+<div class="line"><span class="lineno">   47</span>                          (<a class="code hl_variable" href="#aa2e755d304941d04f0df51e378e2c4dc">reactantEnergy</a> + <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.bgsd_options().beta));</div>
+<div class="line"><span class="lineno">   48</span>    <span class="keywordflow">return</span> Henergy;</div>
+<div class="line"><span class="lineno">   49</span>  }</div>
 <div class="ttc" id="aclasseonc_1_1ObjectiveFunction_html_a9d74eea28a1c17f36202adff592ca871"><div class="ttname"><a href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">eonc::ObjectiveFunction::params</a></div><div class="ttdeci">const Parameters &amp; params</div><div class="ttdef"><b>Definition</b> <a href="ObjectiveFunction_8h_source.html#l00020">ObjectiveFunction.h:20</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="ac803ae722f445829f476b060dded12aa" name="ac803ae722f445829f476b060dded12aa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac803ae722f445829f476b060dded12aa">&#9670;&#160;</a></span>getGradient()</h2>
+<a id="af09b31ceef426b8ae34384f428331a70" name="af09b31ceef426b8ae34384f428331a70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af09b31ceef426b8ae34384f428331a70">&#9670;&#160;</a></span>getGradient()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -570,7 +571,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">VectorXd eonc::BGSDObjectiveFunction::getGradient </td>
           <td>(</td>
-          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>fdstep</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span></td><td>)</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em></em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -583,27 +584,26 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#a2cde804855ed7d58658f912636254352">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00055">55</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   55</span>                                          {</div>
-<div class="line"><span class="lineno">   56</span>    (void)fdstep;</div>
-<div class="line"><span class="lineno">   57</span>    VectorXd Vforce = <a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.getForcesFreeV();</div>
-<div class="line"><span class="lineno">   58</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> magVforce = Vforce.norm();</div>
-<div class="line"><span class="lineno">   59</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> fd = <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.bgsd_options().gradient_finite_difference;</div>
-<div class="line"><span class="lineno">   60</span>    <span class="keywordflow">if</span> (!(magVforce &gt; 0.0) || !std::isfinite(magVforce) || !(fd &gt; 0.0)) {</div>
-<div class="line"><span class="lineno">   61</span>      <span class="keywordflow">return</span> VectorXd::Zero(Vforce.size());</div>
-<div class="line"><span class="lineno">   62</span>    }</div>
-<div class="line"><span class="lineno">   63</span>    <span class="keyword">const</span> VectorXd normVforce = Vforce / magVforce;</div>
-<div class="line"><span class="lineno">   64</span>    <span class="keyword">const</span> VectorXd Vpositions = <a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.getPositionsFreeV();</div>
-<div class="line"><span class="lineno">   65</span>    <a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.setPositionsFreeV(Vpositions - normVforce * fd);</div>
-<div class="line"><span class="lineno">   66</span>    VectorXd Vforcenew = <a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.getForcesFreeV();</div>
-<div class="line"><span class="lineno">   67</span>    <a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.setPositionsFreeV(Vpositions);</div>
-<div class="line"><span class="lineno">   68</span>    VectorXd Hforce = magVforce * (Vforcenew - Vforce) / fd +</div>
-<div class="line"><span class="lineno">   69</span>                      <a class="code hl_variable" href="#a4926beac8a80e2cb0294537ba6b80576">bgsdAlpha</a> *</div>
-<div class="line"><span class="lineno">   70</span>                          (<a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.getPotentialEnergy() -</div>
-<div class="line"><span class="lineno">   71</span>                           (<a class="code hl_variable" href="#aa2e755d304941d04f0df51e378e2c4dc">reactantEnergy</a> + <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.bgsd_options().beta)) *</div>
-<div class="line"><span class="lineno">   72</span>                          Vforce;</div>
-<div class="line"><span class="lineno">   73</span>    <span class="keywordflow">return</span> -Hforce;</div>
-<div class="line"><span class="lineno">   74</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00051">51</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   51</span>                                     {</div>
+<div class="line"><span class="lineno">   52</span>    VectorXd Vforce = <a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.getForcesFreeV();</div>
+<div class="line"><span class="lineno">   53</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> magVforce = Vforce.norm();</div>
+<div class="line"><span class="lineno">   54</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> fd = <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.bgsd_options().gradient_finite_difference;</div>
+<div class="line"><span class="lineno">   55</span>    <span class="keywordflow">if</span> (!(magVforce &gt; 0.0) || !std::isfinite(magVforce) || !(fd &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">   56</span>      <span class="keywordflow">return</span> VectorXd::Zero(Vforce.size());</div>
+<div class="line"><span class="lineno">   57</span>    }</div>
+<div class="line"><span class="lineno">   58</span>    <span class="keyword">const</span> VectorXd normVforce = Vforce / magVforce;</div>
+<div class="line"><span class="lineno">   59</span>    <span class="keyword">const</span> VectorXd Vpositions = <a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.getPositionsFreeV();</div>
+<div class="line"><span class="lineno">   60</span>    <a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.setPositionsFreeV(Vpositions - normVforce * fd);</div>
+<div class="line"><span class="lineno">   61</span>    VectorXd Vforcenew = <a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.getForcesFreeV();</div>
+<div class="line"><span class="lineno">   62</span>    <a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.setPositionsFreeV(Vpositions);</div>
+<div class="line"><span class="lineno">   63</span>    VectorXd Hforce = magVforce * (Vforcenew - Vforce) / fd +</div>
+<div class="line"><span class="lineno">   64</span>                      <a class="code hl_variable" href="#a4926beac8a80e2cb0294537ba6b80576">bgsdAlpha</a> *</div>
+<div class="line"><span class="lineno">   65</span>                          (<a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.getPotentialEnergy() -</div>
+<div class="line"><span class="lineno">   66</span>                           (<a class="code hl_variable" href="#aa2e755d304941d04f0df51e378e2c4dc">reactantEnergy</a> + <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.bgsd_options().beta)) *</div>
+<div class="line"><span class="lineno">   67</span>                          Vforce;</div>
+<div class="line"><span class="lineno">   68</span>    <span class="keywordflow">return</span> -Hforce;</div>
+<div class="line"><span class="lineno">   69</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -630,12 +630,12 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00076">76</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   76</span>                           {</div>
-<div class="line"><span class="lineno">   77</span>    VectorXd Hforce = <a class="code hl_function" href="#ac803ae722f445829f476b060dded12aa">getGradient</a>();</div>
-<div class="line"><span class="lineno">   78</span>    <span class="keywordtype">double</span> Hnorm = Hforce.norm();</div>
-<div class="line"><span class="lineno">   79</span>    <span class="keywordflow">return</span> Hnorm;</div>
-<div class="line"><span class="lineno">   80</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00071">71</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   71</span>                           {</div>
+<div class="line"><span class="lineno">   72</span>    VectorXd Hforce = <a class="code hl_function" href="#af09b31ceef426b8ae34384f428331a70">getGradient</a>();</div>
+<div class="line"><span class="lineno">   73</span>    <span class="keywordtype">double</span> Hnorm = Hforce.norm();</div>
+<div class="line"><span class="lineno">   74</span>    <span class="keywordflow">return</span> Hnorm;</div>
+<div class="line"><span class="lineno">   75</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -664,8 +664,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#aa06776d23dd7b6ffa23db1555d657261">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00083">83</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   83</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.getPositionsFreeV(); }</div>
+<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00078">78</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   78</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.getPositionsFreeV(); }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -694,10 +694,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#a90d7874f2d2686d628c9d6057f841925">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00085">85</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   85</span>{ <span class="keywordflow">return</span> <a class="code hl_function" href="#ab3f111b88307b3fb7ecbf1d3e35ccbc8">isConvergedH</a>() &amp;&amp; <a class="code hl_function" href="#a599dbf4c439ef56de66611c16d3cc74d">isConvergedV</a>(); }</div>
-<div class="ttc" id="aclasseonc_1_1BGSDObjectiveFunction_html_a599dbf4c439ef56de66611c16d3cc74d"><div class="ttname"><a href="#a599dbf4c439ef56de66611c16d3cc74d">eonc::BGSDObjectiveFunction::isConvergedV</a></div><div class="ttdeci">bool isConvergedV()</div><div class="ttdef"><b>Definition</b> <a href="BiasedGradientSquaredDescent_8cpp_source.html#l00089">BiasedGradientSquaredDescent.cpp:89</a></div></div>
-<div class="ttc" id="aclasseonc_1_1BGSDObjectiveFunction_html_ab3f111b88307b3fb7ecbf1d3e35ccbc8"><div class="ttname"><a href="#ab3f111b88307b3fb7ecbf1d3e35ccbc8">eonc::BGSDObjectiveFunction::isConvergedH</a></div><div class="ttdeci">bool isConvergedH()</div><div class="ttdef"><b>Definition</b> <a href="BiasedGradientSquaredDescent_8cpp_source.html#l00086">BiasedGradientSquaredDescent.cpp:86</a></div></div>
+<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00080">80</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   80</span>{ <span class="keywordflow">return</span> <a class="code hl_function" href="#ab3f111b88307b3fb7ecbf1d3e35ccbc8">isConvergedH</a>() &amp;&amp; <a class="code hl_function" href="#a599dbf4c439ef56de66611c16d3cc74d">isConvergedV</a>(); }</div>
+<div class="ttc" id="aclasseonc_1_1BGSDObjectiveFunction_html_a599dbf4c439ef56de66611c16d3cc74d"><div class="ttname"><a href="#a599dbf4c439ef56de66611c16d3cc74d">eonc::BGSDObjectiveFunction::isConvergedV</a></div><div class="ttdeci">bool isConvergedV()</div><div class="ttdef"><b>Definition</b> <a href="BiasedGradientSquaredDescent_8cpp_source.html#l00084">BiasedGradientSquaredDescent.cpp:84</a></div></div>
+<div class="ttc" id="aclasseonc_1_1BGSDObjectiveFunction_html_ab3f111b88307b3fb7ecbf1d3e35ccbc8"><div class="ttname"><a href="#ab3f111b88307b3fb7ecbf1d3e35ccbc8">eonc::BGSDObjectiveFunction::isConvergedH</a></div><div class="ttdeci">bool isConvergedH()</div><div class="ttdef"><b>Definition</b> <a href="BiasedGradientSquaredDescent_8cpp_source.html#l00081">BiasedGradientSquaredDescent.cpp:81</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -724,11 +724,11 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00086">86</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   86</span>                      {</div>
-<div class="line"><span class="lineno">   87</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#ae3c651107a28e0083b089929b56677d7">getConvergenceH</a>() &lt; <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.bgsd_options().h_force_convergence;</div>
-<div class="line"><span class="lineno">   88</span>  }</div>
-<div class="ttc" id="aclasseonc_1_1BGSDObjectiveFunction_html_ae3c651107a28e0083b089929b56677d7"><div class="ttname"><a href="#ae3c651107a28e0083b089929b56677d7">eonc::BGSDObjectiveFunction::getConvergenceH</a></div><div class="ttdeci">double getConvergenceH()</div><div class="ttdef"><b>Definition</b> <a href="BiasedGradientSquaredDescent_8cpp_source.html#l00097">BiasedGradientSquaredDescent.cpp:97</a></div></div>
+<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00081">81</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   81</span>                      {</div>
+<div class="line"><span class="lineno">   82</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#ae3c651107a28e0083b089929b56677d7">getConvergenceH</a>() &lt; <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.bgsd_options().h_force_convergence;</div>
+<div class="line"><span class="lineno">   83</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1BGSDObjectiveFunction_html_ae3c651107a28e0083b089929b56677d7"><div class="ttname"><a href="#ae3c651107a28e0083b089929b56677d7">eonc::BGSDObjectiveFunction::getConvergenceH</a></div><div class="ttdeci">double getConvergenceH()</div><div class="ttdef"><b>Definition</b> <a href="BiasedGradientSquaredDescent_8cpp_source.html#l00092">BiasedGradientSquaredDescent.cpp:92</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -755,10 +755,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00092">92</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   92</span>                       {</div>
-<div class="line"><span class="lineno">   93</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#ae3c651107a28e0083b089929b56677d7">getConvergenceH</a>() &lt; <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.bgsd_options().grad2force_convergence;</div>
-<div class="line"><span class="lineno">   94</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00087">87</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   87</span>                       {</div>
+<div class="line"><span class="lineno">   88</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#ae3c651107a28e0083b089929b56677d7">getConvergenceH</a>() &lt; <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.bgsd_options().grad2force_convergence;</div>
+<div class="line"><span class="lineno">   89</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -785,11 +785,11 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00089">89</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   89</span>                      {</div>
-<div class="line"><span class="lineno">   90</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#a858077ffc687dee14ccbf1ed4d4dd435">getConvergenceV</a>() &lt; <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.bgsd_options().grad2energy_convergence;</div>
-<div class="line"><span class="lineno">   91</span>  }</div>
-<div class="ttc" id="aclasseonc_1_1BGSDObjectiveFunction_html_a858077ffc687dee14ccbf1ed4d4dd435"><div class="ttname"><a href="#a858077ffc687dee14ccbf1ed4d4dd435">eonc::BGSDObjectiveFunction::getConvergenceV</a></div><div class="ttdeci">double getConvergenceV()</div><div class="ttdef"><b>Definition</b> <a href="BiasedGradientSquaredDescent_8cpp_source.html#l00098">BiasedGradientSquaredDescent.cpp:98</a></div></div>
+<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00084">84</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   84</span>                      {</div>
+<div class="line"><span class="lineno">   85</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#a858077ffc687dee14ccbf1ed4d4dd435">getConvergenceV</a>() &lt; <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.bgsd_options().grad2energy_convergence;</div>
+<div class="line"><span class="lineno">   86</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1BGSDObjectiveFunction_html_a858077ffc687dee14ccbf1ed4d4dd435"><div class="ttname"><a href="#a858077ffc687dee14ccbf1ed4d4dd435">eonc::BGSDObjectiveFunction::getConvergenceV</a></div><div class="ttdeci">double getConvergenceV()</div><div class="ttdef"><b>Definition</b> <a href="BiasedGradientSquaredDescent_8cpp_source.html#l00093">BiasedGradientSquaredDescent.cpp:93</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -818,8 +818,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#ab285e512e05c11a1438a93d72a0ec527">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00082">82</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   82</span>{ <a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.setPositionsFreeV(x); }</div>
+<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00077">77</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   77</span>{ <a class="code hl_variable" href="#ad1e6ee23466905e5f243c97d66b87a6b">matter</a>.setPositionsFreeV(x); }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -844,7 +844,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00105">105</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00100">100</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
 
 </div>
 </div>
@@ -868,7 +868,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00030">30</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00026">26</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
 
 </div>
 </div>
@@ -892,7 +892,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00104">104</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html#l00099">99</a> of file <a class="el" href="BiasedGradientSquaredDescent_8cpp_source.html">BiasedGradientSquaredDescent.cpp</a>.</p>
 
 </div>
 </div>

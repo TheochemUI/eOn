@@ -267,6 +267,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a90d7874f2d2686d628c9d6057f841925" id="r_a90d7874f2d2686d628c9d6057f841925"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a90d7874f2d2686d628c9d6057f841925">isConverged</a> ()=0</td></tr>
 <tr class="memitem:adb5aa05d56bdb3f5eca741688f4f4e2d" id="r_adb5aa05d56bdb3f5eca741688f4f4e2d"><td class="memItemLeft">virtual double&#160;</td><td class="memItemRight"><a class="el" href="#adb5aa05d56bdb3f5eca741688f4f4e2d">getConvergence</a> ()=0</td></tr>
 <tr class="memitem:a71d9f4b931fccd6ae74a054a92ab1fa9" id="r_a71d9f4b931fccd6ae74a054a92ab1fa9"><td class="memItemLeft">virtual VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a71d9f4b931fccd6ae74a054a92ab1fa9">difference</a> (const VectorXd &amp;a, const VectorXd &amp;b)=0</td></tr>
+<tr class="memitem:a1b411c5e39f354a9ec1058e84c172e54" id="r_a1b411c5e39f354a9ec1058e84c172e54"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a1b411c5e39f354a9ec1058e84c172e54">supportsFiniteDifferenceCurvature</a> () const</td></tr>
 <tr class="memitem:af3271abcddd3c2ec4808a5b3f25e4b77" id="r_af3271abcddd3c2ec4808a5b3f25e4b77"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#af3271abcddd3c2ec4808a5b3f25e4b77">minimumImage</a> (Eigen::Ref&lt; Eigen::Vector3d &gt;) const</td></tr>
 <tr class="memitem:a8f2672688adbd931070f00fa29b72be8" id="r_a8f2672688adbd931070f00fa29b72be8"><td class="memItemLeft">virtual VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a8f2672688adbd931070f00fa29b72be8">getMasses</a> () const</td></tr>
 <tr class="memitem:a9026e74111d5f55078d5c5f8a47501aa" id="r_a9026e74111d5f55078d5c5f8a47501aa"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a9026e74111d5f55078d5c5f8a47501aa">getPeriodic</a> () const</td></tr>
@@ -472,7 +473,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classeonc_1_1BGSDObjectiveFunction.html#ac803ae722f445829f476b060dded12aa">eonc::BGSDObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ae56376728840b0ce19ab0ebbc02dae89">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1IDPPObjectiveFunction.html#af9ff6bc659b9161a28d757518834137f">eonc::IDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1MinModeObjectiveFunction.html#a6d66337710dadc9e124e7ed7f553164f">eonc::MinModeObjectiveFunction</a>, <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#a01941b334921107d573ae0f8f5ad7e1f">eonc::NEBObjectiveFunction</a>, and <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#ad74a5737ea8d57236b8b5e0ac4221ebd">eonc::ZBLRepulsiveIDPPObjective</a>.</p>
+<p>Implemented in <a class="el" href="classeonc_1_1BGSDObjectiveFunction.html#af09b31ceef426b8ae34384f428331a70">eonc::BGSDObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ae56376728840b0ce19ab0ebbc02dae89">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1IDPPObjectiveFunction.html#af9ff6bc659b9161a28d757518834137f">eonc::IDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1MinModeObjectiveFunction.html#a6d66337710dadc9e124e7ed7f553164f">eonc::MinModeObjectiveFunction</a>, <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#a01941b334921107d573ae0f8f5ad7e1f">eonc::NEBObjectiveFunction</a>, and <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#ad74a5737ea8d57236b8b5e0ac4221ebd">eonc::ZBLRepulsiveIDPPObjective</a>.</p>
 
 </div>
 </div>
@@ -499,8 +500,8 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00037">37</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   37</span>{ <span class="keywordflow">return</span> VectorXd(); }</div>
+<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00039">39</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   39</span>{ <span class="keywordflow">return</span> VectorXd(); }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -527,8 +528,8 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00039">39</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   39</span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
+<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00041">41</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   41</span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -609,8 +610,8 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00035">35</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   35</span>{}</div>
+<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00037">37</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   37</span>{}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -639,6 +640,36 @@ Protected Attributes</h2></td></tr>
 
 <p>Implemented in <a class="el" href="classeonc_1_1BGSDObjectiveFunction.html#a4efa21aa4c35e9ad297d488c8cea091e">eonc::BGSDObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a074596ff89086f0b6c4c4735031d53d0">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1IDPPObjectiveFunction.html#ae7bb7895f4dc995b9eafbc0b8625746e">eonc::IDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1MinModeObjectiveFunction.html#ae5821ab7860f4d031604c92eecc99138">eonc::MinModeObjectiveFunction</a>, <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#af16aa1b71afc9ded3769415a31aad88b">eonc::NEBObjectiveFunction</a>, and <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a40a01577f1935accb593eca541e0653a">eonc::ZBLRepulsiveIDPPObjective</a>.</p>
 
+</div>
+</div>
+<a id="a1b411c5e39f354a9ec1058e84c172e54" name="a1b411c5e39f354a9ec1058e84c172e54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b411c5e39f354a9ec1058e84c172e54">&#9670;&#160;</a></span>supportsFiniteDifferenceCurvature()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eonc::ObjectiveFunction::supportsFiniteDifferenceCurvature </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#a68ab21a59496d0ed70471e5b8a3ee30e">eonc::NEBObjectiveFunction</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00034">34</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   34</span>{ <span class="keywordflow">return</span> <span class="keyword">true</span>; }</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>

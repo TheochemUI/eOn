@@ -155,6 +155,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/in-process.html">In-process jobs (no file IPC)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/abi-surface.html">Public C++ surface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/rgpot-migration.html">rgpot kernel inventory</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/porting_potentials.html">Porting potentials</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/docbuild.html">Working with the documentation</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn.html">Subversion</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn-migration.html">Migrating from SVN</a></li>
@@ -174,6 +175,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.geometry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.pbc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.wire.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.wire</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
@@ -187,6 +189,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.cancel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.cancel</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
@@ -217,6 +220,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.3.1/index.html">[v3.3.1] - 2026-09-27</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v3.3.1/release-notes.html">eOn 3.3.1</a></li>
 </ul>
@@ -420,7 +427,7 @@ and different runtime topologies.</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>Direct in-process</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">-Dwith_rgpot=true</span></code></p></td>
+<td><p>always, except Windows</p></td>
 <td><p>Potential type <code class="docutils literal notranslate"><span class="pre">RGPOT</span></code>: links rgpot NWChemPot / CPMDPot</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">dlopen</span></code> of <code class="docutils literal notranslate"><span class="pre">libnwchemc.so</span></code> / <code class="docutils literal notranslate"><span class="pre">libcpmdc.so</span></code> in the eOn address space</p></td>
 <td><p>Production NWChem/CPMD forces in one process</p></td>
@@ -453,26 +460,27 @@ nwchemc skipping redundant RTDB resets when method params are unchanged so
 multi-step optimize/NEB stays competitive with the socket.</p>
 <section id="build-flags-summary">
 <h2>Build flags (summary)<a class="headerlink" href="#build-flags-summary" title="Link to this heading">¶</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Direct NWChem/CPMD via rgpot frontends (dlopen engines)</span>
-</span><span data-line="2">meson<span class="w"> </span>setup<span class="w"> </span>bbdir-rgpot<span class="w"> </span>-Dwith_rgpot<span class="o">=</span><span class="nb">true</span>
-</span><span data-line="3">
-</span><span data-line="4"><span class="c1"># eOn exposes its potentials as an rgpot-compatible RPC *server*</span>
-</span><span data-line="5">meson<span class="w"> </span>setup<span class="w"> </span>bbdir-serve<span class="w"> </span>-Dwith_serve<span class="o">=</span><span class="nb">true</span>
-</span><span data-line="6">
-</span><span data-line="7"><span class="c1"># Both (independent features; subproject shared)</span>
-</span><span data-line="8">meson<span class="w"> </span>setup<span class="w"> </span>bbdir-both<span class="w"> </span>-Dwith_rgpot<span class="o">=</span><span class="nb">true</span><span class="w"> </span>-Dwith_serve<span class="o">=</span><span class="nb">true</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Direct NWChem/CPMD via rgpot frontends (dlopen engines). No option:</span>
+</span><span data-line="2"><span class="c1"># non-Windows builds always link this arm. Cap&#39;n Proto is required.</span>
+</span><span data-line="3">meson<span class="w"> </span>setup<span class="w"> </span>bbdir-rgpot
+</span><span data-line="4">
+</span><span data-line="5"><span class="c1"># eOn exposes its potentials as an rgpot-compatible RPC *server*</span>
+</span><span data-line="6">meson<span class="w"> </span>setup<span class="w"> </span>bbdir-serve<span class="w"> </span>-Dwith_serve<span class="o">=</span><span class="nb">true</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="c1"># Serve on top of the direct arm (the direct arm is already on)</span>
+</span><span data-line="9">meson<span class="w"> </span>setup<span class="w"> </span>bbdir-both<span class="w"> </span>-Dwith_serve<span class="o">=</span><span class="nb">true</span>
 </span></pre></div>
 </div>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>Option</p></th>
+<tr class="row-odd"><th class="head"><p>Build</p></th>
 <th class="head"><p>Compile define</p></th>
 <th class="head"><p>Links from rgpot subproject</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">with_rgpot</span></code></p></td>
+<tr class="row-even"><td><p>direct RGPOT (non-Windows)</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">WITH_RGPOT</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">nwchempot_dep</span></code>, <code class="docutils literal notranslate"><span class="pre">cpmdpot_dep</span></code> (frontends + schema)</p></td>
 </tr>
@@ -620,7 +628,7 @@ support.</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=9ac01507"></script>
+      <script src="../_static/documentation_options.js?v=b0e360d0"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

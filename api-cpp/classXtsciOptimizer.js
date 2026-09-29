@@ -8,6 +8,7 @@ var classXtsciOptimizer =
     [ "run", "classXtsciOptimizer.html#a4928929091c0d1f588e04ac29a8a86b4", null ],
     [ "step", "classXtsciOptimizer.html#ac8fa0e20cc86e1240da7e50af7ccd249", null ],
     [ "m_cached_x", "classXtsciOptimizer.html#a5854cdd11934a6f03d601c140b38563f", null ],
+    [ "m_eindir", "classXtsciOptimizer.html#ad94bf9c63f6f403b0f1456124a4eef2c", null ],
     [ "m_solver", "classXtsciOptimizer.html#a8d21e066da8018dce977cd483ebd2399", null ],
     [ "m_x", "classXtsciOptimizer.html#a92eeff22e2007615935c6de6fb9983b7", null ]
 ];

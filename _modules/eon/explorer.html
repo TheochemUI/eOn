@@ -155,6 +155,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/in-process.html">In-process jobs (no file IPC)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/abi-surface.html">Public C++ surface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/rgpot-migration.html">rgpot kernel inventory</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/porting_potentials.html">Porting potentials</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/docbuild.html">Working with the documentation</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/svn.html">Subversion</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/svn-migration.html">Migrating from SVN</a></li>
@@ -174,6 +175,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.geometry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.pbc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.wire.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.wire</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
@@ -187,6 +189,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.cancel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.cancel</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
@@ -217,6 +220,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v3.3.1/index.html">[v3.3.1] - 2026-09-27</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v3.3.1/release-notes.html">eOn 3.3.1</a></li>
 </ul>
@@ -1199,7 +1206,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="767">        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;force_calls_minimization&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">results_dat1</span><span class="p">[</span><span class="s1">&#39;total_force_calls&#39;</span><span class="p">]</span>
 </span><span data-line="768">        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;force_calls_minimization&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">results_dat2</span><span class="p">[</span><span class="s1">&#39;total_force_calls&#39;</span><span class="p">]</span>
 </span><span data-line="769">
-</span><span data-line="770">        <span class="n">is_reactant</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">atoms</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reactant</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comp_eps_r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comp_neighbor_cutoff</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">check_rotation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comp_check_rotation</span><span class="p">,</span> <span class="n">use_identical</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comp_use_identical</span><span class="p">)</span>
+</span><span data-line="770">        <span class="n">is_reactant</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">atoms</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reactant</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comp_eps_r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comp_neighbor_cutoff</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">check_rotation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comp_check_rotation</span><span class="p">,</span> <span class="n">use_identical</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comp_use_identical</span><span class="p">,</span> <span class="n">remove_translation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comp_remove_translation</span><span class="p">)</span>
 </span><span data-line="771">
 </span><span data-line="772">        <span class="n">tc1</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">parse_results</span><span class="p">(</span><span class="n">result1</span><span class="p">[</span><span class="s1">&#39;results.dat&#39;</span><span class="p">])[</span><span class="s1">&#39;termination_reason&#39;</span><span class="p">]</span>
 </span><span data-line="773">        <span class="n">tc2</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">parse_results</span><span class="p">(</span><span class="n">result2</span><span class="p">[</span><span class="s1">&#39;results.dat&#39;</span><span class="p">])[</span><span class="s1">&#39;termination_reason&#39;</span><span class="p">]</span>
@@ -1404,7 +1411,7 @@ data-aria-dark="Switch to auto color mode">
     </div>
   </div>
 </footer>
-      <script src="../../_static/documentation_options.js?v=9ac01507"></script>
+      <script src="../../_static/documentation_options.js?v=b0e360d0"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>

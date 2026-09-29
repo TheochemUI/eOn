@@ -11,6 +11,7 @@ var classeonc_1_1Potential =
     [ "Potential", "classeonc_1_1Potential.html#ac908414bc07e7c33019e01abb4a7d9ee", null ],
     [ "~Potential", "classeonc_1_1Potential.html#a57af1d92eeff9618f873a0241e390de2", null ],
     [ "clonePotential", "classeonc_1_1Potential.html#a59bc4af33d113751d3804054b79a4872", null ],
+    [ "finiteCutoff", "classeonc_1_1Potential.html#a8f4fea1662aaa9e26f7a2ac0862d53f8", null ],
     [ "force", "classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3", null ],
     [ "force", "classeonc_1_1Potential.html#a57832183eb8dec7c2f1442363d1f7994", null ],
     [ "forceBatch", "classeonc_1_1Potential.html#aa66e1416134ff55639a6d20a34e3c1c1", null ],

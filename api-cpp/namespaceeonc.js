@@ -10,6 +10,7 @@ var namespaceeonc =
       [ "validate_and_link", "namespaceeonc_1_1config.html#a78d7cf925cc0890b91729530015d1018", null ]
     ] ],
     [ "detail", "namespaceeonc_1_1detail.html", [
+      [ "maxFreeAtomForceNormScalar", "namespaceeonc_1_1detail.html#a80ff6def7130f0f201757f99680ce040", null ],
       [ "runRotationSolver", "namespaceeonc_1_1detail.html#a6b1eabf13d45174874c319017618aaec", null ]
     ] ],
     [ "dynlib", "namespaceeonc_1_1dynlib.html", [
@@ -61,7 +62,9 @@ var namespaceeonc =
       [ "apply", "namespaceeonc_1_1pbc.html#a7bf2adae174e6b9e1265299d46b400ee", null ],
       [ "applyLegacy", "namespaceeonc_1_1pbc.html#aa30c19bf4a78bd641a3087cd2d228c19", null ],
       [ "applyPositions", "namespaceeonc_1_1pbc.html#abad2bfe4d09d881af9d6df88063455cf", null ],
-      [ "applyV", "namespaceeonc_1_1pbc.html#ac9275cb7a90e6142c029620e501a7f14", null ]
+      [ "applyV", "namespaceeonc_1_1pbc.html#ac9275cb7a90e6142c029620e501a7f14", null ],
+      [ "wrapLegacyUnit", "namespaceeonc_1_1pbc.html#a826e0e89281d1e1b00d3815898fc8d4e", null ],
+      [ "wrapMinimumImage", "namespaceeonc_1_1pbc.html#a4b4602b79d548ced226ea35337b5c119", null ]
     ] ],
     [ "pot", "namespaceeonc_1_1pot.html", [
       [ "commandFailure", "namespaceeonc_1_1pot.html#a45de6b6995d3f1722923ace90da08bdd", null ],
@@ -77,11 +80,10 @@ var namespaceeonc =
       [ "logFreqs", "namespaceeonc_1_1Prefactor.html#a1119f028d017c1522a8167d2180cf19e", null ],
       [ "movedAtoms", "namespaceeonc_1_1Prefactor.html#a2ff4dd44b7f73e862323275553ebfd7e", null ],
       [ "movedAtomsPct", "namespaceeonc_1_1Prefactor.html#a24cfd71c283f6249b7237fc650407878", null ],
-      [ "removeZeroFreqs", "namespaceeonc_1_1Prefactor.html#ad37a40fd2ada37e7a039739cd69a7190", null ],
-      [ "FILTER_CUTOFF", "namespaceeonc_1_1Prefactor.html#a0d0e1917c5501cdc7ef881018ec115d0", null ],
-      [ "FILTER_FRACTION", "namespaceeonc_1_1Prefactor.html#afc056c6475d2aa47599d96160e9329ce", null ],
-      [ "RATE_HTST", "namespaceeonc_1_1Prefactor.html#ab705ebdc1173ba3d8e3f085eb8326a80", null ],
-      [ "RATE_QQHTST", "namespaceeonc_1_1Prefactor.html#ad61b06683b59d9f2921f828f486e6aa8", null ]
+      [ "FILTER_CUTOFF", "namespaceeonc_1_1Prefactor.html#a1b83ea7cb5fe9387d8065f388b2f00f2", null ],
+      [ "FILTER_FRACTION", "namespaceeonc_1_1Prefactor.html#afc5f3819b915d3f80a1293c9d816e5bd", null ],
+      [ "RATE_HTST", "namespaceeonc_1_1Prefactor.html#a1aa3b445a4aa8166fc4c78e12f2e68e2", null ],
+      [ "RATE_QQHTST", "namespaceeonc_1_1Prefactor.html#ad9d93dcbc6f25ae13cc8f6b06f05696f", null ]
     ] ],
     [ "rng", "namespaceeonc_1_1rng.html", [
       [ "gaussRandom", "namespaceeonc_1_1rng.html#acec44c143227d3b4957ed2c919a551c3", null ],
@@ -100,6 +102,7 @@ var namespaceeonc =
       [ "safe_sqrt", "namespaceeonc_1_1safemath.html#aca143ad04605edfbb9163b099c295c05", null ],
       [ "eps", "namespaceeonc_1_1safemath.html#a57c5f23e983b67c789337e2108c86c8c", null ]
     ] ],
+    [ "xtsci_eindir", "namespaceeonc_1_1xtsci__eindir.html", "namespaceeonc_1_1xtsci__eindir" ],
     [ "ams_options_t", "structeonc_1_1ams__options__t.html", "structeonc_1_1ams__options__t" ],
     [ "artn_options_t", "structeonc_1_1artn__options__t.html", "structeonc_1_1artn__options__t" ],
     [ "ARTnResource", "classeonc_1_1ARTnResource.html", "classeonc_1_1ARTnResource" ],
@@ -244,6 +247,11 @@ var namespaceeonc =
       [ "Davidson", "namespaceeonc.html#a424d22bb15de7b1ea51aeab514681c37a3d7485486e07487a43f99cffe0a0b696", null ],
       [ "LOR", "namespaceeonc.html#a424d22bb15de7b1ea51aeab514681c37ad3335c358811cfc353257e21b1d38229", null ]
     ] ],
+    [ "FdScheme", "namespaceeonc.html#a1473c0575632e4e2549120f33b8525dd", [
+      [ "OneSided", "namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda81797e9c6fc44586202026bb6aaefe8c", null ],
+      [ "Central", "namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda4a8c79ddddd6109289084e80aa41cdf2", null ],
+      [ "Fourth", "namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda6e599f7a2a9186d391be4537f105be98", null ]
+    ] ],
     [ "JobType", "namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379", [
       [ "Unknown", "namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a88183b946cc5f0e8c96b2e66e1c74a7e", null ],
       [ "Process_Search", "namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a9fc45f090022ce2dfd190f63f008f36d", null ],
@@ -337,6 +345,7 @@ var namespaceeonc =
     [ "atomListMeansAll", "namespaceeonc.html#a050ecdb7d50604cefc5ab9fb5a50b8e4", null ],
     [ "buildEigenmodeStrategy", "namespaceeonc.html#a53a942db7f595f4023b790db6ca2758a", null ],
     [ "bundle", "namespaceeonc.html#a0d50d17b3b014d6aecf3292f553142c1", null ],
+    [ "colorMobileCutoffGraph", "namespaceeonc.html#acadde9502e384d1b7898c6fa55a22b1a", null ],
     [ "commandLine", "namespaceeonc.html#a968ff6a4c1d4936e710e6fd3d108a7f9", null ],
     [ "config_from_params", "namespaceeonc.html#a6652d0e25201d6a2881deb81f6f86998", null ],
     [ "decode_div_insn", "namespaceeonc.html#ae6b4d913cbbc345faa8f1b014fbe4eff", null ],
@@ -352,6 +361,8 @@ var namespaceeonc =
     [ "eigenmodeTotalIterations", "namespaceeonc.html#a730aa4fd117b14e5edf687766f4e6044", null ],
     [ "enableFPE", "namespaceeonc.html#ac546b01c933b83b114fa0e53ff93ed9d", null ],
     [ "ensure_interpreter", "namespaceeonc.html#a3f9b51a0a8d8a0d0075699d7830db0bf", null ],
+    [ "fdForceDerivative", "namespaceeonc.html#a158b4320d869da987eae2018295a92fd", null ],
+    [ "fdHessianVector", "namespaceeonc.html#a1aaf34eb8de2a3b2ed22c536cc106aab", null ],
     [ "forceJobRegistration", "namespaceeonc.html#a639209af6a7105d7eaf94f0dbee199c4", null ],
     [ "fpe_signal_handler", "namespaceeonc.html#a51919213af54512d30570d7053b3a8a3", null ],
     [ "freeAtomIndices", "namespaceeonc.html#a490e17ecdba1a6bf0f341728c1d9b9af", null ],
@@ -359,12 +370,18 @@ var namespaceeonc =
     [ "get_artn_resource", "namespaceeonc.html#a16a3a8eaca16e227234b28940c82ed85", null ],
     [ "get_ira_resource", "namespaceeonc.html#a08079adb14a919ed931e047d4fb09b03", null ],
     [ "getBundleSize", "namespaceeonc.html#a29c549360eda188b0aa269d3b402bddf", null ],
+    [ "greedyColorCutoffGraph", "namespaceeonc.html#ac8e99fdd4ddf41e78efb08347735cdae", null ],
     [ "jobTable", "namespaceeonc.html#a08808d4d6168f0d86aab7ebd9f0aee82", null ],
+    [ "lammpsOpenArgs", "namespaceeonc.html#a683c88f3c96430d9a3217a3eaf21c020", null ],
+    [ "lammpsScreenCursor", "namespaceeonc.html#a25573da8a25eeb817db8ab5c3e84ba60", null ],
+    [ "lammpsWorkerReaped", "namespaceeonc.html#a591dfc92514140e2a59b6444008a61c1", null ],
     [ "lattice_rows_to_fortran_box", "namespaceeonc.html#afbde0a233976150fadc6895653dc3cd0", null ],
     [ "maskWindowsMxcsrForContinue", "namespaceeonc.html#aba46d1d8df8488b185b2ed3d7d9379eb", null ],
+    [ "maxFreeAtomForceNorm", "namespaceeonc.html#ad52e6fd72cd768445176672c88a48259", null ],
     [ "minImageRemoveRigidDrift", "namespaceeonc.html#a2b2dd3bb93935dc5ca7b997104a4bb14", null ],
     [ "mobileForces", "namespaceeonc.html#ac05c62309d9dc6b1ae410a98bd17c293", null ],
     [ "packMobileRows", "namespaceeonc.html#a6baeaa9ee75d8ba1f598e80639fa79ab", null ],
+    [ "parseFdScheme", "namespaceeonc.html#a54c78dc90bd7020c23096bbb8744789f", null ],
     [ "parseServeSpec", "namespaceeonc.html#a0bab3b9bafa3fca028a6c31adac24447", null ],
     [ "pmfScanS", "namespaceeonc.html#a6850a9024a9fe22051cafdf708e2a9f7", null ],
     [ "potAllowsSharedInstance", "namespaceeonc.html#a7244d894793caf3c7b47a9dd67bb7ae7", null ],
@@ -380,7 +397,6 @@ var namespaceeonc =
     [ "serveReplicated", "namespaceeonc.html#addbe99ddcc2a13a67797e7a9f0625197", null ],
     [ "startPooledRpcServer", "namespaceeonc.html#abde34b2d6455f233f19867a3e220b56c", null ],
     [ "startRpcServer", "namespaceeonc.html#ae73698d7590f300d12636be26b8e0ea7", null ],
-    [ "strchrcount", "namespaceeonc.html#ae89a3bb124a918a661f75f947e62970e", null ],
     [ "unbundle", "namespaceeonc.html#a2703aadec043ff820ae31c94ed7f8c4b", null ],
     [ "unpackMobileRows", "namespaceeonc.html#a419e9f0f2a85a8a76afe1ae0615f2022", null ],
     [ "usesAlternativeRotation", "namespaceeonc.html#a5b795f46811b90d51ec4a80335871aeb", null ],

@@ -15,6 +15,9 @@ var annotated_dup =
         [ "FileScoped", "structeonc_1_1log_1_1FileScoped.html", "structeonc_1_1log_1_1FileScoped" ]
       ] ],
       [ "neb", "namespaceeonc_1_1neb.html", [
+        [ "zoom", "namespaceeonc_1_1neb_1_1zoom.html", [
+          [ "Window", "structeonc_1_1neb_1_1zoom_1_1Window.html", "structeonc_1_1neb_1_1zoom_1_1Window" ]
+        ] ],
         [ "DNEB_Projection", "structeonc_1_1neb_1_1DNEB__Projection.html", "structeonc_1_1neb_1_1DNEB__Projection" ],
         [ "ExtremaResult", "structeonc_1_1neb_1_1ExtremaResult.html", "structeonc_1_1neb_1_1ExtremaResult" ],
         [ "ImageForceData", "structeonc_1_1neb_1_1ImageForceData.html", "structeonc_1_1neb_1_1ImageForceData" ],
@@ -30,6 +33,9 @@ var annotated_dup =
       ] ],
       [ "params_ssot", "namespaceeonc_1_1params__ssot.html", [
         [ "GeneratedDefaults", "structeonc_1_1params__ssot_1_1GeneratedDefaults.html", "structeonc_1_1params__ssot_1_1GeneratedDefaults" ]
+      ] ],
+      [ "xtsci_eindir", "namespaceeonc_1_1xtsci__eindir.html", [
+        [ "View", "structeonc_1_1xtsci__eindir_1_1View.html", "structeonc_1_1xtsci__eindir_1_1View" ]
       ] ],
       [ "ams_options_t", "structeonc_1_1ams__options__t.html", "structeonc_1_1ams__options__t" ],
       [ "artn_options_t", "structeonc_1_1artn__options__t.html", "structeonc_1_1artn__options__t" ],

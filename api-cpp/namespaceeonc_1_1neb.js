@@ -1,5 +1,6 @@
 var namespaceeonc_1_1neb =
 [
+    [ "zoom", "namespaceeonc_1_1neb_1_1zoom.html", "namespaceeonc_1_1neb_1_1zoom" ],
     [ "DNEB_Projection", "structeonc_1_1neb_1_1DNEB__Projection.html", "structeonc_1_1neb_1_1DNEB__Projection" ],
     [ "ExtremaResult", "structeonc_1_1neb_1_1ExtremaResult.html", "structeonc_1_1neb_1_1ExtremaResult" ],
     [ "ImageForceData", "structeonc_1_1neb_1_1ImageForceData.html", "structeonc_1_1neb_1_1ImageForceData" ],
@@ -25,8 +26,8 @@ var namespaceeonc_1_1neb =
     [ "findSplineExtrema", "namespaceeonc_1_1neb.html#ae2bcb7440c5a7c56b5f545f1b3a18dd2", null ],
     [ "forcePerp", "namespaceeonc_1_1neb.html#ad4e735e3316d7c7c1adee860f3092b45", null ],
     [ "interpolatedPeakMode", "namespaceeonc_1_1neb.html#a7ce2fa2921058fefa4c8580e5d23a6e1", null ],
-    [ "pathToConFrames", "namespaceeonc_1_1neb.html#a91b5edfbc7ccfad8b12158c4a577f1ab", null ],
-    [ "printImageData", "namespaceeonc_1_1neb.html#ac9eab767bb62543c947aaed38e5f06b4", null ],
-    [ "writePathCon", "namespaceeonc_1_1neb.html#aa7cfbb79d2fd990dcecce194c4c4d29f", null ],
+    [ "pathToConFrames", "namespaceeonc_1_1neb.html#a200b4ee42d165fca881ca1f3053c9634", null ],
+    [ "printImageData", "namespaceeonc_1_1neb.html#a8d42b1b31322ea1b17cc94c29905b20a", null ],
+    [ "writePathCon", "namespaceeonc_1_1neb.html#a97a7096d08e3c06ae953526f3d794259", null ],
     [ "zeroTranslation", "namespaceeonc_1_1neb.html#a321f9a64a7765a9c96e31a75f6fac665", null ]
 ];

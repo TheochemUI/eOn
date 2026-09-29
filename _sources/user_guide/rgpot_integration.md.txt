@@ -13,7 +13,7 @@ and different runtime topologies.
 
 ```{mermaid}
 flowchart LR
-  subgraph direct ["Direct in-process (-Dwith_rgpot)"]
+  subgraph direct ["Direct in-process (always, except Windows)"]
     E1[eOn RGPOT pot] --> NP[rgpot NWChemPot / CPMDPot]
     NP -->|dlopen| L1[libnwchemc.so / libcpmdc.so]
   end
@@ -29,7 +29,7 @@ flowchart LR
 
 | Role | Meson option | What runs in eOn | Wire / load | Typical use |
 | --- | --- | --- | --- | --- |
-| Direct in-process | `-Dwith_rgpot=true` | Potential type `RGPOT`: links rgpot NWChemPot / CPMDPot | `dlopen` of `libnwchemc.so` / `libcpmdc.so` in the eOn address space | Production NWChem/CPMD forces in one process |
+| Direct in-process | always, except Windows | Potential type `RGPOT`: links rgpot NWChemPot / CPMDPot | `dlopen` of `libnwchemc.so` / `libcpmdc.so` in the eOn address space | Production NWChem/CPMD forces in one process |
 | eOn as RPC server | `-Dwith_serve=true` | `eonclient --serve` implements rgpot's Potential RPC | Cap'n Proto server in eOn | ChemGP / other tools drive any eOn pot over the network |
 | RPC client to potserv | Outside eOn | Code outside eOn connects to rgpot `potserv` | Cap'n Proto client to potserv, which then `dlopen`s engines | Engine debugging via potserv |
 
@@ -48,19 +48,20 @@ multi-step optimize/NEB stays competitive with the socket.
 ## Build flags (summary)
 
 ```{code-block} bash
-# Direct NWChem/CPMD via rgpot frontends (dlopen engines)
-meson setup bbdir-rgpot -Dwith_rgpot=true
+# Direct NWChem/CPMD via rgpot frontends (dlopen engines). No option:
+# non-Windows builds always link this arm. Cap'n Proto is required.
+meson setup bbdir-rgpot
 
 # eOn exposes its potentials as an rgpot-compatible RPC *server*
 meson setup bbdir-serve -Dwith_serve=true
 
-# Both (independent features; subproject shared)
-meson setup bbdir-both -Dwith_rgpot=true -Dwith_serve=true
+# Serve on top of the direct arm (the direct arm is already on)
+meson setup bbdir-both -Dwith_serve=true
 ```
 
-| Option | Compile define | Links from rgpot subproject |
+| Build | Compile define | Links from rgpot subproject |
 | --- | --- | --- |
-| `with_rgpot` | `WITH_RGPOT` | `nwchempot_dep`, `cpmdpot_dep` (frontends + schema) |
+| direct RGPOT (non-Windows) | `WITH_RGPOT` | `nwchempot_dep`, `cpmdpot_dep` (frontends + schema) |
 | `with_serve` | `WITH_SERVE_MODE` | `ptlrpc_dep` (RPC server stack) |
 
 Both are convenience archives inside rgpot's single versioned `librgpot`,

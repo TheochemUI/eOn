@@ -12,16 +12,17 @@ var searchData=
   ['ghostatoms_9',['ghostatoms',['../classEMT.html#a92e6e5451149334a04a89f9efdda4ac8',1,'EMT']]],
   ['ghostpotential_10',['ghostPotential',['../classGhostAtoms.html#aba08fd3d36effac3cb1d0b50e5438045',1,'GhostAtoms']]],
   ['gle_5fa_5ffile_11',['gle_a_file',['../structeonc_1_1oh__tst__options__t.html#a10158b3b43d49fee1883445da756a2c8',1,'eonc::oh_tst_options_t']]],
-  ['global_5foptimization_5foptions_5f_12',['global_optimization_options_',['../classeonc_1_1Parameters.html#aa9e2745313e92117043199be5b9dac82',1,'eonc::Parameters']]],
-  ['gp_5fsurrogate_5foptions_5f_13',['gp_surrogate_options_',['../classeonc_1_1Parameters.html#ac210de108c5e0e490948f11203fd96dc',1,'eonc::Parameters']]],
-  ['gpr_5fdimer_5foptions_5f_14',['gpr_dimer_options_',['../classeonc_1_1Parameters.html#a301b205f8e7b4ff7dccf5c4a55d6bb62',1,'eonc::Parameters']]],
+  ['global_5foptimization_5foptions_5f_12',['global_optimization_options_',['../structeonc_1_1Parameters_1_1Impl.html#a276ec52122be54c81f54d4cfd2141387',1,'eonc::Parameters::Impl']]],
+  ['gp_5fsurrogate_5foptions_5f_13',['gp_surrogate_options_',['../structeonc_1_1Parameters_1_1Impl.html#aaeb4b569b1e47a0a826b2978f3c024ca',1,'eonc::Parameters::Impl']]],
+  ['gpr_5fdimer_5foptions_5f_14',['gpr_dimer_options_',['../structeonc_1_1Parameters_1_1Impl.html#acf0df5c154c8a3d8d638cb7ea2b40188',1,'eonc::Parameters::Impl']]],
   ['gpr_5fmodel_15',['gpr_model',['../classGPRPotential.html#adc6806d7f58eda6383f890816fb6b627',1,'GPRPotential']]],
   ['gpr_5fparams_16',['gpr_params',['../structeonc_1_1gpr__dimer__options__t.html#a2a14aab24375c7e656285864c092131f',1,'eonc::gpr_dimer_options_t']]],
   ['grad2energy_5fconvergence_17',['grad2energy_convergence',['../structeonc_1_1bgsd__options__t.html#a9534c4c3f3ec594c4152005ee6180d51',1,'eonc::bgsd_options_t']]],
   ['grad2force_5fconvergence_18',['grad2force_convergence',['../structeonc_1_1bgsd__options__t.html#a632d1ba463ae61438cb32c2c9ee56719',1,'eonc::bgsd_options_t']]],
   ['grad_5ffile_19',['grad_file',['../structeonc_1_1gpr__dimer__options__t_1_1debug__params__t.html#adeb51a5db96116aac95ba6a905f5eae1',1,'eonc::gpr_dimer_options_t::debug_params_t']]],
   ['gradient_5ffinite_5fdifference_20',['gradient_finite_difference',['../structeonc_1_1bgsd__options__t.html#a67d42eeb520bde21bd6ab703454c3ab9',1,'eonc::bgsd_options_t']]],
-  ['gradients_21',['gradients',['../classeonc_1_1ImprovedDimer.html#a89b8ad5f49419d61029016bdb57aa887',1,'eonc::ImprovedDimer']]],
-  ['gram_22',['GRAM',['../namespaceforcefields_1_1unit__system.html#a44785f1fbd2ea379e47a0211e6b273a4',1,'forcefields::unit_system']]],
-  ['gram_5fper_5fmol_23',['GRAM_PER_MOL',['../namespaceforcefields_1_1unit__system.html#a286f6446474e402af5a2854536ec89cd',1,'forcefields::unit_system']]]
+  ['gradient_5fsign_21',['gradient_sign',['../structeonc_1_1xtsci__eindir_1_1View.html#a26e6e612adfa3b5da20f7062ecd948df',1,'eonc::xtsci_eindir::View']]],
+  ['gradients_22',['gradients',['../classeonc_1_1ImprovedDimer.html#a89b8ad5f49419d61029016bdb57aa887',1,'eonc::ImprovedDimer']]],
+  ['gram_23',['GRAM',['../namespaceforcefields_1_1unit__system.html#a44785f1fbd2ea379e47a0211e6b273a4',1,'forcefields::unit_system']]],
+  ['gram_5fper_5fmol_24',['GRAM_PER_MOL',['../namespaceforcefields_1_1unit__system.html#a286f6446474e402af5a2854536ec89cd',1,'forcefields::unit_system']]]
 ];

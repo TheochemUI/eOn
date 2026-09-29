@@ -24,7 +24,7 @@ var searchData=
   ['neb_5fband_21',['neb_band',['../structeonc_1_1io_1_1ConFrameMetadata.html#a1e3ec7c95a8f840aab609450248a3ce8',1,'eonc::io::ConFrameMetadata']]],
   ['neb_5fbead_22',['neb_bead',['../structeonc_1_1io_1_1ConFrameMetadata.html#af120c8f87a26122f66264df1f1bf2a1b',1,'eonc::io::ConFrameMetadata']]],
   ['neb_5fmmf_23',['neb_mmf',['../structeonc_1_1debug__options__t.html#a778c257acfe908c5343a37ab3554bc95',1,'eonc::debug_options_t']]],
-  ['neb_5foptions_5f_24',['neb_options_',['../classeonc_1_1Parameters.html#ad8f1a6ce41055d75a8bd03cad956c200',1,'eonc::Parameters']]],
+  ['neb_5foptions_5f_24',['neb_options_',['../structeonc_1_1Parameters_1_1Impl.html#a426b238ebb5e82c1cf834cafa596334e',1,'eonc::Parameters::Impl']]],
   ['neigh_5flist_5f_25',['neigh_list_',['../classEAM.html#a2cfc0069b7a60064775febb23c146a84',1,'EAM']]],
   ['neighbor_5fcutoff_26',['neighbor_cutoff',['../structeonc_1_1StructureComparisonOptions.html#adc7f08a491372a1527b34c97dcb21e2a',1,'eonc::StructureComparisonOptions']]],
   ['neighborlist_27',['neighborList',['../classNeighborList.html#aa9a8b382f1bd16ccd48f10f2b3b1bcb6',1,'NeighborList']]],

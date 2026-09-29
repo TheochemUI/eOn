@@ -46,6 +46,7 @@ var ParametersOptions_8h =
     [ "eonc::neb_options_t::spring_options_t::onsager_machlup_t", "structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html", "structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t" ],
     [ "eonc::neb_options_t::climbing_image_options_t", "structeonc_1_1neb__options__t_1_1climbing__image__options__t.html", "structeonc_1_1neb__options__t_1_1climbing__image__options__t" ],
     [ "eonc::neb_options_t::climbing_image_options_t::hybrid_dimer_t", "structeonc_1_1neb__options__t_1_1climbing__image__options__t_1_1hybrid__dimer__t.html", "structeonc_1_1neb__options__t_1_1climbing__image__options__t_1_1hybrid__dimer__t" ],
+    [ "eonc::neb_options_t::zoom_options_t", "structeonc_1_1neb__options__t_1_1zoom__options__t.html", "structeonc_1_1neb__options__t_1_1zoom__options__t" ],
     [ "eonc::neb_options_t::path_initialization_t", "structeonc_1_1neb__options__t_1_1path__initialization__t.html", "structeonc_1_1neb__options__t_1_1path__initialization__t" ],
     [ "eonc::neb_options_t::endpoint_options_t", "structeonc_1_1neb__options__t_1_1endpoint__options__t.html", "structeonc_1_1neb__options__t_1_1endpoint__options__t" ],
     [ "eonc::dynamics_options_t", "structeonc_1_1dynamics__options__t.html", "structeonc_1_1dynamics__options__t" ],

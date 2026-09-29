@@ -7,7 +7,7 @@ var classeonc_1_1LBFGS =
     [ "getStep", "classeonc_1_1LBFGS.html#aefc648b78220c46fcce4fe276e78f85c", null ],
     [ "hessianStep", "classeonc_1_1LBFGS.html#ab81c7c1b467bfdba7725b6590c885ce0", null ],
     [ "micRij", "classeonc_1_1LBFGS.html#afcac6cba33e48041f069fe4bfeba83be", null ],
-    [ "reset", "classeonc_1_1LBFGS.html#a40376d5a689bcf46b75faff1e56867e5", null ],
+    [ "reset", "classeonc_1_1LBFGS.html#ad0c78e6bdb73ddd2d71fd9d645d3f8a8", null ],
     [ "run", "classeonc_1_1LBFGS.html#aa0772bc6ee4b4f7eb2ac94efab715886", null ],
     [ "step", "classeonc_1_1LBFGS.html#a86f366cc1e97dc79132b2f9b855de51d", null ],
     [ "update", "classeonc_1_1LBFGS.html#a1e91f0aaa4d3858d2b251b9612c03a59", null ],

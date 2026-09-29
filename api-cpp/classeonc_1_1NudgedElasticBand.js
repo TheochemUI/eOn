@@ -43,6 +43,7 @@ var classeonc_1_1NudgedElasticBand =
     [ "pot", "classeonc_1_1NudgedElasticBand.html#aaecefdd86316ce81857e1d9c45e637cc", null ],
     [ "projectedForce", "classeonc_1_1NudgedElasticBand.html#a993690c7a8194ab389bf601a63e8317a", null ],
     [ "projectionStrat_", "classeonc_1_1NudgedElasticBand.html#ab32b99f131d250dc9c1c7a860680799f", null ],
+    [ "reactantEnergy", "classeonc_1_1NudgedElasticBand.html#a62e8e01ecd0aa36766be602dc8c4da25", null ],
     [ "status", "classeonc_1_1NudgedElasticBand.html#aae351f3ccfad45107798a7cffe4c746c", null ],
     [ "tangent", "classeonc_1_1NudgedElasticBand.html#a189895e2c19c739127a2e83fcb049a07", null ],
     [ "tangentStrat_", "classeonc_1_1NudgedElasticBand.html#a98b42129fbdfda6cd908a50a5752b865", null ]

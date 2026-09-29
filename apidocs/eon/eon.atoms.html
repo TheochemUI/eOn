@@ -155,6 +155,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/in-process.html">In-process jobs (no file IPC)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/abi-surface.html">Public C++ surface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/rgpot-migration.html">rgpot kernel inventory</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/porting_potentials.html">Porting potentials</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/docbuild.html">Working with the documentation</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/svn.html">Subversion</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/svn-migration.html">Migrating from SVN</a></li>
@@ -174,6 +175,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l3"><a class="reference internal" href="eon.geometry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="eon.geometry.pbc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="eon.geometry.wire.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.wire</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
@@ -187,6 +189,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.cancel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.cancel</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
@@ -217,6 +220,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v3.3.1/index.html">[v3.3.1] - 2026-09-27</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v3.3.1/release-notes.html">eOn 3.3.1</a></li>
 </ul>
@@ -317,9 +324,11 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#eon.atoms.atomic_number"><code class="docutils literal notranslate"><span class="pre">atomic_number()</span></code></a></li>
 <li><a class="reference internal" href="#eon.atoms.symbol_for_z"><code class="docutils literal notranslate"><span class="pre">symbol_for_z()</span></code></a></li>
 <li><a class="reference internal" href="#eon.atoms.identical"><code class="docutils literal notranslate"><span class="pre">identical()</span></code></a></li>
+<li><a class="reference internal" href="#eon.atoms.remove_net_translation"><code class="docutils literal notranslate"><span class="pre">remove_net_translation()</span></code></a></li>
 <li><a class="reference internal" href="#eon.atoms.match"><code class="docutils literal notranslate"><span class="pre">match()</span></code></a></li>
 <li><a class="reference internal" href="#eon.atoms.point_energy_match"><code class="docutils literal notranslate"><span class="pre">point_energy_match()</span></code></a></li>
 <li><a class="reference internal" href="#eon.atoms.points_energies_match"><code class="docutils literal notranslate"><span class="pre">points_energies_match()</span></code></a></li>
+<li><a class="reference internal" href="#eon.atoms.crystal_spacegroup"><code class="docutils literal notranslate"><span class="pre">crystal_spacegroup()</span></code></a></li>
 <li><a class="reference internal" href="#eon.atoms.rot_match"><code class="docutils literal notranslate"><span class="pre">rot_match()</span></code></a></li>
 <li><a class="reference internal" href="#eon.atoms.rotm"><code class="docutils literal notranslate"><span class="pre">rotm()</span></code></a></li>
 <li><a class="reference internal" href="#eon.atoms.CNA_FCC"><code class="docutils literal notranslate"><span class="pre">CNA_FCC</span></code></a></li>
@@ -410,7 +419,9 @@ working type. On disk, structures are <code class="docutils literal notranslate"
 <p>Geometry kernels
 PBC, neighbor lists (vesin), and process-atom selection live under
 :mod:<code class="docutils literal notranslate"><span class="pre">eon.geometry</span></code>. This module re-exports them for compatibility and
-keeps structure-matching / CNA helpers plus a radius/color overlay.</p>
+keeps CNA helpers plus a radius/color overlay. <code class="docutils literal notranslate"><span class="pre">identical</span></code> matches
+one partner per atom. Rotational matches and crystal space groups go
+through <code class="docutils literal notranslate"><span class="pre">readcon_ops</span></code>.</p>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
 <section id="functions">
@@ -427,14 +438,20 @@ keeps structure-matching / CNA helpers plus a radius/color overlay.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.identical" title="eon.atoms.identical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">identical</span></code></a></p></td>
 <td><p>True if two structures match when same-element atoms are interchangeable.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.match" title="eon.atoms.match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.remove_net_translation" title="eon.atoms.remove_net_translation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_net_translation</span></code></a></p></td>
+<td><p>Copy of <code class="docutils literal notranslate"><span class="pre">a</span></code> shifted by its mean minimum-image displacement onto <code class="docutils literal notranslate"><span class="pre">b</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.match" title="eon.atoms.match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.point_energy_match" title="eon.atoms.point_energy_match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">point_energy_match</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.point_energy_match" title="eon.atoms.point_energy_match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">point_energy_match</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.points_energies_match" title="eon.atoms.points_energies_match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">points_energies_match</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.points_energies_match" title="eon.atoms.points_energies_match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">points_energies_match</span></code></a></p></td>
 <td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.crystal_spacegroup" title="eon.atoms.crystal_spacegroup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crystal_spacegroup</span></code></a></p></td>
+<td><p>International symbol, number, and Hall number for a periodic crystal.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.rot_match" title="eon.atoms.rot_match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rot_match</span></code></a></p></td>
 <td></td>
@@ -539,19 +556,37 @@ Max allowed MIC displacement (Å) for a pair to count as the same site.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="eon.atoms.remove_net_translation">
+<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">remove_net_translation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#remove_net_translation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.remove_net_translation" title="Link to this definition">¶</a></dt>
+<dd><p>Copy of <code class="docutils literal notranslate"><span class="pre">a</span></code> shifted by its mean minimum-image displacement onto <code class="docutils literal notranslate"><span class="pre">b</span></code>.</p>
+<p>Mirrors the client’s <code class="docutils literal notranslate"><span class="pre">geometry::translationRemove</span></code>: with no fixed atoms
+a periodic system can drift as a whole during a saddle search, and the
+drifted copy is the same configuration.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="eon.atoms.match">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbor_cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indistinguishable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_rotation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_identical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.match" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbor_cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indistinguishable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_rotation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_identical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_translation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.match" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.atoms.point_energy_match">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">point_energy_match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbor_cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_rotation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_identical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#point_energy_match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.point_energy_match" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">point_energy_match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbor_cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_rotation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_identical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_translation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#point_energy_match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.point_energy_match" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.atoms.points_energies_match">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">points_energies_match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files_b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energies_b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbor_cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_rotation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_identical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#points_energies_match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.points_energies_match" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">points_energies_match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files_b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energies_b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbor_cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_rotation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_identical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_translation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#points_energies_match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.points_energies_match" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.atoms.crystal_spacegroup">
+<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">crystal_spacegroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symprec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#crystal_spacegroup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.crystal_spacegroup" title="Link to this definition">¶</a></dt>
+<dd><p>International symbol, number, and Hall number for a periodic crystal.</p>
+<p>One international number covers several settings. <code class="docutils literal notranslate"><span class="pre">hall_number</span></code> names
+the setting. This is not the cluster match. Iterative Rotations and
+Assignments answers that question.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.atoms.rot_match">
@@ -782,7 +817,7 @@ object.</p>
     </div>
   </div>
 </footer>
-      <script src="../../_static/documentation_options.js?v=9ac01507"></script>
+      <script src="../../_static/documentation_options.js?v=b0e360d0"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>

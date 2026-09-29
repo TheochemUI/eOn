@@ -261,7 +261,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:af5e38a77399147106fd57aced5092a71 inherit pub_methods_classeonc_1_1Optimizer" id="r_af5e38a77399147106fd57aced5092a71"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#af5e38a77399147106fd57aced5092a71">Optimizer</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1ObjectiveFunction.html">ObjectiveFunction</a> &gt; a_objf, <a class="el" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">OptType</a> a_optype, const <a class="el" href="structeonc_1_1OptimizerConfig.html">OptimizerConfig</a> &amp;a_config)</td></tr>
 <tr class="memitem:a7359cf3da3da63ba17b3564de5428e18 inherit pub_methods_classeonc_1_1Optimizer" id="r_a7359cf3da3da63ba17b3564de5428e18"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#a7359cf3da3da63ba17b3564de5428e18">Optimizer</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1ObjectiveFunction.html">ObjectiveFunction</a> &gt; a_objf, const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;a_params)</td></tr>
 <tr class="memitem:a0799f30a0b8940646966008020d93e6d inherit pub_methods_classeonc_1_1Optimizer" id="r_a0799f30a0b8940646966008020d93e6d"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#a0799f30a0b8940646966008020d93e6d">Optimizer</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1ObjectiveFunction.html">ObjectiveFunction</a> &gt; a_objf, <a class="el" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">OptType</a> a_optype, const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;a_params)</td></tr>
-<tr class="memitem:ae94c246f1e45f8f7b8f906667951543c inherit pub_methods_classeonc_1_1Optimizer" id="r_ae94c246f1e45f8f7b8f906667951543c"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#ae94c246f1e45f8f7b8f906667951543c">~Optimizer</a> ()</td></tr>
+<tr class="memitem:a9ea80e9f5f70262118bad3c9dd08a2ca inherit pub_methods_classeonc_1_1Optimizer" id="r_a9ea80e9f5f70262118bad3c9dd08a2ca"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#a9ea80e9f5f70262118bad3c9dd08a2ca">~Optimizer</a> ()=default</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -312,10 +312,14 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="SteepestDescent_8h_source.html#l00026">26</a> of file <a class="el" href="SteepestDescent_8h_source.html">SteepestDescent.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   28</span>      : <a class="code hl_function" href="classeonc_1_1Optimizer.html#a51ef8ef5f774fa7125131d8a5dd72710">Optimizer</a>(a_objf, <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a38f99abbc1d339c277c0669e7bc373c0">OptType::SD</a>, a_params), <a class="code hl_variable" href="#a76fdfb4e1bee4c619af814e4a839e13f">iteration</a>{0} {}</div>
+<div class="fragment"><div class="line"><span class="lineno">   28</span>      : <a class="code hl_function" href="classeonc_1_1Optimizer.html#a51ef8ef5f774fa7125131d8a5dd72710">Optimizer</a>(a_objf, <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a38f99abbc1d339c277c0669e7bc373c0">OptType::SD</a>, <a class="code hl_function" href="structeonc_1_1OptimizerConfig.html#abcfc681e415bb093ecdc44ed452e7e0d">OptimizerConfig::fromParams</a>(a_params)),</div>
+<div class="line"><span class="lineno">   29</span>        <a class="code hl_variable" href="#ab0d3cd1e0a6243a7f6849be79986043f">m_rPrev</a>{Eigen::VectorXd::Zero(a_objf-&gt;degreesOfFreedom())},</div>
+<div class="line"><span class="lineno">   30</span>        <a class="code hl_variable" href="#a963c99bb05cc480983010a41b82bb86a">m_fPrev</a>{Eigen::VectorXd::Zero(a_objf-&gt;degreesOfFreedom())} {}</div>
 <div class="ttc" id="aclasseonc_1_1Optimizer_html_a51ef8ef5f774fa7125131d8a5dd72710"><div class="ttname"><a href="classeonc_1_1Optimizer.html#a51ef8ef5f774fa7125131d8a5dd72710">eonc::Optimizer::Optimizer</a></div><div class="ttdeci">Optimizer(std::shared_ptr&lt; ObjectiveFunction &gt; a_objf, const OptimizerConfig &amp;a_config)</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00073">Optimizer.h:73</a></div></div>
-<div class="ttc" id="aclasseonc_1_1SteepestDescent_html_a76fdfb4e1bee4c619af814e4a839e13f"><div class="ttname"><a href="#a76fdfb4e1bee4c619af814e4a839e13f">eonc::SteepestDescent::iteration</a></div><div class="ttdeci">size_t iteration</div><div class="ttdef"><b>Definition</b> <a href="SteepestDescent_8h_source.html#l00037">SteepestDescent.h:37</a></div></div>
+<div class="ttc" id="aclasseonc_1_1SteepestDescent_html_a963c99bb05cc480983010a41b82bb86a"><div class="ttname"><a href="#a963c99bb05cc480983010a41b82bb86a">eonc::SteepestDescent::m_fPrev</a></div><div class="ttdeci">Eigen::VectorXd m_fPrev</div><div class="ttdef"><b>Definition</b> <a href="SteepestDescent_8h_source.html#l00041">SteepestDescent.h:41</a></div></div>
+<div class="ttc" id="aclasseonc_1_1SteepestDescent_html_ab0d3cd1e0a6243a7f6849be79986043f"><div class="ttname"><a href="#ab0d3cd1e0a6243a7f6849be79986043f">eonc::SteepestDescent::m_rPrev</a></div><div class="ttdeci">Eigen::VectorXd m_rPrev</div><div class="ttdef"><b>Definition</b> <a href="SteepestDescent_8h_source.html#l00040">SteepestDescent.h:40</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56a38f99abbc1d339c277c0669e7bc373c0"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a38f99abbc1d339c277c0669e7bc373c0">eonc::OptType::SD</a></div><div class="ttdeci">@ SD</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00110">BaseStructures.h:110</a></div></div>
+<div class="ttc" id="astructeonc_1_1OptimizerConfig_html_abcfc681e415bb093ecdc44ed452e7e0d"><div class="ttname"><a href="structeonc_1_1OptimizerConfig.html#abcfc681e415bb093ecdc44ed452e7e0d">eonc::OptimizerConfig::fromParams</a></div><div class="ttdeci">static OptimizerConfig fromParams(const Parameters &amp;p)</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00057">Optimizer.h:57</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -407,6 +411,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">   53</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
 <div class="line"><span class="lineno">   54</span>}</div>
 <div class="ttc" id="aclasseonc_1_1Optimizer_html_ac396cbda1caadf57ff9df7eda4db1822"><div class="ttname"><a href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">eonc::Optimizer::m_objf</a></div><div class="ttdeci">std::shared_ptr&lt; ObjectiveFunction &gt; m_objf</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00070">Optimizer.h:70</a></div></div>
+<div class="ttc" id="aclasseonc_1_1SteepestDescent_html_a76fdfb4e1bee4c619af814e4a839e13f"><div class="ttname"><a href="#a76fdfb4e1bee4c619af814e4a839e13f">eonc::SteepestDescent::iteration</a></div><div class="ttdeci">size_t iteration</div><div class="ttdef"><b>Definition</b> <a href="SteepestDescent_8h_source.html#l00039">SteepestDescent.h:39</a></div></div>
 <div class="ttc" id="aclasseonc_1_1SteepestDescent_html_af50e78dc893197ae449ea6057d3fd5b1"><div class="ttname"><a href="#af50e78dc893197ae449ea6057d3fd5b1">eonc::SteepestDescent::step</a></div><div class="ttdeci">int step(double a_maxMove) override</div><div class="ttdef"><b>Definition</b> <a href="SteepestDescent_8cpp_source.html#l00020">SteepestDescent.cpp:20</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -466,9 +471,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">   46</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
 <div class="line"><span class="lineno">   47</span>}</div>
 <div class="ttc" id="aclasseonc_1_1Optimizer_html_a3bfcee12036bd655e29a065e8e1c1f4d"><div class="ttname"><a href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">eonc::Optimizer::m_optConfig</a></div><div class="ttdeci">const OptimizerConfig m_optConfig</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00069">Optimizer.h:69</a></div></div>
-<div class="ttc" id="aclasseonc_1_1SteepestDescent_html_a963c99bb05cc480983010a41b82bb86a"><div class="ttname"><a href="#a963c99bb05cc480983010a41b82bb86a">eonc::SteepestDescent::m_fPrev</a></div><div class="ttdeci">Eigen::VectorXd m_fPrev</div><div class="ttdef"><b>Definition</b> <a href="SteepestDescent_8h_source.html#l00039">SteepestDescent.h:39</a></div></div>
-<div class="ttc" id="aclasseonc_1_1SteepestDescent_html_aa9274ce5fef24e7b8a1babf63c3aa840"><div class="ttname"><a href="#aa9274ce5fef24e7b8a1babf63c3aa840">eonc::SteepestDescent::m_log</a></div><div class="ttdeci">eonc::log::FileScoped m_log</div><div class="ttdef"><b>Definition</b> <a href="SteepestDescent_8h_source.html#l00035">SteepestDescent.h:35</a></div></div>
-<div class="ttc" id="aclasseonc_1_1SteepestDescent_html_ab0d3cd1e0a6243a7f6849be79986043f"><div class="ttname"><a href="#ab0d3cd1e0a6243a7f6849be79986043f">eonc::SteepestDescent::m_rPrev</a></div><div class="ttdeci">Eigen::VectorXd m_rPrev</div><div class="ttdef"><b>Definition</b> <a href="SteepestDescent_8h_source.html#l00038">SteepestDescent.h:38</a></div></div>
+<div class="ttc" id="aclasseonc_1_1SteepestDescent_html_aa9274ce5fef24e7b8a1babf63c3aa840"><div class="ttname"><a href="#aa9274ce5fef24e7b8a1babf63c3aa840">eonc::SteepestDescent::m_log</a></div><div class="ttdeci">eonc::log::FileScoped m_log</div><div class="ttdef"><b>Definition</b> <a href="SteepestDescent_8h_source.html#l00037">SteepestDescent.h:37</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1geometry_html_acbf42a1f91c3c4317451f0c12a60aeee"><div class="ttname"><a href="namespaceeonc_1_1geometry.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::geometry::maxAtomMotionAppliedV</a></div><div class="ttdeci">VectorXd maxAtomMotionAppliedV(const VectorXd v1, double maxMotion)</div><div class="ttdef"><b>Definition</b> <a href="GeometryAnalysis_8cpp_source.html#l00319">GeometryAnalysis.cpp:319</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1safemath_html_a0d2ff3ef0f0032b6e2f75662df3816cf"><div class="ttname"><a href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a></div><div class="ttdeci">constexpr double safe_div(double num, double denom, double fallback=0.0)</div><div class="ttdef"><b>Definition</b> <a href="SafeMath_8h_source.html#l00021">SafeMath.h:21</a></div></div>
 </div><!-- fragment -->
@@ -495,8 +498,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SteepestDescent_8h_source.html#l00037">37</a> of file <a class="el" href="SteepestDescent_8h_source.html">SteepestDescent.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   37</span>{0};</div>
+<p class="definition">Definition at line <a class="el" href="SteepestDescent_8h_source.html#l00039">39</a> of file <a class="el" href="SteepestDescent_8h_source.html">SteepestDescent.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   39</span>{0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -520,7 +523,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SteepestDescent_8h_source.html#l00039">39</a> of file <a class="el" href="SteepestDescent_8h_source.html">SteepestDescent.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SteepestDescent_8h_source.html#l00041">41</a> of file <a class="el" href="SteepestDescent_8h_source.html">SteepestDescent.h</a>.</p>
 
 </div>
 </div>
@@ -544,8 +547,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SteepestDescent_8h_source.html#l00035">35</a> of file <a class="el" href="SteepestDescent_8h_source.html">SteepestDescent.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   35</span>{<span class="stringliteral">&quot;sd&quot;</span>, <span class="stringliteral">&quot;_sd.log&quot;</span>};</div>
+<p class="definition">Definition at line <a class="el" href="SteepestDescent_8h_source.html#l00037">37</a> of file <a class="el" href="SteepestDescent_8h_source.html">SteepestDescent.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   37</span>{<span class="stringliteral">&quot;sd&quot;</span>, <span class="stringliteral">&quot;_sd.log&quot;</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -569,7 +572,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SteepestDescent_8h_source.html#l00038">38</a> of file <a class="el" href="SteepestDescent_8h_source.html">SteepestDescent.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SteepestDescent_8h_source.html#l00040">40</a> of file <a class="el" href="SteepestDescent_8h_source.html">SteepestDescent.h</a>.</p>
 
 </div>
 </div>

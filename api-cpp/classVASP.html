@@ -255,10 +255,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:af47ae4d0da03317dbf33d29364052ff1" id="r_af47ae4d0da03317dbf33d29364052ff1"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#af47ae4d0da03317dbf33d29364052ff1">VASP</a> (const <a class="el" href="classeonc_1_1Parameters.html">eonc::Parameters</a> &amp;p)</td></tr>
 <tr class="memitem:a6c9b3c7c69527b1276ed16070e7d9070" id="r_a6c9b3c7c69527b1276ed16070e7d9070"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a6c9b3c7c69527b1276ed16070e7d9070">~VASP</a> ()</td></tr>
 <tr class="memitem:a3508053af204c2cf490df512bf0fd334" id="r_a3508053af204c2cf490df512bf0fd334"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a3508053af204c2cf490df512bf0fd334">initialize</a> ()</td></tr>
-<tr class="memitem:a8253c8244127c112c78cf84ec1369250" id="r_a8253c8244127c112c78cf84ec1369250"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a8253c8244127c112c78cf84ec1369250">cleanMemory</a> (void)</td></tr>
-<tr class="memitem:a71750adf8c6d071da7f7488dcef43ca0" id="r_a71750adf8c6d071da7f7488dcef43ca0"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a71750adf8c6d071da7f7488dcef43ca0">force</a> (long N, const double *R, const int *atomicNrs, double *F, double *U, double *variance, const double *box)</td></tr>
+<tr class="memitem:a60ff1f643f81b3f9f32f49c7dfbb6fc1" id="r_a60ff1f643f81b3f9f32f49c7dfbb6fc1"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a60ff1f643f81b3f9f32f49c7dfbb6fc1">cleanMemory</a> ()</td></tr>
+<tr class="memitem:a432732a2a6d733f6a045ffde6d55d09c" id="r_a432732a2a6d733f6a045ffde6d55d09c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a432732a2a6d733f6a045ffde6d55d09c">force</a> (long N, const double *R, const int *atomicNrs, double *F, double *U, double *variance, const double *box) override</td></tr>
 <tr class="memitem:ac553a0cc4a00cdbb7bd23dfd20d58f6d" id="r_ac553a0cc4a00cdbb7bd23dfd20d58f6d"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#ac553a0cc4a00cdbb7bd23dfd20d58f6d">isThreadSafe</a> () const noexcept override</td></tr>
-<tr class="memdesc:ac553a0cc4a00cdbb7bd23dfd20d58f6d"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="#a71750adf8c6d071da7f7488dcef43ca0">force()</a> writes POSCAR, signals through NEWCAR and waits on FU, all at fixed names in the working directory, so two threads in it swap results.  <br /></td></tr>
+<tr class="memdesc:ac553a0cc4a00cdbb7bd23dfd20d58f6d"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="#a432732a2a6d733f6a045ffde6d55d09c">force()</a> writes POSCAR, signals through NEWCAR and waits on FU, all at fixed names in the working directory, so two threads in it swap results.  <br /></td></tr>
 <tr class="memitem:a91eeb1a7ca7adc0508f40eed312b840e" id="r_a91eeb1a7ca7adc0508f40eed312b840e"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a91eeb1a7ca7adc0508f40eed312b840e">needsPerImageInstance</a> () const noexcept override</td></tr>
 <tr class="memdesc:a91eeb1a7ca7adc0508f40eed312b840e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Every instance drives the one <a class="el" href="classVASP.html">VASP</a> process named by the static vaspPID through the one set of files, so a second instance buys no parallelism.  <br /></td></tr>
 <tr class="inherit_header pub_methods_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
@@ -275,6 +275,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:af63f26dc7fdff78a6613961ea860f3a1 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional frozen-atom mask (nAtoms*3, 1.0 = fixed).  <br /></td></tr>
 <tr class="memitem:aa2f4f152a44aa2827a6ca08bdd40da81 inherit pub_methods_classeonc_1_1Potential" id="r_aa2f4f152a44aa2827a6ca08bdd40da81"><td class="memItemLeft">std::tuple&lt; double, <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#aa2f4f152a44aa2827a6ca08bdd40da81">get_ef</a> (const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;pos, const VectorXi &amp;atmnrs, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;box)</td></tr>
 <tr class="memitem:a4f0274548044ab1f714e4801352c4547 inherit pub_methods_classeonc_1_1Potential" id="r_a4f0274548044ab1f714e4801352c4547"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a4f0274548044ab1f714e4801352c4547">getType</a> () const</td></tr>
+<tr class="memitem:a8f4fea1662aaa9e26f7a2ac0862d53f8 inherit pub_methods_classeonc_1_1Potential" id="r_a8f4fea1662aaa9e26f7a2ac0862d53f8"><td class="memItemLeft">virtual double&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a8f4fea1662aaa9e26f7a2ac0862d53f8">finiteCutoff</a> () const noexcept</td></tr>
+<tr class="memdesc:a8f4fea1662aaa9e26f7a2ac0862d53f8 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finite interaction range in position length units.  <br /></td></tr>
 <tr class="memitem:a85b0a3456f6528d8c464ab4b5774878e inherit pub_methods_classeonc_1_1Potential" id="r_a85b0a3456f6528d8c464ab4b5774878e"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a85b0a3456f6528d8c464ab4b5774878e">isSurrogate</a> () const noexcept</td></tr>
 <tr class="memdesc:a85b0a3456f6528d8c464ab4b5774878e inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this is a surrogate (GP) potential.  <br /></td></tr>
 <tr class="memitem:ac4c9e9deaa0e73fa27ff97b6d6acad98 inherit pub_methods_classeonc_1_1Potential" id="r_ac4c9e9deaa0e73fa27ff97b6d6acad98"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac4c9e9deaa0e73fa27ff97b6d6acad98">requiresIsolatedMoleculeLayout</a> () const noexcept</td></tr>
@@ -380,14 +382,14 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="VASP_8h_source.html#l00020">20</a> of file <a class="el" href="VASP_8h_source.html">VASP.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   20</span>{ <a class="code hl_function" href="#a8253c8244127c112c78cf84ec1369250">cleanMemory</a>(); }</div>
-<div class="ttc" id="aclassVASP_html_a8253c8244127c112c78cf84ec1369250"><div class="ttname"><a href="#a8253c8244127c112c78cf84ec1369250">VASP::cleanMemory</a></div><div class="ttdeci">void cleanMemory(void)</div><div class="ttdef"><b>Definition</b> <a href="VASP_8cpp_source.html#l00128">VASP.cpp:128</a></div></div>
+<div class="fragment"><div class="line"><span class="lineno">   20</span>{ <a class="code hl_function" href="#a60ff1f643f81b3f9f32f49c7dfbb6fc1">cleanMemory</a>(); }</div>
+<div class="ttc" id="aclassVASP_html_a60ff1f643f81b3f9f32f49c7dfbb6fc1"><div class="ttname"><a href="#a60ff1f643f81b3f9f32f49c7dfbb6fc1">VASP::cleanMemory</a></div><div class="ttdeci">void cleanMemory()</div><div class="ttdef"><b>Definition</b> <a href="VASP_8cpp_source.html#l00126">VASP.cpp:126</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a8253c8244127c112c78cf84ec1369250" name="a8253c8244127c112c78cf84ec1369250"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8253c8244127c112c78cf84ec1369250">&#9670;&#160;</a></span>cleanMemory()</h2>
+<a id="a60ff1f643f81b3f9f32f49c7dfbb6fc1" name="a60ff1f643f81b3f9f32f49c7dfbb6fc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60ff1f643f81b3f9f32f49c7dfbb6fc1">&#9670;&#160;</a></span>cleanMemory()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -401,24 +403,24 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="VASP_8cpp_source.html#l00128">128</a> of file <a class="el" href="VASP_8cpp_source.html">VASP.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  128</span>                           {</div>
-<div class="line"><span class="lineno">  129</span>  <a class="code hl_variable" href="#a01db62b78dec1432dcdbbc268ca2b951">vaspRunCount</a>--;</div>
-<div class="line"><span class="lineno">  130</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a01db62b78dec1432dcdbbc268ca2b951">vaspRunCount</a> &lt; 1) {</div>
-<div class="line"><span class="lineno">  131</span>    <span class="comment">// Runs from a destructor, so it reports rather than throws.</span></div>
-<div class="line"><span class="lineno">  132</span>    std::ofstream stopcar(kStopCarFile, std::ios::trunc);</div>
-<div class="line"><span class="lineno">  133</span>    <span class="keywordflow">if</span> (!stopcar) {</div>
-<div class="line"><span class="lineno">  134</span>      <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;Could not open {} to stop VASP&quot;</span>, kStopCarFile);</div>
-<div class="line"><span class="lineno">  135</span>      <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  136</span>    }</div>
-<div class="line"><span class="lineno">  137</span>    stopcar &lt;&lt; <span class="stringliteral">&quot;LABORT = .TRUE.\n&quot;</span>;</div>
-<div class="line"><span class="lineno">  138</span>    stopcar.close();</div>
-<div class="line"><span class="lineno">  139</span>    <span class="keywordflow">if</span> (!stopcar) {</div>
-<div class="line"><span class="lineno">  140</span>      <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;Could not write {} to stop VASP&quot;</span>, kStopCarFile);</div>
-<div class="line"><span class="lineno">  141</span>    }</div>
-<div class="line"><span class="lineno">  142</span>  }</div>
-<div class="line"><span class="lineno">  143</span>  <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  144</span>}</div>
+<p class="definition">Definition at line <a class="el" href="VASP_8cpp_source.html#l00126">126</a> of file <a class="el" href="VASP_8cpp_source.html">VASP.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  126</span>                           {</div>
+<div class="line"><span class="lineno">  127</span>  <a class="code hl_variable" href="#a01db62b78dec1432dcdbbc268ca2b951">vaspRunCount</a>--;</div>
+<div class="line"><span class="lineno">  128</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a01db62b78dec1432dcdbbc268ca2b951">vaspRunCount</a> &lt; 1) {</div>
+<div class="line"><span class="lineno">  129</span>    <span class="comment">// Runs from a destructor, so it reports rather than throws.</span></div>
+<div class="line"><span class="lineno">  130</span>    std::ofstream stopcar(kStopCarFile, std::ios::trunc);</div>
+<div class="line"><span class="lineno">  131</span>    <span class="keywordflow">if</span> (!stopcar) {</div>
+<div class="line"><span class="lineno">  132</span>      <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;Could not open {} to stop VASP&quot;</span>, kStopCarFile);</div>
+<div class="line"><span class="lineno">  133</span>      <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  134</span>    }</div>
+<div class="line"><span class="lineno">  135</span>    stopcar &lt;&lt; <span class="stringliteral">&quot;LABORT = .TRUE.\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  136</span>    stopcar.close();</div>
+<div class="line"><span class="lineno">  137</span>    <span class="keywordflow">if</span> (!stopcar) {</div>
+<div class="line"><span class="lineno">  138</span>      <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;Could not write {} to stop VASP&quot;</span>, kStopCarFile);</div>
+<div class="line"><span class="lineno">  139</span>    }</div>
+<div class="line"><span class="lineno">  140</span>  }</div>
+<div class="line"><span class="lineno">  141</span>  <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  142</span>}</div>
 <div class="ttc" id="aEonLogger_8h_html_a85fddaf0620c36ee3fcf865df53a9327"><div class="ttname"><a href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a></div><div class="ttdeci">#define EONC_LOG_WARNING(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00255">EonLogger.h:255</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -446,24 +448,24 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="VASP_8cpp_source.html#l00104">104</a> of file <a class="el" href="VASP_8cpp_source.html">VASP.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  104</span>                               {</div>
-<div class="line"><span class="lineno">  105</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *name : kHandshakeFiles) {</div>
-<div class="line"><span class="lineno">  106</span>    std::error_code ec;</div>
-<div class="line"><span class="lineno">  107</span>    <span class="keywordflow">if</span> (std::filesystem::remove(name, ec)) {</div>
-<div class="line"><span class="lineno">  108</span>      <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;VASP cleared leftover {}&quot;</span>, name);</div>
-<div class="line"><span class="lineno">  109</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (ec) {</div>
-<div class="line"><span class="lineno">  110</span>      <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;VASP could not clear leftover {}: {}&quot;</span>, name,</div>
-<div class="line"><span class="lineno">  111</span>                       ec.message());</div>
-<div class="line"><span class="lineno">  112</span>    }</div>
-<div class="line"><span class="lineno">  113</span>  }</div>
-<div class="line"><span class="lineno">  114</span>}</div>
+<p class="definition">Definition at line <a class="el" href="VASP_8cpp_source.html#l00102">102</a> of file <a class="el" href="VASP_8cpp_source.html">VASP.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  102</span>                               {</div>
+<div class="line"><span class="lineno">  103</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *name : kHandshakeFiles) {</div>
+<div class="line"><span class="lineno">  104</span>    std::error_code ec;</div>
+<div class="line"><span class="lineno">  105</span>    <span class="keywordflow">if</span> (std::filesystem::remove(name, ec)) {</div>
+<div class="line"><span class="lineno">  106</span>      <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;VASP cleared leftover {}&quot;</span>, name);</div>
+<div class="line"><span class="lineno">  107</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (ec) {</div>
+<div class="line"><span class="lineno">  108</span>      <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;VASP could not clear leftover {}: {}&quot;</span>, name,</div>
+<div class="line"><span class="lineno">  109</span>                       ec.message());</div>
+<div class="line"><span class="lineno">  110</span>    }</div>
+<div class="line"><span class="lineno">  111</span>  }</div>
+<div class="line"><span class="lineno">  112</span>}</div>
 <div class="ttc" id="aEonLogger_8h_html_afba240899b90f3996875577cc095dc00"><div class="ttname"><a href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a></div><div class="ttdeci">#define EONC_LOG_INFO(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00249">EonLogger.h:249</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="a71750adf8c6d071da7f7488dcef43ca0" name="a71750adf8c6d071da7f7488dcef43ca0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a71750adf8c6d071da7f7488dcef43ca0">&#9670;&#160;</a></span>force()</h2>
+<a id="a432732a2a6d733f6a045ffde6d55d09c" name="a432732a2a6d733f6a045ffde6d55d09c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a432732a2a6d733f6a045ffde6d55d09c">&#9670;&#160;</a></span>force()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -509,46 +511,48 @@ Additional Inherited Members</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">eonc::Potential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="VASP_8cpp_source.html#l00215">215</a> of file <a class="el" href="VASP_8cpp_source.html">VASP.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  216</span>                                                                 {</div>
-<div class="line"><span class="lineno">  217</span>  variance = <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">  218</span>  <a class="code hl_function" href="#a4fbbbed55b18a24930fcddeec5108f7d">writePOSCAR</a>(N, R, atomicNrs, box);</div>
-<div class="line"><span class="lineno">  219</span> </div>
-<div class="line"><span class="lineno">  220</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="#abc1179999b1b57e9e402be2cd2bbd8f3">vaspRunning</a>()) {</div>
-<div class="line"><span class="lineno">  221</span>    <a class="code hl_function" href="#a01bf9391d7aea020c34614e3cc1b2497">spawnVASP</a>();</div>
-<div class="line"><span class="lineno">  222</span>  }</div>
-<div class="line"><span class="lineno">  223</span> </div>
-<div class="line"><span class="lineno">  224</span>  <span class="comment">// access() succeeds the moment VASP creates FU, not when it finishes</span></div>
-<div class="line"><span class="lineno">  225</span>  <span class="comment">// writing it, so this can observe a partial file. readFU treats a short</span></div>
-<div class="line"><span class="lineno">  226</span>  <span class="comment">// read as an error rather than absorbing it, which turns the race into a</span></div>
-<div class="line"><span class="lineno">  227</span>  <span class="comment">// failure instead of wrong forces. Closing it properly needs a completion</span></div>
-<div class="line"><span class="lineno">  228</span>  <span class="comment">// signal from runvasp.sh, such as writing to a temporary name and renaming</span></div>
-<div class="line"><span class="lineno">  229</span>  <span class="comment">// it once the write completes.</span></div>
-<div class="line"><span class="lineno">  230</span>  <span class="keywordflow">while</span> (access(kForceFile, F_OK) == -1) {</div>
-<div class="line"><span class="lineno">  231</span>    sleep(1);</div>
-<div class="line"><span class="lineno">  232</span>    <a class="code hl_function" href="#abc1179999b1b57e9e402be2cd2bbd8f3">vaspRunning</a>();</div>
-<div class="line"><span class="lineno">  233</span>  }</div>
-<div class="line"><span class="lineno">  234</span>  <a class="code hl_function" href="#aadf02f3657f6409ba6805200b5bda12b">readFU</a>(N, F, U);</div>
-<div class="line"><span class="lineno">  235</span> </div>
-<div class="line"><span class="lineno">  236</span>  std::error_code ec;</div>
-<div class="line"><span class="lineno">  237</span>  <span class="keywordflow">if</span> (!std::filesystem::remove(kForceFile, ec) || ec) {</div>
-<div class="line"><span class="lineno">  238</span>    <span class="comment">// Leaving it behind means the next call reads this call&#39;s numbers.</span></div>
-<div class="line"><span class="lineno">  239</span>    <span class="keywordflow">throw</span> std::runtime_error(std::format(<span class="stringliteral">&quot;Could not remove {}: {}&quot;</span>, kForceFile,</div>
-<div class="line"><span class="lineno">  240</span>                                         ec ? ec.message() : <span class="stringliteral">&quot;already gone&quot;</span>));</div>
-<div class="line"><span class="lineno">  241</span>  }</div>
-<div class="line"><span class="lineno">  242</span>  <a class="code hl_variable" href="#a01db62b78dec1432dcdbbc268ca2b951">vaspRunCount</a>++;</div>
-<div class="line"><span class="lineno">  243</span>  <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  244</span>}</div>
-<div class="ttc" id="aclassVASP_html_a01bf9391d7aea020c34614e3cc1b2497"><div class="ttname"><a href="#a01bf9391d7aea020c34614e3cc1b2497">VASP::spawnVASP</a></div><div class="ttdeci">void spawnVASP()</div><div class="ttdef"><b>Definition</b> <a href="VASP_8cpp_source.html#l00146">VASP.cpp:146</a></div></div>
-<div class="ttc" id="aclassVASP_html_a4fbbbed55b18a24930fcddeec5108f7d"><div class="ttname"><a href="#a4fbbbed55b18a24930fcddeec5108f7d">VASP::writePOSCAR</a></div><div class="ttdeci">void writePOSCAR(long N, const double *R, const int *atomicNrs, const double *box)</div><div class="ttdef"><b>Definition</b> <a href="VASP_8cpp_source.html#l00246">VASP.cpp:246</a></div></div>
-<div class="ttc" id="aclassVASP_html_aadf02f3657f6409ba6805200b5bda12b"><div class="ttname"><a href="#aadf02f3657f6409ba6805200b5bda12b">VASP::readFU</a></div><div class="ttdeci">void readFU(long N, double *F, double *U)</div><div class="ttdef"><b>Definition</b> <a href="VASP_8cpp_source.html#l00306">VASP.cpp:306</a></div></div>
+<p class="definition">Definition at line <a class="el" href="VASP_8cpp_source.html#l00219">219</a> of file <a class="el" href="VASP_8cpp_source.html">VASP.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  220</span>                                                                 {</div>
+<div class="line"><span class="lineno">  221</span>  <span class="keywordflow">if</span> (variance != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  222</span>    *variance = 0.0;</div>
+<div class="line"><span class="lineno">  223</span>  }</div>
+<div class="line"><span class="lineno">  224</span>  <a class="code hl_function" href="#a4fbbbed55b18a24930fcddeec5108f7d">writePOSCAR</a>(N, R, atomicNrs, box);</div>
+<div class="line"><span class="lineno">  225</span> </div>
+<div class="line"><span class="lineno">  226</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="#abc1179999b1b57e9e402be2cd2bbd8f3">vaspRunning</a>()) {</div>
+<div class="line"><span class="lineno">  227</span>    <a class="code hl_function" href="#a01bf9391d7aea020c34614e3cc1b2497">spawnVASP</a>();</div>
+<div class="line"><span class="lineno">  228</span>  }</div>
+<div class="line"><span class="lineno">  229</span> </div>
+<div class="line"><span class="lineno">  230</span>  <span class="comment">// access() succeeds the moment VASP creates FU, not when it finishes</span></div>
+<div class="line"><span class="lineno">  231</span>  <span class="comment">// writing it, so this can observe a partial file. readFU treats a short</span></div>
+<div class="line"><span class="lineno">  232</span>  <span class="comment">// read as an error rather than absorbing it, which turns the race into a</span></div>
+<div class="line"><span class="lineno">  233</span>  <span class="comment">// failure instead of wrong forces. Closing it properly needs a completion</span></div>
+<div class="line"><span class="lineno">  234</span>  <span class="comment">// signal from runvasp.sh, such as writing to a temporary name and renaming</span></div>
+<div class="line"><span class="lineno">  235</span>  <span class="comment">// it once the write completes.</span></div>
+<div class="line"><span class="lineno">  236</span>  <span class="keywordflow">while</span> (access(kForceFile, F_OK) == -1) {</div>
+<div class="line"><span class="lineno">  237</span>    sleep(1);</div>
+<div class="line"><span class="lineno">  238</span>    <a class="code hl_function" href="#abc1179999b1b57e9e402be2cd2bbd8f3">vaspRunning</a>();</div>
+<div class="line"><span class="lineno">  239</span>  }</div>
+<div class="line"><span class="lineno">  240</span>  <a class="code hl_function" href="#aadf02f3657f6409ba6805200b5bda12b">readFU</a>(N, F, U);</div>
+<div class="line"><span class="lineno">  241</span> </div>
+<div class="line"><span class="lineno">  242</span>  std::error_code ec;</div>
+<div class="line"><span class="lineno">  243</span>  <span class="keywordflow">if</span> (!std::filesystem::remove(kForceFile, ec) || ec) {</div>
+<div class="line"><span class="lineno">  244</span>    <span class="comment">// Leaving it behind means the next call reads this call&#39;s numbers.</span></div>
+<div class="line"><span class="lineno">  245</span>    <span class="keywordflow">throw</span> std::runtime_error(std::format(<span class="stringliteral">&quot;Could not remove {}: {}&quot;</span>, kForceFile,</div>
+<div class="line"><span class="lineno">  246</span>                                         ec ? ec.message() : <span class="stringliteral">&quot;already gone&quot;</span>));</div>
+<div class="line"><span class="lineno">  247</span>  }</div>
+<div class="line"><span class="lineno">  248</span>  <a class="code hl_variable" href="#a01db62b78dec1432dcdbbc268ca2b951">vaspRunCount</a>++;</div>
+<div class="line"><span class="lineno">  249</span>  <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  250</span>}</div>
+<div class="ttc" id="aclassVASP_html_a01bf9391d7aea020c34614e3cc1b2497"><div class="ttname"><a href="#a01bf9391d7aea020c34614e3cc1b2497">VASP::spawnVASP</a></div><div class="ttdeci">void spawnVASP()</div><div class="ttdef"><b>Definition</b> <a href="VASP_8cpp_source.html#l00144">VASP.cpp:144</a></div></div>
+<div class="ttc" id="aclassVASP_html_a4fbbbed55b18a24930fcddeec5108f7d"><div class="ttname"><a href="#a4fbbbed55b18a24930fcddeec5108f7d">VASP::writePOSCAR</a></div><div class="ttdeci">void writePOSCAR(long N, const double *R, const int *atomicNrs, const double *box)</div><div class="ttdef"><b>Definition</b> <a href="VASP_8cpp_source.html#l00252">VASP.cpp:252</a></div></div>
+<div class="ttc" id="aclassVASP_html_aadf02f3657f6409ba6805200b5bda12b"><div class="ttname"><a href="#aadf02f3657f6409ba6805200b5bda12b">VASP::readFU</a></div><div class="ttdeci">void readFU(long N, double *F, double *U)</div><div class="ttdef"><b>Definition</b> <a href="VASP_8cpp_source.html#l00312">VASP.cpp:312</a></div></div>
 <div class="ttc" id="aclassVASP_html_abc1179999b1b57e9e402be2cd2bbd8f3"><div class="ttname"><a href="#abc1179999b1b57e9e402be2cd2bbd8f3">VASP::vaspRunning</a></div><div class="ttdeci">bool vaspRunning()</div><div class="ttdef"><b>Definition</b> <a href="VASP_8cpp_source.html#l00197">VASP.cpp:197</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -604,7 +608,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p><a class="el" href="#a71750adf8c6d071da7f7488dcef43ca0">force()</a> writes POSCAR, signals through NEWCAR and waits on FU, all at fixed names in the working directory, so two threads in it swap results. </p>
+<p><a class="el" href="#a432732a2a6d733f6a045ffde6d55d09c">force()</a> writes POSCAR, signals through NEWCAR and waits on FU, all at fixed names in the working directory, so two threads in it swap results. </p>
 
 <p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#af6c385eb52d3764246416ea389c84131">eonc::Potential</a>.</p>
 
@@ -678,27 +682,27 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="VASP_8cpp_source.html#l00306">306</a> of file <a class="el" href="VASP_8cpp_source.html">VASP.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  306</span>                                              {</div>
-<div class="line"><span class="lineno">  307</span>  std::ifstream fu(kForceFile);</div>
-<div class="line"><span class="lineno">  308</span>  <span class="keywordflow">if</span> (!fu) {</div>
-<div class="line"><span class="lineno">  309</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  310</span>        std::format(<span class="stringliteral">&quot;Could not open {}; VASP left no result&quot;</span>, kForceFile));</div>
-<div class="line"><span class="lineno">  311</span>  }</div>
-<div class="line"><span class="lineno">  312</span> </div>
-<div class="line"><span class="lineno">  313</span>  <span class="keywordflow">if</span> (!(fu &gt;&gt; *U)) {</div>
-<div class="line"><span class="lineno">  314</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  315</span>        std::format(<span class="stringliteral">&quot;Could not read the energy from {}&quot;</span>, kForceFile));</div>
-<div class="line"><span class="lineno">  316</span>  }</div>
-<div class="line"><span class="lineno">  317</span> </div>
-<div class="line"><span class="lineno">  318</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; N; i++) {</div>
-<div class="line"><span class="lineno">  319</span>    <span class="keywordflow">if</span> (!(fu &gt;&gt; F[i * 3 + 0] &gt;&gt; F[i * 3 + 1] &gt;&gt; F[i * 3 + 2])) {</div>
-<div class="line"><span class="lineno">  320</span>      <span class="keywordflow">throw</span> std::runtime_error(std::format(</div>
-<div class="line"><span class="lineno">  321</span>          <span class="stringliteral">&quot;{} holds forces for {} atoms, expected {}&quot;</span>, kForceFile, i, N));</div>
-<div class="line"><span class="lineno">  322</span>    }</div>
-<div class="line"><span class="lineno">  323</span>  }</div>
-<div class="line"><span class="lineno">  324</span>  <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  325</span>}</div>
+<p class="definition">Definition at line <a class="el" href="VASP_8cpp_source.html#l00312">312</a> of file <a class="el" href="VASP_8cpp_source.html">VASP.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  312</span>                                              {</div>
+<div class="line"><span class="lineno">  313</span>  std::ifstream fu(kForceFile);</div>
+<div class="line"><span class="lineno">  314</span>  <span class="keywordflow">if</span> (!fu) {</div>
+<div class="line"><span class="lineno">  315</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  316</span>        std::format(<span class="stringliteral">&quot;Could not open {}; VASP left no result&quot;</span>, kForceFile));</div>
+<div class="line"><span class="lineno">  317</span>  }</div>
+<div class="line"><span class="lineno">  318</span> </div>
+<div class="line"><span class="lineno">  319</span>  <span class="keywordflow">if</span> (!(fu &gt;&gt; *U)) {</div>
+<div class="line"><span class="lineno">  320</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  321</span>        std::format(<span class="stringliteral">&quot;Could not read the energy from {}&quot;</span>, kForceFile));</div>
+<div class="line"><span class="lineno">  322</span>  }</div>
+<div class="line"><span class="lineno">  323</span> </div>
+<div class="line"><span class="lineno">  324</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; N; i++) {</div>
+<div class="line"><span class="lineno">  325</span>    <span class="keywordflow">if</span> (!(fu &gt;&gt; F[i * 3 + 0] &gt;&gt; F[i * 3 + 1] &gt;&gt; F[i * 3 + 2])) {</div>
+<div class="line"><span class="lineno">  326</span>      <span class="keywordflow">throw</span> std::runtime_error(std::format(</div>
+<div class="line"><span class="lineno">  327</span>          <span class="stringliteral">&quot;{} holds forces for {} atoms, expected {}&quot;</span>, kForceFile, i, N));</div>
+<div class="line"><span class="lineno">  328</span>    }</div>
+<div class="line"><span class="lineno">  329</span>  }</div>
+<div class="line"><span class="lineno">  330</span>  <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  331</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -725,18 +729,18 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="VASP_8cpp_source.html#l00116">116</a> of file <a class="el" href="VASP_8cpp_source.html">VASP.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  116</span>                            {</div>
-<div class="line"><span class="lineno">  117</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *name : kStaleFiles) {</div>
-<div class="line"><span class="lineno">  118</span>    std::error_code ec;</div>
-<div class="line"><span class="lineno">  119</span>    <span class="keywordflow">if</span> (std::filesystem::remove(name, ec)) {</div>
-<div class="line"><span class="lineno">  120</span>      <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;VASP removed leftover {}&quot;</span>, name);</div>
-<div class="line"><span class="lineno">  121</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (ec) {</div>
-<div class="line"><span class="lineno">  122</span>      <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;VASP could not remove leftover {}: {}&quot;</span>, name,</div>
-<div class="line"><span class="lineno">  123</span>                       ec.message());</div>
-<div class="line"><span class="lineno">  124</span>    }</div>
-<div class="line"><span class="lineno">  125</span>  }</div>
-<div class="line"><span class="lineno">  126</span>}</div>
+<p class="definition">Definition at line <a class="el" href="VASP_8cpp_source.html#l00114">114</a> of file <a class="el" href="VASP_8cpp_source.html">VASP.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  114</span>                            {</div>
+<div class="line"><span class="lineno">  115</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *name : kStaleFiles) {</div>
+<div class="line"><span class="lineno">  116</span>    std::error_code ec;</div>
+<div class="line"><span class="lineno">  117</span>    <span class="keywordflow">if</span> (std::filesystem::remove(name, ec)) {</div>
+<div class="line"><span class="lineno">  118</span>      <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;VASP removed leftover {}&quot;</span>, name);</div>
+<div class="line"><span class="lineno">  119</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (ec) {</div>
+<div class="line"><span class="lineno">  120</span>      <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;VASP could not remove leftover {}: {}&quot;</span>, name,</div>
+<div class="line"><span class="lineno">  121</span>                       ec.message());</div>
+<div class="line"><span class="lineno">  122</span>    }</div>
+<div class="line"><span class="lineno">  123</span>  }</div>
+<div class="line"><span class="lineno">  124</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -763,60 +767,63 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="VASP_8cpp_source.html#l00146">146</a> of file <a class="el" href="VASP_8cpp_source.html">VASP.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  146</span>                     {</div>
-<div class="line"><span class="lineno">  147</span>  <span class="comment">// Runs once per client, since vaspPID stays set for the life of the</span></div>
-<div class="line"><span class="lineno">  148</span>  <span class="comment">// process. The POSCAR eOn just wrote stays, and the first call writes no</span></div>
-<div class="line"><span class="lineno">  149</span>  <span class="comment">// NEWCAR, so nothing here discards a signal this run has sent.</span></div>
-<div class="line"><span class="lineno">  150</span>  <a class="code hl_function" href="#a2cd6df791bd6368a14b5cdb1e1b685df">clearHandshakeFiles</a>();</div>
-<div class="line"><span class="lineno">  151</span> </div>
-<div class="line"><span class="lineno">  152</span>  <span class="comment">// execlp resolves a relative path against whatever directory the process</span></div>
-<div class="line"><span class="lineno">  153</span>  <span class="comment">// last changed to, which under the MPI dispatcher is not necessarily the</span></div>
-<div class="line"><span class="lineno">  154</span>  <span class="comment">// one holding the run. Resolve it in the parent, where a failure can still</span></div>
-<div class="line"><span class="lineno">  155</span>  <span class="comment">// be reported.</span></div>
-<div class="line"><span class="lineno">  156</span>  std::error_code ec;</div>
-<div class="line"><span class="lineno">  157</span>  <span class="keyword">const</span> std::filesystem::path script =</div>
-<div class="line"><span class="lineno">  158</span>      std::filesystem::absolute(kVaspScript, ec);</div>
-<div class="line"><span class="lineno">  159</span>  <span class="keywordflow">if</span> (ec) {</div>
-<div class="line"><span class="lineno">  160</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  161</span>        std::format(<span class="stringliteral">&quot;Could not resolve {}: {}&quot;</span>, kVaspScript, ec.message()));</div>
-<div class="line"><span class="lineno">  162</span>  }</div>
-<div class="line"><span class="lineno">  163</span>  <span class="keywordflow">if</span> (!std::filesystem::exists(script, ec) || ec) {</div>
-<div class="line"><span class="lineno">  164</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  165</span>        std::format(<span class="stringliteral">&quot;{} does not exist; VASP needs it in the working directory&quot;</span>,</div>
-<div class="line"><span class="lineno">  166</span>                    script.string()));</div>
-<div class="line"><span class="lineno">  167</span>  }</div>
-<div class="line"><span class="lineno">  168</span>  <span class="keyword">const</span> std::string scriptPath = script.string();</div>
-<div class="line"><span class="lineno">  169</span> </div>
-<div class="line"><span class="lineno">  170</span>  <span class="keywordflow">if</span> ((<a class="code hl_variable" href="#affd855ebb2a9006f96a63b17338b8987">vaspPID</a> = fork()) == -1) {</div>
-<div class="line"><span class="lineno">  171</span>    fprintf(stderr, <span class="stringliteral">&quot;error forking for vasp: %s\n&quot;</span>, strerror(errno));</div>
-<div class="line"><span class="lineno">  172</span>    exit(1);</div>
-<div class="line"><span class="lineno">  173</span>  }</div>
-<div class="line"><span class="lineno">  174</span> </div>
-<div class="line"><span class="lineno">  175</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#affd855ebb2a9006f96a63b17338b8987">vaspPID</a>) {</div>
-<div class="line"><span class="lineno">  176</span>    <span class="comment">/* We are the parent */</span></div>
-<div class="line"><span class="lineno">  177</span>    setvbuf(stdout, (<span class="keywordtype">char</span> *)NULL, _IONBF, 0); <span class="comment">// non-buffered output</span></div>
-<div class="line"><span class="lineno">  178</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  179</span>    <span class="comment">/* We are the child */</span></div>
-<div class="line"><span class="lineno">  180</span>    <span class="keywordtype">int</span> outFd = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a93da3d2fc737506fa3ef45cf3c3a6a10">open</a>(<span class="stringliteral">&quot;vaspout&quot;</span>, O_CREAT | O_WRONLY | O_TRUNC, 0644);</div>
-<div class="line"><span class="lineno">  181</span>    <span class="keywordflow">if</span> (outFd == -1) {</div>
-<div class="line"><span class="lineno">  182</span>      fprintf(stderr, <span class="stringliteral">&quot;error opening vaspout: %s\n&quot;</span>, strerror(errno));</div>
-<div class="line"><span class="lineno">  183</span>      _exit(1);</div>
-<div class="line"><span class="lineno">  184</span>    }</div>
-<div class="line"><span class="lineno">  185</span>    <span class="keywordflow">if</span> (dup2(outFd, 1) == -1 || dup2(outFd, 2) == -1) {</div>
-<div class="line"><span class="lineno">  186</span>      fprintf(stderr, <span class="stringliteral">&quot;error redirecting vasp output: %s\n&quot;</span>, strerror(errno));</div>
-<div class="line"><span class="lineno">  187</span>      _exit(1);</div>
+<p class="definition">Definition at line <a class="el" href="VASP_8cpp_source.html#l00144">144</a> of file <a class="el" href="VASP_8cpp_source.html">VASP.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  144</span>                     {</div>
+<div class="line"><span class="lineno">  145</span>  <span class="comment">// Runs once per client, since vaspPID stays set for the life of the</span></div>
+<div class="line"><span class="lineno">  146</span>  <span class="comment">// process. The POSCAR eOn just wrote stays, and the first call writes no</span></div>
+<div class="line"><span class="lineno">  147</span>  <span class="comment">// NEWCAR, so nothing here discards a signal this run has sent.</span></div>
+<div class="line"><span class="lineno">  148</span>  <a class="code hl_function" href="#a2cd6df791bd6368a14b5cdb1e1b685df">clearHandshakeFiles</a>();</div>
+<div class="line"><span class="lineno">  149</span> </div>
+<div class="line"><span class="lineno">  150</span>  <span class="comment">// execlp resolves a relative path against whatever directory the process</span></div>
+<div class="line"><span class="lineno">  151</span>  <span class="comment">// last changed to, which under the MPI dispatcher is not necessarily the</span></div>
+<div class="line"><span class="lineno">  152</span>  <span class="comment">// one holding the run. Resolve it in the parent, where a failure can still</span></div>
+<div class="line"><span class="lineno">  153</span>  <span class="comment">// be reported.</span></div>
+<div class="line"><span class="lineno">  154</span>  std::error_code ec;</div>
+<div class="line"><span class="lineno">  155</span>  <span class="keyword">const</span> std::filesystem::path script =</div>
+<div class="line"><span class="lineno">  156</span>      std::filesystem::absolute(kVaspScript, ec);</div>
+<div class="line"><span class="lineno">  157</span>  <span class="keywordflow">if</span> (ec) {</div>
+<div class="line"><span class="lineno">  158</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  159</span>        std::format(<span class="stringliteral">&quot;Could not resolve {}: {}&quot;</span>, kVaspScript, ec.message()));</div>
+<div class="line"><span class="lineno">  160</span>  }</div>
+<div class="line"><span class="lineno">  161</span>  <span class="keywordflow">if</span> (!std::filesystem::exists(script, ec) || ec) {</div>
+<div class="line"><span class="lineno">  162</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  163</span>        std::format(<span class="stringliteral">&quot;{} does not exist; VASP needs it in the working directory&quot;</span>,</div>
+<div class="line"><span class="lineno">  164</span>                    script.string()));</div>
+<div class="line"><span class="lineno">  165</span>  }</div>
+<div class="line"><span class="lineno">  166</span>  <span class="keyword">const</span> std::string scriptPath = script.string();</div>
+<div class="line"><span class="lineno">  167</span> </div>
+<div class="line"><span class="lineno">  168</span>  <span class="keywordflow">if</span> ((<a class="code hl_variable" href="#affd855ebb2a9006f96a63b17338b8987">vaspPID</a> = fork()) == -1) {</div>
+<div class="line"><span class="lineno">  169</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  170</span>        std::format(<span class="stringliteral">&quot;error forking for vasp: {}&quot;</span>, std::strerror(errno)));</div>
+<div class="line"><span class="lineno">  171</span>  }</div>
+<div class="line"><span class="lineno">  172</span> </div>
+<div class="line"><span class="lineno">  173</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#affd855ebb2a9006f96a63b17338b8987">vaspPID</a> != 0) {</div>
+<div class="line"><span class="lineno">  174</span>    setvbuf(stdout, <span class="keyword">nullptr</span>, _IONBF, 0);</div>
+<div class="line"><span class="lineno">  175</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  176</span>    <span class="comment">// The child must not throw: that would run the parent&#39;s destructors.</span></div>
+<div class="line"><span class="lineno">  177</span>    <span class="keywordtype">int</span> outFd = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a93da3d2fc737506fa3ef45cf3c3a6a10">open</a>(<span class="stringliteral">&quot;vaspout&quot;</span>, O_CREAT | O_WRONLY | O_TRUNC, 0644);</div>
+<div class="line"><span class="lineno">  178</span>    <span class="keywordflow">if</span> (outFd == -1) {</div>
+<div class="line"><span class="lineno">  179</span>      fprintf(stderr, <span class="stringliteral">&quot;error opening vaspout: %s\n&quot;</span>, strerror(errno));</div>
+<div class="line"><span class="lineno">  180</span>      _exit(1);</div>
+<div class="line"><span class="lineno">  181</span>    }</div>
+<div class="line"><span class="lineno">  182</span>    <span class="keywordflow">if</span> (dup2(outFd, 1) == -1 || dup2(outFd, 2) == -1) {</div>
+<div class="line"><span class="lineno">  183</span>      fprintf(stderr, <span class="stringliteral">&quot;error redirecting vasp output: %s\n&quot;</span>, strerror(errno));</div>
+<div class="line"><span class="lineno">  184</span>      _exit(1);</div>
+<div class="line"><span class="lineno">  185</span>    }</div>
+<div class="line"><span class="lineno">  186</span>    <span class="keywordflow">if</span> (outFd &gt; 2) {</div>
+<div class="line"><span class="lineno">  187</span>      <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">close</a>(outFd);</div>
 <div class="line"><span class="lineno">  188</span>    }</div>
-<div class="line"><span class="lineno">  189</span>    execl(scriptPath.c_str(), scriptPath.c_str(), (<span class="keywordtype">char</span> *)NULL);</div>
+<div class="line"><span class="lineno">  189</span>    execl(scriptPath.c_str(), scriptPath.c_str(), <span class="keyword">nullptr</span>);</div>
 <div class="line"><span class="lineno">  190</span>    <span class="comment">// Only reached when the exec failed; _exit keeps the child out of the</span></div>
 <div class="line"><span class="lineno">  191</span>    <span class="comment">// parent&#39;s exit handlers.</span></div>
 <div class="line"><span class="lineno">  192</span>    fprintf(stderr, <span class="stringliteral">&quot;error spawning vasp: %s\n&quot;</span>, strerror(errno));</div>
 <div class="line"><span class="lineno">  193</span>    _exit(1);</div>
 <div class="line"><span class="lineno">  194</span>  }</div>
 <div class="line"><span class="lineno">  195</span>}</div>
-<div class="ttc" id="aclassVASP_html_a2cd6df791bd6368a14b5cdb1e1b685df"><div class="ttname"><a href="#a2cd6df791bd6368a14b5cdb1e1b685df">VASP::clearHandshakeFiles</a></div><div class="ttdeci">static void clearHandshakeFiles()</div><div class="ttdef"><b>Definition</b> <a href="VASP_8cpp_source.html#l00104">VASP.cpp:104</a></div></div>
+<div class="ttc" id="aclassVASP_html_a2cd6df791bd6368a14b5cdb1e1b685df"><div class="ttname"><a href="#a2cd6df791bd6368a14b5cdb1e1b685df">VASP::clearHandshakeFiles</a></div><div class="ttdeci">static void clearHandshakeFiles()</div><div class="ttdef"><b>Definition</b> <a href="VASP_8cpp_source.html#l00102">VASP.cpp:102</a></div></div>
 <div class="ttc" id="aclassVASP_html_affd855ebb2a9006f96a63b17338b8987"><div class="ttname"><a href="#affd855ebb2a9006f96a63b17338b8987">VASP::vaspPID</a></div><div class="ttdeci">static pid_t vaspPID</div><div class="ttdef"><b>Definition</b> <a href="VASP_8h_source.html#l00055">VASP.h:55</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1dynlib_html_a93da3d2fc737506fa3ef45cf3c3a6a10"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#a93da3d2fc737506fa3ef45cf3c3a6a10">eonc::dynlib::open</a></div><div class="ttdeci">Handle open(const char *name) noexcept</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00062">DynLib.h:62</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1dynlib_html_aaaf1d7f945f57fb1f9303e58ae88d832"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">eonc::dynlib::close</a></div><div class="ttdeci">void close(Handle h) noexcept</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00077">DynLib.h:77</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -854,14 +861,18 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">  203</span>  }</div>
 <div class="line"><span class="lineno">  204</span> </div>
 <div class="line"><span class="lineno">  205</span>  pid = waitpid(<a class="code hl_variable" href="#affd855ebb2a9006f96a63b17338b8987">vaspPID</a>, &amp;status, WNOHANG);</div>
-<div class="line"><span class="lineno">  206</span> </div>
-<div class="line"><span class="lineno">  207</span>  <span class="keywordflow">if</span> (pid) {</div>
-<div class="line"><span class="lineno">  208</span>    fprintf(stderr, <span class="stringliteral">&quot;vasp died unexpectedly!\n&quot;</span>);</div>
-<div class="line"><span class="lineno">  209</span>    exit(1);</div>
+<div class="line"><span class="lineno">  206</span>  <span class="comment">// EINTR means the child is still running. Treating it as death aborts a</span></div>
+<div class="line"><span class="lineno">  207</span>  <span class="comment">// live VASP job.</span></div>
+<div class="line"><span class="lineno">  208</span>  <span class="keywordflow">if</span> (pid &lt; 0 &amp;&amp; errno == EINTR) {</div>
+<div class="line"><span class="lineno">  209</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><span class="lineno">  210</span>  }</div>
 <div class="line"><span class="lineno">  211</span> </div>
-<div class="line"><span class="lineno">  212</span>  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  213</span>}</div>
+<div class="line"><span class="lineno">  212</span>  <span class="keywordflow">if</span> (pid != 0) {</div>
+<div class="line"><span class="lineno">  213</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;vasp died unexpectedly&quot;</span>);</div>
+<div class="line"><span class="lineno">  214</span>  }</div>
+<div class="line"><span class="lineno">  215</span> </div>
+<div class="line"><span class="lineno">  216</span>  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  217</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -902,65 +913,65 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="VASP_8cpp_source.html#l00246">246</a> of file <a class="el" href="VASP_8cpp_source.html">VASP.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  247</span>                                          {</div>
-<div class="line"><span class="lineno">  248</span>  <span class="comment">// Positions are scaled</span></div>
-<div class="line"><span class="lineno">  249</span>  <span class="keyword">const</span> std::vector&lt;SpeciesRun&gt; runs = speciesRuns(N, atomicNrs);</div>
-<div class="line"><span class="lineno">  250</span> </div>
-<div class="line"><span class="lineno">  251</span>  std::ofstream poscar(<span class="stringliteral">&quot;POSCAR&quot;</span>, std::ios::trunc);</div>
-<div class="line"><span class="lineno">  252</span>  <span class="keywordflow">if</span> (!poscar) {</div>
-<div class="line"><span class="lineno">  253</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Could not open POSCAR for writing&quot;</span>);</div>
-<div class="line"><span class="lineno">  254</span>  }</div>
-<div class="line"><span class="lineno">  255</span> </div>
-<div class="line"><span class="lineno">  256</span>  <span class="comment">// header line (treated as a comment)</span></div>
-<div class="line"><span class="lineno">  257</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;run : runs) {</div>
-<div class="line"><span class="lineno">  258</span>    poscar &lt;&lt; std::format(<span class="stringliteral">&quot;{} &quot;</span>, run.first);</div>
-<div class="line"><span class="lineno">  259</span>  }</div>
-<div class="line"><span class="lineno">  260</span>  poscar &lt;&lt; <span class="stringliteral">&quot;: Atomic numbers\n&quot;</span>;</div>
+<p class="definition">Definition at line <a class="el" href="VASP_8cpp_source.html#l00252">252</a> of file <a class="el" href="VASP_8cpp_source.html">VASP.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  253</span>                                          {</div>
+<div class="line"><span class="lineno">  254</span>  <span class="comment">// Positions are scaled</span></div>
+<div class="line"><span class="lineno">  255</span>  <span class="keyword">const</span> std::vector&lt;SpeciesRun&gt; runs = speciesRuns(N, atomicNrs);</div>
+<div class="line"><span class="lineno">  256</span> </div>
+<div class="line"><span class="lineno">  257</span>  std::ofstream poscar(<span class="stringliteral">&quot;POSCAR&quot;</span>, std::ios::trunc);</div>
+<div class="line"><span class="lineno">  258</span>  <span class="keywordflow">if</span> (!poscar) {</div>
+<div class="line"><span class="lineno">  259</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Could not open POSCAR for writing&quot;</span>);</div>
+<div class="line"><span class="lineno">  260</span>  }</div>
 <div class="line"><span class="lineno">  261</span> </div>
-<div class="line"><span class="lineno">  262</span>  <span class="comment">// boundary box</span></div>
-<div class="line"><span class="lineno">  263</span>  poscar &lt;&lt; <span class="stringliteral">&quot;1.0\n&quot;</span>;</div>
-<div class="line"><span class="lineno">  264</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 3; i++) {</div>
-<div class="line"><span class="lineno">  265</span>    poscar &lt;&lt; std::format(<span class="stringliteral">&quot; {:.8f}\t{:.8f}\t{:.8f}\n&quot;</span>, box[i * 3 + 0],</div>
-<div class="line"><span class="lineno">  266</span>                          box[i * 3 + 1], box[i * 3 + 2]);</div>
-<div class="line"><span class="lineno">  267</span>  }</div>
-<div class="line"><span class="lineno">  268</span> </div>
-<div class="line"><span class="lineno">  269</span>  <span class="comment">// the number of atoms of each different atomic type</span></div>
-<div class="line"><span class="lineno">  270</span>  <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; runs.size(); i++) {</div>
-<div class="line"><span class="lineno">  271</span>    poscar &lt;&lt; std::format(<span class="stringliteral">&quot;{}{}&quot;</span>, runs[i].second,</div>
-<div class="line"><span class="lineno">  272</span>                          i + 1 == runs.size() ? <span class="stringliteral">&quot;\n&quot;</span> : <span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  262</span>  <span class="comment">// header line (treated as a comment)</span></div>
+<div class="line"><span class="lineno">  263</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;run : runs) {</div>
+<div class="line"><span class="lineno">  264</span>    poscar &lt;&lt; std::format(<span class="stringliteral">&quot;{} &quot;</span>, run.first);</div>
+<div class="line"><span class="lineno">  265</span>  }</div>
+<div class="line"><span class="lineno">  266</span>  poscar &lt;&lt; <span class="stringliteral">&quot;: Atomic numbers\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  267</span> </div>
+<div class="line"><span class="lineno">  268</span>  <span class="comment">// boundary box</span></div>
+<div class="line"><span class="lineno">  269</span>  poscar &lt;&lt; <span class="stringliteral">&quot;1.0\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  270</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 3; i++) {</div>
+<div class="line"><span class="lineno">  271</span>    poscar &lt;&lt; std::format(<span class="stringliteral">&quot; {:.8f}\t{:.8f}\t{:.8f}\n&quot;</span>, box[i * 3 + 0],</div>
+<div class="line"><span class="lineno">  272</span>                          box[i * 3 + 1], box[i * 3 + 2]);</div>
 <div class="line"><span class="lineno">  273</span>  }</div>
 <div class="line"><span class="lineno">  274</span> </div>
-<div class="line"><span class="lineno">  275</span>  <span class="comment">// coordinates for all atoms</span></div>
-<div class="line"><span class="lineno">  276</span>  poscar &lt;&lt; <span class="stringliteral">&quot;Cartesian\n&quot;</span>;</div>
-<div class="line"><span class="lineno">  277</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; N; i++) {</div>
-<div class="line"><span class="lineno">  278</span>    poscar &lt;&lt; std::format(<span class="stringliteral">&quot;{:.19f}\t{:.19f}\t{:.19f}\t T T T\n&quot;</span>, R[i * 3 + 0],</div>
-<div class="line"><span class="lineno">  279</span>                          R[i * 3 + 1], R[i * 3 + 2]);</div>
-<div class="line"><span class="lineno">  280</span>  }</div>
-<div class="line"><span class="lineno">  281</span> </div>
-<div class="line"><span class="lineno">  282</span>  poscar.close();</div>
-<div class="line"><span class="lineno">  283</span>  <span class="keywordflow">if</span> (!poscar) {</div>
-<div class="line"><span class="lineno">  284</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Could not write the structure to POSCAR&quot;</span>);</div>
-<div class="line"><span class="lineno">  285</span>  }</div>
-<div class="line"><span class="lineno">  286</span> </div>
-<div class="line"><span class="lineno">  287</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a6e027149212a59db32dacaa9d4ca3240">firstRun</a>) {</div>
-<div class="line"><span class="lineno">  288</span>    <a class="code hl_variable" href="#a6e027149212a59db32dacaa9d4ca3240">firstRun</a> = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  289</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  290</span>    <span class="comment">// An empty NEWCAR tells the running VASP that a new POSCAR is ready.</span></div>
-<div class="line"><span class="lineno">  291</span>    std::ofstream newcar(kNewCarFile, std::ios::trunc);</div>
-<div class="line"><span class="lineno">  292</span>    <span class="keywordflow">if</span> (!newcar) {</div>
-<div class="line"><span class="lineno">  293</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  294</span>          std::format(<span class="stringliteral">&quot;Could not open {} to signal VASP&quot;</span>, kNewCarFile));</div>
-<div class="line"><span class="lineno">  295</span>    }</div>
-<div class="line"><span class="lineno">  296</span>    newcar.close();</div>
-<div class="line"><span class="lineno">  297</span>    <span class="keywordflow">if</span> (!newcar) {</div>
-<div class="line"><span class="lineno">  298</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  299</span>          std::format(<span class="stringliteral">&quot;Could not write {} to signal VASP&quot;</span>, kNewCarFile));</div>
-<div class="line"><span class="lineno">  300</span>    }</div>
-<div class="line"><span class="lineno">  301</span>  }</div>
-<div class="line"><span class="lineno">  302</span> </div>
-<div class="line"><span class="lineno">  303</span>  <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  304</span>}</div>
+<div class="line"><span class="lineno">  275</span>  <span class="comment">// the number of atoms of each different atomic type</span></div>
+<div class="line"><span class="lineno">  276</span>  <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; runs.size(); i++) {</div>
+<div class="line"><span class="lineno">  277</span>    poscar &lt;&lt; std::format(<span class="stringliteral">&quot;{}{}&quot;</span>, runs[i].second,</div>
+<div class="line"><span class="lineno">  278</span>                          i + 1 == runs.size() ? <span class="stringliteral">&quot;\n&quot;</span> : <span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  279</span>  }</div>
+<div class="line"><span class="lineno">  280</span> </div>
+<div class="line"><span class="lineno">  281</span>  <span class="comment">// coordinates for all atoms</span></div>
+<div class="line"><span class="lineno">  282</span>  poscar &lt;&lt; <span class="stringliteral">&quot;Cartesian\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  283</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; N; i++) {</div>
+<div class="line"><span class="lineno">  284</span>    poscar &lt;&lt; std::format(<span class="stringliteral">&quot;{:.19f}\t{:.19f}\t{:.19f}\t T T T\n&quot;</span>, R[i * 3 + 0],</div>
+<div class="line"><span class="lineno">  285</span>                          R[i * 3 + 1], R[i * 3 + 2]);</div>
+<div class="line"><span class="lineno">  286</span>  }</div>
+<div class="line"><span class="lineno">  287</span> </div>
+<div class="line"><span class="lineno">  288</span>  poscar.close();</div>
+<div class="line"><span class="lineno">  289</span>  <span class="keywordflow">if</span> (!poscar) {</div>
+<div class="line"><span class="lineno">  290</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Could not write the structure to POSCAR&quot;</span>);</div>
+<div class="line"><span class="lineno">  291</span>  }</div>
+<div class="line"><span class="lineno">  292</span> </div>
+<div class="line"><span class="lineno">  293</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a6e027149212a59db32dacaa9d4ca3240">firstRun</a>) {</div>
+<div class="line"><span class="lineno">  294</span>    <a class="code hl_variable" href="#a6e027149212a59db32dacaa9d4ca3240">firstRun</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  295</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  296</span>    <span class="comment">// An empty NEWCAR tells the running VASP that a new POSCAR is ready.</span></div>
+<div class="line"><span class="lineno">  297</span>    std::ofstream newcar(kNewCarFile, std::ios::trunc);</div>
+<div class="line"><span class="lineno">  298</span>    <span class="keywordflow">if</span> (!newcar) {</div>
+<div class="line"><span class="lineno">  299</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  300</span>          std::format(<span class="stringliteral">&quot;Could not open {} to signal VASP&quot;</span>, kNewCarFile));</div>
+<div class="line"><span class="lineno">  301</span>    }</div>
+<div class="line"><span class="lineno">  302</span>    newcar.close();</div>
+<div class="line"><span class="lineno">  303</span>    <span class="keywordflow">if</span> (!newcar) {</div>
+<div class="line"><span class="lineno">  304</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  305</span>          std::format(<span class="stringliteral">&quot;Could not write {} to signal VASP&quot;</span>, kNewCarFile));</div>
+<div class="line"><span class="lineno">  306</span>    }</div>
+<div class="line"><span class="lineno">  307</span>  }</div>
+<div class="line"><span class="lineno">  308</span> </div>
+<div class="line"><span class="lineno">  309</span>  <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  310</span>}</div>
 <div class="ttc" id="aclassVASP_html_a6e027149212a59db32dacaa9d4ca3240"><div class="ttname"><a href="#a6e027149212a59db32dacaa9d4ca3240">VASP::firstRun</a></div><div class="ttdeci">static bool firstRun</div><div class="ttdef"><b>Definition</b> <a href="VASP_8h_source.html#l00053">VASP.h:53</a></div></div>
 </div><!-- fragment -->
 </div>

@@ -532,174 +532,198 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Runs the correct saddle search; also checks if the run was successful. </p>
 
-<p class="definition">Definition at line <a class="el" href="ProcessSearchJob_8cpp_source.html#l00233">233</a> of file <a class="el" href="ProcessSearchJob_8cpp_source.html">ProcessSearchJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  233</span>                                      {</div>
-<div class="line"><span class="lineno">  234</span>  Matter matterTemp(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  235</span>  <span class="keywordtype">long</span> status;</div>
-<div class="line"><span class="lineno">  236</span>  <span class="keywordtype">size_t</span> fctmp{0};</div>
-<div class="line"><span class="lineno">  237</span> </div>
-<div class="line"><span class="lineno">  238</span>  fctmp = <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>-&gt;forceCallCounter;</div>
-<div class="line"><span class="lineno">  239</span>  status = <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>-&gt;run();</div>
-<div class="line"><span class="lineno">  240</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;min_mode&quot;</span> &amp;&amp;</div>
-<div class="line"><span class="lineno">  241</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().minmode_method ==</div>
-<div class="line"><span class="lineno">  242</span>          <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a14617f4b0ae6355cdbd54882065b0534">LowestEigenmode::MINMODE_GPRDIMER</a>) {</div>
-<div class="line"><span class="lineno">  243</span>    <a class="code hl_variable" href="#ab61cafe595a8a21499b497398eb16c0a">fCallsSaddle</a> += <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>-&gt;getForceCalls();</div>
-<div class="line"><span class="lineno">  244</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;artn&quot;</span>) {</div>
-<div class="line"><span class="lineno">  245</span>    <a class="code hl_variable" href="#ab61cafe595a8a21499b497398eb16c0a">fCallsSaddle</a> += <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>-&gt;getForceCalls();</div>
-<div class="line"><span class="lineno">  246</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  247</span>    <a class="code hl_variable" href="#ab61cafe595a8a21499b497398eb16c0a">fCallsSaddle</a> += <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>-&gt;forceCallCounter - fctmp;</div>
-<div class="line"><span class="lineno">  248</span>  }</div>
-<div class="line"><span class="lineno">  249</span>  <a class="code hl_define" href="EonLogger_8h.html#a3985f57d817b8b5bac1a2f71f12ea439">EONC_LOG_DEBUG</a>(<span class="stringliteral">&quot;Got {} calls in the saddle search, with previous {}&quot;</span>,</div>
-<div class="line"><span class="lineno">  250</span>                 <a class="code hl_variable" href="#ab61cafe595a8a21499b497398eb16c0a">fCallsSaddle</a>, fctmp);</div>
-<div class="line"><span class="lineno">  251</span> </div>
-<div class="line"><span class="lineno">  252</span>  <span class="keywordflow">if</span> (status != <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a21140618d9213e62812224c7a8863796">MinModeSaddleSearch::STATUS_GOOD</a>) {</div>
-<div class="line"><span class="lineno">  253</span>    <span class="keywordflow">return</span> status;</div>
-<div class="line"><span class="lineno">  254</span>  }</div>
-<div class="line"><span class="lineno">  255</span> </div>
-<div class="line"><span class="lineno">  256</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> posSaddle = <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>-&gt;getPositions();</div>
-<div class="line"><span class="lineno">  257</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> displacedPos;</div>
+<p class="definition">Definition at line <a class="el" href="ProcessSearchJob_8cpp_source.html#l00240">240</a> of file <a class="el" href="ProcessSearchJob_8cpp_source.html">ProcessSearchJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  240</span>                                      {</div>
+<div class="line"><span class="lineno">  241</span>  Matter matterTemp(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  242</span>  <span class="keywordtype">long</span> status;</div>
+<div class="line"><span class="lineno">  243</span>  <span class="keywordtype">size_t</span> fctmp{0};</div>
+<div class="line"><span class="lineno">  244</span> </div>
+<div class="line"><span class="lineno">  245</span>  fctmp = <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>-&gt;forceCallCounter;</div>
+<div class="line"><span class="lineno">  246</span>  status = <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>-&gt;run();</div>
+<div class="line"><span class="lineno">  247</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;min_mode&quot;</span> &amp;&amp;</div>
+<div class="line"><span class="lineno">  248</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().minmode_method ==</div>
+<div class="line"><span class="lineno">  249</span>          <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a14617f4b0ae6355cdbd54882065b0534">LowestEigenmode::MINMODE_GPRDIMER</a>) {</div>
+<div class="line"><span class="lineno">  250</span>    <a class="code hl_variable" href="#ab61cafe595a8a21499b497398eb16c0a">fCallsSaddle</a> += <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>-&gt;getForceCalls();</div>
+<div class="line"><span class="lineno">  251</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;artn&quot;</span>) {</div>
+<div class="line"><span class="lineno">  252</span>    <a class="code hl_variable" href="#ab61cafe595a8a21499b497398eb16c0a">fCallsSaddle</a> += <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>-&gt;getForceCalls();</div>
+<div class="line"><span class="lineno">  253</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  254</span>    <a class="code hl_variable" href="#ab61cafe595a8a21499b497398eb16c0a">fCallsSaddle</a> += <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>-&gt;forceCallCounter - fctmp;</div>
+<div class="line"><span class="lineno">  255</span>  }</div>
+<div class="line"><span class="lineno">  256</span>  <a class="code hl_define" href="EonLogger_8h.html#a3985f57d817b8b5bac1a2f71f12ea439">EONC_LOG_DEBUG</a>(<span class="stringliteral">&quot;Got {} calls in the saddle search, with previous {}&quot;</span>,</div>
+<div class="line"><span class="lineno">  257</span>                 <a class="code hl_variable" href="#ab61cafe595a8a21499b497398eb16c0a">fCallsSaddle</a>, fctmp);</div>
 <div class="line"><span class="lineno">  258</span> </div>
-<div class="line"><span class="lineno">  259</span>  *<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a> = *<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>;</div>
-<div class="line"><span class="lineno">  260</span> </div>
-<div class="line"><span class="lineno">  261</span>  displacedPos =</div>
-<div class="line"><span class="lineno">  262</span>      posSaddle - <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>-&gt;getEigenvector() *</div>
-<div class="line"><span class="lineno">  263</span>                      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.process_search_options().minimization_offset;</div>
-<div class="line"><span class="lineno">  264</span>  <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;setPositions(displacedPos);</div>
+<div class="line"><span class="lineno">  259</span>  <span class="keywordflow">if</span> (status != <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a21140618d9213e62812224c7a8863796">MinModeSaddleSearch::STATUS_GOOD</a>) {</div>
+<div class="line"><span class="lineno">  260</span>    <span class="keywordflow">return</span> status;</div>
+<div class="line"><span class="lineno">  261</span>  }</div>
+<div class="line"><span class="lineno">  262</span> </div>
+<div class="line"><span class="lineno">  263</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> posSaddle = <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>-&gt;getPositions();</div>
+<div class="line"><span class="lineno">  264</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> displacedPos;</div>
 <div class="line"><span class="lineno">  265</span> </div>
-<div class="line"><span class="lineno">  266</span>  *<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> = *<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>;</div>
-<div class="line"><span class="lineno">  267</span>  displacedPos =</div>
-<div class="line"><span class="lineno">  268</span>      posSaddle + <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>-&gt;getEigenvector() *</div>
-<div class="line"><span class="lineno">  269</span>                      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.process_search_options().minimization_offset;</div>
-<div class="line"><span class="lineno">  270</span>  <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;setPositions(displacedPos);</div>
-<div class="line"><span class="lineno">  271</span> </div>
-<div class="line"><span class="lineno">  272</span>  <span class="comment">// Minimize both endpoints concurrently when the shared potential instance is</span></div>
-<div class="line"><span class="lineno">  273</span>  <span class="comment">// safe to call from multiple threads, or when each endpoint owns a separate</span></div>
-<div class="line"><span class="lineno">  274</span>  <span class="comment">// potential instance.</span></div>
-<div class="line"><span class="lineno">  275</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;Starting Minimization 1 &amp; 2&quot;</span>);</div>
-<div class="line"><span class="lineno">  276</span>  <span class="keywordtype">bool</span> converged1{<span class="keyword">false</span>}, converged2{<span class="keyword">false</span>};</div>
-<div class="line"><span class="lineno">  277</span>  <span class="keywordtype">long</span> fc1_before = <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotentialCalls();</div>
-<div class="line"><span class="lineno">  278</span>  <span class="keywordtype">long</span> fc2_before = <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;getPotentialCalls();</div>
-<div class="line"><span class="lineno">  279</span> </div>
-<div class="line"><span class="lineno">  280</span>  <span class="keywordtype">bool</span> canParallel =</div>
-<div class="line"><span class="lineno">  281</span>      <a class="code hl_function" href="namespaceeonc.html#a7244d894793caf3c7b47a9dd67bb7ae7">eonc::potAllowsSharedInstance</a>(*<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>) || <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>-&gt;needsPerImageInstance();</div>
-<div class="line"><span class="lineno">  282</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options().parallel &amp;&amp; canParallel) {</div>
-<div class="line"><span class="lineno">  283</span>    std::thread t1([&amp;] {</div>
-<div class="line"><span class="lineno">  284</span>      converged1 = <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;relax(<span class="keyword">false</span>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.debug_options().write_movies,</div>
-<div class="line"><span class="lineno">  285</span>                               <span class="keyword">false</span>, <span class="stringliteral">&quot;min1&quot;</span>);</div>
-<div class="line"><span class="lineno">  286</span>    });</div>
-<div class="line"><span class="lineno">  287</span>    converged2 =</div>
-<div class="line"><span class="lineno">  288</span>        <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;relax(<span class="keyword">false</span>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.debug_options().write_movies, <span class="keyword">false</span>, <span class="stringliteral">&quot;min2&quot;</span>);</div>
-<div class="line"><span class="lineno">  289</span>    t1.join();</div>
-<div class="line"><span class="lineno">  290</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  291</span>    converged1 =</div>
-<div class="line"><span class="lineno">  292</span>        <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;relax(<span class="keyword">false</span>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.debug_options().write_movies, <span class="keyword">false</span>, <span class="stringliteral">&quot;min1&quot;</span>);</div>
-<div class="line"><span class="lineno">  293</span>    converged2 =</div>
-<div class="line"><span class="lineno">  294</span>        <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;relax(<span class="keyword">false</span>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.debug_options().write_movies, <span class="keyword">false</span>, <span class="stringliteral">&quot;min2&quot;</span>);</div>
-<div class="line"><span class="lineno">  295</span>  }</div>
-<div class="line"><span class="lineno">  296</span> </div>
-<div class="line"><span class="lineno">  297</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotential().get() == <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;getPotential().get()) {</div>
-<div class="line"><span class="lineno">  298</span>    <a class="code hl_variable" href="#a2a9fa27e530909e51e734a76df57f7e4">fCallsMin</a> += <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotentialCalls() - fc1_before;</div>
-<div class="line"><span class="lineno">  299</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  300</span>    <a class="code hl_variable" href="#a2a9fa27e530909e51e734a76df57f7e4">fCallsMin</a> += (<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotentialCalls() - fc1_before) +</div>
-<div class="line"><span class="lineno">  301</span>                 (<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;getPotentialCalls() - fc2_before);</div>
-<div class="line"><span class="lineno">  302</span>  }</div>
-<div class="line"><span class="lineno">  303</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;Min1: {} fcalls, Min2: {} fcalls&quot;</span>,</div>
-<div class="line"><span class="lineno">  304</span>                  <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotentialCalls() - fc1_before,</div>
-<div class="line"><span class="lineno">  305</span>                  <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;getPotentialCalls() - fc2_before);</div>
-<div class="line"><span class="lineno">  306</span> </div>
-<div class="line"><span class="lineno">  307</span>  <span class="keywordflow">if</span> (!converged1 || !converged2) {</div>
-<div class="line"><span class="lineno">  308</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a88457f799f254a70415cf48319304e6d">MinModeSaddleSearch::STATUS_BAD_MINIMA</a>;</div>
-<div class="line"><span class="lineno">  309</span>  }</div>
-<div class="line"><span class="lineno">  310</span> </div>
-<div class="line"><span class="lineno">  311</span>  <span class="keyword">auto</span> sameAs = [](<span class="keyword">const</span> Matter &amp;a, <span class="keyword">const</span> Matter &amp;b) {</div>
-<div class="line"><span class="lineno">  312</span>    Matter probe(a);</div>
-<div class="line"><span class="lineno">  313</span>    <span class="keywordflow">return</span> probe.compare(b);</div>
-<div class="line"><span class="lineno">  314</span>  };</div>
-<div class="line"><span class="lineno">  315</span> </div>
-<div class="line"><span class="lineno">  316</span>  <span class="keywordflow">if</span> (!sameAs(*<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>, *<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>) &amp;&amp; sameAs(*<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>, *<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>)) {</div>
-<div class="line"><span class="lineno">  317</span>    matterTemp = *<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>;</div>
-<div class="line"><span class="lineno">  318</span>    *<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a> = *<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>;</div>
-<div class="line"><span class="lineno">  319</span>    *<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> = matterTemp;</div>
-<div class="line"><span class="lineno">  320</span>  }</div>
-<div class="line"><span class="lineno">  321</span> </div>
-<div class="line"><span class="lineno">  322</span>  <span class="keywordflow">if</span> (!sameAs(*<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>, *<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>)) {</div>
-<div class="line"><span class="lineno">  323</span>    <span class="comment">// Report how far off the endpoint landed. Whether the minimisation</span></div>
-<div class="line"><span class="lineno">  324</span>    <span class="comment">// stopped just outside the state-identity tolerance or relaxed into a</span></div>
-<div class="line"><span class="lineno">  325</span>    <span class="comment">// different state entirely calls for opposite fixes, and the status</span></div>
-<div class="line"><span class="lineno">  326</span>    <span class="comment">// alone does not distinguish them.</span></div>
-<div class="line"><span class="lineno">  327</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> tol =</div>
-<div class="line"><span class="lineno">  328</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.structure_comparison_options().distance_difference;</div>
-<div class="line"><span class="lineno">  329</span>    <span class="keyword">auto</span> countMoved = [&amp;](<span class="keyword">const</span> Matter &amp;m) {</div>
-<div class="line"><span class="lineno">  330</span>      <span class="keywordtype">long</span> moved = 0;</div>
-<div class="line"><span class="lineno">  331</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;numberOfAtoms(); ++i) {</div>
-<div class="line"><span class="lineno">  332</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a></div>
-<div class="line"><span class="lineno">  333</span>                -&gt;pbc(<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;getPositions().row(i) - m.getPositions().row(i))</div>
-<div class="line"><span class="lineno">  334</span>                .norm() &gt; tol) {</div>
-<div class="line"><span class="lineno">  335</span>          ++moved;</div>
-<div class="line"><span class="lineno">  336</span>        }</div>
-<div class="line"><span class="lineno">  337</span>      }</div>
-<div class="line"><span class="lineno">  338</span>      <span class="keywordflow">return</span> moved;</div>
-<div class="line"><span class="lineno">  339</span>    };</div>
-<div class="line"><span class="lineno">  340</span>    QUILL_LOG_INFO(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>,</div>
-<div class="line"><span class="lineno">  341</span>                   <span class="stringliteral">&quot;initial != min1: {} of {} atoms past the {} A tolerance &quot;</span></div>
-<div class="line"><span class="lineno">  342</span>                   <span class="stringliteral">&quot;for min1 ({} for min2); largest separation {} A&quot;</span>,</div>
-<div class="line"><span class="lineno">  343</span>                   countMoved(*<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>), <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;numberOfAtoms(), tol,</div>
-<div class="line"><span class="lineno">  344</span>                   countMoved(*<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>), <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;perAtomNorm(*<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>));</div>
-<div class="line"><span class="lineno">  345</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960ad86c53f3b4f2569a154bd5f901fc16c0">MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED</a>;</div>
-<div class="line"><span class="lineno">  346</span>  }</div>
-<div class="line"><span class="lineno">  347</span> </div>
-<div class="line"><span class="lineno">  348</span>  <span class="keywordflow">if</span> (sameAs(*<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>, *<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>)) {</div>
-<div class="line"><span class="lineno">  349</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;both minima are the initial state&quot;</span>);</div>
-<div class="line"><span class="lineno">  350</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960ad86c53f3b4f2569a154bd5f901fc16c0">MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED</a>;</div>
+<div class="line"><span class="lineno">  266</span>  <span class="comment">// Matter&#39;s copy assignment copies the potential; keep each endpoint&#39;s</span></div>
+<div class="line"><span class="lineno">  267</span>  <span class="comment">// own instance so the two minimizations can run at the same time.</span></div>
+<div class="line"><span class="lineno">  268</span>  <span class="keyword">const</span> <span class="keyword">auto</span> min1Pot = <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotential();</div>
+<div class="line"><span class="lineno">  269</span>  <span class="keyword">const</span> <span class="keyword">auto</span> min2Pot = <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;getPotential();</div>
+<div class="line"><span class="lineno">  270</span>  *<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a> = *<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>;</div>
+<div class="line"><span class="lineno">  271</span>  <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;setPotential(min1Pot);</div>
+<div class="line"><span class="lineno">  272</span> </div>
+<div class="line"><span class="lineno">  273</span>  displacedPos =</div>
+<div class="line"><span class="lineno">  274</span>      posSaddle - <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>-&gt;getEigenvector() *</div>
+<div class="line"><span class="lineno">  275</span>                      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.process_search_options().minimization_offset;</div>
+<div class="line"><span class="lineno">  276</span>  <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;setPositions(displacedPos);</div>
+<div class="line"><span class="lineno">  277</span> </div>
+<div class="line"><span class="lineno">  278</span>  *<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> = *<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>;</div>
+<div class="line"><span class="lineno">  279</span>  <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;setPotential(min2Pot);</div>
+<div class="line"><span class="lineno">  280</span>  displacedPos =</div>
+<div class="line"><span class="lineno">  281</span>      posSaddle + <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>-&gt;getEigenvector() *</div>
+<div class="line"><span class="lineno">  282</span>                      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.process_search_options().minimization_offset;</div>
+<div class="line"><span class="lineno">  283</span>  <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;setPositions(displacedPos);</div>
+<div class="line"><span class="lineno">  284</span> </div>
+<div class="line"><span class="lineno">  285</span>  <span class="comment">// Minimize both endpoints concurrently when the shared potential instance is</span></div>
+<div class="line"><span class="lineno">  286</span>  <span class="comment">// safe to call from multiple threads, or when each endpoint owns a separate</span></div>
+<div class="line"><span class="lineno">  287</span>  <span class="comment">// potential instance.</span></div>
+<div class="line"><span class="lineno">  288</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;Starting Minimization 1 &amp; 2&quot;</span>);</div>
+<div class="line"><span class="lineno">  289</span>  <span class="keywordtype">bool</span> converged1{<span class="keyword">false</span>}, converged2{<span class="keyword">false</span>};</div>
+<div class="line"><span class="lineno">  290</span>  <span class="keywordtype">long</span> fc1_before = <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotentialCalls();</div>
+<div class="line"><span class="lineno">  291</span>  <span class="keywordtype">long</span> fc2_before = <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;getPotentialCalls();</div>
+<div class="line"><span class="lineno">  292</span> </div>
+<div class="line"><span class="lineno">  293</span>  <span class="comment">// Two threads may share an instance only when it is thread safe; a</span></div>
+<div class="line"><span class="lineno">  294</span>  <span class="comment">// per-image potential needs the endpoints to hold distinct instances.</span></div>
+<div class="line"><span class="lineno">  295</span>  <span class="keywordtype">bool</span> canParallel = <a class="code hl_function" href="namespaceeonc.html#a7244d894793caf3c7b47a9dd67bb7ae7">eonc::potAllowsSharedInstance</a>(*<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>) ||</div>
+<div class="line"><span class="lineno">  296</span>                     (<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>-&gt;needsPerImageInstance() &amp;&amp;</div>
+<div class="line"><span class="lineno">  297</span>                      <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotential().get() != <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;getPotential().get());</div>
+<div class="line"><span class="lineno">  298</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options().parallel &amp;&amp; canParallel) {</div>
+<div class="line"><span class="lineno">  299</span>    <span class="comment">// An exception may not leave a thread function (std::terminate), and a</span></div>
+<div class="line"><span class="lineno">  300</span>    <span class="comment">// joinable std::thread may not be destroyed: t1 hands its error back and</span></div>
+<div class="line"><span class="lineno">  301</span>    <span class="comment">// the caller joins before rethrowing either side&#39;s.</span></div>
+<div class="line"><span class="lineno">  302</span>    std::exception_ptr t1Error;</div>
+<div class="line"><span class="lineno">  303</span>    std::thread t1([&amp;] {</div>
+<div class="line"><span class="lineno">  304</span>      <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  305</span>        converged1 = <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;relax(<span class="keyword">false</span>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.debug_options().write_movies,</div>
+<div class="line"><span class="lineno">  306</span>                                 <span class="keyword">false</span>, <span class="stringliteral">&quot;min1&quot;</span>);</div>
+<div class="line"><span class="lineno">  307</span>      } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  308</span>        t1Error = std::current_exception();</div>
+<div class="line"><span class="lineno">  309</span>      }</div>
+<div class="line"><span class="lineno">  310</span>    });</div>
+<div class="line"><span class="lineno">  311</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  312</span>      converged2 = <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;relax(<span class="keyword">false</span>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.debug_options().write_movies,</div>
+<div class="line"><span class="lineno">  313</span>                               <span class="keyword">false</span>, <span class="stringliteral">&quot;min2&quot;</span>);</div>
+<div class="line"><span class="lineno">  314</span>    } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  315</span>      t1.join();</div>
+<div class="line"><span class="lineno">  316</span>      <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  317</span>    }</div>
+<div class="line"><span class="lineno">  318</span>    t1.join();</div>
+<div class="line"><span class="lineno">  319</span>    <span class="keywordflow">if</span> (t1Error)</div>
+<div class="line"><span class="lineno">  320</span>      std::rethrow_exception(t1Error);</div>
+<div class="line"><span class="lineno">  321</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  322</span>    converged1 =</div>
+<div class="line"><span class="lineno">  323</span>        <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;relax(<span class="keyword">false</span>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.debug_options().write_movies, <span class="keyword">false</span>, <span class="stringliteral">&quot;min1&quot;</span>);</div>
+<div class="line"><span class="lineno">  324</span>    converged2 =</div>
+<div class="line"><span class="lineno">  325</span>        <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;relax(<span class="keyword">false</span>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.debug_options().write_movies, <span class="keyword">false</span>, <span class="stringliteral">&quot;min2&quot;</span>);</div>
+<div class="line"><span class="lineno">  326</span>  }</div>
+<div class="line"><span class="lineno">  327</span> </div>
+<div class="line"><span class="lineno">  328</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotential().get() == <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;getPotential().get()) {</div>
+<div class="line"><span class="lineno">  329</span>    <a class="code hl_variable" href="#a2a9fa27e530909e51e734a76df57f7e4">fCallsMin</a> += <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotentialCalls() - fc1_before;</div>
+<div class="line"><span class="lineno">  330</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  331</span>    <a class="code hl_variable" href="#a2a9fa27e530909e51e734a76df57f7e4">fCallsMin</a> += (<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotentialCalls() - fc1_before) +</div>
+<div class="line"><span class="lineno">  332</span>                 (<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;getPotentialCalls() - fc2_before);</div>
+<div class="line"><span class="lineno">  333</span>  }</div>
+<div class="line"><span class="lineno">  334</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;Min1: {} fcalls, Min2: {} fcalls&quot;</span>,</div>
+<div class="line"><span class="lineno">  335</span>                  <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotentialCalls() - fc1_before,</div>
+<div class="line"><span class="lineno">  336</span>                  <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;getPotentialCalls() - fc2_before);</div>
+<div class="line"><span class="lineno">  337</span> </div>
+<div class="line"><span class="lineno">  338</span>  <span class="keywordflow">if</span> (!converged1 || !converged2) {</div>
+<div class="line"><span class="lineno">  339</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a88457f799f254a70415cf48319304e6d">MinModeSaddleSearch::STATUS_BAD_MINIMA</a>;</div>
+<div class="line"><span class="lineno">  340</span>  }</div>
+<div class="line"><span class="lineno">  341</span> </div>
+<div class="line"><span class="lineno">  342</span>  <span class="keyword">auto</span> sameAs = [](<span class="keyword">const</span> Matter &amp;a, <span class="keyword">const</span> Matter &amp;b) {</div>
+<div class="line"><span class="lineno">  343</span>    Matter probe(a);</div>
+<div class="line"><span class="lineno">  344</span>    <span class="keywordflow">return</span> probe.compare(b);</div>
+<div class="line"><span class="lineno">  345</span>  };</div>
+<div class="line"><span class="lineno">  346</span> </div>
+<div class="line"><span class="lineno">  347</span>  <span class="keywordflow">if</span> (!sameAs(*<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>, *<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>) &amp;&amp; sameAs(*<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>, *<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>)) {</div>
+<div class="line"><span class="lineno">  348</span>    matterTemp = *<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>;</div>
+<div class="line"><span class="lineno">  349</span>    *<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a> = *<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>;</div>
+<div class="line"><span class="lineno">  350</span>    *<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> = matterTemp;</div>
 <div class="line"><span class="lineno">  351</span>  }</div>
 <div class="line"><span class="lineno">  352</span> </div>
-<div class="line"><span class="lineno">  353</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.process_search_options().minimize_first) {</div>
-<div class="line"><span class="lineno">  354</span>    <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a> = <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>;</div>
-<div class="line"><span class="lineno">  355</span>  }</div>
-<div class="line"><span class="lineno">  356</span> </div>
-<div class="line"><span class="lineno">  357</span>  <a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[0] = <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>-&gt;getPotentialEnergy() - <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotentialEnergy();</div>
-<div class="line"><span class="lineno">  358</span>  <a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[1] = <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>-&gt;getPotentialEnergy() - <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;getPotentialEnergy();</div>
-<div class="line"><span class="lineno">  359</span> </div>
-<div class="line"><span class="lineno">  360</span>  <span class="keywordflow">if</span> ((<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().max_energy &lt; <a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[0]) ||</div>
-<div class="line"><span class="lineno">  361</span>      (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().max_energy &lt; <a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[1])) {</div>
-<div class="line"><span class="lineno">  362</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960ad9e94eb2dd88afadabb4ab5663464ef1">MinModeSaddleSearch::STATUS_BAD_HIGH_BARRIER</a>;</div>
-<div class="line"><span class="lineno">  363</span>  }</div>
-<div class="line"><span class="lineno">  364</span> </div>
-<div class="line"><span class="lineno">  365</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[0] &lt; 0.0 || <a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[1] &lt; 0.0) {</div>
-<div class="line"><span class="lineno">  366</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a5d760ca634b4780d68dda3cd0ef9b7a2">MinModeSaddleSearch::STATUS_NEGATIVE_BARRIER</a>;</div>
-<div class="line"><span class="lineno">  367</span>  }</div>
-<div class="line"><span class="lineno">  368</span> </div>
-<div class="line"><span class="lineno">  369</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().default_value) {</div>
-<div class="line"><span class="lineno">  370</span>    fctmp = <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotentialCalls();</div>
-<div class="line"><span class="lineno">  371</span>    <span class="keywordtype">int</span> prefStatus;</div>
-<div class="line"><span class="lineno">  372</span>    <span class="keywordtype">double</span> pref1, pref2;</div>
-<div class="line"><span class="lineno">  373</span>    prefStatus = <a class="code hl_function" href="namespaceeonc_1_1Prefactor.html#a9139ed08e86e1089d6bf90d5d9d75d71">eonc::Prefactor::getPrefactors</a>(</div>
-<div class="line"><span class="lineno">  374</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>, <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>.get(), <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>.get(), <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>.get(), pref1, pref2);</div>
-<div class="line"><span class="lineno">  375</span>    <span class="keywordflow">if</span> (prefStatus == -1) {</div>
-<div class="line"><span class="lineno">  376</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Prefactor: bad calculation&quot;</span>);</div>
-<div class="line"><span class="lineno">  377</span>      <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960ac9d5cc3e0ddc359ccd44b84d8f0adf7b">MinModeSaddleSearch::STATUS_FAILED_PREFACTOR</a>;</div>
-<div class="line"><span class="lineno">  378</span>    }</div>
-<div class="line"><span class="lineno">  379</span>    <a class="code hl_variable" href="#a22973a4354dddb54a2c021f59b3f157e">fCallsPrefactors</a> += <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotentialCalls() - fctmp;</div>
-<div class="line"><span class="lineno">  380</span> </div>
-<div class="line"><span class="lineno">  381</span>    <span class="keywordflow">if</span> ((pref1 &gt; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().max_value) ||</div>
-<div class="line"><span class="lineno">  382</span>        (pref1 &lt; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().min_value)) {</div>
-<div class="line"><span class="lineno">  383</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Bad reactant-to-saddle prefactor: {}&quot;</span>, pref1);</div>
-<div class="line"><span class="lineno">  384</span>      <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960adb85c2a6c895cdeb6df2f29040dd088f">MinModeSaddleSearch::STATUS_BAD_PREFACTOR</a>;</div>
-<div class="line"><span class="lineno">  385</span>    }</div>
-<div class="line"><span class="lineno">  386</span>    <span class="keywordflow">if</span> ((pref2 &gt; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().max_value) ||</div>
-<div class="line"><span class="lineno">  387</span>        (pref2 &lt; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().min_value)) {</div>
-<div class="line"><span class="lineno">  388</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Bad product-to-saddle prefactor: {}&quot;</span>, pref2);</div>
-<div class="line"><span class="lineno">  389</span>      <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960adb85c2a6c895cdeb6df2f29040dd088f">MinModeSaddleSearch::STATUS_BAD_PREFACTOR</a>;</div>
-<div class="line"><span class="lineno">  390</span>    }</div>
-<div class="line"><span class="lineno">  391</span>    <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[0] = pref1;</div>
-<div class="line"><span class="lineno">  392</span>    <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[1] = pref2;</div>
-<div class="line"><span class="lineno">  393</span> </div>
-<div class="line"><span class="lineno">  394</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  395</span>    <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[0] = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().default_value;</div>
-<div class="line"><span class="lineno">  396</span>    <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[1] = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().default_value;</div>
-<div class="line"><span class="lineno">  397</span>  }</div>
-<div class="line"><span class="lineno">  398</span>  <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a21140618d9213e62812224c7a8863796">MinModeSaddleSearch::STATUS_GOOD</a>;</div>
-<div class="line"><span class="lineno">  399</span>}</div>
+<div class="line"><span class="lineno">  353</span>  <span class="keywordflow">if</span> (!sameAs(*<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>, *<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>)) {</div>
+<div class="line"><span class="lineno">  354</span>    <span class="comment">// Report how far off the endpoint landed. Whether the minimisation</span></div>
+<div class="line"><span class="lineno">  355</span>    <span class="comment">// stopped just outside the state-identity tolerance or relaxed into a</span></div>
+<div class="line"><span class="lineno">  356</span>    <span class="comment">// different state entirely calls for opposite fixes, and the status</span></div>
+<div class="line"><span class="lineno">  357</span>    <span class="comment">// alone does not distinguish them.</span></div>
+<div class="line"><span class="lineno">  358</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> tol =</div>
+<div class="line"><span class="lineno">  359</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.structure_comparison_options().distance_difference;</div>
+<div class="line"><span class="lineno">  360</span>    <span class="keyword">auto</span> countMoved = [&amp;](<span class="keyword">const</span> Matter &amp;m) {</div>
+<div class="line"><span class="lineno">  361</span>      <span class="keywordtype">long</span> moved = 0;</div>
+<div class="line"><span class="lineno">  362</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;numberOfAtoms(); ++i) {</div>
+<div class="line"><span class="lineno">  363</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a></div>
+<div class="line"><span class="lineno">  364</span>                -&gt;pbc(<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;getPositions().row(i) - m.getPositions().row(i))</div>
+<div class="line"><span class="lineno">  365</span>                .norm() &gt; tol) {</div>
+<div class="line"><span class="lineno">  366</span>          ++moved;</div>
+<div class="line"><span class="lineno">  367</span>        }</div>
+<div class="line"><span class="lineno">  368</span>      }</div>
+<div class="line"><span class="lineno">  369</span>      <span class="keywordflow">return</span> moved;</div>
+<div class="line"><span class="lineno">  370</span>    };</div>
+<div class="line"><span class="lineno">  371</span>    QUILL_LOG_INFO(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>,</div>
+<div class="line"><span class="lineno">  372</span>                   <span class="stringliteral">&quot;initial != min1: {} of {} atoms past the {} A tolerance &quot;</span></div>
+<div class="line"><span class="lineno">  373</span>                   <span class="stringliteral">&quot;for min1 ({} for min2); largest separation {} A&quot;</span>,</div>
+<div class="line"><span class="lineno">  374</span>                   countMoved(*<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>), <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;numberOfAtoms(), tol,</div>
+<div class="line"><span class="lineno">  375</span>                   countMoved(*<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>), <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;perAtomNorm(*<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>));</div>
+<div class="line"><span class="lineno">  376</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960ad86c53f3b4f2569a154bd5f901fc16c0">MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED</a>;</div>
+<div class="line"><span class="lineno">  377</span>  }</div>
+<div class="line"><span class="lineno">  378</span> </div>
+<div class="line"><span class="lineno">  379</span>  <span class="keywordflow">if</span> (sameAs(*<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>, *<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>)) {</div>
+<div class="line"><span class="lineno">  380</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;both minima are the initial state&quot;</span>);</div>
+<div class="line"><span class="lineno">  381</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960ad86c53f3b4f2569a154bd5f901fc16c0">MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED</a>;</div>
+<div class="line"><span class="lineno">  382</span>  }</div>
+<div class="line"><span class="lineno">  383</span> </div>
+<div class="line"><span class="lineno">  384</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.process_search_options().minimize_first) {</div>
+<div class="line"><span class="lineno">  385</span>    <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a> = <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>;</div>
+<div class="line"><span class="lineno">  386</span>  }</div>
+<div class="line"><span class="lineno">  387</span> </div>
+<div class="line"><span class="lineno">  388</span>  <a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[0] = <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>-&gt;getPotentialEnergy() - <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotentialEnergy();</div>
+<div class="line"><span class="lineno">  389</span>  <a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[1] = <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>-&gt;getPotentialEnergy() - <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;getPotentialEnergy();</div>
+<div class="line"><span class="lineno">  390</span> </div>
+<div class="line"><span class="lineno">  391</span>  <span class="keywordflow">if</span> ((<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().max_energy &lt; <a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[0]) ||</div>
+<div class="line"><span class="lineno">  392</span>      (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().max_energy &lt; <a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[1])) {</div>
+<div class="line"><span class="lineno">  393</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960ad9e94eb2dd88afadabb4ab5663464ef1">MinModeSaddleSearch::STATUS_BAD_HIGH_BARRIER</a>;</div>
+<div class="line"><span class="lineno">  394</span>  }</div>
+<div class="line"><span class="lineno">  395</span> </div>
+<div class="line"><span class="lineno">  396</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[0] &lt; 0.0 || <a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[1] &lt; 0.0) {</div>
+<div class="line"><span class="lineno">  397</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a5d760ca634b4780d68dda3cd0ef9b7a2">MinModeSaddleSearch::STATUS_NEGATIVE_BARRIER</a>;</div>
+<div class="line"><span class="lineno">  398</span>  }</div>
+<div class="line"><span class="lineno">  399</span> </div>
+<div class="line"><span class="lineno">  400</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().default_value) {</div>
+<div class="line"><span class="lineno">  401</span>    fctmp = <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotentialCalls();</div>
+<div class="line"><span class="lineno">  402</span>    <span class="keywordtype">int</span> prefStatus;</div>
+<div class="line"><span class="lineno">  403</span>    <span class="keywordtype">double</span> pref1, pref2;</div>
+<div class="line"><span class="lineno">  404</span>    prefStatus = <a class="code hl_function" href="namespaceeonc_1_1Prefactor.html#a9139ed08e86e1089d6bf90d5d9d75d71">eonc::Prefactor::getPrefactors</a>(</div>
+<div class="line"><span class="lineno">  405</span>        <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>, <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>.get(), <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>.get(), <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>.get(), pref1, pref2);</div>
+<div class="line"><span class="lineno">  406</span>    <span class="keywordflow">if</span> (prefStatus == -1) {</div>
+<div class="line"><span class="lineno">  407</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Prefactor: bad calculation&quot;</span>);</div>
+<div class="line"><span class="lineno">  408</span>      <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960ac9d5cc3e0ddc359ccd44b84d8f0adf7b">MinModeSaddleSearch::STATUS_FAILED_PREFACTOR</a>;</div>
+<div class="line"><span class="lineno">  409</span>    }</div>
+<div class="line"><span class="lineno">  410</span>    <a class="code hl_variable" href="#a22973a4354dddb54a2c021f59b3f157e">fCallsPrefactors</a> += <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotentialCalls() - fctmp;</div>
+<div class="line"><span class="lineno">  411</span> </div>
+<div class="line"><span class="lineno">  412</span>    <span class="keywordflow">if</span> ((pref1 &gt; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().max_value) ||</div>
+<div class="line"><span class="lineno">  413</span>        (pref1 &lt; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().min_value)) {</div>
+<div class="line"><span class="lineno">  414</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Bad reactant-to-saddle prefactor: {}&quot;</span>, pref1);</div>
+<div class="line"><span class="lineno">  415</span>      <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960adb85c2a6c895cdeb6df2f29040dd088f">MinModeSaddleSearch::STATUS_BAD_PREFACTOR</a>;</div>
+<div class="line"><span class="lineno">  416</span>    }</div>
+<div class="line"><span class="lineno">  417</span>    <span class="keywordflow">if</span> ((pref2 &gt; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().max_value) ||</div>
+<div class="line"><span class="lineno">  418</span>        (pref2 &lt; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().min_value)) {</div>
+<div class="line"><span class="lineno">  419</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Bad product-to-saddle prefactor: {}&quot;</span>, pref2);</div>
+<div class="line"><span class="lineno">  420</span>      <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960adb85c2a6c895cdeb6df2f29040dd088f">MinModeSaddleSearch::STATUS_BAD_PREFACTOR</a>;</div>
+<div class="line"><span class="lineno">  421</span>    }</div>
+<div class="line"><span class="lineno">  422</span>    <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[0] = pref1;</div>
+<div class="line"><span class="lineno">  423</span>    <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[1] = pref2;</div>
+<div class="line"><span class="lineno">  424</span> </div>
+<div class="line"><span class="lineno">  425</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  426</span>    <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[0] = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().default_value;</div>
+<div class="line"><span class="lineno">  427</span>    <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[1] = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.prefactor_options().default_value;</div>
+<div class="line"><span class="lineno">  428</span>  }</div>
+<div class="line"><span class="lineno">  429</span>  <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a21140618d9213e62812224c7a8863796">MinModeSaddleSearch::STATUS_GOOD</a>;</div>
+<div class="line"><span class="lineno">  430</span>}</div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
 <div class="ttc" id="aEonLogger_8h_html_a3985f57d817b8b5bac1a2f71f12ea439"><div class="ttname"><a href="EonLogger_8h.html#a3985f57d817b8b5bac1a2f71f12ea439">EONC_LOG_DEBUG</a></div><div class="ttdeci">#define EONC_LOG_DEBUG(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00243">EonLogger.h:243</a></div></div>
 <div class="ttc" id="aEonLogger_8h_html_a4cf9b473cf6a1d850b3725fca6805f86"><div class="ttname"><a href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a></div><div class="ttdeci">#define EONC_LOG_ERROR(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00261">EonLogger.h:261</a></div></div>
@@ -918,15 +942,15 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Logs the run status and makes sure the run was successful. </p>
 
-<p class="definition">Definition at line <a class="el" href="ProcessSearchJob_8cpp_source.html#l00471">471</a> of file <a class="el" href="ProcessSearchJob_8cpp_source.html">ProcessSearchJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  471</span>                                               {</div>
-<div class="line"><span class="lineno">  472</span>  <span class="keyword">auto</span> msg = <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>-&gt;describeStatus(status);</div>
-<div class="line"><span class="lineno">  473</span>  <span class="keywordflow">if</span> (status == <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a21140618d9213e62812224c7a8863796">MinModeSaddleSearch::STATUS_GOOD</a>) {</div>
-<div class="line"><span class="lineno">  474</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;[Saddle Search] {}&quot;</span>, msg);</div>
-<div class="line"><span class="lineno">  475</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  476</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;[Saddle Search] {}&quot;</span>, msg);</div>
-<div class="line"><span class="lineno">  477</span>  }</div>
-<div class="line"><span class="lineno">  478</span>}</div>
+<p class="definition">Definition at line <a class="el" href="ProcessSearchJob_8cpp_source.html#l00502">502</a> of file <a class="el" href="ProcessSearchJob_8cpp_source.html">ProcessSearchJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  502</span>                                               {</div>
+<div class="line"><span class="lineno">  503</span>  <span class="keyword">auto</span> msg = <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>-&gt;describeStatus(status);</div>
+<div class="line"><span class="lineno">  504</span>  <span class="keywordflow">if</span> (status == <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a21140618d9213e62812224c7a8863796">MinModeSaddleSearch::STATUS_GOOD</a>) {</div>
+<div class="line"><span class="lineno">  505</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;[Saddle Search] {}&quot;</span>, msg);</div>
+<div class="line"><span class="lineno">  506</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  507</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;[Saddle Search] {}&quot;</span>, msg);</div>
+<div class="line"><span class="lineno">  508</span>  }</div>
+<div class="line"><span class="lineno">  509</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -957,151 +981,154 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1Job.html#ac23db10c6a90d5c6cc8a3a49d7b0dace">eonc::Job</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ProcessSearchJob_8cpp_source.html#l00038">38</a> of file <a class="el" href="ProcessSearchJob_8cpp_source.html">ProcessSearchJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   38</span>                                           {</div>
-<div class="line"><span class="lineno">   39</span>  std::string reactantFilename = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a561b68f975ecb734266063b428d6f2f2">eonc::helpers::getRelevantFile</a>(<span class="stringliteral">&quot;pos.con&quot;</span>);</div>
-<div class="line"><span class="lineno">   40</span>  std::string displacementFilename(<span class="stringliteral">&quot;displacement.con&quot;</span>);</div>
-<div class="line"><span class="lineno">   41</span>  std::string modeFilename(<span class="stringliteral">&quot;direction.dat&quot;</span>);</div>
-<div class="line"><span class="lineno">   42</span>  <span class="keywordtype">size_t</span> fctmp{0};</div>
-<div class="line"><span class="lineno">   43</span>  <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">   44</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;min_mode&quot;</span> ||</div>
-<div class="line"><span class="lineno">   45</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;basin_hopping&quot;</span> ||</div>
-<div class="line"><span class="lineno">   46</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;bgsd&quot;</span>) {</div>
-<div class="line"><span class="lineno">   47</span>    <a class="code hl_variable" href="#a0256d15cfd589d72b98bf244a4f0278b">displacement</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">   48</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;dynamics&quot;</span>) {</div>
-<div class="line"><span class="lineno">   49</span>    <a class="code hl_variable" href="#a0256d15cfd589d72b98bf244a4f0278b">displacement</a> = <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">   50</span>  }</div>
-<div class="line"><span class="lineno">   51</span>  <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">   52</span>  <span class="comment">// Give min2 its own potential for parallel endpoint minimization</span></div>
-<div class="line"><span class="lineno">   53</span>  <span class="keyword">auto</span> min2Pot =</div>
-<div class="line"><span class="lineno">   54</span>      (<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>-&gt;needsPerImageInstance() &amp;&amp; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options().parallel)</div>
-<div class="line"><span class="lineno">   55</span>          ? <a class="code hl_function" href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">eonc::helpers::makePotential</a>(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>)</div>
-<div class="line"><span class="lineno">   56</span>          : <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>;</div>
-<div class="line"><span class="lineno">   57</span>  <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">   58</span>  <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> = std::make_shared&lt;Matter&gt;(min2Pot, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">   59</span> </div>
-<div class="line"><span class="lineno">   60</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;con2matter(reactantFilename))) {</div>
-<div class="line"><span class="lineno">   61</span>    <a class="code hl_define" href="EonLogger_8h.html#afe4077bbe89c5bc6e818b057a692e64a">EONC_LOG_CRITICAL</a>(<span class="stringliteral">&quot;Failed to load {}&quot;</span>, reactantFilename);</div>
-<div class="line"><span class="lineno">   62</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;failed to load &quot;</span> + reactantFilename);</div>
-<div class="line"><span class="lineno">   63</span>  }</div>
-<div class="line"><span class="lineno">   64</span> </div>
-<div class="line"><span class="lineno">   65</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.process_search_options().minimize_first) {</div>
-<div class="line"><span class="lineno">   66</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;Minimizing initial structure\n&quot;</span>);</div>
-<div class="line"><span class="lineno">   67</span>    fctmp = <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;getPotentialCalls();</div>
-<div class="line"><span class="lineno">   68</span>    <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;relax();</div>
-<div class="line"><span class="lineno">   69</span>    <a class="code hl_variable" href="#a2a9fa27e530909e51e734a76df57f7e4">fCallsMin</a> += <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;getPotentialCalls() - fctmp;</div>
-<div class="line"><span class="lineno">   70</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;Initial minimization took {} fcalls&quot;</span>,</div>
-<div class="line"><span class="lineno">   71</span>                    <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;getPotentialCalls() - fctmp);</div>
-<div class="line"><span class="lineno">   72</span>  }</div>
-<div class="line"><span class="lineno">   73</span> </div>
-<div class="line"><span class="lineno">   74</span>  <a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[0] = <a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[1] = 0;</div>
-<div class="line"><span class="lineno">   75</span>  <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[0] = <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[1] = 0;</div>
-<div class="line"><span class="lineno">   76</span> </div>
-<div class="line"><span class="lineno">   77</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> mode = AtomMatrix::Zero(<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;numberOfAtoms(), 3);</div>
-<div class="line"><span class="lineno">   78</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;min_mode&quot;</span> ||</div>
-<div class="line"><span class="lineno">   79</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;basin_hopping&quot;</span> ||</div>
-<div class="line"><span class="lineno">   80</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;bgsd&quot;</span>) {</div>
-<div class="line"><span class="lineno">   81</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().displace_type ==</div>
-<div class="line"><span class="lineno">   82</span>        <a class="code hl_variable" href="namespaceeonc_1_1EpiCenters.html#a3daeffdce455426b6819b083964fa53a">eonc::EpiCenters::DISP_LOAD</a>) {</div>
-<div class="line"><span class="lineno">   83</span>      <span class="comment">// Load displacement.con, or synthesize from pos.con + direction.dat</span></div>
-<div class="line"><span class="lineno">   84</span>      <span class="comment">// (#79).</span></div>
-<div class="line"><span class="lineno">   85</span>      <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1helpers.html#a5cdfb8c4450eaa8a9d66d6d2e5e9d67e">eonc::helpers::loadOrSynthesizeDisplacement</a>(</div>
-<div class="line"><span class="lineno">   86</span>              *<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, *<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>, displacementFilename, modeFilename,</div>
-<div class="line"><span class="lineno">   87</span>              <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().displace_magnitude)) {</div>
-<div class="line"><span class="lineno">   88</span>        <a class="code hl_define" href="EonLogger_8h.html#afe4077bbe89c5bc6e818b057a692e64a">EONC_LOG_CRITICAL</a>(<span class="stringliteral">&quot;Failed to load {} (and no usable {})&quot;</span>,</div>
-<div class="line"><span class="lineno">   89</span>                          displacementFilename, modeFilename);</div>
-<div class="line"><span class="lineno">   90</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;failed to load &quot;</span> + displacementFilename);</div>
-<div class="line"><span class="lineno">   91</span>      }</div>
-<div class="line"><span class="lineno">   92</span>      *<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a> = *<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> = *<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>;</div>
-<div class="line"><span class="lineno">   93</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_function" href="namespaceeonc_1_1helpers.html#a2a110b853a8d95856f9e66dc9ef65dc1">eonc::helpers::applyClientDisplacement</a>(*<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, *<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>,</div>
-<div class="line"><span class="lineno">   94</span>                                                      &amp;mode)) {</div>
-<div class="line"><span class="lineno">   95</span>      *<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a> = *<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> = *<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>;</div>
-<div class="line"><span class="lineno">   96</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">   97</span>      *<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a> = *<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a> = *<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> = *<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>;</div>
-<div class="line"><span class="lineno">   98</span>    }</div>
-<div class="line"><span class="lineno">   99</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a0256d15cfd589d72b98bf244a4f0278b">displacement</a>) {</div>
-<div class="line"><span class="lineno">  100</span>      *<a class="code hl_variable" href="#a0256d15cfd589d72b98bf244a4f0278b">displacement</a> = *<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>;</div>
-<div class="line"><span class="lineno">  101</span>    }</div>
-<div class="line"><span class="lineno">  102</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  103</span>    <span class="comment">// ARTn and dynamics start from the initial minimum</span></div>
-<div class="line"><span class="lineno">  104</span>    *<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a> = *<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a> = *<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> = *<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>;</div>
-<div class="line"><span class="lineno">  105</span>  }</div>
-<div class="line"><span class="lineno">  106</span>  <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;setPotential(min2Pot);</div>
-<div class="line"><span class="lineno">  107</span> </div>
-<div class="line"><span class="lineno">  108</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> useARTnAsMinMode =</div>
-<div class="line"><span class="lineno">  109</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;min_mode&quot;</span> &amp;&amp;</div>
-<div class="line"><span class="lineno">  110</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().minmode_method == <span class="stringliteral">&quot;artn&quot;</span>;</div>
+<p class="definition">Definition at line <a class="el" href="ProcessSearchJob_8cpp_source.html#l00039">39</a> of file <a class="el" href="ProcessSearchJob_8cpp_source.html">ProcessSearchJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   39</span>                                           {</div>
+<div class="line"><span class="lineno">   40</span>  std::string reactantFilename = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a561b68f975ecb734266063b428d6f2f2">eonc::helpers::getRelevantFile</a>(<span class="stringliteral">&quot;pos.con&quot;</span>);</div>
+<div class="line"><span class="lineno">   41</span>  std::string displacementFilename(<span class="stringliteral">&quot;displacement.con&quot;</span>);</div>
+<div class="line"><span class="lineno">   42</span>  std::string modeFilename(<span class="stringliteral">&quot;direction.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">   43</span>  <span class="keywordtype">size_t</span> fctmp{0};</div>
+<div class="line"><span class="lineno">   44</span>  <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">   45</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;min_mode&quot;</span> ||</div>
+<div class="line"><span class="lineno">   46</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;basin_hopping&quot;</span> ||</div>
+<div class="line"><span class="lineno">   47</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;bgsd&quot;</span>) {</div>
+<div class="line"><span class="lineno">   48</span>    <a class="code hl_variable" href="#a0256d15cfd589d72b98bf244a4f0278b">displacement</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">   49</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;dynamics&quot;</span>) {</div>
+<div class="line"><span class="lineno">   50</span>    <a class="code hl_variable" href="#a0256d15cfd589d72b98bf244a4f0278b">displacement</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">   51</span>  }</div>
+<div class="line"><span class="lineno">   52</span>  <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">   53</span>  <span class="comment">// Give min2 its own potential for parallel endpoint minimization</span></div>
+<div class="line"><span class="lineno">   54</span>  <span class="comment">// A clone keeps this job&#39;s potential; makePotential rebuilds from the</span></div>
+<div class="line"><span class="lineno">   55</span>  <span class="comment">// configuration and is the fallback for backends that cannot clone.</span></div>
+<div class="line"><span class="lineno">   56</span>  std::shared_ptr&lt;Potential&gt; min2Pot = <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>;</div>
+<div class="line"><span class="lineno">   57</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>-&gt;needsPerImageInstance() &amp;&amp; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options().parallel) {</div>
+<div class="line"><span class="lineno">   58</span>    <span class="keyword">auto</span> cloned = <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>-&gt;clonePotential();</div>
+<div class="line"><span class="lineno">   59</span>    min2Pot = cloned ? cloned : <a class="code hl_function" href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">eonc::helpers::makePotential</a>(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">   60</span>  }</div>
+<div class="line"><span class="lineno">   61</span>  <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">   62</span>  <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> = std::make_shared&lt;Matter&gt;(min2Pot, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">   63</span> </div>
+<div class="line"><span class="lineno">   64</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;con2matter(reactantFilename))) {</div>
+<div class="line"><span class="lineno">   65</span>    <a class="code hl_define" href="EonLogger_8h.html#afe4077bbe89c5bc6e818b057a692e64a">EONC_LOG_CRITICAL</a>(<span class="stringliteral">&quot;Failed to load {}&quot;</span>, reactantFilename);</div>
+<div class="line"><span class="lineno">   66</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;failed to load &quot;</span> + reactantFilename);</div>
+<div class="line"><span class="lineno">   67</span>  }</div>
+<div class="line"><span class="lineno">   68</span> </div>
+<div class="line"><span class="lineno">   69</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.process_search_options().minimize_first) {</div>
+<div class="line"><span class="lineno">   70</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;Minimizing initial structure\n&quot;</span>);</div>
+<div class="line"><span class="lineno">   71</span>    fctmp = <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;getPotentialCalls();</div>
+<div class="line"><span class="lineno">   72</span>    <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;relax();</div>
+<div class="line"><span class="lineno">   73</span>    <a class="code hl_variable" href="#a2a9fa27e530909e51e734a76df57f7e4">fCallsMin</a> += <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;getPotentialCalls() - fctmp;</div>
+<div class="line"><span class="lineno">   74</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;Initial minimization took {} fcalls&quot;</span>,</div>
+<div class="line"><span class="lineno">   75</span>                    <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;getPotentialCalls() - fctmp);</div>
+<div class="line"><span class="lineno">   76</span>  }</div>
+<div class="line"><span class="lineno">   77</span> </div>
+<div class="line"><span class="lineno">   78</span>  <a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[0] = <a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[1] = 0;</div>
+<div class="line"><span class="lineno">   79</span>  <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[0] = <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[1] = 0;</div>
+<div class="line"><span class="lineno">   80</span> </div>
+<div class="line"><span class="lineno">   81</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> mode = AtomMatrix::Zero(<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;numberOfAtoms(), 3);</div>
+<div class="line"><span class="lineno">   82</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;min_mode&quot;</span> ||</div>
+<div class="line"><span class="lineno">   83</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;basin_hopping&quot;</span> ||</div>
+<div class="line"><span class="lineno">   84</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;bgsd&quot;</span>) {</div>
+<div class="line"><span class="lineno">   85</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().displace_type ==</div>
+<div class="line"><span class="lineno">   86</span>        <a class="code hl_variable" href="namespaceeonc_1_1EpiCenters.html#a3daeffdce455426b6819b083964fa53a">eonc::EpiCenters::DISP_LOAD</a>) {</div>
+<div class="line"><span class="lineno">   87</span>      <span class="comment">// Load displacement.con, or synthesize from pos.con + direction.dat</span></div>
+<div class="line"><span class="lineno">   88</span>      <span class="comment">// (#79).</span></div>
+<div class="line"><span class="lineno">   89</span>      <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1helpers.html#a5cdfb8c4450eaa8a9d66d6d2e5e9d67e">eonc::helpers::loadOrSynthesizeDisplacement</a>(</div>
+<div class="line"><span class="lineno">   90</span>              *<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, *<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>, displacementFilename, modeFilename,</div>
+<div class="line"><span class="lineno">   91</span>              <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().displace_magnitude)) {</div>
+<div class="line"><span class="lineno">   92</span>        <a class="code hl_define" href="EonLogger_8h.html#afe4077bbe89c5bc6e818b057a692e64a">EONC_LOG_CRITICAL</a>(<span class="stringliteral">&quot;Failed to load {} (and no usable {})&quot;</span>,</div>
+<div class="line"><span class="lineno">   93</span>                          displacementFilename, modeFilename);</div>
+<div class="line"><span class="lineno">   94</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;failed to load &quot;</span> + displacementFilename);</div>
+<div class="line"><span class="lineno">   95</span>      }</div>
+<div class="line"><span class="lineno">   96</span>      *<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a> = *<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> = *<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>;</div>
+<div class="line"><span class="lineno">   97</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_function" href="namespaceeonc_1_1helpers.html#a2a110b853a8d95856f9e66dc9ef65dc1">eonc::helpers::applyClientDisplacement</a>(*<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, *<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>,</div>
+<div class="line"><span class="lineno">   98</span>                                                      &amp;mode)) {</div>
+<div class="line"><span class="lineno">   99</span>      *<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a> = *<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> = *<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>;</div>
+<div class="line"><span class="lineno">  100</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  101</span>      *<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a> = *<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a> = *<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> = *<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>;</div>
+<div class="line"><span class="lineno">  102</span>    }</div>
+<div class="line"><span class="lineno">  103</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a0256d15cfd589d72b98bf244a4f0278b">displacement</a>) {</div>
+<div class="line"><span class="lineno">  104</span>      *<a class="code hl_variable" href="#a0256d15cfd589d72b98bf244a4f0278b">displacement</a> = *<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>;</div>
+<div class="line"><span class="lineno">  105</span>    }</div>
+<div class="line"><span class="lineno">  106</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  107</span>    <span class="comment">// ARTn and dynamics start from the initial minimum</span></div>
+<div class="line"><span class="lineno">  108</span>    *<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a> = *<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a> = *<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> = *<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>;</div>
+<div class="line"><span class="lineno">  109</span>  }</div>
+<div class="line"><span class="lineno">  110</span>  <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;setPotential(min2Pot);</div>
 <div class="line"><span class="lineno">  111</span> </div>
-<div class="line"><span class="lineno">  112</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;min_mode&quot;</span>) {</div>
-<div class="line"><span class="lineno">  113</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().displace_type ==</div>
-<div class="line"><span class="lineno">  114</span>            <a class="code hl_variable" href="namespaceeonc_1_1EpiCenters.html#a3daeffdce455426b6819b083964fa53a">eonc::EpiCenters::DISP_LOAD</a> &amp;&amp;</div>
-<div class="line"><span class="lineno">  115</span>        std::filesystem::exists(modeFilename)) {</div>
-<div class="line"><span class="lineno">  116</span>      mode = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a7e0f14f155e21cdf88411cef6a98c90f">eonc::helpers::loadMode</a>(modeFilename, <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;numberOfAtoms());</div>
-<div class="line"><span class="lineno">  117</span>    }</div>
-<div class="line"><span class="lineno">  118</span><span class="preprocessor">#ifdef WITH_ARTN</span></div>
-<div class="line"><span class="lineno">  119</span>    <span class="comment">// ARTn as a min-mode drop-in: eOn displaces, seeds the mode, ARTn</span></div>
-<div class="line"><span class="lineno">  120</span>    <span class="comment">// takes over from the displaced structure.</span></div>
-<div class="line"><span class="lineno">  121</span>    <span class="keywordflow">if</span> (useARTnAsMinMode) {</div>
-<div class="line"><span class="lineno">  122</span>      <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a> =</div>
-<div class="line"><span class="lineno">  123</span>          std::make_unique&lt;ARTnSaddleSearch&gt;(<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, mode, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  124</span>    } <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  125</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  126</span>    {</div>
-<div class="line"><span class="lineno">  127</span>      <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a> = std::make_unique&lt;MinModeSaddleSearch&gt;(</div>
-<div class="line"><span class="lineno">  128</span>          <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, mode, <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;getPotentialEnergy(), <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>);</div>
-<div class="line"><span class="lineno">  129</span>    }</div>
-<div class="line"><span class="lineno">  130</span><span class="preprocessor">#ifdef WITH_ARTN</span></div>
-<div class="line"><span class="lineno">  131</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;artn&quot;</span>) {</div>
-<div class="line"><span class="lineno">  132</span>    <span class="comment">// ARTn handles its own push from the minimum, eigenmode estimation,</span></div>
-<div class="line"><span class="lineno">  133</span>    <span class="comment">// and perpendicular relaxation internally.</span></div>
-<div class="line"><span class="lineno">  134</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> artnMode = AtomMatrix::Zero(<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;numberOfAtoms(), 3);</div>
-<div class="line"><span class="lineno">  135</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().displace_type ==</div>
-<div class="line"><span class="lineno">  136</span>            <a class="code hl_variable" href="namespaceeonc_1_1EpiCenters.html#a3daeffdce455426b6819b083964fa53a">eonc::EpiCenters::DISP_LOAD</a> &amp;&amp;</div>
-<div class="line"><span class="lineno">  137</span>        std::filesystem::exists(modeFilename)) {</div>
-<div class="line"><span class="lineno">  138</span>      artnMode =</div>
-<div class="line"><span class="lineno">  139</span>          <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a7e0f14f155e21cdf88411cef6a98c90f">eonc::helpers::loadMode</a>(modeFilename, <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;numberOfAtoms());</div>
-<div class="line"><span class="lineno">  140</span>    }</div>
-<div class="line"><span class="lineno">  141</span>    <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a> =</div>
-<div class="line"><span class="lineno">  142</span>        std::make_unique&lt;ARTnSaddleSearch&gt;(<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, artnMode, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  143</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  144</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;basin_hopping&quot;</span>) {</div>
+<div class="line"><span class="lineno">  112</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> useARTnAsMinMode =</div>
+<div class="line"><span class="lineno">  113</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;min_mode&quot;</span> &amp;&amp;</div>
+<div class="line"><span class="lineno">  114</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().minmode_method == <span class="stringliteral">&quot;artn&quot;</span>;</div>
+<div class="line"><span class="lineno">  115</span> </div>
+<div class="line"><span class="lineno">  116</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;min_mode&quot;</span>) {</div>
+<div class="line"><span class="lineno">  117</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().displace_type ==</div>
+<div class="line"><span class="lineno">  118</span>            <a class="code hl_variable" href="namespaceeonc_1_1EpiCenters.html#a3daeffdce455426b6819b083964fa53a">eonc::EpiCenters::DISP_LOAD</a> &amp;&amp;</div>
+<div class="line"><span class="lineno">  119</span>        std::filesystem::exists(modeFilename)) {</div>
+<div class="line"><span class="lineno">  120</span>      mode = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a7e0f14f155e21cdf88411cef6a98c90f">eonc::helpers::loadMode</a>(modeFilename, <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;numberOfAtoms());</div>
+<div class="line"><span class="lineno">  121</span>    }</div>
+<div class="line"><span class="lineno">  122</span><span class="preprocessor">#ifdef WITH_ARTN</span></div>
+<div class="line"><span class="lineno">  123</span>    <span class="comment">// ARTn as a min-mode drop-in: eOn displaces, seeds the mode, ARTn</span></div>
+<div class="line"><span class="lineno">  124</span>    <span class="comment">// takes over from the displaced structure.</span></div>
+<div class="line"><span class="lineno">  125</span>    <span class="keywordflow">if</span> (useARTnAsMinMode) {</div>
+<div class="line"><span class="lineno">  126</span>      <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a> =</div>
+<div class="line"><span class="lineno">  127</span>          std::make_unique&lt;ARTnSaddleSearch&gt;(<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, mode, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  128</span>    } <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  129</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  130</span>    {</div>
+<div class="line"><span class="lineno">  131</span>      <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a> = std::make_unique&lt;MinModeSaddleSearch&gt;(</div>
+<div class="line"><span class="lineno">  132</span>          <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, mode, <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;getPotentialEnergy(), <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>);</div>
+<div class="line"><span class="lineno">  133</span>    }</div>
+<div class="line"><span class="lineno">  134</span><span class="preprocessor">#ifdef WITH_ARTN</span></div>
+<div class="line"><span class="lineno">  135</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;artn&quot;</span>) {</div>
+<div class="line"><span class="lineno">  136</span>    <span class="comment">// ARTn handles its own push from the minimum, eigenmode estimation,</span></div>
+<div class="line"><span class="lineno">  137</span>    <span class="comment">// and perpendicular relaxation internally.</span></div>
+<div class="line"><span class="lineno">  138</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> artnMode = AtomMatrix::Zero(<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;numberOfAtoms(), 3);</div>
+<div class="line"><span class="lineno">  139</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().displace_type ==</div>
+<div class="line"><span class="lineno">  140</span>            <a class="code hl_variable" href="namespaceeonc_1_1EpiCenters.html#a3daeffdce455426b6819b083964fa53a">eonc::EpiCenters::DISP_LOAD</a> &amp;&amp;</div>
+<div class="line"><span class="lineno">  141</span>        std::filesystem::exists(modeFilename)) {</div>
+<div class="line"><span class="lineno">  142</span>      artnMode =</div>
+<div class="line"><span class="lineno">  143</span>          <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a7e0f14f155e21cdf88411cef6a98c90f">eonc::helpers::loadMode</a>(modeFilename, <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;numberOfAtoms());</div>
+<div class="line"><span class="lineno">  144</span>    }</div>
 <div class="line"><span class="lineno">  145</span>    <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a> =</div>
-<div class="line"><span class="lineno">  146</span>        std::make_unique&lt;BasinHoppingSaddleSearch&gt;(<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>, <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  147</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;dynamics&quot;</span>) {</div>
-<div class="line"><span class="lineno">  148</span>    <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a> = std::make_unique&lt;DynamicsSaddleSearch&gt;(<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  149</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;bgsd&quot;</span>) {</div>
-<div class="line"><span class="lineno">  150</span>    <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a> = std::make_unique&lt;BiasedGradientSquaredDescent&gt;(</div>
-<div class="line"><span class="lineno">  151</span>        <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;getPotentialEnergy(), <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  152</span>  }</div>
-<div class="line"><span class="lineno">  153</span> </div>
-<div class="line"><span class="lineno">  154</span><span class="preprocessor">#ifndef WITH_ARTN</span></div>
-<div class="line"><span class="lineno">  155</span>  <span class="comment">// Post-dispatch guard for both ARTn entry points so users without a</span></div>
-<div class="line"><span class="lineno">  156</span>  <span class="comment">// WITH_ARTN build get a clean per-case error instead of a silent</span></div>
-<div class="line"><span class="lineno">  157</span>  <span class="comment">// fall-through. Two distinct messages so downstream tooling and the</span></div>
-<div class="line"><span class="lineno">  158</span>  <span class="comment">// integration tests can match on the specific entry point.</span></div>
-<div class="line"><span class="lineno">  159</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;artn&quot;</span>) {</div>
-<div class="line"><span class="lineno">  160</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  161</span>        <span class="stringliteral">&quot;saddle_search.method=artn requires a build with ARTn support &quot;</span></div>
-<div class="line"><span class="lineno">  162</span>        <span class="stringliteral">&quot;(reconfigure with -Dwith_artn=true)&quot;</span>);</div>
-<div class="line"><span class="lineno">  163</span>  }</div>
-<div class="line"><span class="lineno">  164</span>  <span class="keywordflow">if</span> (useARTnAsMinMode) {</div>
-<div class="line"><span class="lineno">  165</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  166</span>        <span class="stringliteral">&quot;saddle_search.minmode_method=artn requires a build with ARTn &quot;</span></div>
-<div class="line"><span class="lineno">  167</span>        <span class="stringliteral">&quot;support (reconfigure with -Dwith_artn=true)&quot;</span>);</div>
-<div class="line"><span class="lineno">  168</span>  }</div>
-<div class="line"><span class="lineno">  169</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  170</span> </div>
-<div class="line"><span class="lineno">  171</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>) {</div>
-<div class="line"><span class="lineno">  172</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;unknown saddle_search.method&quot;</span>);</div>
-<div class="line"><span class="lineno">  173</span>  }</div>
+<div class="line"><span class="lineno">  146</span>        std::make_unique&lt;ARTnSaddleSearch&gt;(<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, artnMode, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  147</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  148</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;basin_hopping&quot;</span>) {</div>
+<div class="line"><span class="lineno">  149</span>    <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a> =</div>
+<div class="line"><span class="lineno">  150</span>        std::make_unique&lt;BasinHoppingSaddleSearch&gt;(<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>, <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  151</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;dynamics&quot;</span>) {</div>
+<div class="line"><span class="lineno">  152</span>    <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a> = std::make_unique&lt;DynamicsSaddleSearch&gt;(<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  153</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;bgsd&quot;</span>) {</div>
+<div class="line"><span class="lineno">  154</span>    <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a> = std::make_unique&lt;BiasedGradientSquaredDescent&gt;(</div>
+<div class="line"><span class="lineno">  155</span>        <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;getPotentialEnergy(), <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  156</span>  }</div>
+<div class="line"><span class="lineno">  157</span> </div>
+<div class="line"><span class="lineno">  158</span><span class="preprocessor">#ifndef WITH_ARTN</span></div>
+<div class="line"><span class="lineno">  159</span>  <span class="comment">// Post-dispatch guard for both ARTn entry points so users without a</span></div>
+<div class="line"><span class="lineno">  160</span>  <span class="comment">// WITH_ARTN build get a clean per-case error instead of a silent</span></div>
+<div class="line"><span class="lineno">  161</span>  <span class="comment">// fall-through. Two distinct messages so downstream tooling and the</span></div>
+<div class="line"><span class="lineno">  162</span>  <span class="comment">// integration tests can match on the specific entry point.</span></div>
+<div class="line"><span class="lineno">  163</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;artn&quot;</span>) {</div>
+<div class="line"><span class="lineno">  164</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  165</span>        <span class="stringliteral">&quot;saddle_search.method=artn requires a build with ARTn support &quot;</span></div>
+<div class="line"><span class="lineno">  166</span>        <span class="stringliteral">&quot;(reconfigure with -Dwith_artn=true)&quot;</span>);</div>
+<div class="line"><span class="lineno">  167</span>  }</div>
+<div class="line"><span class="lineno">  168</span>  <span class="keywordflow">if</span> (useARTnAsMinMode) {</div>
+<div class="line"><span class="lineno">  169</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  170</span>        <span class="stringliteral">&quot;saddle_search.minmode_method=artn requires a build with ARTn &quot;</span></div>
+<div class="line"><span class="lineno">  171</span>        <span class="stringliteral">&quot;support (reconfigure with -Dwith_artn=true)&quot;</span>);</div>
+<div class="line"><span class="lineno">  172</span>  }</div>
+<div class="line"><span class="lineno">  173</span><span class="preprocessor">#endif</span></div>
 <div class="line"><span class="lineno">  174</span> </div>
-<div class="line"><span class="lineno">  175</span>  (void)<a class="code hl_function" href="#ac1cc97632a913f9d037a6e7e42a8486f">runPrepared</a>();</div>
-<div class="line"><span class="lineno">  176</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a5b99e4199a2a79476ea1c6a6ab4f73d3">returnFiles</a>;</div>
-<div class="line"><span class="lineno">  177</span>}</div>
+<div class="line"><span class="lineno">  175</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>) {</div>
+<div class="line"><span class="lineno">  176</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;unknown saddle_search.method&quot;</span>);</div>
+<div class="line"><span class="lineno">  177</span>  }</div>
+<div class="line"><span class="lineno">  178</span> </div>
+<div class="line"><span class="lineno">  179</span>  (void)<a class="code hl_function" href="#ac1cc97632a913f9d037a6e7e42a8486f">runPrepared</a>();</div>
+<div class="line"><span class="lineno">  180</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a5b99e4199a2a79476ea1c6a6ab4f73d3">returnFiles</a>;</div>
+<div class="line"><span class="lineno">  181</span>}</div>
 <div class="ttc" id="aEonLogger_8h_html_afe4077bbe89c5bc6e818b057a692e64a"><div class="ttname"><a href="EonLogger_8h.html#afe4077bbe89c5bc6e818b057a692e64a">EONC_LOG_CRITICAL</a></div><div class="ttdeci">#define EONC_LOG_CRITICAL(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00267">EonLogger.h:267</a></div></div>
 <div class="ttc" id="aclasseonc_1_1ProcessSearchJob_html_a0256d15cfd589d72b98bf244a4f0278b"><div class="ttname"><a href="#a0256d15cfd589d72b98bf244a4f0278b">eonc::ProcessSearchJob::displacement</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; displacement</div><div class="ttdoc">Configuration used during the saddle point search.</div><div class="ttdef"><b>Definition</b> <a href="ProcessSearchJob_8h_source.html#l00102">ProcessSearchJob.h:102</a></div></div>
 <div class="ttc" id="aclasseonc_1_1ProcessSearchJob_html_a5b99e4199a2a79476ea1c6a6ab4f73d3"><div class="ttname"><a href="#a5b99e4199a2a79476ea1c6a6ab4f73d3">eonc::ProcessSearchJob::returnFiles</a></div><div class="ttdeci">std::vector&lt; std::string &gt; returnFiles</div><div class="ttdoc">Container for the results of the run.</div><div class="ttdef"><b>Definition</b> <a href="ProcessSearchJob_8h_source.html#l00089">ProcessSearchJob.h:89</a></div></div>
-<div class="ttc" id="aclasseonc_1_1ProcessSearchJob_html_ac1cc97632a913f9d037a6e7e42a8486f"><div class="ttname"><a href="#ac1cc97632a913f9d037a6e7e42a8486f">eonc::ProcessSearchJob::runPrepared</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; runPrepared()</div><div class="ttdef"><b>Definition</b> <a href="ProcessSearchJob_8cpp_source.html#l00220">ProcessSearchJob.cpp:220</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ProcessSearchJob_html_ac1cc97632a913f9d037a6e7e42a8486f"><div class="ttname"><a href="#ac1cc97632a913f9d037a6e7e42a8486f">eonc::ProcessSearchJob::runPrepared</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; runPrepared()</div><div class="ttdef"><b>Definition</b> <a href="ProcessSearchJob_8cpp_source.html#l00227">ProcessSearchJob.cpp:227</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1EpiCenters_html_a3daeffdce455426b6819b083964fa53a"><div class="ttname"><a href="namespaceeonc_1_1EpiCenters.html#a3daeffdce455426b6819b083964fa53a">eonc::EpiCenters::DISP_LOAD</a></div><div class="ttdeci">const char DISP_LOAD[]</div><div class="ttdef"><b>Definition</b> <a href="EpiCenters_8h_source.html#l00020">EpiCenters.h:20</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1helpers_html_a2a110b853a8d95856f9e66dc9ef65dc1"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a2a110b853a8d95856f9e66dc9ef65dc1">eonc::helpers::applyClientDisplacement</a></div><div class="ttdeci">bool applyClientDisplacement(Matter &amp;target, const Matter &amp;initial, const Parameters &amp;params, AtomMatrix *modeOut)</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00246">HelperFunctions.cpp:246</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1helpers_html_a561b68f975ecb734266063b428d6f2f2"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a561b68f975ecb734266063b428d6f2f2">eonc::helpers::getRelevantFile</a></div><div class="ttdeci">std::string getRelevantFile(std::string filename)</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00122">HelperFunctions.cpp:122</a></div></div>
@@ -1129,46 +1156,49 @@ Additional Inherited Members</h2></td></tr>
 
 <p>In-process entry: seed reactant <a class="el" href="classeonc_1_1Matter.html">Matter</a>, no pos.con (eOn-gbkb). </p>
 
-<p class="definition">Definition at line <a class="el" href="ProcessSearchJob_8cpp_source.html#l00180">180</a> of file <a class="el" href="ProcessSearchJob_8cpp_source.html">ProcessSearchJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  180</span>                                                          {</div>
-<div class="line"><span class="lineno">  181</span>  <span class="keywordflow">if</span> (!seed) {</div>
-<div class="line"><span class="lineno">  182</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;ProcessSearchJob::runFromMatter: null Matter&quot;</span>);</div>
-<div class="line"><span class="lineno">  183</span>  }</div>
-<div class="line"><span class="lineno">  184</span>  <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a> = seed;</div>
-<div class="line"><span class="lineno">  185</span>  <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;setPotential(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>);</div>
-<div class="line"><span class="lineno">  186</span>  <span class="keyword">auto</span> min2Pot =</div>
-<div class="line"><span class="lineno">  187</span>      (<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>-&gt;needsPerImageInstance() &amp;&amp; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options().parallel)</div>
-<div class="line"><span class="lineno">  188</span>          ? <a class="code hl_function" href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">eonc::helpers::makePotential</a>(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>)</div>
-<div class="line"><span class="lineno">  189</span>          : <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>;</div>
-<div class="line"><span class="lineno">  190</span>  <a class="code hl_variable" href="#a0256d15cfd589d72b98bf244a4f0278b">displacement</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  191</span>  <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  192</span>  <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  193</span>  <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> = std::make_shared&lt;Matter&gt;(min2Pot, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  194</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> mode = AtomMatrix::Zero(<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;numberOfAtoms(), 3);</div>
-<div class="line"><span class="lineno">  195</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1helpers.html#a2a110b853a8d95856f9e66dc9ef65dc1">eonc::helpers::applyClientDisplacement</a>(*<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, *<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>,</div>
-<div class="line"><span class="lineno">  196</span>                                              &amp;mode)) {</div>
-<div class="line"><span class="lineno">  197</span>    *<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a> = *<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>;</div>
-<div class="line"><span class="lineno">  198</span>  }</div>
-<div class="line"><span class="lineno">  199</span>  *<a class="code hl_variable" href="#a0256d15cfd589d72b98bf244a4f0278b">displacement</a> = *<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>;</div>
-<div class="line"><span class="lineno">  200</span>  *<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a> = *<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> = *<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>;</div>
-<div class="line"><span class="lineno">  201</span>  <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;setPotential(min2Pot);</div>
-<div class="line"><span class="lineno">  202</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;min_mode&quot;</span>) {</div>
-<div class="line"><span class="lineno">  203</span>    <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a> = std::make_unique&lt;MinModeSaddleSearch&gt;(</div>
-<div class="line"><span class="lineno">  204</span>        <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, mode, <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;getPotentialEnergy(), <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>);</div>
-<div class="line"><span class="lineno">  205</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;basin_hopping&quot;</span>) {</div>
-<div class="line"><span class="lineno">  206</span>    <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a> =</div>
-<div class="line"><span class="lineno">  207</span>        std::make_unique&lt;BasinHoppingSaddleSearch&gt;(<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>, <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  208</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;dynamics&quot;</span>) {</div>
-<div class="line"><span class="lineno">  209</span>    <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a> = std::make_unique&lt;DynamicsSaddleSearch&gt;(<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  210</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;bgsd&quot;</span>) {</div>
-<div class="line"><span class="lineno">  211</span>    <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a> = std::make_unique&lt;BiasedGradientSquaredDescent&gt;(</div>
-<div class="line"><span class="lineno">  212</span>        <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;getPotentialEnergy(), <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  213</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  214</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  215</span>        <span class="stringliteral">&quot;ProcessSearchJob::runFromMatter: unsupported saddle_search.method&quot;</span>);</div>
-<div class="line"><span class="lineno">  216</span>  }</div>
-<div class="line"><span class="lineno">  217</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#ac1cc97632a913f9d037a6e7e42a8486f">runPrepared</a>();</div>
-<div class="line"><span class="lineno">  218</span>}</div>
+<p class="definition">Definition at line <a class="el" href="ProcessSearchJob_8cpp_source.html#l00184">184</a> of file <a class="el" href="ProcessSearchJob_8cpp_source.html">ProcessSearchJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  184</span>                                                          {</div>
+<div class="line"><span class="lineno">  185</span>  <span class="keywordflow">if</span> (!seed) {</div>
+<div class="line"><span class="lineno">  186</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;ProcessSearchJob::runFromMatter: null Matter&quot;</span>);</div>
+<div class="line"><span class="lineno">  187</span>  }</div>
+<div class="line"><span class="lineno">  188</span>  <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a> = seed;</div>
+<div class="line"><span class="lineno">  189</span>  <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;setPotential(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>);</div>
+<div class="line"><span class="lineno">  190</span>  <span class="comment">// A clone keeps this job&#39;s potential; makePotential rebuilds from the</span></div>
+<div class="line"><span class="lineno">  191</span>  <span class="comment">// configuration and is the fallback for backends that cannot clone.</span></div>
+<div class="line"><span class="lineno">  192</span>  std::shared_ptr&lt;Potential&gt; min2Pot = <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>;</div>
+<div class="line"><span class="lineno">  193</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>-&gt;needsPerImageInstance() &amp;&amp; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options().parallel) {</div>
+<div class="line"><span class="lineno">  194</span>    <span class="keyword">auto</span> cloned = <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>-&gt;clonePotential();</div>
+<div class="line"><span class="lineno">  195</span>    min2Pot = cloned ? cloned : <a class="code hl_function" href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">eonc::helpers::makePotential</a>(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  196</span>  }</div>
+<div class="line"><span class="lineno">  197</span>  <a class="code hl_variable" href="#a0256d15cfd589d72b98bf244a4f0278b">displacement</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  198</span>  <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  199</span>  <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  200</span>  <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> = std::make_shared&lt;Matter&gt;(min2Pot, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  201</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> mode = AtomMatrix::Zero(<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;numberOfAtoms(), 3);</div>
+<div class="line"><span class="lineno">  202</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1helpers.html#a2a110b853a8d95856f9e66dc9ef65dc1">eonc::helpers::applyClientDisplacement</a>(*<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, *<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>,</div>
+<div class="line"><span class="lineno">  203</span>                                              &amp;mode)) {</div>
+<div class="line"><span class="lineno">  204</span>    *<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a> = *<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>;</div>
+<div class="line"><span class="lineno">  205</span>  }</div>
+<div class="line"><span class="lineno">  206</span>  *<a class="code hl_variable" href="#a0256d15cfd589d72b98bf244a4f0278b">displacement</a> = *<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>;</div>
+<div class="line"><span class="lineno">  207</span>  *<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a> = *<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> = *<a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>;</div>
+<div class="line"><span class="lineno">  208</span>  <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;setPotential(min2Pot);</div>
+<div class="line"><span class="lineno">  209</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;min_mode&quot;</span>) {</div>
+<div class="line"><span class="lineno">  210</span>    <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a> = std::make_unique&lt;MinModeSaddleSearch&gt;(</div>
+<div class="line"><span class="lineno">  211</span>        <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, mode, <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;getPotentialEnergy(), <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>);</div>
+<div class="line"><span class="lineno">  212</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;basin_hopping&quot;</span>) {</div>
+<div class="line"><span class="lineno">  213</span>    <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a> =</div>
+<div class="line"><span class="lineno">  214</span>        std::make_unique&lt;BasinHoppingSaddleSearch&gt;(<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>, <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  215</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;dynamics&quot;</span>) {</div>
+<div class="line"><span class="lineno">  216</span>    <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a> = std::make_unique&lt;DynamicsSaddleSearch&gt;(<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  217</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;bgsd&quot;</span>) {</div>
+<div class="line"><span class="lineno">  218</span>    <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a> = std::make_unique&lt;BiasedGradientSquaredDescent&gt;(</div>
+<div class="line"><span class="lineno">  219</span>        <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, <a class="code hl_variable" href="#aa8c44da4e95f4c52a4395e82a68ee257">initial</a>-&gt;getPotentialEnergy(), <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  220</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  221</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  222</span>        <span class="stringliteral">&quot;ProcessSearchJob::runFromMatter: unsupported saddle_search.method&quot;</span>);</div>
+<div class="line"><span class="lineno">  223</span>  }</div>
+<div class="line"><span class="lineno">  224</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#ac1cc97632a913f9d037a6e7e42a8486f">runPrepared</a>();</div>
+<div class="line"><span class="lineno">  225</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1195,22 +1225,22 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ProcessSearchJob_8cpp_source.html#l00220">220</a> of file <a class="el" href="ProcessSearchJob_8cpp_source.html">ProcessSearchJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  220</span>                                                    {</div>
-<div class="line"><span class="lineno">  221</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>) {</div>
-<div class="line"><span class="lineno">  222</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;unknown saddle_search.method&quot;</span>);</div>
-<div class="line"><span class="lineno">  223</span>  }</div>
-<div class="line"><span class="lineno">  224</span> </div>
-<div class="line"><span class="lineno">  225</span>  <span class="keywordtype">int</span> status = <a class="code hl_function" href="#aecac3f3d3d7154454afd7104a7f16258">doProcessSearch</a>();</div>
-<div class="line"><span class="lineno">  226</span> </div>
-<div class="line"><span class="lineno">  227</span>  <a class="code hl_function" href="#a774f6d5248f1e1ee2c4451250557c66d">printEndState</a>(status);</div>
-<div class="line"><span class="lineno">  228</span>  <a class="code hl_function" href="#ab91cd17a9d64053d264055fc0011ad1c">saveData</a>(status);</div>
-<div class="line"><span class="lineno">  229</span> </div>
-<div class="line"><span class="lineno">  230</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> ? <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> : <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>;</div>
-<div class="line"><span class="lineno">  231</span>}</div>
-<div class="ttc" id="aclasseonc_1_1ProcessSearchJob_html_a774f6d5248f1e1ee2c4451250557c66d"><div class="ttname"><a href="#a774f6d5248f1e1ee2c4451250557c66d">eonc::ProcessSearchJob::printEndState</a></div><div class="ttdeci">void printEndState(int status)</div><div class="ttdoc">Logs the run status and makes sure the run was successful.</div><div class="ttdef"><b>Definition</b> <a href="ProcessSearchJob_8cpp_source.html#l00471">ProcessSearchJob.cpp:471</a></div></div>
-<div class="ttc" id="aclasseonc_1_1ProcessSearchJob_html_ab91cd17a9d64053d264055fc0011ad1c"><div class="ttname"><a href="#ab91cd17a9d64053d264055fc0011ad1c">eonc::ProcessSearchJob::saveData</a></div><div class="ttdeci">void saveData(int status)</div><div class="ttdoc">Writes the results from the run to file.</div><div class="ttdef"><b>Definition</b> <a href="ProcessSearchJob_8cpp_source.html#l00401">ProcessSearchJob.cpp:401</a></div></div>
-<div class="ttc" id="aclasseonc_1_1ProcessSearchJob_html_aecac3f3d3d7154454afd7104a7f16258"><div class="ttname"><a href="#aecac3f3d3d7154454afd7104a7f16258">eonc::ProcessSearchJob::doProcessSearch</a></div><div class="ttdeci">int doProcessSearch(void)</div><div class="ttdoc">Runs the correct saddle search; also checks if the run was successful.</div><div class="ttdef"><b>Definition</b> <a href="ProcessSearchJob_8cpp_source.html#l00233">ProcessSearchJob.cpp:233</a></div></div>
+<p class="definition">Definition at line <a class="el" href="ProcessSearchJob_8cpp_source.html#l00227">227</a> of file <a class="el" href="ProcessSearchJob_8cpp_source.html">ProcessSearchJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  227</span>                                                    {</div>
+<div class="line"><span class="lineno">  228</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>) {</div>
+<div class="line"><span class="lineno">  229</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;unknown saddle_search.method&quot;</span>);</div>
+<div class="line"><span class="lineno">  230</span>  }</div>
+<div class="line"><span class="lineno">  231</span> </div>
+<div class="line"><span class="lineno">  232</span>  <span class="keywordtype">int</span> status = <a class="code hl_function" href="#aecac3f3d3d7154454afd7104a7f16258">doProcessSearch</a>();</div>
+<div class="line"><span class="lineno">  233</span> </div>
+<div class="line"><span class="lineno">  234</span>  <a class="code hl_function" href="#a774f6d5248f1e1ee2c4451250557c66d">printEndState</a>(status);</div>
+<div class="line"><span class="lineno">  235</span>  <a class="code hl_function" href="#ab91cd17a9d64053d264055fc0011ad1c">saveData</a>(status);</div>
+<div class="line"><span class="lineno">  236</span> </div>
+<div class="line"><span class="lineno">  237</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> ? <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a> : <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>;</div>
+<div class="line"><span class="lineno">  238</span>}</div>
+<div class="ttc" id="aclasseonc_1_1ProcessSearchJob_html_a774f6d5248f1e1ee2c4451250557c66d"><div class="ttname"><a href="#a774f6d5248f1e1ee2c4451250557c66d">eonc::ProcessSearchJob::printEndState</a></div><div class="ttdeci">void printEndState(int status)</div><div class="ttdoc">Logs the run status and makes sure the run was successful.</div><div class="ttdef"><b>Definition</b> <a href="ProcessSearchJob_8cpp_source.html#l00502">ProcessSearchJob.cpp:502</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ProcessSearchJob_html_ab91cd17a9d64053d264055fc0011ad1c"><div class="ttname"><a href="#ab91cd17a9d64053d264055fc0011ad1c">eonc::ProcessSearchJob::saveData</a></div><div class="ttdeci">void saveData(int status)</div><div class="ttdoc">Writes the results from the run to file.</div><div class="ttdef"><b>Definition</b> <a href="ProcessSearchJob_8cpp_source.html#l00432">ProcessSearchJob.cpp:432</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ProcessSearchJob_html_aecac3f3d3d7154454afd7104a7f16258"><div class="ttname"><a href="#aecac3f3d3d7154454afd7104a7f16258">eonc::ProcessSearchJob::doProcessSearch</a></div><div class="ttdeci">int doProcessSearch(void)</div><div class="ttdoc">Runs the correct saddle search; also checks if the run was successful.</div><div class="ttdef"><b>Definition</b> <a href="ProcessSearchJob_8cpp_source.html#l00240">ProcessSearchJob.cpp:240</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1239,76 +1269,76 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Writes the results from the run to file. </p>
 
-<p class="definition">Definition at line <a class="el" href="ProcessSearchJob_8cpp_source.html#l00401">401</a> of file <a class="el" href="ProcessSearchJob_8cpp_source.html">ProcessSearchJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  401</span>                                          {</div>
-<div class="line"><span class="lineno">  402</span>  std::string resultsFilename(<span class="stringliteral">&quot;results.dat&quot;</span>);</div>
-<div class="line"><span class="lineno">  403</span>  <a class="code hl_variable" href="#a5b99e4199a2a79476ea1c6a6ab4f73d3">returnFiles</a>.push_back(resultsFilename);</div>
-<div class="line"><span class="lineno">  404</span> </div>
-<div class="line"><span class="lineno">  405</span>  std::ofstream out(resultsFilename, std::ios::binary);</div>
-<div class="line"><span class="lineno">  406</span>  <span class="keywordflow">if</span> (out) {</div>
-<div class="line"><span class="lineno">  407</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} termination_reason\n&quot;</span>, status);</div>
-<div class="line"><span class="lineno">  408</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} termination_reason_text\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  409</span>                       <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>-&gt;describeStatus(status));</div>
-<div class="line"><span class="lineno">  410</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} random_seed\n&quot;</span>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options().randomSeed);</div>
-<div class="line"><span class="lineno">  411</span>    out &lt;&lt; std::format(</div>
-<div class="line"><span class="lineno">  412</span>        <span class="stringliteral">&quot;{} potential_type\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  413</span>        magic_enum::enum_name&lt;PotType&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.potential_options().potential));</div>
-<div class="line"><span class="lineno">  414</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} total_force_calls\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  415</span>                       <a class="code hl_variable" href="#a2a9fa27e530909e51e734a76df57f7e4">fCallsMin</a> + <a class="code hl_variable" href="#ab61cafe595a8a21499b497398eb16c0a">fCallsSaddle</a> + <a class="code hl_variable" href="#a22973a4354dddb54a2c021f59b3f157e">fCallsPrefactors</a>);</div>
-<div class="line"><span class="lineno">  416</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} force_calls_minimization\n&quot;</span>, <a class="code hl_variable" href="#a2a9fa27e530909e51e734a76df57f7e4">fCallsMin</a>);</div>
-<div class="line"><span class="lineno">  417</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} force_calls_saddle\n&quot;</span>, <a class="code hl_variable" href="#ab61cafe595a8a21499b497398eb16c0a">fCallsSaddle</a>);</div>
-<div class="line"><span class="lineno">  418</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} potential_energy_saddle\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  419</span>                       <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>-&gt;getPotentialEnergy());</div>
-<div class="line"><span class="lineno">  420</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} potential_energy_reactant\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  421</span>                       <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotentialEnergy());</div>
-<div class="line"><span class="lineno">  422</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} potential_energy_product\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  423</span>                       <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;getPotentialEnergy());</div>
-<div class="line"><span class="lineno">  424</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} barrier_reactant_to_product\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  425</span>                       <a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[0]);</div>
-<div class="line"><span class="lineno">  426</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} barrier_product_to_reactant\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  427</span>                       <a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[1]);</div>
-<div class="line"><span class="lineno">  428</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;min_mode&quot;</span>) {</div>
-<div class="line"><span class="lineno">  429</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} displacement_saddle_distance\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  430</span>                         <a class="code hl_variable" href="#a0256d15cfd589d72b98bf244a4f0278b">displacement</a>-&gt;perAtomNorm(*<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>));</div>
-<div class="line"><span class="lineno">  431</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  432</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} displacement_saddle_distance\n&quot;</span>, 0.0);</div>
-<div class="line"><span class="lineno">  433</span>    }</div>
-<div class="line"><span class="lineno">  434</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;dynamics&quot;</span>) {</div>
-<div class="line"><span class="lineno">  435</span>      <span class="keyword">auto</span> ds = <span class="keyword">dynamic_cast&lt;</span>DynamicsSaddleSearch &amp;<span class="keyword">&gt;</span>(*saddleSearch);</div>
-<div class="line"><span class="lineno">  436</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} simulation_time\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  437</span>                         ds.time * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants().timeUnit);</div>
-<div class="line"><span class="lineno">  438</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} md_temperature\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  439</span>                         <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().dynamics.temperature);</div>
-<div class="line"><span class="lineno">  440</span>    }</div>
-<div class="line"><span class="lineno">  441</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} force_calls_prefactors\n&quot;</span>, <a class="code hl_variable" href="#a22973a4354dddb54a2c021f59b3f157e">fCallsPrefactors</a>);</div>
-<div class="line"><span class="lineno">  442</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} prefactor_reactant_to_product\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  443</span>                       <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[0]);</div>
-<div class="line"><span class="lineno">  444</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} prefactor_product_to_reactant\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  445</span>                       <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[1]);</div>
-<div class="line"><span class="lineno">  446</span>  }</div>
-<div class="line"><span class="lineno">  447</span> </div>
-<div class="line"><span class="lineno">  448</span>  std::string reactantFilename(<span class="stringliteral">&quot;reactant.con&quot;</span>);</div>
-<div class="line"><span class="lineno">  449</span>  <a class="code hl_variable" href="#a5b99e4199a2a79476ea1c6a6ab4f73d3">returnFiles</a>.push_back(reactantFilename);</div>
-<div class="line"><span class="lineno">  450</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;matter2con(reactantFilename))) {</div>
-<div class="line"><span class="lineno">  451</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;Failed to write {}&quot;</span>, reactantFilename);</div>
-<div class="line"><span class="lineno">  452</span>  }</div>
-<div class="line"><span class="lineno">  453</span> </div>
-<div class="line"><span class="lineno">  454</span>  std::string modeFilename(<span class="stringliteral">&quot;mode.dat&quot;</span>);</div>
-<div class="line"><span class="lineno">  455</span>  <a class="code hl_variable" href="#a5b99e4199a2a79476ea1c6a6ab4f73d3">returnFiles</a>.push_back(modeFilename);</div>
-<div class="line"><span class="lineno">  456</span>  <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a92f5969aa3d8873415b628ea22b735fa">eonc::helpers::saveMode</a>(modeFilename, <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>-&gt;getEigenvector());</div>
-<div class="line"><span class="lineno">  457</span> </div>
-<div class="line"><span class="lineno">  458</span>  std::string saddleFilename(<span class="stringliteral">&quot;saddle.con&quot;</span>);</div>
-<div class="line"><span class="lineno">  459</span>  <a class="code hl_variable" href="#a5b99e4199a2a79476ea1c6a6ab4f73d3">returnFiles</a>.push_back(saddleFilename);</div>
-<div class="line"><span class="lineno">  460</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>-&gt;matter2con(saddleFilename))) {</div>
-<div class="line"><span class="lineno">  461</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;Failed to write {}&quot;</span>, saddleFilename);</div>
-<div class="line"><span class="lineno">  462</span>  }</div>
-<div class="line"><span class="lineno">  463</span> </div>
-<div class="line"><span class="lineno">  464</span>  std::string productFilename(<span class="stringliteral">&quot;product.con&quot;</span>);</div>
-<div class="line"><span class="lineno">  465</span>  <a class="code hl_variable" href="#a5b99e4199a2a79476ea1c6a6ab4f73d3">returnFiles</a>.push_back(productFilename);</div>
-<div class="line"><span class="lineno">  466</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;matter2con(productFilename))) {</div>
-<div class="line"><span class="lineno">  467</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;Failed to write {}&quot;</span>, productFilename);</div>
-<div class="line"><span class="lineno">  468</span>  }</div>
-<div class="line"><span class="lineno">  469</span>}</div>
+<p class="definition">Definition at line <a class="el" href="ProcessSearchJob_8cpp_source.html#l00432">432</a> of file <a class="el" href="ProcessSearchJob_8cpp_source.html">ProcessSearchJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  432</span>                                          {</div>
+<div class="line"><span class="lineno">  433</span>  std::string resultsFilename(<span class="stringliteral">&quot;results.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  434</span>  <a class="code hl_variable" href="#a5b99e4199a2a79476ea1c6a6ab4f73d3">returnFiles</a>.push_back(resultsFilename);</div>
+<div class="line"><span class="lineno">  435</span> </div>
+<div class="line"><span class="lineno">  436</span>  std::ofstream out(resultsFilename, std::ios::binary);</div>
+<div class="line"><span class="lineno">  437</span>  <span class="keywordflow">if</span> (out) {</div>
+<div class="line"><span class="lineno">  438</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} termination_reason\n&quot;</span>, status);</div>
+<div class="line"><span class="lineno">  439</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} termination_reason_text\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  440</span>                       <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>-&gt;describeStatus(status));</div>
+<div class="line"><span class="lineno">  441</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} random_seed\n&quot;</span>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options().randomSeed);</div>
+<div class="line"><span class="lineno">  442</span>    out &lt;&lt; std::format(</div>
+<div class="line"><span class="lineno">  443</span>        <span class="stringliteral">&quot;{} potential_type\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  444</span>        magic_enum::enum_name&lt;PotType&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.potential_options().potential));</div>
+<div class="line"><span class="lineno">  445</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} total_force_calls\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  446</span>                       <a class="code hl_variable" href="#a2a9fa27e530909e51e734a76df57f7e4">fCallsMin</a> + <a class="code hl_variable" href="#ab61cafe595a8a21499b497398eb16c0a">fCallsSaddle</a> + <a class="code hl_variable" href="#a22973a4354dddb54a2c021f59b3f157e">fCallsPrefactors</a>);</div>
+<div class="line"><span class="lineno">  447</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} force_calls_minimization\n&quot;</span>, <a class="code hl_variable" href="#a2a9fa27e530909e51e734a76df57f7e4">fCallsMin</a>);</div>
+<div class="line"><span class="lineno">  448</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} force_calls_saddle\n&quot;</span>, <a class="code hl_variable" href="#ab61cafe595a8a21499b497398eb16c0a">fCallsSaddle</a>);</div>
+<div class="line"><span class="lineno">  449</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} potential_energy_saddle\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  450</span>                       <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>-&gt;getPotentialEnergy());</div>
+<div class="line"><span class="lineno">  451</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} potential_energy_reactant\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  452</span>                       <a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;getPotentialEnergy());</div>
+<div class="line"><span class="lineno">  453</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} potential_energy_product\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  454</span>                       <a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;getPotentialEnergy());</div>
+<div class="line"><span class="lineno">  455</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} barrier_reactant_to_product\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  456</span>                       <a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[0]);</div>
+<div class="line"><span class="lineno">  457</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} barrier_product_to_reactant\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  458</span>                       <a class="code hl_variable" href="#a73cd9a4033c9e392c3d7c34f5fdcfd19">barriersValues</a>[1]);</div>
+<div class="line"><span class="lineno">  459</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;min_mode&quot;</span>) {</div>
+<div class="line"><span class="lineno">  460</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} displacement_saddle_distance\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  461</span>                         <a class="code hl_variable" href="#a0256d15cfd589d72b98bf244a4f0278b">displacement</a>-&gt;perAtomNorm(*<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>));</div>
+<div class="line"><span class="lineno">  462</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  463</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} displacement_saddle_distance\n&quot;</span>, 0.0);</div>
+<div class="line"><span class="lineno">  464</span>    }</div>
+<div class="line"><span class="lineno">  465</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().method == <span class="stringliteral">&quot;dynamics&quot;</span>) {</div>
+<div class="line"><span class="lineno">  466</span>      <span class="keyword">auto</span> ds = <span class="keyword">dynamic_cast&lt;</span>DynamicsSaddleSearch &amp;<span class="keyword">&gt;</span>(*saddleSearch);</div>
+<div class="line"><span class="lineno">  467</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} simulation_time\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  468</span>                         ds.time * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants().timeUnit);</div>
+<div class="line"><span class="lineno">  469</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} md_temperature\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  470</span>                         <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.saddle_search_options().dynamics.temperature);</div>
+<div class="line"><span class="lineno">  471</span>    }</div>
+<div class="line"><span class="lineno">  472</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} force_calls_prefactors\n&quot;</span>, <a class="code hl_variable" href="#a22973a4354dddb54a2c021f59b3f157e">fCallsPrefactors</a>);</div>
+<div class="line"><span class="lineno">  473</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} prefactor_reactant_to_product\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  474</span>                       <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[0]);</div>
+<div class="line"><span class="lineno">  475</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} prefactor_product_to_reactant\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  476</span>                       <a class="code hl_variable" href="#a743f6fbc7d3de20641c1f5ae59df95e4">prefactorsValues</a>[1]);</div>
+<div class="line"><span class="lineno">  477</span>  }</div>
+<div class="line"><span class="lineno">  478</span> </div>
+<div class="line"><span class="lineno">  479</span>  std::string reactantFilename(<span class="stringliteral">&quot;reactant.con&quot;</span>);</div>
+<div class="line"><span class="lineno">  480</span>  <a class="code hl_variable" href="#a5b99e4199a2a79476ea1c6a6ab4f73d3">returnFiles</a>.push_back(reactantFilename);</div>
+<div class="line"><span class="lineno">  481</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a2f5be2e2fba7a06a40fa61ee7440d781">min1</a>-&gt;matter2con(reactantFilename))) {</div>
+<div class="line"><span class="lineno">  482</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;Failed to write {}&quot;</span>, reactantFilename);</div>
+<div class="line"><span class="lineno">  483</span>  }</div>
+<div class="line"><span class="lineno">  484</span> </div>
+<div class="line"><span class="lineno">  485</span>  std::string modeFilename(<span class="stringliteral">&quot;mode.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  486</span>  <a class="code hl_variable" href="#a5b99e4199a2a79476ea1c6a6ab4f73d3">returnFiles</a>.push_back(modeFilename);</div>
+<div class="line"><span class="lineno">  487</span>  <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a92f5969aa3d8873415b628ea22b735fa">eonc::helpers::saveMode</a>(modeFilename, <a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>, <a class="code hl_variable" href="#aad522ee98cd33d76089144f4c88e4f15">saddleSearch</a>-&gt;getEigenvector());</div>
+<div class="line"><span class="lineno">  488</span> </div>
+<div class="line"><span class="lineno">  489</span>  std::string saddleFilename(<span class="stringliteral">&quot;saddle.con&quot;</span>);</div>
+<div class="line"><span class="lineno">  490</span>  <a class="code hl_variable" href="#a5b99e4199a2a79476ea1c6a6ab4f73d3">returnFiles</a>.push_back(saddleFilename);</div>
+<div class="line"><span class="lineno">  491</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a876829f3316c21a5f1c36d759915b712">saddle</a>-&gt;matter2con(saddleFilename))) {</div>
+<div class="line"><span class="lineno">  492</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;Failed to write {}&quot;</span>, saddleFilename);</div>
+<div class="line"><span class="lineno">  493</span>  }</div>
+<div class="line"><span class="lineno">  494</span> </div>
+<div class="line"><span class="lineno">  495</span>  std::string productFilename(<span class="stringliteral">&quot;product.con&quot;</span>);</div>
+<div class="line"><span class="lineno">  496</span>  <a class="code hl_variable" href="#a5b99e4199a2a79476ea1c6a6ab4f73d3">returnFiles</a>.push_back(productFilename);</div>
+<div class="line"><span class="lineno">  497</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a778faedadbaac9f0da13866501c8411f">min2</a>-&gt;matter2con(productFilename))) {</div>
+<div class="line"><span class="lineno">  498</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a2845d662741b599bc73c1ad2cf12c1c8">log</a>, <span class="stringliteral">&quot;Failed to write {}&quot;</span>, productFilename);</div>
+<div class="line"><span class="lineno">  499</span>  }</div>
+<div class="line"><span class="lineno">  500</span>}</div>
 <div class="ttc" id="anamespaceeonc_1_1helpers_html_a92f5969aa3d8873415b628ea22b735fa"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a92f5969aa3d8873415b628ea22b735fa">eonc::helpers::saveMode</a></div><div class="ttdeci">void saveMode(FILE *modeFile, std::shared_ptr&lt; Matter &gt; matter, AtomMatrix mode)</div><div class="ttdoc">Write a mode; constrained axes are emitted as 0.</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00305">HelperFunctions.cpp:305</a></div></div>
 </div><!-- fragment -->
 </div>

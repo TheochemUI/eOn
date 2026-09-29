@@ -161,13 +161,13 @@ Or set `RGPOT_METATOMIC_ENGINE` / `METATOMIC_ENGINE` and put the model under
 
 ```{code-block} bash
 # Fat host: native Metatomic pot + engine for optional RGPOT consumers
-meson setup build-mta -Dwith_metatomic=true -Dwith_rgpot=true
+meson setup build-mta -Dwith_metatomic=true
 meson compile -C build-mta
 # -> client/libmetatomic_pot.so  (potential = Metatomic)
 # -> client/libmetatomic_engine.so  (RGPOT backend=metatomic)
 
 # Thin host: RGPOT only; no torch at link time
-meson setup build-thin -Dwith_metatomic=false -Dwith_rgpot=true
+meson setup build-thin -Dwith_metatomic=false
 meson compile -C build-thin
 # engine still comes from a fat build or a packager that includes libmetatomic_engine.so
 ```

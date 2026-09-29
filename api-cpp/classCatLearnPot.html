@@ -278,6 +278,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:af63f26dc7fdff78a6613961ea860f3a1 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional frozen-atom mask (nAtoms*3, 1.0 = fixed).  <br /></td></tr>
 <tr class="memitem:aa2f4f152a44aa2827a6ca08bdd40da81 inherit pub_methods_classeonc_1_1Potential" id="r_aa2f4f152a44aa2827a6ca08bdd40da81"><td class="memItemLeft">std::tuple&lt; double, <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#aa2f4f152a44aa2827a6ca08bdd40da81">get_ef</a> (const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;pos, const VectorXi &amp;atmnrs, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;box)</td></tr>
 <tr class="memitem:a4f0274548044ab1f714e4801352c4547 inherit pub_methods_classeonc_1_1Potential" id="r_a4f0274548044ab1f714e4801352c4547"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a4f0274548044ab1f714e4801352c4547">getType</a> () const</td></tr>
+<tr class="memitem:a8f4fea1662aaa9e26f7a2ac0862d53f8 inherit pub_methods_classeonc_1_1Potential" id="r_a8f4fea1662aaa9e26f7a2ac0862d53f8"><td class="memItemLeft">virtual double&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a8f4fea1662aaa9e26f7a2ac0862d53f8">finiteCutoff</a> () const noexcept</td></tr>
+<tr class="memdesc:a8f4fea1662aaa9e26f7a2ac0862d53f8 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finite interaction range in position length units.  <br /></td></tr>
 <tr class="memitem:ac4c9e9deaa0e73fa27ff97b6d6acad98 inherit pub_methods_classeonc_1_1Potential" id="r_ac4c9e9deaa0e73fa27ff97b6d6acad98"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac4c9e9deaa0e73fa27ff97b6d6acad98">requiresIsolatedMoleculeLayout</a> () const noexcept</td></tr>
 <tr class="memdesc:ac4c9e9deaa0e73fa27ff97b6d6acad98 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">True for molecular QM / non-PBC backends (NWChem socket, <a class="el" href="classASE.html">ASE</a> ORCA/NWChem, …).  <br /></td></tr>
 <tr class="memitem:ac0b6310014f5d95811c5e0ec451568ba inherit pub_methods_classeonc_1_1Potential" id="r_ac0b6310014f5d95811c5e0ec451568ba"><td class="memItemLeft">virtual unsigned&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac0b6310014f5d95811c5e0ec451568ba">layoutFlags</a> () const noexcept</td></tr>
@@ -332,21 +334,19 @@ Additional Inherited Members</h2></td></tr>
 <div class="fragment"><div class="line"><span class="lineno">   18</span>    : eonc::SurrogatePotential(<a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a77af44909b5b423b7eb348c87d14112d">eonc::PotType::CatLearn</a>, a_params) {</div>
 <div class="line"><span class="lineno">   19</span>  <span class="keyword">using namespace </span>pybind11::literals;</div>
 <div class="line"><span class="lineno">   20</span>  py::module_ sys = py::module_::import(<span class="stringliteral">&quot;sys&quot;</span>);</div>
-<div class="line"><span class="lineno">   21</span>  py::exec(</div>
-<div class="line"><span class="lineno">   22</span>      std::format(<span class="stringliteral">&quot;sys.path.insert(0, {})&quot;</span>, a_params.<a class="code hl_function" href="classeonc_1_1Parameters.html#aef37e2ba3846e1714736685b84556502">catlearn_options</a>().<a class="code hl_variable" href="structeonc_1_1catlearn__options__t.html#a573a37a4fc8a180525eb6e92dce36537">path</a>));</div>
-<div class="line"><span class="lineno">   23</span> </div>
-<div class="line"><span class="lineno">   24</span>  py::module_ gp_module = py::module_::import(</div>
-<div class="line"><span class="lineno">   25</span>      <span class="stringliteral">&quot;catlearn.regression.gaussianprocess.calculator.mlmodel&quot;</span>);</div>
-<div class="line"><span class="lineno">   26</span> </div>
-<div class="line"><span class="lineno">   27</span>  <span class="comment">// Import the required modules</span></div>
-<div class="line"><span class="lineno">   28</span>  <span class="comment">// GP Model</span></div>
-<div class="line"><span class="lineno">   29</span>  this-&gt;<a class="code hl_variable" href="#a72067d52265df43c043bc4440b2299ec">m_gpmod</a> = gp_module.attr(<span class="stringliteral">&quot;get_default_model&quot;</span>)(</div>
-<div class="line"><span class="lineno">   30</span>      <span class="stringliteral">&quot;model&quot;</span>_a = a_params.<a class="code hl_function" href="classeonc_1_1Parameters.html#aef37e2ba3846e1714736685b84556502">catlearn_options</a>().model);</div>
-<div class="line"><span class="lineno">   31</span>};</div>
+<div class="line"><span class="lineno">   21</span>  sys.attr(<span class="stringliteral">&quot;path&quot;</span>).attr(<span class="stringliteral">&quot;insert&quot;</span>)(0, a_params.<a class="code hl_function" href="classeonc_1_1Parameters.html#a3ae32cee62ec66efec743a58aa10e4c0">catlearn_options</a>().path);</div>
+<div class="line"><span class="lineno">   22</span> </div>
+<div class="line"><span class="lineno">   23</span>  py::module_ gp_module = py::module_::import(</div>
+<div class="line"><span class="lineno">   24</span>      <span class="stringliteral">&quot;catlearn.regression.gaussianprocess.calculator.mlmodel&quot;</span>);</div>
+<div class="line"><span class="lineno">   25</span> </div>
+<div class="line"><span class="lineno">   26</span>  <span class="comment">// Import the required modules</span></div>
+<div class="line"><span class="lineno">   27</span>  <span class="comment">// GP Model</span></div>
+<div class="line"><span class="lineno">   28</span>  this-&gt;<a class="code hl_variable" href="#a72067d52265df43c043bc4440b2299ec">m_gpmod</a> = gp_module.attr(<span class="stringliteral">&quot;get_default_model&quot;</span>)(</div>
+<div class="line"><span class="lineno">   29</span>      <span class="stringliteral">&quot;model&quot;</span>_a = a_params.<a class="code hl_function" href="classeonc_1_1Parameters.html#a3ae32cee62ec66efec743a58aa10e4c0">catlearn_options</a>().model);</div>
+<div class="line"><span class="lineno">   30</span>};</div>
 <div class="ttc" id="aclassCatLearnPot_html_a72067d52265df43c043bc4440b2299ec"><div class="ttname"><a href="#a72067d52265df43c043bc4440b2299ec">CatLearnPot::m_gpmod</a></div><div class="ttdeci">py::object m_gpmod</div><div class="ttdef"><b>Definition</b> <a href="CatLearnPot_8h_source.html#l00036">CatLearnPot.h:36</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Parameters_html_aef37e2ba3846e1714736685b84556502"><div class="ttname"><a href="classeonc_1_1Parameters.html#aef37e2ba3846e1714736685b84556502">eonc::Parameters::catlearn_options</a></div><div class="ttdeci">const catlearn_options_t &amp; catlearn_options() const</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00148">Parameters.h:148</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_a3ae32cee62ec66efec743a58aa10e4c0"><div class="ttname"><a href="classeonc_1_1Parameters.html#a3ae32cee62ec66efec743a58aa10e4c0">eonc::Parameters::catlearn_options</a></div><div class="ttdeci">const catlearn_options_t &amp; catlearn_options() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00148">ParametersAccess.cpp:148</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a77af44909b5b423b7eb348c87d14112d"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a77af44909b5b423b7eb348c87d14112d">eonc::PotType::CatLearn</a></div><div class="ttdeci">@ CatLearn</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00062">BaseStructures.h:62</a></div></div>
-<div class="ttc" id="astructeonc_1_1catlearn__options__t_html_a573a37a4fc8a180525eb6e92dce36537"><div class="ttname"><a href="structeonc_1_1catlearn__options__t.html#a573a37a4fc8a180525eb6e92dce36537">eonc::catlearn_options_t::path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00375">ParametersOptions.h:375</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -408,22 +408,26 @@ Additional Inherited Members</h2></td></tr>
 <p class="definition">Definition at line <a class="el" href="CatLearnPot_8cpp_source.html#l00038">38</a> of file <a class="el" href="CatLearnPot_8cpp_source.html">CatLearnPot.cpp</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">   40</span>                                                             {</div>
 <div class="line"><span class="lineno">   41</span>  <span class="keyword">using namespace </span>pybind11::literals;</div>
-<div class="line"><span class="lineno">   42</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> features =</div>
-<div class="line"><span class="lineno">   43</span>      Eigen::Map&lt;MatrixXd&gt;(<span class="keyword">const_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(positions), 1, nAtoms * 3);</div>
-<div class="line"><span class="lineno">   44</span>  py::tuple ef_and_unc = (this-&gt;<a class="code hl_variable" href="#a72067d52265df43c043bc4440b2299ec">m_gpmod</a>.attr(<span class="stringliteral">&quot;predict&quot;</span>)(</div>
-<div class="line"><span class="lineno">   45</span>      features, <span class="stringliteral">&quot;get_variance&quot;</span>_a = <span class="keyword">true</span>, <span class="stringliteral">&quot;get_derivatives&quot;</span>_a = <span class="keyword">true</span>));</div>
-<div class="line"><span class="lineno">   46</span>  <span class="keyword">auto</span> ef_dat = ef_and_unc[0].cast&lt;<a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a>&gt;();</div>
-<div class="line"><span class="lineno">   47</span>  <span class="keyword">auto</span> vari = ef_and_unc[1].cast&lt;<a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a>&gt;();</div>
-<div class="line"><span class="lineno">   48</span>  <span class="keyword">auto</span> gradients = ef_dat.block(0, 1, 1, nAtoms * 3);</div>
-<div class="line"><span class="lineno">   49</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> idx = 0; idx &lt; nAtoms; idx++) {</div>
-<div class="line"><span class="lineno">   50</span>    forces[3 * idx] = gradients(0, 3 * idx) * -1;</div>
-<div class="line"><span class="lineno">   51</span>    forces[3 * idx + 1] = gradients(0, 3 * idx + 1) * -1;</div>
-<div class="line"><span class="lineno">   52</span>    forces[3 * idx + 2] = gradients(0, 3 * idx + 2) * -1;</div>
-<div class="line"><span class="lineno">   53</span>  }</div>
-<div class="line"><span class="lineno">   54</span>  *variance = vari(0, 0); <span class="comment">// energy variance only</span></div>
-<div class="line"><span class="lineno">   55</span>  *energy = ef_dat(0, 0);</div>
-<div class="line"><span class="lineno">   56</span>  <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">   57</span>}</div>
+<div class="line"><span class="lineno">   42</span>  (void)atomicNrs;</div>
+<div class="line"><span class="lineno">   43</span>  (void)box;</div>
+<div class="line"><span class="lineno">   44</span>  py::gil_scoped_acquire gil;</div>
+<div class="line"><span class="lineno">   45</span>  <span class="keyword">const</span> Eigen::Map&lt;const MatrixXd&gt; features(positions, 1, nAtoms * 3);</div>
+<div class="line"><span class="lineno">   46</span>  py::tuple ef_and_unc = (this-&gt;<a class="code hl_variable" href="#a72067d52265df43c043bc4440b2299ec">m_gpmod</a>.attr(<span class="stringliteral">&quot;predict&quot;</span>)(</div>
+<div class="line"><span class="lineno">   47</span>      features, <span class="stringliteral">&quot;get_variance&quot;</span>_a = <span class="keyword">true</span>, <span class="stringliteral">&quot;get_derivatives&quot;</span>_a = <span class="keyword">true</span>));</div>
+<div class="line"><span class="lineno">   48</span>  <span class="keyword">auto</span> ef_dat = ef_and_unc[0].cast&lt;<a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a>&gt;();</div>
+<div class="line"><span class="lineno">   49</span>  <span class="keyword">auto</span> vari = ef_and_unc[1].cast&lt;<a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a>&gt;();</div>
+<div class="line"><span class="lineno">   50</span>  <span class="keyword">auto</span> gradients = ef_dat.block(0, 1, 1, nAtoms * 3);</div>
+<div class="line"><span class="lineno">   51</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> idx = 0; idx &lt; nAtoms; idx++) {</div>
+<div class="line"><span class="lineno">   52</span>    forces[3 * idx] = gradients(0, 3 * idx) * -1;</div>
+<div class="line"><span class="lineno">   53</span>    forces[3 * idx + 1] = gradients(0, 3 * idx + 1) * -1;</div>
+<div class="line"><span class="lineno">   54</span>    forces[3 * idx + 2] = gradients(0, 3 * idx + 2) * -1;</div>
+<div class="line"><span class="lineno">   55</span>  }</div>
+<div class="line"><span class="lineno">   56</span>  <span class="keywordflow">if</span> (variance != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">   57</span>    *variance = vari(0, 0); <span class="comment">// energy variance only</span></div>
+<div class="line"><span class="lineno">   58</span>  }</div>
+<div class="line"><span class="lineno">   59</span>  *energy = ef_dat(0, 0);</div>
+<div class="line"><span class="lineno">   60</span>  <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   61</span>}</div>
 <div class="ttc" id="aEigen_8h_html_a45bb4cbce093fca4dfb193d3f649da30"><div class="ttname"><a href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, eOnStorageOrder &gt; MatrixXd</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00033">Eigen.h:33</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -490,8 +494,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1SurrogatePotential.html#a56a112bed159728eb1ff2e1dd6c13a8d">eonc::SurrogatePotential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="CatLearnPot_8cpp_source.html#l00033">33</a> of file <a class="el" href="CatLearnPot_8cpp_source.html">CatLearnPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   33</span>                                                                    {</div>
+<p class="definition">Definition at line <a class="el" href="CatLearnPot_8cpp_source.html#l00032">32</a> of file <a class="el" href="CatLearnPot_8cpp_source.html">CatLearnPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   33</span>                                                          {</div>
 <div class="line"><span class="lineno">   34</span>  <a class="code hl_variable" href="#a72067d52265df43c043bc4440b2299ec">m_gpmod</a>.attr(<span class="stringliteral">&quot;optimize&quot;</span>)(features, targets, py::arg(<span class="stringliteral">&quot;retrain&quot;</span>) = <span class="keyword">true</span>);</div>
 <div class="line"><span class="lineno">   35</span>  <span class="keywordflow">return</span>;</div>
 <div class="line"><span class="lineno">   36</span>}</div>

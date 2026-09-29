@@ -47,6 +47,14 @@ pixi run -e docs makedocs
 API tree to `docs/build/html/api-cpp/`. The book nav and landing page
 point at that tree; the Doxygen mainpage points back at the book.
 
+Docs CI installs `eonclient` into the `docs-mta` prefix, then runs
+`scripts/regen_tutorial_figures.py`. That step minimizes `docs/lj13.con`
+with `[Debug] write_movies = true` and writes `plt-min` profile and
+landscape PNGs to `docs/source/fig/generated/` (gitignored). The
+`docs` pixi feature supplies `rgpycrumbs`, `chemparseplot`, and `ira`.
+A missing figure fails the docs job. The same script can be run locally
+once `eonclient` is on `PATH`.
+
 This can be viewed locally with an HTTP server.
 
 ```{code-block} bash

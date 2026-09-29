@@ -7,6 +7,7 @@ var classRgpotAdapter =
     [ "RgpotAdapter", "classRgpotAdapter.html#a00f9defffdf81aed41739d421b9d53a1", null ],
     [ "RgpotAdapter", "classRgpotAdapter.html#af6ef4d12be06ab03c5df65b363d393b0", null ],
     [ "finishConstruct", "classRgpotAdapter.html#a6d9f61f0b829dcab48e29f47e81ca52c", null ],
+    [ "finiteCutoff", "classRgpotAdapter.html#ad1777f60faa4e44fefedb5380730627b", null ],
     [ "force", "classRgpotAdapter.html#a350328b66270a821ccb8e1d764d7e5d1", null ],
     [ "forceBatch", "classRgpotAdapter.html#ae5c9470c08c2505cc3d9f557e014b9eb", null ],
     [ "isThreadSafe", "classRgpotAdapter.html#a055a5f208ff16306b35632596a161674", null ],

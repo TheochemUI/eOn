@@ -239,7 +239,10 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('LAMMPSPot_8h.h
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="Parameters_8h_source.html">eon/Parameters.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Potential_8h_source.html">eon/Potential.h</a>&quot;</code><br />
+<code>#include &lt;cerrno&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
 <code>#include &lt;mutex&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 </div>
 <p><a href="LAMMPSPot_8h_source.html">Go to the source code of this file.</a></p>
@@ -252,6 +255,15 @@ Classes</h2></td></tr>
 Namespaces</h2></td></tr>
 <tr class="memitem:eonc" id="r_eonc"><td class="memItemLeft">namespace &#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html">eonc</a></td></tr>
 <tr class="memdesc:namespaceeonc"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII resource manager for the ARTn C library with global synchronization. <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a591dfc92514140e2a59b6444008a61c1" id="r_a591dfc92514140e2a59b6444008a61c1"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a591dfc92514140e2a59b6444008a61c1">eonc::lammpsWorkerReaped</a> (long got, long child, int err)</td></tr>
+<tr class="memdesc:a591dfc92514140e2a59b6444008a61c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when waitpid has collected the child. EINTR is not a collection.  <br /></td></tr>
+<tr class="memitem:a25573da8a25eeb817db8ab5c3e84ba60" id="r_a25573da8a25eeb817db8ab5c3e84ba60"><td class="memItemLeft">std::int64_t&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a25573da8a25eeb817db8ab5c3e84ba60">eonc::lammpsScreenCursor</a> (std::int64_t pos, std::int64_t fileSize, bool restarted)</td></tr>
+<tr class="memdesc:a25573da8a25eeb817db8ab5c3e84ba60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Byte offset at which to keep copying a LAMMPS screen file.  <br /></td></tr>
+<tr class="memitem:a683c88f3c96430d9a3217a3eaf21c020" id="r_a683c88f3c96430d9a3217a3eaf21c020"><td class="memItemLeft">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a683c88f3c96430d9a3217a3eaf21c020">eonc::lammpsOpenArgs</a> (bool logging, bool with_omp, const std::string &amp;screen)</td></tr>
+<tr class="memdesc:a683c88f3c96430d9a3217a3eaf21c020"><td class="mdescLeft">&#160;</td><td class="mdescRight">LAMMPS argv.  <br /></td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

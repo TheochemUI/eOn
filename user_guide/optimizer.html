@@ -155,6 +155,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/in-process.html">In-process jobs (no file IPC)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/abi-surface.html">Public C++ surface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/rgpot-migration.html">rgpot kernel inventory</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/porting_potentials.html">Porting potentials</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/docbuild.html">Working with the documentation</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn.html">Subversion</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn-migration.html">Migrating from SVN</a></li>
@@ -174,6 +175,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.geometry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.pbc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.wire.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.wire</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
@@ -187,6 +189,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.cancel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.cancel</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
@@ -217,6 +220,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.3.1/index.html">[v3.3.1] - 2026-09-27</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v3.3.1/release-notes.html">eOn 3.3.1</a></li>
 </ul>
@@ -1264,6 +1271,13 @@ inside that engine is <code class="docutils literal notranslate"><span class="pr
 <code class="docutils literal notranslate"><span class="pre">-Dwith_xtsci=true</span></code>. The adapter holds an <code class="docutils literal notranslate"><span class="pre">xts_solver_t</span></code> session;
 each <code class="docutils literal notranslate"><span class="pre">step()</span></code> is one outer iteration so L-BFGS pairs and NLCG
 conjugacy survive the host loop.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">eindir-core</span></code> is on the pkg-config path, the same backend borrows
+an <code class="docutils literal notranslate"><span class="pre">eindir_objective_t</span></code> around the <code class="docutils literal notranslate"><span class="pre">ObjectiveFunction</span></code>. The adapter
+checks the eindir ABI stamp, the gradient feature bit, and the semantic
+descriptor (eV, angstrom, analytic forces) before dispatch.
+<code class="docutils literal notranslate"><span class="pre">Optimizer::run</span></code> then calls <code class="docutils literal notranslate"><span class="pre">xts_minimize_eindir</span></code> unless the step
+needs a host Hessian. <code class="docutils literal notranslate"><span class="pre">step()</span></code> stays one <code class="docutils literal notranslate"><span class="pre">xts_solver_t</span></code> iteration.
+LBFGS, CG, and the other built-in solvers are unchanged.</p>
 <p><code class="docutils literal notranslate"><span class="pre">[Xtsci]</span> <span class="pre">qn_step</span></code>, <code class="docutils literal notranslate"><span class="pre">precon</span></code>, and <code class="docutils literal notranslate"><span class="pre">accept</span></code> are the first-class
 knobs for an L-BFGS session. They map onto
 <code class="docutils literal notranslate"><span class="pre">xts_solver_set_qn_step</span></code>, <code class="docutils literal notranslate"><span class="pre">xts_solver_step_hess_fg</span></code>, and
@@ -1638,7 +1652,7 @@ that same host matrix as the step (eOn rematch).</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=9ac01507"></script>
+      <script src="../_static/documentation_options.js?v=b0e360d0"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

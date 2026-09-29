@@ -254,8 +254,8 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classeonc_1_1H
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a84f1639f4ad0153c8024c12ade98b2c1" id="r_a84f1639f4ad0153c8024c12ade98b2c1"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a84f1639f4ad0153c8024c12ade98b2c1">HessianJob</a> (std::unique_ptr&lt; <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &gt; parameters, <a class="el" href="classeonc_1_1Runtime.html">Runtime</a> &amp;rt)</td></tr>
 <tr class="memitem:a7194eee6ba0607553f4c2c00b8078711" id="r_a7194eee6ba0607553f4c2c00b8078711"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a7194eee6ba0607553f4c2c00b8078711">~HessianJob</a> (void)=default</td></tr>
-<tr class="memitem:a5457160391cf41118f35539da0eb31b3" id="r_a5457160391cf41118f35539da0eb31b3"><td class="memItemLeft">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a5457160391cf41118f35539da0eb31b3">run</a> (void)</td></tr>
-<tr class="memdesc:a5457160391cf41118f35539da0eb31b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual run; used solely for dynamic dispatch.  <br /></td></tr>
+<tr class="memitem:aec2c48897d3e47e0327aac52e1ac70dc" id="r_aec2c48897d3e47e0327aac52e1ac70dc"><td class="memItemLeft">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight"><a class="el" href="#aec2c48897d3e47e0327aac52e1ac70dc">run</a> (void) override</td></tr>
+<tr class="memdesc:aec2c48897d3e47e0327aac52e1ac70dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual run; used solely for dynamic dispatch.  <br /></td></tr>
 <tr class="inherit_header pub_methods_classeonc_1_1Job"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1Job')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1Job.html">eonc::Job</a></td></tr>
 <tr class="memitem:a2106aabb046a746647151b5e46180631 inherit pub_methods_classeonc_1_1Job" id="r_a2106aabb046a746647151b5e46180631"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a2106aabb046a746647151b5e46180631">adoptRuntime</a> (std::unique_ptr&lt; <a class="el" href="classeonc_1_1Runtime.html">Runtime</a> &gt; rt)</td></tr>
 <tr class="memdesc:a2106aabb046a746647151b5e46180631 inherit pub_methods_classeonc_1_1Job"><td class="mdescLeft">&#160;</td><td class="mdescRight">Take ownership of a <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a> previously passed as <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a>&amp;.  <br /></td></tr>
@@ -346,8 +346,8 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a5457160391cf41118f35539da0eb31b3" name="a5457160391cf41118f35539da0eb31b3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5457160391cf41118f35539da0eb31b3">&#9670;&#160;</a></span>run()</h2>
+<a id="aec2c48897d3e47e0327aac52e1ac70dc" name="aec2c48897d3e47e0327aac52e1ac70dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec2c48897d3e47e0327aac52e1ac70dc">&#9670;&#160;</a></span>run()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -364,7 +364,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -373,56 +373,57 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1Job.html#ac23db10c6a90d5c6cc8a3a49d7b0dace">eonc::Job</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="HessianJob_8cpp_source.html#l00030">30</a> of file <a class="el" href="HessianJob_8cpp_source.html">HessianJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   30</span>                                         {</div>
-<div class="line"><span class="lineno">   31</span>  std::string matter_in(<span class="stringliteral">&quot;pos.con&quot;</span>);</div>
-<div class="line"><span class="lineno">   32</span> </div>
-<div class="line"><span class="lineno">   33</span>  std::vector&lt;std::string&gt; returnFiles;</div>
-<div class="line"><span class="lineno">   34</span> </div>
-<div class="line"><span class="lineno">   35</span>  <span class="keyword">auto</span> matter = std::make_unique&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">   36</span> </div>
-<div class="line"><span class="lineno">   37</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(matter-&gt;con2matter(matter_in))) {</div>
-<div class="line"><span class="lineno">   38</span>    <a class="code hl_define" href="EonLogger_8h.html#afe4077bbe89c5bc6e818b057a692e64a">EONC_LOG_CRITICAL</a>(<span class="stringliteral">&quot;Failed to load {}&quot;</span>, matter_in);</div>
-<div class="line"><span class="lineno">   39</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;failed to load &quot;</span> + matter_in);</div>
-<div class="line"><span class="lineno">   40</span>  }</div>
-<div class="line"><span class="lineno">   41</span> </div>
-<div class="line"><span class="lineno">   42</span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ac05b513f4ff7ad2680f4528f5c8136b9">Hessian</a> hessian(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>, matter.get());</div>
-<div class="line"><span class="lineno">   43</span> </div>
-<div class="line"><span class="lineno">   44</span>  <span class="comment">// [Hessian] phva_atoms = PHVA mobile/active set (displaced in FD). free/fixed</span></div>
-<div class="line"><span class="lineno">   45</span>  <span class="comment">// is the optimizer mask; resolveMobileAtoms intersects the list with free.</span></div>
-<div class="line"><span class="lineno">   46</span>  <span class="keyword">const</span> VectorXi mobile = <a class="code hl_function" href="namespaceeonc.html#a0925dba4103d133a844dfad8162f7c8a">eonc::resolveMobileAtoms</a>(</div>
-<div class="line"><span class="lineno">   47</span>      matter.get(), <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.hessian_options().phva_atoms);</div>
-<div class="line"><span class="lineno">   48</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> no_mobile = mobile.size() == 0;</div>
-<div class="line"><span class="lineno">   49</span>  <span class="keywordtype">bool</span> freqs_ok = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   50</span>  <span class="keywordflow">if</span> (!no_mobile) {</div>
-<div class="line"><span class="lineno">   51</span>    <span class="keyword">const</span> VectorXd freqs = hessian.getFreqs(matter.get(), mobile);</div>
-<div class="line"><span class="lineno">   52</span>    freqs_ok = freqs.size() &gt; 0;</div>
-<div class="line"><span class="lineno">   53</span>  }</div>
-<div class="line"><span class="lineno">   54</span> </div>
-<div class="line"><span class="lineno">   55</span>  std::string results_file(<span class="stringliteral">&quot;results.dat&quot;</span>);</div>
-<div class="line"><span class="lineno">   56</span>  returnFiles.push_back(results_file);</div>
-<div class="line"><span class="lineno">   57</span> </div>
-<div class="line"><span class="lineno">   58</span>  <span class="keyword">const</span> <span class="keyword">auto</span> status =</div>
-<div class="line"><span class="lineno">   59</span>      freqs_ok ? <a class="code hl_enumvalue" href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459a45802158e78dd9584161629098018fe8">RunStatus::GOOD</a> : <a class="code hl_enumvalue" href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459ad0a9f0540a833cc97bd3921d0de2d9b5">RunStatus::FAIL_POTENTIAL_FAILED</a>;</div>
-<div class="line"><span class="lineno">   60</span>  <span class="keyword">auto</span> env = <a class="code hl_function" href="structeonc_1_1JobResultEnvelope.html#adcc250879257d0fb4823bb0c799a3510">JobResultEnvelope::fromMinimization</a>(</div>
-<div class="line"><span class="lineno">   61</span>      status, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.potential_options().potential,</div>
-<div class="line"><span class="lineno">   62</span>      <a class="code hl_function" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">PotRegistry::get</a>().<a class="code hl_function" href="classeonc_1_1PotRegistry.html#a6ffd8adea58bf8682dc74e73ad97c17b">total_force_calls</a>(), <span class="keyword">false</span>, 0.0);</div>
-<div class="line"><span class="lineno">   63</span>  env.job_type = <span class="stringliteral">&quot;hessian&quot;</span>;</div>
-<div class="line"><span class="lineno">   64</span>  env.extras.emplace_back(<span class="stringliteral">&quot;force_calls&quot;</span>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(env.force_calls));</div>
-<div class="line"><span class="lineno">   65</span>  env.writeResultsDat(results_file);</div>
-<div class="line"><span class="lineno">   66</span>  <span class="keywordflow">if</span> (std::filesystem::exists(<span class="stringliteral">&quot;hessian.dat&quot;</span>)) {</div>
-<div class="line"><span class="lineno">   67</span>    returnFiles.push_back(<span class="stringliteral">&quot;hessian.dat&quot;</span>);</div>
-<div class="line"><span class="lineno">   68</span>  }</div>
-<div class="line"><span class="lineno">   69</span> </div>
-<div class="line"><span class="lineno">   70</span>  <span class="keywordflow">return</span> returnFiles;</div>
-<div class="line"><span class="lineno">   71</span>}</div>
+<p class="definition">Definition at line <a class="el" href="HessianJob_8cpp_source.html#l00031">31</a> of file <a class="el" href="HessianJob_8cpp_source.html">HessianJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   31</span>                                         {</div>
+<div class="line"><span class="lineno">   32</span>  std::string matter_in = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a561b68f975ecb734266063b428d6f2f2">eonc::helpers::getRelevantFile</a>(<span class="stringliteral">&quot;pos.con&quot;</span>);</div>
+<div class="line"><span class="lineno">   33</span> </div>
+<div class="line"><span class="lineno">   34</span>  std::vector&lt;std::string&gt; returnFiles;</div>
+<div class="line"><span class="lineno">   35</span> </div>
+<div class="line"><span class="lineno">   36</span>  <span class="keyword">auto</span> matter = std::make_unique&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">   37</span> </div>
+<div class="line"><span class="lineno">   38</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(matter-&gt;con2matter(matter_in))) {</div>
+<div class="line"><span class="lineno">   39</span>    <a class="code hl_define" href="EonLogger_8h.html#afe4077bbe89c5bc6e818b057a692e64a">EONC_LOG_CRITICAL</a>(<span class="stringliteral">&quot;Failed to load {}&quot;</span>, matter_in);</div>
+<div class="line"><span class="lineno">   40</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;failed to load &quot;</span> + matter_in);</div>
+<div class="line"><span class="lineno">   41</span>  }</div>
+<div class="line"><span class="lineno">   42</span> </div>
+<div class="line"><span class="lineno">   43</span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ac05b513f4ff7ad2680f4528f5c8136b9">Hessian</a> hessian(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>, matter.get());</div>
+<div class="line"><span class="lineno">   44</span> </div>
+<div class="line"><span class="lineno">   45</span>  <span class="comment">// [Hessian] phva_atoms = PHVA mobile/active set (displaced in FD). free/fixed</span></div>
+<div class="line"><span class="lineno">   46</span>  <span class="comment">// is the optimizer mask; resolveMobileAtoms intersects the list with free.</span></div>
+<div class="line"><span class="lineno">   47</span>  <span class="keyword">const</span> VectorXi mobile = <a class="code hl_function" href="namespaceeonc.html#a0925dba4103d133a844dfad8162f7c8a">eonc::resolveMobileAtoms</a>(</div>
+<div class="line"><span class="lineno">   48</span>      matter.get(), <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.hessian_options().phva_atoms);</div>
+<div class="line"><span class="lineno">   49</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> no_mobile = mobile.size() == 0;</div>
+<div class="line"><span class="lineno">   50</span>  <span class="keywordtype">bool</span> freqs_ok = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   51</span>  <span class="keywordflow">if</span> (!no_mobile) {</div>
+<div class="line"><span class="lineno">   52</span>    <span class="keyword">const</span> VectorXd freqs = hessian.getFreqs(matter.get(), mobile);</div>
+<div class="line"><span class="lineno">   53</span>    freqs_ok = freqs.size() &gt; 0;</div>
+<div class="line"><span class="lineno">   54</span>  }</div>
+<div class="line"><span class="lineno">   55</span> </div>
+<div class="line"><span class="lineno">   56</span>  std::string results_file(<span class="stringliteral">&quot;results.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">   57</span>  returnFiles.push_back(results_file);</div>
+<div class="line"><span class="lineno">   58</span> </div>
+<div class="line"><span class="lineno">   59</span>  <span class="keyword">const</span> <span class="keyword">auto</span> status =</div>
+<div class="line"><span class="lineno">   60</span>      freqs_ok ? <a class="code hl_enumvalue" href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459a45802158e78dd9584161629098018fe8">RunStatus::GOOD</a> : <a class="code hl_enumvalue" href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459ad0a9f0540a833cc97bd3921d0de2d9b5">RunStatus::FAIL_POTENTIAL_FAILED</a>;</div>
+<div class="line"><span class="lineno">   61</span>  <span class="keyword">auto</span> env = <a class="code hl_function" href="structeonc_1_1JobResultEnvelope.html#adcc250879257d0fb4823bb0c799a3510">JobResultEnvelope::fromMinimization</a>(</div>
+<div class="line"><span class="lineno">   62</span>      status, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.potential_options().potential,</div>
+<div class="line"><span class="lineno">   63</span>      <a class="code hl_function" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">PotRegistry::get</a>().<a class="code hl_function" href="classeonc_1_1PotRegistry.html#a6ffd8adea58bf8682dc74e73ad97c17b">total_force_calls</a>(), <span class="keyword">false</span>, 0.0);</div>
+<div class="line"><span class="lineno">   64</span>  env.job_type = <span class="stringliteral">&quot;hessian&quot;</span>;</div>
+<div class="line"><span class="lineno">   65</span>  env.extras.emplace_back(<span class="stringliteral">&quot;force_calls&quot;</span>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(env.force_calls));</div>
+<div class="line"><span class="lineno">   66</span>  env.writeResultsDat(results_file);</div>
+<div class="line"><span class="lineno">   67</span>  <span class="keywordflow">if</span> (std::filesystem::exists(<span class="stringliteral">&quot;hessian.dat&quot;</span>)) {</div>
+<div class="line"><span class="lineno">   68</span>    returnFiles.push_back(<span class="stringliteral">&quot;hessian.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">   69</span>  }</div>
+<div class="line"><span class="lineno">   70</span> </div>
+<div class="line"><span class="lineno">   71</span>  <span class="keywordflow">return</span> returnFiles;</div>
+<div class="line"><span class="lineno">   72</span>}</div>
 <div class="ttc" id="aEonLogger_8h_html_afe4077bbe89c5bc6e818b057a692e64a"><div class="ttname"><a href="EonLogger_8h.html#afe4077bbe89c5bc6e818b057a692e64a">EONC_LOG_CRITICAL</a></div><div class="ttdeci">#define EONC_LOG_CRITICAL(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00267">EonLogger.h:267</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Job_html_a948da0de6ec2575bd6ac975fedaad0c9"><div class="ttname"><a href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">eonc::Job::pot</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; pot</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00063">Job.h:63</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Job_html_a9f0bfab75a98f383ba58f1c592fd2500"><div class="ttname"><a href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">eonc::Job::params</a></div><div class="ttdeci">Parameters params</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00058">Job.h:58</a></div></div>
 <div class="ttc" id="aclasseonc_1_1PotRegistry_html_a5d307a4845d9c0d6d16031a5a637e23b"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">eonc::PotRegistry::get</a></div><div class="ttdeci">static PotRegistry &amp; get() noexcept</div><div class="ttdoc">Process-lifetime singleton.</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00050">PotRegistry.cpp:50</a></div></div>
 <div class="ttc" id="aclasseonc_1_1PotRegistry_html_a6ffd8adea58bf8682dc74e73ad97c17b"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a6ffd8adea58bf8682dc74e73ad97c17b">eonc::PotRegistry::total_force_calls</a></div><div class="ttdeci">size_t total_force_calls() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00098">PotRegistry.cpp:98</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_a561b68f975ecb734266063b428d6f2f2"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a561b68f975ecb734266063b428d6f2f2">eonc::helpers::getRelevantFile</a></div><div class="ttdeci">std::string getRelevantFile(std::string filename)</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00122">HelperFunctions.cpp:122</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_af66b2723d892a4095754f9b0354b4f78"><div class="ttname"><a href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a></div><div class="ttdeci">constexpr bool io_ok(IoStatus s) noexcept</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00038">ConFileIO.h:38</a></div></div>
-<div class="ttc" id="anamespaceeonc_html_a0925dba4103d133a844dfad8162f7c8a"><div class="ttname"><a href="namespaceeonc.html#a0925dba4103d133a844dfad8162f7c8a">eonc::resolveMobileAtoms</a></div><div class="ttdeci">VectorXi resolveMobileAtoms(const Matter *matter, const std::string &amp;atomList)</div><div class="ttdoc">PHVA-class mobile set for FD Hessian and matrix-free Krylov (Lanczos / Davidson).</div><div class="ttdef"><b>Definition</b> <a href="MobileAtoms_8cpp_source.html#l00064">MobileAtoms.cpp:64</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a0925dba4103d133a844dfad8162f7c8a"><div class="ttname"><a href="namespaceeonc.html#a0925dba4103d133a844dfad8162f7c8a">eonc::resolveMobileAtoms</a></div><div class="ttdeci">VectorXi resolveMobileAtoms(const Matter *matter, const std::string &amp;atomList)</div><div class="ttdoc">PHVA-class mobile set for FD Hessian and matrix-free Krylov (Lanczos / Davidson).</div><div class="ttdef"><b>Definition</b> <a href="MobileAtoms_8cpp_source.html#l00068">MobileAtoms.cpp:68</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a848a1af56249f0cafd872ca8b59fc459a45802158e78dd9584161629098018fe8"><div class="ttname"><a href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459a45802158e78dd9584161629098018fe8">eonc::RunStatus::GOOD</a></div><div class="ttdeci">@ GOOD</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00116">BaseStructures.h:116</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a848a1af56249f0cafd872ca8b59fc459ad0a9f0540a833cc97bd3921d0de2d9b5"><div class="ttname"><a href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459ad0a9f0540a833cc97bd3921d0de2d9b5">eonc::RunStatus::FAIL_POTENTIAL_FAILED</a></div><div class="ttdeci">@ FAIL_POTENTIAL_FAILED</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00116">BaseStructures.h:116</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379ac05b513f4ff7ad2680f4528f5c8136b9"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ac05b513f4ff7ad2680f4528f5c8136b9">eonc::JobType::Hessian</a></div><div class="ttdeci">@ Hessian</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00089">BaseStructures.h:89</a></div></div>

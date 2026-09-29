@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['runstatus_0',['RunStatus',['../namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459',1,'eonc']]]
+  ['opttype_0',['OptType',['../namespaceeonc.html#a0776629ae76e653dba046116f845ac56',1,'eonc']]]
 ];

@@ -11,6 +11,7 @@ var classeonc_1_1NEBObjectiveFunction =
     [ "isConverged", "classeonc_1_1NEBObjectiveFunction.html#a8e752fbd1e367a9c573239cb20e01341", null ],
     [ "isUncertain", "classeonc_1_1NEBObjectiveFunction.html#ace98066ce47a2bd62c91b9ec68636734", null ],
     [ "setPositions", "classeonc_1_1NEBObjectiveFunction.html#af16aa1b71afc9ded3769415a31aad88b", null ],
+    [ "supportsFiniteDifferenceCurvature", "classeonc_1_1NEBObjectiveFunction.html#a68ab21a59496d0ed70471e5b8a3ee30e", null ],
     [ "neb", "classeonc_1_1NEBObjectiveFunction.html#a7f5773f645eaaaadf740cf82af64b760", null ],
     [ "status", "classeonc_1_1NEBObjectiveFunction.html#a17add47c532daba37a5b3b9b4c28b30c", null ]
 ];

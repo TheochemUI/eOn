@@ -155,6 +155,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/in-process.html">In-process jobs (no file IPC)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/abi-surface.html">Public C++ surface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/rgpot-migration.html">rgpot kernel inventory</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/porting_potentials.html">Porting potentials</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/docbuild.html">Working with the documentation</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn.html">Subversion</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn-migration.html">Migrating from SVN</a></li>
@@ -174,6 +175,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.geometry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.pbc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.wire.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.wire</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
@@ -187,6 +189,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.cancel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.cancel</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
@@ -217,6 +220,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.3.1/index.html">[v3.3.1] - 2026-09-27</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v3.3.1/release-notes.html">eOn 3.3.1</a></li>
 </ul>
@@ -318,6 +325,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#examples">Examples</a><ul>
 <li><a class="reference internal" href="#deepmd-pytorch-wrapper">DeePMD (PyTorch) wrapper</a></li>
 <li><a class="reference internal" href="#generic-ase-calculator-wrapper">Generic ASE calculator wrapper</a></li>
+<li><a class="reference internal" href="#cpmd-on-several-mpi-ranks">CPMD on several MPI ranks</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#performance-considerations">Performance considerations</a></li>
@@ -584,6 +592,31 @@ directly as the <code class="docutils literal notranslate"><span class="pre">ext
 </div>
 </div>
 </section>
+<section id="cpmd-on-several-mpi-ranks">
+<h3>CPMD on several MPI ranks<a class="headerlink" href="#cpmd-on-several-mpi-ranks" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">examples/akmc-cpmd-slurm</span></code> runs adaptive kinetic Monte Carlo on a silicon
+vacancy with CPMD. The <code class="docutils literal notranslate"><span class="pre">cluster</span></code> communicator submits each process search as
+a Slurm job (see <a class="reference internal" href="communicator.html"><span class="std std-doc">Communicator</span></a>), and inside the job
+<code class="docutils literal notranslate"><span class="pre">ext_pot</span></code> calls <code class="docutils literal notranslate"><span class="pre">cpmd_extpot.py</span></code>, which starts <code class="docutils literal notranslate"><span class="pre">cpmd.x</span></code> on several ranks
+with the launcher in <code class="docutils literal notranslate"><span class="pre">CPMD_LAUNCH</span></code>. The client stays one process; the ranks
+belong to CPMD alone.</p>
+<p>Three details of CPMD’s output decide whether the forces are right:</p>
+<ul class="simple">
+<li><p>The table under <code class="docutils literal notranslate"><span class="pre">GRADIENTS</span> <span class="pre">(-FORCES)</span></code> holds forces, not gradients:
+<code class="docutils literal notranslate"><span class="pre">wrgeo</span></code> prints the ionic force <code class="docutils literal notranslate"><span class="pre">fion</span></code>. The first table, printed before the
+wavefunction optimisation, is all zeros; the last one is the result.</p></li>
+<li><p>That table carries three significant digits. <code class="docutils literal notranslate"><span class="pre">GEOMETRY</span></code> holds the same
+forces in Ha/Bohr to twelve decimals in columns 4 to 6, so the wrapper
+reads forces from <code class="docutils literal notranslate"><span class="pre">GEOMETRY</span></code> and checks them against the table.</p></li>
+<li><p>CPMD lists atoms species by species. The wrapper maps them back to eOn’s
+order.</p></li>
+</ul>
+<p>The wrapper also refuses a result whose wavefunction optimisation printed
+<code class="docutils literal notranslate"><span class="pre">BUT</span> <span class="pre">NO</span> <span class="pre">CONVERGENCE</span></code>, and keeps <code class="docutils literal notranslate"><span class="pre">RESTART.1</span></code> in the exchange directory, so
+every call after the first in a job restarts from the previous wavefunction.
+<code class="docutils literal notranslate"><span class="pre">CELL</span> <span class="pre">VECTORS</span></code> passes eOn’s cell unchanged, and CPMD refuses <code class="docutils literal notranslate"><span class="pre">SYMMETRY</span></code>
+beside it, so the deck omits <code class="docutils literal notranslate"><span class="pre">SYMMETRY</span></code>.</p>
+</section>
 </section>
 <section id="performance-considerations">
 <h2>Performance considerations<a class="headerlink" href="#performance-considerations" title="Link to this heading">¶</a></h2>
@@ -720,7 +753,7 @@ to external callers.</p></li>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=9ac01507"></script>
+      <script src="../_static/documentation_options.js?v=b0e360d0"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

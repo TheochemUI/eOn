@@ -253,8 +253,8 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classeonc_1_1R
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ac47d8058007e4d2e586f84e6dc391432" id="r_ac47d8058007e4d2e586f84e6dc391432"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#ac47d8058007e4d2e586f84e6dc391432">~ReplicaExchangeJob</a> ()=default</td></tr>
-<tr class="memitem:a5b5841e7a404608a3e74e7d53fd07833" id="r_a5b5841e7a404608a3e74e7d53fd07833"><td class="memItemLeft">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a5b5841e7a404608a3e74e7d53fd07833">run</a> (void)</td></tr>
-<tr class="memdesc:a5b5841e7a404608a3e74e7d53fd07833"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual run; used solely for dynamic dispatch.  <br /></td></tr>
+<tr class="memitem:a8d80ee075a6a6c06681c218c41cc53f7" id="r_a8d80ee075a6a6c06681c218c41cc53f7"><td class="memItemLeft">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a8d80ee075a6a6c06681c218c41cc53f7">run</a> (void) override</td></tr>
+<tr class="memdesc:a8d80ee075a6a6c06681c218c41cc53f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual run; used solely for dynamic dispatch.  <br /></td></tr>
 <tr class="memitem:ad9b2a5c7d2b5fc7ce4445161b9097223" id="r_ad9b2a5c7d2b5fc7ce4445161b9097223"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ad9b2a5c7d2b5fc7ce4445161b9097223">runFromMatter</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; initial)</td></tr>
 <tr class="memdesc:ad9b2a5c7d2b5fc7ce4445161b9097223"><td class="mdescLeft">&#160;</td><td class="mdescRight">Matter-first; returns replica-0 <a class="el" href="classeonc_1_1Matter.html">Matter</a> after sampling.  <br /></td></tr>
 <tr class="memitem:a048903796c5d81f4425e1392e1bcea8d" id="r_a048903796c5d81f4425e1392e1bcea8d"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a048903796c5d81f4425e1392e1bcea8d">Job</a> (std::unique_ptr&lt; <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &gt; parameters, <a class="el" href="classeonc_1_1Runtime.html">Runtime</a> &amp;rt)</td></tr>
@@ -304,7 +304,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="ReplicaExchangeJob_8h_source.html#l00022">22</a> of file <a class="el" href="ReplicaExchangeJob_8h_source.html">ReplicaExchangeJob.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ReplicaExchangeJob_8h_source.html#l00021">21</a> of file <a class="el" href="ReplicaExchangeJob_8h_source.html">ReplicaExchangeJob.h</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ac47d8058007e4d2e586f84e6dc391432" name="ac47d8058007e4d2e586f84e6dc391432"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac47d8058007e4d2e586f84e6dc391432">&#9670;&#160;</a></span>~ReplicaExchangeJob()</h2>
@@ -481,8 +481,8 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="a5b5841e7a404608a3e74e7d53fd07833" name="a5b5841e7a404608a3e74e7d53fd07833"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5b5841e7a404608a3e74e7d53fd07833">&#9670;&#160;</a></span>run()</h2>
+<a id="a8d80ee075a6a6c06681c218c41cc53f7" name="a8d80ee075a6a6c06681c218c41cc53f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d80ee075a6a6c06681c218c41cc53f7">&#9670;&#160;</a></span>run()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -499,7 +499,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -520,9 +520,9 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">   39</span>  (void)<a class="code hl_function" href="#ad9b2a5c7d2b5fc7ce4445161b9097223">runFromMatter</a>(<a class="code hl_variable" href="#ab221a9e3f00bc49cb51c429780a74940">pos</a>);</div>
 <div class="line"><span class="lineno">   40</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a1020af3fe2391a1cc3859c66a8c5ebb2">returnFiles</a>;</div>
 <div class="line"><span class="lineno">   41</span>}</div>
-<div class="ttc" id="aclasseonc_1_1ReplicaExchangeJob_html_a1020af3fe2391a1cc3859c66a8c5ebb2"><div class="ttname"><a href="#a1020af3fe2391a1cc3859c66a8c5ebb2">eonc::ReplicaExchangeJob::returnFiles</a></div><div class="ttdeci">std::vector&lt; std::string &gt; returnFiles</div><div class="ttdef"><b>Definition</b> <a href="ReplicaExchangeJob_8h_source.html#l00035">ReplicaExchangeJob.h:35</a></div></div>
-<div class="ttc" id="aclasseonc_1_1ReplicaExchangeJob_html_ab221a9e3f00bc49cb51c429780a74940"><div class="ttname"><a href="#ab221a9e3f00bc49cb51c429780a74940">eonc::ReplicaExchangeJob::pos</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; pos</div><div class="ttdef"><b>Definition</b> <a href="ReplicaExchangeJob_8h_source.html#l00034">ReplicaExchangeJob.h:34</a></div></div>
-<div class="ttc" id="aclasseonc_1_1ReplicaExchangeJob_html_ab50801564583966be13b8f0a57af8263"><div class="ttname"><a href="#ab50801564583966be13b8f0a57af8263">eonc::ReplicaExchangeJob::log</a></div><div class="ttdeci">eonc::log::Scoped log</div><div class="ttdef"><b>Definition</b> <a href="ReplicaExchangeJob_8h_source.html#l00036">ReplicaExchangeJob.h:36</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaExchangeJob_html_a1020af3fe2391a1cc3859c66a8c5ebb2"><div class="ttname"><a href="#a1020af3fe2391a1cc3859c66a8c5ebb2">eonc::ReplicaExchangeJob::returnFiles</a></div><div class="ttdeci">std::vector&lt; std::string &gt; returnFiles</div><div class="ttdef"><b>Definition</b> <a href="ReplicaExchangeJob_8h_source.html#l00034">ReplicaExchangeJob.h:34</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaExchangeJob_html_ab221a9e3f00bc49cb51c429780a74940"><div class="ttname"><a href="#ab221a9e3f00bc49cb51c429780a74940">eonc::ReplicaExchangeJob::pos</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; pos</div><div class="ttdef"><b>Definition</b> <a href="ReplicaExchangeJob_8h_source.html#l00033">ReplicaExchangeJob.h:33</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaExchangeJob_html_ab50801564583966be13b8f0a57af8263"><div class="ttname"><a href="#ab50801564583966be13b8f0a57af8263">eonc::ReplicaExchangeJob::log</a></div><div class="ttdeci">eonc::log::Scoped log</div><div class="ttdef"><b>Definition</b> <a href="ReplicaExchangeJob_8h_source.html#l00035">ReplicaExchangeJob.h:35</a></div></div>
 <div class="ttc" id="aclasseonc_1_1ReplicaExchangeJob_html_ad9b2a5c7d2b5fc7ce4445161b9097223"><div class="ttname"><a href="#ad9b2a5c7d2b5fc7ce4445161b9097223">eonc::ReplicaExchangeJob::runFromMatter</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; runFromMatter(std::shared_ptr&lt; Matter &gt; initial)</div><div class="ttdoc">Matter-first; returns replica-0 Matter after sampling.</div><div class="ttdef"><b>Definition</b> <a href="ReplicaExchangeJob_8cpp_source.html#l00044">ReplicaExchangeJob.cpp:44</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1helpers_html_a561b68f975ecb734266063b428d6f2f2"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a561b68f975ecb734266063b428d6f2f2">eonc::helpers::getRelevantFile</a></div><div class="ttdeci">std::string getRelevantFile(std::string filename)</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00122">HelperFunctions.cpp:122</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_af66b2723d892a4095754f9b0354b4f78"><div class="ttname"><a href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a></div><div class="ttdeci">constexpr bool io_ok(IoStatus s) noexcept</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00038">ConFileIO.h:38</a></div></div>
@@ -554,7 +554,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">   48</span>  <a class="code hl_variable" href="#ab221a9e3f00bc49cb51c429780a74940">pos</a> = initial;</div>
 <div class="line"><span class="lineno">   49</span>  <a class="code hl_variable" href="#ab221a9e3f00bc49cb51c429780a74940">pos</a>-&gt;setPotential(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>);</div>
 <div class="line"><span class="lineno">   50</span> </div>
-<div class="line"><span class="lineno">   51</span>  <span class="keyword">auto</span> &amp;rex = <a class="code hl_function" href="structeonc_1_1ParametersLoadAccess.html#a784797f54da73a808d64a3a7a745b867">ParametersLoadAccess::replica_exchange_options</a>(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">   51</span>  <span class="keyword">auto</span> &amp;rex = <a class="code hl_function" href="structeonc_1_1ParametersLoadAccess.html#a2e3e3a7ae37e6e783e70a6b0e3e409cd">ParametersLoadAccess::replica_exchange_options</a>(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
 <div class="line"><span class="lineno">   52</span>  <span class="keywordflow">if</span> (rex.replicas &lt; 1) {</div>
 <div class="line"><span class="lineno">   53</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
 <div class="line"><span class="lineno">   54</span>        <span class="stringliteral">&quot;ReplicaExchangeJob: replica_exchange.replicas must be &gt;= 1&quot;</span>);</div>
@@ -718,7 +718,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">  212</span>}</div>
 <div class="ttc" id="aclasseonc_1_1PotRegistry_html_a5d307a4845d9c0d6d16031a5a637e23b"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">eonc::PotRegistry::get</a></div><div class="ttdeci">static PotRegistry &amp; get() noexcept</div><div class="ttdoc">Process-lifetime singleton.</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00050">PotRegistry.cpp:50</a></div></div>
 <div class="ttc" id="aclasseonc_1_1PotRegistry_html_a6ffd8adea58bf8682dc74e73ad97c17b"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a6ffd8adea58bf8682dc74e73ad97c17b">eonc::PotRegistry::total_force_calls</a></div><div class="ttdeci">size_t total_force_calls() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00098">PotRegistry.cpp:98</a></div></div>
-<div class="ttc" id="aclasseonc_1_1ReplicaExchangeJob_html_a0eafd4e3780c88d5059383f391ad5d37"><div class="ttname"><a href="#a0eafd4e3780c88d5059383f391ad5d37">eonc::ReplicaExchangeJob::forceCalls</a></div><div class="ttdeci">size_t forceCalls</div><div class="ttdef"><b>Definition</b> <a href="ReplicaExchangeJob_8h_source.html#l00033">ReplicaExchangeJob.h:33</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaExchangeJob_html_a0eafd4e3780c88d5059383f391ad5d37"><div class="ttname"><a href="#a0eafd4e3780c88d5059383f391ad5d37">eonc::ReplicaExchangeJob::forceCalls</a></div><div class="ttdeci">size_t forceCalls</div><div class="ttdef"><b>Definition</b> <a href="ReplicaExchangeJob_8h_source.html#l00032">ReplicaExchangeJob.h:32</a></div></div>
 <div class="ttc" id="aclasseonc_1_1ReplicaExchangeJob_html_afbe90df2003b46b9499ae33857c330de"><div class="ttname"><a href="#afbe90df2003b46b9499ae33857c330de">eonc::ReplicaExchangeJob::saveData</a></div><div class="ttdeci">void saveData()</div><div class="ttdef"><b>Definition</b> <a href="ReplicaExchangeJob_8cpp_source.html#l00214">ReplicaExchangeJob.cpp:214</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1log_html_a4e7c8b5e4189cf657384f1c4bbf14dab"><div class="ttname"><a href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a></div><div class="ttdeci">quill::Logger * get() noexcept</div><div class="ttdoc">Get or create the default &quot;combi&quot; logger.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00044">EonLogger.h:44</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1rng_html_a4f610303ae45757f71160f0664b09b9b"><div class="ttname"><a href="namespaceeonc_1_1rng.html#a4f610303ae45757f71160f0664b09b9b">eonc::rng::random</a></div><div class="ttdeci">double random(long newSeed=0)</div><div class="ttdef"><b>Definition</b> <a href="RandomNumbers_8cpp_source.html#l00029">RandomNumbers.cpp:29</a></div></div>
@@ -726,7 +726,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="ttc" id="anamespaceeonc_1_1rng_html_a699a6770b311d7f44a437f4f915bad69"><div class="ttname"><a href="namespaceeonc_1_1rng.html#a699a6770b311d7f44a437f4f915bad69">eonc::rng::randomDouble</a></div><div class="ttdeci">double randomDouble()</div><div class="ttdef"><b>Definition</b> <a href="RandomNumbers_8cpp_source.html#l00072">RandomNumbers.cpp:72</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1safemath_html_ac4a440a0ec6d054b05ecd14567d41f97"><div class="ttname"><a href="namespaceeonc_1_1safemath.html#ac4a440a0ec6d054b05ecd14567d41f97">eonc::safemath::safe_recip</a></div><div class="ttdeci">constexpr double safe_recip(double x, double fallback=0.0)</div><div class="ttdef"><b>Definition</b> <a href="SafeMath_8h_source.html#l00029">SafeMath.h:29</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a7244d894793caf3c7b47a9dd67bb7ae7"><div class="ttname"><a href="namespaceeonc.html#a7244d894793caf3c7b47a9dd67bb7ae7">eonc::potAllowsSharedInstance</a></div><div class="ttdeci">bool potAllowsSharedInstance(const P &amp;p) noexcept</div><div class="ttdef"><b>Definition</b> <a href="PotCapabilities_8h_source.html#l00038">PotCapabilities.h:38</a></div></div>
-<div class="ttc" id="astructeonc_1_1ParametersLoadAccess_html_a784797f54da73a808d64a3a7a745b867"><div class="ttname"><a href="structeonc_1_1ParametersLoadAccess.html#a784797f54da73a808d64a3a7a745b867">eonc::ParametersLoadAccess::replica_exchange_options</a></div><div class="ttdeci">static replica_exchange_options_t &amp; replica_exchange_options(Parameters &amp;p)</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00429">Parameters.h:429</a></div></div>
+<div class="ttc" id="astructeonc_1_1ParametersLoadAccess_html_a2e3e3a7ae37e6e783e70a6b0e3e409cd"><div class="ttname"><a href="structeonc_1_1ParametersLoadAccess.html#a2e3e3a7ae37e6e783e70a6b0e3e409cd">eonc::ParametersLoadAccess::replica_exchange_options</a></div><div class="ttdeci">static replica_exchange_options_t &amp; replica_exchange_options(Parameters &amp;p)</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00539">ParametersAccess.cpp:539</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -802,8 +802,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ReplicaExchangeJob_8h_source.html#l00033">33</a> of file <a class="el" href="ReplicaExchangeJob_8h_source.html">ReplicaExchangeJob.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   33</span>{0};</div>
+<p class="definition">Definition at line <a class="el" href="ReplicaExchangeJob_8h_source.html#l00032">32</a> of file <a class="el" href="ReplicaExchangeJob_8h_source.html">ReplicaExchangeJob.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   32</span>{0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -827,7 +827,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ReplicaExchangeJob_8h_source.html#l00036">36</a> of file <a class="el" href="ReplicaExchangeJob_8h_source.html">ReplicaExchangeJob.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ReplicaExchangeJob_8h_source.html#l00035">35</a> of file <a class="el" href="ReplicaExchangeJob_8h_source.html">ReplicaExchangeJob.h</a>.</p>
 
 </div>
 </div>
@@ -851,7 +851,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ReplicaExchangeJob_8h_source.html#l00034">34</a> of file <a class="el" href="ReplicaExchangeJob_8h_source.html">ReplicaExchangeJob.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ReplicaExchangeJob_8h_source.html#l00033">33</a> of file <a class="el" href="ReplicaExchangeJob_8h_source.html">ReplicaExchangeJob.h</a>.</p>
 
 </div>
 </div>
@@ -875,7 +875,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ReplicaExchangeJob_8h_source.html#l00035">35</a> of file <a class="el" href="ReplicaExchangeJob_8h_source.html">ReplicaExchangeJob.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ReplicaExchangeJob_8h_source.html#l00034">34</a> of file <a class="el" href="ReplicaExchangeJob_8h_source.html">ReplicaExchangeJob.h</a>.</p>
 
 </div>
 </div>

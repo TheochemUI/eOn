@@ -261,7 +261,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:af5e38a77399147106fd57aced5092a71" id="r_af5e38a77399147106fd57aced5092a71"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#af5e38a77399147106fd57aced5092a71">Optimizer</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1ObjectiveFunction.html">ObjectiveFunction</a> &gt; a_objf, <a class="el" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">OptType</a> a_optype, const <a class="el" href="structeonc_1_1OptimizerConfig.html">OptimizerConfig</a> &amp;a_config)</td></tr>
 <tr class="memitem:a7359cf3da3da63ba17b3564de5428e18" id="r_a7359cf3da3da63ba17b3564de5428e18"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a7359cf3da3da63ba17b3564de5428e18">Optimizer</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1ObjectiveFunction.html">ObjectiveFunction</a> &gt; a_objf, const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;a_params)</td></tr>
 <tr class="memitem:a0799f30a0b8940646966008020d93e6d" id="r_a0799f30a0b8940646966008020d93e6d"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a0799f30a0b8940646966008020d93e6d">Optimizer</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1ObjectiveFunction.html">ObjectiveFunction</a> &gt; a_objf, <a class="el" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">OptType</a> a_optype, const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;a_params)</td></tr>
-<tr class="memitem:ae94c246f1e45f8f7b8f906667951543c" id="r_ae94c246f1e45f8f7b8f906667951543c"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="#ae94c246f1e45f8f7b8f906667951543c">~Optimizer</a> ()</td></tr>
+<tr class="memitem:a9ea80e9f5f70262118bad3c9dd08a2ca" id="r_a9ea80e9f5f70262118bad3c9dd08a2ca"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="#a9ea80e9f5f70262118bad3c9dd08a2ca">~Optimizer</a> ()=default</td></tr>
 <tr class="memitem:aa66365f3f15e6d4b9829e555cfc9f2b5" id="r_aa66365f3f15e6d4b9829e555cfc9f2b5"><td class="memItemLeft">virtual int&#160;</td><td class="memItemRight"><a class="el" href="#aa66365f3f15e6d4b9829e555cfc9f2b5">step</a> (double a_maxMove)=0</td></tr>
 <tr class="memitem:a94dd8b89c732857574c03586efa25273" id="r_a94dd8b89c732857574c03586efa25273"><td class="memItemLeft">virtual int&#160;</td><td class="memItemRight"><a class="el" href="#a94dd8b89c732857574c03586efa25273">run</a> (size_t a_maxIterations, double a_maxMove)=0</td></tr>
 </table><table class="memberdecls">
@@ -426,8 +426,8 @@ Private Attributes</h2></td></tr>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="ae94c246f1e45f8f7b8f906667951543c" name="ae94c246f1e45f8f7b8f906667951543c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae94c246f1e45f8f7b8f906667951543c">&#9670;&#160;</a></span>~Optimizer()</h2>
+<a id="a9ea80e9f5f70262118bad3c9dd08a2ca" name="a9ea80e9f5f70262118bad3c9dd08a2ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ea80e9f5f70262118bad3c9dd08a2ca">&#9670;&#160;</a></span>~Optimizer()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -444,14 +444,11 @@ Private Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel virtual">virtual</span><span class="mlabel default">default</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00094">94</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   94</span>{};</div>
-</div><!-- fragment -->
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>

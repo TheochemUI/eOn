@@ -281,6 +281,8 @@ requires (!std::is_base_of_v&lt;<a class="el" href="classeonc_1_1IPluginLoader.h
 <tr class="memitem:a9c53cdefdb91580b0ed424b3cb90946f" id="r_a9c53cdefdb91580b0ed424b3cb90946f"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a9c53cdefdb91580b0ed424b3cb90946f">needsPerImageInstance</a> () const noexcept override</td></tr>
 <tr class="memdesc:a9c53cdefdb91580b0ed424b3cb90946f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether NEB should create separate Potential instances per image for true parallel force evaluation.  <br /></td></tr>
 <tr class="memitem:a5d2b00bf64a722a4829e19076f82fb2d" id="r_a5d2b00bf64a722a4829e19076f82fb2d"><td class="memItemLeft">const RPot &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a5d2b00bf64a722a4829e19076f82fb2d">kernel</a> () const noexcept</td></tr>
+<tr class="memitem:ad1777f60faa4e44fefedb5380730627b" id="r_ad1777f60faa4e44fefedb5380730627b"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#ad1777f60faa4e44fefedb5380730627b">finiteCutoff</a> () const noexcept override</td></tr>
+<tr class="memdesc:ad1777f60faa4e44fefedb5380730627b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Classical kernels expose <span class="tt">config().cutoff</span>.  <br /></td></tr>
 <tr class="inherit_header pub_methods_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
 <tr class="memitem:af81acd9a6775ff13fab861a51fb9ba95 inherit pub_methods_classeonc_1_1Potential" id="r_af81acd9a6775ff13fab861a51fb9ba95"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> a_ptype)</td></tr>
 <tr class="memdesc:af81acd9a6775ff13fab861a51fb9ba95 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Production default: construction-scope registry, else <a class="el" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b" title="Process-lifetime singleton.">PotRegistry::get()</a>.  <br /></td></tr>
@@ -428,14 +430,12 @@ requires (!std::is_base_of_v&lt;<a class="el" href="classeonc_1_1IPluginLoader.h
 <p>Test seam: injected loader, no process-default search-path mutation. </p>
 
 <p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00044">44</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   46</span>      : <a class="code hl_class" href="classRgpotAdapter.html">eonc::Potential</a>(<a class="code hl_variable" href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">ptype</a>, <a class="code hl_class" href="classRgpotAdapter.html">params</a>),</div>
-<div class="line"><span class="lineno">   47</span>        <a class="code hl_variable" href="#ac358cd271cfe5c2e2dfe3a06f8c15891">pot_</a>(<a class="code hl_class" href="classRgpotAdapter.html">cfg</a>),</div>
-<div class="line"><span class="lineno">   48</span>        <a class="code hl_variable" href="#a2eafb88cad1f014be27fd142e926a9f1">loader_</a>(<a class="code hl_class" href="classRgpotAdapter.html">loader</a>) {</div>
-<div class="line"><span class="lineno">   49</span>    <a class="code hl_function" href="#a6d9f61f0b829dcab48e29f47e81ca52c">finishConstruct</a>(<a class="code hl_class" href="classRgpotAdapter.html">params</a>);</div>
-<div class="line"><span class="lineno">   50</span>  }</div>
-<div class="ttc" id="aclassRgpotAdapter_html_a2eafb88cad1f014be27fd142e926a9f1"><div class="ttname"><a href="#a2eafb88cad1f014be27fd142e926a9f1">RgpotAdapter::loader_</a></div><div class="ttdeci">eonc::IPluginLoader &amp; loader_</div><div class="ttdef"><b>Definition</b> <a href="RgpotAdapter_8h_source.html#l00166">RgpotAdapter.h:166</a></div></div>
-<div class="ttc" id="aclassRgpotAdapter_html_a6d9f61f0b829dcab48e29f47e81ca52c"><div class="ttname"><a href="#a6d9f61f0b829dcab48e29f47e81ca52c">RgpotAdapter::finishConstruct</a></div><div class="ttdeci">void finishConstruct(const eonc::Parameters &amp;params)</div><div class="ttdef"><b>Definition</b> <a href="RgpotAdapter_8h_source.html#l00150">RgpotAdapter.h:150</a></div></div>
-<div class="ttc" id="aclassRgpotAdapter_html_ac358cd271cfe5c2e2dfe3a06f8c15891"><div class="ttname"><a href="#ac358cd271cfe5c2e2dfe3a06f8c15891">RgpotAdapter::pot_</a></div><div class="ttdeci">RPot pot_</div><div class="ttdef"><b>Definition</b> <a href="RgpotAdapter_8h_source.html#l00165">RgpotAdapter.h:165</a></div></div>
+<div class="fragment"><div class="line"><span class="lineno">   46</span>      : <a class="code hl_class" href="classRgpotAdapter.html">eonc::Potential</a>(<a class="code hl_variable" href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">ptype</a>, <a class="code hl_class" href="classRgpotAdapter.html">params</a>), <a class="code hl_variable" href="#ac358cd271cfe5c2e2dfe3a06f8c15891">pot_</a>(<a class="code hl_class" href="classRgpotAdapter.html">cfg</a>), <a class="code hl_variable" href="#a2eafb88cad1f014be27fd142e926a9f1">loader_</a>(<a class="code hl_class" href="classRgpotAdapter.html">loader</a>) {</div>
+<div class="line"><span class="lineno">   47</span>    <a class="code hl_function" href="#a6d9f61f0b829dcab48e29f47e81ca52c">finishConstruct</a>(<a class="code hl_class" href="classRgpotAdapter.html">params</a>);</div>
+<div class="line"><span class="lineno">   48</span>  }</div>
+<div class="ttc" id="aclassRgpotAdapter_html_a2eafb88cad1f014be27fd142e926a9f1"><div class="ttname"><a href="#a2eafb88cad1f014be27fd142e926a9f1">RgpotAdapter::loader_</a></div><div class="ttdeci">eonc::IPluginLoader &amp; loader_</div><div class="ttdef"><b>Definition</b> <a href="RgpotAdapter_8h_source.html#l00170">RgpotAdapter.h:170</a></div></div>
+<div class="ttc" id="aclassRgpotAdapter_html_a6d9f61f0b829dcab48e29f47e81ca52c"><div class="ttname"><a href="#a6d9f61f0b829dcab48e29f47e81ca52c">RgpotAdapter::finishConstruct</a></div><div class="ttdeci">void finishConstruct(const eonc::Parameters &amp;params)</div><div class="ttdef"><b>Definition</b> <a href="RgpotAdapter_8h_source.html#l00154">RgpotAdapter.h:154</a></div></div>
+<div class="ttc" id="aclassRgpotAdapter_html_ac358cd271cfe5c2e2dfe3a06f8c15891"><div class="ttname"><a href="#ac358cd271cfe5c2e2dfe3a06f8c15891">RgpotAdapter::pot_</a></div><div class="ttdeci">RPot pot_</div><div class="ttdef"><b>Definition</b> <a href="RgpotAdapter_8h_source.html#l00169">RgpotAdapter.h:169</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -470,12 +470,11 @@ template&lt;class RPot&gt; </div>
 
 <p>Kernels with no configuration surface default-construct in place. </p>
 
-<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00053">53</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   54</span>      : <a class="code hl_class" href="classRgpotAdapter.html">eonc::Potential</a>(<a class="code hl_variable" href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">ptype</a>, <a class="code hl_class" href="classRgpotAdapter.html">params</a>),</div>
-<div class="line"><span class="lineno">   55</span>        <a class="code hl_variable" href="#ac358cd271cfe5c2e2dfe3a06f8c15891">pot_</a>(),</div>
-<div class="line"><span class="lineno">   56</span>        <a class="code hl_variable" href="#a2eafb88cad1f014be27fd142e926a9f1">loader_</a>(<a class="code hl_class" href="classRgpotAdapter.html">eonc::PluginLoader::instance</a>()) {</div>
-<div class="line"><span class="lineno">   57</span>    <a class="code hl_function" href="#a6d9f61f0b829dcab48e29f47e81ca52c">finishConstruct</a>(<a class="code hl_class" href="classRgpotAdapter.html">params</a>);</div>
-<div class="line"><span class="lineno">   58</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00051">51</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   52</span>      : <a class="code hl_class" href="classRgpotAdapter.html">eonc::Potential</a>(<a class="code hl_variable" href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">ptype</a>, <a class="code hl_class" href="classRgpotAdapter.html">params</a>), <a class="code hl_variable" href="#ac358cd271cfe5c2e2dfe3a06f8c15891">pot_</a>(),</div>
+<div class="line"><span class="lineno">   53</span>        <a class="code hl_variable" href="#a2eafb88cad1f014be27fd142e926a9f1">loader_</a>(<a class="code hl_class" href="classRgpotAdapter.html">eonc::PluginLoader::instance</a>()) {</div>
+<div class="line"><span class="lineno">   54</span>    <a class="code hl_function" href="#a6d9f61f0b829dcab48e29f47e81ca52c">finishConstruct</a>(<a class="code hl_class" href="classRgpotAdapter.html">params</a>);</div>
+<div class="line"><span class="lineno">   55</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -515,12 +514,10 @@ template&lt;class RPot&gt; </div>
 
 <p>Test seam: injected loader, no process-default search-path mutation. </p>
 
-<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00060">60</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   62</span>      : <a class="code hl_class" href="classRgpotAdapter.html">eonc::Potential</a>(<a class="code hl_variable" href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">ptype</a>, <a class="code hl_class" href="classRgpotAdapter.html">params</a>),</div>
-<div class="line"><span class="lineno">   63</span>        <a class="code hl_variable" href="#ac358cd271cfe5c2e2dfe3a06f8c15891">pot_</a>(),</div>
-<div class="line"><span class="lineno">   64</span>        <a class="code hl_variable" href="#a2eafb88cad1f014be27fd142e926a9f1">loader_</a>(<a class="code hl_class" href="classRgpotAdapter.html">loader</a>) {</div>
-<div class="line"><span class="lineno">   65</span>    <a class="code hl_function" href="#a6d9f61f0b829dcab48e29f47e81ca52c">finishConstruct</a>(<a class="code hl_class" href="classRgpotAdapter.html">params</a>);</div>
-<div class="line"><span class="lineno">   66</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00057">57</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   59</span>      : <a class="code hl_class" href="classRgpotAdapter.html">eonc::Potential</a>(<a class="code hl_variable" href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">ptype</a>, <a class="code hl_class" href="classRgpotAdapter.html">params</a>), <a class="code hl_variable" href="#ac358cd271cfe5c2e2dfe3a06f8c15891">pot_</a>(), <a class="code hl_variable" href="#a2eafb88cad1f014be27fd142e926a9f1">loader_</a>(<a class="code hl_class" href="classRgpotAdapter.html">loader</a>) {</div>
+<div class="line"><span class="lineno">   60</span>    <a class="code hl_function" href="#a6d9f61f0b829dcab48e29f47e81ca52c">finishConstruct</a>(<a class="code hl_class" href="classRgpotAdapter.html">params</a>);</div>
+<div class="line"><span class="lineno">   61</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -560,10 +557,10 @@ template&lt;class RPot&gt; </div>
 
 <p>Take a pre-built kernel (ExprPot and other move-only constructors). </p>
 
-<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00069">69</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   71</span>      : <a class="code hl_function" href="#a945b2410479f50596e497553d6021d7c">RgpotAdapter</a>(<a class="code hl_variable" href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">ptype</a>, <a class="code hl_class" href="classRgpotAdapter.html">params</a>, <a class="code hl_class" href="classRgpotAdapter.html">std::move</a>(<a class="code hl_function" href="#a5d2b00bf64a722a4829e19076f82fb2d">kernel</a>),</div>
-<div class="line"><span class="lineno">   72</span>                     <a class="code hl_class" href="classRgpotAdapter.html">eonc::PluginLoader::instance</a>()) {}</div>
-<div class="ttc" id="aclassRgpotAdapter_html_a5d2b00bf64a722a4829e19076f82fb2d"><div class="ttname"><a href="#a5d2b00bf64a722a4829e19076f82fb2d">RgpotAdapter::kernel</a></div><div class="ttdeci">const RPot &amp; kernel() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="RgpotAdapter_8h_source.html#l00147">RgpotAdapter.h:147</a></div></div>
+<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00064">64</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   66</span>      : <a class="code hl_function" href="#a945b2410479f50596e497553d6021d7c">RgpotAdapter</a>(<a class="code hl_variable" href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">ptype</a>, <a class="code hl_class" href="classRgpotAdapter.html">params</a>, <a class="code hl_class" href="classRgpotAdapter.html">std::move</a>(<a class="code hl_function" href="#a5d2b00bf64a722a4829e19076f82fb2d">kernel</a>),</div>
+<div class="line"><span class="lineno">   67</span>                     <a class="code hl_class" href="classRgpotAdapter.html">eonc::PluginLoader::instance</a>()) {}</div>
+<div class="ttc" id="aclassRgpotAdapter_html_a5d2b00bf64a722a4829e19076f82fb2d"><div class="ttname"><a href="#a5d2b00bf64a722a4829e19076f82fb2d">RgpotAdapter::kernel</a></div><div class="ttdeci">const RPot &amp; kernel() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="RgpotAdapter_8h_source.html#l00141">RgpotAdapter.h:141</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -608,12 +605,11 @@ template&lt;class RPot&gt; </div>
 
 <p>Test seam: injected loader, no process-default search-path mutation. </p>
 
-<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00074">74</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   76</span>      : <a class="code hl_class" href="classRgpotAdapter.html">eonc::Potential</a>(<a class="code hl_variable" href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">ptype</a>, <a class="code hl_class" href="classRgpotAdapter.html">params</a>),</div>
-<div class="line"><span class="lineno">   77</span>        <a class="code hl_variable" href="#ac358cd271cfe5c2e2dfe3a06f8c15891">pot_</a>(<a class="code hl_class" href="classRgpotAdapter.html">std::move</a>(<a class="code hl_function" href="#a5d2b00bf64a722a4829e19076f82fb2d">kernel</a>)),</div>
-<div class="line"><span class="lineno">   78</span>        <a class="code hl_variable" href="#a2eafb88cad1f014be27fd142e926a9f1">loader_</a>(<a class="code hl_class" href="classRgpotAdapter.html">loader</a>) {</div>
-<div class="line"><span class="lineno">   79</span>    <a class="code hl_function" href="#a6d9f61f0b829dcab48e29f47e81ca52c">finishConstruct</a>(<a class="code hl_class" href="classRgpotAdapter.html">params</a>);</div>
-<div class="line"><span class="lineno">   80</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00069">69</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   71</span>      : <a class="code hl_class" href="classRgpotAdapter.html">eonc::Potential</a>(<a class="code hl_variable" href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">ptype</a>, <a class="code hl_class" href="classRgpotAdapter.html">params</a>), <a class="code hl_variable" href="#ac358cd271cfe5c2e2dfe3a06f8c15891">pot_</a>(<a class="code hl_class" href="classRgpotAdapter.html">std::move</a>(<a class="code hl_function" href="#a5d2b00bf64a722a4829e19076f82fb2d">kernel</a>)),</div>
+<div class="line"><span class="lineno">   72</span>        <a class="code hl_variable" href="#a2eafb88cad1f014be27fd142e926a9f1">loader_</a>(<a class="code hl_class" href="classRgpotAdapter.html">loader</a>) {</div>
+<div class="line"><span class="lineno">   73</span>    <a class="code hl_function" href="#a6d9f61f0b829dcab48e29f47e81ca52c">finishConstruct</a>(<a class="code hl_class" href="classRgpotAdapter.html">params</a>);</div>
+<div class="line"><span class="lineno">   74</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -643,12 +639,53 @@ template&lt;class RPot&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00150">150</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  150</span>                                                     {</div>
-<div class="line"><span class="lineno">  151</span>    <a class="code hl_variable" href="#a2eafb88cad1f014be27fd142e926a9f1">loader_</a>.add_config_paths(<a class="code hl_class" href="classRgpotAdapter.html">params</a>.potential_options().potentialsPath);</div>
-<div class="line"><span class="lineno">  152</span>    <a class="code hl_function" href="#a5d9f82311bf9a6e71a55e9d7debaecbf">validateCaps</a>();</div>
-<div class="line"><span class="lineno">  153</span>  }</div>
-<div class="ttc" id="aclassRgpotAdapter_html_a5d9f82311bf9a6e71a55e9d7debaecbf"><div class="ttname"><a href="#a5d9f82311bf9a6e71a55e9d7debaecbf">RgpotAdapter::validateCaps</a></div><div class="ttdeci">void validateCaps() const</div><div class="ttdef"><b>Definition</b> <a href="RgpotAdapter_8h_source.html#l00155">RgpotAdapter.h:155</a></div></div>
+<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00154">154</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  154</span>                                                     {</div>
+<div class="line"><span class="lineno">  155</span>    <a class="code hl_variable" href="#a2eafb88cad1f014be27fd142e926a9f1">loader_</a>.add_config_paths(<a class="code hl_class" href="classRgpotAdapter.html">params</a>.potential_options().potentialsPath);</div>
+<div class="line"><span class="lineno">  156</span>    <a class="code hl_function" href="#a5d9f82311bf9a6e71a55e9d7debaecbf">validateCaps</a>();</div>
+<div class="line"><span class="lineno">  157</span>  }</div>
+<div class="ttc" id="aclassRgpotAdapter_html_a5d9f82311bf9a6e71a55e9d7debaecbf"><div class="ttname"><a href="#a5d9f82311bf9a6e71a55e9d7debaecbf">RgpotAdapter::validateCaps</a></div><div class="ttdeci">void validateCaps() const</div><div class="ttdef"><b>Definition</b> <a href="RgpotAdapter_8h_source.html#l00159">RgpotAdapter.h:159</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad1777f60faa4e44fefedb5380730627b" name="ad1777f60faa4e44fefedb5380730627b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1777f60faa4e44fefedb5380730627b">&#9670;&#160;</a></span>finiteCutoff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class RPot&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classRgpotAdapter.html">RgpotAdapter</a>&lt; RPot &gt;::finiteCutoff </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Classical kernels expose <span class="tt">config().cutoff</span>. </p>
+<p>Anything else is not treated as finite-range. </p>
+
+<p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#a8f4fea1662aaa9e26f7a2ac0862d53f8">eonc::Potential</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00145">145</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  145</span>                                                              {</div>
+<div class="line"><span class="lineno">  146</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (<span class="keyword">requires</span>(<span class="keyword">const</span> <a class="code hl_class" href="classRgpotAdapter.html">RPot</a> &amp;<a class="code hl_class" href="classRgpotAdapter.html">k</a>) { <a class="code hl_class" href="classRgpotAdapter.html">k</a>.config().cutoff; }) {</div>
+<div class="line"><span class="lineno">  147</span>      <span class="keywordflow">return</span> <a class="code hl_variable" href="#ac358cd271cfe5c2e2dfe3a06f8c15891">pot_</a>.config().cutoff;</div>
+<div class="line"><span class="lineno">  148</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  149</span>      <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><span class="lineno">  150</span>    }</div>
+<div class="line"><span class="lineno">  151</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -708,16 +745,16 @@ template&lt;class RPot&gt; </div>
 
 <p>Implements <a class="el" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">eonc::Potential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00082">82</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   83</span>                                                                      {</div>
-<div class="line"><span class="lineno">   84</span>    <a class="code hl_class" href="classRgpotAdapter.html">rgpot::ForceInput</a> <a class="code hl_class" href="classRgpotAdapter.html">in</a>{<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_class" href="classRgpotAdapter.html">N</a>), <a class="code hl_class" href="classRgpotAdapter.html">R</a>, <a class="code hl_class" href="classRgpotAdapter.html">atomicNrs</a>, <a class="code hl_class" href="classRgpotAdapter.html">box</a>};</div>
-<div class="line"><span class="lineno">   85</span>    <a class="code hl_class" href="classRgpotAdapter.html">rgpot::ForceOut</a> <a class="code hl_class" href="classRgpotAdapter.html">out</a>{<a class="code hl_class" href="classRgpotAdapter.html">F</a>, 0.0, 0.0};</div>
-<div class="line"><span class="lineno">   86</span>    <a class="code hl_variable" href="#ac358cd271cfe5c2e2dfe3a06f8c15891">pot_</a>.forceImpl(<a class="code hl_class" href="classRgpotAdapter.html">in</a>, &amp;<a class="code hl_class" href="classRgpotAdapter.html">out</a>);</div>
-<div class="line"><span class="lineno">   87</span>    *<a class="code hl_class" href="classRgpotAdapter.html">U</a> = <a class="code hl_class" href="classRgpotAdapter.html">out</a>.energy;</div>
-<div class="line"><span class="lineno">   88</span>    <span class="keywordflow">if</span> (<a class="code hl_class" href="classRgpotAdapter.html">variance</a> != <span class="keyword">nullptr</span>) {</div>
-<div class="line"><span class="lineno">   89</span>      *<a class="code hl_class" href="classRgpotAdapter.html">variance</a> = <a class="code hl_class" href="classRgpotAdapter.html">out</a>.variance;</div>
-<div class="line"><span class="lineno">   90</span>    }</div>
-<div class="line"><span class="lineno">   91</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00076">76</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   77</span>                                                                      {</div>
+<div class="line"><span class="lineno">   78</span>    <a class="code hl_class" href="classRgpotAdapter.html">rgpot::ForceInput</a> <a class="code hl_class" href="classRgpotAdapter.html">in</a>{<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_class" href="classRgpotAdapter.html">N</a>), <a class="code hl_class" href="classRgpotAdapter.html">R</a>, <a class="code hl_class" href="classRgpotAdapter.html">atomicNrs</a>, <a class="code hl_class" href="classRgpotAdapter.html">box</a>};</div>
+<div class="line"><span class="lineno">   79</span>    <a class="code hl_class" href="classRgpotAdapter.html">rgpot::ForceOut</a> <a class="code hl_class" href="classRgpotAdapter.html">out</a>{<a class="code hl_class" href="classRgpotAdapter.html">F</a>, 0.0, 0.0};</div>
+<div class="line"><span class="lineno">   80</span>    <a class="code hl_variable" href="#ac358cd271cfe5c2e2dfe3a06f8c15891">pot_</a>.forceImpl(<a class="code hl_class" href="classRgpotAdapter.html">in</a>, &amp;<a class="code hl_class" href="classRgpotAdapter.html">out</a>);</div>
+<div class="line"><span class="lineno">   81</span>    *<a class="code hl_class" href="classRgpotAdapter.html">U</a> = <a class="code hl_class" href="classRgpotAdapter.html">out</a>.energy;</div>
+<div class="line"><span class="lineno">   82</span>    <span class="keywordflow">if</span> (<a class="code hl_class" href="classRgpotAdapter.html">variance</a> != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">   83</span>      *<a class="code hl_class" href="classRgpotAdapter.html">variance</a> = <a class="code hl_class" href="classRgpotAdapter.html">out</a>.variance;</div>
+<div class="line"><span class="lineno">   84</span>    }</div>
+<div class="line"><span class="lineno">   85</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -786,31 +823,31 @@ template&lt;class RPot&gt; </div>
 
 <p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#aa66e1416134ff55639a6d20a34e3c1c1">eonc::Potential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00109">109</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  112</span>                                                       {</div>
-<div class="line"><span class="lineno">  113</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_class" href="classRgpotAdapter.html">n</a> = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_class" href="classRgpotAdapter.html">nSystems</a>);</div>
-<div class="line"><span class="lineno">  114</span>    <a class="code hl_class" href="classRgpotAdapter.html">std::vector&lt;rgpot::ForceInput&gt;</a> <a class="code hl_class" href="classRgpotAdapter.html">in</a>;</div>
-<div class="line"><span class="lineno">  115</span>    <a class="code hl_class" href="classRgpotAdapter.html">std::vector&lt;rgpot::ForceOut&gt;</a> <a class="code hl_class" href="classRgpotAdapter.html">out</a>;</div>
-<div class="line"><span class="lineno">  116</span>    <a class="code hl_class" href="classRgpotAdapter.html">in</a>.reserve(<a class="code hl_class" href="classRgpotAdapter.html">n</a>);</div>
-<div class="line"><span class="lineno">  117</span>    <a class="code hl_class" href="classRgpotAdapter.html">out</a>.reserve(<a class="code hl_class" href="classRgpotAdapter.html">n</a>);</div>
-<div class="line"><span class="lineno">  118</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> <a class="code hl_class" href="classRgpotAdapter.html">i</a> = 0; <a class="code hl_class" href="classRgpotAdapter.html">i</a> &lt; <a class="code hl_class" href="classRgpotAdapter.html">n</a>; ++<a class="code hl_class" href="classRgpotAdapter.html">i</a>) {</div>
-<div class="line"><span class="lineno">  119</span>      <a class="code hl_class" href="classRgpotAdapter.html">in</a>.push_back(<a class="code hl_class" href="classRgpotAdapter.html">rgpot::ForceInput</a>{<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_class" href="classRgpotAdapter.html">nAtoms</a>), <a class="code hl_class" href="classRgpotAdapter.html">positions</a>[<a class="code hl_class" href="classRgpotAdapter.html">i</a>],</div>
-<div class="line"><span class="lineno">  120</span>                                     <a class="code hl_class" href="classRgpotAdapter.html">atomicNrs</a>[<a class="code hl_class" href="classRgpotAdapter.html">i</a>], <a class="code hl_class" href="classRgpotAdapter.html">boxes</a>[<a class="code hl_class" href="classRgpotAdapter.html">i</a>]});</div>
-<div class="line"><span class="lineno">  121</span>      <a class="code hl_class" href="classRgpotAdapter.html">out</a>.push_back(<a class="code hl_class" href="classRgpotAdapter.html">rgpot::ForceOut</a>{<a class="code hl_class" href="classRgpotAdapter.html">forces</a>[<a class="code hl_class" href="classRgpotAdapter.html">i</a>], 0.0, 0.0});</div>
-<div class="line"><span class="lineno">  122</span>    }</div>
-<div class="line"><span class="lineno">  123</span> </div>
-<div class="line"><span class="lineno">  124</span>    <a class="code hl_variable" href="#ac358cd271cfe5c2e2dfe3a06f8c15891">pot_</a>.forceBatchImpl(</div>
-<div class="line"><span class="lineno">  125</span>        <a class="code hl_class" href="classRgpotAdapter.html">rgpot::ForceBatch</a>{.nSystems = <a class="code hl_class" href="classRgpotAdapter.html">n</a>, .in = <a class="code hl_class" href="classRgpotAdapter.html">in</a>.data(), .out = <a class="code hl_class" href="classRgpotAdapter.html">out</a>.data()});</div>
-<div class="line"><span class="lineno">  126</span> </div>
-<div class="line"><span class="lineno">  127</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> <a class="code hl_class" href="classRgpotAdapter.html">i</a> = 0; <a class="code hl_class" href="classRgpotAdapter.html">i</a> &lt; <a class="code hl_class" href="classRgpotAdapter.html">n</a>; ++<a class="code hl_class" href="classRgpotAdapter.html">i</a>) {</div>
-<div class="line"><span class="lineno">  128</span>      <a class="code hl_class" href="classRgpotAdapter.html">energies</a>[<a class="code hl_class" href="classRgpotAdapter.html">i</a>] = <a class="code hl_class" href="classRgpotAdapter.html">out</a>[<a class="code hl_class" href="classRgpotAdapter.html">i</a>].energy;</div>
-<div class="line"><span class="lineno">  129</span>      <span class="keywordflow">if</span> (<a class="code hl_class" href="classRgpotAdapter.html">variances</a> != <span class="keyword">nullptr</span>) {</div>
-<div class="line"><span class="lineno">  130</span>        <a class="code hl_class" href="classRgpotAdapter.html">variances</a>[<a class="code hl_class" href="classRgpotAdapter.html">i</a>] = <a class="code hl_class" href="classRgpotAdapter.html">out</a>[<a class="code hl_class" href="classRgpotAdapter.html">i</a>].variance;</div>
-<div class="line"><span class="lineno">  131</span>      }</div>
-<div class="line"><span class="lineno">  132</span>      <a class="code hl_variable" href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">forceCallCounter</a>++;</div>
-<div class="line"><span class="lineno">  133</span>      <a class="code hl_function" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">eonc::PotRegistry::get</a>().<a class="code hl_function" href="classeonc_1_1PotRegistry.html#a46a3c876ed01abc8123cd88bc3aae8da">on_force_call</a>(<a class="code hl_variable" href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">ptype</a>);</div>
-<div class="line"><span class="lineno">  134</span>    }</div>
-<div class="line"><span class="lineno">  135</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00103">103</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  106</span>                                                       {</div>
+<div class="line"><span class="lineno">  107</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_class" href="classRgpotAdapter.html">n</a> = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_class" href="classRgpotAdapter.html">nSystems</a>);</div>
+<div class="line"><span class="lineno">  108</span>    <a class="code hl_class" href="classRgpotAdapter.html">std::vector&lt;rgpot::ForceInput&gt;</a> <a class="code hl_class" href="classRgpotAdapter.html">in</a>;</div>
+<div class="line"><span class="lineno">  109</span>    <a class="code hl_class" href="classRgpotAdapter.html">std::vector&lt;rgpot::ForceOut&gt;</a> <a class="code hl_class" href="classRgpotAdapter.html">out</a>;</div>
+<div class="line"><span class="lineno">  110</span>    <a class="code hl_class" href="classRgpotAdapter.html">in</a>.reserve(<a class="code hl_class" href="classRgpotAdapter.html">n</a>);</div>
+<div class="line"><span class="lineno">  111</span>    <a class="code hl_class" href="classRgpotAdapter.html">out</a>.reserve(<a class="code hl_class" href="classRgpotAdapter.html">n</a>);</div>
+<div class="line"><span class="lineno">  112</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> <a class="code hl_class" href="classRgpotAdapter.html">i</a> = 0; <a class="code hl_class" href="classRgpotAdapter.html">i</a> &lt; <a class="code hl_class" href="classRgpotAdapter.html">n</a>; ++<a class="code hl_class" href="classRgpotAdapter.html">i</a>) {</div>
+<div class="line"><span class="lineno">  113</span>      <a class="code hl_class" href="classRgpotAdapter.html">in</a>.push_back(<a class="code hl_class" href="classRgpotAdapter.html">rgpot::ForceInput</a>{<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_class" href="classRgpotAdapter.html">nAtoms</a>), <a class="code hl_class" href="classRgpotAdapter.html">positions</a>[<a class="code hl_class" href="classRgpotAdapter.html">i</a>],</div>
+<div class="line"><span class="lineno">  114</span>                                     <a class="code hl_class" href="classRgpotAdapter.html">atomicNrs</a>[<a class="code hl_class" href="classRgpotAdapter.html">i</a>], <a class="code hl_class" href="classRgpotAdapter.html">boxes</a>[<a class="code hl_class" href="classRgpotAdapter.html">i</a>]});</div>
+<div class="line"><span class="lineno">  115</span>      <a class="code hl_class" href="classRgpotAdapter.html">out</a>.push_back(<a class="code hl_class" href="classRgpotAdapter.html">rgpot::ForceOut</a>{<a class="code hl_class" href="classRgpotAdapter.html">forces</a>[<a class="code hl_class" href="classRgpotAdapter.html">i</a>], 0.0, 0.0});</div>
+<div class="line"><span class="lineno">  116</span>    }</div>
+<div class="line"><span class="lineno">  117</span> </div>
+<div class="line"><span class="lineno">  118</span>    <a class="code hl_variable" href="#ac358cd271cfe5c2e2dfe3a06f8c15891">pot_</a>.forceBatchImpl(</div>
+<div class="line"><span class="lineno">  119</span>        <a class="code hl_class" href="classRgpotAdapter.html">rgpot::ForceBatch</a>{.nSystems = <a class="code hl_class" href="classRgpotAdapter.html">n</a>, .in = <a class="code hl_class" href="classRgpotAdapter.html">in</a>.data(), .out = <a class="code hl_class" href="classRgpotAdapter.html">out</a>.data()});</div>
+<div class="line"><span class="lineno">  120</span> </div>
+<div class="line"><span class="lineno">  121</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> <a class="code hl_class" href="classRgpotAdapter.html">i</a> = 0; <a class="code hl_class" href="classRgpotAdapter.html">i</a> &lt; <a class="code hl_class" href="classRgpotAdapter.html">n</a>; ++<a class="code hl_class" href="classRgpotAdapter.html">i</a>) {</div>
+<div class="line"><span class="lineno">  122</span>      <a class="code hl_class" href="classRgpotAdapter.html">energies</a>[<a class="code hl_class" href="classRgpotAdapter.html">i</a>] = <a class="code hl_class" href="classRgpotAdapter.html">out</a>[<a class="code hl_class" href="classRgpotAdapter.html">i</a>].energy;</div>
+<div class="line"><span class="lineno">  123</span>      <span class="keywordflow">if</span> (<a class="code hl_class" href="classRgpotAdapter.html">variances</a> != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  124</span>        <a class="code hl_class" href="classRgpotAdapter.html">variances</a>[<a class="code hl_class" href="classRgpotAdapter.html">i</a>] = <a class="code hl_class" href="classRgpotAdapter.html">out</a>[<a class="code hl_class" href="classRgpotAdapter.html">i</a>].variance;</div>
+<div class="line"><span class="lineno">  125</span>      }</div>
+<div class="line"><span class="lineno">  126</span>      <a class="code hl_variable" href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">forceCallCounter</a>++;</div>
+<div class="line"><span class="lineno">  127</span>      <a class="code hl_function" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">eonc::PotRegistry::get</a>().<a class="code hl_function" href="classeonc_1_1PotRegistry.html#a46a3c876ed01abc8123cd88bc3aae8da">on_force_call</a>(<a class="code hl_variable" href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">ptype</a>);</div>
+<div class="line"><span class="lineno">  128</span>    }</div>
+<div class="line"><span class="lineno">  129</span>  }</div>
 <div class="ttc" id="aclasseonc_1_1PotRegistry_html_a46a3c876ed01abc8123cd88bc3aae8da"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a46a3c876ed01abc8123cd88bc3aae8da">eonc::PotRegistry::on_force_call</a></div><div class="ttdeci">void on_force_call(PotType t) noexcept override</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00088">PotRegistry.cpp:88</a></div></div>
 <div class="ttc" id="aclasseonc_1_1PotRegistry_html_a5d307a4845d9c0d6d16031a5a637e23b"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">eonc::PotRegistry::get</a></div><div class="ttdeci">static PotRegistry &amp; get() noexcept</div><div class="ttdoc">Process-lifetime singleton.</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00050">PotRegistry.cpp:50</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Potential_html_a2ae7cca425e3d69d2825c58d1c7704eb"><div class="ttname"><a href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">eonc::Potential::forceCallCounter</a></div><div class="ttdeci">std::atomic&lt; size_t &gt; forceCallCounter</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00053">Potential.h:53</a></div></div>
@@ -847,10 +884,10 @@ template&lt;class RPot&gt; </div>
 
 <p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#af6c385eb52d3764246416ea389c84131">eonc::Potential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00137">137</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  137</span>                                                            {</div>
-<div class="line"><span class="lineno">  138</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#ac358cd271cfe5c2e2dfe3a06f8c15891">pot_</a>.caps().reentrancy == <a class="code hl_class" href="classRgpotAdapter.html">rgpot::Reentrancy::SharedInstance</a>;</div>
-<div class="line"><span class="lineno">  139</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00131">131</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  131</span>                                                            {</div>
+<div class="line"><span class="lineno">  132</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#ac358cd271cfe5c2e2dfe3a06f8c15891">pot_</a>.caps().reentrancy == <a class="code hl_class" href="classRgpotAdapter.html">rgpot::Reentrancy::SharedInstance</a>;</div>
+<div class="line"><span class="lineno">  133</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -879,8 +916,8 @@ template&lt;class RPot&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00147">147</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  147</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#ac358cd271cfe5c2e2dfe3a06f8c15891">pot_</a>; }</div>
+<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00141">141</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  141</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#ac358cd271cfe5c2e2dfe3a06f8c15891">pot_</a>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -914,12 +951,12 @@ template&lt;class RPot&gt; </div>
 
 <p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#a8b83745c9898990f848daafa4c351c2f">eonc::Potential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00141">141</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  141</span>                                                                     {</div>
-<div class="line"><span class="lineno">  142</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_class" href="classRgpotAdapter.html">caps</a> = <a class="code hl_variable" href="#ac358cd271cfe5c2e2dfe3a06f8c15891">pot_</a>.caps();</div>
-<div class="line"><span class="lineno">  143</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classRgpotAdapter.html">caps</a>.perImageInstances ||</div>
-<div class="line"><span class="lineno">  144</span>           <a class="code hl_class" href="classRgpotAdapter.html">caps</a>.reentrancy == <a class="code hl_class" href="classRgpotAdapter.html">rgpot::Reentrancy::PerInstance</a>;</div>
-<div class="line"><span class="lineno">  145</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00135">135</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  135</span>                                                                     {</div>
+<div class="line"><span class="lineno">  136</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_class" href="classRgpotAdapter.html">caps</a> = <a class="code hl_variable" href="#ac358cd271cfe5c2e2dfe3a06f8c15891">pot_</a>.caps();</div>
+<div class="line"><span class="lineno">  137</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classRgpotAdapter.html">caps</a>.perImageInstances ||</div>
+<div class="line"><span class="lineno">  138</span>           <a class="code hl_class" href="classRgpotAdapter.html">caps</a>.reentrancy == <a class="code hl_class" href="classRgpotAdapter.html">rgpot::Reentrancy::PerInstance</a>;</div>
+<div class="line"><span class="lineno">  139</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -953,10 +990,10 @@ template&lt;class RPot&gt; </div>
 
 <p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#a2d8781e3cbea888f88b7523c5d00bc43">eonc::Potential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00097">97</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   97</span>                                                                       {</div>
-<div class="line"><span class="lineno">   98</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#ac358cd271cfe5c2e2dfe3a06f8c15891">pot_</a>.caps().batched;</div>
-<div class="line"><span class="lineno">   99</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00091">91</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   91</span>                                                                       {</div>
+<div class="line"><span class="lineno">   92</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#ac358cd271cfe5c2e2dfe3a06f8c15891">pot_</a>.caps().batched;</div>
+<div class="line"><span class="lineno">   93</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -985,16 +1022,16 @@ template&lt;class RPot&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00155">155</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  155</span>                            {</div>
-<div class="line"><span class="lineno">  156</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_class" href="classRgpotAdapter.html">caps</a> = <a class="code hl_variable" href="#ac358cd271cfe5c2e2dfe3a06f8c15891">pot_</a>.caps();</div>
-<div class="line"><span class="lineno">  157</span>    <span class="keyword">using </span><a class="code hl_class" href="classRgpotAdapter.html">R</a> = <a class="code hl_class" href="classRgpotAdapter.html">rgpot::Reentrancy</a>;</div>
-<div class="line"><span class="lineno">  158</span>    <span class="keywordflow">if</span> (<a class="code hl_class" href="classRgpotAdapter.html">caps</a>.reentrancy != <a class="code hl_class" href="classRgpotAdapter.html">R::SharedInstance</a> &amp;&amp;</div>
-<div class="line"><span class="lineno">  159</span>        <a class="code hl_class" href="classRgpotAdapter.html">caps</a>.reentrancy != <a class="code hl_class" href="classRgpotAdapter.html">R::PerInstance</a> &amp;&amp;</div>
-<div class="line"><span class="lineno">  160</span>        <a class="code hl_class" href="classRgpotAdapter.html">caps</a>.reentrancy != <a class="code hl_class" href="classRgpotAdapter.html">R::ProcessSerial</a>) {</div>
-<div class="line"><span class="lineno">  161</span>      <span class="keywordflow">throw</span> <a class="code hl_class" href="classRgpotAdapter.html">std::runtime_error</a>(<span class="stringliteral">&quot;rgpot kernel advertised an unknown reentrancy&quot;</span>);</div>
-<div class="line"><span class="lineno">  162</span>    }</div>
-<div class="line"><span class="lineno">  163</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00159">159</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  159</span>                            {</div>
+<div class="line"><span class="lineno">  160</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_class" href="classRgpotAdapter.html">caps</a> = <a class="code hl_variable" href="#ac358cd271cfe5c2e2dfe3a06f8c15891">pot_</a>.caps();</div>
+<div class="line"><span class="lineno">  161</span>    <span class="keyword">using </span><a class="code hl_class" href="classRgpotAdapter.html">R</a> = <a class="code hl_class" href="classRgpotAdapter.html">rgpot::Reentrancy</a>;</div>
+<div class="line"><span class="lineno">  162</span>    <span class="keywordflow">if</span> (<a class="code hl_class" href="classRgpotAdapter.html">caps</a>.reentrancy != <a class="code hl_class" href="classRgpotAdapter.html">R::SharedInstance</a> &amp;&amp;</div>
+<div class="line"><span class="lineno">  163</span>        <a class="code hl_class" href="classRgpotAdapter.html">caps</a>.reentrancy != <a class="code hl_class" href="classRgpotAdapter.html">R::PerInstance</a> &amp;&amp;</div>
+<div class="line"><span class="lineno">  164</span>        <a class="code hl_class" href="classRgpotAdapter.html">caps</a>.reentrancy != <a class="code hl_class" href="classRgpotAdapter.html">R::ProcessSerial</a>) {</div>
+<div class="line"><span class="lineno">  165</span>      <span class="keywordflow">throw</span> <a class="code hl_class" href="classRgpotAdapter.html">std::runtime_error</a>(<span class="stringliteral">&quot;rgpot kernel advertised an unknown reentrancy&quot;</span>);</div>
+<div class="line"><span class="lineno">  166</span>    }</div>
+<div class="line"><span class="lineno">  167</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1021,7 +1058,7 @@ template&lt;class RPot&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00166">166</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00170">170</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
 
 </div>
 </div>
@@ -1047,7 +1084,7 @@ template&lt;class RPot&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00165">165</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RgpotAdapter_8h_source.html#l00169">169</a> of file <a class="el" href="RgpotAdapter_8h_source.html">RgpotAdapter.h</a>.</p>
 
 </div>
 </div>

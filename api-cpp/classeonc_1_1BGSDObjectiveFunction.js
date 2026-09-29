@@ -8,7 +8,7 @@ var classeonc_1_1BGSDObjectiveFunction =
     [ "getConvergenceH", "classeonc_1_1BGSDObjectiveFunction.html#ae3c651107a28e0083b089929b56677d7", null ],
     [ "getConvergenceV", "classeonc_1_1BGSDObjectiveFunction.html#a858077ffc687dee14ccbf1ed4d4dd435", null ],
     [ "getEnergy", "classeonc_1_1BGSDObjectiveFunction.html#a1215b3cf0c3b8ba3da629f2f54ea64fd", null ],
-    [ "getGradient", "classeonc_1_1BGSDObjectiveFunction.html#ac803ae722f445829f476b060dded12aa", null ],
+    [ "getGradient", "classeonc_1_1BGSDObjectiveFunction.html#af09b31ceef426b8ae34384f428331a70", null ],
     [ "getGradientnorm", "classeonc_1_1BGSDObjectiveFunction.html#a20fdd872accdb18b2b88341c27e5b3ab", null ],
     [ "getPositions", "classeonc_1_1BGSDObjectiveFunction.html#aafdd30e603e34e75b6e7cf1fa3e6db54", null ],
     [ "isConverged", "classeonc_1_1BGSDObjectiveFunction.html#ab7896a8618a0ffc78cb01085d4d2d55f", null ],

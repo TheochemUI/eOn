@@ -155,6 +155,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../devdocs/in-process.html">In-process jobs (no file IPC)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../devdocs/abi-surface.html">Public C++ surface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../devdocs/rgpot-migration.html">rgpot kernel inventory</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../devdocs/porting_potentials.html">Porting potentials</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../devdocs/docbuild.html">Working with the documentation</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../devdocs/svn.html">Subversion</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../devdocs/svn-migration.html">Migrating from SVN</a></li>
@@ -174,6 +175,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.geometry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidocs/eon/eon.geometry.pbc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidocs/eon/eon.geometry.wire.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.wire</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
@@ -187,6 +189,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.cancel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.cancel</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
@@ -217,6 +220,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../releases/v3.3.1/index.html">[v3.3.1] - 2026-09-27</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../releases/v3.3.1/release-notes.html">eOn 3.3.1</a></li>
 </ul>
@@ -2586,431 +2593,471 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="2117">    <span class="n">mmf_peak_tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
 </span><span data-line="2118">        <span class="n">default</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
 </span><span data-line="2119">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Generate modes and peak configurations.&quot;</span><span class="p">,</span>
-</span><span data-line="2120">    <span class="p">)</span></div>
+</span><span data-line="2120">    <span class="p">)</span>
+</span><span data-line="2121">    <span class="n">zoom_neb</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2122">        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span data-line="2123">        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+</span><span data-line="2124">            <span class="s2">&quot;After the climbing image is stable, pack every image onto a &quot;</span>
+</span><span data-line="2125">            <span class="s2">&quot;window around it and continue the band, including OCINEB.&quot;</span>
+</span><span data-line="2126">        <span class="p">),</span>
+</span><span data-line="2127">    <span class="p">)</span>
+</span><span data-line="2128">    <span class="n">zoom_alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2129">        <span class="n">default</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+</span><span data-line="2130">        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+</span><span data-line="2131">            <span class="s2">&quot;Auto window keeps images above this fraction of the barrier &quot;</span>
+</span><span data-line="2132">            <span class="s2">&quot;height, measured from the lower endpoint.&quot;</span>
+</span><span data-line="2133">        <span class="p">),</span>
+</span><span data-line="2134">    <span class="p">)</span>
+</span><span data-line="2135">    <span class="n">zoom_offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2136">        <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="2137">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Manual window half-width in images on each side of the climbing image.&quot;</span><span class="p">,</span>
+</span><span data-line="2138">    <span class="p">)</span>
+</span><span data-line="2139">    <span class="n">zoom_mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="s2">&quot;manual&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2140">        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+</span><span data-line="2141">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;auto uses zoom_alpha; manual uses zoom_offset.&quot;</span><span class="p">,</span>
+</span><span data-line="2142">    <span class="p">)</span>
+</span><span data-line="2143">    <span class="n">zoom_after</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2144">        <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="2145">        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+</span><span data-line="2146">            <span class="s2">&quot;Band force that arms Zoom-NEB. 0 uses ten times converged_force.&quot;</span>
+</span><span data-line="2147">        <span class="p">),</span>
+</span><span data-line="2148">    <span class="p">)</span>
+</span><span data-line="2149">    <span class="n">zoom_interpolation</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;cubic&quot;</span><span class="p">,</span> <span class="s2">&quot;linear&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2150">        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;cubic&quot;</span><span class="p">,</span>
+</span><span data-line="2151">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Arc-length interpolation used to pack images into the window.&quot;</span><span class="p">,</span>
+</span><span data-line="2152">    <span class="p">)</span>
+</span><span data-line="2153">    <span class="n">zoom_ci_stability</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2154">        <span class="n">default</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+</span><span data-line="2155">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Iterations the climbing-image index must stay fixed before zoom.&quot;</span><span class="p">,</span>
+</span><span data-line="2156">    <span class="p">)</span>
+</span><span data-line="2157">    <span class="n">zoom_max_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2158">        <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+</span><span data-line="2159">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Iterations allowed after zoom. 0 keeps the band iteration cap.&quot;</span><span class="p">,</span>
+</span><span data-line="2160">    <span class="p">)</span></div>
 
-</span><span data-line="2121">
-</span><span data-line="2122">
+</span><span data-line="2161">
+</span><span data-line="2162">
 <div class="viewcode-block" id="LanczosConfig">
 <a class="viewcode-back" href="../../../user_guide/lanczos.html#eon.schema.LanczosConfig">[docs]</a>
-</span><span data-line="2123"><span class="k">class</span><span class="w"> </span><span class="nc">LanczosConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="2124">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="2125">
-</span><span data-line="2126">    <span class="n">tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2127">        <span class="n">default</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
-</span><span data-line="2128">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;This is the convergence criteria for relative change in the estimated lowest eigenvalue.&quot;</span><span class="p">,</span>
-</span><span data-line="2129">    <span class="p">)</span>
-</span><span data-line="2130">    <span class="n">max_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2131">        <span class="n">default</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-</span><span data-line="2132">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The maximum number of refinement iterations when calculating the minimum eigenvalue.&quot;</span><span class="p">,</span>
-</span><span data-line="2133">    <span class="p">)</span>
-</span><span data-line="2134">    <span class="n">quit_early</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2135">        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-</span><span data-line="2136">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;If the relative change between the previous lowest eigenvalue and the curvature along the initial direction is less than the tolerance, terminate.&quot;</span><span class="p">,</span>
-</span><span data-line="2137">    <span class="p">)</span>
-</span><span data-line="2138">    <span class="n">phva_atoms</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2139">        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;All&quot;</span><span class="p">,</span>
-</span><span data-line="2140">        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-</span><span data-line="2141">            <span class="s2">&quot;PHVA mobile/active atoms for the Lanczos Krylov space (not free/fixed): &quot;</span>
-</span><span data-line="2142">            <span class="s2">&quot;comma-delimited indices or &#39;All&#39; for every free atom.&quot;</span>
-</span><span data-line="2143">        <span class="p">),</span>
-</span><span data-line="2144">    <span class="p">)</span></div>
-
-</span><span data-line="2145">
-</span><span data-line="2146">
-</span><span data-line="2147"><span class="k">class</span><span class="w"> </span><span class="nc">DavidsonConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="2148">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="2149">
-</span><span data-line="2150">    <span class="n">tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2151">        <span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
-</span><span data-line="2152">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Convergence on relative eigenvalue change and residual norm for the Davidson min-mode Ritz pair.&quot;</span><span class="p">,</span>
-</span><span data-line="2153">    <span class="p">)</span>
-</span><span data-line="2154">    <span class="n">max_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2155">        <span class="n">default</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-</span><span data-line="2156">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum subspace dimension / Davidson iterations.&quot;</span><span class="p">,</span>
-</span><span data-line="2157">    <span class="p">)</span>
-</span><span data-line="2158">    <span class="n">diagonal_preconditioner</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2159">        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-</span><span data-line="2160">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Use a cheap | (H v)_i / v_i | heuristic preconditioner (not the true Hessian diagonal).&quot;</span><span class="p">,</span>
-</span><span data-line="2161">    <span class="p">)</span>
-</span><span data-line="2162">    <span class="n">phva_atoms</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2163">        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;All&quot;</span><span class="p">,</span>
-</span><span data-line="2164">        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-</span><span data-line="2165">            <span class="s2">&quot;PHVA mobile/active atoms for the Davidson Ritz space (not free/fixed): &quot;</span>
-</span><span data-line="2166">            <span class="s2">&quot;comma-delimited indices or &#39;All&#39; for every free atom.&quot;</span>
-</span><span data-line="2167">        <span class="p">),</span>
-</span><span data-line="2168">    <span class="p">)</span>
-</span><span data-line="2169">
-</span><span data-line="2170">
-</span><span data-line="2171"><span class="k">class</span><span class="w"> </span><span class="nc">ARTnConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="2172">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="2173">
-</span><span data-line="2174">    <span class="n">push_step_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2175">        <span class="n">default</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
-</span><span data-line="2176">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Step size for the initial push away from the minimum, in Angstroms.&quot;</span><span class="p">,</span>
+</span><span data-line="2163"><span class="k">class</span><span class="w"> </span><span class="nc">LanczosConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="2164">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="2165">
+</span><span data-line="2166">    <span class="n">tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2167">        <span class="n">default</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
+</span><span data-line="2168">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;This is the convergence criteria for relative change in the estimated lowest eigenvalue.&quot;</span><span class="p">,</span>
+</span><span data-line="2169">    <span class="p">)</span>
+</span><span data-line="2170">    <span class="n">max_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2171">        <span class="n">default</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+</span><span data-line="2172">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The maximum number of refinement iterations when calculating the minimum eigenvalue.&quot;</span><span class="p">,</span>
+</span><span data-line="2173">    <span class="p">)</span>
+</span><span data-line="2174">    <span class="n">quit_early</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2175">        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="2176">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;If the relative change between the previous lowest eigenvalue and the curvature along the initial direction is less than the tolerance, terminate.&quot;</span><span class="p">,</span>
 </span><span data-line="2177">    <span class="p">)</span>
-</span><span data-line="2178">    <span class="n">force_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2179">        <span class="n">default</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
-</span><span data-line="2180">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Force convergence criterion for saddle point, in eV/Angstrom. Maps to pARTn&#39;s forc_thr.&quot;</span><span class="p">,</span>
-</span><span data-line="2181">    <span class="p">)</span>
-</span><span data-line="2182">    <span class="n">max_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2183">        <span class="n">default</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
-</span><span data-line="2184">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum number of ARTn iterations.&quot;</span><span class="p">,</span>
-</span><span data-line="2185">    <span class="p">)</span>
-</span><span data-line="2186">    <span class="n">ninit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2187">        <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
-</span><span data-line="2188">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Number of initial push steps before Lanczos eigenmode estimation. -1 keeps pARTn&#39;s built-in default. 0 skips the push phase and goes directly to Lanczos (appropriate when eOn supplies the displacement). Larger values let ARTn explore further from the minimum.&quot;</span><span class="p">,</span>
-</span><span data-line="2189">    <span class="p">)</span>
-</span><span data-line="2190">    <span class="n">nperp_limitation</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2191">        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
-</span><span data-line="2192">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Comma-separated ints controlling max perp-relax steps per Lanczos cycle. &#39;default&#39; uses pARTn defaults. &#39;-1&#39; for unlimited (smooth potentials). &#39;20,30&#39; for ML potentials.&quot;</span><span class="p">,</span>
+</span><span data-line="2178">    <span class="n">phva_atoms</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2179">        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;All&quot;</span><span class="p">,</span>
+</span><span data-line="2180">        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+</span><span data-line="2181">            <span class="s2">&quot;PHVA mobile/active atoms for the Lanczos Krylov space (not free/fixed): &quot;</span>
+</span><span data-line="2182">            <span class="s2">&quot;comma-delimited indices or &#39;All&#39; for every free atom.&quot;</span>
+</span><span data-line="2183">        <span class="p">),</span>
+</span><span data-line="2184">    <span class="p">)</span></div>
+
+</span><span data-line="2185">
+</span><span data-line="2186">
+</span><span data-line="2187"><span class="k">class</span><span class="w"> </span><span class="nc">DavidsonConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="2188">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="2189">
+</span><span data-line="2190">    <span class="n">tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2191">        <span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+</span><span data-line="2192">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Convergence on relative eigenvalue change and residual norm for the Davidson min-mode Ritz pair.&quot;</span><span class="p">,</span>
 </span><span data-line="2193">    <span class="p">)</span>
-</span><span data-line="2194">    <span class="n">lanczos_min_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2195">        <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
-</span><span data-line="2196">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Minimum Lanczos iterations before convergence check. -1 uses pARTn default (3). Set to 1 for refinement near a known saddle.&quot;</span><span class="p">,</span>
+</span><span data-line="2194">    <span class="n">max_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2195">        <span class="n">default</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+</span><span data-line="2196">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum subspace dimension / Davidson iterations.&quot;</span><span class="p">,</span>
 </span><span data-line="2197">    <span class="p">)</span>
-</span><span data-line="2198">    <span class="n">nsmooth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2199">        <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
-</span><span data-line="2200">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Number of smooth interpolation steps between push and eigenvector. -1 uses pARTn default. 0 disables smoothing.&quot;</span><span class="p">,</span>
+</span><span data-line="2198">    <span class="n">diagonal_preconditioner</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2199">        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span data-line="2200">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Use a cheap | (H v)_i / v_i | heuristic preconditioner (not the true Hessian diagonal).&quot;</span><span class="p">,</span>
 </span><span data-line="2201">    <span class="p">)</span>
-</span><span data-line="2202">    <span class="n">filin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2203">        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-</span><span data-line="2204">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Path to an artn.in style input file. Empty keeps pARTn&#39;s post-artn_create NAN_STR sentinel (&#39;BBBB&#39;), so no file is read and all parameters come from this [ARTn] section. A non-empty value must name a file on disk; eOn checks before pARTn setup and aborts with a clear error when missing.&quot;</span><span class="p">,</span>
-</span><span data-line="2205">    <span class="p">)</span>
-</span><span data-line="2206">
-</span><span data-line="2207">
-</span><span data-line="2208"><span class="k">class</span><span class="w"> </span><span class="nc">IRAConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="2209">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="2202">    <span class="n">phva_atoms</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2203">        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;All&quot;</span><span class="p">,</span>
+</span><span data-line="2204">        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+</span><span data-line="2205">            <span class="s2">&quot;PHVA mobile/active atoms for the Davidson Ritz space (not free/fixed): &quot;</span>
+</span><span data-line="2206">            <span class="s2">&quot;comma-delimited indices or &#39;All&#39; for every free atom.&quot;</span>
+</span><span data-line="2207">        <span class="p">),</span>
+</span><span data-line="2208">    <span class="p">)</span>
+</span><span data-line="2209">
 </span><span data-line="2210">
-</span><span data-line="2211">    <span class="n">distance_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2212">        <span class="n">default</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
-</span><span data-line="2213">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Distance threshold for atom matching in structure comparison.&quot;</span><span class="p">,</span>
-</span><span data-line="2214">    <span class="p">)</span>
-</span><span data-line="2215">    <span class="n">symmetry_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2216">        <span class="n">default</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-</span><span data-line="2217">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Threshold for symmetry detection (SOFI algorithm).&quot;</span><span class="p">,</span>
-</span><span data-line="2218">    <span class="p">)</span>
-</span><span data-line="2219">    <span class="n">use_pbc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2220">        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-</span><span data-line="2221">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Use periodic boundary conditions for structure comparison.&quot;</span><span class="p">,</span>
-</span><span data-line="2222">    <span class="p">)</span>
-</span><span data-line="2223">
-</span><span data-line="2224">
-</span><span data-line="2225"><span class="k">class</span><span class="w"> </span><span class="nc">BGSDConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="2226">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="2227">
-</span><span data-line="2228">    <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2229">        <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
-</span><span data-line="2230">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Bias prefactor for the BGSD objective.&quot;</span><span class="p">,</span>
-</span><span data-line="2231">    <span class="p">)</span>
-</span><span data-line="2232">    <span class="n">beta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2233">        <span class="n">default</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
-</span><span data-line="2234">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Energy offset used in the BGSD bias term.&quot;</span><span class="p">,</span>
-</span><span data-line="2235">    <span class="p">)</span>
-</span><span data-line="2236">    <span class="n">gradientfinitedifference</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2237">        <span class="n">default</span><span class="o">=</span><span class="mf">0.000001</span><span class="p">,</span>
-</span><span data-line="2238">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Finite-difference step used to estimate the BGSD gradient.&quot;</span><span class="p">,</span>
-</span><span data-line="2239">    <span class="p">)</span>
-</span><span data-line="2240">    <span class="n">Hforceconvergence</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2241">        <span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
-</span><span data-line="2242">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Convergence threshold for the Hessian-like force component.&quot;</span><span class="p">,</span>
-</span><span data-line="2243">    <span class="p">)</span>
-</span><span data-line="2244">    <span class="n">grad2energyconvergence</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2245">        <span class="n">default</span><span class="o">=</span><span class="mf">0.000001</span><span class="p">,</span>
-</span><span data-line="2246">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Convergence threshold for the squared-gradient energy criterion.&quot;</span><span class="p">,</span>
-</span><span data-line="2247">    <span class="p">)</span>
-</span><span data-line="2248">    <span class="n">grad2forceconvergence</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2249">        <span class="n">default</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span>
-</span><span data-line="2250">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Convergence threshold for the squared-gradient force criterion.&quot;</span><span class="p">,</span>
-</span><span data-line="2251">    <span class="p">)</span>
-</span><span data-line="2252">
-</span><span data-line="2253">
-</span><span data-line="2254"><span class="k">class</span><span class="w"> </span><span class="nc">HessianConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="2255">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="2256">    <span class="n">phva_atoms</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2257">        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;All&quot;</span><span class="p">,</span>
-</span><span data-line="2258">        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-</span><span data-line="2259">            <span class="s2">&quot;PHVA mobile/active atoms displaced in the Hessian FD (not free/fixed): &quot;</span>
-</span><span data-line="2260">            <span class="s2">&quot;comma-delimited indices, e.g. 0,1,2, or &#39;All&#39; for every free atom.&quot;</span>
-</span><span data-line="2261">        <span class="p">),</span>
+</span><span data-line="2211"><span class="k">class</span><span class="w"> </span><span class="nc">ARTnConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="2212">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="2213">
+</span><span data-line="2214">    <span class="n">push_step_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2215">        <span class="n">default</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+</span><span data-line="2216">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Step size for the initial push away from the minimum, in Angstroms.&quot;</span><span class="p">,</span>
+</span><span data-line="2217">    <span class="p">)</span>
+</span><span data-line="2218">    <span class="n">force_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2219">        <span class="n">default</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+</span><span data-line="2220">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Force convergence criterion for saddle point, in eV/Angstrom. Maps to pARTn&#39;s forc_thr.&quot;</span><span class="p">,</span>
+</span><span data-line="2221">    <span class="p">)</span>
+</span><span data-line="2222">    <span class="n">max_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2223">        <span class="n">default</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+</span><span data-line="2224">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum number of ARTn iterations.&quot;</span><span class="p">,</span>
+</span><span data-line="2225">    <span class="p">)</span>
+</span><span data-line="2226">    <span class="n">ninit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2227">        <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="2228">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Number of initial push steps before Lanczos eigenmode estimation. -1 keeps pARTn&#39;s built-in default. 0 skips the push phase and goes directly to Lanczos (appropriate when eOn supplies the displacement). Larger values let ARTn explore further from the minimum.&quot;</span><span class="p">,</span>
+</span><span data-line="2229">    <span class="p">)</span>
+</span><span data-line="2230">    <span class="n">nperp_limitation</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2231">        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+</span><span data-line="2232">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Comma-separated ints controlling max perp-relax steps per Lanczos cycle. &#39;default&#39; uses pARTn defaults. &#39;-1&#39; for unlimited (smooth potentials). &#39;20,30&#39; for ML potentials.&quot;</span><span class="p">,</span>
+</span><span data-line="2233">    <span class="p">)</span>
+</span><span data-line="2234">    <span class="n">lanczos_min_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2235">        <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="2236">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Minimum Lanczos iterations before convergence check. -1 uses pARTn default (3). Set to 1 for refinement near a known saddle.&quot;</span><span class="p">,</span>
+</span><span data-line="2237">    <span class="p">)</span>
+</span><span data-line="2238">    <span class="n">nsmooth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2239">        <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="2240">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Number of smooth interpolation steps between push and eigenvector. -1 uses pARTn default. 0 disables smoothing.&quot;</span><span class="p">,</span>
+</span><span data-line="2241">    <span class="p">)</span>
+</span><span data-line="2242">    <span class="n">filin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2243">        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="2244">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Path to an artn.in style input file. Empty keeps pARTn&#39;s post-artn_create NAN_STR sentinel (&#39;BBBB&#39;), so no file is read and all parameters come from this [ARTn] section. A non-empty value must name a file on disk; eOn checks before pARTn setup and aborts with a clear error when missing.&quot;</span><span class="p">,</span>
+</span><span data-line="2245">    <span class="p">)</span>
+</span><span data-line="2246">
+</span><span data-line="2247">
+</span><span data-line="2248"><span class="k">class</span><span class="w"> </span><span class="nc">IRAConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="2249">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="2250">
+</span><span data-line="2251">    <span class="n">distance_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2252">        <span class="n">default</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+</span><span data-line="2253">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Distance threshold for atom matching in structure comparison.&quot;</span><span class="p">,</span>
+</span><span data-line="2254">    <span class="p">)</span>
+</span><span data-line="2255">    <span class="n">symmetry_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2256">        <span class="n">default</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+</span><span data-line="2257">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Threshold for symmetry detection (SOFI algorithm).&quot;</span><span class="p">,</span>
+</span><span data-line="2258">    <span class="p">)</span>
+</span><span data-line="2259">    <span class="n">use_pbc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2260">        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span data-line="2261">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Use periodic boundary conditions for structure comparison.&quot;</span><span class="p">,</span>
 </span><span data-line="2262">    <span class="p">)</span>
-</span><span data-line="2263">    <span class="n">zero_freq_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2264">        <span class="n">default</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The value assigned to zero frequencies.&quot;</span>
-</span><span data-line="2265">    <span class="p">)</span>
-</span><span data-line="2266">
+</span><span data-line="2263">
+</span><span data-line="2264">
+</span><span data-line="2265"><span class="k">class</span><span class="w"> </span><span class="nc">BGSDConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="2266">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span><span data-line="2267">
+</span><span data-line="2268">    <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2269">        <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+</span><span data-line="2270">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Bias prefactor for the BGSD objective.&quot;</span><span class="p">,</span>
+</span><span data-line="2271">    <span class="p">)</span>
+</span><span data-line="2272">    <span class="n">beta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2273">        <span class="n">default</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+</span><span data-line="2274">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Energy offset used in the BGSD bias term.&quot;</span><span class="p">,</span>
+</span><span data-line="2275">    <span class="p">)</span>
+</span><span data-line="2276">    <span class="n">gradientfinitedifference</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2277">        <span class="n">default</span><span class="o">=</span><span class="mf">0.000001</span><span class="p">,</span>
+</span><span data-line="2278">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Finite-difference step used to estimate the BGSD gradient.&quot;</span><span class="p">,</span>
+</span><span data-line="2279">    <span class="p">)</span>
+</span><span data-line="2280">    <span class="n">Hforceconvergence</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2281">        <span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+</span><span data-line="2282">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Convergence threshold for the Hessian-like force component.&quot;</span><span class="p">,</span>
+</span><span data-line="2283">    <span class="p">)</span>
+</span><span data-line="2284">    <span class="n">grad2energyconvergence</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2285">        <span class="n">default</span><span class="o">=</span><span class="mf">0.000001</span><span class="p">,</span>
+</span><span data-line="2286">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Convergence threshold for the squared-gradient energy criterion.&quot;</span><span class="p">,</span>
+</span><span data-line="2287">    <span class="p">)</span>
+</span><span data-line="2288">    <span class="n">grad2forceconvergence</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2289">        <span class="n">default</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span>
+</span><span data-line="2290">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Convergence threshold for the squared-gradient force criterion.&quot;</span><span class="p">,</span>
+</span><span data-line="2291">    <span class="p">)</span>
+</span><span data-line="2292">
+</span><span data-line="2293">
+</span><span data-line="2294"><span class="k">class</span><span class="w"> </span><span class="nc">HessianConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="2295">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="2296">    <span class="n">phva_atoms</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2297">        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;All&quot;</span><span class="p">,</span>
+</span><span data-line="2298">        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+</span><span data-line="2299">            <span class="s2">&quot;PHVA mobile/active atoms displaced in the Hessian FD (not free/fixed): &quot;</span>
+</span><span data-line="2300">            <span class="s2">&quot;comma-delimited indices, e.g. 0,1,2, or &#39;All&#39; for every free atom.&quot;</span>
+</span><span data-line="2301">        <span class="p">),</span>
+</span><span data-line="2302">    <span class="p">)</span>
+</span><span data-line="2303">    <span class="n">zero_freq_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2304">        <span class="n">default</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The value assigned to zero frequencies.&quot;</span>
+</span><span data-line="2305">    <span class="p">)</span>
+</span><span data-line="2306">
+</span><span data-line="2307">
 <div class="viewcode-block" id="DynamicsConfig">
 <a class="viewcode-back" href="../../../user_guide/dynamics.html#eon.schema.DynamicsConfig">[docs]</a>
-</span><span data-line="2268"><span class="k">class</span><span class="w"> </span><span class="nc">DynamicsConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="2269">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="2270">
-</span><span data-line="2271">    <span class="n">time_step</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2272">        <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The duration of each MD step, in femtoseconds.&quot;</span>
-</span><span data-line="2273">    <span class="p">)</span>
-</span><span data-line="2274">    <span class="n">time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2275">        <span class="n">default</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">,</span>
-</span><span data-line="2276">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Total MD time, in femtoseconds.&quot;</span><span class="p">,</span>
-</span><span data-line="2277">    <span class="p">)</span>
-</span><span data-line="2278">    <span class="n">thermostat</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;andersen&quot;</span><span class="p">,</span> <span class="s2">&quot;langevin&quot;</span><span class="p">,</span> <span class="s2">&quot;nose_hoover&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2279">        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Thermostat to use for the dynamics simulation.&quot;</span>
-</span><span data-line="2280">    <span class="p">)</span>
-</span><span data-line="2281"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="2282"><span class="sd">    Options:</span>
-</span><span data-line="2283"><span class="sd">    - ``none``: NVE dynamics with the verlet algorithm. Initial velocities set by temperature.</span>
-</span><span data-line="2284"><span class="sd">    - ``andersen``: Andersen thermostat with the Verlet algorithm.</span>
-</span><span data-line="2285"><span class="sd">    - ``langevin``: Langevin thermostat with the Verlet algorithm.</span>
-</span><span data-line="2286"><span class="sd">    - ``nose_hoover``: Nosé-Hoover thermostat with the Verlet algorithm.</span>
-</span><span data-line="2287"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="2288">    <span class="n">andersen_collision_period</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2289">        <span class="n">default</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span>
-</span><span data-line="2290">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The collision period (in fs) for the Andersen thermostat.&quot;</span><span class="p">,</span>
-</span><span data-line="2291">    <span class="p">)</span>
-</span><span data-line="2292">    <span class="n">andersen_alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2293">        <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The collision strength in the Andersen thermostat.&quot;</span>
-</span><span data-line="2294">    <span class="p">)</span>
-</span><span data-line="2295">    <span class="n">nose_mass</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2296">        <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-</span><span data-line="2297">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The effective mass of the additional degree of freedom in the Nosé-Hoover thermostat, which determines the coupling frequency of the thermostat.&quot;</span><span class="p">,</span>
-</span><span data-line="2298">    <span class="p">)</span>
-</span><span data-line="2299">    <span class="n">langevin_friction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2300">        <span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
-</span><span data-line="2301">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The damping coefficient for Langevin dynamics (1/fs).&quot;</span><span class="p">,</span>
-</span><span data-line="2302">    <span class="p">)</span></div>
+</span><span data-line="2308"><span class="k">class</span><span class="w"> </span><span class="nc">DynamicsConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="2309">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="2310">
+</span><span data-line="2311">    <span class="n">time_step</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2312">        <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The duration of each MD step, in femtoseconds.&quot;</span>
+</span><span data-line="2313">    <span class="p">)</span>
+</span><span data-line="2314">    <span class="n">time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2315">        <span class="n">default</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">,</span>
+</span><span data-line="2316">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Total MD time, in femtoseconds.&quot;</span><span class="p">,</span>
+</span><span data-line="2317">    <span class="p">)</span>
+</span><span data-line="2318">    <span class="n">thermostat</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;andersen&quot;</span><span class="p">,</span> <span class="s2">&quot;langevin&quot;</span><span class="p">,</span> <span class="s2">&quot;nose_hoover&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2319">        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Thermostat to use for the dynamics simulation.&quot;</span>
+</span><span data-line="2320">    <span class="p">)</span>
+</span><span data-line="2321"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="2322"><span class="sd">    Options:</span>
+</span><span data-line="2323"><span class="sd">    - ``none``: NVE dynamics with the verlet algorithm. Initial velocities set by temperature.</span>
+</span><span data-line="2324"><span class="sd">    - ``andersen``: Andersen thermostat with the Verlet algorithm.</span>
+</span><span data-line="2325"><span class="sd">    - ``langevin``: Langevin thermostat with the Verlet algorithm.</span>
+</span><span data-line="2326"><span class="sd">    - ``nose_hoover``: Nosé-Hoover thermostat with the Verlet algorithm.</span>
+</span><span data-line="2327"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="2328">    <span class="n">andersen_collision_period</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2329">        <span class="n">default</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span>
+</span><span data-line="2330">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The collision period (in fs) for the Andersen thermostat.&quot;</span><span class="p">,</span>
+</span><span data-line="2331">    <span class="p">)</span>
+</span><span data-line="2332">    <span class="n">andersen_alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2333">        <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The collision strength in the Andersen thermostat.&quot;</span>
+</span><span data-line="2334">    <span class="p">)</span>
+</span><span data-line="2335">    <span class="n">nose_mass</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2336">        <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+</span><span data-line="2337">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The effective mass of the additional degree of freedom in the Nosé-Hoover thermostat, which determines the coupling frequency of the thermostat.&quot;</span><span class="p">,</span>
+</span><span data-line="2338">    <span class="p">)</span>
+</span><span data-line="2339">    <span class="n">langevin_friction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2340">        <span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+</span><span data-line="2341">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The damping coefficient for Langevin dynamics (1/fs).&quot;</span><span class="p">,</span>
+</span><span data-line="2342">    <span class="p">)</span></div>
 
-</span><span data-line="2303">
-</span><span data-line="2304">
+</span><span data-line="2343">
+</span><span data-line="2344">
 <div class="viewcode-block" id="ParallelReplicaConfig">
 <a class="viewcode-back" href="../../../user_guide/parallel_replica.html#eon.schema.ParallelReplicaConfig">[docs]</a>
-</span><span data-line="2305"><span class="k">class</span><span class="w"> </span><span class="nc">ParallelReplicaConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="2306">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="2307">
-</span><span data-line="2308">    <span class="n">dephase_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2309">        <span class="n">default</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">,</span>
-</span><span data-line="2310">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Time (in fs) to decorrelate the replica trajectories.&quot;</span><span class="p">,</span>
-</span><span data-line="2311">    <span class="p">)</span>
-</span><span data-line="2312"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="2313"><span class="sd">    The momenta will be inverted when reaching the dividing surface to prevent</span>
-</span><span data-line="2314"><span class="sd">    transitions occurring during this time.</span>
-</span><span data-line="2315"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="2316">
-</span><span data-line="2317">    <span class="n">state_check_interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2318">        <span class="n">default</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Frequency (in fs) to check the system state.&quot;</span>
-</span><span data-line="2319">    <span class="p">)</span>
-</span><span data-line="2320"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="2321"><span class="sd">    Every ``state_check_interval``, the current configuration is minimized and</span>
-</span><span data-line="2322"><span class="sd">    compared to the initial state minimum to decide if a transition to a new</span>
-</span><span data-line="2323"><span class="sd">    state has occurred. When :any:`refine_transition` is set to true, the code</span>
-</span><span data-line="2324"><span class="sd">    will keep a buffer of configurations so that the transition time can be</span>
-</span><span data-line="2325"><span class="sd">    determined to more precision than ``state_check_interval``.</span>
-</span><span data-line="2326"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="2327">
-</span><span data-line="2328">    <span class="n">refine_transition</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2329">        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Whether the transition time is refined.&quot;</span>
-</span><span data-line="2330">    <span class="p">)</span>
-</span><span data-line="2331"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="2332"><span class="sd">    When this option is true, an array of (:any:`state_check_interval`/</span>
-</span><span data-line="2333"><span class="sd">    :any:`state_save_interval`) configurations along the history of the</span>
-</span><span data-line="2334"><span class="sd">    trajectory is saved. A binary search is then used to determine the</span>
-</span><span data-line="2335"><span class="sd">    transition time. When this option is false, the transition time is taken to</span>
-</span><span data-line="2336"><span class="sd">    be when the new state was found. This function reduces the need for small</span>
-</span><span data-line="2337"><span class="sd">    values of :any:`state_check_interval`; the precision of the transition time</span>
-</span><span data-line="2338"><span class="sd">    is :any:`state_save_interval` * :any:`dynamics time_step</span>
-</span><span data-line="2339"><span class="sd">    &lt;eon.schema.DynamicsConfig.time_step&gt;`.</span>
-</span><span data-line="2340"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="2341">
-</span><span data-line="2342">    <span class="n">state_save_interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2343">        <span class="n">default</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="mf">1000.0</span><span class="p">,</span>  <span class="c1"># 0.1 * state_check_interval</span>
-</span><span data-line="2344">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Frequency to record system state.&quot;</span><span class="p">,</span>
-</span><span data-line="2345">    <span class="p">)</span>
-</span><span data-line="2346"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="2347"><span class="sd">    How often the system is recorded to the buffer array when the</span>
-</span><span data-line="2348"><span class="sd">    :any:`refine_transition` option is</span>
-</span><span data-line="2349"><span class="sd">    activated. Increasing the value of</span>
-</span><span data-line="2350"><span class="sd">    :any:`state_save_interval` lowers the</span>
-</span><span data-line="2351"><span class="sd">    precision of the transition time estimate but also reduces memory usage and</span>
-</span><span data-line="2352"><span class="sd">    speeds up refinement of the transition step.</span>
-</span><span data-line="2353"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="2354">
-</span><span data-line="2355">    <span class="n">post_transition_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2356">        <span class="n">default</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">,</span>
-</span><span data-line="2357">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Additional time (in fs) after a new state is found.&quot;</span><span class="p">,</span>
-</span><span data-line="2358">    <span class="p">)</span>
-</span><span data-line="2359"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="2360"><span class="sd">    A state check will be employed after this post_transition_time to confirm</span>
-</span><span data-line="2361"><span class="sd">    that the state is stable. This additional check helps avoid meta-stable</span>
-</span><span data-line="2362"><span class="sd">    states. A value similar to</span>
-</span><span data-line="2363"><span class="sd">    :any:`dephase_time` is recommended.</span>
-</span><span data-line="2364"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="2365">
-</span><span data-line="2366">    <span class="n">stop_after_transition</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2367">        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Whether to stop the job when a new state is found.&quot;</span>
-</span><span data-line="2368">    <span class="p">)</span>
-</span><span data-line="2369">
-</span><span data-line="2370">    <span class="n">dephase_loop_stop</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2371">        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Whether to stop the dephase loop.&quot;</span>
-</span><span data-line="2372">    <span class="p">)</span>
-</span><span data-line="2373">
-</span><span data-line="2374">    <span class="n">dephase_loop_max</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2375">        <span class="n">default</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum number of dephase loops.&quot;</span>
-</span><span data-line="2376">    <span class="p">)</span></div>
-
-</span><span data-line="2377">
-</span><span data-line="2378">
-<div class="viewcode-block" id="HyperdynamicsConfig">
-<a class="viewcode-back" href="../../../user_guide/hyperdynamics.html#eon.schema.HyperdynamicsConfig">[docs]</a>
-</span><span data-line="2379"><span class="k">class</span><span class="w"> </span><span class="nc">HyperdynamicsConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="2380">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="2345"><span class="k">class</span><span class="w"> </span><span class="nc">ParallelReplicaConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="2346">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="2347">
+</span><span data-line="2348">    <span class="n">dephase_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2349">        <span class="n">default</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">,</span>
+</span><span data-line="2350">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Time (in fs) to decorrelate the replica trajectories.&quot;</span><span class="p">,</span>
+</span><span data-line="2351">    <span class="p">)</span>
+</span><span data-line="2352"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="2353"><span class="sd">    The momenta will be inverted when reaching the dividing surface to prevent</span>
+</span><span data-line="2354"><span class="sd">    transitions occurring during this time.</span>
+</span><span data-line="2355"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="2356">
+</span><span data-line="2357">    <span class="n">state_check_interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2358">        <span class="n">default</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Frequency (in fs) to check the system state.&quot;</span>
+</span><span data-line="2359">    <span class="p">)</span>
+</span><span data-line="2360"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="2361"><span class="sd">    Every ``state_check_interval``, the current configuration is minimized and</span>
+</span><span data-line="2362"><span class="sd">    compared to the initial state minimum to decide if a transition to a new</span>
+</span><span data-line="2363"><span class="sd">    state has occurred. When :any:`refine_transition` is set to true, the code</span>
+</span><span data-line="2364"><span class="sd">    will keep a buffer of configurations so that the transition time can be</span>
+</span><span data-line="2365"><span class="sd">    determined to more precision than ``state_check_interval``.</span>
+</span><span data-line="2366"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="2367">
+</span><span data-line="2368">    <span class="n">refine_transition</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2369">        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Whether the transition time is refined.&quot;</span>
+</span><span data-line="2370">    <span class="p">)</span>
+</span><span data-line="2371"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="2372"><span class="sd">    When this option is true, an array of (:any:`state_check_interval`/</span>
+</span><span data-line="2373"><span class="sd">    :any:`state_save_interval`) configurations along the history of the</span>
+</span><span data-line="2374"><span class="sd">    trajectory is saved. A binary search is then used to determine the</span>
+</span><span data-line="2375"><span class="sd">    transition time. When this option is false, the transition time is taken to</span>
+</span><span data-line="2376"><span class="sd">    be when the new state was found. This function reduces the need for small</span>
+</span><span data-line="2377"><span class="sd">    values of :any:`state_check_interval`; the precision of the transition time</span>
+</span><span data-line="2378"><span class="sd">    is :any:`state_save_interval` * :any:`dynamics time_step</span>
+</span><span data-line="2379"><span class="sd">    &lt;eon.schema.DynamicsConfig.time_step&gt;`.</span>
+</span><span data-line="2380"><span class="sd">    &quot;&quot;&quot;</span>
 </span><span data-line="2381">
-</span><span data-line="2382">    <span class="n">bias_potential</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;bond_boost&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2383">        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Type of bias potential to use.&quot;</span>
-</span><span data-line="2384">    <span class="p">)</span>
-</span><span data-line="2385"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="2386"><span class="sd">    Options:</span>
-</span><span data-line="2387"><span class="sd">    - ``none``: With no bias potential, run regular MD.</span>
-</span><span data-line="2388"><span class="sd">    - ``bond_boost``: Bond boost method.</span>
-</span><span data-line="2389"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="2390">
-</span><span data-line="2391">    <span class="n">bb_dvmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2392">        <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The magnitude of the bond-boost bias potential.&quot;</span>
-</span><span data-line="2393">    <span class="p">)</span>
+</span><span data-line="2382">    <span class="n">state_save_interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2383">        <span class="n">default</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="mf">1000.0</span><span class="p">,</span>  <span class="c1"># 0.1 * state_check_interval</span>
+</span><span data-line="2384">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Frequency to record system state.&quot;</span><span class="p">,</span>
+</span><span data-line="2385">    <span class="p">)</span>
+</span><span data-line="2386"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="2387"><span class="sd">    How often the system is recorded to the buffer array when the</span>
+</span><span data-line="2388"><span class="sd">    :any:`refine_transition` option is</span>
+</span><span data-line="2389"><span class="sd">    activated. Increasing the value of</span>
+</span><span data-line="2390"><span class="sd">    :any:`state_save_interval` lowers the</span>
+</span><span data-line="2391"><span class="sd">    precision of the transition time estimate but also reduces memory usage and</span>
+</span><span data-line="2392"><span class="sd">    speeds up refinement of the transition step.</span>
+</span><span data-line="2393"><span class="sd">    &quot;&quot;&quot;</span>
 </span><span data-line="2394">
-</span><span data-line="2395">    <span class="n">bb_rmd_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2396">        <span class="n">default</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span>
-</span><span data-line="2397">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Regular MD duration (in fs) to determine equilibrium bond length before adding bias potential.&quot;</span><span class="p">,</span>
+</span><span data-line="2395">    <span class="n">post_transition_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2396">        <span class="n">default</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">,</span>
+</span><span data-line="2397">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Additional time (in fs) after a new state is found.&quot;</span><span class="p">,</span>
 </span><span data-line="2398">    <span class="p">)</span>
-</span><span data-line="2399">
-</span><span data-line="2400">    <span class="n">bb_boost_atom_list</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2401">        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;ALL&quot;</span><span class="p">,</span>
-</span><span data-line="2402">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The atoms that will be displaced in the calculation: a comma delimited list of atom indices, e.g. 0,1,2. Default is &#39;All&#39;.&quot;</span><span class="p">,</span>
-</span><span data-line="2403">    <span class="p">)</span>
-</span><span data-line="2404">
-</span><span data-line="2405">    <span class="n">bb_rcut</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2406">        <span class="n">default</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
-</span><span data-line="2407">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Cutoff distance (in Angstroms) for bonds included in the bond-boost potential.&quot;</span><span class="p">,</span>
+</span><span data-line="2399"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="2400"><span class="sd">    A state check will be employed after this post_transition_time to confirm</span>
+</span><span data-line="2401"><span class="sd">    that the state is stable. This additional check helps avoid meta-stable</span>
+</span><span data-line="2402"><span class="sd">    states. A value similar to</span>
+</span><span data-line="2403"><span class="sd">    :any:`dephase_time` is recommended.</span>
+</span><span data-line="2404"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="2405">
+</span><span data-line="2406">    <span class="n">stop_after_transition</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2407">        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Whether to stop the job when a new state is found.&quot;</span>
 </span><span data-line="2408">    <span class="p">)</span>
 </span><span data-line="2409">
-</span><span data-line="2410">    <span class="n">bb_stretch_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2411">        <span class="n">default</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Defines the bond-boost dividing surface.&quot;</span>
+</span><span data-line="2410">    <span class="n">dephase_loop_stop</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2411">        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Whether to stop the dephase loop.&quot;</span>
 </span><span data-line="2412">    <span class="p">)</span>
-</span><span data-line="2413"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="2414"><span class="sd">    It should be smaller than the maximum fractional nearest-neighbor bond stretch or compression at any transition state.</span>
-</span><span data-line="2415"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="2416">
-</span><span data-line="2417">    <span class="n">bb_ds_curvature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="2418">        <span class="n">default</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Curvature near the bond-boost dividing surface.&quot;</span>
-</span><span data-line="2419">    <span class="p">)</span>
-</span><span data-line="2420"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="2421"><span class="sd">    It should have a value &lt;= 1. We recommend the value to be 0.9-0.98.</span>
-</span><span data-line="2422"><span class="sd">    &quot;&quot;&quot;</span></div>
+</span><span data-line="2413">
+</span><span data-line="2414">    <span class="n">dephase_loop_max</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2415">        <span class="n">default</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum number of dephase loops.&quot;</span>
+</span><span data-line="2416">    <span class="p">)</span></div>
 
-</span><span data-line="2423">
-</span><span data-line="2424">
-</span><span data-line="2425"><span class="k">class</span><span class="w"> </span><span class="nc">GPRDimerConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="2426">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="2427">
-</span><span data-line="2428">    <span class="n">finite_angle</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.005</span><span class="p">)</span>
-</span><span data-line="2429">    <span class="n">converged_angle</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
-</span><span data-line="2430">    <span class="n">relaxation_converged_angle</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.005</span><span class="p">)</span>
-</span><span data-line="2431">    <span class="n">max_initial_rotation_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
-</span><span data-line="2432">    <span class="n">max_relaxation_rotation_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-</span><span data-line="2433">    <span class="n">divisor_t_dimer</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-</span><span data-line="2434">    <span class="n">max_outer_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
-</span><span data-line="2435">    <span class="n">max_inner_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-</span><span data-line="2436">    <span class="n">max_midpoint_displacement</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-</span><span data-line="2437">    <span class="n">rotation_opt_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;lbfgs&quot;</span><span class="p">)</span>
-</span><span data-line="2438">    <span class="n">translation_opt_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;lbfgs&quot;</span><span class="p">)</span>
-</span><span data-line="2439">    <span class="n">active_radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
-</span><span data-line="2440">    <span class="n">dimer_separation</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
-</span><span data-line="2441">    <span class="n">force_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
-</span><span data-line="2442">
-</span><span data-line="2443">
-</span><span data-line="2444"><span class="k">class</span><span class="w"> </span><span class="nc">DistributedReplicaConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="2445">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="2446">
-</span><span data-line="2447">    <span class="n">sampling_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;sampling steps&quot;</span><span class="p">)</span>
-</span><span data-line="2448">    <span class="n">target_temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">300.0</span><span class="p">)</span>
-</span><span data-line="2449">    <span class="n">balance_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
-</span><span data-line="2450">
-</span><span data-line="2451">
-</span><span data-line="2452"><span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="2453">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="2454">
-</span><span data-line="2455">    <span class="n">main</span><span class="p">:</span> <span class="n">MainConfig</span>
-</span><span data-line="2456">    <span class="n">structure_comparison</span><span class="p">:</span> <span class="n">StructureComparisonConfig</span>
-</span><span data-line="2457">    <span class="n">akmc</span><span class="p">:</span> <span class="n">AKMCConfig</span>
-</span><span data-line="2458">    <span class="n">basin_hopping</span><span class="p">:</span> <span class="n">BasinHoppingConfig</span>
-</span><span data-line="2459">    <span class="n">paths</span><span class="p">:</span> <span class="n">PathsConfig</span>
-</span><span data-line="2460">    <span class="n">dimer</span><span class="p">:</span> <span class="n">DimerConfig</span>
-</span><span data-line="2461">    <span class="n">neb</span><span class="p">:</span> <span class="n">NudgedElasticBandConfig</span>
-</span><span data-line="2462">    <span class="n">lanczos</span><span class="p">:</span> <span class="n">LanczosConfig</span>
-</span><span data-line="2463">    <span class="n">davidson</span><span class="p">:</span> <span class="n">DavidsonConfig</span>
-</span><span data-line="2464">    <span class="n">hessian</span><span class="p">:</span> <span class="n">HessianConfig</span>
-</span><span data-line="2465">    <span class="n">communicator</span><span class="p">:</span> <span class="n">CommunicatorConfig</span>
-</span><span data-line="2466">    <span class="n">process_search</span><span class="p">:</span> <span class="n">ProcessSearchConfig</span>
-</span><span data-line="2467">    <span class="n">prefactor</span><span class="p">:</span> <span class="n">PrefactorConfig</span>
-</span><span data-line="2468">    <span class="n">saddle_search</span><span class="p">:</span> <span class="n">SaddleSearchConfig</span>
-</span><span data-line="2469">    <span class="n">potential</span><span class="p">:</span> <span class="n">PotentialConfig</span>
-</span><span data-line="2470">    <span class="n">refine</span><span class="p">:</span> <span class="n">RefineConfig</span>
-</span><span data-line="2471">    <span class="n">kdb</span><span class="p">:</span> <span class="n">KDBConfig</span>
-</span><span data-line="2472">    <span class="n">dynamics</span><span class="p">:</span> <span class="n">DynamicsConfig</span>
-</span><span data-line="2473">    <span class="n">parrep</span><span class="p">:</span> <span class="n">ParallelReplicaConfig</span>
-</span><span data-line="2474">    <span class="n">hyperdyn</span><span class="p">:</span> <span class="n">HyperdynamicsConfig</span>
-</span><span data-line="2475">    <span class="n">recycling</span><span class="p">:</span> <span class="n">RecyclingConfig</span>
-</span><span data-line="2476">    <span class="n">coarse_graining</span><span class="p">:</span> <span class="n">CoarseGrainingConfig</span>
-</span><span data-line="2477">    <span class="n">optimizer</span><span class="p">:</span> <span class="n">OptimizerConfig</span>
-</span><span data-line="2478">    <span class="n">distributed_replica</span><span class="p">:</span> <span class="n">DistributedReplicaConfig</span>
-</span><span data-line="2479">    <span class="n">gprdimer</span><span class="p">:</span> <span class="n">GPRDimerConfig</span>
-</span><span data-line="2480">    <span class="n">bgsd</span><span class="p">:</span> <span class="n">BGSDConfig</span>
-</span><span data-line="2481">    <span class="n">artn</span><span class="p">:</span> <span class="n">ARTnConfig</span>
-</span><span data-line="2482">    <span class="n">ira</span><span class="p">:</span> <span class="n">IRAConfig</span>
-</span><span data-line="2483">    <span class="n">debug</span><span class="p">:</span> <span class="n">DebugConfig</span>
-</span><span data-line="2484">    <span class="n">serve</span><span class="p">:</span> <span class="n">ServeConfig</span>
-</span><span data-line="2485">
-</span><span data-line="2486">    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;communicator&quot;</span><span class="p">)</span>
-</span><span data-line="2487">    <span class="k">def</span><span class="w"> </span><span class="nf">check_communicator</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-</span><span data-line="2488">        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;local&quot;</span><span class="p">:</span>
-</span><span data-line="2489">            <span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">client_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">number_of_CPUs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span>
-</span><span data-line="2490">                <span class="s2">&quot;local communicator requires client_path and number_of_CPUs&quot;</span>
-</span><span data-line="2491">            <span class="p">)</span>
-</span><span data-line="2492">        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;cluster&quot;</span><span class="p">:</span>
-</span><span data-line="2493">            <span class="k">assert</span> <span class="p">(</span>
-</span><span data-line="2494">                <span class="n">v</span><span class="o">.</span><span class="n">script_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-</span><span data-line="2495">                <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">name_prefix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-</span><span data-line="2496">                <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">queued_jobs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-</span><span data-line="2497">                <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">cancel_job</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-</span><span data-line="2498">                <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">submit_job</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-</span><span data-line="2499">            <span class="p">),</span> <span class="p">(</span>
-</span><span data-line="2500">                <span class="s2">&quot;cluster communicator requires script_path, name_prefix, queued_jobs, cancel_job, and submit_job&quot;</span>
-</span><span data-line="2501">            <span class="p">)</span>
-</span><span data-line="2502">        <span class="k">return</span> <span class="n">v</span>
-</span><span data-line="2503">
-</span><span data-line="2504">    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coarse_graining&quot;</span><span class="p">)</span>
-</span><span data-line="2505">    <span class="k">def</span><span class="w"> </span><span class="nf">check_coarse_graining</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-</span><span data-line="2506">        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">superbasin_scheme</span> <span class="o">==</span> <span class="s2">&quot;transition_counting&quot;</span><span class="p">:</span>
-</span><span data-line="2507">            <span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">number_of_transitions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span>
-</span><span data-line="2508">                <span class="s2">&quot;transition_counting scheme requires number_of_transitions&quot;</span>
-</span><span data-line="2509">            <span class="p">)</span>
-</span><span data-line="2510">        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">superbasin_scheme</span> <span class="o">==</span> <span class="s2">&quot;energy_level&quot;</span><span class="p">:</span>
-</span><span data-line="2511">            <span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">energy_increment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span>
-</span><span data-line="2512">                <span class="s2">&quot;energy_level scheme requires energy_increment&quot;</span>
-</span><span data-line="2513">            <span class="p">)</span>
-</span><span data-line="2514">        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">use_askmc</span><span class="p">:</span>
-</span><span data-line="2515">            <span class="k">assert</span> <span class="p">(</span>
-</span><span data-line="2516">                <span class="n">v</span><span class="o">.</span><span class="n">askmc_confidence</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-</span><span data-line="2517">                <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">askmc_barrier_raise_param</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-</span><span data-line="2518">                <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">askmc_high_barrier_def</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-</span><span data-line="2519">                <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">askmc_barrier_test_on</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-</span><span data-line="2520">                <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">askmc_connections_test_on</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-</span><span data-line="2521">            <span class="p">),</span> <span class="p">(</span>
-</span><span data-line="2522">                <span class="s2">&quot;askmc requires askmc_confidence, askmc_barrier_raise_param, askmc_high_barrier_def, askmc_barrier_test_on, and askmc_connections_test_on&quot;</span>
-</span><span data-line="2523">            <span class="p">)</span>
-</span><span data-line="2524">        <span class="k">return</span> <span class="n">v</span>
+</span><span data-line="2417">
+</span><span data-line="2418">
+<div class="viewcode-block" id="HyperdynamicsConfig">
+<a class="viewcode-back" href="../../../user_guide/hyperdynamics.html#eon.schema.HyperdynamicsConfig">[docs]</a>
+</span><span data-line="2419"><span class="k">class</span><span class="w"> </span><span class="nc">HyperdynamicsConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="2420">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="2421">
+</span><span data-line="2422">    <span class="n">bias_potential</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;bond_boost&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2423">        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Type of bias potential to use.&quot;</span>
+</span><span data-line="2424">    <span class="p">)</span>
+</span><span data-line="2425"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="2426"><span class="sd">    Options:</span>
+</span><span data-line="2427"><span class="sd">    - ``none``: With no bias potential, run regular MD.</span>
+</span><span data-line="2428"><span class="sd">    - ``bond_boost``: Bond boost method.</span>
+</span><span data-line="2429"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="2430">
+</span><span data-line="2431">    <span class="n">bb_dvmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2432">        <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The magnitude of the bond-boost bias potential.&quot;</span>
+</span><span data-line="2433">    <span class="p">)</span>
+</span><span data-line="2434">
+</span><span data-line="2435">    <span class="n">bb_rmd_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2436">        <span class="n">default</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span>
+</span><span data-line="2437">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Regular MD duration (in fs) to determine equilibrium bond length before adding bias potential.&quot;</span><span class="p">,</span>
+</span><span data-line="2438">    <span class="p">)</span>
+</span><span data-line="2439">
+</span><span data-line="2440">    <span class="n">bb_boost_atom_list</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2441">        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;ALL&quot;</span><span class="p">,</span>
+</span><span data-line="2442">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The atoms that will be displaced in the calculation: a comma delimited list of atom indices, e.g. 0,1,2. Default is &#39;All&#39;.&quot;</span><span class="p">,</span>
+</span><span data-line="2443">    <span class="p">)</span>
+</span><span data-line="2444">
+</span><span data-line="2445">    <span class="n">bb_rcut</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2446">        <span class="n">default</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
+</span><span data-line="2447">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Cutoff distance (in Angstroms) for bonds included in the bond-boost potential.&quot;</span><span class="p">,</span>
+</span><span data-line="2448">    <span class="p">)</span>
+</span><span data-line="2449">
+</span><span data-line="2450">    <span class="n">bb_stretch_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2451">        <span class="n">default</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Defines the bond-boost dividing surface.&quot;</span>
+</span><span data-line="2452">    <span class="p">)</span>
+</span><span data-line="2453"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="2454"><span class="sd">    It should be smaller than the maximum fractional nearest-neighbor bond stretch or compression at any transition state.</span>
+</span><span data-line="2455"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="2456">
+</span><span data-line="2457">    <span class="n">bb_ds_curvature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="2458">        <span class="n">default</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Curvature near the bond-boost dividing surface.&quot;</span>
+</span><span data-line="2459">    <span class="p">)</span>
+</span><span data-line="2460"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="2461"><span class="sd">    It should have a value &lt;= 1. We recommend the value to be 0.9-0.98.</span>
+</span><span data-line="2462"><span class="sd">    &quot;&quot;&quot;</span></div>
+
+</span><span data-line="2463">
+</span><span data-line="2464">
+</span><span data-line="2465"><span class="k">class</span><span class="w"> </span><span class="nc">GPRDimerConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="2466">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="2467">
+</span><span data-line="2468">    <span class="n">finite_angle</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.005</span><span class="p">)</span>
+</span><span data-line="2469">    <span class="n">converged_angle</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+</span><span data-line="2470">    <span class="n">relaxation_converged_angle</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.005</span><span class="p">)</span>
+</span><span data-line="2471">    <span class="n">max_initial_rotation_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+</span><span data-line="2472">    <span class="n">max_relaxation_rotation_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span><span data-line="2473">    <span class="n">divisor_t_dimer</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span><span data-line="2474">    <span class="n">max_outer_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+</span><span data-line="2475">    <span class="n">max_inner_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+</span><span data-line="2476">    <span class="n">max_midpoint_displacement</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+</span><span data-line="2477">    <span class="n">rotation_opt_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;lbfgs&quot;</span><span class="p">)</span>
+</span><span data-line="2478">    <span class="n">translation_opt_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;lbfgs&quot;</span><span class="p">)</span>
+</span><span data-line="2479">    <span class="n">active_radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+</span><span data-line="2480">    <span class="n">dimer_separation</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+</span><span data-line="2481">    <span class="n">force_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+</span><span data-line="2482">
+</span><span data-line="2483">
+</span><span data-line="2484"><span class="k">class</span><span class="w"> </span><span class="nc">DistributedReplicaConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="2485">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="2486">
+</span><span data-line="2487">    <span class="n">sampling_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;sampling steps&quot;</span><span class="p">)</span>
+</span><span data-line="2488">    <span class="n">target_temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">300.0</span><span class="p">)</span>
+</span><span data-line="2489">    <span class="n">balance_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+</span><span data-line="2490">
+</span><span data-line="2491">
+</span><span data-line="2492"><span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="2493">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="2494">
+</span><span data-line="2495">    <span class="n">main</span><span class="p">:</span> <span class="n">MainConfig</span>
+</span><span data-line="2496">    <span class="n">structure_comparison</span><span class="p">:</span> <span class="n">StructureComparisonConfig</span>
+</span><span data-line="2497">    <span class="n">akmc</span><span class="p">:</span> <span class="n">AKMCConfig</span>
+</span><span data-line="2498">    <span class="n">basin_hopping</span><span class="p">:</span> <span class="n">BasinHoppingConfig</span>
+</span><span data-line="2499">    <span class="n">paths</span><span class="p">:</span> <span class="n">PathsConfig</span>
+</span><span data-line="2500">    <span class="n">dimer</span><span class="p">:</span> <span class="n">DimerConfig</span>
+</span><span data-line="2501">    <span class="n">neb</span><span class="p">:</span> <span class="n">NudgedElasticBandConfig</span>
+</span><span data-line="2502">    <span class="n">lanczos</span><span class="p">:</span> <span class="n">LanczosConfig</span>
+</span><span data-line="2503">    <span class="n">davidson</span><span class="p">:</span> <span class="n">DavidsonConfig</span>
+</span><span data-line="2504">    <span class="n">hessian</span><span class="p">:</span> <span class="n">HessianConfig</span>
+</span><span data-line="2505">    <span class="n">communicator</span><span class="p">:</span> <span class="n">CommunicatorConfig</span>
+</span><span data-line="2506">    <span class="n">process_search</span><span class="p">:</span> <span class="n">ProcessSearchConfig</span>
+</span><span data-line="2507">    <span class="n">prefactor</span><span class="p">:</span> <span class="n">PrefactorConfig</span>
+</span><span data-line="2508">    <span class="n">saddle_search</span><span class="p">:</span> <span class="n">SaddleSearchConfig</span>
+</span><span data-line="2509">    <span class="n">potential</span><span class="p">:</span> <span class="n">PotentialConfig</span>
+</span><span data-line="2510">    <span class="n">refine</span><span class="p">:</span> <span class="n">RefineConfig</span>
+</span><span data-line="2511">    <span class="n">kdb</span><span class="p">:</span> <span class="n">KDBConfig</span>
+</span><span data-line="2512">    <span class="n">dynamics</span><span class="p">:</span> <span class="n">DynamicsConfig</span>
+</span><span data-line="2513">    <span class="n">parrep</span><span class="p">:</span> <span class="n">ParallelReplicaConfig</span>
+</span><span data-line="2514">    <span class="n">hyperdyn</span><span class="p">:</span> <span class="n">HyperdynamicsConfig</span>
+</span><span data-line="2515">    <span class="n">recycling</span><span class="p">:</span> <span class="n">RecyclingConfig</span>
+</span><span data-line="2516">    <span class="n">coarse_graining</span><span class="p">:</span> <span class="n">CoarseGrainingConfig</span>
+</span><span data-line="2517">    <span class="n">optimizer</span><span class="p">:</span> <span class="n">OptimizerConfig</span>
+</span><span data-line="2518">    <span class="n">distributed_replica</span><span class="p">:</span> <span class="n">DistributedReplicaConfig</span>
+</span><span data-line="2519">    <span class="n">gprdimer</span><span class="p">:</span> <span class="n">GPRDimerConfig</span>
+</span><span data-line="2520">    <span class="n">bgsd</span><span class="p">:</span> <span class="n">BGSDConfig</span>
+</span><span data-line="2521">    <span class="n">artn</span><span class="p">:</span> <span class="n">ARTnConfig</span>
+</span><span data-line="2522">    <span class="n">ira</span><span class="p">:</span> <span class="n">IRAConfig</span>
+</span><span data-line="2523">    <span class="n">debug</span><span class="p">:</span> <span class="n">DebugConfig</span>
+</span><span data-line="2524">    <span class="n">serve</span><span class="p">:</span> <span class="n">ServeConfig</span>
 </span><span data-line="2525">
-</span><span data-line="2526">    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;process_search&quot;</span><span class="p">,</span> <span class="n">always</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="2527">    <span class="k">def</span><span class="w"> </span><span class="nf">update_process_search</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-</span><span data-line="2528">        <span class="n">optimizer_config</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;optimizer&quot;</span><span class="p">)</span>
-</span><span data-line="2529">        <span class="k">if</span> <span class="n">optimizer_config</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">minimization_offset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="2530">            <span class="n">v</span><span class="o">.</span><span class="n">minimization_offset</span> <span class="o">=</span> <span class="n">optimizer_config</span><span class="o">.</span><span class="n">max_move</span>
-</span><span data-line="2531">        <span class="k">return</span> <span class="n">v</span>
+</span><span data-line="2526">    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;communicator&quot;</span><span class="p">)</span>
+</span><span data-line="2527">    <span class="k">def</span><span class="w"> </span><span class="nf">check_communicator</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+</span><span data-line="2528">        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;local&quot;</span><span class="p">:</span>
+</span><span data-line="2529">            <span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">client_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">number_of_CPUs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span>
+</span><span data-line="2530">                <span class="s2">&quot;local communicator requires client_path and number_of_CPUs&quot;</span>
+</span><span data-line="2531">            <span class="p">)</span>
+</span><span data-line="2532">        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;cluster&quot;</span><span class="p">:</span>
+</span><span data-line="2533">            <span class="k">assert</span> <span class="p">(</span>
+</span><span data-line="2534">                <span class="n">v</span><span class="o">.</span><span class="n">script_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</span><span data-line="2535">                <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">name_prefix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</span><span data-line="2536">                <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">queued_jobs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</span><span data-line="2537">                <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">cancel_job</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</span><span data-line="2538">                <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">submit_job</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</span><span data-line="2539">            <span class="p">),</span> <span class="p">(</span>
+</span><span data-line="2540">                <span class="s2">&quot;cluster communicator requires script_path, name_prefix, queued_jobs, cancel_job, and submit_job&quot;</span>
+</span><span data-line="2541">            <span class="p">)</span>
+</span><span data-line="2542">        <span class="k">return</span> <span class="n">v</span>
+</span><span data-line="2543">
+</span><span data-line="2544">    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coarse_graining&quot;</span><span class="p">)</span>
+</span><span data-line="2545">    <span class="k">def</span><span class="w"> </span><span class="nf">check_coarse_graining</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+</span><span data-line="2546">        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">superbasin_scheme</span> <span class="o">==</span> <span class="s2">&quot;transition_counting&quot;</span><span class="p">:</span>
+</span><span data-line="2547">            <span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">number_of_transitions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span>
+</span><span data-line="2548">                <span class="s2">&quot;transition_counting scheme requires number_of_transitions&quot;</span>
+</span><span data-line="2549">            <span class="p">)</span>
+</span><span data-line="2550">        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">superbasin_scheme</span> <span class="o">==</span> <span class="s2">&quot;energy_level&quot;</span><span class="p">:</span>
+</span><span data-line="2551">            <span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">energy_increment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span>
+</span><span data-line="2552">                <span class="s2">&quot;energy_level scheme requires energy_increment&quot;</span>
+</span><span data-line="2553">            <span class="p">)</span>
+</span><span data-line="2554">        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">use_askmc</span><span class="p">:</span>
+</span><span data-line="2555">            <span class="k">assert</span> <span class="p">(</span>
+</span><span data-line="2556">                <span class="n">v</span><span class="o">.</span><span class="n">askmc_confidence</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</span><span data-line="2557">                <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">askmc_barrier_raise_param</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</span><span data-line="2558">                <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">askmc_high_barrier_def</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</span><span data-line="2559">                <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">askmc_barrier_test_on</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</span><span data-line="2560">                <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">askmc_connections_test_on</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</span><span data-line="2561">            <span class="p">),</span> <span class="p">(</span>
+</span><span data-line="2562">                <span class="s2">&quot;askmc requires askmc_confidence, askmc_barrier_raise_param, askmc_high_barrier_def, askmc_barrier_test_on, and askmc_connections_test_on&quot;</span>
+</span><span data-line="2563">            <span class="p">)</span>
+</span><span data-line="2564">        <span class="k">return</span> <span class="n">v</span>
+</span><span data-line="2565">
+</span><span data-line="2566">    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;process_search&quot;</span><span class="p">,</span> <span class="n">always</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="2567">    <span class="k">def</span><span class="w"> </span><span class="nf">update_process_search</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+</span><span data-line="2568">        <span class="n">optimizer_config</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;optimizer&quot;</span><span class="p">)</span>
+</span><span data-line="2569">        <span class="k">if</span> <span class="n">optimizer_config</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">minimization_offset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="2570">            <span class="n">v</span><span class="o">.</span><span class="n">minimization_offset</span> <span class="o">=</span> <span class="n">optimizer_config</span><span class="o">.</span><span class="n">max_move</span>
+</span><span data-line="2571">        <span class="k">return</span> <span class="n">v</span>
 </span></pre></div>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -3115,7 +3162,7 @@ data-aria-dark="Switch to auto color mode">
     </div>
   </div>
 </footer>
-      <script src="../../../_static/documentation_options.js?v=9ac01507"></script>
+      <script src="../../../_static/documentation_options.js?v=b0e360d0"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>

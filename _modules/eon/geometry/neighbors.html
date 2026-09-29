@@ -155,6 +155,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../devdocs/in-process.html">In-process jobs (no file IPC)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../devdocs/abi-surface.html">Public C++ surface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../devdocs/rgpot-migration.html">rgpot kernel inventory</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../devdocs/porting_potentials.html">Porting potentials</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../devdocs/docbuild.html">Working with the documentation</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../devdocs/svn.html">Subversion</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../devdocs/svn-migration.html">Migrating from SVN</a></li>
@@ -174,6 +175,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.geometry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidocs/eon/eon.geometry.pbc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidocs/eon/eon.geometry.wire.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.wire</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
@@ -187,6 +189,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.cancel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.cancel</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
@@ -217,6 +220,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../releases/v3.3.1/index.html">[v3.3.1] - 2026-09-27</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../releases/v3.3.1/release-notes.html">eOn 3.3.1</a></li>
 </ul>
@@ -535,6 +542,8 @@ data-aria-dark="Switch to auto color mode">
 
 </span><span data-line="159">
 </span><span data-line="160">
+<div class="viewcode-block" id="neighbor_list_linkcell">
+<a class="viewcode-back" href="../../../apidocs/eon/eon.geometry.neighbors.html#eon.geometry.neighbors.neighbor_list_linkcell">[docs]</a>
 </span><span data-line="161"><span class="k">def</span><span class="w"> </span><span class="nf">neighbor_list_linkcell</span><span class="p">(</span>
 </span><span data-line="162">    <span class="n">p</span><span class="p">:</span> <span class="n">StructureLike</span><span class="p">,</span>
 </span><span data-line="163">    <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
@@ -586,93 +595,39 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="209">            <span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">d2</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="n">cut2</span><span class="p">:</span>
 </span><span data-line="210">                <span class="n">neigh</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
 </span><span data-line="211">        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">neigh</span><span class="p">)))</span>
-</span><span data-line="212">    <span class="k">return</span> <span class="n">out</span>
+</span><span data-line="212">    <span class="k">return</span> <span class="n">out</span></div>
+
 </span><span data-line="213">
 </span><span data-line="214">
-<div class="viewcode-block" id="neighbor_list_linkcell">
-<a class="viewcode-back" href="../../../apidocs/eon/eon.geometry.neighbors.html#eon.geometry.neighbors.neighbor_list_linkcell">[docs]</a>
-</span><span data-line="215"><span class="k">def</span><span class="w"> </span><span class="nf">neighbor_list_linkcell</span><span class="p">(</span>
-</span><span data-line="216">    <span class="n">p</span><span class="p">:</span> <span class="n">StructureLike</span><span class="p">,</span>
-</span><span data-line="217">    <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-</span><span data-line="218">    <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="219"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
-</span><span data-line="220"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Neighbor list via :func:`linkcell.knearest`, filtered to *cutoff*.</span>
-</span><span data-line="221">
-</span><span data-line="222"><span class="sd">    Production :func:`neighbor_list` stays on vesin. This path exists so</span>
-</span><span data-line="223"><span class="sd">    the two kernels can be compared on the same Structure.</span>
-</span><span data-line="224"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="225">    <span class="kn">import</span><span class="w"> </span><span class="nn">linkcell</span>
-</span><span data-line="226">
-</span><span data-line="227">    <span class="n">r</span><span class="p">,</span> <span class="n">box</span> <span class="o">=</span> <span class="n">_positions_box</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-</span><span data-line="228">    <span class="n">n</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</span><span data-line="229">    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-</span><span data-line="230">        <span class="k">return</span> <span class="p">[]</span>
-</span><span data-line="231">    <span class="k">if</span> <span class="n">cutoff</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-</span><span data-line="232">        <span class="k">return</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
-</span><span data-line="233">    <span class="n">kk</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-</span><span data-line="234">    <span class="k">if</span> <span class="n">kk</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-</span><span data-line="235">        <span class="k">return</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
-</span><span data-line="236">    <span class="n">xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-</span><span data-line="237">    <span class="n">cell</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-</span><span data-line="238">    <span class="n">raw</span> <span class="o">=</span> <span class="n">linkcell</span><span class="o">.</span><span class="n">knearest</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="n">cell</span><span class="p">,</span> <span class="n">kk</span><span class="p">)</span>
-</span><span data-line="239">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-</span><span data-line="240">        <span class="n">nn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">from_dlpack</span><span class="p">(</span><span class="n">raw</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-</span><span data-line="241">        <span class="n">d2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">from_dlpack</span><span class="p">(</span><span class="n">raw</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-</span><span data-line="242">    <span class="k">else</span><span class="p">:</span>
-</span><span data-line="243">        <span class="n">nn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">from_dlpack</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
-</span><span data-line="244">        <span class="kn">import</span><span class="w"> </span><span class="nn">minimage</span>
-</span><span data-line="245">
-</span><span data-line="246">        <span class="n">mi</span> <span class="o">=</span> <span class="n">minimage</span><span class="o">.</span><span class="n">Cell</span><span class="o">.</span><span class="n">from_vesin</span><span class="p">(</span><span class="n">box</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
-</span><span data-line="247">        <span class="n">d2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-</span><span data-line="248">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-</span><span data-line="249">            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">kk</span><span class="p">):</span>
-</span><span data-line="250">                <span class="n">idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nn</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
-</span><span data-line="251">                <span class="k">if</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-</span><span data-line="252">                    <span class="n">d2</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-</span><span data-line="253">                <span class="k">else</span><span class="p">:</span>
-</span><span data-line="254">                    <span class="n">d2</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">mi</span><span class="o">.</span><span class="n">dist2</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">r</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
-</span><span data-line="255">    <span class="n">cut2</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">cutoff</span><span class="p">)</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">cutoff</span><span class="p">)</span>
-</span><span data-line="256">    <span class="n">out</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="257">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-</span><span data-line="258">        <span class="n">neigh</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="259">        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">kk</span><span class="p">):</span>
-</span><span data-line="260">            <span class="n">idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nn</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
-</span><span data-line="261">            <span class="k">if</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">idx</span> <span class="o">==</span> <span class="n">i</span><span class="p">:</span>
-</span><span data-line="262">                <span class="k">continue</span>
-</span><span data-line="263">            <span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">d2</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="n">cut2</span><span class="p">:</span>
-</span><span data-line="264">                <span class="n">neigh</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
-</span><span data-line="265">        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">neigh</span><span class="p">)))</span>
-</span><span data-line="266">    <span class="k">return</span> <span class="n">out</span></div>
-
-</span><span data-line="267">
-</span><span data-line="268">
 <div class="viewcode-block" id="coordination_numbers">
 <a class="viewcode-back" href="../../../apidocs/eon/eon.geometry.neighbors.html#eon.geometry.neighbors.coordination_numbers">[docs]</a>
-</span><span data-line="269"><span class="k">def</span><span class="w"> </span><span class="nf">coordination_numbers</span><span class="p">(</span>
-</span><span data-line="270">    <span class="n">p</span><span class="p">:</span> <span class="n">StructureLike</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">brute</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span data-line="271"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-</span><span data-line="272">    <span class="k">return</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">neighbor_list</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">,</span> <span class="n">brute</span><span class="p">)]</span></div>
+</span><span data-line="215"><span class="k">def</span><span class="w"> </span><span class="nf">coordination_numbers</span><span class="p">(</span>
+</span><span data-line="216">    <span class="n">p</span><span class="p">:</span> <span class="n">StructureLike</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">brute</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="217"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+</span><span data-line="218">    <span class="k">return</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">neighbor_list</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">,</span> <span class="n">brute</span><span class="p">)]</span></div>
 
-</span><span data-line="273">
-</span><span data-line="274">
+</span><span data-line="219">
+</span><span data-line="220">
 <div class="viewcode-block" id="least_coordinated">
 <a class="viewcode-back" href="../../../apidocs/eon/eon.geometry.neighbors.html#eon.geometry.neighbors.least_coordinated">[docs]</a>
-</span><span data-line="275"><span class="k">def</span><span class="w"> </span><span class="nf">least_coordinated</span><span class="p">(</span>
-</span><span data-line="276">    <span class="n">p</span><span class="p">:</span> <span class="n">StructureLike</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">brute</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span data-line="277"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-</span><span data-line="278"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Indices of free atoms with the lowest coordination number.&quot;&quot;&quot;</span>
-</span><span data-line="279">    <span class="n">cn</span> <span class="o">=</span> <span class="n">coordination_numbers</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">,</span> <span class="n">brute</span><span class="p">)</span>
-</span><span data-line="280">    <span class="k">if</span> <span class="ow">not</span> <span class="n">cn</span><span class="p">:</span>
-</span><span data-line="281">        <span class="k">return</span> <span class="p">[]</span>
-</span><span data-line="282">    <span class="n">maxcoord</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
-</span><span data-line="283">    <span class="n">mincoord</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
-</span><span data-line="284">    <span class="n">free</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">&quot;free&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cn</span><span class="p">))),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-</span><span data-line="285">    <span class="k">while</span> <span class="n">mincoord</span> <span class="o">&lt;=</span> <span class="n">maxcoord</span><span class="p">:</span>
-</span><span data-line="286">        <span class="n">least</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cn</span><span class="p">))</span> <span class="k">if</span> <span class="n">cn</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">mincoord</span> <span class="ow">and</span> <span class="n">free</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
-</span><span data-line="287">        <span class="k">if</span> <span class="n">least</span><span class="p">:</span>
-</span><span data-line="288">            <span class="k">return</span> <span class="n">least</span>
-</span><span data-line="289">        <span class="n">mincoord</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span data-line="290">    <span class="k">return</span> <span class="p">[]</span></div>
+</span><span data-line="221"><span class="k">def</span><span class="w"> </span><span class="nf">least_coordinated</span><span class="p">(</span>
+</span><span data-line="222">    <span class="n">p</span><span class="p">:</span> <span class="n">StructureLike</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">brute</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="223"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+</span><span data-line="224"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Indices of free atoms with the lowest coordination number.&quot;&quot;&quot;</span>
+</span><span data-line="225">    <span class="kn">from</span><span class="w"> </span><span class="nn">eon.structure</span><span class="w"> </span><span class="kn">import</span> <span class="n">as_atom_free</span>
+</span><span data-line="226">
+</span><span data-line="227">    <span class="n">cn</span> <span class="o">=</span> <span class="n">coordination_numbers</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">,</span> <span class="n">brute</span><span class="p">)</span>
+</span><span data-line="228">    <span class="k">if</span> <span class="ow">not</span> <span class="n">cn</span><span class="p">:</span>
+</span><span data-line="229">        <span class="k">return</span> <span class="p">[]</span>
+</span><span data-line="230">    <span class="n">maxcoord</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
+</span><span data-line="231">    <span class="n">mincoord</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
+</span><span data-line="232">    <span class="n">free</span> <span class="o">=</span> <span class="n">as_atom_free</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">&quot;free&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cn</span><span class="p">))))</span>
+</span><span data-line="233">    <span class="k">while</span> <span class="n">mincoord</span> <span class="o">&lt;=</span> <span class="n">maxcoord</span><span class="p">:</span>
+</span><span data-line="234">        <span class="n">least</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cn</span><span class="p">))</span> <span class="k">if</span> <span class="n">cn</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">mincoord</span> <span class="ow">and</span> <span class="n">free</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+</span><span data-line="235">        <span class="k">if</span> <span class="n">least</span><span class="p">:</span>
+</span><span data-line="236">            <span class="k">return</span> <span class="n">least</span>
+</span><span data-line="237">        <span class="n">mincoord</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span data-line="238">    <span class="k">return</span> <span class="p">[]</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">
@@ -778,7 +733,7 @@ data-aria-dark="Switch to auto color mode">
     </div>
   </div>
 </footer>
-      <script src="../../../_static/documentation_options.js?v=9ac01507"></script>
+      <script src="../../../_static/documentation_options.js?v=b0e360d0"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>

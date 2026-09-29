@@ -155,6 +155,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/in-process.html">In-process jobs (no file IPC)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/abi-surface.html">Public C++ surface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/rgpot-migration.html">rgpot kernel inventory</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/porting_potentials.html">Porting potentials</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/docbuild.html">Working with the documentation</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn.html">Subversion</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn-migration.html">Migrating from SVN</a></li>
@@ -174,6 +175,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.geometry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.pbc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.wire.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.wire</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
@@ -187,6 +189,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.cancel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.cancel</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
@@ -217,6 +220,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.3.1/index.html">[v3.3.1] - 2026-09-27</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v3.3.1/release-notes.html">eOn 3.3.1</a></li>
 </ul>
@@ -311,6 +318,7 @@ data-aria-dark="Switch to auto color mode">
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#how-it-works">How it works</a><ul>
 <li><a class="reference internal" href="#fd-schemes-hessian-fd-scheme">FD schemes (<code class="docutils literal notranslate"><span class="pre">[Hessian]</span> <span class="pre">fd_scheme</span></code>)</a></li>
+<li><a class="reference internal" href="#cutoff-coloring">Cutoff coloring</a></li>
 <li><a class="reference internal" href="#column-resume">Column resume</a></li>
 </ul>
 </li>
@@ -438,9 +446,39 @@ displacement; default (0.01,\text{Å})).</p>
 <p>$$H_{ij} \approx -\frac{F_j(x + h e_i) - F_j(x)}{h}$$</p>
 <p><strong>central</strong> — central difference, (\sim 2M) force evaluations:</p>
 <p>$$H_{ij} \approx -\frac{F_j(x + h e_i) - F_j(x - h e_i)}{2h}$$</p>
+<p><strong>fourth</strong> — fourth-order central difference, (\sim 4M) force evaluations
+(aliases <code class="docutils literal notranslate"><span class="pre">fourth_order</span></code> and <code class="docutils literal notranslate"><span class="pre">central4</span></code>):</p>
+<p>$$H_{ij} \approx -\frac{-F_j(x+2h e_i)+8F_j(x+h e_i)-8F_j(x-h e_i)+F_j(x-2h e_i)}{12h}$$</p>
 <p>One-sided is preferred for classical EAM AKMC cost; central reduces (O(h)) bias
-when validating prefactors. The assembled matrix is symmetrized ((H+H^T)/2)
-before diagonalization. Mass-weighting uses (\tilde H_{ij} = H_{ij}/\sqrt{m_i m_j}).</p>
+when validating prefactors. Fourth-order cancels the (O(h^2)) term as well.
+The same <code class="docutils literal notranslate"><span class="pre">fd_scheme</span> <span class="pre">=</span> <span class="pre">fourth</span></code> value selects that stencil for Lanczos and
+Davidson Hessian-vector products. <code class="docutils literal notranslate"><span class="pre">one_sided</span></code> and <code class="docutils literal notranslate"><span class="pre">central</span></code> leave those
+products on the forward difference. Dimer rotation, conjugate gradients, and
+LBFGS keep their own real steps. Complex-step is not a scheme: cutoffs and
+external potentials are not holomorphic. The assembled matrix is symmetrized
+((H+H^T)/2) before diagonalization. Mass-weighting uses
+(\tilde H_{ij} = H_{ij}/\sqrt{m_i m_j}).</p>
+</section>
+<section id="cutoff-coloring">
+<h3>Cutoff coloring<a class="headerlink" href="#cutoff-coloring" title="Link to this heading">¶</a></h3>
+<p>A potential that reports a finite interaction range (<code class="docutils literal notranslate"><span class="pre">Potential::finiteCutoff</span></code>,
+including classical rgpot kernels with <code class="docutils literal notranslate"><span class="pre">config().cutoff</span></code>) does not need one
+displacement per coordinate. Mobile atoms are greedy-colored so that two atoms
+share a color only when their closed cutoff neighborhoods are disjoint. One
+displacement of a whole color along x, y, or z fills every column of that
+color. Central differences use two force evaluations per Cartesian direction
+per color, and fourth-order differences use four, independent of the number
+of atoms. Catch2 <code class="docutils literal notranslate"><span class="pre">Colored</span> <span class="pre">FD</span> <span class="pre">Hessian</span> <span class="pre">matches</span> <span class="pre">serial</span> <span class="pre">central</span> <span class="pre">difference</span></code> uses
+four atoms on a line, spaced 1.2 Å, with a 1.5 Å cutoff. That coloring has
+three colors, so the central scheme takes <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">+</span> <span class="pre">2</span> <span class="pre">×</span> <span class="pre">3</span> <span class="pre">×</span> <span class="pre">3</span> <span class="pre">=</span> <span class="pre">19</span></code> force calls.
+The per-column loop takes <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">+</span> <span class="pre">2</span> <span class="pre">×</span> <span class="pre">12</span> <span class="pre">=</span> <span class="pre">25</span></code>. The colored matrix matches the
+serial central matrix to <code class="docutils literal notranslate"><span class="pre">1e-8</span></code>. Catch2 <code class="docutils literal notranslate"><span class="pre">Fourth-order</span> <span class="pre">stencil</span> <span class="pre">matches</span> <span class="pre">a</span> <span class="pre">complex-step</span> <span class="pre">oracle</span></code> evaluates <code class="docutils literal notranslate"><span class="pre">z^4</span> <span class="pre">+</span> <span class="pre">0.3</span> <span class="pre">z^2</span></code> at <code class="docutils literal notranslate"><span class="pre">0.8</span></code>. The fourth-order
+value stays within <code class="docutils literal notranslate"><span class="pre">1e-10</span></code> of the complex-step derivative. The central value
+is more than <code class="docutils literal notranslate"><span class="pre">1e-3</span></code> away, and farther from the oracle than the fourth-order
+value. The same matrix is
+built one column at a time when the potential is not finite-range, when
+<code class="docutils literal notranslate"><span class="pre">[Main]</span> <span class="pre">remove_net_force</span></code> couples every atom, or when a column checkpoint is
+in use.</p>
 </section>
 <section id="column-resume">
 <h3>Column resume<a class="headerlink" href="#column-resume" title="Link to this heading">¶</a></h3>
@@ -459,9 +497,10 @@ column; a successful run removes the checkpoint.</p>
 </span><span data-line="6"><span class="na">phva_atoms</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">All</span>
 </span><span data-line="7"><span class="na">fd_scheme</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">one_sided</span>
 </span><span data-line="8"><span class="c1"># fd_scheme = central</span>
-</span><span data-line="9"><span class="c1"># resume = true</span>
-</span><span data-line="10"><span class="c1"># checkpoint_path = hessian.ckpt</span>
-</span><span data-line="11"><span class="na">zero_freq_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1e-6</span>
+</span><span data-line="9"><span class="c1"># fd_scheme = fourth</span>
+</span><span data-line="10"><span class="c1"># resume = true</span>
+</span><span data-line="11"><span class="c1"># checkpoint_path = hessian.ckpt</span>
+</span><span data-line="12"><span class="na">zero_freq_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1e-6</span>
 </span></pre></div>
 </div>
 <p>The output <code class="docutils literal notranslate"><span class="pre">results.dat</span></code> records force-call counts; <code class="docutils literal notranslate"><span class="pre">hessian.dat</span></code> contains the
@@ -620,7 +659,7 @@ rather than (3 N_\mathrm{free}):</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=9ac01507"></script>
+      <script src="../_static/documentation_options.js?v=b0e360d0"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

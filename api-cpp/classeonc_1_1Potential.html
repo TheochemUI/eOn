@@ -295,6 +295,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:af63f26dc7fdff78a6613961ea860f3a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional frozen-atom mask (nAtoms*3, 1.0 = fixed).  <br /></td></tr>
 <tr class="memitem:aa2f4f152a44aa2827a6ca08bdd40da81" id="r_aa2f4f152a44aa2827a6ca08bdd40da81"><td class="memItemLeft">std::tuple&lt; double, <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#aa2f4f152a44aa2827a6ca08bdd40da81">get_ef</a> (const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;pos, const VectorXi &amp;atmnrs, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;box)</td></tr>
 <tr class="memitem:a4f0274548044ab1f714e4801352c4547" id="r_a4f0274548044ab1f714e4801352c4547"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a>&#160;</td><td class="memItemRight"><a class="el" href="#a4f0274548044ab1f714e4801352c4547">getType</a> () const</td></tr>
+<tr class="memitem:a8f4fea1662aaa9e26f7a2ac0862d53f8" id="r_a8f4fea1662aaa9e26f7a2ac0862d53f8"><td class="memItemLeft">virtual double&#160;</td><td class="memItemRight"><a class="el" href="#a8f4fea1662aaa9e26f7a2ac0862d53f8">finiteCutoff</a> () const noexcept</td></tr>
+<tr class="memdesc:a8f4fea1662aaa9e26f7a2ac0862d53f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finite interaction range in position length units.  <br /></td></tr>
 <tr class="memitem:a85b0a3456f6528d8c464ab4b5774878e" id="r_a85b0a3456f6528d8c464ab4b5774878e"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a85b0a3456f6528d8c464ab4b5774878e">isSurrogate</a> () const noexcept</td></tr>
 <tr class="memdesc:a85b0a3456f6528d8c464ab4b5774878e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this is a surrogate (GP) potential.  <br /></td></tr>
 <tr class="memitem:ac4c9e9deaa0e73fa27ff97b6d6acad98" id="r_ac4c9e9deaa0e73fa27ff97b6d6acad98"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#ac4c9e9deaa0e73fa27ff97b6d6acad98">requiresIsolatedMoleculeLayout</a> () const noexcept</td></tr>
@@ -359,12 +361,12 @@ Private Attributes</h2></td></tr>
 <tr><td class="fieldname"><a id="a6a35357f6786a54c47eceedf6eab2056aacfc9fac11fea7710fbe22b6ba4b3a9e" name="a6a35357f6786a54c47eceedf6eab2056aacfc9fac11fea7710fbe22b6ba4b3a9e"></a>Subprocess&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00124">124</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  124</span>                       : <span class="keywordtype">unsigned</span> {</div>
-<div class="line"><span class="lineno">  125</span>    InProcess = 1u &lt;&lt; 0,</div>
-<div class="line"><span class="lineno">  126</span>    NeedsWorkingDirectory = 1u &lt;&lt; 1,</div>
-<div class="line"><span class="lineno">  127</span>    Subprocess = 1u &lt;&lt; 2,</div>
-<div class="line"><span class="lineno">  128</span>  };</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00129">129</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  129</span>                       : <span class="keywordtype">unsigned</span> {</div>
+<div class="line"><span class="lineno">  130</span>    InProcess = 1u &lt;&lt; 0,</div>
+<div class="line"><span class="lineno">  131</span>    NeedsWorkingDirectory = 1u &lt;&lt; 1,</div>
+<div class="line"><span class="lineno">  132</span>    Subprocess = 1u &lt;&lt; 2,</div>
+<div class="line"><span class="lineno">  133</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -558,10 +560,43 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classMetatomicPotential.html#ac35d7288268507729edb8d784f4fcc7b">MetatomicPotential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00154">154</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  154</span>                                                                        {</div>
-<div class="line"><span class="lineno">  155</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">  156</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00159">159</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  159</span>                                                                        {</div>
+<div class="line"><span class="lineno">  160</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  161</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8f4fea1662aaa9e26f7a2ac0862d53f8" name="a8f4fea1662aaa9e26f7a2ac0862d53f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f4fea1662aaa9e26f7a2ac0862d53f8">&#9670;&#160;</a></span>finiteCutoff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual double eonc::Potential::finiteCutoff </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Finite interaction range in position length units. </p>
+<p>0 means the potential is not finite-cutoff; the FD <a class="el" href="classeonc_1_1Hessian.html">Hessian</a> then stays one column per coordinate. </p>
+
+<p>Reimplemented in <a class="el" href="classRgpotAdapter.html#ad1777f60faa4e44fefedb5380730627b">RgpotAdapter&lt; RPot &gt;</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00109">109</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  109</span>{ <span class="keywordflow">return</span> 0.0; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -617,7 +652,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classAMS.html#ad04b4329073d29965c46346bfa879e99">AMS</a>, <a class="el" href="classAMS__IO.html#ab80a79b2043b5391513046066f84b9aa">AMS_IO</a>, <a class="el" href="classASE.html#a76e329778602bb3421e16cacce8a4fbe">ASE</a>, <a class="el" href="classASENwchemPot.html#a1ab4fc225d8b268feca76619ebedef75">ASENwchemPot</a>, <a class="el" href="classASEOrcaPot.html#a12bf4106eb086eb753d4dfea64119a28">ASEOrcaPot</a>, <a class="el" href="classCatLearnPot.html#a585b8b2c22ce79f168d434334de75fed">CatLearnPot</a>, <a class="el" href="classEAM.html#ad3dae1a4f620bc02ea4205ccae927ee6">EAM</a>, <a class="el" href="classEffectiveMediumTheory.html#a08dcd66fc62f9b34e86cbe0b92dca8f0">EffectiveMediumTheory</a>, <a class="el" href="classeonc_1_1MetatomicDynPot.html#a0cb6cbac6a7f5640c10962ca7dfb8e70">eonc::MetatomicDynPot</a>, <a class="el" href="classExtPot.html#af0d92ad67010d7bb75348b00dd0d7a6d">ExtPot</a>, <a class="el" href="classGPRPotential.html#a19aa6f4080ff12fb6f302141d035e311">GPRPotential</a>, <a class="el" href="classLAMMPSPot.html#ae6993a4dfc3a18a67140fa3e6054410e">LAMMPSPot</a>, <a class="el" href="classMetatomicPotential.html#a06640aa432a3e8994c6074a60cb92a92">MetatomicPotential</a>, <a class="el" href="classMPIPot.html#a4ff3e7f5f609fd326cb1ab81ba168f15">MPIPot</a>, <a class="el" href="classRgpotAdapter.html#a350328b66270a821ccb8e1d764d7e5d1">RgpotAdapter&lt; RPot &gt;</a>, <a class="el" href="classRgpotPot.html#ac6d4be4522b1487195716c2dcbd44e79">RgpotPot</a>, <a class="el" href="classSocketNWChemPot.html#acb7244cf6eebf04c3281f29bec72ef3a">SocketNWChemPot</a>, <a class="el" href="classSpceCcl.html#a3e27c1683578a458ed5002065f41c2a1">SpceCcl</a>, <a class="el" href="classTip4p.html#abdf049cd8a9a0f7522cddc140c9dec8d">Tip4p</a>, <a class="el" href="classTip4p__Pt.html#a79c2a1308b6f58ce44d0f62ac1b1ae14">Tip4p_Pt</a>, <a class="el" href="classVASP.html#a71750adf8c6d071da7f7488dcef43ca0">VASP</a>, and <a class="el" href="classXTBPot.html#a7617c95800c8821d3c81c75a80ccdd38">XTBPot</a>.</p>
+<p>Implemented in <a class="el" href="classAMS.html#ad04b4329073d29965c46346bfa879e99">AMS</a>, <a class="el" href="classAMS__IO.html#ab80a79b2043b5391513046066f84b9aa">AMS_IO</a>, <a class="el" href="classASE.html#a76e329778602bb3421e16cacce8a4fbe">ASE</a>, <a class="el" href="classASENwchemPot.html#a1ab4fc225d8b268feca76619ebedef75">ASENwchemPot</a>, <a class="el" href="classASEOrcaPot.html#a12bf4106eb086eb753d4dfea64119a28">ASEOrcaPot</a>, <a class="el" href="classCatLearnPot.html#a585b8b2c22ce79f168d434334de75fed">CatLearnPot</a>, <a class="el" href="classEAM.html#ad3dae1a4f620bc02ea4205ccae927ee6">EAM</a>, <a class="el" href="classEffectiveMediumTheory.html#a08dcd66fc62f9b34e86cbe0b92dca8f0">EffectiveMediumTheory</a>, <a class="el" href="classeonc_1_1MetatomicDynPot.html#a0cb6cbac6a7f5640c10962ca7dfb8e70">eonc::MetatomicDynPot</a>, <a class="el" href="classExtPot.html#af0d92ad67010d7bb75348b00dd0d7a6d">ExtPot</a>, <a class="el" href="classGPRPotential.html#ad02c8260f9ef21637b6d3361be2368ba">GPRPotential</a>, <a class="el" href="classLAMMPSPot.html#ae6993a4dfc3a18a67140fa3e6054410e">LAMMPSPot</a>, <a class="el" href="classMetatomicPotential.html#a06640aa432a3e8994c6074a60cb92a92">MetatomicPotential</a>, <a class="el" href="classMPIPot.html#a18a5768452f75bd84062143fe5822cf6">MPIPot</a>, <a class="el" href="classRgpotAdapter.html#a350328b66270a821ccb8e1d764d7e5d1">RgpotAdapter&lt; RPot &gt;</a>, <a class="el" href="classRgpotPot.html#ac6d4be4522b1487195716c2dcbd44e79">RgpotPot</a>, <a class="el" href="classSocketNWChemPot.html#acb7244cf6eebf04c3281f29bec72ef3a">SocketNWChemPot</a>, <a class="el" href="classSpceCcl.html#a3e27c1683578a458ed5002065f41c2a1">SpceCcl</a>, <a class="el" href="classTip4p.html#abdf049cd8a9a0f7522cddc140c9dec8d">Tip4p</a>, <a class="el" href="classTip4p__Pt.html#a79c2a1308b6f58ce44d0f62ac1b1ae14">Tip4p_Pt</a>, <a class="el" href="classVASP.html#a432732a2a6d733f6a045ffde6d55d09c">VASP</a>, and <a class="el" href="classXTBPot.html#a7617c95800c8821d3c81c75a80ccdd38">XTBPot</a>.</p>
 
 </div>
 </div>
@@ -745,18 +780,18 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classASE.html#a8f19bffa4b531c4e8b1033362da43311">ASE</a>, <a class="el" href="classMetatomicPotential.html#a4425775e22771c363739a4920b88aa9b">MetatomicPotential</a>, and <a class="el" href="classRgpotAdapter.html#ae5c9470c08c2505cc3d9f557e014b9eb">RgpotAdapter&lt; RPot &gt;</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00168">168</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  172</span>                                                      {</div>
-<div class="line"><span class="lineno">  173</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; nSystems; i++) {</div>
-<div class="line"><span class="lineno">  174</span>      <span class="keywordtype">double</span> var = 0;</div>
-<div class="line"><span class="lineno">  175</span>      <a class="code hl_function" href="#a51a8f3110935f320fe1bfca4efa3bbb3">force</a>(nAtoms, positions[i], atomicNrs[i], forces[i], &amp;energies[i], &amp;var,</div>
-<div class="line"><span class="lineno">  176</span>            boxes[i]);</div>
-<div class="line"><span class="lineno">  177</span>      <span class="keywordflow">if</span> (variances)</div>
-<div class="line"><span class="lineno">  178</span>        variances[i] = var;</div>
-<div class="line"><span class="lineno">  179</span>      <a class="code hl_variable" href="#a2ae7cca425e3d69d2825c58d1c7704eb">forceCallCounter</a>++;</div>
-<div class="line"><span class="lineno">  180</span>      <a class="code hl_variable" href="#aa9f8a1e4a8ed057ff50555c4df3eed17">registry_</a>.on_force_call(<a class="code hl_variable" href="#ac102f249b890f52d06d96feff8f2047a">ptype</a>);</div>
-<div class="line"><span class="lineno">  181</span>    }</div>
-<div class="line"><span class="lineno">  182</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00173">173</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  177</span>                                                      {</div>
+<div class="line"><span class="lineno">  178</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; nSystems; i++) {</div>
+<div class="line"><span class="lineno">  179</span>      <span class="keywordtype">double</span> var = 0;</div>
+<div class="line"><span class="lineno">  180</span>      <a class="code hl_function" href="#a51a8f3110935f320fe1bfca4efa3bbb3">force</a>(nAtoms, positions[i], atomicNrs[i], forces[i], &amp;energies[i], &amp;var,</div>
+<div class="line"><span class="lineno">  181</span>            boxes[i]);</div>
+<div class="line"><span class="lineno">  182</span>      <span class="keywordflow">if</span> (variances)</div>
+<div class="line"><span class="lineno">  183</span>        variances[i] = var;</div>
+<div class="line"><span class="lineno">  184</span>      <a class="code hl_variable" href="#a2ae7cca425e3d69d2825c58d1c7704eb">forceCallCounter</a>++;</div>
+<div class="line"><span class="lineno">  185</span>      <a class="code hl_variable" href="#aa9f8a1e4a8ed057ff50555c4df3eed17">registry_</a>.on_force_call(<a class="code hl_variable" href="#ac102f249b890f52d06d96feff8f2047a">ptype</a>);</div>
+<div class="line"><span class="lineno">  186</span>    }</div>
+<div class="line"><span class="lineno">  187</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -863,13 +898,13 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classEAM.html#abcf5da2c9e16e8367fb1a6ac99495030">EAM</a>, and <a class="el" href="classEffectiveMediumTheory.html#a1e73d72949d8a6dc5ff037505d7371c5">EffectiveMediumTheory</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00137">137</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  137</span>                                                                         {</div>
-<div class="line"><span class="lineno">  138</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a91745245fd7e7f3c6066fc1c7ad6550f">force_serial_</a>)</div>
-<div class="line"><span class="lineno">  139</span>      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  140</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#af6c385eb52d3764246416ea389c84131">isThreadSafe</a>();</div>
-<div class="line"><span class="lineno">  141</span>  }</div>
-<div class="ttc" id="aclasseonc_1_1Potential_html_af6c385eb52d3764246416ea389c84131"><div class="ttname"><a href="#af6c385eb52d3764246416ea389c84131">eonc::Potential::isThreadSafe</a></div><div class="ttdeci">virtual bool isThreadSafe() const noexcept</div><div class="ttdoc">Whether this potential&#39;s force() can be called from multiple threads on the SAME instance.</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00121">Potential.h:121</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00142">142</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  142</span>                                                                         {</div>
+<div class="line"><span class="lineno">  143</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a91745245fd7e7f3c6066fc1c7ad6550f">force_serial_</a>)</div>
+<div class="line"><span class="lineno">  144</span>      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  145</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#af6c385eb52d3764246416ea389c84131">isThreadSafe</a>();</div>
+<div class="line"><span class="lineno">  146</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_af6c385eb52d3764246416ea389c84131"><div class="ttname"><a href="#af6c385eb52d3764246416ea389c84131">eonc::Potential::isThreadSafe</a></div><div class="ttdeci">virtual bool isThreadSafe() const noexcept</div><div class="ttdoc">Whether this potential&#39;s force() can be called from multiple threads on the SAME instance.</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00126">Potential.h:126</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -901,8 +936,8 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classeonc_1_1SurrogatePotential.html#ad42039b117afe2b3b90a124b2c937fd5">eonc::SurrogatePotential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00108">108</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  108</span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00113">113</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  113</span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -932,10 +967,10 @@ Private Attributes</h2></td></tr>
 <p>Whether this potential's <a class="el" href="#a51a8f3110935f320fe1bfca4efa3bbb3">force()</a> can be called from multiple threads on the SAME instance. </p>
 <p>Python-based potentials return false. Potentials with internal mutex (<a class="el" href="classMetatomicPotential.html" title="A potential class that uses a metatomic model for energy and force calculations.">MetatomicPotential</a>) return true but serialize internally &ndash; use <a class="el" href="#a8b83745c9898990f848daafa4c351c2f" title="Whether NEB should create separate Potential instances per image for true parallel force evaluation.">needsPerImageInstance()</a> to check if separate instances would enable true parallelism. </p>
 
-<p>Reimplemented in <a class="el" href="classASE.html#a87de4a795d2e4cc8167b58f9ee57b816">ASE</a>, <a class="el" href="classASENwchemPot.html#aad96569ab2c932ebca647815d4e88bf9">ASENwchemPot</a>, <a class="el" href="classASEOrcaPot.html#a1a6ac572725f41a14321d9952833fa88">ASEOrcaPot</a>, <a class="el" href="classCatLearnPot.html#aa777851437ce45f6c2c751c4eefe9334">CatLearnPot</a>, <a class="el" href="classeonc_1_1MetatomicDynPot.html#a94bafcce10882ea0dd40cc6d46ce252b">eonc::MetatomicDynPot</a>, <a class="el" href="classExtPot.html#a70ea3e4ecd4d90fa063d4d15acc6a316">ExtPot</a>, <a class="el" href="classMetatomicPotential.html#a67cf280dee7c9ea210be7038b80f0673">MetatomicPotential</a>, <a class="el" href="classRgpotAdapter.html#a055a5f208ff16306b35632596a161674">RgpotAdapter&lt; RPot &gt;</a>, <a class="el" href="classRgpotPot.html#aa3807f25df4a13d2563d53aac59e63cd">RgpotPot</a>, <a class="el" href="classSocketNWChemPot.html#a1c3d7d3852d7bffa52051833c1f018e7">SocketNWChemPot</a>, <a class="el" href="classVASP.html#ac553a0cc4a00cdbb7bd23dfd20d58f6d">VASP</a>, and <a class="el" href="classXTBPot.html#a10ce034cef18039d3d8e767d31f3b6d0">XTBPot</a>.</p>
+<p>Reimplemented in <a class="el" href="classASE.html#a87de4a795d2e4cc8167b58f9ee57b816">ASE</a>, <a class="el" href="classASENwchemPot.html#aad96569ab2c932ebca647815d4e88bf9">ASENwchemPot</a>, <a class="el" href="classASEOrcaPot.html#a1a6ac572725f41a14321d9952833fa88">ASEOrcaPot</a>, <a class="el" href="classCatLearnPot.html#aa777851437ce45f6c2c751c4eefe9334">CatLearnPot</a>, <a class="el" href="classeonc_1_1MetatomicDynPot.html#a94bafcce10882ea0dd40cc6d46ce252b">eonc::MetatomicDynPot</a>, <a class="el" href="classExtPot.html#a70ea3e4ecd4d90fa063d4d15acc6a316">ExtPot</a>, <a class="el" href="classGPRPotential.html#ab96ae48f95c3f916fd3acfef5c6633cb">GPRPotential</a>, <a class="el" href="classMetatomicPotential.html#a67cf280dee7c9ea210be7038b80f0673">MetatomicPotential</a>, <a class="el" href="classMPIPot.html#a35484a61a7c16eeb433029f85636aaf5">MPIPot</a>, <a class="el" href="classRgpotAdapter.html#a055a5f208ff16306b35632596a161674">RgpotAdapter&lt; RPot &gt;</a>, <a class="el" href="classRgpotPot.html#aa3807f25df4a13d2563d53aac59e63cd">RgpotPot</a>, <a class="el" href="classSocketNWChemPot.html#a1c3d7d3852d7bffa52051833c1f018e7">SocketNWChemPot</a>, <a class="el" href="classVASP.html#ac553a0cc4a00cdbb7bd23dfd20d58f6d">VASP</a>, and <a class="el" href="classXTBPot.html#a10ce034cef18039d3d8e767d31f3b6d0">XTBPot</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00121">121</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  121</span>{ <span class="keywordflow">return</span> <span class="keyword">true</span>; }</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00126">126</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  126</span>{ <span class="keywordflow">return</span> <span class="keyword">true</span>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -964,11 +999,11 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classExtPot.html#a07e9a81ce759322f12b66f895f33b544">ExtPot</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00129">129</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  129</span>                                                              {</div>
-<div class="line"><span class="lineno">  130</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>(<a class="code hl_enumvalue" href="#a6a35357f6786a54c47eceedf6eab2056a651a693296d758550ddc034a389ef058">PotLayout::InProcess</a>);</div>
-<div class="line"><span class="lineno">  131</span>  }</div>
-<div class="ttc" id="aclasseonc_1_1Potential_html_a6a35357f6786a54c47eceedf6eab2056a651a693296d758550ddc034a389ef058"><div class="ttname"><a href="#a6a35357f6786a54c47eceedf6eab2056a651a693296d758550ddc034a389ef058">eonc::Potential::PotLayout::InProcess</a></div><div class="ttdeci">@ InProcess</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00125">Potential.h:125</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00134">134</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  134</span>                                                              {</div>
+<div class="line"><span class="lineno">  135</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>(<a class="code hl_enumvalue" href="#a6a35357f6786a54c47eceedf6eab2056a651a693296d758550ddc034a389ef058">PotLayout::InProcess</a>);</div>
+<div class="line"><span class="lineno">  136</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_a6a35357f6786a54c47eceedf6eab2056a651a693296d758550ddc034a389ef058"><div class="ttname"><a href="#a6a35357f6786a54c47eceedf6eab2056a651a693296d758550ddc034a389ef058">eonc::Potential::PotLayout::InProcess</a></div><div class="ttdeci">@ InProcess</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00130">Potential.h:130</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -998,12 +1033,12 @@ Private Attributes</h2></td></tr>
 <p>Whether NEB should create separate <a class="el" href="classeonc_1_1Potential.html">Potential</a> instances per image for true parallel force evaluation. </p>
 <p>When true, NEB calls makePotential() once per image instead of sharing one instance. Override in potentials that use internal mutexes (e.g. <a class="el" href="classMetatomicPotential.html" title="A potential class that uses a metatomic model for energy and force calculations.">MetatomicPotential</a>). </p>
 
-<p>Reimplemented in <a class="el" href="classASE.html#a010bef6241727643231ce39ee1a9274c">ASE</a>, <a class="el" href="classASENwchemPot.html#ae9a594ec6df17962bf7effce28d14f06">ASENwchemPot</a>, <a class="el" href="classASEOrcaPot.html#add74cdefab0c022714872bb214900ea6">ASEOrcaPot</a>, <a class="el" href="classeonc_1_1MetatomicDynPot.html#a3886e4cab360ae86dcf7ba922c32b8ed">eonc::MetatomicDynPot</a>, <a class="el" href="classExtPot.html#ac4356ad3ff646bc6129de6a2adcc5718">ExtPot</a>, <a class="el" href="classLAMMPSPot.html#aae77d35cbf6bcf84a38b055de76ccaca">LAMMPSPot</a>, <a class="el" href="classMetatomicPotential.html#a1345a4da1b9a96efb94f8ab12a1dc597">MetatomicPotential</a>, <a class="el" href="classRgpotAdapter.html#a9c53cdefdb91580b0ed424b3cb90946f">RgpotAdapter&lt; RPot &gt;</a>, <a class="el" href="classVASP.html#a91eeb1a7ca7adc0508f40eed312b840e">VASP</a>, and <a class="el" href="classXTBPot.html#a76199d47259c1432ef416e3febfc946a">XTBPot</a>.</p>
+<p>Reimplemented in <a class="el" href="classASE.html#a010bef6241727643231ce39ee1a9274c">ASE</a>, <a class="el" href="classASENwchemPot.html#ae9a594ec6df17962bf7effce28d14f06">ASENwchemPot</a>, <a class="el" href="classASEOrcaPot.html#add74cdefab0c022714872bb214900ea6">ASEOrcaPot</a>, <a class="el" href="classeonc_1_1MetatomicDynPot.html#a3886e4cab360ae86dcf7ba922c32b8ed">eonc::MetatomicDynPot</a>, <a class="el" href="classExtPot.html#ac4356ad3ff646bc6129de6a2adcc5718">ExtPot</a>, <a class="el" href="classLAMMPSPot.html#aae77d35cbf6bcf84a38b055de76ccaca">LAMMPSPot</a>, <a class="el" href="classMetatomicPotential.html#a1345a4da1b9a96efb94f8ab12a1dc597">MetatomicPotential</a>, <a class="el" href="classRgpotAdapter.html#a9c53cdefdb91580b0ed424b3cb90946f">RgpotAdapter&lt; RPot &gt;</a>, <a class="el" href="classSocketNWChemPot.html#ae3ebead7bad2a55f753afd9868cbe899">SocketNWChemPot</a>, <a class="el" href="classVASP.html#a91eeb1a7ca7adc0508f40eed312b840e">VASP</a>, and <a class="el" href="classXTBPot.html#a76199d47259c1432ef416e3febfc946a">XTBPot</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00148">148</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  148</span>                                                                    {</div>
-<div class="line"><span class="lineno">  149</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  150</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00153">153</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  153</span>                                                                    {</div>
+<div class="line"><span class="lineno">  154</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  155</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1035,10 +1070,10 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classASENwchemPot.html#a386d56a47a59e9c3269fa9bd6edee7a7">ASENwchemPot</a>, <a class="el" href="classASEOrcaPot.html#acf04a451ead66da0d62358edfd137bea">ASEOrcaPot</a>, <a class="el" href="classRgpotPot.html#a30439012a21f7aeae6a23c1cf66b1fc8">RgpotPot</a>, and <a class="el" href="classSocketNWChemPot.html#ae6ac82b26dee40dc875804cff80ef1df">SocketNWChemPot</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00112">112</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  112</span>                                                                             {</div>
-<div class="line"><span class="lineno">  113</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  114</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00117">117</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  117</span>                                                                             {</div>
+<div class="line"><span class="lineno">  118</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  119</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1110,10 +1145,10 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classASE.html#a6cc801cfb55242aede7b55034117ccd5">ASE</a>, <a class="el" href="classMetatomicPotential.html#a1d1230f9247bc0e0c5be9062be0d6bde">MetatomicPotential</a>, and <a class="el" href="classRgpotAdapter.html#a1325b13dceca141f31feda2e1171fcdc">RgpotAdapter&lt; RPot &gt;</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00161">161</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  161</span>                                                                      {</div>
-<div class="line"><span class="lineno">  162</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  163</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00166">166</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  166</span>                                                                      {</div>
+<div class="line"><span class="lineno">  167</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  168</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>

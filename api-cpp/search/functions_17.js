@@ -31,7 +31,7 @@ var searchData=
   ['xtb_5fnewenvironment_28',['xtb_newEnvironment',['../xtb_8h.html#a71d8e8c70c478f53c235e16e6de90352',1,'xtb.h']]],
   ['xtb_5fnewmolecule_29',['xtb_newMolecule',['../xtb_8h.html#a07c5c503de2eb5e189cca9fd1fc00fd8',1,'xtb.h']]],
   ['xtb_5fnewresults_30',['xtb_newResults',['../xtb_8h.html#ac18a87a8013d19aeefe7d9f220689179',1,'xtb.h']]],
-  ['xtb_5foptions_31',['xtb_options',['../classeonc_1_1Parameters.html#a97ff4b14159152edfad8bc5305b49dda',1,'eonc::Parameters::xtb_options()'],['../structeonc_1_1ParametersLoadAccess.html#a77babb92bddf396fff21c573193921c1',1,'eonc::ParametersLoadAccess::xtb_options(Parameters &amp;p)'],['../structeonc_1_1ParametersLoadAccess.html#a63a4f9ac550142b25dedaf7690c98b60',1,'eonc::ParametersLoadAccess::xtb_options(const Parameters &amp;p)']]],
+  ['xtb_5foptions_31',['xtb_options',['../classeonc_1_1Parameters.html#a30580f564a20e0ddaa54990c279df0de',1,'eonc::Parameters::xtb_options()'],['../structeonc_1_1ParametersLoadAccess.html#a1b4cb5008d486d033fe91c2214f1e9db',1,'eonc::ParametersLoadAccess::xtb_options(Parameters &amp;p)'],['../structeonc_1_1ParametersLoadAccess.html#a27ed0f856f3bb4d7b798b7f435b587ab',1,'eonc::ParametersLoadAccess::xtb_options(const Parameters &amp;p)']]],
   ['xtb_5freleaseexternalcharges_32',['xtb_releaseExternalCharges',['../xtb_8h.html#a82a3de8002ba9b9b3994b92a3f2ad224',1,'xtb.h']]],
   ['xtb_5freleaseoutput_33',['xtb_releaseOutput',['../xtb_8h.html#aa5e9f1a6e87c5cd61a50cda8805ecf1e',1,'xtb.h']]],
   ['xtb_5freleasesolvent_34',['xtb_releaseSolvent',['../xtb_8h.html#a38658d8e0b3f037bc3c36d0bed081742',1,'xtb.h']]],

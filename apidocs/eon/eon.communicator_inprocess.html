@@ -155,6 +155,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/in-process.html">In-process jobs (no file IPC)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/abi-surface.html">Public C++ surface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/rgpot-migration.html">rgpot kernel inventory</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/porting_potentials.html">Porting potentials</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/docbuild.html">Working with the documentation</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/svn.html">Subversion</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/svn-migration.html">Migrating from SVN</a></li>
@@ -174,6 +175,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l3"><a class="reference internal" href="eon.geometry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="eon.geometry.pbc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="eon.geometry.wire.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.wire</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
@@ -187,6 +189,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.cancel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.cancel</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
@@ -217,6 +220,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v3.3.1/index.html">[v3.3.1] - 2026-09-27</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v3.3.1/release-notes.html">eOn 3.3.1</a></li>
 </ul>
@@ -388,10 +395,10 @@ data-aria-dark="Switch to auto color mode">
           <section id="module-eon.communicator_inprocess">
 <span id="eon-communicator-inprocess"></span><h1><a class="reference internal" href="#module-eon.communicator_inprocess" title="eon.communicator_inprocess"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a><a class="headerlink" href="#module-eon.communicator_inprocess" title="Link to this heading">¶</a></h1>
 <p>In-process communicator: jobs run as pyeonclient.Matter (no eonclient binary).</p>
-<p>This is the Matter-through path:
-Structure/Atoms  →  pyeonclient.Matter  →  relax / (future jobs)  →  Structure</p>
-<p>Requires the pyeonclient extension (<code class="docutils literal notranslate"><span class="pre">-Dwith_pyeonclient=true</span></code>). Cluster/MPI
-still use the file-based communicators.</p>
+<p>Geometry crosses the job dict as a Structure (numpy working set) or a
+readcon.ConFrame. Matter is the potential-bearing client object. Result
+saddle and product values are ConFrames. This path does not read or write
+.con text.</p>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
 <section id="classes">
@@ -428,42 +435,41 @@ still use the file-based communicators.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="eon.communicator_inprocess.LocalInProcess">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.communicator_inprocess.</span></span><span class="sig-name descname"><span class="pre">LocalInProcess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scratchpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bundle_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator_inprocess.html#LocalInProcess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator_inprocess.LocalInProcess" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.communicator_inprocess.</span></span><span class="sig-name descname"><span class="pre">LocalInProcess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scratchpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bundle_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.communicator_inprocess.LocalInProcess" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="eon.communicator.html#eon.communicator.Communicator" title="eon.communicator.Communicator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eon.communicator.Communicator</span></code></a></p>
 <p>Run client work in-process via Matter (nanobind), not a subprocess.</p>
 <p class="rubric">Initialization</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.communicator_inprocess.LocalInProcess.get_queue_size">
-<span class="sig-name descname"><span class="pre">get_queue_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator_inprocess.html#LocalInProcess.get_queue_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator_inprocess.LocalInProcess.get_queue_size" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_queue_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.communicator_inprocess.LocalInProcess.get_queue_size" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.communicator_inprocess.LocalInProcess.get_number_in_progress">
-<span class="sig-name descname"><span class="pre">get_number_in_progress</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator_inprocess.html#LocalInProcess.get_number_in_progress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator_inprocess.LocalInProcess.get_number_in_progress" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_number_in_progress</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.communicator_inprocess.LocalInProcess.get_number_in_progress" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.communicator_inprocess.LocalInProcess.cancel_state">
-<span class="sig-name descname"><span class="pre">cancel_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator_inprocess.html#LocalInProcess.cancel_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator_inprocess.LocalInProcess.cancel_state" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">cancel_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.communicator_inprocess.LocalInProcess.cancel_state" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.communicator_inprocess.LocalInProcess.submit_jobs">
-<span class="sig-name descname"><span class="pre">submit_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invariants</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator_inprocess.html#LocalInProcess.submit_jobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator_inprocess.LocalInProcess.submit_jobs" title="Link to this definition">¶</a></dt>
-<dd><p>Run each job dict in-process. Supports minimization-like jobs.</p>
-<p>Job dict keys (legacy file names kept for explorer compatibility):</p>
-<ul class="simple">
-<li><p>pos.con — reactant structure (StringIO of .con text)</p></li>
-<li><p>id — job id string
-Dispatch follows Parameters.job (minimization, point, process_search,
-saddle_search). Other types raise CommunicatorError.</p></li>
-</ul>
+<span class="sig-name descname"><span class="pre">submit_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invariants</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.communicator_inprocess.LocalInProcess.submit_jobs" title="Link to this definition">¶</a></dt>
+<dd><p>Run each job dict in-process.</p>
+<p>Geometry is a Structure, a readcon.ConFrame or .con text on one of
+<code class="docutils literal notranslate"><span class="pre">structure</span></code>, <code class="docutils literal notranslate"><span class="pre">conframe</span></code>, <code class="docutils literal notranslate"><span class="pre">reactant</span></code>, <code class="docutils literal notranslate"><span class="pre">pos</span></code>, or <code class="docutils literal notranslate"><span class="pre">pos.con</span></code>,
+or the same objects on the invariant dict. The result carries
+<code class="docutils literal notranslate"><span class="pre">product</span></code> and, for a saddle search, <code class="docutils literal notranslate"><span class="pre">saddle</span></code> as ConFrames, and
+the same geometry as <code class="docutils literal notranslate"><span class="pre">min.con</span></code> and <code class="docutils literal notranslate"><span class="pre">saddle.con</span></code> for the drivers
+that read .con text. Nothing is written to disk.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.communicator_inprocess.LocalInProcess.get_results">
-<span class="sig-name descname"><span class="pre">get_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resultspath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_result</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator_inprocess.html#LocalInProcess.get_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator_inprocess.LocalInProcess.get_results" title="Link to this definition">¶</a></dt>
-<dd><p>Return finished job dicts (legacy StringIO + Matter fields).</p>
+<span class="sig-name descname"><span class="pre">get_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resultspath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_result</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.communicator_inprocess.LocalInProcess.get_results" title="Link to this definition">¶</a></dt>
+<dd><p>Return finished job dicts. Geometry is ConFrame, not a file.</p>
 </dd></dl>
 
 </dd></dl>
@@ -589,7 +595,7 @@ saddle_search). Other types raise CommunicatorError.</p></li>
     </div>
   </div>
 </footer>
-      <script src="../../_static/documentation_options.js?v=9ac01507"></script>
+      <script src="../../_static/documentation_options.js?v=b0e360d0"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>

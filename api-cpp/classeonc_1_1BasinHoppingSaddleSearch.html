@@ -434,8 +434,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1SaddleSearchMethod.html#a70772a4163d7b2e5bae114620119f33f">eonc::SaddleSearchMethod</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BasinHoppingSaddleSearch_8cpp_source.html#l00109">109</a> of file <a class="el" href="BasinHoppingSaddleSearch_8cpp_source.html">BasinHoppingSaddleSearch.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  109</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a6a1ec75484cb54bd7cdb0aa01c3a9e19">eigenvalue</a>; }</div>
+<p class="definition">Definition at line <a class="el" href="BasinHoppingSaddleSearch_8cpp_source.html#l00110">110</a> of file <a class="el" href="BasinHoppingSaddleSearch_8cpp_source.html">BasinHoppingSaddleSearch.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  110</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a6a1ec75484cb54bd7cdb0aa01c3a9e19">eigenvalue</a>; }</div>
 <div class="ttc" id="aclasseonc_1_1BasinHoppingSaddleSearch_html_a6a1ec75484cb54bd7cdb0aa01c3a9e19"><div class="ttname"><a href="#a6a1ec75484cb54bd7cdb0aa01c3a9e19">eonc::BasinHoppingSaddleSearch::eigenvalue</a></div><div class="ttdeci">double eigenvalue</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingSaddleSearch_8h_source.html#l00065">BasinHoppingSaddleSearch.h:65</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -465,8 +465,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1SaddleSearchMethod.html#a57da87103a898ecc496bf03eddb20d1b">eonc::SaddleSearchMethod</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BasinHoppingSaddleSearch_8cpp_source.html#l00111">111</a> of file <a class="el" href="BasinHoppingSaddleSearch_8cpp_source.html">BasinHoppingSaddleSearch.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  111</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a5b73410b07ee883217573dd77575f0ce">eigenvector</a>; }</div>
+<p class="definition">Definition at line <a class="el" href="BasinHoppingSaddleSearch_8cpp_source.html#l00112">112</a> of file <a class="el" href="BasinHoppingSaddleSearch_8cpp_source.html">BasinHoppingSaddleSearch.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  112</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a5b73410b07ee883217573dd77575f0ce">eigenvector</a>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -531,20 +531,20 @@ Additional Inherited Members</h2></td></tr>
 <p>Highest-energy interior bead. </p>
 <p>Interiors are indices 1..numImages. Returns 0 when numImages &lt; 1 so the caller does not read path[-1]. </p>
 
-<p class="definition">Definition at line <a class="el" href="BasinHoppingSaddleSearch_8cpp_source.html#l00025">25</a> of file <a class="el" href="BasinHoppingSaddleSearch_8cpp_source.html">BasinHoppingSaddleSearch.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   26</span>                                                                  {</div>
-<div class="line"><span class="lineno">   27</span>  <span class="keywordtype">double</span> emax = -1e100;</div>
-<div class="line"><span class="lineno">   28</span>  <span class="keywordtype">int</span> highest = 0;</div>
-<div class="line"><span class="lineno">   29</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 1; i &lt;= numImages; i++) {</div>
-<div class="line"><span class="lineno">   30</span>    <span class="keywordtype">double</span> etest = path[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)]-&gt;getPotentialEnergy();</div>
-<div class="line"><span class="lineno">   31</span>    QUILL_LOG_DEBUG(<a class="code hl_function" href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a>(), <span class="stringliteral">&quot;i: {} Etest: {:.1f}&quot;</span>, i, etest);</div>
-<div class="line"><span class="lineno">   32</span>    <span class="keywordflow">if</span> (etest &gt; emax) {</div>
-<div class="line"><span class="lineno">   33</span>      emax = etest;</div>
-<div class="line"><span class="lineno">   34</span>      highest = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(i);</div>
-<div class="line"><span class="lineno">   35</span>    }</div>
-<div class="line"><span class="lineno">   36</span>  }</div>
-<div class="line"><span class="lineno">   37</span>  <span class="keywordflow">return</span> highest;</div>
-<div class="line"><span class="lineno">   38</span>}</div>
+<p class="definition">Definition at line <a class="el" href="BasinHoppingSaddleSearch_8cpp_source.html#l00020">20</a> of file <a class="el" href="BasinHoppingSaddleSearch_8cpp_source.html">BasinHoppingSaddleSearch.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   21</span>                                                                  {</div>
+<div class="line"><span class="lineno">   22</span>  <span class="keywordtype">double</span> emax = -1e100;</div>
+<div class="line"><span class="lineno">   23</span>  <span class="keywordtype">int</span> highest = 0;</div>
+<div class="line"><span class="lineno">   24</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 1; i &lt;= numImages; i++) {</div>
+<div class="line"><span class="lineno">   25</span>    <span class="keywordtype">double</span> etest = path[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)]-&gt;getPotentialEnergy();</div>
+<div class="line"><span class="lineno">   26</span>    QUILL_LOG_DEBUG(<a class="code hl_function" href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a>(), <span class="stringliteral">&quot;i: {} Etest: {:.1f}&quot;</span>, i, etest);</div>
+<div class="line"><span class="lineno">   27</span>    <span class="keywordflow">if</span> (etest &gt; emax) {</div>
+<div class="line"><span class="lineno">   28</span>      emax = etest;</div>
+<div class="line"><span class="lineno">   29</span>      highest = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(i);</div>
+<div class="line"><span class="lineno">   30</span>    }</div>
+<div class="line"><span class="lineno">   31</span>  }</div>
+<div class="line"><span class="lineno">   32</span>  <span class="keywordflow">return</span> highest;</div>
+<div class="line"><span class="lineno">   33</span>}</div>
 <div class="ttc" id="anamespaceeonc_1_1log_html_a4e7c8b5e4189cf657384f1c4bbf14dab"><div class="ttname"><a href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a></div><div class="ttdeci">quill::Logger * get() noexcept</div><div class="ttdoc">Get or create the default &quot;combi&quot; logger.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00044">EonLogger.h:44</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -623,16 +623,16 @@ Additional Inherited Members</h2></td></tr>
 <p>Quenched Metropolis weight for energy change <span class="tt">de</span>. </p>
 <p>Divides by <span class="tt">kB * temperature</span> only for an uphill hop when both are positive. Non-positive temperature or <span class="tt">kB</span> refuses that hop. </p>
 
-<p class="definition">Definition at line <a class="el" href="BasinHoppingSaddleSearch_8cpp_source.html#l00098">98</a> of file <a class="el" href="BasinHoppingSaddleSearch_8cpp_source.html">BasinHoppingSaddleSearch.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   99</span>                                                                           {</div>
-<div class="line"><span class="lineno">  100</span>  <span class="keywordflow">if</span> (!(de &gt; 0.0)) {</div>
-<div class="line"><span class="lineno">  101</span>    <span class="keywordflow">return</span> 1.0;</div>
-<div class="line"><span class="lineno">  102</span>  }</div>
-<div class="line"><span class="lineno">  103</span>  <span class="keywordflow">if</span> (!(temperature &gt; 0.0) || !(kB &gt; 0.0)) {</div>
-<div class="line"><span class="lineno">  104</span>    <span class="keywordflow">return</span> 0.0;</div>
-<div class="line"><span class="lineno">  105</span>  }</div>
-<div class="line"><span class="lineno">  106</span>  <span class="keywordflow">return</span> std::exp(-de / (kB * temperature));</div>
-<div class="line"><span class="lineno">  107</span>}</div>
+<p class="definition">Definition at line <a class="el" href="BasinHoppingSaddleSearch_8cpp_source.html#l00099">99</a> of file <a class="el" href="BasinHoppingSaddleSearch_8cpp_source.html">BasinHoppingSaddleSearch.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  100</span>                                                                           {</div>
+<div class="line"><span class="lineno">  101</span>  <span class="keywordflow">if</span> (!(de &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  102</span>    <span class="keywordflow">return</span> 1.0;</div>
+<div class="line"><span class="lineno">  103</span>  }</div>
+<div class="line"><span class="lineno">  104</span>  <span class="keywordflow">if</span> (!(temperature &gt; 0.0) || !(kB &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  105</span>    <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><span class="lineno">  106</span>  }</div>
+<div class="line"><span class="lineno">  107</span>  <span class="keywordflow">return</span> std::exp(-de / (kB * temperature));</div>
+<div class="line"><span class="lineno">  108</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -661,70 +661,76 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1SaddleSearchMethod.html#a1b2b26d4f7116bdad39ea3ff58058496">eonc::SaddleSearchMethod</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BasinHoppingSaddleSearch_8cpp_source.html#l00040">40</a> of file <a class="el" href="BasinHoppingSaddleSearch_8cpp_source.html">BasinHoppingSaddleSearch.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   40</span>                                  {</div>
-<div class="line"><span class="lineno">   41</span>  <span class="comment">// minimize &quot;saddle&quot;</span></div>
-<div class="line"><span class="lineno">   42</span>  <a class="code hl_variable" href="#ac535c682de8d192d5e20972e24d18154">saddle</a>-&gt;relax(<span class="keyword">false</span>, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="stringliteral">&quot;displacementmin&quot;</span>);</div>
-<div class="line"><span class="lineno">   43</span>  <a class="code hl_variable" href="#a03dad16c576f5e2a58616971930c6f7d">product</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#a3c005d31acbafdaa38c96a953c2b3d06">pot</a>, <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">params</a>);</div>
-<div class="line"><span class="lineno">   44</span>  *<a class="code hl_variable" href="#a03dad16c576f5e2a58616971930c6f7d">product</a> = *<a class="code hl_variable" href="#ac535c682de8d192d5e20972e24d18154">saddle</a>;</div>
-<div class="line"><span class="lineno">   45</span>  <span class="comment">// Metropolis on the quenched energies: exp(-de/(kB*T)).</span></div>
-<div class="line"><span class="lineno">   46</span>  <span class="comment">// Divide only for an uphill hop at positive temperature. T &lt;= 0 rejects</span></div>
-<div class="line"><span class="lineno">   47</span>  <span class="comment">// that hop (zero-temperature limit) and must not trap or flip the sign.</span></div>
-<div class="line"><span class="lineno">   48</span>  <span class="keywordtype">double</span> eproduct, ereactant, de;</div>
-<div class="line"><span class="lineno">   49</span>  eproduct = <a class="code hl_variable" href="#a03dad16c576f5e2a58616971930c6f7d">product</a>-&gt;getPotentialEnergy();</div>
-<div class="line"><span class="lineno">   50</span>  ereactant = <a class="code hl_variable" href="#a528ba9aae1bf90b4495318bea6be33f3">reactant</a>-&gt;getPotentialEnergy();</div>
-<div class="line"><span class="lineno">   51</span>  de = eproduct - ereactant;</div>
-<div class="line"><span class="lineno">   52</span>  <span class="keywordtype">double</span> kB = <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">params</a>.constants().kB;</div>
-<div class="line"><span class="lineno">   53</span>  <span class="keywordtype">double</span> Temperature = <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">params</a>.main_options().temperature;</div>
-<div class="line"><span class="lineno">   54</span>  <span class="keywordtype">double</span> p = <a class="code hl_function" href="#a72d353c6a86cf778ce4e41520bdcbdfe">metropolisProbability</a>(de, kB, Temperature);</div>
-<div class="line"><span class="lineno">   55</span>  <span class="keywordtype">double</span> r = <a class="code hl_function" href="namespaceeonc_1_1rng.html#a4f610303ae45757f71160f0664b09b9b">eonc::rng::random</a>();</div>
-<div class="line"><span class="lineno">   56</span>  <span class="keywordflow">if</span> (de &gt; 0.0 &amp;&amp; r &gt; p) { <span class="comment">// reject</span></div>
-<div class="line"><span class="lineno">   57</span>    <a class="code hl_variable" href="#a1d8dfd3f5210f5c190f1ecb52777b120">status</a> = 1;</div>
-<div class="line"><span class="lineno">   58</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a1d8dfd3f5210f5c190f1ecb52777b120">status</a>;</div>
-<div class="line"><span class="lineno">   59</span>  }</div>
-<div class="line"><span class="lineno">   60</span>  <span class="comment">// NEB reactant to minimized &quot;saddle&quot;</span></div>
-<div class="line"><span class="lineno">   61</span>  NudgedElasticBand neb(<a class="code hl_variable" href="#a528ba9aae1bf90b4495318bea6be33f3">reactant</a>, <a class="code hl_variable" href="#a03dad16c576f5e2a58616971930c6f7d">product</a>, <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">params</a>, <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#a3c005d31acbafdaa38c96a953c2b3d06">pot</a>);</div>
-<div class="line"><span class="lineno">   62</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(</div>
-<div class="line"><span class="lineno">   63</span>          neb.path[0]-&gt;matter2con(<span class="stringliteral">&quot;neb_initial_band.con&quot;</span>, <span class="keyword">false</span>))) {</div>
-<div class="line"><span class="lineno">   64</span>    QUILL_LOG_WARNING(<a class="code hl_variable" href="#a2bba9615dd74fc4c88299849f0d835a3">log</a>, <span class="stringliteral">&quot;Failed to write neb_initial_band.con&quot;</span>);</div>
-<div class="line"><span class="lineno">   65</span>  }</div>
-<div class="line"><span class="lineno">   66</span>  <span class="comment">// Reactant is frame 0. Interiors are 1..numImages, including the last.</span></div>
-<div class="line"><span class="lineno">   67</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 1; j &lt;= neb.numImages; j++) {</div>
-<div class="line"><span class="lineno">   68</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(</div>
-<div class="line"><span class="lineno">   69</span>            neb.path[j]-&gt;matter2con(<span class="stringliteral">&quot;neb_initial_band.con&quot;</span>, <span class="keyword">true</span>))) {</div>
-<div class="line"><span class="lineno">   70</span>      QUILL_LOG_WARNING(<a class="code hl_variable" href="#a2bba9615dd74fc4c88299849f0d835a3">log</a>, <span class="stringliteral">&quot;Failed to append neb_initial_band frame&quot;</span>);</div>
-<div class="line"><span class="lineno">   71</span>    }</div>
-<div class="line"><span class="lineno">   72</span>  }</div>
-<div class="line"><span class="lineno">   73</span>  neb.compute();</div>
-<div class="line"><span class="lineno">   74</span>  <span class="comment">// pick the maximum energy image along the band</span></div>
-<div class="line"><span class="lineno">   75</span>  <span class="keywordtype">int</span> HighestImage = <a class="code hl_function" href="#aef846de92375fc3c69f7874e5b77de45">highestEnergyInteriorImage</a>(neb.path, neb.numImages);</div>
-<div class="line"><span class="lineno">   76</span>  <span class="keywordflow">if</span> (HighestImage &lt; 1) {</div>
-<div class="line"><span class="lineno">   77</span>    QUILL_LOG_WARNING(<a class="code hl_variable" href="#a2bba9615dd74fc4c88299849f0d835a3">log</a>, <span class="stringliteral">&quot;No interior NEB image for basin hopping&quot;</span>);</div>
-<div class="line"><span class="lineno">   78</span>    <a class="code hl_variable" href="#a1d8dfd3f5210f5c190f1ecb52777b120">status</a> = <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a5340da9e157cd954497d7ff776845b8b">MinModeSaddleSearch::STATUS_BAD_NO_BARRIER</a>;</div>
-<div class="line"><span class="lineno">   79</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a1d8dfd3f5210f5c190f1ecb52777b120">status</a>;</div>
-<div class="line"><span class="lineno">   80</span>  }</div>
-<div class="line"><span class="lineno">   81</span>  <span class="comment">// do dimer</span></div>
-<div class="line"><span class="lineno">   82</span>  <span class="comment">// Calculate initial direction</span></div>
-<div class="line"><span class="lineno">   83</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> r_1 = neb.path[HighestImage - 1]-&gt;getPositions();</div>
-<div class="line"><span class="lineno">   84</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> r_3 = neb.path[HighestImage + 1]-&gt;getPositions();</div>
-<div class="line"><span class="lineno">   85</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> direction =</div>
-<div class="line"><span class="lineno">   86</span>      <a class="code hl_function" href="#aeb057db2de650e3c779b6721fc98c848">initialDimerDirection</a>(*neb.path[HighestImage], r_1, r_3);</div>
-<div class="line"><span class="lineno">   87</span>  MinModeSaddleSearch dim(neb.path[HighestImage], direction.normalized(),</div>
-<div class="line"><span class="lineno">   88</span>                          ereactant, <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">params</a>, <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#a3c005d31acbafdaa38c96a953c2b3d06">pot</a>);</div>
-<div class="line"><span class="lineno">   89</span>  <span class="comment">// ProcessSearchJob treats STATUS_GOOD as a saddle. The climb&#39;s own</span></div>
-<div class="line"><span class="lineno">   90</span>  <span class="comment">// status is that decision; discarding it records a failed climb as found.</span></div>
-<div class="line"><span class="lineno">   91</span>  <a class="code hl_variable" href="#a1d8dfd3f5210f5c190f1ecb52777b120">status</a> = dim.run();</div>
-<div class="line"><span class="lineno">   92</span>  *<a class="code hl_variable" href="#ac535c682de8d192d5e20972e24d18154">saddle</a> = *neb.path[HighestImage];</div>
-<div class="line"><span class="lineno">   93</span>  <a class="code hl_variable" href="#a6a1ec75484cb54bd7cdb0aa01c3a9e19">eigenvalue</a> = dim.getEigenvalue();</div>
-<div class="line"><span class="lineno">   94</span>  <a class="code hl_variable" href="#a5b73410b07ee883217573dd77575f0ce">eigenvector</a> = dim.getEigenvector();</div>
-<div class="line"><span class="lineno">   95</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a1d8dfd3f5210f5c190f1ecb52777b120">status</a>;</div>
-<div class="line"><span class="lineno">   96</span>}</div>
+<p class="definition">Definition at line <a class="el" href="BasinHoppingSaddleSearch_8cpp_source.html#l00035">35</a> of file <a class="el" href="BasinHoppingSaddleSearch_8cpp_source.html">BasinHoppingSaddleSearch.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   35</span>                                  {</div>
+<div class="line"><span class="lineno">   36</span>  <span class="comment">// minimize &quot;saddle&quot;</span></div>
+<div class="line"><span class="lineno">   37</span>  <a class="code hl_variable" href="#ac535c682de8d192d5e20972e24d18154">saddle</a>-&gt;relax(<span class="keyword">false</span>, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="stringliteral">&quot;displacementmin&quot;</span>);</div>
+<div class="line"><span class="lineno">   38</span>  <a class="code hl_variable" href="#a03dad16c576f5e2a58616971930c6f7d">product</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#a3c005d31acbafdaa38c96a953c2b3d06">pot</a>, <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">params</a>);</div>
+<div class="line"><span class="lineno">   39</span>  *<a class="code hl_variable" href="#a03dad16c576f5e2a58616971930c6f7d">product</a> = *<a class="code hl_variable" href="#ac535c682de8d192d5e20972e24d18154">saddle</a>;</div>
+<div class="line"><span class="lineno">   40</span>  <span class="comment">// Metropolis on the quenched energies: exp(-de/(kB*T)).</span></div>
+<div class="line"><span class="lineno">   41</span>  <span class="comment">// Divide only for an uphill hop at positive temperature. T &lt;= 0 rejects</span></div>
+<div class="line"><span class="lineno">   42</span>  <span class="comment">// that hop (zero-temperature limit) and must not trap or flip the sign.</span></div>
+<div class="line"><span class="lineno">   43</span>  <span class="keywordtype">double</span> eproduct, ereactant, de;</div>
+<div class="line"><span class="lineno">   44</span>  eproduct = <a class="code hl_variable" href="#a03dad16c576f5e2a58616971930c6f7d">product</a>-&gt;getPotentialEnergy();</div>
+<div class="line"><span class="lineno">   45</span>  ereactant = <a class="code hl_variable" href="#a528ba9aae1bf90b4495318bea6be33f3">reactant</a>-&gt;getPotentialEnergy();</div>
+<div class="line"><span class="lineno">   46</span>  de = eproduct - ereactant;</div>
+<div class="line"><span class="lineno">   47</span>  <span class="keywordtype">double</span> kB = <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">params</a>.constants().kB;</div>
+<div class="line"><span class="lineno">   48</span>  <span class="keywordtype">double</span> Temperature = <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">params</a>.main_options().temperature;</div>
+<div class="line"><span class="lineno">   49</span>  <span class="keywordtype">double</span> p = <a class="code hl_function" href="#a72d353c6a86cf778ce4e41520bdcbdfe">metropolisProbability</a>(de, kB, Temperature);</div>
+<div class="line"><span class="lineno">   50</span>  <span class="keywordtype">double</span> r = <a class="code hl_function" href="namespaceeonc_1_1rng.html#a4f610303ae45757f71160f0664b09b9b">eonc::rng::random</a>();</div>
+<div class="line"><span class="lineno">   51</span>  <span class="keywordflow">if</span> (de &gt; 0.0 &amp;&amp; r &gt; p) { <span class="comment">// reject</span></div>
+<div class="line"><span class="lineno">   52</span>    <a class="code hl_variable" href="#a1d8dfd3f5210f5c190f1ecb52777b120">status</a> = 1;</div>
+<div class="line"><span class="lineno">   53</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a1d8dfd3f5210f5c190f1ecb52777b120">status</a>;</div>
+<div class="line"><span class="lineno">   54</span>  }</div>
+<div class="line"><span class="lineno">   55</span>  <span class="comment">// NEB reactant to minimized &quot;saddle&quot;</span></div>
+<div class="line"><span class="lineno">   56</span>  NudgedElasticBand neb(<a class="code hl_variable" href="#a528ba9aae1bf90b4495318bea6be33f3">reactant</a>, <a class="code hl_variable" href="#a03dad16c576f5e2a58616971930c6f7d">product</a>, <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">params</a>, <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#a3c005d31acbafdaa38c96a953c2b3d06">pot</a>);</div>
+<div class="line"><span class="lineno">   57</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(</div>
+<div class="line"><span class="lineno">   58</span>          neb.path[0]-&gt;matter2con(<span class="stringliteral">&quot;neb_initial_band.con&quot;</span>, <span class="keyword">false</span>))) {</div>
+<div class="line"><span class="lineno">   59</span>    QUILL_LOG_WARNING(<a class="code hl_variable" href="#a2bba9615dd74fc4c88299849f0d835a3">log</a>, <span class="stringliteral">&quot;Failed to write neb_initial_band.con&quot;</span>);</div>
+<div class="line"><span class="lineno">   60</span>  }</div>
+<div class="line"><span class="lineno">   61</span>  <span class="comment">// Reactant is frame 0. Interiors are 1..numImages, including the last.</span></div>
+<div class="line"><span class="lineno">   62</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 1; j &lt;= neb.numImages; j++) {</div>
+<div class="line"><span class="lineno">   63</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(</div>
+<div class="line"><span class="lineno">   64</span>            neb.path[j]-&gt;matter2con(<span class="stringliteral">&quot;neb_initial_band.con&quot;</span>, <span class="keyword">true</span>))) {</div>
+<div class="line"><span class="lineno">   65</span>      QUILL_LOG_WARNING(<a class="code hl_variable" href="#a2bba9615dd74fc4c88299849f0d835a3">log</a>, <span class="stringliteral">&quot;Failed to append neb_initial_band frame&quot;</span>);</div>
+<div class="line"><span class="lineno">   66</span>    }</div>
+<div class="line"><span class="lineno">   67</span>  }</div>
+<div class="line"><span class="lineno">   68</span>  neb.compute();</div>
+<div class="line"><span class="lineno">   69</span>  <span class="comment">// Interior images only. Endpoints are fixed, and a band with no interior</span></div>
+<div class="line"><span class="lineno">   70</span>  <span class="comment">// image has no highest image; one image already has both neighbours.</span></div>
+<div class="line"><span class="lineno">   71</span>  <span class="keywordflow">if</span> (neb.numImages &lt; 1) {</div>
+<div class="line"><span class="lineno">   72</span>    QUILL_LOG_WARNING(<a class="code hl_variable" href="#a2bba9615dd74fc4c88299849f0d835a3">log</a>, <span class="stringliteral">&quot;No interior NEB image for basin hopping&quot;</span>);</div>
+<div class="line"><span class="lineno">   73</span>    <a class="code hl_variable" href="#a1d8dfd3f5210f5c190f1ecb52777b120">status</a> = <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a5340da9e157cd954497d7ff776845b8b">MinModeSaddleSearch::STATUS_BAD_NO_BARRIER</a>;</div>
+<div class="line"><span class="lineno">   74</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a1d8dfd3f5210f5c190f1ecb52777b120">status</a>;</div>
+<div class="line"><span class="lineno">   75</span>  }</div>
+<div class="line"><span class="lineno">   76</span>  <span class="keywordtype">int</span> HighestImage = <a class="code hl_function" href="#aef846de92375fc3c69f7874e5b77de45">highestEnergyInteriorImage</a>(neb.path, neb.numImages);</div>
+<div class="line"><span class="lineno">   77</span>  <span class="keywordflow">if</span> (HighestImage &lt; 1) {</div>
+<div class="line"><span class="lineno">   78</span>    QUILL_LOG_WARNING(<a class="code hl_variable" href="#a2bba9615dd74fc4c88299849f0d835a3">log</a>, <span class="stringliteral">&quot;No interior NEB image for basin hopping&quot;</span>);</div>
+<div class="line"><span class="lineno">   79</span>    <a class="code hl_variable" href="#a1d8dfd3f5210f5c190f1ecb52777b120">status</a> = <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a5340da9e157cd954497d7ff776845b8b">MinModeSaddleSearch::STATUS_BAD_NO_BARRIER</a>;</div>
+<div class="line"><span class="lineno">   80</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a1d8dfd3f5210f5c190f1ecb52777b120">status</a>;</div>
+<div class="line"><span class="lineno">   81</span>  }</div>
+<div class="line"><span class="lineno">   82</span>  <span class="comment">// do dimer</span></div>
+<div class="line"><span class="lineno">   83</span>  <span class="comment">// Calculate initial direction</span></div>
+<div class="line"><span class="lineno">   84</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> r_1 = neb.path[HighestImage - 1]-&gt;getPositions();</div>
+<div class="line"><span class="lineno">   85</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> r_3 = neb.path[HighestImage + 1]-&gt;getPositions();</div>
+<div class="line"><span class="lineno">   86</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> direction =</div>
+<div class="line"><span class="lineno">   87</span>      <a class="code hl_function" href="#aeb057db2de650e3c779b6721fc98c848">initialDimerDirection</a>(*neb.path[HighestImage], r_1, r_3);</div>
+<div class="line"><span class="lineno">   88</span>  MinModeSaddleSearch dim(neb.path[HighestImage], direction.normalized(),</div>
+<div class="line"><span class="lineno">   89</span>                          ereactant, <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">params</a>, <a class="code hl_variable" href="classeonc_1_1SaddleSearchMethod.html#a3c005d31acbafdaa38c96a953c2b3d06">pot</a>);</div>
+<div class="line"><span class="lineno">   90</span>  <span class="comment">// ProcessSearchJob treats STATUS_GOOD as a saddle. The climb&#39;s own</span></div>
+<div class="line"><span class="lineno">   91</span>  <span class="comment">// status is that decision; discarding it records a failed climb as found.</span></div>
+<div class="line"><span class="lineno">   92</span>  <a class="code hl_variable" href="#a1d8dfd3f5210f5c190f1ecb52777b120">status</a> = dim.run();</div>
+<div class="line"><span class="lineno">   93</span>  *<a class="code hl_variable" href="#ac535c682de8d192d5e20972e24d18154">saddle</a> = *neb.path[HighestImage];</div>
+<div class="line"><span class="lineno">   94</span>  <a class="code hl_variable" href="#a6a1ec75484cb54bd7cdb0aa01c3a9e19">eigenvalue</a> = dim.getEigenvalue();</div>
+<div class="line"><span class="lineno">   95</span>  <a class="code hl_variable" href="#a5b73410b07ee883217573dd77575f0ce">eigenvector</a> = dim.getEigenvector();</div>
+<div class="line"><span class="lineno">   96</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a1d8dfd3f5210f5c190f1ecb52777b120">status</a>;</div>
+<div class="line"><span class="lineno">   97</span>}</div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
 <div class="ttc" id="aclasseonc_1_1BasinHoppingSaddleSearch_html_a03dad16c576f5e2a58616971930c6f7d"><div class="ttname"><a href="#a03dad16c576f5e2a58616971930c6f7d">eonc::BasinHoppingSaddleSearch::product</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; product</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingSaddleSearch_8h_source.html#l00070">BasinHoppingSaddleSearch.h:70</a></div></div>
 <div class="ttc" id="aclasseonc_1_1BasinHoppingSaddleSearch_html_a2bba9615dd74fc4c88299849f0d835a3"><div class="ttname"><a href="#a2bba9615dd74fc4c88299849f0d835a3">eonc::BasinHoppingSaddleSearch::log</a></div><div class="ttdeci">eonc::log::Scoped log</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingSaddleSearch_8h_source.html#l00075">BasinHoppingSaddleSearch.h:75</a></div></div>
-<div class="ttc" id="aclasseonc_1_1BasinHoppingSaddleSearch_html_a72d353c6a86cf778ce4e41520bdcbdfe"><div class="ttname"><a href="#a72d353c6a86cf778ce4e41520bdcbdfe">eonc::BasinHoppingSaddleSearch::metropolisProbability</a></div><div class="ttdeci">static double metropolisProbability(double de, double kB, double temperature)</div><div class="ttdoc">Quenched Metropolis weight for energy change de.</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingSaddleSearch_8cpp_source.html#l00098">BasinHoppingSaddleSearch.cpp:98</a></div></div>
+<div class="ttc" id="aclasseonc_1_1BasinHoppingSaddleSearch_html_a72d353c6a86cf778ce4e41520bdcbdfe"><div class="ttname"><a href="#a72d353c6a86cf778ce4e41520bdcbdfe">eonc::BasinHoppingSaddleSearch::metropolisProbability</a></div><div class="ttdeci">static double metropolisProbability(double de, double kB, double temperature)</div><div class="ttdoc">Quenched Metropolis weight for energy change de.</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingSaddleSearch_8cpp_source.html#l00099">BasinHoppingSaddleSearch.cpp:99</a></div></div>
 <div class="ttc" id="aclasseonc_1_1BasinHoppingSaddleSearch_html_aeb057db2de650e3c779b6721fc98c848"><div class="ttname"><a href="#aeb057db2de650e3c779b6721fc98c848">eonc::BasinHoppingSaddleSearch::initialDimerDirection</a></div><div class="ttdeci">static AtomMatrix initialDimerDirection(const Matter &amp;image, const AtomMatrix &amp;prev, const AtomMatrix &amp;next)</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingSaddleSearch_8h_source.html#l00038">BasinHoppingSaddleSearch.h:38</a></div></div>
-<div class="ttc" id="aclasseonc_1_1BasinHoppingSaddleSearch_html_aef846de92375fc3c69f7874e5b77de45"><div class="ttname"><a href="#aef846de92375fc3c69f7874e5b77de45">eonc::BasinHoppingSaddleSearch::highestEnergyInteriorImage</a></div><div class="ttdeci">static int highestEnergyInteriorImage(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;path, long numImages)</div><div class="ttdoc">Highest-energy interior bead.</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingSaddleSearch_8cpp_source.html#l00025">BasinHoppingSaddleSearch.cpp:25</a></div></div>
+<div class="ttc" id="aclasseonc_1_1BasinHoppingSaddleSearch_html_aef846de92375fc3c69f7874e5b77de45"><div class="ttname"><a href="#aef846de92375fc3c69f7874e5b77de45">eonc::BasinHoppingSaddleSearch::highestEnergyInteriorImage</a></div><div class="ttdeci">static int highestEnergyInteriorImage(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;path, long numImages)</div><div class="ttdoc">Highest-energy interior bead.</div><div class="ttdef"><b>Definition</b> <a href="BasinHoppingSaddleSearch_8cpp_source.html#l00020">BasinHoppingSaddleSearch.cpp:20</a></div></div>
 <div class="ttc" id="aclasseonc_1_1MinModeSaddleSearch_html_a4a5c4ebad104382ef600037faafd5960a5340da9e157cd954497d7ff776845b8b"><div class="ttname"><a href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a5340da9e157cd954497d7ff776845b8b">eonc::MinModeSaddleSearch::STATUS_BAD_NO_BARRIER</a></div><div class="ttdeci">@ STATUS_BAD_NO_BARRIER</div><div class="ttdef"><b>Definition</b> <a href="MinModeSaddleSearch_8h_source.html#l00048">MinModeSaddleSearch.h:48</a></div></div>
 <div class="ttc" id="aclasseonc_1_1SaddleSearchMethod_html_a3c005d31acbafdaa38c96a953c2b3d06"><div class="ttname"><a href="classeonc_1_1SaddleSearchMethod.html#a3c005d31acbafdaa38c96a953c2b3d06">eonc::SaddleSearchMethod::pot</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; pot</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchMethod_8h_source.html#l00023">SaddleSearchMethod.h:23</a></div></div>
 <div class="ttc" id="aclasseonc_1_1SaddleSearchMethod_html_ad351caa18edcf52bb3a7530059ee2311"><div class="ttname"><a href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">eonc::SaddleSearchMethod::params</a></div><div class="ttdeci">const Parameters &amp; params</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchMethod_8h_source.html#l00024">SaddleSearchMethod.h:24</a></div></div>

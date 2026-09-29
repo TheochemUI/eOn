@@ -155,6 +155,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/in-process.html">In-process jobs (no file IPC)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/abi-surface.html">Public C++ surface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/rgpot-migration.html">rgpot kernel inventory</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/porting_potentials.html">Porting potentials</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/docbuild.html">Working with the documentation</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn.html">Subversion</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn-migration.html">Migrating from SVN</a></li>
@@ -174,6 +175,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.geometry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.pbc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.wire.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.wire</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
@@ -187,6 +189,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.cancel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.cancel</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
@@ -217,6 +220,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.3.1/index.html">[v3.3.1] - 2026-09-27</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v3.3.1/release-notes.html">eOn 3.3.1</a></li>
 </ul>
@@ -698,9 +705,13 @@ There is no <code class="docutils literal notranslate"><span class="pre">eonclie
 </tbody>
 </table>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">results.dat</span></code> is still synthesized as text so the classic explorer can parse
-it. The result dict also carries <code class="docutils literal notranslate"><span class="pre">_matter</span></code> / <code class="docutils literal notranslate"><span class="pre">_structure</span></code> so callers do not
-have to re-read CON.</p>
+<p>A job carries geometry as a <code class="docutils literal notranslate"><span class="pre">Structure</span></code> or a <code class="docutils literal notranslate"><span class="pre">readcon.ConFrame</span></code>
+(<code class="docutils literal notranslate"><span class="pre">structure</span></code>, <code class="docutils literal notranslate"><span class="pre">conframe</span></code>, <code class="docutils literal notranslate"><span class="pre">reactant</span></code>, <code class="docutils literal notranslate"><span class="pre">pos</span></code>, or <code class="docutils literal notranslate"><span class="pre">pos.con</span></code>). <code class="docutils literal notranslate"><span class="pre">.con</span></code> text is
+refused. The result dict returns <code class="docutils literal notranslate"><span class="pre">product</span></code> and, when a saddle exists,
+<code class="docutils literal notranslate"><span class="pre">saddle</span></code> as <code class="docutils literal notranslate"><span class="pre">ConFrame</span></code> objects. Those frames are not written to disk.
+<code class="docutils literal notranslate"><span class="pre">_matter</span></code> stays the potential-bearing client object and <code class="docutils literal notranslate"><span class="pre">_structure</span></code> the
+numpy working set. <code class="docutils literal notranslate"><span class="pre">results.dat</span></code> is still synthesized as text so the classic
+explorer can parse scalars.</p>
 </section>
 </section>
 <section id="additional-topics">
@@ -746,6 +757,25 @@ Currently only AKMC is supported. Example MPI communicator run:</p>
 </span><span data-line="4"><span class="na">script_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;/home/user/eon/tools/clusters/sge6.2&quot;</span>
 </span></pre></div>
 </div>
+<p>The Slurm scripts in <code class="docutils literal notranslate"><span class="pre">tools/clusters/slurm</span></code> take their site options from
+the environment of the server process. <code class="docutils literal notranslate"><span class="pre">EON_SBATCH_ARGS</span></code> sets extra
+<code class="docutils literal notranslate"><span class="pre">sbatch</span></code> options (account, partition, nodes, tasks, time) and <code class="docutils literal notranslate"><span class="pre">EON_CLIENT</span></code>
+the command each job runs, <code class="docutils literal notranslate"><span class="pre">eonclient</span></code> by default:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nb">export</span><span class="w"> </span><span class="nv">EON_SBATCH_ARGS</span><span class="o">=</span><span class="s2">&quot;-A myaccount -p cpu -N 1 --ntasks=48 -t 01:00:00&quot;</span>
+</span><span data-line="2"><span class="nb">export</span><span class="w"> </span><span class="nv">EON_CLIENT</span><span class="o">=</span>eonclient
+</span><span data-line="3">eon
+</span></pre></div>
+</div>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Communicator]</span>
+</span><span data-line="2"><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;cluster&quot;</span>
+</span><span data-line="3"><span class="na">script_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;/path/to/eon/tools/clusters/slurm&quot;</span>
+</span></pre></div>
+</div>
+<p>A potential that needs several MPI ranks, such as CPMD behind <code class="docutils literal notranslate"><span class="pre">ext_pot</span></code>,
+starts them from its wrapper inside the job (<code class="docutils literal notranslate"><span class="pre">srun</span> <span class="pre">-n</span> <span class="pre">48</span> <span class="pre">cpmd.x</span> <span class="pre">...</span></code>); the
+client itself stays one process. When a state reaches its confidence the
+server cancels only the jobs still queued. Jobs that already finished are
+harvested on the next pass and filtered by state.</p>
 </section>
 </section>
 </section>
@@ -867,7 +897,7 @@ Currently only AKMC is supported. Example MPI communicator run:</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=9ac01507"></script>
+      <script src="../_static/documentation_options.js?v=b0e360d0"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

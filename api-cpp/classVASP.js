@@ -2,9 +2,9 @@ var classVASP =
 [
     [ "VASP", "classVASP.html#af47ae4d0da03317dbf33d29364052ff1", null ],
     [ "~VASP", "classVASP.html#a6c9b3c7c69527b1276ed16070e7d9070", null ],
-    [ "cleanMemory", "classVASP.html#a8253c8244127c112c78cf84ec1369250", null ],
+    [ "cleanMemory", "classVASP.html#a60ff1f643f81b3f9f32f49c7dfbb6fc1", null ],
     [ "clearHandshakeFiles", "classVASP.html#a2cd6df791bd6368a14b5cdb1e1b685df", null ],
-    [ "force", "classVASP.html#a71750adf8c6d071da7f7488dcef43ca0", null ],
+    [ "force", "classVASP.html#a432732a2a6d733f6a045ffde6d55d09c", null ],
     [ "initialize", "classVASP.html#a3508053af204c2cf490df512bf0fd334", null ],
     [ "isThreadSafe", "classVASP.html#ac553a0cc4a00cdbb7bd23dfd20d58f6d", null ],
     [ "needsPerImageInstance", "classVASP.html#a91eeb1a7ca7adc0508f40eed312b840e", null ],

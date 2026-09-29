@@ -263,6 +263,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ace98066ce47a2bd62c91b9ec68636734" id="r_ace98066ce47a2bd62c91b9ec68636734"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#ace98066ce47a2bd62c91b9ec68636734">isUncertain</a> ()</td></tr>
 <tr class="memitem:a3c6538fb4e9f395a56f17a4f093f41c3" id="r_a3c6538fb4e9f395a56f17a4f093f41c3"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a3c6538fb4e9f395a56f17a4f093f41c3">getConvergence</a> ()</td></tr>
 <tr class="memitem:a851585537077d6e16539cce87b5b697f" id="r_a851585537077d6e16539cce87b5b697f"><td class="memItemLeft">VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a851585537077d6e16539cce87b5b697f">difference</a> (const VectorXd &amp;a, const VectorXd &amp;b)</td></tr>
+<tr class="memitem:a68ab21a59496d0ed70471e5b8a3ee30e" id="r_a68ab21a59496d0ed70471e5b8a3ee30e"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a68ab21a59496d0ed70471e5b8a3ee30e">supportsFiniteDifferenceCurvature</a> () const override</td></tr>
 <tr class="inherit_header pub_methods_classeonc_1_1ObjectiveFunction"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1ObjectiveFunction')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1ObjectiveFunction.html">eonc::ObjectiveFunction</a></td></tr>
 <tr class="memitem:a7539f6688c5b9e68654bf0a8762e8c34 inherit pub_methods_classeonc_1_1ObjectiveFunction" id="r_a7539f6688c5b9e68654bf0a8762e8c34"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ObjectiveFunction.html#a7539f6688c5b9e68654bf0a8762e8c34">ObjectiveFunction</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;paramsPassed)</td></tr>
 <tr class="memitem:a2757b1b7f7d80d47c033ee32adb8d667 inherit pub_methods_classeonc_1_1ObjectiveFunction" id="r_a2757b1b7f7d80d47c033ee32adb8d667"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ObjectiveFunction.html#a2757b1b7f7d80d47c033ee32adb8d667">~ObjectiveFunction</a> ()</td></tr>
@@ -285,7 +286,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="NudgedElasticBand_8h_source.html#l00106">106</a> of file <a class="el" href="NudgedElasticBand_8h_source.html">NudgedElasticBand.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="NudgedElasticBand_8h_source.html#l00109">109</a> of file <a class="el" href="NudgedElasticBand_8h_source.html">NudgedElasticBand.h</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aedd1f0f4c63e96afa561e32017aebebb" name="aedd1f0f4c63e96afa561e32017aebebb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aedd1f0f4c63e96afa561e32017aebebb">&#9670;&#160;</a></span>NEBObjectiveFunction()</h2>
@@ -314,9 +315,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NudgedElasticBand_8h_source.html#l00108">108</a> of file <a class="el" href="NudgedElasticBand_8h_source.html">NudgedElasticBand.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  110</span>      : <a class="code hl_function" href="classeonc_1_1ObjectiveFunction.html#a7539f6688c5b9e68654bf0a8762e8c34">ObjectiveFunction</a>(parametersPassed), <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>{nebPassed} {}</div>
-<div class="ttc" id="aclasseonc_1_1NEBObjectiveFunction_html_a7f5773f645eaaaadf740cf82af64b760"><div class="ttname"><a href="#a7f5773f645eaaaadf740cf82af64b760">eonc::NEBObjectiveFunction::neb</a></div><div class="ttdeci">NudgedElasticBand * neb</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00127">NudgedElasticBand.h:127</a></div></div>
+<p class="definition">Definition at line <a class="el" href="NudgedElasticBand_8h_source.html#l00111">111</a> of file <a class="el" href="NudgedElasticBand_8h_source.html">NudgedElasticBand.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  113</span>      : <a class="code hl_function" href="classeonc_1_1ObjectiveFunction.html#a7539f6688c5b9e68654bf0a8762e8c34">ObjectiveFunction</a>(parametersPassed), <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>{nebPassed} {}</div>
+<div class="ttc" id="aclasseonc_1_1NEBObjectiveFunction_html_a7f5773f645eaaaadf740cf82af64b760"><div class="ttname"><a href="#a7f5773f645eaaaadf740cf82af64b760">eonc::NEBObjectiveFunction::neb</a></div><div class="ttdeci">NudgedElasticBand * neb</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00132">NudgedElasticBand.h:132</a></div></div>
 <div class="ttc" id="aclasseonc_1_1ObjectiveFunction_html_a7539f6688c5b9e68654bf0a8762e8c34"><div class="ttname"><a href="classeonc_1_1ObjectiveFunction.html#a7539f6688c5b9e68654bf0a8762e8c34">eonc::ObjectiveFunction::ObjectiveFunction</a></div><div class="ttdeci">ObjectiveFunction(const Parameters &amp;paramsPassed)</div><div class="ttdef"><b>Definition</b> <a href="ObjectiveFunction_8h_source.html#l00023">ObjectiveFunction.h:23</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -344,8 +345,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NudgedElasticBand_8h_source.html#l00113">113</a> of file <a class="el" href="NudgedElasticBand_8h_source.html">NudgedElasticBand.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  113</span>{};</div>
+<p class="definition">Definition at line <a class="el" href="NudgedElasticBand_8h_source.html#l00116">116</a> of file <a class="el" href="NudgedElasticBand_8h_source.html">NudgedElasticBand.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  116</span>{};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -638,7 +639,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">   72</span>  }</div>
 <div class="line"><span class="lineno">   73</span>  <span class="keywordflow">return</span> unc_conv;</div>
 <div class="line"><span class="lineno">   74</span>}</div>
-<div class="ttc" id="aclasseonc_1_1NEBObjectiveFunction_html_a17add47c532daba37a5b3b9b4c28b30c"><div class="ttname"><a href="#a17add47c532daba37a5b3b9b4c28b30c">eonc::NEBObjectiveFunction::status</a></div><div class="ttdeci">NudgedElasticBand::NEBStatus status</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00124">NudgedElasticBand.h:124</a></div></div>
+<div class="ttc" id="aclasseonc_1_1NEBObjectiveFunction_html_a17add47c532daba37a5b3b9b4c28b30c"><div class="ttname"><a href="#a17add47c532daba37a5b3b9b4c28b30c">eonc::NEBObjectiveFunction::status</a></div><div class="ttdeci">NudgedElasticBand::NEBStatus status</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00129">NudgedElasticBand.h:129</a></div></div>
 <div class="ttc" id="aclasseonc_1_1NudgedElasticBand_html_ae4aa0062944f9d1fb091b3c4f5bd1016ac45d59fc6c6e8e3d9f5468639ba94278"><div class="ttname"><a href="classeonc_1_1NudgedElasticBand.html#ae4aa0062944f9d1fb091b3c4f5bd1016ac45d59fc6c6e8e3d9f5468639ba94278">eonc::NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY</a></div><div class="ttdeci">@ MAX_UNCERTAINTY</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00047">NudgedElasticBand.h:47</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -680,6 +681,36 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- fragment -->
 </div>
 </div>
+<a id="a68ab21a59496d0ed70471e5b8a3ee30e" name="a68ab21a59496d0ed70471e5b8a3ee30e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68ab21a59496d0ed70471e5b8a3ee30e">&#9670;&#160;</a></span>supportsFiniteDifferenceCurvature()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::NEBObjectiveFunction::supportsFiniteDifferenceCurvature </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classeonc_1_1ObjectiveFunction.html#a1b411c5e39f354a9ec1058e84c172e54">eonc::ObjectiveFunction</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="NudgedElasticBand_8h_source.html#l00128">128</a> of file <a class="el" href="NudgedElasticBand_8h_source.html">NudgedElasticBand.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  128</span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
+</div><!-- fragment -->
+</div>
+</div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
 <a id="a7f5773f645eaaaadf740cf82af64b760" name="a7f5773f645eaaaadf740cf82af64b760"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7f5773f645eaaaadf740cf82af64b760">&#9670;&#160;</a></span>neb</h2>
@@ -701,7 +732,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NudgedElasticBand_8h_source.html#l00127">127</a> of file <a class="el" href="NudgedElasticBand_8h_source.html">NudgedElasticBand.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="NudgedElasticBand_8h_source.html#l00132">132</a> of file <a class="el" href="NudgedElasticBand_8h_source.html">NudgedElasticBand.h</a>.</p>
 
 </div>
 </div>
@@ -717,7 +748,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NudgedElasticBand_8h_source.html#l00124">124</a> of file <a class="el" href="NudgedElasticBand_8h_source.html">NudgedElasticBand.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="NudgedElasticBand_8h_source.html#l00129">129</a> of file <a class="el" href="NudgedElasticBand_8h_source.html">NudgedElasticBand.h</a>.</p>
 
 </div>
 </div>

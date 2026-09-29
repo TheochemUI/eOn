@@ -270,30 +270,30 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00306">306</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  307</span>                                                    {</div>
-<div class="line"><span class="lineno">  308</span>  <span class="keywordflow">if</span> (matobjs.empty()) {</div>
-<div class="line"><span class="lineno">  309</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;accuratePES: empty path&quot;</span>);</div>
-<div class="line"><span class="lineno">  310</span>  }</div>
-<div class="line"><span class="lineno">  311</span>  Eigen::VectorXd predEnergies{Eigen::VectorXd::Zero(matobjs.size())};</div>
-<div class="line"><span class="lineno">  312</span>  Eigen::VectorXd trueEnergies{Eigen::VectorXd::Zero(matobjs.size())};</div>
-<div class="line"><span class="lineno">  313</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> idx{0}; idx &lt; predEnergies.size(); idx++) {</div>
-<div class="line"><span class="lineno">  314</span>    <span class="keyword">auto</span> incoming = matobjs[idx]-&gt;getPotential();</div>
-<div class="line"><span class="lineno">  315</span>    predEnergies[idx] = matobjs[idx]-&gt;getPotentialEnergy();</div>
-<div class="line"><span class="lineno">  316</span>    matobjs[idx]-&gt;setPotential(true_pot);</div>
-<div class="line"><span class="lineno">  317</span>    trueEnergies[idx] = matobjs[idx]-&gt;getPotentialEnergy();</div>
-<div class="line"><span class="lineno">  318</span>    matobjs[idx]-&gt;setPotential(incoming);</div>
-<div class="line"><span class="lineno">  319</span>  }</div>
-<div class="line"><span class="lineno">  320</span>  Eigen::VectorXd difference = predEnergies - trueEnergies;</div>
-<div class="line"><span class="lineno">  321</span>  <span class="keyword">const</span> <span class="keyword">auto</span> maxAbs = difference.array().abs().maxCoeff();</div>
-<div class="line"><span class="lineno">  322</span>  std::ostringstream oss;</div>
-<div class="line"><span class="lineno">  323</span>  oss &lt;&lt; <span class="stringliteral">&quot;predicted\n&quot;</span></div>
-<div class="line"><span class="lineno">  324</span>      &lt;&lt; predEnergies &lt;&lt; <span class="stringliteral">&quot;\ntrue\n&quot;</span></div>
-<div class="line"><span class="lineno">  325</span>      &lt;&lt; trueEnergies &lt;&lt; <span class="stringliteral">&quot;\ndifference\n&quot;</span></div>
-<div class="line"><span class="lineno">  326</span>      &lt;&lt; difference &lt;&lt; <span class="stringliteral">&quot;\n maxAbs: &quot;</span> &lt;&lt; maxAbs;</div>
-<div class="line"><span class="lineno">  327</span>  <a class="code hl_define" href="EonLogger_8h.html#a3a49ea217a42f6fa30a666949f43447b">EONC_LOG_TRACE</a>(<span class="stringliteral">&quot;{}&quot;</span>, oss.str());</div>
-<div class="line"><span class="lineno">  328</span>  <span class="keywordflow">return</span> maxAbs &lt; 0.05;</div>
-<div class="line"><span class="lineno">  329</span>}</div>
+<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00305">305</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  306</span>                                                    {</div>
+<div class="line"><span class="lineno">  307</span>  <span class="keywordflow">if</span> (matobjs.empty()) {</div>
+<div class="line"><span class="lineno">  308</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;accuratePES: empty path&quot;</span>);</div>
+<div class="line"><span class="lineno">  309</span>  }</div>
+<div class="line"><span class="lineno">  310</span>  Eigen::VectorXd predEnergies{Eigen::VectorXd::Zero(matobjs.size())};</div>
+<div class="line"><span class="lineno">  311</span>  Eigen::VectorXd trueEnergies{Eigen::VectorXd::Zero(matobjs.size())};</div>
+<div class="line"><span class="lineno">  312</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> idx{0}; idx &lt; predEnergies.size(); idx++) {</div>
+<div class="line"><span class="lineno">  313</span>    <span class="keyword">auto</span> incoming = matobjs[idx]-&gt;getPotential();</div>
+<div class="line"><span class="lineno">  314</span>    predEnergies[idx] = matobjs[idx]-&gt;getPotentialEnergy();</div>
+<div class="line"><span class="lineno">  315</span>    matobjs[idx]-&gt;setPotential(true_pot);</div>
+<div class="line"><span class="lineno">  316</span>    trueEnergies[idx] = matobjs[idx]-&gt;getPotentialEnergy();</div>
+<div class="line"><span class="lineno">  317</span>    matobjs[idx]-&gt;setPotential(incoming);</div>
+<div class="line"><span class="lineno">  318</span>  }</div>
+<div class="line"><span class="lineno">  319</span>  Eigen::VectorXd difference = predEnergies - trueEnergies;</div>
+<div class="line"><span class="lineno">  320</span>  <span class="keyword">const</span> <span class="keyword">auto</span> maxAbs = difference.array().abs().maxCoeff();</div>
+<div class="line"><span class="lineno">  321</span>  std::ostringstream oss;</div>
+<div class="line"><span class="lineno">  322</span>  oss &lt;&lt; <span class="stringliteral">&quot;predicted\n&quot;</span></div>
+<div class="line"><span class="lineno">  323</span>      &lt;&lt; predEnergies &lt;&lt; <span class="stringliteral">&quot;\ntrue\n&quot;</span></div>
+<div class="line"><span class="lineno">  324</span>      &lt;&lt; trueEnergies &lt;&lt; <span class="stringliteral">&quot;\ndifference\n&quot;</span></div>
+<div class="line"><span class="lineno">  325</span>      &lt;&lt; difference &lt;&lt; <span class="stringliteral">&quot;\n maxAbs: &quot;</span> &lt;&lt; maxAbs;</div>
+<div class="line"><span class="lineno">  326</span>  <a class="code hl_define" href="EonLogger_8h.html#a3a49ea217a42f6fa30a666949f43447b">EONC_LOG_TRACE</a>(<span class="stringliteral">&quot;{}&quot;</span>, oss.str());</div>
+<div class="line"><span class="lineno">  327</span>  <span class="keywordflow">return</span> maxAbs &lt; 0.05;</div>
+<div class="line"><span class="lineno">  328</span>}</div>
 <div class="ttc" id="aEonLogger_8h_html_a3a49ea217a42f6fa30a666949f43447b"><div class="ttname"><a href="EonLogger_8h.html#a3a49ea217a42f6fa30a666949f43447b">EONC_LOG_TRACE</a></div><div class="ttdeci">#define EONC_LOG_TRACE(...)</div><div class="ttdoc">Convenience macro for one-shot logging without storing a logger.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00237">EonLogger.h:237</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -313,20 +313,20 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00203">203</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  203</span>                                                        {</div>
-<div class="line"><span class="lineno">  204</span>  <span class="comment">// Calculate dimensions</span></div>
-<div class="line"><span class="lineno">  205</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> features(matobjs.size(), matobjs.front().numberOfFreeAtoms() * 3);</div>
-<div class="line"><span class="lineno">  206</span>  <a class="code hl_define" href="EonLogger_8h.html#a3a49ea217a42f6fa30a666949f43447b">EONC_LOG_TRACE</a>(<span class="stringliteral">&quot;rows: {}, cols:{}&quot;</span>, matobjs.size(),</div>
-<div class="line"><span class="lineno">  207</span>                 matobjs.front().numberOfFreeAtoms() * 3);</div>
-<div class="line"><span class="lineno">  208</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> idx{0}; idx &lt; features.rows(); idx++) {</div>
-<div class="line"><span class="lineno">  209</span>    features.row(idx) = matobjs[idx].getPositionsFreeV();</div>
-<div class="line"><span class="lineno">  210</span>  }</div>
-<div class="line"><span class="lineno">  211</span>  std::ostringstream oss;</div>
-<div class="line"><span class="lineno">  212</span>  oss &lt;&lt; features;</div>
-<div class="line"><span class="lineno">  213</span>  <a class="code hl_define" href="EonLogger_8h.html#a3a49ea217a42f6fa30a666949f43447b">EONC_LOG_TRACE</a>(<span class="stringliteral">&quot;Features\n:{}&quot;</span>, oss.str());</div>
-<div class="line"><span class="lineno">  214</span>  <span class="keywordflow">return</span> features;</div>
-<div class="line"><span class="lineno">  215</span>}</div>
+<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00202">202</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  202</span>                                                        {</div>
+<div class="line"><span class="lineno">  203</span>  <span class="comment">// Calculate dimensions</span></div>
+<div class="line"><span class="lineno">  204</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> features(matobjs.size(), matobjs.front().numberOfFreeAtoms() * 3);</div>
+<div class="line"><span class="lineno">  205</span>  <a class="code hl_define" href="EonLogger_8h.html#a3a49ea217a42f6fa30a666949f43447b">EONC_LOG_TRACE</a>(<span class="stringliteral">&quot;rows: {}, cols:{}&quot;</span>, matobjs.size(),</div>
+<div class="line"><span class="lineno">  206</span>                 matobjs.front().numberOfFreeAtoms() * 3);</div>
+<div class="line"><span class="lineno">  207</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> idx{0}; idx &lt; features.rows(); idx++) {</div>
+<div class="line"><span class="lineno">  208</span>    features.row(idx) = matobjs[idx].getPositionsFreeV();</div>
+<div class="line"><span class="lineno">  209</span>  }</div>
+<div class="line"><span class="lineno">  210</span>  std::ostringstream oss;</div>
+<div class="line"><span class="lineno">  211</span>  oss &lt;&lt; features;</div>
+<div class="line"><span class="lineno">  212</span>  <a class="code hl_define" href="EonLogger_8h.html#a3a49ea217a42f6fa30a666949f43447b">EONC_LOG_TRACE</a>(<span class="stringliteral">&quot;Features\n:{}&quot;</span>, oss.str());</div>
+<div class="line"><span class="lineno">  213</span>  <span class="keywordflow">return</span> features;</div>
+<div class="line"><span class="lineno">  214</span>}</div>
 <div class="ttc" id="aEigen_8h_html_a45bb4cbce093fca4dfb193d3f649da30"><div class="ttname"><a href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, eOnStorageOrder &gt; MatrixXd</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00033">Eigen.h:33</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -346,20 +346,20 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00216">216</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  216</span>                                                                       {</div>
-<div class="line"><span class="lineno">  217</span>  <span class="comment">// Calculate dimensions</span></div>
-<div class="line"><span class="lineno">  218</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> features(matobjs.size(), matobjs.front()-&gt;numberOfFreeAtoms() * 3);</div>
-<div class="line"><span class="lineno">  219</span>  <a class="code hl_define" href="EonLogger_8h.html#a3a49ea217a42f6fa30a666949f43447b">EONC_LOG_TRACE</a>(<span class="stringliteral">&quot;rows: {}, cols:{}\n&quot;</span>, matobjs.size(),</div>
-<div class="line"><span class="lineno">  220</span>                 matobjs.front()-&gt;numberOfFreeAtoms() * 3);</div>
-<div class="line"><span class="lineno">  221</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> idx{0}; idx &lt; features.rows(); idx++) {</div>
-<div class="line"><span class="lineno">  222</span>    features.row(idx) = matobjs[idx]-&gt;getPositionsFreeV();</div>
-<div class="line"><span class="lineno">  223</span>  }</div>
-<div class="line"><span class="lineno">  224</span>  std::ostringstream oss;</div>
-<div class="line"><span class="lineno">  225</span>  oss &lt;&lt; features;</div>
-<div class="line"><span class="lineno">  226</span>  <a class="code hl_define" href="EonLogger_8h.html#a3a49ea217a42f6fa30a666949f43447b">EONC_LOG_TRACE</a>(<span class="stringliteral">&quot;Features\n:{}&quot;</span>, oss.str());</div>
-<div class="line"><span class="lineno">  227</span>  <span class="keywordflow">return</span> features;</div>
-<div class="line"><span class="lineno">  228</span>}</div>
+<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00215">215</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  215</span>                                                                       {</div>
+<div class="line"><span class="lineno">  216</span>  <span class="comment">// Calculate dimensions</span></div>
+<div class="line"><span class="lineno">  217</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> features(matobjs.size(), matobjs.front()-&gt;numberOfFreeAtoms() * 3);</div>
+<div class="line"><span class="lineno">  218</span>  <a class="code hl_define" href="EonLogger_8h.html#a3a49ea217a42f6fa30a666949f43447b">EONC_LOG_TRACE</a>(<span class="stringliteral">&quot;rows: {}, cols:{}\n&quot;</span>, matobjs.size(),</div>
+<div class="line"><span class="lineno">  219</span>                 matobjs.front()-&gt;numberOfFreeAtoms() * 3);</div>
+<div class="line"><span class="lineno">  220</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> idx{0}; idx &lt; features.rows(); idx++) {</div>
+<div class="line"><span class="lineno">  221</span>    features.row(idx) = matobjs[idx]-&gt;getPositionsFreeV();</div>
+<div class="line"><span class="lineno">  222</span>  }</div>
+<div class="line"><span class="lineno">  223</span>  std::ostringstream oss;</div>
+<div class="line"><span class="lineno">  224</span>  oss &lt;&lt; features;</div>
+<div class="line"><span class="lineno">  225</span>  <a class="code hl_define" href="EonLogger_8h.html#a3a49ea217a42f6fa30a666949f43447b">EONC_LOG_TRACE</a>(<span class="stringliteral">&quot;Features\n:{}&quot;</span>, oss.str());</div>
+<div class="line"><span class="lineno">  226</span>  <span class="keywordflow">return</span> features;</div>
+<div class="line"><span class="lineno">  227</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -382,24 +382,24 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00229">229</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  230</span>                                                        {</div>
-<div class="line"><span class="lineno">  231</span>  <span class="comment">// Always with derivatives for now</span></div>
-<div class="line"><span class="lineno">  232</span>  <span class="comment">// Energy + Derivatives for each row</span></div>
-<div class="line"><span class="lineno">  233</span>  <span class="keyword">const</span> <span class="keyword">auto</span> nrows = matobjs.size();</div>
-<div class="line"><span class="lineno">  234</span>  <span class="keyword">const</span> <span class="keyword">auto</span> ncols = (matobjs.front().numberOfFreeAtoms() * 3) + 1;</div>
-<div class="line"><span class="lineno">  235</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> targets(nrows, ncols);</div>
-<div class="line"><span class="lineno">  236</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> idx{0}; idx &lt; targets.rows(); idx++) {</div>
-<div class="line"><span class="lineno">  237</span>    matobjs[idx].setPotential(true_pot);</div>
-<div class="line"><span class="lineno">  238</span>    targets.row(idx)[0] = matobjs[idx].getPotentialEnergy();</div>
-<div class="line"><span class="lineno">  239</span>    targets.block(idx, 1, 1, ncols - 1) =</div>
-<div class="line"><span class="lineno">  240</span>        matobjs[idx].getForcesFreeV().array() * -1;</div>
-<div class="line"><span class="lineno">  241</span>  }</div>
-<div class="line"><span class="lineno">  242</span>  std::ostringstream oss;</div>
-<div class="line"><span class="lineno">  243</span>  oss &lt;&lt; targets;</div>
-<div class="line"><span class="lineno">  244</span>  <a class="code hl_define" href="EonLogger_8h.html#a3a49ea217a42f6fa30a666949f43447b">EONC_LOG_TRACE</a>(<span class="stringliteral">&quot;Targets\n:{}&quot;</span>, oss.str());</div>
-<div class="line"><span class="lineno">  245</span>  <span class="keywordflow">return</span> targets;</div>
-<div class="line"><span class="lineno">  246</span>}</div>
+<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00228">228</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  229</span>                                                        {</div>
+<div class="line"><span class="lineno">  230</span>  <span class="comment">// Always with derivatives for now</span></div>
+<div class="line"><span class="lineno">  231</span>  <span class="comment">// Energy + Derivatives for each row</span></div>
+<div class="line"><span class="lineno">  232</span>  <span class="keyword">const</span> <span class="keyword">auto</span> nrows = matobjs.size();</div>
+<div class="line"><span class="lineno">  233</span>  <span class="keyword">const</span> <span class="keyword">auto</span> ncols = (matobjs.front().numberOfFreeAtoms() * 3) + 1;</div>
+<div class="line"><span class="lineno">  234</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> targets(nrows, ncols);</div>
+<div class="line"><span class="lineno">  235</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> idx{0}; idx &lt; targets.rows(); idx++) {</div>
+<div class="line"><span class="lineno">  236</span>    matobjs[idx].setPotential(true_pot);</div>
+<div class="line"><span class="lineno">  237</span>    targets.row(idx)[0] = matobjs[idx].getPotentialEnergy();</div>
+<div class="line"><span class="lineno">  238</span>    targets.block(idx, 1, 1, ncols - 1) =</div>
+<div class="line"><span class="lineno">  239</span>        matobjs[idx].getForcesFreeV().array() * -1;</div>
+<div class="line"><span class="lineno">  240</span>  }</div>
+<div class="line"><span class="lineno">  241</span>  std::ostringstream oss;</div>
+<div class="line"><span class="lineno">  242</span>  oss &lt;&lt; targets;</div>
+<div class="line"><span class="lineno">  243</span>  <a class="code hl_define" href="EonLogger_8h.html#a3a49ea217a42f6fa30a666949f43447b">EONC_LOG_TRACE</a>(<span class="stringliteral">&quot;Targets\n:{}&quot;</span>, oss.str());</div>
+<div class="line"><span class="lineno">  244</span>  <span class="keywordflow">return</span> targets;</div>
+<div class="line"><span class="lineno">  245</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -422,22 +422,22 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00247">247</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  248</span>                                                        {</div>
-<div class="line"><span class="lineno">  249</span>  <span class="keyword">const</span> <span class="keyword">auto</span> nrows = matobjs.size();</div>
-<div class="line"><span class="lineno">  250</span>  <span class="keyword">const</span> <span class="keyword">auto</span> ncols = (matobjs.front()-&gt;numberOfFreeAtoms() * 3) + 1;</div>
-<div class="line"><span class="lineno">  251</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> targets(nrows, ncols);</div>
-<div class="line"><span class="lineno">  252</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> idx{0}; idx &lt; targets.rows(); idx++) {</div>
-<div class="line"><span class="lineno">  253</span>    matobjs[idx]-&gt;setPotential(true_pot);</div>
-<div class="line"><span class="lineno">  254</span>    targets.row(idx)[0] = matobjs[idx]-&gt;getPotentialEnergy();</div>
-<div class="line"><span class="lineno">  255</span>    targets.block(idx, 1, 1, ncols - 1) =</div>
-<div class="line"><span class="lineno">  256</span>        matobjs[idx]-&gt;getForcesFreeV().array() * -1;</div>
-<div class="line"><span class="lineno">  257</span>  }</div>
-<div class="line"><span class="lineno">  258</span>  std::ostringstream oss;</div>
-<div class="line"><span class="lineno">  259</span>  oss &lt;&lt; targets;</div>
-<div class="line"><span class="lineno">  260</span>  <a class="code hl_define" href="EonLogger_8h.html#a3a49ea217a42f6fa30a666949f43447b">EONC_LOG_TRACE</a>(<span class="stringliteral">&quot;Targets\n:{}&quot;</span>, oss.str());</div>
-<div class="line"><span class="lineno">  261</span>  <span class="keywordflow">return</span> targets;</div>
-<div class="line"><span class="lineno">  262</span>}</div>
+<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00246">246</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  247</span>                                                        {</div>
+<div class="line"><span class="lineno">  248</span>  <span class="keyword">const</span> <span class="keyword">auto</span> nrows = matobjs.size();</div>
+<div class="line"><span class="lineno">  249</span>  <span class="keyword">const</span> <span class="keyword">auto</span> ncols = (matobjs.front()-&gt;numberOfFreeAtoms() * 3) + 1;</div>
+<div class="line"><span class="lineno">  250</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> targets(nrows, ncols);</div>
+<div class="line"><span class="lineno">  251</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> idx{0}; idx &lt; targets.rows(); idx++) {</div>
+<div class="line"><span class="lineno">  252</span>    matobjs[idx]-&gt;setPotential(true_pot);</div>
+<div class="line"><span class="lineno">  253</span>    targets.row(idx)[0] = matobjs[idx]-&gt;getPotentialEnergy();</div>
+<div class="line"><span class="lineno">  254</span>    targets.block(idx, 1, 1, ncols - 1) =</div>
+<div class="line"><span class="lineno">  255</span>        matobjs[idx]-&gt;getForcesFreeV().array() * -1;</div>
+<div class="line"><span class="lineno">  256</span>  }</div>
+<div class="line"><span class="lineno">  257</span>  std::ostringstream oss;</div>
+<div class="line"><span class="lineno">  258</span>  oss &lt;&lt; targets;</div>
+<div class="line"><span class="lineno">  259</span>  <a class="code hl_define" href="EonLogger_8h.html#a3a49ea217a42f6fa30a666949f43447b">EONC_LOG_TRACE</a>(<span class="stringliteral">&quot;Targets\n:{}&quot;</span>, oss.str());</div>
+<div class="line"><span class="lineno">  260</span>  <span class="keywordflow">return</span> targets;</div>
+<div class="line"><span class="lineno">  261</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -456,21 +456,21 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00284">284</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  284</span>                                                                   {</div>
-<div class="line"><span class="lineno">  285</span>  <span class="keywordflow">if</span> (matobjs.size() &lt; 3) {</div>
-<div class="line"><span class="lineno">  286</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
-<div class="line"><span class="lineno">  287</span>        <span class="stringliteral">&quot;getMaxUncertainty: need at least three images&quot;</span>);</div>
-<div class="line"><span class="lineno">  288</span>  }</div>
-<div class="line"><span class="lineno">  289</span>  Eigen::VectorXd pathUncertainty{Eigen::VectorXd::Zero(matobjs.size() - 2)};</div>
-<div class="line"><span class="lineno">  290</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> idx{0}; idx &lt; pathUncertainty.size(); idx++) {</div>
-<div class="line"><span class="lineno">  291</span>    pathUncertainty[idx] = matobjs[idx + 1]-&gt;getEnergyVariance();</div>
-<div class="line"><span class="lineno">  292</span>  }</div>
-<div class="line"><span class="lineno">  293</span>  Eigen::VectorXd::Index maxIndex;</div>
-<div class="line"><span class="lineno">  294</span>  <span class="keywordtype">double</span> maxUnc{pathUncertainty.maxCoeff()};</div>
-<div class="line"><span class="lineno">  295</span>  pathUncertainty.maxCoeff(&amp;maxIndex);</div>
-<div class="line"><span class="lineno">  296</span>  <span class="keywordflow">return</span> std::make_pair(maxUnc, maxIndex);</div>
-<div class="line"><span class="lineno">  297</span>}</div>
+<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00283">283</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  283</span>                                                                   {</div>
+<div class="line"><span class="lineno">  284</span>  <span class="keywordflow">if</span> (matobjs.size() &lt; 3) {</div>
+<div class="line"><span class="lineno">  285</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">  286</span>        <span class="stringliteral">&quot;getMaxUncertainty: need at least three images&quot;</span>);</div>
+<div class="line"><span class="lineno">  287</span>  }</div>
+<div class="line"><span class="lineno">  288</span>  Eigen::VectorXd pathUncertainty{Eigen::VectorXd::Zero(matobjs.size() - 2)};</div>
+<div class="line"><span class="lineno">  289</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> idx{0}; idx &lt; pathUncertainty.size(); idx++) {</div>
+<div class="line"><span class="lineno">  290</span>    pathUncertainty[idx] = matobjs[idx + 1]-&gt;getEnergyVariance();</div>
+<div class="line"><span class="lineno">  291</span>  }</div>
+<div class="line"><span class="lineno">  292</span>  Eigen::VectorXd::Index maxIndex;</div>
+<div class="line"><span class="lineno">  293</span>  <span class="keywordtype">double</span> maxUnc{pathUncertainty.maxCoeff()};</div>
+<div class="line"><span class="lineno">  294</span>  pathUncertainty.maxCoeff(&amp;maxIndex);</div>
+<div class="line"><span class="lineno">  295</span>  <span class="keywordflow">return</span> std::make_pair(maxUnc, maxIndex);</div>
+<div class="line"><span class="lineno">  296</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -489,19 +489,19 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00263">263</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  263</span>                                                                {</div>
-<div class="line"><span class="lineno">  264</span>  <span class="comment">// Initial GP slice: endpoints plus one interior sample. CatLearn</span></div>
-<div class="line"><span class="lineno">  265</span>  <span class="comment">// training is order-sensitive (front, back, interior). The interior</span></div>
-<div class="line"><span class="lineno">  266</span>  <span class="comment">// index is two-thirds along the movable images, not n/2.</span></div>
-<div class="line"><span class="lineno">  267</span>  <span class="keywordflow">if</span> (matobjs.size() &lt; 3) {</div>
-<div class="line"><span class="lineno">  268</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;getMidSlice: need at least three images&quot;</span>);</div>
-<div class="line"><span class="lineno">  269</span>  }</div>
-<div class="line"><span class="lineno">  270</span>  <span class="keyword">const</span> std::size_t n = matobjs.size();</div>
-<div class="line"><span class="lineno">  271</span>  <span class="keyword">const</span> std::size_t twoThirds =</div>
-<div class="line"><span class="lineno">  272</span>      <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(((n - 2) * 2.0 / 3.0) + 1.0);</div>
-<div class="line"><span class="lineno">  273</span>  <span class="keywordflow">return</span> {matobjs.front(), matobjs.back(), matobjs[twoThirds]};</div>
-<div class="line"><span class="lineno">  274</span>}</div>
+<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00262">262</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  262</span>                                                                {</div>
+<div class="line"><span class="lineno">  263</span>  <span class="comment">// Initial GP slice: endpoints plus one interior sample. CatLearn</span></div>
+<div class="line"><span class="lineno">  264</span>  <span class="comment">// training is order-sensitive (front, back, interior). The interior</span></div>
+<div class="line"><span class="lineno">  265</span>  <span class="comment">// index is two-thirds along the movable images, not n/2.</span></div>
+<div class="line"><span class="lineno">  266</span>  <span class="keywordflow">if</span> (matobjs.size() &lt; 3) {</div>
+<div class="line"><span class="lineno">  267</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;getMidSlice: need at least three images&quot;</span>);</div>
+<div class="line"><span class="lineno">  268</span>  }</div>
+<div class="line"><span class="lineno">  269</span>  <span class="keyword">const</span> std::size_t n = matobjs.size();</div>
+<div class="line"><span class="lineno">  270</span>  <span class="keyword">const</span> std::size_t twoThirds =</div>
+<div class="line"><span class="lineno">  271</span>      <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(((n - 2) * 2.0 / 3.0) + 1.0);</div>
+<div class="line"><span class="lineno">  272</span>  <span class="keywordflow">return</span> {matobjs.front(), matobjs.back(), matobjs[twoThirds]};</div>
+<div class="line"><span class="lineno">  273</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -524,17 +524,17 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00299">299</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  300</span>                                                   {</div>
-<div class="line"><span class="lineno">  301</span>  <span class="keyword">auto</span> [maxUnc, maxIndex] = <a class="code hl_function" href="#a92339fc198f1b112c18bbaa6869867db">getMaxUncertainty</a>(matobjs);</div>
-<div class="line"><span class="lineno">  302</span>  <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> candidate{*matobjs[maxIndex + 1]};</div>
-<div class="line"><span class="lineno">  303</span>  <span class="keywordflow">return</span> std::make_pair&lt;Eigen::VectorXd, Eigen::VectorXd&gt;(</div>
-<div class="line"><span class="lineno">  304</span>      candidate.<a class="code hl_function" href="classeonc_1_1Matter.html#a636c2e4c8ad751c102f1693a11ae3942">getPositionsFreeV</a>(), <a class="code hl_function" href="#afb72d01ef6c1e32950b58b359c000cc7">make_target</a>(candidate, true_pot));</div>
-<div class="line"><span class="lineno">  305</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Matter_html"><div class="ttname"><a href="classeonc_1_1Matter.html">eonc::Matter</a></div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00093">Matter.h:93</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_a636c2e4c8ad751c102f1693a11ae3942"><div class="ttname"><a href="classeonc_1_1Matter.html#a636c2e4c8ad751c102f1693a11ae3942">eonc::Matter::getPositionsFreeV</a></div><div class="ttdeci">VectorXd getPositionsFreeV() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00326">Matter.cpp:326</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1helpers_1_1surrogate_html_a92339fc198f1b112c18bbaa6869867db"><div class="ttname"><a href="#a92339fc198f1b112c18bbaa6869867db">eonc::helpers::surrogate::getMaxUncertainty</a></div><div class="ttdeci">std::pair&lt; double, Eigen::VectorXd::Index &gt; getMaxUncertainty(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;matobjs)</div><div class="ttdef"><b>Definition</b> <a href="GPSurrogateJob_8cpp_source.html#l00284">GPSurrogateJob.cpp:284</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1helpers_1_1surrogate_html_afb72d01ef6c1e32950b58b359c000cc7"><div class="ttname"><a href="#afb72d01ef6c1e32950b58b359c000cc7">eonc::helpers::surrogate::make_target</a></div><div class="ttdeci">Eigen::VectorXd make_target(Matter &amp;m1, std::shared_ptr&lt; Potential &gt; true_pot)</div><div class="ttdef"><b>Definition</b> <a href="GPSurrogateJob_8cpp_source.html#l00275">GPSurrogateJob.cpp:275</a></div></div>
+<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00298">298</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  299</span>                                                   {</div>
+<div class="line"><span class="lineno">  300</span>  <span class="keyword">auto</span> [maxUnc, maxIndex] = <a class="code hl_function" href="#a92339fc198f1b112c18bbaa6869867db">getMaxUncertainty</a>(matobjs);</div>
+<div class="line"><span class="lineno">  301</span>  <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> candidate{*matobjs[maxIndex + 1]};</div>
+<div class="line"><span class="lineno">  302</span>  <span class="keywordflow">return</span> std::make_pair&lt;Eigen::VectorXd, Eigen::VectorXd&gt;(</div>
+<div class="line"><span class="lineno">  303</span>      candidate.<a class="code hl_function" href="classeonc_1_1Matter.html#a636c2e4c8ad751c102f1693a11ae3942">getPositionsFreeV</a>(), <a class="code hl_function" href="#afb72d01ef6c1e32950b58b359c000cc7">make_target</a>(candidate, true_pot));</div>
+<div class="line"><span class="lineno">  304</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html"><div class="ttname"><a href="classeonc_1_1Matter.html">eonc::Matter</a></div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00089">Matter.h:89</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a636c2e4c8ad751c102f1693a11ae3942"><div class="ttname"><a href="classeonc_1_1Matter.html#a636c2e4c8ad751c102f1693a11ae3942">eonc::Matter::getPositionsFreeV</a></div><div class="ttdeci">VectorXd getPositionsFreeV() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00345">Matter.cpp:345</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_1_1surrogate_html_a92339fc198f1b112c18bbaa6869867db"><div class="ttname"><a href="#a92339fc198f1b112c18bbaa6869867db">eonc::helpers::surrogate::getMaxUncertainty</a></div><div class="ttdeci">std::pair&lt; double, Eigen::VectorXd::Index &gt; getMaxUncertainty(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;matobjs)</div><div class="ttdef"><b>Definition</b> <a href="GPSurrogateJob_8cpp_source.html#l00283">GPSurrogateJob.cpp:283</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_1_1surrogate_html_afb72d01ef6c1e32950b58b359c000cc7"><div class="ttname"><a href="#afb72d01ef6c1e32950b58b359c000cc7">eonc::helpers::surrogate::make_target</a></div><div class="ttdeci">Eigen::VectorXd make_target(Matter &amp;m1, std::shared_ptr&lt; Potential &gt; true_pot)</div><div class="ttdef"><b>Definition</b> <a href="GPSurrogateJob_8cpp_source.html#l00274">GPSurrogateJob.cpp:274</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -557,19 +557,19 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00275">275</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  275</span>                                                                         {</div>
-<div class="line"><span class="lineno">  276</span>  <span class="keyword">const</span> <span class="keyword">auto</span> ncols = (m1.<a class="code hl_function" href="classeonc_1_1Matter.html#ab5d79749ee089776eecd605f6da72674">numberOfFreeAtoms</a>() * 3) + 1;</div>
-<div class="line"><span class="lineno">  277</span>  Eigen::VectorXd target(ncols);</div>
-<div class="line"><span class="lineno">  278</span>  m1.<a class="code hl_function" href="classeonc_1_1Matter.html#a4cb6ed70d68021cba05aaea9868d9de5">setPotential</a>(true_pot);</div>
-<div class="line"><span class="lineno">  279</span>  target(0) = m1.<a class="code hl_function" href="classeonc_1_1Matter.html#a991745c4fb760027221d419b8cf6fd8e">getPotentialEnergy</a>();</div>
-<div class="line"><span class="lineno">  280</span>  target.segment(1, ncols - 1) = m1.<a class="code hl_function" href="classeonc_1_1Matter.html#a267ac00ed718ef3d3f576b9b5ef6260e">getForcesFreeV</a>() * -1;</div>
-<div class="line"><span class="lineno">  281</span>  <span class="keywordflow">return</span> target;</div>
-<div class="line"><span class="lineno">  282</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_a267ac00ed718ef3d3f576b9b5ef6260e"><div class="ttname"><a href="classeonc_1_1Matter.html#a267ac00ed718ef3d3f576b9b5ef6260e">eonc::Matter::getForcesFreeV</a></div><div class="ttdeci">VectorXd getForcesFreeV() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00423">Matter.cpp:423</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_a4cb6ed70d68021cba05aaea9868d9de5"><div class="ttname"><a href="classeonc_1_1Matter.html#a4cb6ed70d68021cba05aaea9868d9de5">eonc::Matter::setPotential</a></div><div class="ttdeci">void setPotential(std::shared_ptr&lt; Potential &gt; pot)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00729">Matter.cpp:729</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_a991745c4fb760027221d419b8cf6fd8e"><div class="ttname"><a href="classeonc_1_1Matter.html#a991745c4fb760027221d419b8cf6fd8e">eonc::Matter::getPotentialEnergy</a></div><div class="ttdeci">double getPotentialEnergy() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00530">Matter.cpp:530</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_ab5d79749ee089776eecd605f6da72674"><div class="ttname"><a href="classeonc_1_1Matter.html#ab5d79749ee089776eecd605f6da72674">eonc::Matter::numberOfFreeAtoms</a></div><div class="ttdeci">long int numberOfFreeAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00559">Matter.cpp:559</a></div></div>
+<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00274">274</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  274</span>                                                                         {</div>
+<div class="line"><span class="lineno">  275</span>  <span class="keyword">const</span> <span class="keyword">auto</span> ncols = (m1.<a class="code hl_function" href="classeonc_1_1Matter.html#ab5d79749ee089776eecd605f6da72674">numberOfFreeAtoms</a>() * 3) + 1;</div>
+<div class="line"><span class="lineno">  276</span>  Eigen::VectorXd target(ncols);</div>
+<div class="line"><span class="lineno">  277</span>  m1.<a class="code hl_function" href="classeonc_1_1Matter.html#a4cb6ed70d68021cba05aaea9868d9de5">setPotential</a>(true_pot);</div>
+<div class="line"><span class="lineno">  278</span>  target(0) = m1.<a class="code hl_function" href="classeonc_1_1Matter.html#a991745c4fb760027221d419b8cf6fd8e">getPotentialEnergy</a>();</div>
+<div class="line"><span class="lineno">  279</span>  target.segment(1, ncols - 1) = m1.<a class="code hl_function" href="classeonc_1_1Matter.html#a267ac00ed718ef3d3f576b9b5ef6260e">getForcesFreeV</a>() * -1;</div>
+<div class="line"><span class="lineno">  280</span>  <span class="keywordflow">return</span> target;</div>
+<div class="line"><span class="lineno">  281</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a267ac00ed718ef3d3f576b9b5ef6260e"><div class="ttname"><a href="classeonc_1_1Matter.html#a267ac00ed718ef3d3f576b9b5ef6260e">eonc::Matter::getForcesFreeV</a></div><div class="ttdeci">VectorXd getForcesFreeV() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00442">Matter.cpp:442</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a4cb6ed70d68021cba05aaea9868d9de5"><div class="ttname"><a href="classeonc_1_1Matter.html#a4cb6ed70d68021cba05aaea9868d9de5">eonc::Matter::setPotential</a></div><div class="ttdeci">void setPotential(std::shared_ptr&lt; Potential &gt; pot)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00754">Matter.cpp:754</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a991745c4fb760027221d419b8cf6fd8e"><div class="ttname"><a href="classeonc_1_1Matter.html#a991745c4fb760027221d419b8cf6fd8e">eonc::Matter::getPotentialEnergy</a></div><div class="ttdeci">double getPotentialEnergy() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00554">Matter.cpp:554</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_ab5d79749ee089776eecd605f6da72674"><div class="ttname"><a href="classeonc_1_1Matter.html#ab5d79749ee089776eecd605f6da72674">eonc::Matter::numberOfFreeAtoms</a></div><div class="ttdeci">long int numberOfFreeAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00583">Matter.cpp:583</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>

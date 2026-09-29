@@ -155,6 +155,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/in-process.html">In-process jobs (no file IPC)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/abi-surface.html">Public C++ surface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/rgpot-migration.html">rgpot kernel inventory</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/porting_potentials.html">Porting potentials</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/docbuild.html">Working with the documentation</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/svn.html">Subversion</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/svn-migration.html">Migrating from SVN</a></li>
@@ -174,6 +175,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.geometry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.pbc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.wire.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.wire</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
@@ -187,6 +189,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.cancel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.cancel</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
@@ -217,6 +220,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v3.3.1/index.html">[v3.3.1] - 2026-09-27</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v3.3.1/release-notes.html">eOn 3.3.1</a></li>
 </ul>
@@ -577,236 +584,239 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="186">            <span class="kc">True</span><span class="p">,</span>
 </span><span data-line="187">            <span class="n">check_rotation</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">comp_check_rotation</span><span class="p">,</span>
 </span><span data-line="188">            <span class="n">use_identical</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">comp_use_identical</span><span class="p">,</span>
-</span><span data-line="189">        <span class="p">):</span>
-</span><span data-line="190">            <span class="k">return</span> <span class="n">pid</span>
-</span><span data-line="191">    <span class="k">return</span> <span class="kc">None</span></div>
+</span><span data-line="189">            <span class="c1"># A config-like object without the option compares positions</span>
+</span><span data-line="190">            <span class="c1"># as they are, without removing a rigid translation.</span>
+</span><span data-line="191">            <span class="n">remove_translation</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;comp_remove_translation&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+</span><span data-line="192">        <span class="p">):</span>
+</span><span data-line="193">            <span class="k">return</span> <span class="n">pid</span>
+</span><span data-line="194">    <span class="k">return</span> <span class="kc">None</span></div>
 
-</span><span data-line="192">
-</span><span data-line="193">
+</span><span data-line="195">
+</span><span data-line="196">
 <div class="viewcode-block" id="accumulate_end_state">
 <a class="viewcode-back" href="../../apidocs/eon/eon.escaperate.html#eon.escaperate.accumulate_end_state">[docs]</a>
-</span><span data-line="194"><span class="k">def</span><span class="w"> </span><span class="nf">accumulate_end_state</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
-</span><span data-line="195"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Fold one transition into the end-state table. Return the process id.</span>
-</span><span data-line="196">
-</span><span data-line="197"><span class="sd">    A repeat product updates views/time/rate and does not call add_process,</span>
-</span><span data-line="198"><span class="sd">    because process ids are content-addressed and a second add would collide.</span>
-</span><span data-line="199"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="200">    <span class="n">table_path</span> <span class="o">=</span> <span class="n">end_state_table_path</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
-</span><span data-line="201">    <span class="n">rows</span> <span class="o">=</span> <span class="n">load_end_state_table</span><span class="p">(</span><span class="n">table_path</span><span class="p">)</span>
-</span><span data-line="202">    <span class="n">trans_time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="s2">&quot;transition_time_s&quot;</span><span class="p">])</span>
-</span><span data-line="203">    <span class="n">time_check</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
-</span><span data-line="204">    <span class="n">matched_pid</span> <span class="o">=</span> <span class="n">find_matching_process</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
-</span><span data-line="205">
-</span><span data-line="206">    <span class="k">if</span> <span class="n">matched_pid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="207">        <span class="n">updated</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span data-line="208">        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
-</span><span data-line="209">            <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;process_id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">matched_pid</span><span class="p">:</span>
-</span><span data-line="210">                <span class="n">row</span><span class="p">[</span><span class="s2">&quot;views&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;views&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
-</span><span data-line="211">                <span class="n">row</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="n">trans_time</span>
-</span><span data-line="212">                <span class="n">row</span><span class="p">[</span><span class="s2">&quot;rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="213">                    <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;views&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="mf">0.0</span>
-</span><span data-line="214">                <span class="p">)</span>
-</span><span data-line="215">                <span class="n">updated</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span data-line="216">                <span class="k">break</span>
-</span><span data-line="217">        <span class="k">if</span> <span class="ow">not</span> <span class="n">updated</span><span class="p">:</span>
-</span><span data-line="218">            <span class="n">next_state</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">),</span> <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-</span><span data-line="219">            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-</span><span data-line="220">                <span class="p">{</span>
-</span><span data-line="221">                    <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">next_state</span><span class="p">,</span>
-</span><span data-line="222">                    <span class="s2">&quot;views&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-</span><span data-line="223">                    <span class="s2">&quot;rate&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">trans_time</span><span class="p">)</span> <span class="k">if</span> <span class="n">trans_time</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">,</span>
-</span><span data-line="224">                    <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">trans_time</span><span class="p">,</span>
-</span><span data-line="225">                    <span class="s2">&quot;process_id&quot;</span><span class="p">:</span> <span class="n">matched_pid</span><span class="p">,</span>
-</span><span data-line="226">                <span class="p">}</span>
-</span><span data-line="227">            <span class="p">)</span>
-</span><span data-line="228">        <span class="n">process_id</span> <span class="o">=</span> <span class="n">matched_pid</span>
-</span><span data-line="229">    <span class="k">else</span><span class="p">:</span>
-</span><span data-line="230">        <span class="n">process_id</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">add_process</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-</span><span data-line="231">        <span class="n">next_state</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">),</span> <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-</span><span data-line="232">        <span class="n">new_time</span> <span class="o">=</span> <span class="n">time_check</span> <span class="o">+</span> <span class="n">trans_time</span>
-</span><span data-line="233">        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-</span><span data-line="234">            <span class="p">{</span>
-</span><span data-line="235">                <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">next_state</span><span class="p">,</span>
-</span><span data-line="236">                <span class="s2">&quot;views&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-</span><span data-line="237">                <span class="s2">&quot;rate&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">new_time</span><span class="p">)</span> <span class="k">if</span> <span class="n">new_time</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">,</span>
-</span><span data-line="238">                <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">new_time</span><span class="p">,</span>
-</span><span data-line="239">                <span class="s2">&quot;process_id&quot;</span><span class="p">:</span> <span class="n">process_id</span><span class="p">,</span>
-</span><span data-line="240">            <span class="p">}</span>
-</span><span data-line="241">        <span class="p">)</span>
-</span><span data-line="242">
-</span><span data-line="243">    <span class="n">save_end_state_table</span><span class="p">(</span><span class="n">table_path</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span>
-</span><span data-line="244">    <span class="k">return</span> <span class="n">process_id</span></div>
-
+</span><span data-line="197"><span class="k">def</span><span class="w"> </span><span class="nf">accumulate_end_state</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+</span><span data-line="198"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Fold one transition into the end-state table. Return the process id.</span>
+</span><span data-line="199">
+</span><span data-line="200"><span class="sd">    A repeat product updates views/time/rate and does not call add_process,</span>
+</span><span data-line="201"><span class="sd">    because process ids are content-addressed and a second add would collide.</span>
+</span><span data-line="202"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="203">    <span class="n">table_path</span> <span class="o">=</span> <span class="n">end_state_table_path</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
+</span><span data-line="204">    <span class="n">rows</span> <span class="o">=</span> <span class="n">load_end_state_table</span><span class="p">(</span><span class="n">table_path</span><span class="p">)</span>
+</span><span data-line="205">    <span class="n">trans_time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="s2">&quot;transition_time_s&quot;</span><span class="p">])</span>
+</span><span data-line="206">    <span class="n">time_check</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+</span><span data-line="207">    <span class="n">matched_pid</span> <span class="o">=</span> <span class="n">find_matching_process</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+</span><span data-line="208">
+</span><span data-line="209">    <span class="k">if</span> <span class="n">matched_pid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="210">        <span class="n">updated</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="211">        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+</span><span data-line="212">            <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;process_id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">matched_pid</span><span class="p">:</span>
+</span><span data-line="213">                <span class="n">row</span><span class="p">[</span><span class="s2">&quot;views&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;views&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span data-line="214">                <span class="n">row</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="n">trans_time</span>
+</span><span data-line="215">                <span class="n">row</span><span class="p">[</span><span class="s2">&quot;rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="216">                    <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;views&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="mf">0.0</span>
+</span><span data-line="217">                <span class="p">)</span>
+</span><span data-line="218">                <span class="n">updated</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="219">                <span class="k">break</span>
+</span><span data-line="220">        <span class="k">if</span> <span class="ow">not</span> <span class="n">updated</span><span class="p">:</span>
+</span><span data-line="221">            <span class="n">next_state</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">),</span> <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span data-line="222">            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+</span><span data-line="223">                <span class="p">{</span>
+</span><span data-line="224">                    <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">next_state</span><span class="p">,</span>
+</span><span data-line="225">                    <span class="s2">&quot;views&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span data-line="226">                    <span class="s2">&quot;rate&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">trans_time</span><span class="p">)</span> <span class="k">if</span> <span class="n">trans_time</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="227">                    <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">trans_time</span><span class="p">,</span>
+</span><span data-line="228">                    <span class="s2">&quot;process_id&quot;</span><span class="p">:</span> <span class="n">matched_pid</span><span class="p">,</span>
+</span><span data-line="229">                <span class="p">}</span>
+</span><span data-line="230">            <span class="p">)</span>
+</span><span data-line="231">        <span class="n">process_id</span> <span class="o">=</span> <span class="n">matched_pid</span>
+</span><span data-line="232">    <span class="k">else</span><span class="p">:</span>
+</span><span data-line="233">        <span class="n">process_id</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">add_process</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</span><span data-line="234">        <span class="n">next_state</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">),</span> <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span data-line="235">        <span class="n">new_time</span> <span class="o">=</span> <span class="n">time_check</span> <span class="o">+</span> <span class="n">trans_time</span>
+</span><span data-line="236">        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+</span><span data-line="237">            <span class="p">{</span>
+</span><span data-line="238">                <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">next_state</span><span class="p">,</span>
+</span><span data-line="239">                <span class="s2">&quot;views&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span data-line="240">                <span class="s2">&quot;rate&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">new_time</span><span class="p">)</span> <span class="k">if</span> <span class="n">new_time</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="241">                <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">new_time</span><span class="p">,</span>
+</span><span data-line="242">                <span class="s2">&quot;process_id&quot;</span><span class="p">:</span> <span class="n">process_id</span><span class="p">,</span>
+</span><span data-line="243">            <span class="p">}</span>
+</span><span data-line="244">        <span class="p">)</span>
 </span><span data-line="245">
+</span><span data-line="246">    <span class="n">save_end_state_table</span><span class="p">(</span><span class="n">table_path</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span>
+</span><span data-line="247">    <span class="k">return</span> <span class="n">process_id</span></div>
+
+</span><span data-line="248">
 <div class="viewcode-block" id="make_searches">
 <a class="viewcode-back" href="../../apidocs/eon/eon.escaperate.html#eon.escaperate.make_searches">[docs]</a>
-</span><span data-line="246"><span class="k">def</span><span class="w"> </span><span class="nf">make_searches</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">current_state</span><span class="p">,</span> <span class="n">wuid</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ConfigClass</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-</span><span data-line="247">    <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="248">        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;make_searches requires a ConfigClass instance&quot;</span><span class="p">)</span>
-</span><span data-line="249">    <span class="n">reactant</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">.</span><span class="n">get_reactant</span><span class="p">()</span>
-</span><span data-line="250">    <span class="n">num_in_buffer</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">queued_search_count</span><span class="p">()</span>
-</span><span data-line="251">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Queue contains </span><span class="si">%i</span><span class="s2"> searches&quot;</span> <span class="o">%</span> <span class="n">num_in_buffer</span><span class="p">)</span>
-</span><span data-line="252">    <span class="n">num_to_make</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">comm_job_buffer_size</span> <span class="o">-</span> <span class="n">num_in_buffer</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</span><span data-line="253">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Making </span><span class="si">%i</span><span class="s2"> searches&quot;</span> <span class="o">%</span> <span class="n">num_to_make</span><span class="p">)</span>
-</span><span data-line="254">
-</span><span data-line="255">    <span class="k">if</span> <span class="n">num_to_make</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-</span><span data-line="256">        <span class="k">return</span> <span class="n">wuid</span>
+</span><span data-line="249"><span class="k">def</span><span class="w"> </span><span class="nf">make_searches</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">current_state</span><span class="p">,</span> <span class="n">wuid</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ConfigClass</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+</span><span data-line="250">    <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="251">        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;make_searches requires a ConfigClass instance&quot;</span><span class="p">)</span>
+</span><span data-line="252">    <span class="n">reactant</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">.</span><span class="n">get_reactant</span><span class="p">()</span>
+</span><span data-line="253">    <span class="n">num_in_buffer</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">queued_search_count</span><span class="p">()</span>
+</span><span data-line="254">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Queue contains </span><span class="si">%i</span><span class="s2"> searches&quot;</span> <span class="o">%</span> <span class="n">num_in_buffer</span><span class="p">)</span>
+</span><span data-line="255">    <span class="n">num_to_make</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">comm_job_buffer_size</span> <span class="o">-</span> <span class="n">num_in_buffer</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span data-line="256">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Making </span><span class="si">%i</span><span class="s2"> searches&quot;</span> <span class="o">%</span> <span class="n">num_to_make</span><span class="p">)</span>
 </span><span data-line="257">
-</span><span data-line="258">    <span class="n">searches</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="259">
-</span><span data-line="260">    <span class="n">invariants</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="261">
-</span><span data-line="262">    <span class="n">reactIO</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
-</span><span data-line="263">    <span class="n">io</span><span class="o">.</span><span class="n">savecon</span><span class="p">(</span><span class="n">reactIO</span><span class="p">,</span> <span class="n">reactant</span><span class="p">)</span>
+</span><span data-line="258">    <span class="k">if</span> <span class="n">num_to_make</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="259">        <span class="k">return</span> <span class="n">wuid</span>
+</span><span data-line="260">
+</span><span data-line="261">    <span class="n">searches</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="262">
+</span><span data-line="263">    <span class="n">invariants</span> <span class="o">=</span> <span class="p">{}</span>
 </span><span data-line="264">
-</span><span data-line="265">    <span class="n">searches</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="266">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_to_make</span><span class="p">):</span>
-</span><span data-line="267">        <span class="n">search</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="268">        <span class="n">search</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">current_state</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="n">wuid</span><span class="p">)</span>
-</span><span data-line="269">        <span class="n">search</span><span class="p">[</span><span class="s1">&#39;pos.con&#39;</span><span class="p">]</span>  <span class="o">=</span> <span class="n">reactIO</span>
-</span><span data-line="270">        <span class="n">ini_changes</span> <span class="o">=</span> <span class="p">[</span>
-</span><span data-line="271">                        <span class="p">(</span><span class="s1">&#39;Main&#39;</span><span class="p">,</span> <span class="s1">&#39;job&#39;</span><span class="p">,</span> <span class="s1">&#39;parallel_replica&#39;</span><span class="p">),</span>
-</span><span data-line="272">                        <span class="p">(</span><span class="s1">&#39;Main&#39;</span><span class="p">,</span> <span class="s1">&#39;random_seed&#39;</span><span class="p">,</span>
-</span><span data-line="273">                            <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="mi">10</span><span class="o">**</span><span class="mi">9</span><span class="p">))),</span>
-</span><span data-line="274">                      <span class="p">]</span>
-</span><span data-line="275">        <span class="n">search</span><span class="p">[</span><span class="s1">&#39;config.ini&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">modify_config</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">config_path</span><span class="p">,</span> <span class="n">ini_changes</span><span class="p">)</span>
-</span><span data-line="276">        <span class="n">searches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">search</span><span class="p">)</span>
-</span><span data-line="277">        <span class="n">wuid</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span data-line="278">
-</span><span data-line="279">    <span class="n">comm</span><span class="o">.</span><span class="n">submit_jobs</span><span class="p">(</span><span class="n">searches</span><span class="p">,</span> <span class="n">invariants</span><span class="p">)</span>
-</span><span data-line="280">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Created &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">num_to_make</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; searches&quot;</span><span class="p">)</span>
-</span><span data-line="281">    <span class="k">return</span> <span class="n">wuid</span></div>
+</span><span data-line="265">    <span class="n">reactIO</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+</span><span data-line="266">    <span class="n">io</span><span class="o">.</span><span class="n">savecon</span><span class="p">(</span><span class="n">reactIO</span><span class="p">,</span> <span class="n">reactant</span><span class="p">)</span>
+</span><span data-line="267">
+</span><span data-line="268">    <span class="n">searches</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="269">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_to_make</span><span class="p">):</span>
+</span><span data-line="270">        <span class="n">search</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="271">        <span class="n">search</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">current_state</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="n">wuid</span><span class="p">)</span>
+</span><span data-line="272">        <span class="n">search</span><span class="p">[</span><span class="s1">&#39;pos.con&#39;</span><span class="p">]</span>  <span class="o">=</span> <span class="n">reactIO</span>
+</span><span data-line="273">        <span class="n">ini_changes</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="274">                        <span class="p">(</span><span class="s1">&#39;Main&#39;</span><span class="p">,</span> <span class="s1">&#39;job&#39;</span><span class="p">,</span> <span class="s1">&#39;parallel_replica&#39;</span><span class="p">),</span>
+</span><span data-line="275">                        <span class="p">(</span><span class="s1">&#39;Main&#39;</span><span class="p">,</span> <span class="s1">&#39;random_seed&#39;</span><span class="p">,</span>
+</span><span data-line="276">                            <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="mi">10</span><span class="o">**</span><span class="mi">9</span><span class="p">))),</span>
+</span><span data-line="277">                      <span class="p">]</span>
+</span><span data-line="278">        <span class="n">search</span><span class="p">[</span><span class="s1">&#39;config.ini&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">modify_config</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">config_path</span><span class="p">,</span> <span class="n">ini_changes</span><span class="p">)</span>
+</span><span data-line="279">        <span class="n">searches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">search</span><span class="p">)</span>
+</span><span data-line="280">        <span class="n">wuid</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span data-line="281">
+</span><span data-line="282">    <span class="n">comm</span><span class="o">.</span><span class="n">submit_jobs</span><span class="p">(</span><span class="n">searches</span><span class="p">,</span> <span class="n">invariants</span><span class="p">)</span>
+</span><span data-line="283">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Created &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">num_to_make</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; searches&quot;</span><span class="p">)</span>
+</span><span data-line="284">    <span class="k">return</span> <span class="n">wuid</span></div>
 
-</span><span data-line="282">
+</span><span data-line="285">
 <div class="viewcode-block" id="register_results">
 <a class="viewcode-back" href="../../apidocs/eon/eon.escaperate.html#eon.escaperate.register_results">[docs]</a>
-</span><span data-line="283"><span class="k">def</span><span class="w"> </span><span class="nf">register_results</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">current_state</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ConfigClass</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-</span><span data-line="284">    <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="285">        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;register_results requires a ConfigClass instance&quot;</span><span class="p">)</span>
-</span><span data-line="286">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Registering results&quot;</span><span class="p">)</span>
-</span><span data-line="287">    <span class="n">jobs_in</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">)</span>
-</span><span data-line="288">    <span class="k">if</span> <span class="n">jobs_in</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
-</span><span data-line="289">        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">jobs_in</span><span class="p">)</span>
-</span><span data-line="290">    <span class="n">jobs_in</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="291">    <span class="c1"># Function used by communicator to determine whether to discard a result</span>
-</span><span data-line="292">    <span class="k">def</span><span class="w"> </span><span class="nf">keep_result</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-</span><span data-line="293">        <span class="k">return</span> <span class="kc">True</span>
-</span><span data-line="294">    <span class="n">transition</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="295">    <span class="n">num_registered</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span data-line="296">    <span class="n">speedup</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span data-line="297">    <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">comm</span><span class="o">.</span><span class="n">get_results</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">,</span> <span class="n">keep_result</span><span class="p">):</span>
-</span><span data-line="298">        <span class="c1"># The result dictionary contains the following key-value pairs:</span>
-</span><span data-line="299">        <span class="c1"># reactant.con - an array of strings containing the reactant</span>
-</span><span data-line="300">        <span class="c1"># product.con - an array of strings containing the product</span>
-</span><span data-line="301">        <span class="c1"># results.dat - an array of strings containing the results</span>
-</span><span data-line="302">        <span class="c1"># id - StateNumber_WUID</span>
-</span><span data-line="303">        <span class="c1">#</span>
-</span><span data-line="304">        <span class="c1"># The reactant, product, and mode are passed as lines of the files because</span>
-</span><span data-line="305">        <span class="c1"># the information contained in them is not needed for registering results</span>
-</span><span data-line="306">
-</span><span data-line="307">        <span class="n">state_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-</span><span data-line="308">
-</span><span data-line="309">        <span class="n">state</span> <span class="o">=</span> <span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">state_num</span><span class="p">)</span>
-</span><span data-line="310">
-</span><span data-line="311">        <span class="c1"># read in the results</span>
-</span><span data-line="312">        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">parse_results</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;results.dat&#39;</span><span class="p">])</span>
-</span><span data-line="313">        <span class="n">speedup</span> <span class="o">+=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">][</span><span class="s1">&#39;speedup&#39;</span><span class="p">]</span>
-</span><span data-line="314">        <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">][</span><span class="s1">&#39;transition_found&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-</span><span data-line="315">            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">][</span><span class="s1">&#39;transition_time_s&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">state</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
-</span><span data-line="316">            <span class="n">product</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;product.con&#39;</span><span class="p">])</span>
-</span><span data-line="317">            <span class="n">process_id</span> <span class="o">=</span> <span class="n">accumulate_end_state</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
-</span><span data-line="318">            <span class="n">time</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">][</span><span class="s1">&#39;transition_time_s&#39;</span><span class="p">]</span>
-</span><span data-line="319">            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Found transition with time </span><span class="si">%.3e</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
-</span><span data-line="320">            <span class="k">if</span> <span class="ow">not</span> <span class="n">transition</span> <span class="ow">and</span> <span class="n">current_state</span><span class="o">.</span><span class="n">number</span><span class="o">==</span><span class="n">state</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
-</span><span data-line="321">                <span class="n">transition</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;process_id&#39;</span><span class="p">:</span><span class="n">process_id</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">:</span><span class="n">time</span><span class="p">}</span>
-</span><span data-line="322">            <span class="n">state</span><span class="o">.</span><span class="n">zero_time</span><span class="p">()</span>
-</span><span data-line="323">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="324">            <span class="n">state</span><span class="o">.</span><span class="n">inc_time</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">][</span><span class="s1">&#39;simulation_time_s&#39;</span><span class="p">])</span>
-</span><span data-line="325">        <span class="n">num_registered</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span data-line="326">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Processed </span><span class="si">%i</span><span class="s2"> (result) searches&quot;</span><span class="p">,</span> <span class="n">num_registered</span><span class="p">)</span>
-</span><span data-line="327">    <span class="k">if</span> <span class="n">num_registered</span> <span class="o">&gt;=</span><span class="mi">1</span><span class="p">:</span>
-</span><span data-line="328">        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Average speedup is  </span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">speedup</span><span class="o">/</span><span class="n">num_registered</span><span class="p">)</span>
-</span><span data-line="329">    <span class="k">return</span> <span class="n">num_registered</span><span class="p">,</span> <span class="n">transition</span><span class="p">,</span> <span class="n">speedup</span></div>
+</span><span data-line="286"><span class="k">def</span><span class="w"> </span><span class="nf">register_results</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">current_state</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ConfigClass</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+</span><span data-line="287">    <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="288">        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;register_results requires a ConfigClass instance&quot;</span><span class="p">)</span>
+</span><span data-line="289">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Registering results&quot;</span><span class="p">)</span>
+</span><span data-line="290">    <span class="n">jobs_in</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">)</span>
+</span><span data-line="291">    <span class="k">if</span> <span class="n">jobs_in</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+</span><span data-line="292">        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">jobs_in</span><span class="p">)</span>
+</span><span data-line="293">    <span class="n">jobs_in</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="294">    <span class="c1"># Function used by communicator to determine whether to discard a result</span>
+</span><span data-line="295">    <span class="k">def</span><span class="w"> </span><span class="nf">keep_result</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+</span><span data-line="296">        <span class="k">return</span> <span class="kc">True</span>
+</span><span data-line="297">    <span class="n">transition</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="298">    <span class="n">num_registered</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="299">    <span class="n">speedup</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="300">    <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">comm</span><span class="o">.</span><span class="n">get_results</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">,</span> <span class="n">keep_result</span><span class="p">):</span>
+</span><span data-line="301">        <span class="c1"># The result dictionary contains the following key-value pairs:</span>
+</span><span data-line="302">        <span class="c1"># reactant.con - an array of strings containing the reactant</span>
+</span><span data-line="303">        <span class="c1"># product.con - an array of strings containing the product</span>
+</span><span data-line="304">        <span class="c1"># results.dat - an array of strings containing the results</span>
+</span><span data-line="305">        <span class="c1"># id - StateNumber_WUID</span>
+</span><span data-line="306">        <span class="c1">#</span>
+</span><span data-line="307">        <span class="c1"># The reactant, product, and mode are passed as lines of the files because</span>
+</span><span data-line="308">        <span class="c1"># the information contained in them is not needed for registering results</span>
+</span><span data-line="309">
+</span><span data-line="310">        <span class="n">state_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+</span><span data-line="311">
+</span><span data-line="312">        <span class="n">state</span> <span class="o">=</span> <span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">state_num</span><span class="p">)</span>
+</span><span data-line="313">
+</span><span data-line="314">        <span class="c1"># read in the results</span>
+</span><span data-line="315">        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">parse_results</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;results.dat&#39;</span><span class="p">])</span>
+</span><span data-line="316">        <span class="n">speedup</span> <span class="o">+=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">][</span><span class="s1">&#39;speedup&#39;</span><span class="p">]</span>
+</span><span data-line="317">        <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">][</span><span class="s1">&#39;transition_found&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+</span><span data-line="318">            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">][</span><span class="s1">&#39;transition_time_s&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">state</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
+</span><span data-line="319">            <span class="n">product</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;product.con&#39;</span><span class="p">])</span>
+</span><span data-line="320">            <span class="n">process_id</span> <span class="o">=</span> <span class="n">accumulate_end_state</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+</span><span data-line="321">            <span class="n">time</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">][</span><span class="s1">&#39;transition_time_s&#39;</span><span class="p">]</span>
+</span><span data-line="322">            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Found transition with time </span><span class="si">%.3e</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+</span><span data-line="323">            <span class="k">if</span> <span class="ow">not</span> <span class="n">transition</span> <span class="ow">and</span> <span class="n">current_state</span><span class="o">.</span><span class="n">number</span><span class="o">==</span><span class="n">state</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
+</span><span data-line="324">                <span class="n">transition</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;process_id&#39;</span><span class="p">:</span><span class="n">process_id</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">:</span><span class="n">time</span><span class="p">}</span>
+</span><span data-line="325">            <span class="n">state</span><span class="o">.</span><span class="n">zero_time</span><span class="p">()</span>
+</span><span data-line="326">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="327">            <span class="n">state</span><span class="o">.</span><span class="n">inc_time</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">][</span><span class="s1">&#39;simulation_time_s&#39;</span><span class="p">])</span>
+</span><span data-line="328">        <span class="n">num_registered</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span data-line="329">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Processed </span><span class="si">%i</span><span class="s2"> (result) searches&quot;</span><span class="p">,</span> <span class="n">num_registered</span><span class="p">)</span>
+</span><span data-line="330">    <span class="k">if</span> <span class="n">num_registered</span> <span class="o">&gt;=</span><span class="mi">1</span><span class="p">:</span>
+</span><span data-line="331">        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Average speedup is  </span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">speedup</span><span class="o">/</span><span class="n">num_registered</span><span class="p">)</span>
+</span><span data-line="332">    <span class="k">return</span> <span class="n">num_registered</span><span class="p">,</span> <span class="n">transition</span><span class="p">,</span> <span class="n">speedup</span></div>
 
-</span><span data-line="330">
+</span><span data-line="333">
 <div class="viewcode-block" id="main">
 <a class="viewcode-back" href="../../apidocs/eon/eon.escaperate.html#eon.escaperate.main">[docs]</a>
-</span><span data-line="331"><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">ConfigClass</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-</span><span data-line="332">    <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="333">        <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigClass</span><span class="p">()</span>
-</span><span data-line="334">    <span class="n">optpar</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">(</span><span class="n">usage</span><span class="o">=</span><span class="s2">&quot;usage: %prog [options] config.ini&quot;</span><span class="p">)</span>
-</span><span data-line="335">    <span class="n">optpar</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-q&quot;</span><span class="p">,</span> <span class="s2">&quot;--quiet&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;quiet&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">help</span><span class="o">=</span><span class="s2">&quot;only write to the log file&quot;</span><span class="p">)</span>
-</span><span data-line="336">    <span class="n">optpar</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-n&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-submit&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;no_submit&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t submit searches; only register finished results&quot;</span><span class="p">)</span>
-</span><span data-line="337">    <span class="n">optpar</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-R&quot;</span><span class="p">,</span> <span class="s2">&quot;--reset&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;reset&quot;</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;reset the simulation, discarding all data&quot;</span><span class="p">)</span>
-</span><span data-line="338">    <span class="n">options</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">optpar</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
-</span><span data-line="339">
-</span><span data-line="340">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-</span><span data-line="341">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;takes only one positional argument&quot;</span><span class="p">)</span>
-</span><span data-line="342">    <span class="n">config</span><span class="o">.</span><span class="n">init_from_cli</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-</span><span data-line="343">
-</span><span data-line="344">    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">comm_job_bundle_size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-</span><span data-line="345">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;error: Parallel Replica only supports a bundle size of 1&quot;</span><span class="p">)</span>
-</span><span data-line="346">        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-</span><span data-line="347">
-</span><span data-line="348">    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">no_submit</span><span class="p">:</span>
-</span><span data-line="349">        <span class="n">config</span><span class="o">.</span><span class="n">comm_job_buffer_size</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="334"><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">ConfigClass</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+</span><span data-line="335">    <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="336">        <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigClass</span><span class="p">()</span>
+</span><span data-line="337">    <span class="n">optpar</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">(</span><span class="n">usage</span><span class="o">=</span><span class="s2">&quot;usage: %prog [options] config.ini&quot;</span><span class="p">)</span>
+</span><span data-line="338">    <span class="n">optpar</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-q&quot;</span><span class="p">,</span> <span class="s2">&quot;--quiet&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;quiet&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">help</span><span class="o">=</span><span class="s2">&quot;only write to the log file&quot;</span><span class="p">)</span>
+</span><span data-line="339">    <span class="n">optpar</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-n&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-submit&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;no_submit&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t submit searches; only register finished results&quot;</span><span class="p">)</span>
+</span><span data-line="340">    <span class="n">optpar</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-R&quot;</span><span class="p">,</span> <span class="s2">&quot;--reset&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;reset&quot;</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;reset the simulation, discarding all data&quot;</span><span class="p">)</span>
+</span><span data-line="341">    <span class="n">options</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">optpar</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+</span><span data-line="342">
+</span><span data-line="343">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span data-line="344">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;takes only one positional argument&quot;</span><span class="p">)</span>
+</span><span data-line="345">    <span class="n">config</span><span class="o">.</span><span class="n">init_from_cli</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+</span><span data-line="346">
+</span><span data-line="347">    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">comm_job_bundle_size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+</span><span data-line="348">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;error: Parallel Replica only supports a bundle size of 1&quot;</span><span class="p">)</span>
+</span><span data-line="349">        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 </span><span data-line="350">
-</span><span data-line="351">    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">reset</span><span class="p">:</span>
-</span><span data-line="352">        <span class="n">res</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Are you sure you want to reset (all data files will be lost)? (y/N) &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-</span><span data-line="353">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span>
-</span><span data-line="354">            <span class="n">rmdirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_out</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">path_states</span><span class="p">,</span>
-</span><span data-line="355">                    <span class="n">config</span><span class="o">.</span><span class="n">path_scratch</span><span class="p">]</span>
-</span><span data-line="356">            <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">debug_keep_all_results</span><span class="p">:</span>
-</span><span data-line="357">                <span class="n">rmdirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;old_searches&quot;</span><span class="p">)</span>
-</span><span data-line="358">            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rmdirs</span><span class="p">:</span>
-</span><span data-line="359">                <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
-</span><span data-line="360">                    <span class="n">io</span><span class="o">.</span><span class="n">remove_tree_and_empty_parents</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-</span><span data-line="361">
-</span><span data-line="362">            <span class="n">results</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_results</span><span class="p">)</span>
-</span><span data-line="363">            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span>
-</span><span data-line="364">                <span class="n">io</span><span class="o">.</span><span class="n">info_txt_path</span><span class="p">(</span><span class="n">config</span><span class="p">),</span>
-</span><span data-line="365">                <span class="n">results</span> <span class="o">/</span> <span class="s2">&quot;dynamics.txt&quot;</span><span class="p">,</span>
-</span><span data-line="366">                <span class="n">results</span> <span class="o">/</span> <span class="s2">&quot;pr.log&quot;</span><span class="p">,</span>
-</span><span data-line="367">                <span class="n">io</span><span class="o">.</span><span class="n">prng_state_path</span><span class="p">(</span><span class="n">config</span><span class="p">),</span>
-</span><span data-line="368">            <span class="p">]:</span>
-</span><span data-line="369">                <span class="n">p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-</span><span data-line="370">                <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-</span><span data-line="371">                    <span class="n">p</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
-</span><span data-line="372">
-</span><span data-line="373">            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Reset&quot;</span><span class="p">)</span>
-</span><span data-line="374">        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span data-line="351">    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">no_submit</span><span class="p">:</span>
+</span><span data-line="352">        <span class="n">config</span><span class="o">.</span><span class="n">comm_job_buffer_size</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="353">
+</span><span data-line="354">    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">reset</span><span class="p">:</span>
+</span><span data-line="355">        <span class="n">res</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Are you sure you want to reset (all data files will be lost)? (y/N) &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+</span><span data-line="356">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span>
+</span><span data-line="357">            <span class="n">rmdirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_out</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">path_states</span><span class="p">,</span>
+</span><span data-line="358">                    <span class="n">config</span><span class="o">.</span><span class="n">path_scratch</span><span class="p">]</span>
+</span><span data-line="359">            <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">debug_keep_all_results</span><span class="p">:</span>
+</span><span data-line="360">                <span class="n">rmdirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;old_searches&quot;</span><span class="p">)</span>
+</span><span data-line="361">            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rmdirs</span><span class="p">:</span>
+</span><span data-line="362">                <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+</span><span data-line="363">                    <span class="n">io</span><span class="o">.</span><span class="n">remove_tree_and_empty_parents</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</span><span data-line="364">
+</span><span data-line="365">            <span class="n">results</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_results</span><span class="p">)</span>
+</span><span data-line="366">            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span>
+</span><span data-line="367">                <span class="n">io</span><span class="o">.</span><span class="n">info_txt_path</span><span class="p">(</span><span class="n">config</span><span class="p">),</span>
+</span><span data-line="368">                <span class="n">results</span> <span class="o">/</span> <span class="s2">&quot;dynamics.txt&quot;</span><span class="p">,</span>
+</span><span data-line="369">                <span class="n">results</span> <span class="o">/</span> <span class="s2">&quot;pr.log&quot;</span><span class="p">,</span>
+</span><span data-line="370">                <span class="n">io</span><span class="o">.</span><span class="n">prng_state_path</span><span class="p">(</span><span class="n">config</span><span class="p">),</span>
+</span><span data-line="371">            <span class="p">]:</span>
+</span><span data-line="372">                <span class="n">p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</span><span data-line="373">                <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+</span><span data-line="374">                    <span class="n">p</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
 </span><span data-line="375">
-</span><span data-line="376">    <span class="c1"># setup logging</span>
-</span><span data-line="377">    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
-</span><span data-line="378">            <span class="n">filename</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_results</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;pr.log&quot;</span><span class="p">),</span>
-</span><span data-line="379">            <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> </span><span class="si">%(levelname)s</span><span class="s2">:</span><span class="si">%(name)s</span><span class="s2">: </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span>
-</span><span data-line="380">            <span class="n">datefmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%F</span><span class="s2"> %T&quot;</span><span class="p">)</span>
-</span><span data-line="381">    <span class="n">logging</span><span class="o">.</span><span class="n">raiseExceptions</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span data-line="382">
-</span><span data-line="383">    <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">quiet</span><span class="p">:</span>
-</span><span data-line="384">        <span class="n">rootlogger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-</span><span data-line="385">        <span class="n">console</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
-</span><span data-line="386">        <span class="n">console</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
-</span><span data-line="387">        <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span data-line="388">        <span class="n">console</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
-</span><span data-line="389">        <span class="n">rootlogger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console</span><span class="p">)</span>
-</span><span data-line="390">
-</span><span data-line="391">    <span class="n">lock</span> <span class="o">=</span> <span class="n">locking</span><span class="o">.</span><span class="n">LockFile</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_results</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;lockfile&quot;</span><span class="p">))</span>
-</span><span data-line="392">
-</span><span data-line="393">    <span class="k">if</span> <span class="n">lock</span><span class="o">.</span><span class="n">aquirelock</span><span class="p">():</span>
-</span><span data-line="394">        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">comm_type</span> <span class="o">==</span> <span class="s1">&#39;mpi&#39;</span><span class="p">:</span>
-</span><span data-line="395">            <span class="kn">from</span><span class="w"> </span><span class="nn">eon.mpiwait</span><span class="w"> </span><span class="kn">import</span> <span class="n">mpiwait</span>
-</span><span data-line="396">            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-</span><span data-line="397">                <span class="n">mpiwait</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">mpi_poll_period</span><span class="p">)</span>
-</span><span data-line="398">                <span class="n">parallelreplica</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</span><span data-line="399">        <span class="n">parallelreplica</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</span><span data-line="400">    <span class="k">else</span><span class="p">:</span>
-</span><span data-line="401">        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t get lock&quot;</span><span class="p">)</span>
-</span><span data-line="402">        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+</span><span data-line="376">            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Reset&quot;</span><span class="p">)</span>
+</span><span data-line="377">        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span data-line="378">
+</span><span data-line="379">    <span class="c1"># setup logging</span>
+</span><span data-line="380">    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+</span><span data-line="381">            <span class="n">filename</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_results</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;pr.log&quot;</span><span class="p">),</span>
+</span><span data-line="382">            <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> </span><span class="si">%(levelname)s</span><span class="s2">:</span><span class="si">%(name)s</span><span class="s2">: </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span data-line="383">            <span class="n">datefmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%F</span><span class="s2"> %T&quot;</span><span class="p">)</span>
+</span><span data-line="384">    <span class="n">logging</span><span class="o">.</span><span class="n">raiseExceptions</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="385">
+</span><span data-line="386">    <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">quiet</span><span class="p">:</span>
+</span><span data-line="387">        <span class="n">rootlogger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span data-line="388">        <span class="n">console</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+</span><span data-line="389">        <span class="n">console</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+</span><span data-line="390">        <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="391">        <span class="n">console</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+</span><span data-line="392">        <span class="n">rootlogger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console</span><span class="p">)</span>
+</span><span data-line="393">
+</span><span data-line="394">    <span class="n">lock</span> <span class="o">=</span> <span class="n">locking</span><span class="o">.</span><span class="n">LockFile</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_results</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;lockfile&quot;</span><span class="p">))</span>
+</span><span data-line="395">
+</span><span data-line="396">    <span class="k">if</span> <span class="n">lock</span><span class="o">.</span><span class="n">aquirelock</span><span class="p">():</span>
+</span><span data-line="397">        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">comm_type</span> <span class="o">==</span> <span class="s1">&#39;mpi&#39;</span><span class="p">:</span>
+</span><span data-line="398">            <span class="kn">from</span><span class="w"> </span><span class="nn">eon.mpiwait</span><span class="w"> </span><span class="kn">import</span> <span class="n">mpiwait</span>
+</span><span data-line="399">            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span><span data-line="400">                <span class="n">mpiwait</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">mpi_poll_period</span><span class="p">)</span>
+</span><span data-line="401">                <span class="n">parallelreplica</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span data-line="402">        <span class="n">parallelreplica</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span data-line="403">    <span class="k">else</span><span class="p">:</span>
+</span><span data-line="404">        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t get lock&quot;</span><span class="p">)</span>
+</span><span data-line="405">        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
 
-</span><span data-line="403">
-</span><span data-line="404"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-</span><span data-line="405">    <span class="n">main</span><span class="p">()</span>
+</span><span data-line="406">
+</span><span data-line="407"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+</span><span data-line="408">    <span class="n">main</span><span class="p">()</span>
 </span></pre></div>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -911,7 +921,7 @@ data-aria-dark="Switch to auto color mode">
     </div>
   </div>
 </footer>
-      <script src="../../_static/documentation_options.js?v=9ac01507"></script>
+      <script src="../../_static/documentation_options.js?v=b0e360d0"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>

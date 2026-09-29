@@ -7,6 +7,7 @@ var classSocketNWChemPot =
     [ "force", "classSocketNWChemPot.html#acb7244cf6eebf04c3281f29bec72ef3a", null ],
     [ "forceOnce", "classSocketNWChemPot.html#af427d30239468667d8373b61bea65477", null ],
     [ "isThreadSafe", "classSocketNWChemPot.html#a1c3d7d3852d7bffa52051833c1f018e7", null ],
+    [ "needsPerImageInstance", "classSocketNWChemPot.html#ae3ebead7bad2a55f753afd9868cbe899", null ],
     [ "recv_exact", "classSocketNWChemPot.html#a292c257368501d85ff6196bda2f69d42", null ],
     [ "recv_header", "classSocketNWChemPot.html#a7ecdffb2e62b8558799819acad409d93", null ],
     [ "requiresIsolatedMoleculeLayout", "classSocketNWChemPot.html#ae6ac82b26dee40dc875804cff80ef1df", null ],

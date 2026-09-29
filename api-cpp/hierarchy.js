@@ -99,6 +99,7 @@ var hierarchy =
     [ "eonc::IMetatomicLoader", "classeonc_1_1IMetatomicLoader.html", [
       [ "eonc::MetatomicLoader", "classeonc_1_1MetatomicLoader.html", null ]
     ] ],
+    [ "eonc::Matter::Impl", "structeonc_1_1Matter_1_1Impl.html", null ],
     [ "eonc::Parameters::Impl", "structeonc_1_1Parameters_1_1Impl.html", null ],
     [ "RGPotEngine::Impl", "structRGPotEngine_1_1Impl.html", null ],
     [ "eonc::neb::ImprovedTangent", "structeonc_1_1neb_1_1ImprovedTangent.html", null ],
@@ -223,7 +224,7 @@ var hierarchy =
       ] ]
     ] ],
     [ "eonc::potential_options_t", "structeonc_1_1potential__options__t.html", null ],
-    [ "eonc::PotentialBase", null, [
+    [ "forcefields::PotentialBase", "classforcefields_1_1PotentialBase.html", [
       [ "forcefields::Ccl", "classforcefields_1_1Ccl.html", [
         [ "forcefields::SpceCcl", "classforcefields_1_1SpceCcl.html", [
           [ "SpceCcl", "classSpceCcl.html", null ],
@@ -236,7 +237,6 @@ var hierarchy =
         ] ]
       ] ]
     ] ],
-    [ "forcefields::PotentialBase", "classforcefields_1_1PotentialBase.html", null ],
     [ "eonc::PotentialConstructionScope", "classeonc_1_1PotentialConstructionScope.html", null ],
     [ "eonc::ReplicaDynamicsJob::PrdClock", "structeonc_1_1ReplicaDynamicsJob_1_1PrdClock.html", null ],
     [ "eonc::prefactor_options_t", "structeonc_1_1prefactor__options__t.html", null ],
@@ -291,13 +291,16 @@ var hierarchy =
     [ "vector&lt; T &gt;", "classvector.html", null ],
     [ "forcefields::PotentialBase::Vector3", "structforcefields_1_1PotentialBase_1_1Vector3.html", null ],
     [ "eonc::VesinNeighbors", "classeonc_1_1VesinNeighbors.html", null ],
+    [ "eonc::xtsci_eindir::View", "structeonc_1_1xtsci__eindir_1_1View.html", null ],
     [ "forcefields::SpceCcl::Water", "structforcefields_1_1SpceCcl_1_1Water.html", null ],
     [ "forcefields::Tip4p::Water", "structforcefields_1_1Tip4p_1_1Water.html", null ],
     [ "eonc::neb::WeightedSpring", "structeonc_1_1neb_1_1WeightedSpring.html", null ],
+    [ "eonc::neb::zoom::Window", "structeonc_1_1neb_1_1zoom_1_1Window.html", null ],
     [ "eonc::X86DivRegs", "structeonc_1_1X86DivRegs.html", null ],
     [ "eonc::xtb_options_t", "structeonc_1_1xtb__options__t.html", null ],
     [ "XTBEngineLoader", "classXTBEngineLoader.html", null ],
     [ "XTBEngineOptions", "structXTBEngineOptions.html", null ],
     [ "eonc::optimizer_options_t::xtsci_t", "structeonc_1_1optimizer__options__t_1_1xtsci__t.html", null ],
-    [ "eonc::zbl_options_t", "structeonc_1_1zbl__options__t.html", null ]
+    [ "eonc::zbl_options_t", "structeonc_1_1zbl__options__t.html", null ],
+    [ "eonc::neb_options_t::zoom_options_t", "structeonc_1_1neb__options__t_1_1zoom__options__t.html", null ]
 ];

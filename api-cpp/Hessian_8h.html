@@ -239,8 +239,10 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('Hessian_8h.htm
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="Eigen_8h_source.html">Eigen.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="FiniteDifference_8h_source.html">FiniteDifference.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Matter_8h_source.html">Matter.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Parameters_8h_source.html">Parameters.h</a>&quot;</code><br />
+<code>#include &lt;vector&gt;</code><br />
 </div>
 <p><a href="Hessian_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -252,6 +254,13 @@ Classes</h2></td></tr>
 Namespaces</h2></td></tr>
 <tr class="memitem:eonc" id="r_eonc"><td class="memItemLeft">namespace &#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html">eonc</a></td></tr>
 <tr class="memdesc:namespaceeonc"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII resource manager for the ARTn C library with global synchronization. <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ac8e99fdd4ddf41e78efb08347735cdae" id="r_ac8e99fdd4ddf41e78efb08347735cdae"><td class="memItemLeft">std::vector&lt; int &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#ac8e99fdd4ddf41e78efb08347735cdae">eonc::greedyColorCutoffGraph</a> (const std::vector&lt; std::vector&lt; int &gt; &gt; &amp;adj)</td></tr>
+<tr class="memdesc:ac8e99fdd4ddf41e78efb08347735cdae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Greedy coloring of an undirected graph.  <br /></td></tr>
+<tr class="memitem:acadde9502e384d1b7898c6fa55a22b1a" id="r_acadde9502e384d1b7898c6fa55a22b1a"><td class="memItemLeft">std::vector&lt; int &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#acadde9502e384d1b7898c6fa55a22b1a">eonc::colorMobileCutoffGraph</a> (const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;matter, const VectorXi &amp;atoms, double cutoff)</td></tr>
+<tr class="memdesc:acadde9502e384d1b7898c6fa55a22b1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conflict graph on <span class="tt">atoms</span>: two mobile atoms share an edge when their closed cutoff neighborhoods intersect, then greedy-colored.  <br /></td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

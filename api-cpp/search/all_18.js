@@ -2,7 +2,7 @@ var searchData=
 [
   ['v_0',['v',['../structforcefields_1_1PotentialBase_1_1Vector3.html#ae966efbbdc5df12a5eb593d76e772466',1,'forcefields::PotentialBase::Vector3']]],
   ['v0_1',['V0',['../structemt__parameters.html#a49ea6a96e328e61ecccd4331dd378a16',1,'emt_parameters']]],
-  ['valid_2',['valid',['../classeonc_1_1GleThermostat.html#af5f0642e4b2c9df3ec2cda66708d4c3b',1,'eonc::GleThermostat']]],
+  ['valid_2',['valid',['../structeonc_1_1neb_1_1zoom_1_1Window.html#a2579fb068ff705fa0da57140935be975',1,'eonc::neb::zoom::Window::valid'],['../classeonc_1_1GleThermostat.html#af5f0642e4b2c9df3ec2cda66708d4c3b',1,'eonc::GleThermostat::valid()']]],
   ['validate_5fand_5flink_3',['validate_and_link',['../namespaceeonc_1_1config.html#a78d7cf925cc0890b91729530015d1018',1,'eonc::config']]],
   ['validatecaps_4',['validateCaps',['../classRgpotAdapter.html#a5d9f82311bf9a6e71a55e9d7debaecbf',1,'RgpotAdapter']]],
   ['value_5',['value',['../structeonc_1_1io_1_1ConMetadataValue.html#a5141789563917ce9d858a12203420ac3',1,'eonc::io::ConMetadataValue::value'],['../structeonc_1_1io_1_1ConMetadataText.html#ac4d17b6e44298bf2deb1871e47138a6d',1,'eonc::io::ConMetadataText::value']]],
@@ -39,7 +39,7 @@ var searchData=
   ['vector_36',['vector',['../classvector.html',1,'vector&lt; T &gt;'],['../classeonc_1_1VesinNeighbors.html#a1332b56a22d1485278dada592c2ef371',1,'eonc::VesinNeighbors::vector()']]],
   ['vector3_37',['Vector3',['../structforcefields_1_1PotentialBase_1_1Vector3.html',1,'forcefields::PotentialBase']]],
   ['vectors_38',['vectors',['../group__vector3d.html',1,'Common operations 3D vectors.'],['../classSuperCell.html#affa5638859c2084f5a450d36af59e3d0',1,'SuperCell::vectors']]],
-  ['velocities_39',['velocities',['../classeonc_1_1Matter.html#a4cf3e65a663f6fe1059deb9735f1ede5',1,'eonc::Matter']]],
+  ['velocities_39',['velocities',['../structeonc_1_1Matter_1_1Impl.html#a693df01cd28eeb6579833245b70b5f83',1,'eonc::Matter::Impl']]],
   ['velocity_40',['VELOCITY',['../namespaceforcefields_1_1unit__system.html#a93d91af67e7433ab6b3450aa08458f42',1,'forcefields::unit_system']]],
   ['velocityverlet_41',['velocityVerlet',['../classeonc_1_1Dynamics.html#afa99630c07f9015664f5c9473eb7fad3',1,'eonc::Dynamics']]],
   ['velopt_42',['velopt',['../classeonc_1_1GlobalOptimizationJob.html#a5a8981475ca98745f4570ed4e94737bc',1,'eonc::GlobalOptimizationJob']]],
@@ -48,10 +48,11 @@ var searchData=
   ['vesinneighbors_2ecpp_45',['VesinNeighbors.cpp',['../VesinNeighbors_8cpp.html',1,'']]],
   ['vesinneighbors_2eh_46',['VesinNeighbors.h',['../VesinNeighbors_8h.html',1,'']]],
   ['vexp_47',['vexp',['../mass_8h.html#a5d10d1713b90599726fa15998fcd06d5',1,'mass.h']]],
-  ['vlog_48',['vlog',['../mass_8h.html#aef1118659fc2d12173e975b6928c28b7',1,'mass.h']]],
-  ['volt_49',['VOLT',['../namespaceforcefields_1_1unit__system.html#a01b9ef66ff4c5224055fac14361fe614',1,'forcefields::unit_system']]],
-  ['vrec_50',['vrec',['../mass_8h.html#a8060fe92dc9b66b80b4850cb4f3771f0',1,'mass.h']]],
-  ['vsqrt_51',['vsqrt',['../mass_8h.html#af73c78af16c3f2e2f0e8e85aff1a7d2d',1,'mass.h']]],
-  ['vxi1_52',['vxi1',['../classeonc_1_1Dynamics.html#abf77bb6d483d2c8933766b4df171b6b8',1,'eonc::Dynamics']]],
-  ['vxi2_53',['vxi2',['../classeonc_1_1Dynamics.html#a75d7ca3d6afd69c60f2688bcf2708a91',1,'eonc::Dynamics']]]
+  ['view_48',['View',['../structeonc_1_1xtsci__eindir_1_1View.html',1,'eonc::xtsci_eindir']]],
+  ['vlog_49',['vlog',['../mass_8h.html#aef1118659fc2d12173e975b6928c28b7',1,'mass.h']]],
+  ['volt_50',['VOLT',['../namespaceforcefields_1_1unit__system.html#a01b9ef66ff4c5224055fac14361fe614',1,'forcefields::unit_system']]],
+  ['vrec_51',['vrec',['../mass_8h.html#a8060fe92dc9b66b80b4850cb4f3771f0',1,'mass.h']]],
+  ['vsqrt_52',['vsqrt',['../mass_8h.html#af73c78af16c3f2e2f0e8e85aff1a7d2d',1,'mass.h']]],
+  ['vxi1_53',['vxi1',['../classeonc_1_1Dynamics.html#abf77bb6d483d2c8933766b4df171b6b8',1,'eonc::Dynamics']]],
+  ['vxi2_54',['vxi2',['../classeonc_1_1Dynamics.html#a75d7ca3d6afd69c60f2688bcf2708a91',1,'eonc::Dynamics']]]
 ];

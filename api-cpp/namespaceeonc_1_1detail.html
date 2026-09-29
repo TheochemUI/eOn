@@ -242,8 +242,81 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('namespaceeonc_
 Functions</h2></td></tr>
 <tr class="memitem:a6b1eabf13d45174874c319017618aaec" id="r_a6b1eabf13d45174874c319017618aaec"><td class="memTemplParams" colspan="2">template&lt;typename Solver&gt; </td></tr>
 <tr class="memitem:a6b1eabf13d45174874c319017618aaec template"><td class="memItemLeft"><a class="el" href="structeonc_1_1DimerRotationResult.html">DimerRotationResult</a>&#160;</td><td class="memItemRight"><a class="el" href="#a6b1eabf13d45174874c319017618aaec">runRotationSolver</a> (const std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &amp;matter, const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;params, const std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt; &amp;pot, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;initialDirection)</td></tr>
+<tr class="memitem:a80ff6def7130f0f201757f99680ce040" id="r_a80ff6def7130f0f201757f99680ce040"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a80ff6def7130f0f201757f99680ce040">maxFreeAtomForceNormScalar</a> (const double *forces, const double *fixed, long begin, long nAtoms)</td></tr>
+<tr class="memdesc:a80ff6def7130f0f201757f99680ce040"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scalar max of per-atom Euclidean norms on <span class="tt">[begin, nAtoms)</span>.  <br /></td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="a80ff6def7130f0f201757f99680ce040" name="a80ff6def7130f0f201757f99680ce040"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80ff6def7130f0f201757f99680ce040">&#9670;&#160;</a></span>maxFreeAtomForceNormScalar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::detail::maxFreeAtomForceNormScalar </td>
+          <td>(</td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>forces</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>fixed</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>begin</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>nAtoms</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Scalar max of per-atom Euclidean norms on <span class="tt">[begin, nAtoms)</span>. </p>
+<p>Fully fixed atoms (<span class="tt">fixed</span> entries all &gt; 0.5) contribute nothing. A NaN norm on a free atom is returned as is: std::max would drop it and let a convergence test pass on bad forces. </p>
+
+<p class="definition">Definition at line <a class="el" href="ForceNorm_8h_source.html#l00025">25</a> of file <a class="el" href="ForceNorm_8h_source.html">ForceNorm.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   27</span>                                                      {</div>
+<div class="line"><span class="lineno">   28</span>  <span class="keywordtype">double</span> best = 0.0;</div>
+<div class="line"><span class="lineno">   29</span>  <span class="keywordflow">if</span> (forces == <span class="keyword">nullptr</span> || nAtoms &lt;= 0 || begin &gt;= nAtoms) {</div>
+<div class="line"><span class="lineno">   30</span>    <span class="keywordflow">return</span> best;</div>
+<div class="line"><span class="lineno">   31</span>  }</div>
+<div class="line"><span class="lineno">   32</span>  <span class="keywordflow">if</span> (begin &lt; 0) {</div>
+<div class="line"><span class="lineno">   33</span>    begin = 0;</div>
+<div class="line"><span class="lineno">   34</span>  }</div>
+<div class="line"><span class="lineno">   35</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = begin; i &lt; nAtoms; ++i) {</div>
+<div class="line"><span class="lineno">   36</span>    <span class="keywordflow">if</span> (fixed != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">   37</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> *mask = fixed + 3 * i;</div>
+<div class="line"><span class="lineno">   38</span>      <span class="keywordflow">if</span> (mask[0] &gt; 0.5 &amp;&amp; mask[1] &gt; 0.5 &amp;&amp; mask[2] &gt; 0.5) {</div>
+<div class="line"><span class="lineno">   39</span>        <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">   40</span>      }</div>
+<div class="line"><span class="lineno">   41</span>    }</div>
+<div class="line"><span class="lineno">   42</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> *row = forces + 3 * i;</div>
+<div class="line"><span class="lineno">   43</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> xx = row[0] * row[0];</div>
+<div class="line"><span class="lineno">   44</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> yy = row[1] * row[1];</div>
+<div class="line"><span class="lineno">   45</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> zz = row[2] * row[2];</div>
+<div class="line"><span class="lineno">   46</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> norm = std::sqrt((xx + yy) + zz);</div>
+<div class="line"><span class="lineno">   47</span>    <span class="keywordflow">if</span> (std::isnan(norm)) {</div>
+<div class="line"><span class="lineno">   48</span>      <span class="keywordflow">return</span> norm;</div>
+<div class="line"><span class="lineno">   49</span>    }</div>
+<div class="line"><span class="lineno">   50</span>    best = std::max(best, norm);</div>
+<div class="line"><span class="lineno">   51</span>  }</div>
+<div class="line"><span class="lineno">   52</span>  <span class="keywordflow">return</span> best;</div>
+<div class="line"><span class="lineno">   53</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="a6b1eabf13d45174874c319017618aaec" name="a6b1eabf13d45174874c319017618aaec"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6b1eabf13d45174874c319017618aaec">&#9670;&#160;</a></span>runRotationSolver()</h2>
 

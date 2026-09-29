@@ -240,10 +240,9 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('Bundling_8cpp.
 <div class="textblock"><code>#include &quot;<a class="el" href="Bundling_8h_source.html">eon/Bundling.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="EonLogger_8h_source.html">eon/EonLogger.h</a>&quot;</code><br />
 <code>#include &lt;cctype&gt;</code><br />
-<code>#include &lt;cstdio&gt;</code><br />
-<code>#include &lt;cstdlib&gt;</code><br />
-<code>#include &lt;cstring&gt;</code><br />
+<code>#include &lt;charconv&gt;</code><br />
 <code>#include &lt;filesystem&gt;</code><br />
+<code>#include &lt;format&gt;</code><br />
 <code>#include &lt;system_error&gt;</code><br />
 <code>#include &lt;utility&gt;</code><br />
 </div>
@@ -257,7 +256,6 @@ Namespaces</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a29c549360eda188b0aa269d3b402bddf" id="r_a29c549360eda188b0aa269d3b402bddf"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a29c549360eda188b0aa269d3b402bddf">eonc::getBundleSize</a> ()</td></tr>
-<tr class="memitem:ae89a3bb124a918a661f75f947e62970e" id="r_ae89a3bb124a918a661f75f947e62970e"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#ae89a3bb124a918a661f75f947e62970e">eonc::strchrcount</a> (const char *haystack, char needle)</td></tr>
 <tr class="memitem:a2703aadec043ff820ae31c94ed7f8c4b" id="r_a2703aadec043ff820ae31c94ed7f8c4b"><td class="memItemLeft">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a2703aadec043ff820ae31c94ed7f8c4b">eonc::unbundle</a> (int number)</td></tr>
 <tr class="memitem:a2216ed20ff2e22ecca18afddd1713033" id="r_a2216ed20ff2e22ecca18afddd1713033"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a2216ed20ff2e22ecca18afddd1713033">eonc::deleteUnbundledFiles</a> (const std::vector&lt; std::string &gt; &amp;unbundledFilenames)</td></tr>
 <tr class="memitem:a0d50d17b3b014d6aecf3292f553142c1" id="r_a0d50d17b3b014d6aecf3292f553142c1"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a0d50d17b3b014d6aecf3292f553142c1">eonc::bundle</a> (int number, const std::vector&lt; std::string &gt; &amp;filenames, std::vector&lt; std::string &gt; *bundledFilenames)</td></tr>

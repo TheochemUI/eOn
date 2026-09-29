@@ -370,20 +370,23 @@ carte", J. Chem. Theory Comput. 6, 1170 (2010): each Cartesian degree of freedom
 
 <p class="definition">Definition at line <a class="el" href="GleThermostat_8cpp_source.html#l00085">85</a> of file <a class="el" href="GleThermostat_8cpp_source.html">GleThermostat.cpp</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">   86</span>                                                              {</div>
-<div class="line"><span class="lineno">   87</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#ade3e57624369e5ea031065b4499769e4">m_valid</a> || vel.size() != <a class="code hl_variable" href="#ab216aabbfb04b7d8f5dc00344f6b081b">m_Z</a>.cols()) {</div>
+<div class="line"><span class="lineno">   87</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#ade3e57624369e5ea031065b4499769e4">m_valid</a> || vel.size() != <a class="code hl_variable" href="#ab216aabbfb04b7d8f5dc00344f6b081b">m_Z</a>.cols() || masses3N.size() != vel.size()) {</div>
 <div class="line"><span class="lineno">   88</span>    <span class="keywordflow">return</span>;</div>
 <div class="line"><span class="lineno">   89</span>  }</div>
-<div class="line"><span class="lineno">   90</span>  <span class="keyword">const</span> VectorXd sqrtM = masses3N.cwiseSqrt();</div>
-<div class="line"><span class="lineno">   91</span>  <a class="code hl_variable" href="#ab216aabbfb04b7d8f5dc00344f6b081b">m_Z</a>.row(0) = (vel.cwiseProduct(sqrtM)).transpose();</div>
-<div class="line"><span class="lineno">   92</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> xi(<a class="code hl_variable" href="#ab216aabbfb04b7d8f5dc00344f6b081b">m_Z</a>.rows(), <a class="code hl_variable" href="#ab216aabbfb04b7d8f5dc00344f6b081b">m_Z</a>.cols());</div>
-<div class="line"><span class="lineno">   93</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; xi.rows(); ++i) {</div>
-<div class="line"><span class="lineno">   94</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; xi.cols(); ++j) {</div>
-<div class="line"><span class="lineno">   95</span>      xi(i, j) = gauss();</div>
-<div class="line"><span class="lineno">   96</span>    }</div>
-<div class="line"><span class="lineno">   97</span>  }</div>
-<div class="line"><span class="lineno">   98</span>  <a class="code hl_variable" href="#ab216aabbfb04b7d8f5dc00344f6b081b">m_Z</a> = <a class="code hl_variable" href="#a5c175752ee70135e10655d5fd5d3f56b">m_T</a> * <a class="code hl_variable" href="#ab216aabbfb04b7d8f5dc00344f6b081b">m_Z</a> + <a class="code hl_variable" href="#a0fbc7da62502b3818e6d1c3a95b070a2">m_S</a> * xi;</div>
-<div class="line"><span class="lineno">   99</span>  vel = <a class="code hl_variable" href="#ab216aabbfb04b7d8f5dc00344f6b081b">m_Z</a>.row(0).transpose().cwiseQuotient(sqrtM);</div>
-<div class="line"><span class="lineno">  100</span>}</div>
+<div class="line"><span class="lineno">   90</span>  <span class="keywordflow">if</span> ((masses3N.array() &lt;= 0.0).any()) {</div>
+<div class="line"><span class="lineno">   91</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   92</span>  }</div>
+<div class="line"><span class="lineno">   93</span>  <span class="keyword">const</span> VectorXd sqrtM = masses3N.cwiseSqrt();</div>
+<div class="line"><span class="lineno">   94</span>  <a class="code hl_variable" href="#ab216aabbfb04b7d8f5dc00344f6b081b">m_Z</a>.row(0) = (vel.cwiseProduct(sqrtM)).transpose();</div>
+<div class="line"><span class="lineno">   95</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> xi(<a class="code hl_variable" href="#ab216aabbfb04b7d8f5dc00344f6b081b">m_Z</a>.rows(), <a class="code hl_variable" href="#ab216aabbfb04b7d8f5dc00344f6b081b">m_Z</a>.cols());</div>
+<div class="line"><span class="lineno">   96</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; xi.rows(); ++i) {</div>
+<div class="line"><span class="lineno">   97</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; xi.cols(); ++j) {</div>
+<div class="line"><span class="lineno">   98</span>      xi(i, j) = gauss();</div>
+<div class="line"><span class="lineno">   99</span>    }</div>
+<div class="line"><span class="lineno">  100</span>  }</div>
+<div class="line"><span class="lineno">  101</span>  <a class="code hl_variable" href="#ab216aabbfb04b7d8f5dc00344f6b081b">m_Z</a> = <a class="code hl_variable" href="#a5c175752ee70135e10655d5fd5d3f56b">m_T</a> * <a class="code hl_variable" href="#ab216aabbfb04b7d8f5dc00344f6b081b">m_Z</a> + <a class="code hl_variable" href="#a0fbc7da62502b3818e6d1c3a95b070a2">m_S</a> * xi;</div>
+<div class="line"><span class="lineno">  102</span>  vel = <a class="code hl_variable" href="#ab216aabbfb04b7d8f5dc00344f6b081b">m_Z</a>.row(0).transpose().cwiseQuotient(sqrtM);</div>
+<div class="line"><span class="lineno">  103</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
