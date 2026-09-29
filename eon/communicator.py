@@ -425,6 +425,10 @@ class MPI(Communicator):
             strindex = strterm[0][0]
             jobdir = buf[:strindex].tostring()
             jobdir = Path(jobdir.decode()).name
+            if not (Path(self.scratchpath) / jobdir).is_dir():
+                logger.error("Client returned %s, which is not in %s; skipping",
+                             jobdir, self.scratchpath)
+                continue
 
             if self.config.debug_keep_all_results:
                 shutil.copytree(

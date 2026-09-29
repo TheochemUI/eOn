@@ -375,6 +375,10 @@ static int eonClientMain(int argc, char **argv) {
   snprintf(logfilename, 1024, "eonclient_%i.log", my_client_number);
 
   auto orig_path = std::filesystem::current_path();
+  // In client/server mode a failed job is logged and its directory handed
+  // back without results.dat; the server skips it and this rank stays in
+  // the pool. A standalone rank still exits with the error.
+  const bool keepServing = !client_standalone;
   while (true) {
     std::filesystem::current_path(orig_path);
     std::string path(1024, '\0');
@@ -405,10 +409,27 @@ static int eonClientMain(int argc, char **argv) {
               eonc::helpers::enterJobDirectory(path.c_str())) {
         QUILL_LOG_ERROR(logger, "error: chdir: {}", *chdirError);
         logger->flush_log();
-        return EXIT_FAILURE;
+        MPI_Send(&path[0], 1024, MPI_CHAR, server_rank, 0, MPI_COMM_WORLD);
+        continue;
       }
     }
+#else
+    constexpr bool keepServing = false;
 #endif
+    // Flushes the logs into the job directory so a failed job still shows
+    // its error to whoever reads the returned directory.
+    auto stageFailedJobLogs = [&] {
+      logger->flush_log();
+      if (auto *trace =
+              quill::Frontend::get_logger(std::string{"_traceback"})) {
+        trace->flush_log();
+      }
+      for (const std::string_view logName :
+           {std::string_view{"client_quill.log"},
+            std::string_view{"client_traceback.log"}}) {
+        eonc::helpers::stageReturnLog(logHome.string(), logName);
+      }
+    };
 
     printSystemInfo();
 
@@ -443,6 +464,10 @@ static int eonClientMain(int argc, char **argv) {
       if (error) {
         QUILL_LOG_ERROR(logger, "problem loading parameter file, stopping");
         logger->flush_log();
+        if (keepServing) {
+          stageFailedJobLogs();
+          continue;
+        }
         return 1;
       }
 
@@ -456,6 +481,10 @@ static int eonClientMain(int argc, char **argv) {
                         std::string{magic_enum::enum_name<eonc::JobType>(
                             parameters.main_options().job)});
         logger->flush_log();
+        if (keepServing) {
+          stageFailedJobLogs();
+          continue;
+        }
         return 1;
       }
 
@@ -465,11 +494,19 @@ static int eonClientMain(int argc, char **argv) {
       } catch (int e) {
         QUILL_LOG_CRITICAL(logger, "[ERROR] job exited on error {}", e);
         logger->flush_log();
+        if (keepServing) {
+          stageFailedJobLogs();
+          continue;
+        }
         return EXIT_FAILURE;
       } catch (const std::exception &e) {
         QUILL_LOG_CRITICAL(logger, "[ERROR] unhandled exception: {}", e.what());
         logger->flush_log();
         std::cerr << "[ERROR] unhandled exception: " << e.what() << "\n";
+        if (keepServing) {
+          stageFailedJobLogs();
+          continue;
+        }
         return EXIT_FAILURE;
       }
 
