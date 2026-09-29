@@ -186,7 +186,9 @@ def find_matching_process(product, state, config):
             True,
             check_rotation=config.comp_check_rotation,
             use_identical=config.comp_use_identical,
-            remove_translation=config.comp_remove_translation,
+            # A config-like object without the option compares positions
+            # as they are, without removing a rigid translation.
+            remove_translation=getattr(config, "comp_remove_translation", False),
         ):
             return pid
     return None
