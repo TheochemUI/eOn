@@ -34,8 +34,7 @@ std::vector<::capnp::word> read_params_file(const std::string &path) {
   if (!in)
     throw std::runtime_error("RGPOT: cannot open params_path: " + path);
   const std::streamsize bytes = in.tellg();
-  if (bytes <= 0 ||
-      (static_cast<size_t>(bytes) % sizeof(::capnp::word)) != 0)
+  if (bytes <= 0 || (static_cast<size_t>(bytes) % sizeof(::capnp::word)) != 0)
     throw std::runtime_error(
         "RGPOT: params_path is not a capnp flat message: " + path);
   std::vector<::capnp::word> words(static_cast<size_t>(bytes) /
