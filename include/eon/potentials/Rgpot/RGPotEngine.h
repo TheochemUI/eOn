@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <memory>
 #include <string>
 
@@ -58,6 +59,14 @@ public:
   [[nodiscard]] int calculatorIndex() const noexcept;
   /// Ranks in the MPI world the groups were bound on (1 without MPI).
   [[nodiscard]] int calculatorWorld() const noexcept;
+  /// This process's rank in that world (0 without MPI).
+  [[nodiscard]] int worldRank() const noexcept;
+  /// Collective on MPI_COMM_WORLD: every rank leaves with world rank 0's
+  /// bytes. A no-op on one rank.
+  void broadcastFromDriver(void *data, std::size_t bytes) const;
+  /// Registers MPI_Finalize at exit (once per process) when the world has
+  /// more than one rank.
+  void finalizeMpiAtExit() const;
   /// Collective on MPI_COMM_WORLD: every rank leaves with the energy and
   /// the 3N forces computed by the first rank of group `owner`. Only
   /// CPMD's parent rank holds the true forces, so this also keeps the

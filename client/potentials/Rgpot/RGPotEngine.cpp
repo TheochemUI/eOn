@@ -281,6 +281,26 @@ int RGPotEngine::calculatorWorld() const noexcept {
   return impl_ ? impl_->world : 1;
 }
 
+int RGPotEngine::worldRank() const noexcept {
+  if (!impl_ || impl_->world <= 1)
+    return 0;
+  const rgpot::CalculatorGroup &g = ::rgpot::thisCalculator();
+  return g.index * g.ranks + g.rank_in_group;
+}
+
+void RGPotEngine::finalizeMpiAtExit() const {
+  if (impl_ && impl_->world > 1)
+    ::rgpot::finalizeMpiAtExit();
+}
+
+void RGPotEngine::broadcastFromDriver(void *data, std::size_t bytes) const {
+  if (!impl_ || impl_->world <= 1 || bytes == 0)
+    return;
+  // World rank 0 is the first rank of calculator 0.
+  if (::rgpot::shareFromCalculator(0, data, bytes) == 0)
+    throw std::runtime_error("RGPOT: could not broadcast from the driver rank");
+}
+
 void RGPotEngine::shareResult(int owner, long N, double *F, double *U) const {
   if (!impl_ || impl_->world <= 1)
     return;

@@ -51,6 +51,20 @@ public:
   [[nodiscard]] bool engineAvailable() const;
 
 private:
+  // Under mpirun (an MPI build of rgpot with cpmdc) only world rank 0 runs
+  // eOn. It broadcasts each force request; the other ranks serve requests
+  // from the constructor until the driver sends a stop, then exit.
+  [[noreturn]] void serveWorker();
+  void computeSingle(long N, const double *R, const int *atomicNrs, double *F,
+                     double *U, const double *box);
+  void computeBatch(long nSystems, long nAtoms, const double *const *positions,
+                    const int *const *atomicNrs, double *const *forces,
+                    double *energies, const double *const *boxes);
+  void sendStop();
+  void releaseWorkersAtExit();
+
   std::unique_ptr<RGPotEngine> impl_;
   std::string backend_;
+  bool driver_{true};
+  bool stopped_{false};
 };
