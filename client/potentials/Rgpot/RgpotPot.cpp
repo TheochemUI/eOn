@@ -31,6 +31,7 @@ RgpotPot::RgpotPot(const eonc::Parameters &p)
   opt.memory_mb = o.memory_mb;
   opt.scratch_dir = o.scratch_dir;
   opt.input_block = o.input_block;
+  opt.permanent_dir = o.permanent_dir;
   opt.model_path = o.model_path;
   opt.device = o.device;
   opt.length_unit = o.length_unit;

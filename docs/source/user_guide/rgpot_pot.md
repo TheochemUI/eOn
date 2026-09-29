@@ -99,6 +99,28 @@ Optional `input_block` (or env `RGPOT_NWCHEM_INPUT_BLOCK`) supplies NWChem
 `scf_type` looks like an XC label (e.g. `b3lyp`), a minimal DFT block is
 emitted automatically.
 
+For `backend = cpmdc`, `input_block` (or env `RGPOT_CPMD_INPUT_BLOCK`) carries
+CPMD `&SECTION` text. cpmdc places it ahead of the sections it generates, so
+a periodic `&SYSTEM` or a full `&DFT` given here takes the place of the
+isolated cold deck. `permanent_dir` sets the CPMD `FILEPATH`, where the
+`RESTART` files go; `scratch_dir` is the fallback. The pseudopotential
+directory comes from `CPMDC_PSEUDO_DIR` or `CPMD_PP_LIBRARY_PATH`.
+
+```{code-block} ini
+[RgpotPot]
+backend = cpmdc
+permanent_dir = /scratch/cpmd-restart
+input_block = &SYSTEM
+    ANGSTROM
+    CELL VECTORS
+      10.26 0.0 0.0
+      0.0 10.26 0.0
+      0.0 0.0 10.26
+    CUTOFF
+      30.0
+  &END
+```
+
 Installed rgpot ≥ 2.5.0 is preferred via `pkg-config` (`dependency('rgpot')`);
 the Meson wrap is the fallback for hermetic/dev builds.
 

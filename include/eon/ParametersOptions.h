@@ -151,6 +151,7 @@ struct rgpot_options_t {
   int memory_mb{0};
   std::string scratch_dir{};
   std::string input_block{};
+  std::string permanent_dir{};
   // Metatomic dlopen (backend=metatomic)
   std::string model_path{};
   std::string device{"cpu"};

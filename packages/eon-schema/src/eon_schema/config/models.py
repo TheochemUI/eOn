@@ -800,7 +800,14 @@ class RgpotPot(BaseModel):
     scratch_dir: str = Field(default="", description="Engine scratch directory.")
     input_block: str = Field(
         default="",
-        description="Verbatim input block appended to the generated engine input.",
+        description=(
+            "Verbatim input block for the engine: NWChem inputBlocks, or CPMD"
+            " &SECTION text placed ahead of the sections cpmdc generates."
+        ),
+    )
+    permanent_dir: str = Field(
+        default="",
+        description="CPMD FILEPATH directory for RESTART files (backend=cpmdc).",
     )
 
 

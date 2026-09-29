@@ -18,7 +18,8 @@ struct RGPotEngineOptions {
   std::string title;
   int memory_mb{0};
   std::string scratch_dir;
-  std::string input_block; // optional NWChem inputBlocks text
+  std::string input_block;   // raw input text for NWChem or CPMD inputBlocks
+  std::string permanent_dir; // CPMD FILEPATH for RESTART files (cpmdc)
   // Metatomic (backend=metatomic): dlopen libmetatomic_engine.so
   std::string model_path;
   std::string device{"cpu"};

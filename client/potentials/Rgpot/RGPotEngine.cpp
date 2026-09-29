@@ -148,6 +148,19 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
       params.setMemoryMb(static_cast<uint32_t>(opt.memory_mb));
     if (!opt.scratch_dir.empty())
       params.setScratchDir(opt.scratch_dir);
+    if (!opt.permanent_dir.empty())
+      params.setPermanentDir(opt.permanent_dir);
+    // Raw &SECTION text goes ahead of the sections cpmdc generates, so a
+    // periodic &SYSTEM or a full &DFT here replaces the isolated cold deck.
+    std::string block = opt.input_block;
+    if (block.empty()) {
+      if (const char *env = std::getenv("RGPOT_CPMD_INPUT_BLOCK"))
+        block = env;
+    }
+    if (!block.empty()) {
+      auto blocks = params.initInputBlocks(1);
+      blocks.set(0, block);
+    }
     impl_->cpmd = std::make_unique<rgpot::CPMDPot>(params.asReader());
     if (!impl_->cpmd->available())
       throw std::runtime_error(
