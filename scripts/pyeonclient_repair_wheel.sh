@@ -242,12 +242,22 @@ repair_one() {
   declare -A soname_map=(
     [librgpot.so.3]=libeon_rgpot.so.3
   )
+  local src
   for old_soname in "${!soname_map[@]}"; do
     new_soname="${soname_map[$old_soname]}"
+    # meson-python puts librgpot either in the libs dir or next to _core in
+    # the package dir; take it from wherever it is.
+    src=""
     if [[ -f "$libs_dir/$old_soname" ]]; then
-      mv -f "$libs_dir/$old_soname" "$libs_dir/$new_soname"
+      src="$libs_dir/$old_soname"
+    else
+      src="$(find "$work" -type f -name "$old_soname" -print -quit)"
+    fi
+    if [[ -n "$src" ]]; then
+      mv -f "$src" "$libs_dir/$new_soname"
       patchelf --set-soname "$new_soname" "$libs_dir/$new_soname"
-      echo "soname: $old_soname -> $new_soname"
+      patchelf --set-rpath '$ORIGIN' "$libs_dir/$new_soname"
+      echo "soname: ${src#"$work/"} -> ${libs_dir#"$work/"}/$new_soname"
     fi
   done
   while IFS= read -r -d '' so; do
@@ -274,6 +284,15 @@ repair_one() {
       exit 1
     fi
   done < <(find "$work" -type f \( -name '*.so' -o -name '*.so.*' \) -print0)
+  # A renamed NEEDED is only safe when the renamed library ships with it.
+  for new_soname in "${soname_map[@]}"; do
+    while IFS= read -r -d '' so; do
+      if needed_libs "$so" | grep -qx "$new_soname" && [[ ! -f "$libs_dir/$new_soname" ]]; then
+        echo "ERROR: $(basename "$so") needs $new_soname but the wheel does not carry it" >&2
+        exit 1
+      fi
+    done < <(find "$work" -type f \( -name '*.so' -o -name '*.so.*' \) -print0)
+  done
 
   # Repack with zip (always portable; no wheel.cli dependency). RECORD is
   # rewritten from the files actually present: the rename and drop steps
