@@ -414,7 +414,7 @@ static int eonClientMain(int argc, char **argv) {
       }
     }
 #else
-    constexpr bool keepServing = false;
+  constexpr bool keepServing = false;
 #endif
     // Flushes the logs into the job directory so a failed job still shows
     // its error to whoever reads the returned directory.
