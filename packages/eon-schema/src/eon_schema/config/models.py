@@ -791,6 +791,10 @@ class RgpotPot(BaseModel):
         default=250, description="XTB max iterations when backend=xtb."
     )
     uhf: int = Field(default=0, description="XTB unpaired electrons when backend=xtb.")
+    xtb_charge: float = Field(
+        default=0.0,
+        description=("XTB total charge when backend=xtb. An omitted key uses charge."),
+    )
     engine_root: str = Field(
         default="", description="Engine installation root (NWCHEM_ROOT / CPMD_ROOT)."
     )
@@ -809,6 +813,23 @@ class RgpotPot(BaseModel):
     permanent_dir: str = Field(
         default="",
         description="CPMD FILEPATH directory for RESTART files (backend=cpmdc).",
+    )
+    params_path: str = Field(
+        default="",
+        description=(
+            "Path to a Cap'n Proto CPMDParams message. The message is the"
+            " CPMD method (sections, pseudopotentials, and cell) and replaces"
+            " functional, cutoff_ry, charge, and multiplicity."
+        ),
+    )
+    ranks_per_image: int = Field(
+        default=0,
+        description=(
+            "Ranks per CPMD calculator group. The MPI world is split into"
+            " groups of this size, with one CPMD session per group. Rank 0"
+            " drives eOn and the other ranks serve force requests. 0 is one"
+            " group of all ranks."
+        ),
     )
 
 

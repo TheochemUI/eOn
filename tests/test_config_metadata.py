@@ -40,6 +40,7 @@ SECTION_CLASS_NAMES = {
     "ARTn": "ARTnConfig",
     "IRA": "IRAConfig",
     "BGSD": "BGSDConfig",
+    "RgpotPot": "RgpotPot",
 }
 
 

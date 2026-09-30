@@ -2153,6 +2153,63 @@ RgpotPot:
             kind: int
             default: 0
 
+        model_path:
+            kind: string
+            default: ""
+
+        device:
+            kind: string
+            default: "cpu"
+
+        length_unit:
+            kind: string
+            default: "angstrom"
+
+        extensions_directory:
+            kind: string
+            default: ""
+
+        check_consistency:
+            kind: boolean
+            default: false
+
+        uncertainty_threshold:
+            kind: float
+            default: -1.0
+
+        torch_determinism_strict:
+            kind: boolean
+            default: false
+
+        paramset:
+            kind: string
+            default: "GFN2xTB"
+            values:
+                - GFNFF
+                - GFN0xTB
+                - GFN1xTB
+                - GFN2xTB
+
+        accuracy:
+            kind: float
+            default: 1.0
+
+        electronic_temperature:
+            kind: float
+            default: 300.0
+
+        max_iterations:
+            kind: int
+            default: 250
+
+        uhf:
+            kind: int
+            default: 0
+
+        xtb_charge:
+            kind: float
+            default: 0.0
+
 ################################################################################
 
 Metatomic:
