@@ -562,12 +562,11 @@ _linkto += eoncbase
 # later _deps += readcon_dep does not reach libsocket_nwchem.so.
 # Prefer cargo-c / pkg-config install (conda-forge host package); fall back
 # to the meson subproject when the system package is not available.
-# ConFileIO needs 0.13+ (clone, bulk set_*_from_flat, compression_from_extension).
-# Wrap tag v0.14.10 still ships Cargo.toml 0.14.9 (eOn-aqmi / feedstock #31).
-# Accept the crate version so cargo-c pkg-config does not fail the check.
+# ConFileIO needs 0.15 for the displacements section (Hessian modes.con)
+# on top of 0.13's clone, bulk set_*_from_flat and compression_from_extension.
 readcon_dep = dependency(
     'readcon-core',
-    version: '>=0.14.9',
+    version: '>=0.15.0',
     method: 'pkg-config',
     required: false,
 )
@@ -575,7 +574,7 @@ readcon_order_srcs = []
 if not readcon_dep.found()
     readcon_proj = subproject(
         'readcon-core',
-        version: '>=0.14.9',
+        version: '>=0.15.0',
         default_options: {
             'with_tests': false,
             'with_examples': false,
