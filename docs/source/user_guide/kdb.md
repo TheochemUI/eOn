@@ -39,10 +39,11 @@ prefactor in s^-1, the mode, and the readcon-db frame keys go into
 `amsel.KdbStore`. The catalog directory is `Paths.kdb` (default
 `<main_directory>/kdb/`). `KdbStore` opens that directory.
 
-A suggestion refines a dimer from the stored saddle and the stored mode.
-Each stored process is offered once. The next search is a random
-displacement when none remain. With `kdb_only = true` and an empty
-catalog, no random search is submitted.
+A suggestion refines from the stored saddle. The direction is the stored
+mode when its absolute cosine with the reactant-to-saddle vector is at
+least `kdb_mac`, and that vector otherwise. Each stored process is
+offered once. The next search is a random displacement when none remain.
+With `kdb_only = true` and an empty catalog, no random search is submitted.
 
 `use_kdb = true` does not import the PyPI `kdb` package. It needs
 `amsel` and `readcon-db`. A missing `amsel` logs `amsel is not installed`
