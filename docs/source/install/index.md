@@ -7,14 +7,20 @@ myst:
 
 # Installation
 
+```{toctree}
+:hidden:
+
+eessi
+```
+
 eOn is divided up into two separate programs: a server and a client. The client
 does most of the computation (e.g. saddle searches, minimizations, and molecular
-dynamics) while the server creates the input for the client and processes its
-results.
+dynamics) while the server creates the input for the client and processes that
+output.
 
 ## Getting started
 
-The simplest way to hit the ground running is with the `conda` package:
+The shortest start is the `conda` package:
 
 ```{code-block} bash
 # best with pixi
@@ -24,7 +30,7 @@ pixi add eon
 micromamba install -c conda-forge eon
 ```
 
-At this point any of the many examples should be good to go.
+Those commands install the conda-forge release package. They do not check out `develop`. A source build of `develop` is the section below. The examples in this book run against the release package. `pixi.toml` on `develop` records version 3.4.0, and the conda-forge package can be an older release.
 
 The conda package is a maximalist build with the following potentials and
 features enabled:
@@ -33,7 +39,7 @@ features enabled:
 - [xTB](https://xtb-docs.readthedocs.io/) (semi-empirical tight-binding)
 - [rgpot integration](project:../user_guide/rgpot_integration.md) (direct dlopen vs serve vs potserv client)
 - [RgpotPot / RGPOT](project:../user_guide/rgpot_pot.md) (in-process NWChemPot/CPMDPot; always linked except on Windows)
-- [Serve mode](project:../user_guide/serve_mode.md) (`-Dwith_serve`: eOn as rgpot-compatible RPC *server*)
+- [Serve mode](project:../user_guide/serve_mode.md) (`-Dwith_serve`: eOn as an rgpot-compatible remote procedure call server)
 
 The server is accessed through `python -m eon.server`, and the `eonclient`
 binary is automatically made available in the activated environment.
@@ -49,29 +55,29 @@ eon.server`.
 `eOn` is now developed and distributed primarily via GitHub.
 ```
 
-Once git is present[^1]:
+Once git is present[^1], clone `develop`. A clone with no branch name follows the repository default.
 
 ```{code-block} bash
-git clone https://github.com/TheochemUI/eOn.git
+git clone -b develop https://github.com/TheochemUI/eOn.git
 cd eOn
 ```
 
 ````{margin}
 ```{note}
 
-* The [GitHub CLI tool](https://cli.github.com/) makes authentication much easier.
+* Authentication is easier with the [command line tool](https://cli.github.com/).
 * [Pixi](https://pixi.sh/) is now recommended
 ```
 ````
 
 ## Building from source
 
-We provide a `conda` environment and `pixi` setup, with dependencies handled by `conda-lock`.
+Pixi installs the dependencies recorded in `pixi.lock`. `pixi shell` opens the default environment. `dev-lite` is the lighter shell: the `lint` and `develop` features from `pixi.toml`.
 
 ```{code-block} bash
 pixi shell
 # or
-pixi s -e dev-lite
+pixi shell -e dev-lite
 ```
 
 Other environments can be found by inspecting the `pixi.toml` file.
@@ -82,13 +88,14 @@ This is the installation path that fails least often:
 # conda-compilers may try to install to
 # $CONDA_PREFIX/lib/x86_64-linux-gnu
 # without --libdir
-meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype=release
+meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype=release \
+  --force-fallback-for=nlohmann_json
+meson compile -C bbdir
+meson test -C bbdir --suite eon
 meson install -C bbdir
 ```
 
-If that `meson setup` stops on glibc errors raised from inside `<cmath>`, add
-`--force-fallback-for=nlohmann_json` and read the rolling distro section below
-for what causes it.
+The setup line already passes `--force-fallback-for=nlohmann_json`. The rolling distro section below says why a host `nlohmann_json` breaks the conda compiler. The test line should finish with a fail count of 0.
 
 Some additional performance can be gained with `ccache` and `mold`, which can be
 passed with `--native-file`:
@@ -96,7 +103,7 @@ passed with `--native-file`:
 - With `ccache` installed, add `--native-file nativeFiles/ccache_gnu.ini`
 - With `mold` installed, add `--native-file nativeFiles/mold.ini`
 
-### Troubleshooting: rolling distros (Arch, Fedora)
+### Troubleshooting on rolling distros
 
 On rolling-release distributions with newer system packages, the conda-forge
 compiler sysroot conflicts with system headers. `meson setup` stops during the
@@ -122,13 +129,10 @@ dependency lookup.
 ### Troubleshooting: a global cargo linker setting
 
 readcon-core is built by cargo, which reads `~/.cargo/config.toml` in addition
-to the environment. A `rustflags` entry there applies to every crate eOn builds,
-including inside a conda or pixi environment where the compiler is
-conda-forge's rather than the system one.
+to the environment. A `rustflags` entry there applies to every crate eOn builds.
+That includes a conda or pixi environment. The compiler there is conda-forge's.
 
-The case that comes up is a linker override. `-C link-arg=-fuse-ld=mold` works
-with a system GCC new enough to resolve `mold` by name, but the absolute form
-`-fuse-ld=/usr/bin/mold` is rejected by conda-forge's GCC 13:
+One failure is a linker override. A system GCC that can resolve `mold` by name accepts `-C link-arg=-fuse-ld=mold`. conda-forge's GCC 13 rejects `-fuse-ld=/usr/bin/mold`:
 
 ```text
 error: linking with `x86_64-conda-linux-gnu-cc` failed: exit status: 1
@@ -154,12 +158,15 @@ The full listing of options is found in the `meson_options.txt` file. These can
 all be turned on and off at the command line. As an example see the [LAMMPS
 integration instructions](project:../user_guide/lammps_pot.md).
 
-For optional wrapped dependencies such as ARTn and IRA, download the
-subproject sources before configuring:
+For an optional wrapped dependency, download the subproject sources before configuring:
 
 ```{code-block} bash
 meson subprojects download artn-plugin ira
 ```
+
+# European environment for scientific software installations (EESSI)
+
+A `develop` checkout on this 2026.06 release uses EESSI-extend, the `eOn-devel` bundle, CapnProto 1.4.0, and `foss/2026.1`. The run-path list and the calculator groups are on the [build page](eessi.md).
 
 # Licenses
 
