@@ -15,6 +15,9 @@
 #include "eon/MobileAtoms.h"
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
+#ifdef WITH_GPRD
+#include "eon/AtomicGPDimer.h"
+#endif
 
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/optional.h>
