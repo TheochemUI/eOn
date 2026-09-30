@@ -1293,9 +1293,12 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
       big.block(j * f, k * f, f, f) -= c * eye;
       big.block(k * f, j * f, f, f) -= c * eye;
     }
-    const Eigen::SelfAdjointEigenSolver<MatrixXd> es(big,
-                                                     Eigen::EigenvaluesOnly);
-    const VectorXd &lam = es.eigenvalues();
+    // MatrixXd is row-major. The self-adjoint solver reads a column-major
+    // triangle, so the ring matrix is copied before the decomposition.
+    const ColMajorXd ring = big;
+    const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(
+        ring, Eigen::EigenvaluesOnly);
+    const VectorXd lam = es.eigenvalues();
     if (exactRigid) {
       std::vector<long> order(static_cast<size_t>(lam.size()));
       std::iota(order.begin(), order.end(), 0L);
@@ -1447,7 +1450,8 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
     // already omitted. Any other resolved negative value is an extra
     // unstable mode.
     const double residualCut = 1e-4 * c;
-    const long steps = std::min(N * f, static_cast<long>(80));
+    const long dim = N * f;
+    const long steps = dim <= 400 ? dim : std::min(dim, static_cast<long>(80));
     std::vector<VectorXd> start = cycleFull;
     start.front()(0) += 0.1;
     const std::vector<RingMode> modes =

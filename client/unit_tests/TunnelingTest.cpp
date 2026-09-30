@@ -483,7 +483,11 @@ double denseRingLog(double c, const std::vector<MatrixXd> &diag) {
     big.block(j * f, k * f, f, f) -= c * eye;
     big.block(k * f, j * f, f, f) -= c * eye;
   }
-  const Eigen::SelfAdjointEigenSolver<MatrixXd> es(big, Eigen::EigenvaluesOnly);
+  const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
+      ring = big;
+  const Eigen::SelfAdjointEigenSolver<
+      Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>>
+      es(ring, Eigen::EigenvaluesOnly);
   double sum = 0.0;
   for (long i = 0; i < es.eigenvalues().size(); ++i) {
     sum += std::log(std::abs(es.eigenvalues()(i)));
@@ -553,17 +557,19 @@ TEST_CASE("The cyclic ring determinant matches a dense factorisation",
   }
   const double spring = 2.0 * std::log(static_cast<double>(nn)) +
                         static_cast<double>(nn - 1) * std::log(cf);
-  const Eigen::SelfAdjointEigenSolver<MatrixXd> es([&] {
-    MatrixXd big = MatrixXd::Zero(nn * nf, nn * nf);
-    const MatrixXd eye = MatrixXd::Identity(nf, nf);
-    for (long j = 0; j < nn; ++j) {
-      big.block(j * nf, j * nf, nf, nf) = flat[static_cast<size_t>(j)];
-      const long k = (j + 1) % nn;
-      big.block(j * nf, k * nf, nf, nf) -= cf * eye;
-      big.block(k * nf, j * nf, nf, nf) -= cf * eye;
-    }
-    return big;
-  }());
+  MatrixXd big = MatrixXd::Zero(nn * nf, nn * nf);
+  const MatrixXd eye = MatrixXd::Identity(nf, nf);
+  for (long j = 0; j < nn; ++j) {
+    big.block(j * nf, j * nf, nf, nf) = flat[static_cast<size_t>(j)];
+    const long k = (j + 1) % nn;
+    big.block(j * nf, k * nf, nf, nf) -= cf * eye;
+    big.block(k * nf, j * nf, nf, nf) -= cf * eye;
+  }
+  const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
+      ring = big;
+  const Eigen::SelfAdjointEigenSolver<
+      Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>>
+      es(ring, Eigen::EigenvaluesOnly);
   double kept = 0.0;
   long zeros = 0;
   for (long i = 0; i < es.eigenvalues().size(); ++i) {
