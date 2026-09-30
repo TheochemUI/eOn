@@ -3,6 +3,7 @@ fail_fast: false
 exclude: |
   (?x)(
   thirdparty| # vendored
+  subprojects/gpr_optim/| # vendored gpr_optim pin, patches keep their whitespace
   xtb.h| # vendored
   mastereqn| # legacy (?)
   libqd| # vendored / legacy (?)
