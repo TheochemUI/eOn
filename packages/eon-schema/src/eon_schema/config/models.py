@@ -1355,6 +1355,55 @@ class RecyclingConfig(BaseModel):
     )
 
 
+class AmselConfig(BaseModel):
+    """``[amsel]`` keys. Field names and defaults match ``eon/config.yaml``."""
+
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    discover_decide: bool = Field(
+        default=False,
+        description="Call amsel discover_decide on the current state's process table at each KMC step.",
+    )
+    """
+    Independent of :any:`eon.schema.CoarseGrainingConfig.use_mcamc`.
+    A barrier strictly below ``e_min_init`` is an in-basin edge. A
+    barrier at or above ``e_min_init`` is an exit. On an accepted basin
+    the exit time and the exit channel come from the mean-rate method
+    (MRM) or from first-passage-time analysis (FPTA). Those kernels are
+    the ``amsel`` package. When that package is absent the log line is
+    ``amsel discover_decide status=unavailable`` and the step is ordinary
+    KMC.
+    """
+    e_min_init: float = Field(
+        default=0.5,
+        description="Initial transition-state cutoff in eV. A barrier strictly below this cutoff stays inside the basin.",
+    )
+    e_min_step: float = Field(
+        default=0.05,
+        description="Step, in eV, by which discover_decide lowers the cutoff when it retightens the basin.",
+    )
+    e_min_floor: float = Field(
+        default=0.05,
+        description="Lowest transition-state cutoff, in eV, that discover_decide will use.",
+    )
+    cv_threshold: float = Field(
+        default=10.0,
+        description="Largest coefficient of variation for which a basin is accepted.",
+    )
+    on_error: Literal["fallback_single", "unavailable_mcamc", "raise"] = Field(
+        default="fallback_single",
+        description="Result of a failed amsel call.",
+    )
+    """
+    ``fallback_single`` returns status ``fallback_single`` with
+    ``available`` true, and the step is ordinary KMC.
+    ``unavailable_mcamc`` returns status ``unavailable`` with
+    ``available`` false. ``raise`` re-raises the exception.
+    ``unavailable`` with ``available`` true is not a status this model
+    names.
+    """
+
+
 class CoarseGrainingConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
@@ -2594,6 +2643,7 @@ class Config(BaseModel):
     hyperdyn: HyperdynamicsConfig
     recycling: RecyclingConfig
     coarse_graining: CoarseGrainingConfig
+    amsel: AmselConfig = Field(default_factory=AmselConfig)
     optimizer: OptimizerConfig
     distributed_replica: DistributedReplicaConfig
     gprdimer: GPRDimerConfig

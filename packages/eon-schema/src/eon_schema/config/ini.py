@@ -58,6 +58,7 @@ MODEL_INI_SECTION: dict[str, str] = {
     "DebugConfig": "Debug",
     "KDBConfig": "KDB",
     "RecyclingConfig": "Recycling",
+    "AmselConfig": "amsel",
     "CoarseGrainingConfig": "Coarse Graining",
     "HessianConfig": "Hessian",
     "InstantonConfig": "Instanton",
