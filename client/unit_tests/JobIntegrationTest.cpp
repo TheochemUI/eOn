@@ -2697,13 +2697,14 @@ TEST_CASE("OH-TST symmetry distance uses the half-line endpoint",
   REQUIRE(v[1] == Catch::Approx(1.0).margin(1e-12));
 }
 
-TEST_CASE_METHOD(
-    JobIntegrationFixture,
-    "InstantonJob writes the path and a splitting between LJ13 minima",
-    "[job][instanton][integration]") {
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "InstantonJob writes the path and flags an asymmetric pair",
+                 "[job][instanton][integration]") {
   if (!copyTestData("neb_lj13")) {
     SKIP("neb_lj13 test system not found");
   }
+  // The two LJ13 minima differ by 0.86 eV: the path converges, and the
+  // splitting is withheld because beta |delta| is far above 0.1.
   writeConfig(R"(
 [Main]
 job = instanton
@@ -2714,7 +2715,6 @@ potential = lj
 [Instanton]
 beads = 64
 beta_hbar_omega = 30
-hessian_stride = 8
 max_iterations = 4000
 force_tolerance = 1e-3
 )");
@@ -2724,14 +2724,12 @@ force_tolerance = 1e-3
   const auto frames =
       readcon::read_all_frames((workdir / "instanton.con").string());
   REQUIRE(frames.size() == 65);
-  const double action = std::stod(results.at("instanton_action"));
-  const double delta0 = std::stod(results.at("tunnel_splitting_instanton"));
-  REQUIRE(std::isfinite(action));
-  REQUIRE(action > 0.0);
-  REQUIRE(delta0 > 0.0);
-  REQUIRE(delta0 < 1.0);
-  // The kink sits inside imaginary time, away from both ends.
-  REQUIRE(std::stod(results.at("instanton_mode_separation")) > 10.0);
+  REQUIRE(std::isfinite(std::stod(results.at("instanton_action"))));
+  REQUIRE_THAT(std::stod(results.at("tunnel_asymmetry")),
+               Catch::Matchers::WithinAbs(0.8634, 1e-3));
+  REQUIRE(std::stod(results.at("instanton_symmetric")) == 0.0);
+  REQUIRE(std::stod(results.at("instanton_beta_asymmetry")) > 0.1);
+  REQUIRE(results.count("tunnel_splitting_instanton") == 0);
 }
 
 } /* namespace tests */

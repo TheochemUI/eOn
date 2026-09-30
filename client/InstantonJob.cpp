@@ -256,7 +256,17 @@ std::vector<std::string> InstantonJob::run(void) {
 
   bool splitOk = false;
   std::string failure;
-  if (inst.converged) {
+  // beta |delta|: the propagator ratio reads delta0 only when the wells
+  // lie within a small fraction of kB T of each other.
+  const double betaAsymmetry =
+      std::abs(inst.asymmetry) * betaHbar / tunneling::kHbar;
+  if (inst.converged && !inst.symmetricEnough) {
+    EONC_LOG_WARNING("[Instanton] beta |delta| = {:.3g}: the wells differ by "
+                     "{:.4g} eV, too far for the splitting; the path and "
+                     "action are written, the splitting is not",
+                     betaAsymmetry, inst.asymmetry);
+  }
+  if (inst.converged && inst.symmetricEnough) {
     const long stride = std::max<long>(1, o.hessian_stride);
     const long P = o.beads;
     std::map<long, MatrixXd> anchors;
@@ -326,10 +336,12 @@ std::vector<std::string> InstantonJob::run(void) {
   }
   returnFiles.push_back(pathFile);
 
-  const auto status = splitOk
-                          ? RunStatus::GOOD
-                          : (inst.converged ? RunStatus::FAIL_POTENTIAL_FAILED
-                                            : RunStatus::FAIL_MAX_ITERATIONS);
+  // A converged path between wells too far apart is a result, not a
+  // failure: the flags say why no splitting was written.
+  const bool good = splitOk || (inst.converged && !inst.symmetricEnough);
+  const auto status = good ? RunStatus::GOOD
+                           : (inst.converged ? RunStatus::FAIL_POTENTIAL_FAILED
+                                             : RunStatus::FAIL_MAX_ITERATIONS);
   auto env = JobResultEnvelope::fromMinimization(
       status, params.potential_options().potential,
       PotRegistry::get().total_force_calls(), false, 0.0);
@@ -340,6 +352,12 @@ std::vector<std::string> InstantonJob::run(void) {
   env.extras.emplace_back("instanton_action", inst.action);
   env.extras.emplace_back("instanton_temperature_K", kelvin);
   env.extras.emplace_back("tunnel_asymmetry", inst.asymmetry);
+  env.extras.emplace_back("instanton_beta_asymmetry", betaAsymmetry);
+  env.extras.emplace_back("instanton_symmetric",
+                          inst.symmetricEnough ? 1.0 : 0.0);
+  env.extras.emplace_back("instanton_beta_asymmetry", betaAsymmetry);
+  env.extras.emplace_back("instanton_symmetric",
+                          inst.symmetricEnough ? 1.0 : 0.0);
   if (splitOk) {
     env.extras.emplace_back("tunnel_splitting_instanton", inst.delta0);
     env.extras.emplace_back("instanton_mode_separation", inst.modeSeparation);

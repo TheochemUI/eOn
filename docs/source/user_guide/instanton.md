@@ -115,11 +115,13 @@ frame and `results.dat` carry:
 | `instanton_temperature_K` | {math}`1/(k_B \beta)` for the imaginary time used |
 | `instanton_mode_separation` | how well the kink's translation separates from the other modes |
 | `instanton_symmetric` | 1 when {math}`\beta|\Delta| < 0.1` |
+| `instanton_beta_asymmetry` | {math}`\beta|\Delta|` |
 
 The propagator ratio measures {math}`\Delta_0` when the two wells lie within
 a small fraction of {math}`k_B T` of each other. `instanton_symmetric = 0`
-flags a pair outside that window. The action and the path still hold there,
-but the splitting prefactor does not.
+flags a pair outside that window. The job still writes the path and the
+action, but no `tunnel_splitting_instanton`, and reports success: the flag
+says why. For such a pair, use the WKB estimate along a band.
 
 ## Checks
 
