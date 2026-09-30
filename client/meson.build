@@ -1005,7 +1005,7 @@ if py_embed
     endif
 endif
 
-if get_option('with_mpi')
+if get_option('with_mpi').enabled()
     # library() in the MPIPot subdir snapshots _deps. mpi has to be on
     # that list first or libmpipot is linked without libmpi.
     mpi_dep = dependency('mpi')

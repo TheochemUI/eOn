@@ -90,7 +90,7 @@ The MPI communicator runs the server and the clients as one MPI job. The
 number of clients, and so the number of jobs in flight, comes from the MPI
 launch.
 
-Build the client with `-Dwith_mpi=true`; the resulting `eonclient` only runs
+Build the client with `-Dwith_mpi=enabled`; the resulting `eonclient` only runs
 under MPI. Two environment variables set the layout. `EON_NUMBER_OF_CLIENTS`
 is how many ranks become clients, and `EON_SERVER_PATH` is a Python script
 that starts the server. Launch the clients, not the server: one extra rank

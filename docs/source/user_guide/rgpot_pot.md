@@ -125,7 +125,7 @@ meson compile -C bbdir
 The flag configures the wrap. A `pkg-config` rgpot must already be an MPI
 build. If it is not, `ranks_per_image` greater than 0 raises.
 
-eOn's `-Dwith_mpi` option builds the client/server program. Calculator
+eOn's `-Dwith_mpi=enabled` option builds the client/server program. Calculator
 groups are this page's launch, `mpirun -np N eonclient`, with rgpot built
 `-Drgpot:with_mpi=enabled`.
 
