@@ -663,6 +663,14 @@ struct thermostat_options_t {
   double nose_mass{1.0};
   double langevin_friction_input{0.01};
   double langevin_friction{0.0}; // computed: input * timeUnit
+  long path_beads{8};
+  std::string path_springs{"trotter"};
+  double path_eco_omega_max{0.0};
+  std::string path_gle_file;
+  double path_pile_tau_input{100.0}; // fs
+  double path_pile_tau{0.0};         // input / timeUnit
+  double path_pile_scale{1.0};
+  std::uint64_t path_seed{1};
 };
 
 // [Replica Exchange] //
@@ -825,6 +833,9 @@ struct instanton_options_t {
   bool bead_ladder{false};
   // Mode rate: the rate uses a Hessian on every stride-th bead.
   std::string hessian_final{"recomputed"};
+  // "trotter" or "eco". Economised springs are refused: the instanton
+  // is a Trotter discretisation.
+  std::string springs{"trotter"};
 };
 
 // [OH_TST] //

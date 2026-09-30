@@ -174,6 +174,18 @@ json to_json(const Parameters &p) {
       {"nose_mass", ParametersLoadAccess::thermostat_options(p).nose_mass},
       {"langevin_friction",
        ParametersLoadAccess::thermostat_options(p).langevin_friction_input},
+      {"path_beads", ParametersLoadAccess::thermostat_options(p).path_beads},
+      {"path_springs",
+       ParametersLoadAccess::thermostat_options(p).path_springs},
+      {"path_eco_omega_max",
+       ParametersLoadAccess::thermostat_options(p).path_eco_omega_max},
+      {"path_gle_file",
+       ParametersLoadAccess::thermostat_options(p).path_gle_file},
+      {"path_pile_tau",
+       ParametersLoadAccess::thermostat_options(p).path_pile_tau_input},
+      {"path_pile_scale",
+       ParametersLoadAccess::thermostat_options(p).path_pile_scale},
+      {"path_seed", ParametersLoadAccess::thermostat_options(p).path_seed},
   };
 
   // [Nudged Elastic Band]
@@ -305,6 +317,7 @@ json to_json(const Parameters &p) {
         {"energy_shift", o.energy_shift},
         {"bead_ladder", o.bead_ladder},
         {"hessian_final", o.hessian_final},
+        {"springs", o.springs},
     };
   }
 
@@ -507,6 +520,20 @@ void from_json(const json &j, Parameters &p) {
     JSON_OPT(
         s, "langevin_friction",
         ParametersLoadAccess::thermostat_options(p).langevin_friction_input);
+    JSON_OPT(s, "path_beads",
+             ParametersLoadAccess::thermostat_options(p).path_beads);
+    JSON_OPT(s, "path_springs",
+             ParametersLoadAccess::thermostat_options(p).path_springs);
+    JSON_OPT(s, "path_eco_omega_max",
+             ParametersLoadAccess::thermostat_options(p).path_eco_omega_max);
+    JSON_OPT(s, "path_gle_file",
+             ParametersLoadAccess::thermostat_options(p).path_gle_file);
+    JSON_OPT(s, "path_pile_tau",
+             ParametersLoadAccess::thermostat_options(p).path_pile_tau_input);
+    JSON_OPT(s, "path_pile_scale",
+             ParametersLoadAccess::thermostat_options(p).path_pile_scale);
+    JSON_OPT(s, "path_seed",
+             ParametersLoadAccess::thermostat_options(p).path_seed);
   }
 
   // [Nudged Elastic Band]

@@ -94,6 +94,9 @@ force_tolerance = 1e-3
 hessian_stride = 4
 ```
 
+`springs = eco` is refused. The instanton is a Trotter discretisation of
+the ring.
+
 `beta_hbar_omega` sets the imaginary time in units of {math}`1/\omega` of
 the stiffer minimum along the line between them. It must be long enough for
 the kink to relax into both wells. `results.dat` reports

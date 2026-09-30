@@ -2613,6 +2613,13 @@ class InstantonConfig(BaseModel):
             "Mode rate: recomputed takes a Hessian on every stride-th bead."
         ),
     )
+    springs: Literal["trotter", "eco"] = Field(
+        default="trotter",
+        description=(
+            "Ring-polymer springs. eco is refused: the instanton uses"
+            " Trotter springs."
+        ),
+    )
 
 
 class DynamicsConfig(BaseModel):
@@ -2625,7 +2632,9 @@ class DynamicsConfig(BaseModel):
         default=1000.0,
         description="Total MD time, in femtoseconds.",
     )
-    thermostat: Literal["none", "andersen", "langevin", "nose_hoover"] = Field(
+    thermostat: Literal[
+        "none", "andersen", "langevin", "nose_hoover", "pile", "piglet"
+    ] = Field(
         default="none", description="Thermostat to use for the dynamics simulation."
     )
     """
@@ -2634,7 +2643,52 @@ class DynamicsConfig(BaseModel):
     - ``andersen``: Andersen thermostat with the Verlet algorithm.
     - ``langevin``: Langevin thermostat with the Verlet algorithm.
     - ``nose_hoover``: Nosé-Hoover thermostat with the Verlet algorithm.
+    - ``pile``: path-integral Langevin equation on the ring-polymer normal modes.
+    - ``piglet``: normal-mode GLE on the internal modes, Langevin on the centroid.
     """
+    path_beads: int = Field(
+        default=8,
+        ge=1,
+        description="Beads in a pile or piglet trajectory.",
+    )
+    path_springs: Literal["trotter", "eco"] = Field(
+        default="trotter",
+        description=(
+            "Trotter ring-polymer springs, or economised springs."
+            " eco is refused with piglet."
+        ),
+    )
+    path_eco_omega_max: float = Field(
+        default=0.0,
+        ge=0.0,
+        description=(
+            "Highest physical frequency, in internal frequency units,"
+            " reproduced by economised springs."
+        ),
+    )
+    path_gle_file: str = Field(
+        default="",
+        description=(
+            "Normal-mode GLE matrices for piglet. The file starts with"
+            " the mode count and the matrix dimension, then each mode's"
+            " drift matrix and covariance."
+        ),
+    )
+    path_pile_tau: float = Field(
+        default=100.0,
+        gt=0.0,
+        description="Centroid Langevin damping time, in femtoseconds.",
+    )
+    path_pile_scale: float = Field(
+        default=1.0,
+        gt=0.0,
+        description="Scales the critical damping of the internal PILE modes.",
+    )
+    path_seed: int = Field(
+        default=1,
+        ge=0,
+        description="Seed for the path-integral random numbers.",
+    )
     andersen_collision_period: float = Field(
         default=100.0,
         description="The collision period (in fs) for the Andersen thermostat.",

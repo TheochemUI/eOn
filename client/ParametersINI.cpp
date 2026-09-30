@@ -21,6 +21,7 @@
 
 #include <cerrno>
 #include <cmath>
+#include <cstdint>
 #include <ctime>
 #include <sstream>
 #include <stdexcept>
@@ -1418,6 +1419,32 @@ int load_ini(INIReader &ini, Parameters &params) {
   ParametersLoadAccess::thermostat_options(params).langevin_friction =
       ParametersLoadAccess::thermostat_options(params).langevin_friction_input *
       ParametersLoadAccess::constants(params).timeUnit;
+  {
+    auto &th = ParametersLoadAccess::thermostat_options(params);
+    th.path_beads = ini.GetInteger("Dynamics", "path_beads", th.path_beads);
+    th.path_springs =
+        toLowerCase(ini.Get("Dynamics", "path_springs", th.path_springs));
+    th.path_eco_omega_max =
+        ini.GetReal("Dynamics", "path_eco_omega_max", th.path_eco_omega_max);
+    th.path_gle_file = ini.Get("Dynamics", "path_gle_file", th.path_gle_file);
+    th.path_pile_tau_input =
+        ini.GetReal("Dynamics", "path_pile_tau", th.path_pile_tau_input);
+    const double timeUnit = ParametersLoadAccess::constants(params).timeUnit;
+    th.path_pile_tau = timeUnit > 0.0 ? th.path_pile_tau_input / timeUnit : 0.0;
+    th.path_pile_scale =
+        ini.GetReal("Dynamics", "path_pile_scale", th.path_pile_scale);
+    const long seed = ini.GetInteger("Dynamics", "path_seed",
+                                     static_cast<long>(th.path_seed));
+    if (seed < 0) {
+      throw std::invalid_argument("[Dynamics] path_seed must be non-negative");
+    }
+    th.path_seed = static_cast<std::uint64_t>(seed);
+    if (th.path_springs != "trotter" && th.path_springs != "eco") {
+      throw std::invalid_argument(
+          "[Dynamics] path_springs must be trotter or eco, not " +
+          th.path_springs);
+    }
+  }
 
   // [Parallel Replica]
 
@@ -1916,6 +1943,11 @@ int load_ini(INIReader &ini, Parameters &params) {
     o.energy_shift = ini.GetReal("Instanton", "energy_shift", o.energy_shift);
     o.bead_ladder = ini.GetBoolean("Instanton", "bead_ladder", o.bead_ladder);
     o.hessian_final = ini.Get("Instanton", "hessian_final", o.hessian_final);
+    o.springs = toLowerCase(ini.Get("Instanton", "springs", o.springs));
+    if (o.springs != "trotter" && o.springs != "eco") {
+      throw std::invalid_argument(
+          "[Instanton] springs must be trotter or eco, not " + o.springs);
+    }
     if (o.mode != "splitting" && o.mode != "rate") {
       throw std::invalid_argument("[Instanton] mode must be splitting or rate, "
                                   "not " +

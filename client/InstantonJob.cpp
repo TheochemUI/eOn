@@ -15,6 +15,7 @@
 #include "eon/Hessian.h"
 #include "eon/JobResult.h"
 #include "eon/Matter.h"
+#include "eon/PathIntegral.h"
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 #include "eon/Tunneling.h"
@@ -621,6 +622,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
 
 std::vector<std::string> InstantonJob::run(void) {
   const auto &o = params.instanton_options();
+  pathintegral::requireTrotterSprings(o.springs, "instanton");
   std::vector<std::string> returnFiles;
   const std::string resultsFile = "results.dat";
   const std::string pathFile = "instanton.con";

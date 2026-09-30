@@ -11,6 +11,8 @@
 */
 #include "eon/Dynamics.h"
 #include "eon/EonLogger.h"
+#include "eon/PathIntegral.h"
+#include "eon/Tunneling.h"
 
 #include <cmath>
 #include <stdexcept>
@@ -21,6 +23,8 @@ const char Dynamics::ANDERSEN[] = "andersen";
 const char Dynamics::NOSE_HOOVER[] = "nose_hoover";
 const char Dynamics::LANGEVIN[] = "langevin";
 const char Dynamics::NONE[] = "none";
+const char Dynamics::PILE[] = "pile";
+const char Dynamics::PIGLET[] = "piglet";
 
 Dynamics::Dynamics(Matter *matter_in, const DynamicsConfig &config)
     : matter{matter_in},
@@ -60,6 +64,11 @@ void Dynamics::oneStep(int stepNumber) {
     langevinVerlet();
   } else if (m_config.thermostat_kind == NONE) {
     velocityVerlet();
+  } else if (m_config.thermostat_kind == PILE ||
+             m_config.thermostat_kind == PIGLET) {
+    throw std::invalid_argument(
+        "path-integral dynamics is a ring-polymer trajectory, not a "
+        "velocity Verlet step");
   }
 
   if (stepNumber != -1) {
@@ -92,7 +101,68 @@ void Dynamics::velocityVerlet() {
   matter->setVelocities(velocities);
 }
 
+void Dynamics::runPathIntegral() {
+  auto pot = matter->getPotential();
+  if (!pot) {
+    throw std::invalid_argument("path-integral dynamics has no potential");
+  }
+  const long atoms = matter->numberOfAtoms();
+  std::vector<double> masses(static_cast<size_t>(atoms));
+  std::vector<int> numbers(static_cast<size_t>(atoms));
+  std::vector<char> free(static_cast<size_t>(3 * atoms), 1);
+  const VectorXi z = matter->getAtomicNrs();
+  for (long i = 0; i < atoms; ++i) {
+    masses[static_cast<size_t>(i)] = matter->getMass(i);
+    numbers[static_cast<size_t>(i)] = z[i];
+    for (int axis = 0; axis < 3; ++axis) {
+      if (matter->getFixed(i, axis)) {
+        free[static_cast<size_t>(3 * i + axis)] = 0;
+      }
+    }
+  }
+  pathintegral::Options opt;
+  opt.beads = m_config.path_beads;
+  opt.temperature = temperature;
+  opt.kB = kB;
+  opt.hbar = tunneling::kHbar;
+  opt.dt = dt;
+  opt.springs = m_config.path_springs == "eco" ? pathintegral::Springs::Eco
+                                               : pathintegral::Springs::Trotter;
+  opt.thermostat = m_config.thermostat_kind == PIGLET
+                       ? pathintegral::Thermostat::Piglet
+                       : pathintegral::Thermostat::Pile;
+  opt.pileTau = m_config.path_pile_tau;
+  opt.pileScale = m_config.path_pile_scale;
+  opt.ecoOmegaMax = m_config.path_eco_omega_max;
+  opt.gleFile = m_config.path_gle_file;
+  opt.seed = m_config.path_seed;
+  pathintegral::RingPolymer ring(atoms, masses, numbers, free, opt);
+  const AtomMatrix pos = matter->getPositions();
+  ring.setAllBeads(pos.data());
+  const Matrix3d box =
+      matter->getPeriodic() ? matter->getCell() : Matrix3d::Zero().eval();
+  for (long step = 0; step < m_config.steps; ++step) {
+    ring.step(*pot, box.data(), false);
+  }
+  const VectorXd centroid = ring.centroid();
+  const VectorXd velocity = ring.centroidVelocity();
+  AtomMatrix out = pos;
+  AtomMatrix vel = matter->getVelocities();
+  for (long i = 0; i < atoms; ++i) {
+    for (int axis = 0; axis < 3; ++axis) {
+      out(i, axis) = centroid[3 * i + axis];
+      vel(i, axis) = velocity[3 * i + axis];
+    }
+  }
+  matter->setPositions(out);
+  matter->setVelocities(vel);
+}
+
 void Dynamics::run() {
+  if (m_config.thermostat_kind == PILE || m_config.thermostat_kind == PIGLET) {
+    runPathIntegral();
+    return;
+  }
   double sumT = 0.0, sumT2 = 0.0;
 
   setThermalVelocity();

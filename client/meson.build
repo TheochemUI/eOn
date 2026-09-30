@@ -776,6 +776,7 @@ eonclib_sources = [
     # MatrixHelpers.hpp is header-only under include/eon/ (via -I include).
     'Dimer.cpp',
     'Dynamics.cpp',
+    'PathIntegral.cpp',
     'GlobalOptimizationJob.cpp',
     'BiasedGradientSquaredDescent.cpp',
     'SafeHyperJob.cpp',
@@ -1616,6 +1617,7 @@ if get_option('with_tests')
     )
     test_array = [  #
         ['test_impldim', 'ImpDimerTest.cpp', 'saddle_search'],
+        ['test_path_integral', 'PathIntegralTest.cpp', '', 300],
         ['strparse_run', 'StringHelpersTest.cpp', ''],
         ['test_matter', 'MatterTest.cpp', 'neb_morse'],
         # The cubic rate at 600 beads, and its half-ring comparison, run
