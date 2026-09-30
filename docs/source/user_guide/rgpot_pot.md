@@ -235,12 +235,15 @@ Launch it with the same `eonclient` or `mpirun` line as the point job.
 
 ### A 7-image nudged elastic band (NEB)
 
-`images = 7` asks for 7 intermediate images. Each band update evaluates
-those 7 images. The reactant and product are separate force calls, and
-those calls run on group 0.
+`images = 7` asks for 7 intermediate images. A band update evaluates
+each image whose positions changed.
 
-Seven groups of 4 ranks need 28 ranks. Force `j` in the batch goes to
-group `j` modulo 7, so each image keeps one CPMD session.
+The reactant and the product are one batch at the start. The reactant
+runs on group 0. The product runs on group 1.
+
+Seven groups of 4 ranks need 28 ranks. Intermediate image 1 runs on
+group 0, and image 7 runs on group 6. An update that skips an image
+leaves the others on those groups.
 
 The run reads `reactant.con` and `product.con`.
 
