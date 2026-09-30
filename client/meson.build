@@ -1857,6 +1857,44 @@ if get_option('with_tests')
             workdir: meson.project_source_root() +
                      '/client/unit_tests/data/systems/rgpot_nwchem_test',
         )
+        _rgpot_mpirun = find_program('mpirun', 'mpiexec', required: false)
+        _rgpot_bash = find_program('bash', required: false)
+        if _rgpot_mpirun.found() and _rgpot_bash.found()
+            rgpot_mpi_exit = executable(
+                'rgpot_mpi_exit',
+                sources: ['unit_tests/rgpot_mpi_exit.cpp'],
+                dependencies: test_deps,
+                include_directories: _incdirs,
+                cpp_args: test_args,
+                link_args: _linkargs,
+                link_with: test_link,
+                build_rpath: ':'.join(_runtime_rpath),
+            )
+            _rgpot_mpi_script = (
+                meson.project_source_root()
+                / 'client'
+                / 'unit_tests'
+                / 'run_rgpot_mpi.sh'
+            )
+            test(
+                'test_rgpot_mpi_fault',
+                _rgpot_bash,
+                args: [_rgpot_mpi_script, rgpot_mpi_exit.full_path(), 'fault'],
+                timeout: 90,
+                suite: ['eon', 'rgpot'],
+                is_parallel: false,
+                env: _rgpot_test_env,
+            )
+            test(
+                'test_rgpot_mpi_params',
+                _rgpot_bash,
+                args: [_rgpot_mpi_script, rgpot_mpi_exit.full_path(), 'params'],
+                timeout: 90,
+                suite: ['eon', 'rgpot'],
+                is_parallel: false,
+                env: _rgpot_test_env,
+            )
+        endif
     endif
 
     # Benchmarks (not in default test suite -- run via: meson test --benchmark)
