@@ -253,7 +253,7 @@ Instanton valleyInstanton(const CurvedValley &pes, long beads,
   InstantonOptions opt;
   opt.beads = beads;
   opt.betaHbarOmega = betaHbarOmega;
-  opt.forceTolerance = 1e-9;
+  opt.forceTolerance = 1e-7;
   opt.maxIterations = 20000;
   Instanton inst =
       optimizeInstanton(a, b, betaHbarOmega / omega, {}, pes.batch(), opt);

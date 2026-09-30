@@ -2712,9 +2712,9 @@ job = instanton
 potential = lj
 
 [Instanton]
-beads = 32
-beta_hbar_omega = 12
-hessian_stride = 4
+beads = 64
+beta_hbar_omega = 30
+hessian_stride = 8
 max_iterations = 4000
 force_tolerance = 1e-3
 )");
@@ -2723,7 +2723,7 @@ force_tolerance = 1e-3
   REQUIRE(std::filesystem::exists(workdir / "instanton.con"));
   const auto frames =
       readcon::read_all_frames((workdir / "instanton.con").string());
-  REQUIRE(frames.size() == 33);
+  REQUIRE(frames.size() == 65);
   const double action = std::stod(results.at("instanton_action"));
   const double delta0 = std::stod(results.at("tunnel_splitting_instanton"));
   REQUIRE(std::isfinite(action));

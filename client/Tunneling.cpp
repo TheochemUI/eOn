@@ -410,7 +410,13 @@ Instanton optimizeInstanton(const VectorXd &start, const VectorXd &end,
       }
       next = evaluateAction(trial, start, end, vEnds[0], vEnds[1], dtau,
                             potential);
-      if (next.action <= cur.action + 1e-4 * step * slope) {
+      // Near the minimum the action changes by less than its round-off;
+      // there a step that shrinks the gradient is progress too.
+      const bool armijo = next.action <= cur.action + 1e-4 * step * slope;
+      const bool flat = std::abs(next.action - cur.action) <=
+                        1e-13 * std::max(1.0, std::abs(cur.action));
+      if (armijo ||
+          (flat && largestBeadNorm(next.grad) < largestBeadNorm(cur.grad))) {
         accepted = true;
         break;
       }
