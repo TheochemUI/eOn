@@ -1431,6 +1431,22 @@ configure_file(
 
 # --------------------- Library
 
+# install_rpath is the whole installed run path. Meson does not add libdir
+# beside it. The client is in bindir and libeonclib is in libdir. Potential
+# modules are installed into that same directory, so a library finds them
+# at $ORIGIN.
+_libdir = get_option('libdir')
+_bindir = get_option('bindir')
+if not fs.is_absolute(_libdir)
+    _libdir = get_option('prefix') / _libdir
+endif
+if not fs.is_absolute(_bindir)
+    _bindir = get_option('prefix') / _bindir
+endif
+_bin_to_lib = '$ORIGIN/' + fs.relative_to(_libdir, _bindir)
+_lib_install_rpath = ':'.join(['$ORIGIN'] + _runtime_rpath)
+_exe_install_rpath = ':'.join([_bin_to_lib] + _runtime_rpath)
+
 eclib = library(
     'eonclib',
     sources: eonclib_sources + readcon_order_srcs,
@@ -1440,7 +1456,7 @@ eclib = library(
     cpp_args: _args,
     link_args: _linkargs,
     build_rpath: ':'.join(_runtime_rpath),
-    install_rpath: ':'.join(_runtime_rpath),
+    install_rpath: _lib_install_rpath,
     install: true,
 )
 
@@ -1462,7 +1478,7 @@ if get_option('with_metatomic')
         link_with: [eclib, eoncbase],
         include_directories: _incdirs,
         build_rpath: ':'.join(_runtime_rpath),
-        install_rpath: ':'.join(_runtime_rpath),
+        install_rpath: _lib_install_rpath,
         install: true,
         gnu_symbol_visibility: 'default',
     )
@@ -1529,7 +1545,7 @@ ec = executable(
     cpp_args: [_args, '-w'],
     link_args: _linkargs,
     build_rpath: ':'.join(_runtime_rpath),
-    install_rpath: ':'.join(_runtime_rpath),
+    install_rpath: _exe_install_rpath,
     pie: false,
     # Standalone pyeonclient wheels only need the extension + shared libs.
     install: get_option('install_eon_server'),
