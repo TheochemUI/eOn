@@ -21,6 +21,8 @@
 
 #include <Eigen/QR>
 #include <Eigen/SVD>
+
+#include <array>
 #include <cmath>
 #include <filesystem>
 #include <functional>
@@ -36,6 +38,11 @@ namespace {
 
 /// One unit of imaginary time, sqrt(amu Angstrom^2 / eV), in fs.
 constexpr double kTimeUnitFs = 10.180505717871193;
+
+/// ||H r|| / (||H||_F ||r||) at or below this is a rotational zero mode.
+/// A real curvature sits near the scale of ||H||; a finite-difference null
+/// vector does not.
+constexpr double kRotationZero = 1e-2;
 
 /// Mass-weighted coordinates over the free atoms, measured from a reference
 /// structure under its minimum image.
@@ -85,16 +92,11 @@ public:
     }
     m.setPositions(r);
   }
-  /// With no atom fixed, an orthonormal basis of the rigid motions of m in
-  /// these coordinates: three translations, and for a cluster three
-  /// rotations about the centre of mass. Empty when an atom is fixed.
-  MatrixXd rigidBasis(const Matter &m) const {
-    if (static_cast<long>(free_.size()) != m.numberOfAtoms()) {
-      return {};
-    }
+  /// Three translations, then three rotations about the centre of mass, in
+  /// these coordinates. A rotation column is zero for a linear molecule.
+  MatrixXd rigidGenerators(const Matter &m) const {
     const long n = dimension();
-    const bool cluster = !m.getPeriodic();
-    MatrixXd b = MatrixXd::Zero(n, cluster ? 6 : 3);
+    MatrixXd b = MatrixXd::Zero(n, 6);
     const AtomMatrix r = m.getPositions();
     Eigen::RowVector3d com = Eigen::RowVector3d::Zero();
     double total = 0.0;
@@ -109,16 +111,61 @@ public:
       const Eigen::Vector3d x = (r.row(free_[k]) - com).transpose();
       for (int c = 0; c < 3; ++c) {
         b(i + c, c) = sqrtMass_[k];
-        if (cluster) {
-          Eigen::Vector3d e = Eigen::Vector3d::Zero();
-          e(c) = 1.0;
-          b.block(i, 3 + c, 3, 1) = sqrtMass_[k] * e.cross(x);
-        }
+        Eigen::Vector3d e = Eigen::Vector3d::Zero();
+        e(c) = 1.0;
+        b.block(i, 3 + c, 3, 1) = sqrtMass_[k] * e.cross(x);
       }
     }
-    // Rank-revealing: a linear molecule has two rotations, not three.
+    return b;
+  }
+  /// Which of the three rotation generators are zero modes of hess.
+  /// ||H r|| small against ||H||, not whether the cell is periodic: a
+  /// cluster in a box is periodic and still free to rotate.
+  void markRotationZeroModes(const MatrixXd &hess, const MatrixXd &generators,
+                             std::array<bool, 3> &keep,
+                             std::array<double, 3> &residual) const {
+    const MatrixXd h = 0.5 * (hess + hess.transpose());
+    const double hn = h.norm();
+    for (int c = 0; c < 3; ++c) {
+      const VectorXd r = generators.col(3 + c);
+      const double rn = r.norm();
+      if (!(rn > 0.0)) {
+        keep[static_cast<size_t>(c)] = false;
+        residual[static_cast<size_t>(c)] = 0.0;
+        continue;
+      }
+      const double rel = hn > 0.0 ? (h * r).norm() / (hn * rn) : 0.0;
+      residual[static_cast<size_t>(c)] = rel;
+      keep[static_cast<size_t>(c)] = rel <= kRotationZero;
+    }
+  }
+  /// With no atom fixed, an orthonormal basis of the rigid motions of m:
+  /// three translations, plus each rotation `rotations` marks as a zero
+  /// mode. Empty when an atom is fixed. Rank-revealing, so a linear
+  /// molecule keeps two rotations.
+  MatrixXd rigidBasis(const Matter &m,
+                      const std::array<bool, 3> &rotations) const {
+    if (static_cast<long>(free_.size()) != m.numberOfAtoms()) {
+      return {};
+    }
+    const MatrixXd g = rigidGenerators(m);
+    const long n = g.rows();
+    std::vector<int> cols{0, 1, 2};
+    for (int c = 0; c < 3; ++c) {
+      if (rotations[static_cast<size_t>(c)]) {
+        cols.push_back(3 + c);
+      }
+    }
+    MatrixXd b(n, static_cast<long>(cols.size()));
+    for (size_t k = 0; k < cols.size(); ++k) {
+      b.col(static_cast<long>(k)) = g.col(cols[k]);
+    }
     const Eigen::ColPivHouseholderQR<MatrixXd> qr(b);
-    return qr.householderQ() * MatrixXd::Identity(n, qr.rank());
+    const long rank = qr.rank();
+    if (rank <= 0) {
+      return {};
+    }
+    return qr.householderQ() * MatrixXd::Identity(n, rank);
   }
   VectorXd gradient(const AtomMatrix &forces) const {
     VectorXd g(dimension());
@@ -183,7 +230,9 @@ std::vector<std::string>
 runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         const Matter &reactant, const MassWeighted &mw,
         const tunneling::BatchPotential &evaluate,
-        const std::function<MatrixXd(const VectorXd &)> &hessianAt) {
+        const std::function<MatrixXd(const VectorXd &)> &hessianAt,
+        const std::array<bool, 3> &rotationZero,
+        const std::array<double, 3> &rotationResidual) {
   const auto &o = params.instanton_options();
   const std::string resultsFile = "results.dat";
   const std::string pathFile = "instanton.con";
@@ -209,11 +258,13 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   const MatrixXd hReactant = hessianAt(VectorXd::Zero(n));
   const MatrixXd hSaddle = hessianAt(qSaddle);
   const double tc = tunneling::crossoverTemperature(hSaddle);
-  const long rigidModes = mw.rigidBasis(reactant).cols();
+  const long rigidModes = mw.rigidBasis(reactant, rotationZero).cols();
   const double beta = 1.0 / (tunneling::kBoltzmann * o.temperature);
   EONC_LOG_INFO("[Instanton] rate: {} beads at {:.4g} K, crossover {:.4g} K, "
-                "barrier {:.6f} eV, {} degrees of freedom",
-                o.beads, o.temperature, tc, vSaddle - vReactant, n);
+                "barrier {:.6f} eV, {} degrees of freedom, {} rigid modes",
+                o.beads, o.temperature, tc, vSaddle - vReactant, n, rigidModes);
+  EONC_LOG_INFO("[Instanton] rotation residuals {:.3g}, {:.3g}, {:.3g}",
+                rotationResidual[0], rotationResidual[1], rotationResidual[2]);
 
   std::vector<std::pair<std::string, double>> extras{
       {"instanton_temperature_K", o.temperature},
@@ -233,10 +284,12 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   };
 
   if (!(o.temperature < tc)) {
-    // Above T_c the ring collapses onto the saddle and the rate is the
-    // classical one with a quantum prefactor; no instanton exists.
+    // The ring has collapsed onto the saddle. Above the crossover the
+    // rate is the parabolic barrier correction, which this job does not
+    // evaluate.
     EONC_LOG_ERROR("[Instanton] {:.4g} K is at or above the crossover "
-                   "temperature {:.4g} K",
+                   "temperature {:.4g} K; the parabolic barrier correction "
+                   "applies and this job does not evaluate it",
                    o.temperature, tc);
     write(RunStatus::FAIL_POTENTIAL_FAILED);
     return returnFiles;
@@ -402,6 +455,11 @@ std::vector<std::string> InstantonJob::run(void) {
     }
   };
 
+  // The first call is the reactant. Its Hessian decides which rotations
+  // are zero modes; later beads reuse that decision.
+  std::array<bool, 3> rotationZero{{false, false, false}};
+  std::array<double, 3> rotationResidual{{0.0, 0.0, 0.0}};
+  bool rotationsKnown = false;
   auto hessianAt = [&](const VectorXd &q) {
     Matter m(*reactant);
     mw.place(q, m);
@@ -411,9 +469,14 @@ std::vector<std::string> InstantonJob::run(void) {
     if (out.rows() != n) {
       throw std::runtime_error("instanton: a bead Hessian failed");
     }
+    if (!rotationsKnown) {
+      mw.markRotationZeroModes(out, mw.rigidGenerators(m), rotationZero,
+                               rotationResidual);
+      rotationsKnown = true;
+    }
     // A finite-difference Hessian of a free structure has small nonzero
     // rigid eigenvalues of either sign; project them to zero.
-    const MatrixXd rigid = mw.rigidBasis(m);
+    const MatrixXd rigid = mw.rigidBasis(m, rotationZero);
     if (rigid.cols() > 0) {
       const MatrixXd p = MatrixXd::Identity(n, n) - rigid * rigid.transpose();
       out = p * out * p;
@@ -422,7 +485,8 @@ std::vector<std::string> InstantonJob::run(void) {
   };
 
   if (o.mode == "rate") {
-    return runRate(params, pot, *reactant, mw, evaluate, hessianAt);
+    return runRate(params, pot, *reactant, mw, evaluate, hessianAt,
+                   rotationZero, rotationResidual);
   }
 
   auto product = std::make_unique<Matter>(pot, params);

@@ -2902,4 +2902,34 @@ force_tolerance = 1e-3
   REQUIRE(results.count("tunnel_splitting_instanton") == 0);
 }
 
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "InstantonJob rate through the LJ13 saddle beats HTST",
+                 "[job][instanton][integration]") {
+  if (!copyTestData("neb_lj13")) {
+    SKIP("neb_lj13 test system not found");
+  }
+  // saddle.con is the climbing image of this pair (barrier 1.0017 eV).
+  // 198 K is 0.6 of the 330 K crossover. The con file carries a 101 A
+  // box, so the cluster is periodic and its rotations are zero modes
+  // only by the reactant Hessian.
+  writeConfig(R"(
+[Main]
+job = instanton
+
+[Potential]
+potential = lj
+
+[Instanton]
+mode = rate
+temperature = 198
+beads = 16
+max_iterations = 3000
+)");
+  auto results = runJob();
+  REQUIRE(results.at("termination_reason") == "0");
+  REQUIRE(std::stod(results.at("instanton_negative_modes")) == 1.0);
+  REQUIRE(std::stod(results.at("rate_instanton_log")) >
+          std::stod(results.at("rate_htst_log")));
+}
+
 } /* namespace tests */
