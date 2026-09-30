@@ -1495,6 +1495,180 @@ bb_boost_atomlist = all
   std::filesystem::current_path(oldDir);
 }
 
+struct ReplicaTransitionRun {
+  AtomMatrix positions;
+  long transitionStep{0};
+};
+
+// Mirrors ParallelReplicaJob::runFromMatter with refine_transition off and
+// zero post_transition_time: the seeded dephase loop, the production steps
+// with one state check per state_check_interval, and the trajectory copy at
+// the detected transition. The copy either keeps the bond boost, as the job
+// does, or drops it through plain copy assignment.
+static ReplicaTransitionRun replicaTransitionRun(const Parameters &spec,
+                                                 bool keepBiasAfterTransition) {
+  eonc::rng::random(spec.main_options().randomSeed);
+  auto pot = eonc::helpers::makePotential(PotType::LJ, spec);
+  auto reactant = std::make_shared<Matter>(pot, spec);
+  reactant->con2matter(std::string("pos.con"));
+  reactant->relax();
+  // runFromMatter writes the reactant before copying, which wraps PBC.
+  (void)reactant->matter2con("reactant.con");
+
+  auto trajectory = std::make_shared<Matter>(pot, spec);
+  *trajectory = *reactant;
+  Dynamics dynamics(trajectory.get(), spec);
+  BondBoost bondBoost(trajectory.get(), spec);
+  bondBoost.initialize();
+  trajectory->setBiasPotential(&bondBoost);
+
+  const double dt = spec.dynamics_options().time_step;
+  {
+    Dynamics dephase(trajectory.get(), spec);
+    int dephaseSteps = static_cast<int>(
+        std::floor(spec.parallel_replica_options().dephase_time / dt + 0.5));
+    if (dephaseSteps < 1) {
+      dephaseSteps = 1;
+    }
+    const long maxLoops =
+        std::max(1L, spec.parallel_replica_options().dephase_loop_max);
+    Matter initial(pot, spec);
+    initial = *trajectory;
+    for (long loop = 0; loop < maxLoops; ++loop) {
+      trajectory->assignKeepingBias(initial);
+      dephase.setThermalVelocity();
+      for (int step = 1; step <= dephaseSteps; ++step) {
+        dephase.oneStep(step);
+      }
+      Matter minimized(pot, spec);
+      minimized = *trajectory;
+      minimized.relax();
+      if (minimized.compare(*reactant)) {
+        break;
+      }
+    }
+  }
+
+  int stateCheckInterval = static_cast<int>(std::floor(
+      spec.parallel_replica_options().state_check_interval / dt + 0.5));
+  if (stateCheckInterval < 1) {
+    stateCheckInterval = 1;
+  }
+  const long steps = spec.dynamics_options().steps;
+  ReplicaTransitionRun out;
+  Matter transitionStructure(pot, spec);
+  for (long step = 1; step <= steps; ++step) {
+    bondBoost.advance();
+    dynamics.oneStep();
+    (void)bondBoost.boost();
+    if (out.transitionStep != 0 ||
+        (step % stateCheckInterval != 0 && step != steps)) {
+      continue;
+    }
+    Matter minimized(pot, spec);
+    minimized = *trajectory;
+    minimized.relax();
+    if (!minimized.compare(*reactant)) {
+      out.transitionStep = step;
+      transitionStructure = *trajectory;
+      if (keepBiasAfterTransition) {
+        trajectory->assignKeepingBias(transitionStructure);
+      } else {
+        *trajectory = transitionStructure;
+      }
+    }
+  }
+  out.positions = trajectory->getPositionsCopy();
+  return out;
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "ParallelReplicaJob keeps bond-boost forces past a "
+                 "transition when stop_after_transition is false",
+                 "[job][parallel_replica][bond_boost]") {
+  EON_REQUIRE_TEST_DATA(".");
+  // Seed, temperature, and budget match the stop_after_transition budget
+  // test, which sees a transition on this LJ13 cluster within the run.
+  writeConfig(R"(
+[Main]
+job = parallel_replica
+temperature = 10000
+random_seed = 42
+
+[Potential]
+potential = lj
+
+[Dynamics]
+time_step = 1.0
+time = 1000.0
+thermostat = andersen
+andersen_collision_steps = 10
+andersen_alpha = 1.0
+
+[Optimizer]
+opt_method = lbfgs
+converged_force = 0.001
+max_iterations = 200
+
+[Parallel Replica]
+dephase_time = 20.0
+dephase_loop_max = 2
+state_check_interval = 40.0
+refine_transition = false
+post_transition_time = 0.0
+stop_after_transition = false
+
+[Hyperdynamics]
+bias_potential = bond_boost
+bb_rmd_time = 2.0
+bb_dvmax = 0.4
+bb_boost_atomlist = all
+)");
+
+  std::filesystem::copy_file(workdir / "reactant.con", workdir / "pos.con",
+                             std::filesystem::copy_options::overwrite_existing);
+
+  auto oldDir = std::filesystem::current_path();
+  std::filesystem::current_path(workdir);
+  auto loaded = std::make_unique<Parameters>();
+  loaded->load("config.ini");
+  const Parameters spec = *loaded;
+  REQUIRE(spec.parallel_replica_options().auto_stop == false);
+  REQUIRE(spec.parallel_replica_options().refine_transition == false);
+  REQUIRE(spec.parallel_replica_options().corr_time == 0.0);
+  REQUIRE(spec.hyperdynamics_options().bias_potential ==
+          Hyperdynamics::BOND_BOOST);
+
+  const ReplicaTransitionRun kept = replicaTransitionRun(spec, true);
+  const ReplicaTransitionRun dropped = replicaTransitionRun(spec, false);
+  // Both mirrors share the trajectory up to the transition, so they detect
+  // it at the same step. Steps have to remain after it for the bias to act.
+  REQUIRE(kept.transitionStep > 0);
+  REQUIRE(kept.transitionStep < spec.dynamics_options().steps);
+  REQUIRE(dropped.transitionStep == kept.transitionStep);
+  REQUIRE((kept.positions - dropped.positions).norm() > 1e-4);
+
+  eonc::rng::random(spec.main_options().randomSeed);
+  auto pot = eonc::helpers::makePotential(PotType::LJ, spec);
+  auto matter = std::make_shared<Matter>(pot, spec);
+  matter->con2matter(std::string("pos.con"));
+  ParallelReplicaJob job(pot, spec);
+  auto result = job.runFromMatter(matter);
+
+  auto results = parseResultsDat("results.dat");
+  REQUIRE(results.count("transition_found") > 0);
+  REQUIRE(std::stoi(results["transition_found"]) == 1);
+  // The job follows the mirror that keeps the boost through the copy at the
+  // transition, and not the one that loses it.
+  REQUIRE(result->getPositions().isApprox(kept.positions, 1e-8));
+  REQUIRE_FALSE(result->getPositions().isApprox(dropped.positions, 1e-8));
+  // bondBoost is a stack local of runFromMatter; the returned trajectory
+  // must not point at it.
+  REQUIRE(result->getBiasPotential() == nullptr);
+
+  std::filesystem::current_path(oldDir);
+}
+
 TEST_CASE_METHOD(JobIntegrationFixture, "ReplicaExchangeJob runs on LJ cluster",
                  "[job][replica_exchange][integration]") {
   EON_REQUIRE_TEST_DATA(".");
