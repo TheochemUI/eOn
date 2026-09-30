@@ -13,6 +13,8 @@
 
 #include "Matter.h"
 
+#include <optional>
+
 namespace eonc {
 
 class ObjectiveFunction {
@@ -32,6 +34,10 @@ public:
   virtual VectorXd difference(const VectorXd &a, const VectorXd &b) = 0;
   // Allow the initial finite-difference curvature estimate used by L-BFGS.
   virtual bool supportsFiniteDifferenceCurvature() const { return true; }
+  // A curvature the objective already knows (eV / A^2, magnitude), so
+  // L-BFGS can seed H0 from it instead of spending a force call on the
+  // finite-difference probe. Empty when nothing is known.
+  virtual std::optional<double> knownCurvature() const { return std::nullopt; }
   // Packwood/Kermode pair preconditioner: MIC of one Cartesian pair.
   // Default leaves dr unchanged (no cell).
   virtual void minimumImage(Eigen::Ref<Eigen::Vector3d> /*dr*/) const {}

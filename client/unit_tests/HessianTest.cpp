@@ -663,4 +663,46 @@ TEST_CASE_METHOD(HessianScratch,
   }
 }
 
+TEST_CASE_METHOD(HessianScratch,
+                 "evaluateTogether batches the dirty systems and matches "
+                 "single evaluations",
+                 "[matter][batch]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto lj = eonc::helpers::makePotential(PotType::LJ, params);
+  auto batched = std::make_shared<WrappedLJ<true>>(lj, params);
+  Matter a(batched, params), b(batched, params), ref(lj, params);
+  a.con2matter(std::string("reactant.con"));
+  ref.con2matter(std::string("reactant.con"));
+  b = a;
+  AtomMatrix shifted = b.getPositions();
+  shifted(3, 0) += 0.05;
+  b.setPositions(shifted);
+  REQUIRE(a.needsForceUpdate());
+  REQUIRE(b.needsForceUpdate());
+  const size_t before = batched->forceCallCounter;
+  Matter *const both[] = {&a, &b};
+  eonc::evaluateTogether(*batched, both);
+  REQUIRE_FALSE(a.needsForceUpdate());
+  REQUIRE_FALSE(b.needsForceUpdate());
+  // One batch, two systems: the counter advances by the batch size.
+  REQUIRE(batched->forceCallCounter == before + 2);
+  REQUIRE_THAT(a.getPotentialEnergy(),
+               Catch::Matchers::WithinRel(ref.getPotentialEnergy(), 1e-12));
+  Matter refB(lj, params);
+  refB.con2matter(std::string("reactant.con"));
+  refB.setPositions(shifted);
+  REQUIRE_THAT(b.getPotentialEnergy(),
+               Catch::Matchers::WithinRel(refB.getPotentialEnergy(), 1e-12));
+  for (long i = 0; i < b.numberOfAtoms(); ++i) {
+    for (int c = 0; c < 3; ++c) {
+      REQUIRE_THAT(b.getForces()(i, c),
+                   Catch::Matchers::WithinAbs(refB.getForces()(i, c), 1e-10));
+    }
+  }
+  // A clean set costs nothing.
+  eonc::evaluateTogether(*batched, both);
+  REQUIRE(batched->forceCallCounter == before + 2);
+}
+
 } /* namespace tests */

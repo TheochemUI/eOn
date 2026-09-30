@@ -43,6 +43,15 @@ public:
                   const int *const *atomicNrs, double *const *forces,
                   double *energies, double *variances,
                   const double *const *boxes) override;
+  /// System j runs on group owners[j] mod G when owners is given (an
+  /// owner below zero falls back to j), so a NEB image keeps its group
+  /// across partial band updates.
+  void forceBatchOwned(long nSystems, long nAtoms,
+                       const double *const *positions,
+                       const int *const *atomicNrs, double *const *forces,
+                       double *energies, double *variances,
+                       const double *const *boxes,
+                       const long *owners) override;
   /// NWChem molecular SCF does not support PBC; CPMD may be periodic.
   [[nodiscard]] bool requiresIsolatedMoleculeLayout() const noexcept override {
     return backend_ == "nwchemc";
@@ -59,7 +68,8 @@ private:
                      double *U, const double *box);
   void computeBatch(long nSystems, long nAtoms, const double *const *positions,
                     const int *const *atomicNrs, double *const *forces,
-                    double *energies, const double *const *boxes);
+                    double *energies, const double *const *boxes,
+                    const std::int64_t *owners);
   void sendStop();
   void releaseWorkersAtExit();
 

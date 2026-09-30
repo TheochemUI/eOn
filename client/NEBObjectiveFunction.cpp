@@ -27,6 +27,10 @@ VectorXd NEBObjectiveFunction::getGradient(bool fdstep) {
 }
 
 double NEBObjectiveFunction::getEnergy() {
+  // The band update evaluates dirty images as one batch; summing image
+  // energies on a moved band would otherwise evaluate them one at a time.
+  if (neb->movedAfterForceCall)
+    neb->updateForces();
   double Energy{0};
   for (long i = 1; i <= neb->numImages; i++) {
     Energy += neb->path[i]->getPotentialEnergy();

@@ -20,6 +20,7 @@
 #include <array>
 #include <cstdint>
 #include <memory>
+#include <span>
 #include <string>
 #include <vector>
 
@@ -209,6 +210,12 @@ public:
   /// Mutable access to force storage for batched potential evaluation.
   /// Caller must also call setComputedPotential() after writing forces.
   double *forcesData();
+  /// Puts a known evaluation back after a position reset: the forces and
+  /// energy of a geometry this object held before, so no potential call
+  /// follows. Fixed-atom masking applies on read as for any evaluation.
+  void setEvaluation(const AtomMatrix &forces, double energy) {
+    restoreFileForces(forces, true, energy);
+  }
 
   /// Set energy/variance from external batched evaluation and mark forces
   /// as up-to-date (recomputePotential = false).
@@ -365,5 +372,11 @@ private:
   std::vector<readcon::ConFrame> movie_frames_;
   mutable double potentialEnergy;
 };
+
+/// Evaluates every system that needs a force update. With a potential
+/// that batches, the dirty systems go through forceBatch in one call, so
+/// calculator groups take them together; otherwise each computes on its
+/// own. Systems that are current are left alone.
+void evaluateTogether(Potential &pot, std::span<Matter *const> systems);
 
 } // namespace eonc

@@ -82,6 +82,10 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
   // climbingImage to a neighbor; band CI force is that neighbor.
   const long walked = neb.climbingImage;
   AtomMatrix savedPositions = neb.path[walked]->getPositions();
+  // The saved geometry is evaluated already; a restore puts its forces
+  // back instead of asking the potential again.
+  const AtomMatrix savedForces = neb.path[walked]->getForcesRaw();
+  const double savedEnergy = neb.path[walked]->getPotentialEnergy();
 
   double alignment = 0.0;
   int mmfResult = runDimer(neb, alignment);
@@ -120,6 +124,7 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
     const bool restore = cfg_.restore_unhelpful || mmfResult == -2;
     if (restore) {
       neb.path[walked]->setPositions(savedPositions);
+      neb.path[walked]->setEvaluation(savedForces, savedEnergy);
       neb.movedAfterForceCall = true;
       has_cached_mode_ = false;
       newForce = convForce;

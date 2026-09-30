@@ -179,8 +179,18 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
     }
   }
 
-  if (m_iteration == 0 && m_optConfig.opts.lbfgs.auto_scale &&
-      m_objf->supportsFiniteDifferenceCurvature()) {
+  const std::optional<double> known =
+      m_iteration == 0 && m_optConfig.opts.lbfgs.auto_scale
+          ? m_objf->knownCurvature()
+          : std::nullopt;
+  if (known && std::isfinite(*known) && *known > 0.0) {
+    H0 = 1.0 / *known;
+    if (m_optConfig.opts.lbfgs.max_inverse_curvature > 0.0) {
+      H0 = std::min(H0, m_optConfig.opts.lbfgs.max_inverse_curvature);
+    }
+    QUILL_LOG_DEBUG(m_log, "[LBFGS] H0={:.4e} (known curvature)", H0);
+  } else if (m_iteration == 0 && m_optConfig.opts.lbfgs.auto_scale &&
+             m_objf->supportsFiniteDifferenceCurvature()) {
     m_objf->setPositions(r + m_optConfig.finiteDifference *
                                  eonc::safemath::safe_normalized(a_f));
     Eigen::VectorXd dg = m_objf->getGradient(true) + a_f;
