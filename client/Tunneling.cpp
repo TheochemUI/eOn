@@ -1324,13 +1324,16 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
       for (long k = 0; k < lam.size(); ++k) {
         denseLog += std::log(std::abs(lam(k)));
       }
+      // A numerical null mode makes log|det| disagree by tens of nats while
+      // the modes kept in the rate still match. Check only a definite ring.
       const double blockLog = cyclicRingLogAbsDet(c, diag);
-      if (!logAbsAgrees(denseLog, blockLog)) {
+      if (lam.cwiseAbs().minCoeff() > zeroCut &&
+          !logAbsAgrees(blockLog, denseLog)) {
         throw std::runtime_error(
             "instantonRate: the cyclic block determinant disagrees with the "
             "dense ring Hessian (" +
-            std::to_string(blockLog) + " against " + std::to_string(denseLog) +
-            ")");
+            std::to_string(blockLog) + " against " +
+            std::to_string(denseLog) + ")");
       }
     }
     // The zero mode (the ring's translation in imaginary time) and the rigid

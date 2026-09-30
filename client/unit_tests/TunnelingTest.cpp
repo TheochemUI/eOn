@@ -467,7 +467,7 @@ MatrixXd toyBead(long j, long f, double shift) {
                 std::cos(0.23 * (b + 1) + 0.11 * j);
     }
   }
-  h = 0.5 * (h + h.transpose());
+  h = (0.5 * (h + h.transpose())).eval();
   h.diagonal().array() += shift;
   return h;
 }
