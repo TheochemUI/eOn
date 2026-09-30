@@ -83,6 +83,12 @@ public:
              double *U, double *variance, const double *box) override;
   void setFixedMask(long nAtoms, const double *isFixed) override;
 
+  [[nodiscard]] bool computesStress() const noexcept override {
+    return haveStress_;
+  }
+
+  [[nodiscard]] Matrix3d cauchyStress() const override { return stress_; }
+
 private:
   LAMMPSPot(const eonc::Parameters &p, eonc::ILammpsLoader &loader,
             bool isolate_worker);
@@ -110,6 +116,8 @@ private:
                      const double *box);
   void applySetforce(long N);
   bool realunits{false};
+  Matrix3d stress_{Matrix3d::Zero()};
+  bool haveStress_{false};
   std::vector<double> fixedMask_;
   long maskN_{0};
   // Covers fixedMask_ and, on the in-process paths, LAMMPSObj. The worker

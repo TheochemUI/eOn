@@ -106,6 +106,12 @@ public:
     return false;
   }
 
+  [[nodiscard]] bool computesStress() const noexcept override {
+    return haveStress_;
+  }
+
+  [[nodiscard]] Matrix3d cauchyStress() const override { return stress_; }
+
 private:
   enum class GFNMethod { GFNFF, GFN0xTB, GFN1xTB, GFN2xTB };
   xtb_TEnvironment env = nullptr;
@@ -122,4 +128,6 @@ private:
 
   size_t counter;
   bool initialized;
+  Matrix3d stress_{Matrix3d::Zero()};
+  bool haveStress_{false};
 };

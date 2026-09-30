@@ -231,6 +231,24 @@ void SocketNWChemPot::forceOnce(long N, const double *R, const int *atomicNrs,
     throw std::runtime_error("Atom count mismatch from NWChem");
   recv_exact(forces_ha_bohr.data(), forces_ha_bohr.size() * sizeof(double));
   recv_exact(virial_ha.data(), virial_ha.size() * sizeof(double));
+  // i-PI virial is in Hartree and is positive when the system pushes
+  // outward, so sigma = (1/V) dE/dε = -virial / V. The buffer is
+  // symmetric, so row-major and column-major agree after averaging.
+  const double volume =
+      box == nullptr ? 0.0 : std::abs(Matrix3d::Map(box).determinant());
+  stress_.setZero();
+  haveStress_ = volume > 0.0;
+  if (haveStress_) {
+    const double scale = -HARTREE_IN_EV / volume;
+    for (int row = 0; row < 3; ++row) {
+      for (int col = 0; col < 3; ++col) {
+        const double vij =
+            0.5 * (virial_ha[static_cast<size_t>(row * 3 + col)] +
+                   virial_ha[static_cast<size_t>(col * 3 + row)]);
+        stress_(row, col) = vij * scale;
+      }
+    }
+  }
   recv_exact(&extra_len, sizeof(extra_len));
   if (extra_len > 0) {
     std::vector<char> extra_buf(extra_len);

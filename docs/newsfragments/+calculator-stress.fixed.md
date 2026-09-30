@@ -1,0 +1,1 @@
+The solid-state band keeps the Cauchy stress a calculator already computed. rgpot pair kernels, xTB, the i-PI virial, EMT, and LAMMPS pressure are read on the force call. A cell difference is used only when that tensor is absent.

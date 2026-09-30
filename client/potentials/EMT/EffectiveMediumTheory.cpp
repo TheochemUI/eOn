@@ -77,4 +77,18 @@ void EffectiveMediumTheory::force(long N, const double *R, const int *atomicNrs,
 
   const Vec *tempF = EMTObj->GetCartesianForces();
   std::memcpy(F, tempF, N * sizeof(Vec));
+
+  // GetStress sums the pair term df * r ⊗ r and divides by the cell
+  // volume. The pair force is df * r, so dE/dε = -df * r ⊗ r.
+  double raw[6] = {};
+  EMTObj->GetStress(raw, nullptr);
+  stress_.setZero();
+  stress_(0, 0) = -raw[0];
+  stress_(1, 1) = -raw[1];
+  stress_(2, 2) = -raw[2];
+  stress_(1, 2) = stress_(2, 1) = -raw[3];
+  stress_(0, 2) = stress_(2, 0) = -raw[4];
+  stress_(0, 1) = stress_(1, 0) = -raw[5];
+  const double volume = std::abs(Matrix3d::Map(box).determinant());
+  haveStress_ = volume > 0.0 && stress_.allFinite();
 }

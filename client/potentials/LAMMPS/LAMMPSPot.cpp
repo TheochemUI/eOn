@@ -328,12 +328,20 @@ void LAMMPSPot::runWorkerLoop() {
       forceLocal(N, R.data(), atomicNrs.data(), F.data(), &U, box);
     } catch (...) {
       status = 1;
+      haveStress_ = false;
+    }
+    double stressRaw[9] = {};
+    if (haveStress_) {
+      for (int i = 0; i < 9; ++i) {
+        stressRaw[i] = stress_(i / 3, i % 3);
+      }
     }
 
     if (!writeExact(resFd, &status, sizeof(status)) ||
         !writeExact(resFd, &U, sizeof(U)) ||
         !writeExact(resFd, F.data(),
-                    sizeof(double) * static_cast<size_t>(3 * N))) {
+                    sizeof(double) * static_cast<size_t>(3 * N)) ||
+        !writeExact(resFd, stressRaw, sizeof(stressRaw))) {
       _exit(1);
     }
   }
@@ -477,9 +485,11 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
     }
   }
   int status = 0;
+  double stressRaw[9] = {};
   if (!readExact(resFd, &status, sizeof(status)) ||
       !readExact(resFd, U, sizeof(double)) ||
-      !readExact(resFd, F, sizeof(double) * static_cast<size_t>(3 * N))) {
+      !readExact(resFd, F, sizeof(double) * static_cast<size_t>(3 * N)) ||
+      !readExact(resFd, stressRaw, sizeof(stressRaw))) {
     --workerRespawnsLeft;
     EONC_LOG_WARNING(
         "[LAMMPSPot] worker died during force eval; {} respawns left "
@@ -492,6 +502,13 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
   if (screenRestart) {
     lammpsScreenRestart_ = true;
   }
+  stress_.setZero();
+  for (int row = 0; row < 3; ++row) {
+    for (int col = 0; col < 3; ++col) {
+      stress_(row, col) = stressRaw[row * 3 + col];
+    }
+  }
+  haveStress_ = status == 0 && stress_.allFinite();
   if (status != 0) {
     drainLammpsScreen();
     --workerRespawnsLeft;
@@ -610,6 +627,56 @@ void LAMMPSPot::forceLocal(long N, const double *R, const int *atomicNrs,
     free(fx);
     free(fy);
     free(fz);
+
+    // LAMMPS pressure is positive when the cell pushes outward. sigma =
+    // (1/V) dE/dε has the opposite sign. metal reports bars, real reports
+    // atmospheres. 1 eV/Angstrom^3 = 1.6021766208e6 bar.
+    auto *sxx = static_cast<double *>(
+        lmp.extract_variable(LAMMPSObj, "eon_sxx", nullptr));
+    auto *syy = static_cast<double *>(
+        lmp.extract_variable(LAMMPSObj, "eon_syy", nullptr));
+    auto *szz = static_cast<double *>(
+        lmp.extract_variable(LAMMPSObj, "eon_szz", nullptr));
+    auto *sxy = static_cast<double *>(
+        lmp.extract_variable(LAMMPSObj, "eon_sxy", nullptr));
+    auto *sxz = static_cast<double *>(
+        lmp.extract_variable(LAMMPSObj, "eon_sxz", nullptr));
+    auto *syz = static_cast<double *>(
+        lmp.extract_variable(LAMMPSObj, "eon_syz", nullptr));
+    const bool got = sxx && syy && szz && sxy && sxz && syz;
+    auto release = [&]() {
+      if (sxx)
+        free(sxx);
+      if (syy)
+        free(syy);
+      if (szz)
+        free(szz);
+      if (sxy)
+        free(sxy);
+      if (sxz)
+        free(sxz);
+      if (syz)
+        free(syz);
+    };
+    if (!got) {
+      release();
+      haveStress_ = false;
+      stress_.setZero();
+    } else {
+      constexpr double barPerEvA3 = 1.6021766208e6;
+      constexpr double barPerAtm = 1.01325;
+      const double toEv =
+          realunits ? -(barPerAtm / barPerEvA3) : -(1.0 / barPerEvA3);
+      stress_.setZero();
+      stress_(0, 0) = (*sxx) * toEv;
+      stress_(1, 1) = (*syy) * toEv;
+      stress_(2, 2) = (*szz) * toEv;
+      stress_(0, 1) = stress_(1, 0) = (*sxy) * toEv;
+      stress_(0, 2) = stress_(2, 0) = (*sxz) * toEv;
+      stress_(1, 2) = stress_(2, 1) = (*syz) * toEv;
+      haveStress_ = stress_.allFinite();
+      release();
+    }
   } catch (...) {
     fpeh.restore_fpe();
     throw;
@@ -787,4 +854,12 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
   lammpsCommand("variable fy atom fy");
   lammpsCommand("variable fz atom fz");
   lammpsCommand("variable pe equal pe");
+  // Kinetic part omitted. The six components are pxx pyy pzz pxy pxz pyz.
+  lammpsCommand("compute eon_press all pressure NULL virial");
+  lammpsCommand("variable eon_sxx equal c_eon_press[1]");
+  lammpsCommand("variable eon_syy equal c_eon_press[2]");
+  lammpsCommand("variable eon_szz equal c_eon_press[3]");
+  lammpsCommand("variable eon_sxy equal c_eon_press[4]");
+  lammpsCommand("variable eon_sxz equal c_eon_press[5]");
+  lammpsCommand("variable eon_syz equal c_eon_press[6]");
 }

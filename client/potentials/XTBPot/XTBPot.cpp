@@ -90,5 +90,22 @@ void XTBPot::force(long N, const double *R, const int *atomicNrs, double *F,
     F[i] *= -1.0 * (HARTREE / BOHR);
   }
   *U *= HARTREE;
+
+  // xtb's virial is dE/dε in Hartree, column-major. sigma = virial / V.
+  double virial[9] = {};
+  xtb_getVirial(env, res, virial);
+  const double volume = std::abs(Matrix3d::Map(box).determinant());
+  stress_.setZero();
+  haveStress_ = volume > 0.0;
+  if (haveStress_) {
+    const double scale = HARTREE / volume;
+    for (int col = 0; col < 3; ++col) {
+      for (int row = 0; row < 3; ++row) {
+        const double vij =
+            0.5 * (virial[row + 3 * col] + virial[col + 3 * row]);
+        stress_(row, col) = vij * scale;
+      }
+    }
+  }
   counter++;
 }
