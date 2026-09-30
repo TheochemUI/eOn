@@ -228,8 +228,8 @@ and the same band carries a one-dimensional WKB rate.
 `ln_k_wkb_path_per_s`. A run at more than one temperature also writes
 `instanton_<T>K.con`. The coldest temperature is written to `instanton.con`.
 
-That barrier ring has no fixed atom at the coldest temperature, so the
-three translations are omitted. A
+With no atom fixed, both the reactant and the instanton omit the three
+translations. A
 rotation is omitted when it is a zero mode of the reactant Hessian, which a
 free cluster has and a crystal does not. A cluster in a large periodic cell
 is told apart by that Hessian, not by the periodic flag. The springs along
