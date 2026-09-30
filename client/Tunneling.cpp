@@ -1296,8 +1296,8 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
     // MatrixXd is row-major. The self-adjoint solver reads a column-major
     // triangle, so the ring matrix is copied before the decomposition.
     const ColMajorXd ring = big;
-    const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(
-        ring, Eigen::EigenvaluesOnly);
+    const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(ring,
+                                                       Eigen::EigenvaluesOnly);
     const VectorXd lam = es.eigenvalues();
     if (exactRigid) {
       std::vector<long> order(static_cast<size_t>(lam.size()));
@@ -1332,8 +1332,8 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
         throw std::runtime_error(
             "instantonRate: the cyclic block determinant disagrees with the "
             "dense ring Hessian (" +
-            std::to_string(blockLog) + " against " +
-            std::to_string(denseLog) + ")");
+            std::to_string(blockLog) + " against " + std::to_string(denseLog) +
+            ")");
       }
     }
     // The zero mode (the ring's translation in imaginary time) and the rigid

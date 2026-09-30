@@ -1,5 +1,5 @@
-#include "catch2/catch_amalgamated.hpp"
 #include "eon/potentials/Rgpot/CpmdMessage.h"
+#include "catch2/catch_amalgamated.hpp"
 
 #include <capnp/message.h>
 #include <capnp/serialize.h>
