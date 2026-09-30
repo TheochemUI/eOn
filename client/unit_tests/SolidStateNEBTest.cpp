@@ -13,8 +13,6 @@
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/NudgedElasticBand.h"
-#include "eon/Parameters.h"
-#include "eon/potentials/EMT/EffectiveMediumTheory.h"
 
 #include <cmath>
 #include <memory>
@@ -276,53 +274,6 @@ TEST_CASE("solid_state ini keys set the lattice band", "[neb][solid_state]") {
   REQUIRE(params.neb_options().solid_state.enabled);
   REQUIRE(params.neb_options().solid_state.weight == Catch::Approx(2.5));
   REQUIRE(params.neb_options().solid_state.pressure == Catch::Approx(0.01));
-}
-
-TEST_CASE("EMT stress matches a coordinate difference", "[neb][solid_state]") {
-  Parameters params;
-  EffectiveMediumTheory pot(params);
-  const long nAtoms = 2;
-  const int atomic[2] = {13, 13};
-  double positions[6] = {0.0, 0.0, 0.0, 2.7, 0.25, -0.15};
-  double box[9] = {10.0, 0.0, 0.0, 0.3, 9.5, 0.0, -0.2, 0.15, 11.0};
-  double forces[6] = {};
-  double energy = 0.0;
-  pot.force(nAtoms, positions, atomic, forces, &energy, nullptr, box);
-  REQUIRE(pot.computesStress());
-  const Matrix3d analytic = pot.cauchyStress();
-
-  const double volume = std::abs(Matrix3d::Map(box).determinant());
-  constexpr double step = 1e-6;
-  const int rows[6] = {0, 1, 2, 1, 0, 0};
-  const int cols[6] = {0, 1, 2, 2, 2, 1};
-  for (int comp = 0; comp < 6; ++comp) {
-    const int row = rows[comp];
-    const int col = cols[comp];
-    auto energyAt = [&](double eps) {
-      double shifted[6];
-      double strained[9];
-      for (int i = 0; i < 6; ++i) {
-        shifted[i] = positions[i];
-      }
-      for (int i = 0; i < 9; ++i) {
-        strained[i] = box[i];
-      }
-      for (int atom = 0; atom < 2; ++atom) {
-        shifted[3 * atom + col] += positions[3 * atom + row] * eps;
-      }
-      for (int k = 0; k < 3; ++k) {
-        strained[k * 3 + col] += box[k * 3 + row] * eps;
-      }
-      double f2[6] = {};
-      double u = 0.0;
-      pot.force(nAtoms, shifted, atomic, f2, &u, nullptr, strained);
-      return u;
-    };
-    const double derivative =
-        (energyAt(step) - energyAt(-step)) / (2.0 * step);
-    REQUIRE(analytic(row, col) ==
-            Catch::Approx(derivative / volume).margin(1e-5));
-  }
 }
 
 } // namespace

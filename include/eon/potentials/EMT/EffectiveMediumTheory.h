@@ -36,8 +36,6 @@ private:
   EMTDefaultParameterProvider *EMTParameterObj{nullptr};
   EMT *EMTObj{nullptr};
   SuperCell *SuperCellObj{nullptr};
-  Matrix3d stress_{Matrix3d::Zero()};
-  bool haveStress_{false};
 
 public:
   EffectiveMediumTheory(const eonc::Parameters &p)
@@ -48,12 +46,6 @@ public:
   // To satify interface
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box);
-
-  [[nodiscard]] bool computesStress() const noexcept override {
-    return haveStress_;
-  }
-
-  [[nodiscard]] Matrix3d cauchyStress() const override { return stress_; }
 
   /// ASAP Atoms/EMT objects are mutated in force(); do not share one instance.
   [[nodiscard]] bool isSharedInstanceThreadSafe() const noexcept override {
