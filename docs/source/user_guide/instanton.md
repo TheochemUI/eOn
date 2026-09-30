@@ -153,7 +153,7 @@ different calculation again, and this page does not implement it.
 `mode = rate` reads the reactant and `saddle_filename` (default `saddle.con`).
 The instanton is a closed ring, a first-order saddle of the ring-polymer
 potential, with one negative eigenvalue and one zero eigenvalue that cycles
-the beads. Richardson and Althorpe, J. Chem. Phys. 131, 214106 (2009), give
+the beads. {cite:t}`inst-richardsonRingpolymerMolecularDynamics2009` give
 
 ```{math}
 k Z_r = \frac{1}{\beta_N \hbar}
@@ -214,8 +214,7 @@ those directions stay, so they cancel between the instanton and the reactant.
 | `instanton_negative_modes` | negative eigenvalues of the ring Hessian; a first-order saddle has 1 |
 | `instanton_zero_mode` | the eigenvalue left out |
 
-Habershon, Manolopoulos, Markland and Miller, Annu. Rev. Phys. Chem. 64, 387
-(2013), doi:10.1146/annurev-physchem-040412-110122, expect the sampled
+{cite:t}`inst-habershonRingpolymerMolecularDynamics2013` expect the sampled
 ring-polymer rate to lie within about a factor of two of the exact quantum
 rate between {math}`T_c` and {math}`T_c/2`. That bound compares the sampled
 rate with the exact rate. It is not a comparison of this instanton with a
@@ -223,7 +222,7 @@ free-energy profile.
 
 The cubic metastable well, {math}`V = \omega_0^2 q^2/2 - g q^3/3`, is the
 check. Deep below the crossover its rate approaches the zero-temperature
-decay of Caldeira and Leggett, Ann. Phys. 149, 374 (1983).
+decay of {cite:t}`inst-caldeiraQuantumTunnellingDissipative1983`.
 
 ## Checks
 
@@ -243,3 +242,14 @@ finite-difference Hamiltonian, converged to {math}`10^{-5}`.
 The instanton's error falls as the barrier deepens, the regime glass TLS sit
 in. The same cases tie the C++ path and splitting to an independent
 implementation of the discretisation to {math}`2 \times 10^{-3}`.
+
+## References
+
+```{bibliography}
+---
+style: alpha
+filter: docname in docnames
+labelprefix: INST_
+keyprefix: inst-
+---
+```

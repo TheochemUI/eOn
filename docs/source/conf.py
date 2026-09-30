@@ -54,7 +54,7 @@ if _pyeon_src.is_dir():
 
 sitemap_show_lastmod = True
 
-bibtex_bibfiles = ["bibtex/eonDocs.bib"]
+bibtex_bibfiles = ["bibtex/eonDocs.bib", "bibtex/instanton.bib"]
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
