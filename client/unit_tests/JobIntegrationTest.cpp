@@ -2924,12 +2924,58 @@ mode = rate
 temperature = 198
 beads = 16
 max_iterations = 3000
+force_tolerance = 1e-6
 )");
-  auto results = runJob();
-  REQUIRE(results.at("termination_reason") == "0");
-  REQUIRE(std::stod(results.at("instanton_negative_modes")) == 1.0);
-  REQUIRE(std::stod(results.at("rate_instanton_log")) >
-          std::stod(results.at("rate_htst_log")));
+  auto half = runJob();
+  REQUIRE(half.at("termination_reason") == "0");
+  REQUIRE(std::stod(half.at("instanton_negative_modes")) == 1.0);
+  REQUIRE(std::stod(half.at("rate_instanton_log")) >
+          std::stod(half.at("rate_htst_log")));
+  const double afterHalf = std::stod(half.at("force_calls"));
+  writeConfig(R"(
+[Main]
+job = instanton
+
+[Potential]
+potential = lj
+
+[Instanton]
+mode = rate
+temperature = 198
+beads = 16
+max_iterations = 3000
+force_tolerance = 1e-6
+half_ring = false
+)");
+  auto full = runJob();
+  REQUIRE(full.at("termination_reason") == "0");
+  const double afterFull = std::stod(full.at("force_calls"));
+  writeConfig(R"(
+[Main]
+job = instanton
+
+[Potential]
+potential = lj
+
+[Instanton]
+mode = rate
+temperature = 198
+beads = 16
+max_iterations = 3000
+force_tolerance = 1e-6
+)");
+  auto halfAgain = runJob();
+  REQUIRE(halfAgain.at("termination_reason") == "0");
+  const double afterHalfAgain = std::stod(halfAgain.at("force_calls"));
+  const double halfLog = std::stod(half.at("rate_instanton_log"));
+  const double fullLog = std::stod(full.at("rate_instanton_log"));
+  const double againLog = std::stod(halfAgain.at("rate_instanton_log"));
+  const double fullCalls = afterFull - afterHalf;
+  const double halfCalls = afterHalfAgain - afterFull;
+  CAPTURE(halfLog, fullLog, againLog, halfCalls, fullCalls);
+  REQUIRE(std::abs(halfLog - fullLog) < 1e-6);
+  REQUIRE(std::abs(againLog - fullLog) < 1e-6);
+  REQUIRE(halfCalls < fullCalls);
 }
 
 } /* namespace tests */

@@ -199,6 +199,19 @@ stride keeps a Hessian on every stride-th bead and interpolates linearly
 between those anchors. That interpolation is an approximation: the rate
 formula uses the Hessian of every bead.
 
+`half_ring` defaults to enabled. On an even bead count the search runs from
+one turning point to the other and the closed ring is the mirror of that
+chain. An odd count keeps every bead. `energy_shift` (default 0, in eV) is
+subtracted from every bead potential and from the reactant and saddle
+energies in the rate.
+
+Below three quarters of the crossover, a search that starts without a ring
+walks down from 0.85 of the crossover, and each warmer ring starts the next.
+Up to 4096 active coordinates the step climbs one mode and turns every other
+negative curvature downhill. Its Hessian starts at the saddle and follows
+accepted moves with a Bofill update. The rate uses the bead Hessians, not
+that update. A larger ring keeps minimum-mode following.
+
 With no atom fixed, the three translations are omitted on both sides. A
 rotation is omitted when it is a zero mode of the reactant Hessian, which a
 free cluster has and a crystal does not. A cluster in a large periodic cell

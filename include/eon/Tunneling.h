@@ -222,6 +222,11 @@ struct RateInstantonOptions {
   double maxStep = 0.05;        ///< largest bead move per step,
                                 ///< amu^0.5 Angstrom
   long memory = 10;             ///< L-BFGS correction pairs
+  /// Even N, when the guess already matches under j -> N - j: evaluate
+  /// the potential from one turning point to the other and copy it.
+  /// An odd N, or a guess without that symmetry, evaluates every bead.
+  bool halfRing = true;
+  double energyShift = 0.0; ///< subtracted from every bead potential, eV
 };
 
 struct RateInstanton {
@@ -251,12 +256,15 @@ struct RateInstanton {
   double classicalLogRate = 0.0;
 };
 
-/// Finds the rate instanton at inverse temperature `beta` (1 / eV) by
-/// minimum-mode following on U_N. `guess` holds N beads, or is empty for a
-/// ring stretched along the saddle's unstable mode to where V has dropped by
-/// (1 - T / T_c) of the lower of the two barriers. `saddle` and `hessSaddle`
-/// are the mass-weighted saddle and its Hessian. Each step costs one batch of
-/// N potential calls plus one batch per Lanczos step.
+/// Finds the rate instanton at inverse temperature `beta` (1 / eV).
+/// `guess` holds N beads, or is empty for a ring stretched along the saddle's
+/// unstable mode to where V has dropped by (1 - T / T_c) of the lower of the
+/// two barriers. Below 0.75 T_c an empty guess cools from 0.85 T_c. Up to
+/// 4096 active coordinates each step is an index-1 Newton step on a Bofill
+/// Hessian and costs one potential batch. Beyond that the step is
+/// minimum-mode following: one batch plus a Lanczos batch. `saddle` and
+/// `hessSaddle` are mass-weighted. An even ring whose beads match under
+/// j -> N - j is optimised from one turning point to the other and mirrored.
 RateInstanton optimizeRateInstanton(const VectorXd &saddle,
                                     const MatrixXd &hessSaddle, double beta,
                                     std::vector<VectorXd> guess,

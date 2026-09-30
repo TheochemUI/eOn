@@ -1,0 +1,1 @@
+The rate instanton below three quarters of the crossover cools from 0.85 of that temperature. Rings of at most 4096 active coordinates take an index-1 Newton step with a Bofill Hessian, and an even ring is searched from one turning point to the other. Larger rings keep minimum-mode following. The rate uses the bead Hessians.

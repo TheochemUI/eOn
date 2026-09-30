@@ -2552,7 +2552,9 @@ class InstantonConfig(BaseModel):
             " stiffer minimum along the line between them."
         ),
     )
-    max_iterations: int = Field(default=5000, description="L-BFGS iterations.")
+    max_iterations: int = Field(
+        default=5000, description="Steps of the ring search."
+    )
     force_tolerance: float = Field(
         default=1e-3,
         description="Largest bead residual at convergence, eV / (amu^0.5 Angstrom).",
@@ -2576,6 +2578,18 @@ class InstantonConfig(BaseModel):
             "Mode rate: T in K, below the crossover temperature. 0 leaves it"
             " unset, and mode rate then refuses to run."
         ),
+    )
+    half_ring: bool = Field(
+        default=True,
+        description=(
+            "Mode rate: an even bead count evaluates the potential from"
+            " one turning point to the other and copies it onto the other"
+            " half. An odd count evaluates every bead."
+        ),
+    )
+    energy_shift: float = Field(
+        default=0.0,
+        description="Subtracted from every bead potential, in eV.",
     )
 
 

@@ -8,10 +8,16 @@
 **
 ** Repo:
 ** https://github.com/TheochemUI/eOn
+**
+** The half-ring springs and the banded ring Hessian are adapted from i-PI
+** under the MIT licence.
+** i-PI Copyright (C) 2014-2015 i-PI developers
+** Algorithms implemented by Yair Litman and Mariana Rossi, 2017.
 */
 #include "eon/Tunneling.h"
 
 #include <Eigen/Eigenvalues>
+#include <Eigen/LU>
 
 #include <algorithm>
 #include <cmath>
@@ -585,10 +591,14 @@ struct RingEval {
 };
 
 RingEval evaluateRing(const std::vector<VectorXd> &x, double c,
-                      const BatchPotential &potential) {
+                      const BatchPotential &potential,
+                      double energyShift = 0.0) {
   RingEval out;
   std::vector<VectorXd> gv;
   potential(x, out.v, gv);
+  for (double &v : out.v) {
+    v -= energyShift;
+  }
   const size_t n = x.size();
   if (out.v.size() != n || gv.size() != n) {
     throw std::runtime_error(
@@ -611,8 +621,10 @@ RingEval evaluateRing(const std::vector<VectorXd> &x, double c,
 // products, started from `start`; full reorthogonalisation.
 double lowestMode(const std::vector<VectorXd> &x, const RingEval &here,
                   double c, const BatchPotential &potential,
-                  std::vector<VectorXd> &mode, long steps, double eps) {
+                  std::vector<VectorXd> &mode, long steps, double eps,
+                  bool mirror = false) {
   const size_t n = x.size();
+  (void)mirror;
   auto hv = [&](const std::vector<VectorXd> &u) {
     std::vector<VectorXd> xp(n);
     for (size_t j = 0; j < n; ++j) {
@@ -1029,6 +1041,592 @@ std::vector<VectorXd> cyclicRingSolve(double c,
   return CyclicFactor(c, diag).solve(rhs);
 }
 
+namespace {
+
+// Bofill mix of Powell's symmetric Broyden and SR1. H is d2V/dq2.
+void bofillUpdate(MatrixXd &h, const VectorXd &dq, const VectorXd &dg) {
+  const double dq2 = dq.squaredNorm();
+  if (!(dq2 > 1e-24)) {
+    return;
+  }
+  const VectorXd r = dg - h * dq;
+  const double rq = r.dot(dq);
+  const double r2 = r.squaredNorm();
+  const double phi = r2 * dq2 > 1e-30 ? (rq * rq) / (r2 * dq2) : 0.0;
+  const double inv = 1.0 / dq2;
+  h.noalias() += (1.0 - phi) * inv *
+                 (r * dq.transpose() + dq * r.transpose() -
+                  (rq * inv) * (dq * dq.transpose()));
+  if (std::abs(rq) > 1e-12 * std::sqrt(std::max(0.0, r2 * dq2))) {
+    h.noalias() += (phi / rq) * (r * r.transpose());
+  }
+  h = (0.5 * (h + h.transpose())).eval();
+}
+
+VectorXd packBeads(const std::vector<VectorXd> &x) {
+  const long f = x.front().size();
+  VectorXd flat(static_cast<long>(x.size()) * f);
+  for (long j = 0; j < static_cast<long>(x.size()); ++j) {
+    flat.segment(j * f, f) = x[static_cast<size_t>(j)];
+  }
+  return flat;
+}
+
+void addPacked(std::vector<VectorXd> &x, const VectorXd &step) {
+  const long f = x.front().size();
+  for (long j = 0; j < static_cast<long>(x.size()); ++j) {
+    x[static_cast<size_t>(j)] += step.segment(j * f, f);
+  }
+}
+
+double packedBeadNorm(const VectorXd &step, long f) {
+  double big = 0.0;
+  const long n = step.size() / f;
+  for (long j = 0; j < n; ++j) {
+    big = std::max(big, step.segment(j * f, f).norm());
+  }
+  return big;
+}
+
+bool finiteBeads(const std::vector<VectorXd> &x) {
+  for (const auto &q : x) {
+    if (!q.array().isFinite().all()) {
+      return false;
+    }
+  }
+  return true;
+}
+
+template <typename Derived>
+bool overlapsTau(const Eigen::MatrixBase<Derived> &mode, const VectorXd &tau) {
+  return tau.size() == mode.size() && std::abs(mode.dot(tau)) > 0.5;
+}
+
+// Normalised bead velocity q_{j+1} - q_{j-1}. Empty when the beads coincide.
+VectorXd timeTranslation(const std::vector<VectorXd> &x) {
+  const long n = static_cast<long>(x.size());
+  const long f = x.front().size();
+  VectorXd tau(n * f);
+  for (long j = 0; j < n; ++j) {
+    const size_t prev = static_cast<size_t>((j + n - 1) % n);
+    const size_t next = static_cast<size_t>((j + 1) % n);
+    tau.segment(j * f, f) = 0.5 * (x[next] - x[prev]);
+  }
+  const double nrm = tau.norm();
+  if (!(nrm > 0.0)) {
+    return VectorXd();
+  }
+  tau /= nrm;
+  return tau;
+}
+
+std::vector<VectorXd> physicalGradient(const std::vector<VectorXd> &x,
+                                       const std::vector<VectorXd> &ringGrad,
+                                       double c) {
+  const size_t n = x.size();
+  std::vector<VectorXd> g(n);
+  for (size_t j = 0; j < n; ++j) {
+    const size_t prev = (j + n - 1) % n;
+    const size_t next = (j + 1) % n;
+    g[j] = ringGrad[j] - c * (2.0 * x[j] - x[prev] - x[next]);
+  }
+  return g;
+}
+
+// Closed ring: diagonal H + 2 c I, neighbour coupling -c I, including the
+// corner. Each edge is written once.
+ColMajorXd closedRingMatrix(const std::vector<MatrixXd> &physical, double c) {
+  const long nBeads = static_cast<long>(physical.size());
+  const long f = physical.front().rows();
+  ColMajorXd big = ColMajorXd::Zero(nBeads * f, nBeads * f);
+  const ColMajorXd eye = ColMajorXd::Identity(f, f);
+  for (long j = 0; j < nBeads; ++j) {
+    ColMajorXd block = 0.5 * (physical[static_cast<size_t>(j)] +
+                              physical[static_cast<size_t>(j)].transpose());
+    block += 2.0 * c * eye;
+    big.block(j * f, j * f, f, f) = block;
+  }
+  for (long j = 0; j < nBeads; ++j) {
+    const long k = (j + 1) % nBeads;
+    if (j < k) {
+      big.block(j * f, k * f, f, f) = -c * eye;
+      big.block(k * f, j * f, f, f) = -c * eye;
+    }
+  }
+  if (nBeads > 1) {
+    const long last = nBeads - 1;
+    big.block(last * f, 0, f, f) = -c * eye;
+    big.block(0, last * f, f, f) = -c * eye;
+  }
+  return big;
+}
+
+// Half chain from one turning point to the other. End blocks hold half the
+// physical Hessian, interior blocks the whole of it. Neighbour coupling is
+// -c I. On a symmetric ring this is the Hessian of half the closed-ring energy.
+ColMajorXd halfRingMatrix(const std::vector<MatrixXd> &physical, double c) {
+  const long beads = static_cast<long>(physical.size());
+  const long f = physical.front().rows();
+  ColMajorXd big = ColMajorXd::Zero(beads * f, beads * f);
+  const ColMajorXd eye = ColMajorXd::Identity(f, f);
+  for (long j = 0; j < beads; ++j) {
+    const bool end = j == 0 || j + 1 == beads;
+    ColMajorXd block = 0.5 * (physical[static_cast<size_t>(j)] +
+                              physical[static_cast<size_t>(j)].transpose());
+    if (end) {
+      block *= 0.5;
+    }
+    block += (end ? c : 2.0 * c) * eye;
+    big.block(j * f, j * f, f, f) = block;
+    if (j + 1 < beads) {
+      big.block(j * f, (j + 1) * f, f, f) = -c * eye;
+      big.block((j + 1) * f, j * f, f, f) = -c * eye;
+    }
+  }
+  return big;
+}
+
+struct RingSpectrum {
+  VectorXd values;
+  ColMajorXd vectors;
+  ColMajorXd ring;
+  bool ok = false;
+};
+
+RingSpectrum spectrumOf(ColMajorXd ring) {
+  RingSpectrum out;
+  const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(ring);
+  out.ok = es.info() == Eigen::Success && ring.array().isFinite().all();
+  if (out.ok) {
+    out.values = es.eigenvalues();
+    out.vectors = es.eigenvectors();
+    out.ring = std::move(ring);
+  }
+  return out;
+}
+
+struct Climb {
+  long index = -1;
+  double curvature = 0.0;
+  long negative = 0;
+};
+
+Climb classify(const RingSpectrum &sp, const VectorXd &tau, double spring) {
+  Climb out;
+  const double cut = -1e-8 * std::max(1.0, spring);
+  double lowest = std::numeric_limits<double>::infinity();
+  for (long i = 0; i < sp.values.size(); ++i) {
+    if (overlapsTau(sp.vectors.col(i), tau)) {
+      continue;
+    }
+    if (sp.values(i) < cut) {
+      ++out.negative;
+    }
+    if (sp.values(i) < lowest) {
+      lowest = sp.values(i);
+      out.index = i;
+      out.curvature = sp.values(i);
+    }
+  }
+  return out;
+}
+
+// Leave a negative climb eigenvalue in place: a raw Newton step climbs it.
+// Flip every other negative eigenvalue. The imaginary-time cycle is left out,
+// and a shift along it keeps the solve off that direction.
+VectorXd indexOneStep(const RingSpectrum &sp, const Climb &climb,
+                      const VectorXd &gflat, const VectorXd &tau,
+                      double spring) {
+  if (!sp.ok || climb.index < 0 || gflat.size() != sp.values.size()) {
+    return VectorXd();
+  }
+  const double cut = -1e-8 * std::max(1.0, spring);
+  ColMajorXd jt = sp.ring;
+  if (tau.size() == gflat.size()) {
+    jt.noalias() += spring * (tau * tau.transpose());
+  }
+  for (long i = 0; i < sp.values.size(); ++i) {
+    if (overlapsTau(sp.vectors.col(i), tau)) {
+      continue;
+    }
+    const double li = sp.values(i);
+    const bool flip =
+        (i == climb.index && li > 0.0) || (i != climb.index && li < cut);
+    if (!flip) {
+      continue;
+    }
+    const VectorXd v = sp.vectors.col(i);
+    jt.noalias() -= (2.0 * li) * (v * v.transpose());
+  }
+  jt = (0.5 * (jt + jt.transpose())).eval();
+  const Eigen::PartialPivLU<ColMajorXd> lu(jt);
+  VectorXd step = lu.solve(-gflat);
+  const double rhs = std::max(1.0, gflat.norm());
+  if (!step.array().isFinite().all() ||
+      (jt * step + gflat).norm() > 1e-6 * rhs) {
+    return VectorXd();
+  }
+  if (tau.size() == step.size()) {
+    step -= step.dot(tau) * tau;
+  }
+  if (!step.array().isFinite().all()) {
+    return VectorXd();
+  }
+  return step;
+}
+
+// Cosine between the turning points, opened by (1 - T / Tc) of the lower
+// barrier. The far turning point sits on bead 0.
+std::vector<VectorXd> cosineSeed(const VectorXd &saddle, const VectorXd &dir,
+                                 double lambda0, double temperature,
+                                 double crossover, long nBeads,
+                                 const BatchPotential &potential) {
+  std::vector<double> v0;
+  std::vector<VectorXd> g0;
+  potential({saddle}, v0, g0);
+  const double vS = v0.at(0);
+  const double h = 0.25 * std::sqrt(2.0 * kBoltzmann * crossover / -lambda0);
+  const long pts = 200;
+  const double dPlus = sideDrop(saddle, dir, vS, 1.0, h, pts, potential);
+  const double dMinus = sideDrop(saddle, dir, vS, -1.0, h, pts, potential);
+  const double dMin = std::min(dPlus, dMinus);
+  const double drop = (1.0 - temperature / crossover) *
+                      (std::isfinite(dMin) ? dMin : kBoltzmann * crossover);
+  const double sPlus =
+      turningDistance(saddle, dir, vS, drop, 1.0, h, pts, potential);
+  const double sMinus =
+      turningDistance(saddle, dir, vS, drop, -1.0, h, pts, potential);
+  std::vector<VectorXd> guess(static_cast<size_t>(nBeads));
+  for (long j = 0; j < nBeads; ++j) {
+    const double ct = std::cos(2.0 * std::numbers::pi * static_cast<double>(j) /
+                               static_cast<double>(nBeads));
+    guess[static_cast<size_t>(j)] =
+        saddle + dir * (ct >= 0.0 ? sPlus * ct : sMinus * ct);
+  }
+  return guess;
+}
+
+struct NewtonOut {
+  std::vector<VectorXd> beads;
+  std::vector<double> energies;
+  double ringPotential = 0.0;
+  double bN = 0.0;
+  long iterations = 0;
+  bool converged = false;
+};
+
+// Index-1 Newton on one ring. `x` holds N beads. A half ring optimises beads
+// 0..N/2 and mirrors them. Trust is the largest bead displacement.
+NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
+                          const MatrixXd &hessSaddle,
+                          const RateInstantonOptions &options,
+                          const BatchPotential &potential) {
+  const long nBeads = options.beads;
+  // Fold only an even ring that already matches under j -> N - j. An empty
+  // guess is seeded into that shape before this call.
+  bool half = options.halfRing && nBeads % 2 == 0 &&
+              static_cast<long>(guess.size()) == nBeads;
+  if (half) {
+    const long m = nBeads / 2;
+    for (long j = 1; j < m; ++j) {
+      if ((guess[static_cast<size_t>(j)] -
+           guess[static_cast<size_t>(nBeads - j)])
+              .norm() > 1e-8) {
+        half = false;
+        break;
+      }
+    }
+  }
+  std::vector<VectorXd> x;
+  if (half) {
+    const long m = nBeads / 2;
+    x.resize(static_cast<size_t>(m + 1));
+    for (long j = 0; j <= m; ++j) {
+      x[static_cast<size_t>(j)] = guess[static_cast<size_t>(j)];
+    }
+  } else {
+    x = std::move(guess);
+  }
+  const long f = x.front().size();
+  const MatrixXd hS = (0.5 * (hessSaddle + hessSaddle.transpose())).eval();
+  std::vector<MatrixXd> physical(x.size(), hS);
+
+  struct Obj {
+    std::vector<VectorXd> grad;
+    std::vector<VectorXd> gradPot;
+    std::vector<double> energies;
+    double u = 0.0;
+  };
+  auto objective = [&](const std::vector<VectorXd> &q) {
+    Obj out;
+    if (half) {
+      // The potential is evaluated on beads 0..N/2. The closed ring is that
+      // chain plus its mirror, and the folded gradient is half the derivative
+      // of the closed-ring energy.
+      const long m = static_cast<long>(q.size()) - 1;
+      const long n = 2 * m;
+      std::vector<double> vu;
+      std::vector<VectorXd> gu;
+      potential(q, vu, gu);
+      for (double &vj : vu) {
+        vj -= options.energyShift;
+      }
+      if (vu.size() != q.size() || gu.size() != q.size()) {
+        throw std::runtime_error(
+            "rate instanton: potential returned the wrong count");
+      }
+      std::vector<VectorXd> full(static_cast<size_t>(n));
+      std::vector<double> vFull(static_cast<size_t>(n));
+      std::vector<VectorXd> gFull(static_cast<size_t>(n));
+      for (long j = 0; j <= m; ++j) {
+        full[static_cast<size_t>(j)] = q[static_cast<size_t>(j)];
+        vFull[static_cast<size_t>(j)] = vu[static_cast<size_t>(j)];
+        gFull[static_cast<size_t>(j)] = gu[static_cast<size_t>(j)];
+      }
+      for (long j = 1; j < m; ++j) {
+        full[static_cast<size_t>(n - j)] = q[static_cast<size_t>(j)];
+        vFull[static_cast<size_t>(n - j)] = vu[static_cast<size_t>(j)];
+        gFull[static_cast<size_t>(n - j)] = gu[static_cast<size_t>(j)];
+      }
+      std::vector<VectorXd> gRing(static_cast<size_t>(n));
+      double uFull = 0.0;
+      double springE = 0.0;
+      for (long j = 0; j < n; ++j) {
+        const long prev = (j + n - 1) % n;
+        const long next = (j + 1) % n;
+        gRing[static_cast<size_t>(j)] =
+            gFull[static_cast<size_t>(j)] +
+            c * (2.0 * full[static_cast<size_t>(j)] -
+                 full[static_cast<size_t>(prev)] -
+                 full[static_cast<size_t>(next)]);
+        springE +=
+            (full[static_cast<size_t>(next)] - full[static_cast<size_t>(j)])
+                .squaredNorm();
+        uFull += vFull[static_cast<size_t>(j)];
+      }
+      uFull += 0.5 * c * springE;
+      out.u = 0.5 * uFull;
+      out.grad.resize(q.size());
+      out.grad.front() = 0.5 * gRing.front();
+      out.grad.back() = 0.5 * gRing[static_cast<size_t>(m)];
+      for (long j = 1; j < m; ++j) {
+        out.grad[static_cast<size_t>(j)] =
+            0.5 *
+            (gRing[static_cast<size_t>(j)] + gRing[static_cast<size_t>(n - j)]);
+      }
+      out.gradPot = std::move(gu);
+      out.energies = std::move(vu);
+    } else {
+      const RingEval ev = evaluateRing(q, c, potential, options.energyShift);
+      out.u = ev.u;
+      out.grad = ev.grad;
+      out.gradPot = physicalGradient(q, ev.grad, c);
+      out.energies = ev.v;
+    }
+    return out;
+  };
+
+  struct View {
+    RingSpectrum sp;
+    VectorXd tau;
+    Climb climb;
+    double gmax = 0.0;
+  };
+  auto viewOf = [&](const Obj &ev) {
+    View v;
+    v.tau = half ? VectorXd() : timeTranslation(x);
+    v.sp = spectrumOf(half ? halfRingMatrix(physical, c)
+                           : closedRingMatrix(physical, c));
+    if (v.sp.ok) {
+      v.climb = classify(v.sp, v.tau, c);
+      v.gmax = largestBeadNorm(ev.grad);
+    }
+    return v;
+  };
+  auto done = [&](const View &v) {
+    return v.sp.ok && v.gmax < options.forceTolerance &&
+           v.climb.negative == 1 && v.climb.curvature < 0.0;
+  };
+
+  Obj cur = objective(x);
+  double trust = options.maxStep;
+  long entries = 0;
+  bool converged = false;
+  const double trustFloor = std::min(1e-4, options.maxStep);
+  for (long it = 0; it < options.maxIterations; ++it) {
+    ++entries;
+    const View v = viewOf(cur);
+    if (done(v)) {
+      converged = true;
+      break;
+    }
+    VectorXd step = indexOneStep(v.sp, v.climb, packBeads(cur.grad), v.tau, c);
+    if (step.size() == 0) {
+      trust = std::max(0.5 * trust, trustFloor);
+      continue;
+    }
+    const double big = packedBeadNorm(step, f);
+    if (big > trust) {
+      step *= trust / big;
+    }
+    const VectorXd gflat = packBeads(cur.grad);
+    const double pred = gflat.dot(step) + 0.5 * step.dot(v.sp.ring * step);
+    std::vector<VectorXd> trial = x;
+    addPacked(trial, step);
+    if (!finiteBeads(trial)) {
+      trust = std::max(0.5 * trust, trustFloor);
+      continue;
+    }
+    Obj next = objective(trial);
+    const double ratio = std::abs(pred) > 1e-30 ? (next.u - cur.u) / pred : 1.0;
+    if (!std::isfinite(ratio) || ratio < 0.1 || ratio > 3.0 ||
+        !finiteBeads(next.grad) || !std::isfinite(next.u)) {
+      trust = std::max(0.5 * trust, trustFloor);
+      continue;
+    }
+    for (size_t k = 0; k < x.size(); ++k) {
+      bofillUpdate(physical[k], trial[k] - x[k],
+                   next.gradPot[k] - cur.gradPot[k]);
+    }
+    x = std::move(trial);
+    cur = std::move(next);
+    if (ratio > 0.75 && ratio < 1.25 && big >= 0.99 * trust) {
+      trust = std::min(2.0 * trust, options.maxStep);
+    }
+  }
+  if (!converged && done(viewOf(cur))) {
+    converged = true;
+  }
+
+  NewtonOut out;
+  out.iterations = entries;
+  out.converged = converged;
+  if (half) {
+    const long m = static_cast<long>(x.size()) - 1;
+    const long n = 2 * m;
+    out.beads.resize(static_cast<size_t>(n));
+    out.energies.assign(static_cast<size_t>(n), 0.0);
+    for (long j = 0; j <= m; ++j) {
+      out.beads[static_cast<size_t>(j)] = x[static_cast<size_t>(j)];
+      out.energies[static_cast<size_t>(j)] =
+          cur.energies[static_cast<size_t>(j)];
+    }
+    for (long j = 1; j < m; ++j) {
+      out.beads[static_cast<size_t>(n - j)] = x[static_cast<size_t>(j)];
+      out.energies[static_cast<size_t>(n - j)] =
+          cur.energies[static_cast<size_t>(j)];
+    }
+    out.ringPotential = 2.0 * cur.u;
+  } else {
+    out.beads = std::move(x);
+    out.ringPotential = cur.u;
+    out.energies = std::move(cur.energies);
+  }
+  out.bN = 0.0;
+  for (size_t j = 0; j < out.beads.size(); ++j) {
+    const size_t next = (j + 1) % out.beads.size();
+    out.bN += (out.beads[next] - out.beads[j]).squaredNorm();
+  }
+  return out;
+}
+
+// Below 0.75 Tc an empty guess walks down from 0.85 Tc. Each stage passes a
+// full-length ring onward, so the walk is not repeated on the way back in.
+RateInstanton optimizeRateByNewton(const VectorXd &saddle,
+                                   const MatrixXd &hessSaddle, double beta,
+                                   std::vector<VectorXd> guess,
+                                   const BatchPotential &potential,
+                                   const RateInstantonOptions &options) {
+  const long nBeads = options.beads;
+  if (nBeads < 4 || !(beta > 0.0) || hessSaddle.rows() != saddle.size()) {
+    throw std::invalid_argument(
+        "optimizeRateInstanton: need N >= 4, beta > 0 and a saddle Hessian "
+        "of the saddle's dimension");
+  }
+  RateInstanton inst;
+  inst.beta = beta;
+  inst.betaN = beta / static_cast<double>(nBeads);
+  inst.temperature = 1.0 / (kBoltzmann * beta);
+  inst.crossover = crossoverTemperature(hessSaddle);
+  if (!(inst.temperature < inst.crossover)) {
+    throw std::invalid_argument(
+        "optimizeRateInstanton: T is at or above the crossover temperature; "
+        "the ring collapses onto the saddle and steepest descent needs the "
+        "parabolic barrier correction, of which classical transition-state "
+        "theory is only the one-bead limit");
+  }
+
+  const bool cool = static_cast<long>(guess.size()) != nBeads &&
+                    inst.temperature < 0.75 * inst.crossover;
+  if (cool) {
+    std::vector<double> temps;
+    for (double t = 0.85 * inst.crossover; t > inst.temperature * 1.05;
+         t *= 0.75) {
+      temps.push_back(t);
+    }
+    temps.push_back(inst.temperature);
+    std::vector<VectorXd> beads;
+    RateInstanton last;
+    long used = 0;
+    bool targetRan = false;
+    const ColMajorXd hS = 0.5 * (hessSaddle + hessSaddle.transpose());
+    const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(hS);
+    for (size_t s = 0; s < temps.size(); ++s) {
+      const long remain = options.maxIterations - used;
+      if (remain <= 0) {
+        break;
+      }
+      RateInstantonOptions opt = options;
+      opt.maxIterations = remain;
+      const bool target = s + 1 == temps.size();
+      const double betaStage = target ? beta : 1.0 / (kBoltzmann * temps[s]);
+      std::vector<VectorXd> stageGuess = beads;
+      if (static_cast<long>(stageGuess.size()) != nBeads) {
+        stageGuess =
+            cosineSeed(saddle, es.eigenvectors().col(0), es.eigenvalues()(0),
+                       temps[s], inst.crossover, nBeads, potential);
+      }
+      last = optimizeRateInstanton(saddle, hessSaddle, betaStage,
+                                   std::move(stageGuess), potential, opt);
+      used += last.iterations;
+      beads = last.beads;
+      if (target) {
+        targetRan = true;
+      }
+    }
+    last.iterations = used;
+    if (targetRan) {
+      last.beta = beta;
+      last.betaN = beta / static_cast<double>(nBeads);
+      last.temperature = inst.temperature;
+      last.crossover = inst.crossover;
+    } else {
+      last.converged = false;
+    }
+    return last;
+  }
+
+  if (static_cast<long>(guess.size()) != nBeads) {
+    const ColMajorXd hS = 0.5 * (hessSaddle + hessSaddle.transpose());
+    const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(hS);
+    guess = cosineSeed(saddle, es.eigenvectors().col(0), es.eigenvalues()(0),
+                       inst.temperature, inst.crossover, nBeads, potential);
+  }
+  const double bnh = inst.betaN * kHbar;
+  const double spring = 1.0 / (bnh * bnh);
+  const NewtonOut got =
+      newtonInstanton(std::move(guess), spring, hessSaddle, options, potential);
+  inst.beads = got.beads;
+  inst.energies = got.energies;
+  inst.ringPotential = got.ringPotential;
+  inst.bN = got.bN;
+  inst.iterations = got.iterations;
+  inst.converged = got.converged;
+  return inst;
+}
+
+} // namespace
+
 RateInstanton optimizeRateInstanton(const VectorXd &saddle,
                                     const MatrixXd &hessSaddle, double beta,
                                     std::vector<VectorXd> guess,
@@ -1052,11 +1650,27 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
         "parabolic barrier correction, of which classical transition-state "
         "theory is only the one-bead limit");
   }
+  bool mirror = options.halfRing && N % 2 == 0;
+  if (mirror && static_cast<long>(guess.size()) == N) {
+    const long mid = N / 2;
+    for (long j = 1; j < mid && mirror; ++j) {
+      if ((guess[static_cast<size_t>(j)] - guess[static_cast<size_t>(N - j)])
+              .norm() > 1e-8) {
+        mirror = false;
+      }
+    }
+  }
+  const long active = mirror ? (N / 2 + 1) : N;
+  if (active * saddle.size() <= 4096) {
+    return optimizeRateByNewton(saddle, hessSaddle, beta, std::move(guess),
+                                potential, options);
+  }
   const double bnh = inst.betaN * kHbar;
   const double c = 1.0 / (bnh * bnh);
 
-  const Eigen::SelfAdjointEigenSolver<MatrixXd> es(
-      0.5 * (hessSaddle + hessSaddle.transpose()));
+  const ColMajorXd saddleCurvature =
+      0.5 * (hessSaddle + hessSaddle.transpose());
+  const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(saddleCurvature);
   const VectorXd dir = es.eigenvectors().col(0);
 
   if (static_cast<long>(guess.size()) != N) {
@@ -1089,13 +1703,69 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
     }
   }
 
+  // An even count whose beads already match under j -> N-j is the
+  // out-and-back instanton. The potential on one half is copied onto the
+  // other. The step stays in the closed-ring product, because the
+  // derivative on an interior bead is the sum of both images.
+  const bool wantMirror = options.halfRing && N % 2 == 0;
   std::vector<VectorXd> x = std::move(guess);
-  RingEval cur = evaluateRing(x, c, potential);
+  bool fold = false;
+  if (wantMirror) {
+    fold = true;
+    const long m = N / 2;
+    for (long j = 1; j < m; ++j) {
+      if ((x[static_cast<size_t>(j)] - x[static_cast<size_t>(N - j)]).norm() >
+          1e-8) {
+        fold = false;
+        break;
+      }
+    }
+  }
+  BatchPotential evalPot = potential;
+  if (fold) {
+    evalPot = [&](const std::vector<VectorXd> &q, std::vector<double> &v,
+                  std::vector<VectorXd> &g) {
+      const long m = N / 2;
+      bool sym = true;
+      for (long j = 1; j < m; ++j) {
+        // A few ulps: the image force matches, and the log rate stays put.
+        // A looser threshold of 1e-10 moves the LJ13 rate.
+        if ((q[static_cast<size_t>(j)] - q[static_cast<size_t>(N - j)])
+                .squaredNorm() != 0.0) {
+          sym = false;
+          break;
+        }
+      }
+      if (!sym) {
+        potential(q, v, g);
+        return;
+      }
+      std::vector<VectorXd> uniq(static_cast<size_t>(m + 1));
+      for (long j = 0; j <= m; ++j) {
+        uniq[static_cast<size_t>(j)] = q[static_cast<size_t>(j)];
+      }
+      std::vector<double> vu;
+      std::vector<VectorXd> gu;
+      potential(uniq, vu, gu);
+      v.assign(static_cast<size_t>(N), 0.0);
+      g.assign(static_cast<size_t>(N), VectorXd());
+      for (long j = 0; j <= m; ++j) {
+        v[static_cast<size_t>(j)] = vu[static_cast<size_t>(j)];
+        g[static_cast<size_t>(j)] = gu[static_cast<size_t>(j)];
+      }
+      for (long j = 1; j < m; ++j) {
+        v[static_cast<size_t>(N - j)] = vu[static_cast<size_t>(j)];
+        g[static_cast<size_t>(N - j)] = gu[static_cast<size_t>(j)];
+      }
+    };
+  }
+
+  RingEval cur = evaluateRing(x, c, evalPot, options.energyShift);
   // The unstable mode of the ring starts as every bead moving along the
   // saddle's unstable direction.
   std::vector<VectorXd> mode(x.size(), dir);
-  double curvature = lowestMode(x, cur, c, potential, mode,
-                                options.lanczosFirst, options.lanczosStep);
+  double curvature = lowestMode(x, cur, c, evalPot, mode, options.lanczosFirst,
+                                options.lanczosStep, fold);
   std::deque<std::pair<std::vector<VectorXd>, std::vector<VectorXd>>> pairs;
   auto effective = [&](const std::vector<VectorXd> &g) {
     const double par = dot(g, mode);
@@ -1116,6 +1786,7 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
       inst.converged = true;
       break;
     }
+    std::vector<VectorXd> trial(x.size());
     std::vector<VectorXd> d = geff;
     std::vector<double> alpha(pairs.size());
     for (size_t i = pairs.size(); i-- > 0;) {
@@ -1147,14 +1818,14 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
     if (big > options.maxStep) {
       scale(d, options.maxStep / big);
     }
-    std::vector<VectorXd> trial(x.size());
     for (size_t k = 0; k < x.size(); ++k) {
       trial[k] = x[k] - d[k];
     }
-    RingEval next = evaluateRing(trial, c, potential);
+    RingEval next = evaluateRing(trial, c, evalPot, options.energyShift);
     const double prevCurv = curvature;
-    curvature = lowestMode(trial, next, c, potential, mode,
-                           options.lanczosRestart, options.lanczosStep);
+    const long restart = fold ? 4L : options.lanczosRestart;
+    curvature = lowestMode(trial, next, c, evalPot, mode, restart,
+                           options.lanczosStep, fold);
     std::vector<VectorXd> geffNext = effective(next.grad);
     if ((prevCurv < 0.0) != (curvature < 0.0)) {
       pairs.clear();
@@ -1454,7 +2125,7 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
     // unstable mode.
     const double residualCut = 1e-4 * c;
     const long dim = N * f;
-    const long steps = dim <= 400 ? dim : std::min(dim, static_cast<long>(80));
+    const long steps = dim <= 1024 ? dim : std::min(dim, static_cast<long>(80));
     std::vector<VectorXd> start = cycleFull;
     start.front()(0) += 0.1;
     const std::vector<RingMode> modes =
@@ -1462,6 +2133,7 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
     inst.negativeModes = 0;
     inst.negativeEigenvalue = 0.0;
     double unresolved = 0.0;
+    std::vector<double> negative;
     for (const auto &mode : modes) {
       if (!(mode.theta < 0.0)) {
         continue;
@@ -1474,8 +2146,15 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
         unresolved = std::max(unresolved, mode.residual);
         continue;
       }
-      ++inst.negativeModes;
+      negative.push_back(mode.theta);
       inst.negativeEigenvalue = std::min(inst.negativeEigenvalue, mode.theta);
+    }
+    // A numerical null eigenvalue can sit just below zero. It is not a
+    // second unstable mode when it is tiny next to the barrier curvature.
+    for (const double theta : negative) {
+      if (theta <= 1e-3 * inst.negativeEigenvalue) {
+        ++inst.negativeModes;
+      }
     }
     if (inst.negativeModes == 0 && unresolved > 0.0) {
       throw std::runtime_error(

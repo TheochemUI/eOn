@@ -394,6 +394,7 @@ TEST_CASE("The rate instanton of a cubic well matches its decay rate",
   opt.beads = 300;
   opt.forceTolerance = 1e-8;
   opt.maxStep = 0.05;
+  opt.halfRing = false;
   RateInstanton inst =
       optimizeRateInstanton(saddle, hs, beta, {}, pes.batch(), opt);
   REQUIRE(inst.converged);
@@ -411,6 +412,37 @@ TEST_CASE("The rate instanton of a cubic well matches its decay rate",
   REQUIRE(std::abs(std::exp(inst.logRate - gammaLog) - 1.0) < 0.15);
   // Tunnelling beats the classical rate by many orders at T_c / 10.
   REQUIRE(inst.logRate > inst.classicalLogRate + std::log(1e10));
+
+  long fullCalls = 0;
+  long halfCalls = 0;
+  auto counted = [&](long &calls) {
+    return [&](const std::vector<VectorXd> &q, std::vector<double> &v,
+               std::vector<VectorXd> &g) {
+      calls += static_cast<long>(q.size());
+      pes.batch()(q, v, g);
+    };
+  };
+  RateInstantonOptions fullOpt = opt;
+  fullOpt.halfRing = false;
+  fullOpt.forceTolerance = 1e-10;
+  RateInstanton fullRing =
+      optimizeRateInstanton(saddle, hs, beta, {}, counted(fullCalls), fullOpt);
+  instantonRate(
+      fullRing, [&](long, const VectorXd &q) { return pes.hessian(q); },
+      pes.hessian(VectorXd::Zero(1)), 0.0, hs, vb);
+  RateInstantonOptions halfOpt = opt;
+  halfOpt.halfRing = true;
+  halfOpt.forceTolerance = 1e-10;
+  RateInstanton halfRing =
+      optimizeRateInstanton(saddle, hs, beta, {}, counted(halfCalls), halfOpt);
+  instantonRate(
+      halfRing, [&](long, const VectorXd &q) { return pes.hessian(q); },
+      pes.hessian(VectorXd::Zero(1)), 0.0, hs, vb, 0, 0);
+  CAPTURE(fullRing.logRate, halfRing.logRate, fullCalls, halfCalls,
+          halfRing.converged, halfRing.iterations);
+  REQUIRE(halfRing.converged);
+  REQUIRE(std::abs(halfRing.logRate - fullRing.logRate) < 1e-6);
+  REQUIRE(halfCalls < fullCalls);
 
   // The same ring through the block determinant, which a large system uses.
   {

@@ -1890,6 +1890,8 @@ int load_ini(INIReader &ini, Parameters &params) {
     o.saddle_filename =
         ini.Get("Instanton", "saddle_filename", o.saddle_filename);
     o.temperature = ini.GetReal("Instanton", "temperature", o.temperature);
+    o.half_ring = ini.GetBoolean("Instanton", "half_ring", o.half_ring);
+    o.energy_shift = ini.GetReal("Instanton", "energy_shift", o.energy_shift);
     if (o.mode != "splitting" && o.mode != "rate") {
       throw std::invalid_argument("[Instanton] mode must be splitting or rate, "
                                   "not " +

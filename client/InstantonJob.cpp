@@ -299,6 +299,8 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   ro.beads = o.beads;
   ro.maxIterations = o.max_iterations;
   ro.forceTolerance = o.force_tolerance;
+  ro.halfRing = o.half_ring;
+  ro.energyShift = o.energy_shift;
   tunneling::RateInstanton inst = tunneling::optimizeRateInstanton(
       qSaddle, hSaddle, beta, {}, evaluate, ro);
   EONC_LOG_INFO("[Instanton] ring U_N {:.6f} eV after {} iterations{}",
@@ -331,8 +333,9 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       return (1.0 - t) * anchor(lo) + t * anchor(hi);
     };
     try {
-      tunneling::instantonRate(inst, beadHessian, hReactant, vReactant, hSaddle,
-                               vSaddle, rigidModes);
+      tunneling::instantonRate(inst, beadHessian, hReactant,
+                               vReactant - o.energy_shift, hSaddle,
+                               vSaddle - o.energy_shift, rigidModes);
       rateOk = std::isfinite(inst.logRate) && inst.negativeModes == 1;
       if (inst.negativeModes != 1) {
         EONC_LOG_ERROR("[Instanton] the ring Hessian has {} negative modes, "

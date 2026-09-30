@@ -1184,6 +1184,16 @@ Instanton:
             kind: float
             default: 0.0
 
+        # Even bead count: search one turning point to the other and
+        # mirror the closed ring. An odd count keeps every bead.
+        half_ring:
+            kind: bool
+            default: true
+
+        energy_shift:
+            kind: float
+            default: 0.0
+
 ################################################################################
 
 Lanczos:
