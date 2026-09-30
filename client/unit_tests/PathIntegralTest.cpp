@@ -14,6 +14,8 @@
 
 #include "catch2/catch_amalgamated.hpp"
 
+#include <Eigen/Core>
+
 #include <cmath>
 #include <filesystem>
 #include <fstream>
@@ -133,8 +135,8 @@ void writeGle(const std::filesystem::path &path, long nModes, double tk) {
 
 TEST_CASE("Normal mode matrix is orthogonal", "[path-integral]") {
   for (long n : {1, 2, 7, 8}) {
-    const eonc::MatrixXd c = eonc::pathintegral::normalModeMatrix(n);
-    const eonc::MatrixXd eye = c * c.transpose();
+    const Eigen::MatrixXd c = eonc::pathintegral::normalModeMatrix(n);
+    const Eigen::MatrixXd eye = c * c.transpose();
     for (long i = 0; i < n; ++i) {
       for (long j = 0; j < n; ++j) {
         const double expect = i == j ? 1.0 : 0.0;
@@ -145,13 +147,13 @@ TEST_CASE("Normal mode matrix is orthogonal", "[path-integral]") {
 }
 
 TEST_CASE("Economised eigenvalues match the fit", "[path-integral]") {
-  const eonc::VectorXd small = eonc::pathintegral::ecoEigenvalues(8, 20.0);
+  const Eigen::VectorXd small = eonc::pathintegral::ecoEigenvalues(8, 20.0);
   REQUIRE(small.size() == 8);
   REQUIRE(small[0] == Catch::Approx(0.0).margin(1e-15));
   for (long k = 1; k < 8; ++k) {
     REQUIRE(small[k] == Catch::Approx(1.126555635687).epsilon(1e-6));
   }
-  const eonc::VectorXd wide = eonc::pathintegral::ecoEigenvalues(48, 20.0);
+  const Eigen::VectorXd wide = eonc::pathintegral::ecoEigenvalues(48, 20.0);
   REQUIRE(wide[1] == Catch::Approx(0.130892000997).epsilon(1e-5));
   REQUIRE(wide[24] == Catch::Approx(1.329206639740).epsilon(1e-5));
   REQUIRE(wide[47] == Catch::Approx(wide[1]).margin(1e-12));
@@ -180,9 +182,9 @@ TEST_CASE("Centroid hyperplane mean force of a harmonic oscillator",
   pot.omega = 2.0;
   RingPolymer ring = makePolymer(opt);
   const double s = 0.25;
-  eonc::VectorXd q = eonc::VectorXd::Zero(3);
-  eonc::VectorXd origin = q;
-  eonc::VectorXd normal = q;
+  Eigen::VectorXd q = Eigen::VectorXd::Zero(3);
+  Eigen::VectorXd origin = q;
+  Eigen::VectorXd normal = q;
   q[0] = s;
   origin[0] = s;
   normal[0] = 1.0;
@@ -222,7 +224,7 @@ TEST_CASE(
   opt.seed = 5;
   Harmonic pot;
   RingPolymer ring = makePolymer(opt);
-  eonc::VectorXd q = eonc::VectorXd::Zero(3);
+  Eigen::VectorXd q = Eigen::VectorXd::Zero(3);
   ring.setAllBeads(q.data());
   const long production = 6000000;
   const auto sample = ring.sample(pot, nullptr, 200000, production);
@@ -256,7 +258,7 @@ TEST_CASE("Economised springs reach the Trotter error at half the beads",
   opt.seed = 9;
   Harmonic pot;
   RingPolymer ring = makePolymer(opt);
-  eonc::VectorXd q = eonc::VectorXd::Zero(3);
+  Eigen::VectorXd q = Eigen::VectorXd::Zero(3);
   ring.setAllBeads(q.data());
   const auto sample = ring.sample(pot, nullptr, 50000, 800000);
   REQUIRE(sample.kineticCv == Catch::Approx(exact).epsilon(0.01));
