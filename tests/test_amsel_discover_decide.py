@@ -430,6 +430,114 @@ def test_lone_barrier_is_a_direct_mrm_exit(tmp_path, monkeypatch, caplog):
     assert any("exit kernel=mrm" in message and "product=1" in message for message in caplog.messages)
 
 
+def test_unlinked_product_steps_before_confidence(tmp_path, monkeypatch, caplog):
+    """The live product column -1 leaves at confidence 0. The process id stays the table key."""
+    seen = {}
+    proc_id = 957256310822057824
+
+    def decide(entry, candidates, rates, barriers, e_init, e_step, e_floor, cv):
+        seen["decide_rates"] = [tuple(item) for item in rates]
+        seen["candidates"] = list(candidates)
+        return (
+            "rejected_no_metastable_basin",
+            [entry],
+            [],
+            [],
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            (0.25, 0, False),
+            (1, 0, []),
+        )
+
+    def mrm(transient, absorbing, rates, entry):
+        seen["mrm"] = (
+            list(transient),
+            list(absorbing),
+            [tuple(item) for item in rates],
+            int(entry),
+        )
+        return (2.776e-11, [1.0], [1.0])
+
+    _install_mrm(monkeypatch, decide, mrm)
+    cfg = _config(
+        tmp_path,
+        """
+        [amsel]
+        discover_decide = true
+        e_min_init = 0.25
+        """,
+        confidence=0.6,
+        max_kmc_steps=1,
+    )
+    row = {
+        "rate": 3.60149e10,
+        "product": -1,
+        "barrier": 0.3007465477817,
+        "saddle_energy": -2795.66219,
+        "product_energy": -2795.86028,
+        "prefactor": 1.0e12,
+    }
+    state0 = _State(
+        0,
+        {proc_id: row},
+        energy=-2795.962935813,
+        confidence=0.0,
+    )
+
+    class _Linking(_States):
+        def get_product_state(self, reactant, asked):
+            seen["asked"] = asked
+            table = self.mapping[int(reactant)].procs
+            proc = table[asked]
+            product = int(proc["product"])
+            if product < 0:
+                number = max(self.mapping) + 1
+                created = _State(
+                    number,
+                    {},
+                    energy=proc["product_energy"],
+                    confidence=0.0,
+                )
+                self.mapping[number] = created
+                proc["product"] = number
+                return created
+            return self.mapping[product]
+
+    caplog.set_level(logging.INFO, logger="superbasin.amsel_gate")
+    current, previous, time, steps = kmc_step(
+        state0,
+        _Linking({0: state0}),
+        0.0,
+        0.09048214054892499,
+        None,
+        config=cfg,
+    )
+    assert steps == 1
+    assert previous.number == 0
+    assert current.number == 1
+    assert time == pytest.approx(2.776e-11)
+    assert seen["asked"] == proc_id
+    assert proc_id > 0xFFFFFFFF
+    absorbing = seen["mrm"][1][0]
+    assert (1 << 31) <= absorbing <= 0xFFFFFFFF
+    assert seen["mrm"][0] == [0]
+    assert seen["mrm"][3] == 0
+    assert seen["mrm"][2][0][0] == 0
+    assert seen["mrm"][2][0][1] == absorbing
+    assert seen["mrm"][2][0][2] == pytest.approx(3.60149e10)
+    assert seen["decide_rates"][0][1] == absorbing
+    assert absorbing in seen["candidates"]
+    assert -1 not in seen["decide_rates"][0]
+    assert row["product"] == 1
+    assert any(
+        "exit kernel=mrm" in message and "product=%s" % absorbing in message
+        for message in caplog.messages
+    )
+
+
 def test_missing_amsel_does_not_step_below_confidence(tmp_path, monkeypatch, caplog):
     """A missing amsel package logs unavailable and does not hop at confidence 0."""
     monkeypatch.setitem(__import__("sys").modules, "amsel", None)

@@ -1461,7 +1461,9 @@ class AmselConfig(BaseModel):
     first-passage-time analysis (FPTA). Those kernels are the ``amsel``
     package. When that package is absent the log line is
     ``amsel discover_decide status=unavailable`` and no step is taken
-    until the confidence threshold is met.
+    until the confidence threshold is met. A product column of -1 is still
+    an exit: the absorbing label is a 32-bit id, and the hop creates the
+    product state from the process id.
     """
     e_min_init: float = Field(
         default=0.5,

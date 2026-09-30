@@ -15,12 +15,15 @@
 ``amsel_discover_exit`` reads the current state's process table. A barrier
 strictly below ``e_min_init`` is in-basin. A higher barrier is an exit.
 A table with no in-basin edge still exits: the transient set is the entry
-state and the products are absorbing. The exit time and channel come from
+state and the products are absorbing. A product column of -1 is that exit
+too: the absorbing label is a 32-bit id, and the hop creates the product
+state from the process id. The exit time and channel come from
 MRM (mean time) or FPTA (one sample). The kernels are the ``amsel``
 package. A missing package logs ``unavailable`` and returns no exit.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import math
@@ -44,6 +47,9 @@ DISCOVER_DECIDE_STATUSES = (
 )
 _EXIT_STATUSES = ("accepted", "retightened", "split_required")
 _EXIT_KERNELS = ("mrm", "fpta")
+# amsel StateId is u32. State directories are numbered from 0. An unlinked
+# product stays out of that range until the hop creates the directory.
+_UNLINKED_STATE_BASE = 1 << 31
 
 
 class AmselSuperbasinReject(RuntimeError):
@@ -79,14 +85,12 @@ def build_graph_from_superbasin(superbasin: Any, entry_number: int) -> tuple[
     barriers: list[float] = []
     for number in superbasin.state_numbers:
         procs = superbasin.state_dict[number].get_process_table()
-        for _pid, proc in list(procs.items()):
+        for process_key, proc in list(procs.items()):
             rate = float(proc.get("rate", 0.0) or 0.0)
             if rate <= 0.0:
                 continue
-            product = proc.get("product")
-            # -1 marks a process whose product has not been linked to a state
-            # yet; amsel state ids are unsigned.
-            if product is None or int(product) < 0:
+            product = _product_id(proc, process_key)
+            if product is None:
                 continue
             rates.append((int(number), int(product), rate))
             barriers.append(_process_barrier_eV(proc))
@@ -366,7 +370,27 @@ def _resolve_state(resolve_state: Callable[[int], Any] | None, number: int) -> A
         return None
 
 
-def _product_id(proc: Mapping[str, Any]) -> int | None:
+def _unlinked_state_id(process_key: Any, proc: Mapping[str, Any]) -> int:
+    """32-bit absorbing label for a product column that is still -1.
+
+    The process id does not fit in ``amsel``'s ``u32`` state id. The label
+    is only the graph id. The hop creates the product state from the
+    process key.
+    """
+    text = "\0".join(
+        (
+            str(process_key),
+            str(proc.get("barrier")),
+            str(proc.get("product_energy")),
+            str(proc.get("saddle_energy")),
+        )
+    )
+    digest = hashlib.blake2s(text.encode("utf-8"), digest_size=4).digest()
+    offset = int.from_bytes(digest, "little") & 0x7FFFFFFF
+    return _UNLINKED_STATE_BASE + offset
+
+
+def _product_id(proc: Mapping[str, Any], process_key: Any = None) -> int | None:
     product = proc.get("product")
     if product is None:
         return None
@@ -375,7 +399,7 @@ def _product_id(proc: Mapping[str, Any]) -> int | None:
     except (TypeError, ValueError):
         return None
     if pid < 0:
-        return None
+        return _unlinked_state_id(process_key, proc)
     return pid
 
 
@@ -398,14 +422,16 @@ def basin_view_from_state(
     cutoff = float(e_min_init)
     while pending:
         state = pending.pop()
-        for proc in list(state.get_process_table().values()):
-            pid = _product_id(proc)
+        for process_key, proc in list(state.get_process_table().items()):
+            pid = _product_id(proc, process_key)
             if pid is None:
                 continue
             if _process_barrier_eV(proc) < cutoff:
                 if pid in tables:
                     continue
-                other = _resolve_state(resolve_state, pid)
+                other = None
+                if pid < _UNLINKED_STATE_BASE:
+                    other = _resolve_state(resolve_state, pid)
                 if other is None:
                     other = _ProcessView(pid, {})
                 tables[pid] = other
@@ -429,8 +455,8 @@ def basin_view_from_state(
 def _has_in_basin_edge(view: Any, e_min_init: float) -> bool:
     cutoff = float(e_min_init)
     for state in view.state_dict.values():
-        for proc in state.get_process_table().values():
-            if _product_id(proc) is None:
+        for process_key, proc in state.get_process_table().items():
+            if _product_id(proc, process_key) is None:
                 continue
             if _process_barrier_eV(proc) < cutoff:
                 return True
@@ -566,8 +592,8 @@ def _direct_escape_partition(
     absorbing: list[int] = []
     seen: set[int] = set()
     rates: list[tuple[int, int, float]] = []
-    for proc in state.get_process_table().values():
-        pid = _product_id(proc)
+    for process_key, proc in state.get_process_table().items():
+        pid = _product_id(proc, process_key)
         if pid is None or pid == int(entry):
             continue
         if _process_barrier_eV(proc) < cutoff:
@@ -597,15 +623,15 @@ def _exit_process(
         state = state_dict.get(int(number))
         if state is None:
             continue
-        for pid, proc in state.get_process_table().items():
-            if _product_id(proc) != int(absorbing_id):
+        for process_key, proc in state.get_process_table().items():
+            if _product_id(proc, process_key) != int(absorbing_id):
                 continue
             barrier = _process_barrier_eV(proc)
             if barrier < cutoff:
                 continue
             rate = float(proc.get("rate", 0.0) or 0.0)
             if best is None or rate > best[0]:
-                best = (rate, int(number), pid, barrier)
+                best = (rate, int(number), process_key, barrier)
     if best is None:
         return None
     rate, number, pid, barrier = best
@@ -636,7 +662,8 @@ def amsel_discover_exit(
     when discover accepts the basin, retightens it, or splits it. With no
     such edge, a barrier at or above the cutoff is a direct exit. The
     transient set is the entry state, the products are absorbing, and the
-    logged status is ``accepted``.
+    logged status is ``accepted``. A product column of -1 uses a 32-bit
+    absorbing label. The process id is unchanged.
 
     ``debug_use_mean_time`` selects MRM. Otherwise the clock is one FPTA
     sample. The other kernel is used when the selected one is missing.

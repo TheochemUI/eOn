@@ -78,7 +78,9 @@ at or above `e_min_init` counts as an exit. On Si6N8 isomer 1 the back
 barrier is 0.20 eV and the flip-out barrier is 0.30 eV. With `e_min_init`
 at 0.25 eV the 0.20 eV edge stays in the basin and the 0.30 eV edge leaves.
 A table that has only the 0.30 eV saddle, and no faster edge, still leaves.
-The transient set is that state. The product is absorbing.
+The transient set is that state. The product is absorbing. A product column
+of -1 is that same exit: the label sent to amsel is a 32-bit id at or above
+2147483648, and the hop creates the product state from the process id.
 
 The basin comes from `amsel.discover_decide_status` when a faster edge is
 present. The exit time and the exit channel come from the mean-rate method
