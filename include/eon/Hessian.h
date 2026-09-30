@@ -74,6 +74,7 @@ private:
   bool finalizeHessian(int size);
   bool calculateColored(double cutoff, double dr, FdScheme scheme);
   bool calculateSerial(double dr, FdScheme scheme);
+  bool calculateBatched(double dr, FdScheme scheme);
   eonc::log::Scoped log;
 };
 

@@ -610,4 +610,57 @@ TEST_CASE("cartesianMode divides by sqrt(mass) and normalizes", "[hessian]") {
                     std::invalid_argument);
 }
 
+namespace {
+// LJ without a reported cutoff, so neither side takes the colored path;
+// Batched reports batch support and takes the batched path through the
+// default forceBatch loop.
+template <bool Batched> class WrappedLJ final : public eonc::Potential {
+public:
+  WrappedLJ(std::shared_ptr<eonc::Potential> inner, const Parameters &p)
+      : eonc::Potential(PotType::LJ, p),
+        inner_(std::move(inner)) {}
+  void force(long n, const double *r, const int *z, double *f, double *u,
+             double *var, const double *box) override {
+    inner_->force(n, r, z, f, u, var, box);
+  }
+  [[nodiscard]] bool supportsBatchEvaluation() const noexcept override {
+    return Batched;
+  }
+
+private:
+  std::shared_ptr<eonc::Potential> inner_;
+};
+} // namespace
+
+TEST_CASE_METHOD(HessianScratch,
+                 "Batched FD Hessian matches the serial one on LJ",
+                 "[hessian]") {
+  for (const char *scheme : {"one_sided", "central", "fourth"}) {
+    CAPTURE(scheme);
+    Parameters params;
+    ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+    ParametersLoadAccess::hessian_options(params).fd_scheme = scheme;
+    auto lj = eonc::helpers::makePotential(PotType::LJ, params);
+    auto serial = std::make_shared<WrappedLJ<false>>(lj, params);
+    auto batched = std::make_shared<WrappedLJ<true>>(lj, params);
+    Matter serialM(serial, params), batchedM(batched, params);
+    serialM.con2matter(std::string("reactant.con"));
+    batchedM.con2matter(std::string("reactant.con"));
+    VectorXi sub(3);
+    sub << 0, 4, 7;
+    Hessian hs(params, &serialM), hb(params, &batchedM);
+    hs.writeHessianFile(false);
+    hb.writeHessianFile(false);
+    const MatrixXd a = hs.getHessian(&serialM, sub);
+    const MatrixXd b = hb.getHessian(&batchedM, sub);
+    REQUIRE(a.rows() == 9);
+    REQUIRE(b.rows() == 9);
+    for (long i = 0; i < 9; ++i) {
+      for (long j = 0; j < 9; ++j) {
+        REQUIRE_THAT(b(i, j), Catch::Matchers::WithinAbs(a(i, j), 1e-12));
+      }
+    }
+  }
+}
+
 } /* namespace tests */

@@ -324,7 +324,104 @@ bool Hessian::calculate() {
     }
     hessian.setZero();
   }
+  // A potential that evaluates batches (calculator groups, GPU models)
+  // takes the displaced structures together; the column checkpoint stays
+  // on the one-column-at-a-time path.
+  if (ckptPath.empty() && matter->getPotential() &&
+      matter->getPotential()->supportsBatchEvaluation() && size > 1) {
+    return calculateBatched(dr, scheme);
+  }
   return calculateSerial(dr, scheme);
+}
+
+bool Hessian::calculateBatched(double dr, FdScheme scheme) {
+  const int size = static_cast<int>(atoms.rows()) * 3;
+  const AtomMatrix pos = matter->getPositions();
+  auto pot = matter->getPotential();
+
+  Matter base(*matter);
+  const AtomMatrix force0 = base.getForces();
+  if (!force0.allFinite()) {
+    QUILL_LOG_ERROR(log, "[Hessian] non-finite forces at undisplaced geometry; "
+                         "aborting FD Hessian");
+    return false;
+  }
+
+  // Stencil points per column, in the order fdForceDerivative takes them.
+  std::vector<double> steps{1.0};
+  if (scheme != FdScheme::OneSided) {
+    steps.push_back(-1.0);
+  }
+  if (scheme == FdScheme::Fourth) {
+    steps.push_back(2.0);
+    steps.push_back(-2.0);
+  }
+  const int perColumn = static_cast<int>(steps.size());
+  const long nAtoms = matter->numberOfAtoms();
+  const VectorXi nrs = matter->getAtomicNrs();
+  const Matrix3d box =
+      matter->getPeriodic() ? matter->getCell() : Matrix3d::Zero().eval();
+
+  // Columns in chunks, so memory stays bounded for large mobile sets.
+  constexpr int kChunkColumns = 32;
+  std::vector<Matter> displaced;
+  for (int c0 = 0; c0 < size; c0 += kChunkColumns) {
+    const int c1 = std::min(size, c0 + kChunkColumns);
+    const long n = static_cast<long>(c1 - c0) * perColumn;
+    displaced.assign(static_cast<size_t>(n), base);
+    std::vector<const double *> posPtr, boxPtr;
+    std::vector<const int *> nrsPtr;
+    std::vector<double *> frcPtr;
+    for (int i = c0; i < c1; ++i) {
+      for (int k = 0; k < perColumn; ++k) {
+        Matter &m = displaced[static_cast<size_t>((i - c0) * perColumn + k)];
+        AtomMatrix p = pos;
+        p(atoms(i / 3), i % 3) += steps[static_cast<size_t>(k)] * dr;
+        m.setPositions(p);
+      }
+    }
+    for (auto &m : displaced) {
+      posPtr.push_back(m.getPositions().data());
+      nrsPtr.push_back(nrs.data());
+      frcPtr.push_back(m.forcesData());
+      boxPtr.push_back(box.data());
+    }
+    std::vector<double> energies(static_cast<size_t>(n)),
+        variances(static_cast<size_t>(n));
+    pot->forceBatch(n, nAtoms, posPtr.data(), nrsPtr.data(), frcPtr.data(),
+                    energies.data(), variances.data(), boxPtr.data());
+    for (long j = 0; j < n; ++j) {
+      displaced[static_cast<size_t>(j)].setComputedPotential(
+          energies[static_cast<size_t>(j)], variances[static_cast<size_t>(j)]);
+    }
+    for (int i = c0; i < c1; ++i) {
+      auto forces = [&](int k) -> const AtomMatrix & {
+        return displaced[static_cast<size_t>((i - c0) * perColumn + k)]
+            .getForces();
+      };
+      const AtomMatrix &fPlus = forces(0);
+      const AtomMatrix &fMinus = perColumn > 1 ? forces(1) : force0;
+      const AtomMatrix &fPlus2 = perColumn > 2 ? forces(2) : force0;
+      const AtomMatrix &fMinus2 = perColumn > 3 ? forces(3) : force0;
+      if (!fPlus.allFinite() || !fMinus.allFinite() || !fPlus2.allFinite() ||
+          !fMinus2.allFinite()) {
+        QUILL_LOG_ERROR(log,
+                        "[Hessian] non-finite forces for FD column {}; "
+                        "aborting FD Hessian",
+                        i);
+        return false;
+      }
+      const AtomMatrix slope =
+          fdForceDerivative(scheme, dr, force0, fPlus, fMinus, fPlus2, fMinus2);
+      for (int j = 0; j < size; j++) {
+        const double effMass = std::sqrt(matter->getMass(atoms(j / 3)) *
+                                         matter->getMass(atoms(i / 3)));
+        hessian(i, j) =
+            eonc::safemath::safe_div(-slope(atoms(j / 3), j % 3), effMass, 0.0);
+      }
+    }
+  }
+  return finalizeHessian(size);
 }
 
 bool Hessian::calculateColored(double cutoff, double dr, FdScheme scheme) {

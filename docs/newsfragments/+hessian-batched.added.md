@@ -1,0 +1,1 @@
+The finite-difference Hessian evaluates its displaced structures through `forceBatch` when the potential batches, so under `[RgpotPot] ranks_per_image` its columns spread over the CPMD calculator groups. Prefactor and instanton Hessians gain the same. A column checkpoint keeps the one-column path.
