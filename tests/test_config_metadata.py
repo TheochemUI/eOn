@@ -37,6 +37,8 @@ ConfigClass = config_module.ConfigClass
 
 SECTION_CLASS_NAMES = {
     "Saddle Search": "SaddleSearchConfig",
+    "Dynamics": "DynamicsConfig",
+    "Instanton": "InstantonConfig",
     "ARTn": "ARTnConfig",
     "IRA": "IRAConfig",
     "BGSD": "BGSDConfig",

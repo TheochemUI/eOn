@@ -300,4 +300,74 @@ TEST_CASE("Parameters.load rejects unknown enumerated strings",
   }
 }
 
+TEST_CASE("JSON reads path-integral keys from Dynamics and Thermostat",
+          "[params][json]") {
+  nlohmann::json dynamics = {
+      {"Dynamics",
+       {{"path_beads", 16},
+        {"path_springs", "Eco"},
+        {"path_pile_tau", 50.0},
+        {"path_seed", 3},
+        {"thermostat", "Pile"}}},
+  };
+  Parameters fromDynamics;
+  eonc::config::from_json(dynamics, fromDynamics);
+  REQUIRE(fromDynamics.thermostat_options().path_beads == 16);
+  REQUIRE(fromDynamics.thermostat_options().path_springs == "eco");
+  REQUIRE(fromDynamics.thermostat_options().path_pile_tau ==
+          Catch::Approx(50.0 / fromDynamics.constants().timeUnit));
+  REQUIRE(fromDynamics.thermostat_options().path_seed == 3);
+  REQUIRE(fromDynamics.thermostat_options().kind == "pile");
+
+  nlohmann::json thermostatWins = {
+      {"Dynamics", {{"path_beads", 16}, {"path_springs", "trotter"}}},
+      {"Thermostat", {{"path_beads", 4}, {"path_springs", "ECO"}}},
+  };
+  Parameters overridden;
+  eonc::config::from_json(thermostatWins, overridden);
+  REQUIRE(overridden.thermostat_options().path_beads == 4);
+  REQUIRE(overridden.thermostat_options().path_springs == "eco");
+
+  nlohmann::json badSprings = {{"Dynamics", {{"path_springs", "foo"}}}};
+  Parameters bad;
+  REQUIRE_THROWS_AS(eonc::config::from_json(badSprings, bad),
+                    std::invalid_argument);
+
+  nlohmann::json instanton = {
+      {"Instanton",
+       {{"springs", "Trotter"},
+        {"beads", 32},
+        {"mode", "rate"},
+        {"temperatures", "10, 20"}}},
+  };
+  Parameters fromInstanton;
+  eonc::config::from_json(instanton, fromInstanton);
+  REQUIRE(fromInstanton.instanton_options().springs == "trotter");
+  REQUIRE(fromInstanton.instanton_options().beads == 32);
+  REQUIRE(fromInstanton.instanton_options().mode == "rate");
+  REQUIRE(fromInstanton.instanton_options().temperatures.size() == 2);
+  REQUIRE(fromInstanton.instanton_options().temperatures[0] ==
+          Catch::Approx(10.0));
+  REQUIRE(fromInstanton.instanton_options().temperatures[1] ==
+          Catch::Approx(20.0));
+
+  nlohmann::json listed = {
+      {"Instanton", {{"temperatures", {5.0, 15.0}}}},
+  };
+  Parameters fromList;
+  eonc::config::from_json(listed, fromList);
+  REQUIRE(fromList.instanton_options().temperatures.size() == 2);
+  REQUIRE(fromList.instanton_options().temperatures[0] == Catch::Approx(5.0));
+  REQUIRE(fromList.instanton_options().temperatures[1] == Catch::Approx(15.0));
+
+  Parameters written;
+  ParametersLoadAccess::thermostat_options(written).path_beads = 12;
+  ParametersLoadAccess::instanton_options(written).springs = "trotter";
+  auto roundTrip = eonc::config::to_json(written);
+  Parameters loaded;
+  eonc::config::from_json(roundTrip, loaded);
+  REQUIRE(loaded.thermostat_options().path_beads == 12);
+  REQUIRE(loaded.instanton_options().springs == "trotter");
+}
+
 } /* namespace tests */

@@ -88,6 +88,7 @@ product_filename = product.con
 ; start from a converged band instead of the straight line
 initial_path = neb.con
 beads = 256
+springs = trotter
 beta_hbar_omega = 30
 force_tolerance = 1e-3
 ; one finite-difference Hessian every 4 beads, linear in between

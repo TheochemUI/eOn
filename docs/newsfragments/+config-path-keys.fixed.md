@@ -1,0 +1,1 @@
+The server catalog lists the path-integral keys on `[Dynamics]` and `springs` on `[Instanton]`, with the same names and defaults as the client. JSON load reads those keys, including an instanton section.

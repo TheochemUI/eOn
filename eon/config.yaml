@@ -545,6 +545,47 @@ Dynamics:
         thermostat:
             kind: string
             default: none
+            values:
+                - andersen
+                - langevin
+                - none
+                - nose_hoover
+                - pile
+                - piglet
+
+        # Beads on a pile or piglet trajectory.
+        path_beads:
+            kind: int
+            default: 8
+
+        path_springs:
+            kind: string
+            default: trotter
+            values:
+                - eco
+                - trotter
+
+        # Highest frequency, in internal units, that economised springs match.
+        path_eco_omega_max:
+            kind: float
+            default: 0.0
+
+        path_gle_file:
+            kind: string
+            default: ""
+
+        # Centroid Langevin damping time, in femtoseconds.
+        path_pile_tau:
+            kind: float
+            default: 100.0
+
+        path_pile_scale:
+            kind: float
+            default: 1.0
+
+        path_seed:
+            kind: int
+            default: 1
 
         andersen_alpha:
             kind: float
@@ -1178,8 +1219,8 @@ Instanton:
             kind: string
             default: saddle.con
 
-        # K. 0 means unset. mode rate requires a positive value below
-        # the crossover temperature of the saddle.
+        # K. 0 means unset. Below the crossover the job optimises the
+        # ring. Above it the job writes the parabolic barrier factor.
         temperature:
             kind: float
             default: 0.0
@@ -1220,6 +1261,14 @@ Instanton:
         hessian_final:
             kind: string
             default: recomputed
+
+        # eco is refused. The instanton uses Trotter springs.
+        springs:
+            kind: string
+            default: trotter
+            values:
+                - eco
+                - trotter
 
 ################################################################################
 

@@ -95,7 +95,8 @@ as well, because that discretisation assumes Trotter springs.
 `path_gle_file`. The centroid keeps a separate Langevin thermostat.
 `path_pile_tau` is that damping time in femtoseconds, and
 `path_pile_scale` multiplies the critical damping of the internal modes
-when the thermostat is `pile`.
+when the thermostat is `pile`. `path_seed` seeds the path-integral
+random numbers.
 
 The sampler can hold the centroid on a hyperplane and average the
 Cartesian force along the normal. That average is the mean force for
