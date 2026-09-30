@@ -150,6 +150,13 @@ public:
     return pot_.caps().reentrancy == rgpot::Reentrancy::SharedInstance;
   }
 
+  /// Kernels that do not implement periodic boundaries must not have their
+  /// coordinates wrapped. A free cluster with an atom on the cell face is
+  /// torn by that wrap on the first optimizer step.
+  [[nodiscard]] bool requiresIsolatedMoleculeLayout() const noexcept override {
+    return !pot_.caps().periodic;
+  }
+
   [[nodiscard]] bool needsPerImageInstance() const noexcept override {
     const auto caps = pot_.caps();
     return caps.perImageInstances ||
