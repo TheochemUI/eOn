@@ -64,7 +64,9 @@ def build_graph_from_superbasin(superbasin: Any, entry_number: int) -> tuple[
             if rate <= 0.0:
                 continue
             product = proc.get("product")
-            if product is None:
+            # -1 marks a process whose product has not been linked to a state
+            # yet; amsel state ids are unsigned.
+            if product is None or int(product) < 0:
                 continue
             rates.append((int(number), int(product), rate))
             barriers.append(_process_barrier_eV(proc))
@@ -79,12 +81,18 @@ def discover_decide_for_superbasin(
     e_min_step: float = 0.05,
     e_min_floor: float = 0.05,
     cv_threshold: float = 10.0,
+    on_error: str = "fallback_single",
 ) -> dict[str, Any]:
     """Run amsel.discover_decide_status; return a structured result dict.
 
     Keys: status (str), primary_transient (list[int]|None), raw (tuple|None),
     available (bool). If amsel is not importable, available=False and status
     is ``unavailable`` (caller should proceed with legacy MCAMC).
+
+    ``on_error`` decides what a failing amsel call returns: ``raise``
+    re-raises, ``unavailable_mcamc`` reports amsel as unavailable so MCAMC
+    runs as before, and ``fallback_single`` (the default) reports
+    ``fallback_single`` so the caller takes an ordinary single-state step.
     """
     try:
         from amsel import discover_decide_status
@@ -114,16 +122,10 @@ def discover_decide_for_superbasin(
     while len(barriers) < len(rate_triples):
         barriers.append(0.5)
     barriers = barriers[: len(rate_triples)]
+    # The cutoff separates fast in-basin edges from exits. It is not lifted
+    # to the largest barrier: that would make every edge transient and leave
+    # the basin without an absorbing border.
     e_init = float(e_min_init)
-    if barriers:
-        floor = max(barriers) + 0.05
-        if floor > e_init:
-            logger.info(
-                "amsel e_min_init raised from %s to %s (max barrier + 0.05 eV)",
-                e_init,
-                floor,
-            )
-            e_init = floor
 
     try:
         raw = discover_decide_status(
@@ -138,7 +140,7 @@ def discover_decide_for_superbasin(
         )
     except Exception as exc:
         logger.warning("amsel discover_decide_status failed: %s", exc)
-        policy = str(getattr(config, "amsel_on_error", "fallback_single") or "fallback_single")
+        policy = str(on_error or "fallback_single")
         if policy == "raise":
             raise
         if policy == "unavailable_mcamc":

@@ -337,6 +337,10 @@ class ConfigClass:
             self.amsel_cv_threshold = parser.getfloat('amsel', 'cv_threshold')
         except Exception:
             self.amsel_cv_threshold = 10.0
+        try:
+            self.amsel_on_error = parser.get('amsel', 'on_error')
+        except Exception:
+            self.amsel_on_error = "fallback_single"
         # Back-compat aliases used by Superbasin.step getattr
         self.sb_amsel_discover_decide = self.amsel_discover_decide
         self.sb_amsel_e_min_init = self.amsel_e_min_init

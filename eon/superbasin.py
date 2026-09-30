@@ -72,6 +72,7 @@ class Superbasin:
                     getattr(self.config, "amsel_cv_threshold",
                             getattr(self.config, "sb_amsel_cv_threshold", 10.0))
                 ),
+                on_error=str(getattr(self.config, "amsel_on_error", "fallback_single")),
             )
             status = apply_gate_to_superbasin(self, entry_state, decision)
             logger.info(
