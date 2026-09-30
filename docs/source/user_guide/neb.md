@@ -42,6 +42,11 @@ figures (full history, 1:1 reaction-valley panel, structure strip), see
 - Improved tangent method of {cite:t}`neb-henkelmanImprovedTangentEstimate2000`.
 - Climbing image NEB of {cite:t}`neb-henkelmanClimbingImageNudged2000`.
 - Doubly nudged method of {cite:t}`neb-trygubenkoDoublyNudgedElastic2004`.
+- Solid-state band of {cite:t}`neb-sheppardGeneralizedSolidstateNudged2012`,
+  enabled with `solid_state = true`. Interior images relax the cell with
+  the atoms. The cell stays lower triangular, and the tangent uses one
+  Jacobian for atomic displacements and cell strain
+  ([doi:10.1063/1.3684549](https://doi.org/10.1063/1.3684549)).
 
 ```{versionadded} 2.0
 - The energy weighted varying springs method of {cite:t}`neb-asgeirssonNudgedElasticBand2021`.
@@ -154,6 +159,40 @@ zoom_after = 0.0
 zoom_interpolation = cubic
 zoom_ci_stability = 5
 ci_mmf = true
+```
+
+### Solid-state band
+
+`solid_state = true` gives each interior image its own cell. The reactant
+and product cells stay fixed. A proper rotation puts every cell into lower
+triangular form before the band moves: the first lattice vector lies on x
+and the second lies in the xy plane. That removes the three rotations of
+the cell. The initial path for `initializer = linear` is a fractional
+interpolation of those oriented endpoints. `initializer = file` keeps the
+supplied frames after the same rotation.
+
+The spring and the perpendicular force are evaluated in the joint metric of
+{cite:t}`neb-sheppardGeneralizedSolidstateNudged2012`. `solid_state_weight`
+multiplies the cell block of the Jacobian. The default, 1, gives a cell
+strain the same weight as an atomic displacement.
+`solid_state_pressure` is a hydrostatic pressure in eV/Angstrom^3 added to
+that metric. Positive pressure favors a smaller cell. Zero leaves the
+potential-energy surface.
+
+The cell force is the stress tensor. A potential that implements the Cauchy
+stress, with the sign `sigma = (1/V) dE/dε` for the right strain
+`h <- h (I+ε)` at fixed fractional coordinates, is used directly. Any other
+potential is differentiated on the six lower strain components.
+
+`ci_mmf`, `zoom_neb`, `onsager_machlup`, `neb_doubly_nudged`, and
+`neb_elastic_band` are refused. The climbing image itself is the joint-space
+reflection of the force. Peak files still carry the atomic block of the tangent.
+
+```ini
+[Nudged Elastic Band]
+solid_state = true
+solid_state_weight = 1.0
+solid_state_pressure = 0.0
 ```
 
 ### Parallel evaluation
