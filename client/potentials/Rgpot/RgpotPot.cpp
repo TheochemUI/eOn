@@ -153,12 +153,40 @@ void RgpotPot::releaseWorkersAtExit() {
   });
 }
 
+namespace {
+// Runs one evaluation and keeps its error instead of throwing, so the
+// rank still joins every broadcast that follows.
+bool try_force(const RGPotEngine &engine, long N, const double *R,
+               const int *atomicNrs, double *F, double *U, const double *box,
+               std::string &error) {
+  try {
+    engine.force(N, R, atomicNrs, F, U, box);
+    return true;
+  } catch (const std::exception &ex) {
+    error = ex.what();
+    return false;
+  }
+}
+
+[[noreturn]] void raise_failure(long system, int owner,
+                                const std::string &error) {
+  std::string msg = "RGPOT: calculator " + std::to_string(owner) +
+                    " failed on system " + std::to_string(system);
+  if (!error.empty())
+    msg += ": " + error;
+  throw std::runtime_error(msg);
+}
+} // namespace
+
 void RgpotPot::computeSingle(long N, const double *R, const int *atomicNrs,
                              double *F, double *U, const double *box) {
   // Group 0 computes; its first rank's result reaches every rank.
+  std::string error;
+  bool ok = true;
   if (impl_->calculatorIndex() == 0)
-    impl_->force(N, R, atomicNrs, F, U, box);
-  impl_->shareResult(0, N, F, U);
+    ok = try_force(*impl_, N, R, atomicNrs, F, U, box, error);
+  if (!impl_->shareResult(0, N, F, U, ok))
+    raise_failure(0, 0, error);
 }
 
 void RgpotPot::computeBatch(long nSystems, long nAtoms,
@@ -167,15 +195,32 @@ void RgpotPot::computeBatch(long nSystems, long nAtoms,
                             double *energies, const double *const *boxes) {
   const int groups = impl_->calculatorGroups();
   const int mine = impl_->calculatorIndex();
-  for (long j = 0; j < nSystems; j++) {
-    if (groups <= 1 || static_cast<int>(j % groups) == mine)
+  if (impl_->calculatorWorld() <= 1) {
+    for (long j = 0; j < nSystems; j++)
       impl_->force(nAtoms, positions[j], atomicNrs[j], forces[j], &energies[j],
                    boxes[j]);
+    return;
   }
-  if (impl_->calculatorWorld() > 1)
-    for (long j = 0; j < nSystems; j++)
-      impl_->shareResult(static_cast<int>(j % groups), nAtoms, forces[j],
-                         &energies[j]);
+  std::vector<char> ok(static_cast<size_t>(nSystems), 1);
+  std::vector<std::string> errors(static_cast<size_t>(nSystems));
+  for (long j = 0; j < nSystems; j++) {
+    if (static_cast<int>(j % groups) == mine)
+      ok[static_cast<size_t>(j)] =
+          try_force(*impl_, nAtoms, positions[j], atomicNrs[j], forces[j],
+                    &energies[j], boxes[j], errors[static_cast<size_t>(j)]);
+  }
+  // Every share runs before any rank raises, so all ranks leave together.
+  long failed = -1;
+  for (long j = 0; j < nSystems; j++) {
+    const int owner = static_cast<int>(j % groups);
+    if (!impl_->shareResult(owner, nAtoms, forces[j], &energies[j],
+                            ok[static_cast<size_t>(j)] != 0) &&
+        failed < 0)
+      failed = j;
+  }
+  if (failed >= 0)
+    raise_failure(failed, static_cast<int>(failed % groups),
+                  errors[static_cast<size_t>(failed)]);
 }
 
 void RgpotPot::serveWorker() {
@@ -193,8 +238,13 @@ void RgpotPot::serveWorker() {
     impl_->broadcastFromDriver(Z.data(), Z.size() * sizeof(int));
     impl_->broadcastFromDriver(box.data(), box.size() * sizeof(double));
     std::vector<double> F(R.size()), U(static_cast<size_t>(m));
+    // A failed request raised on the driver too; the driver decides
+    // whether the job goes on, so a worker keeps serving.
     if (hdr[0] == kSingle) {
-      computeSingle(n, R.data(), Z.data(), F.data(), U.data(), box.data());
+      try {
+        computeSingle(n, R.data(), Z.data(), F.data(), U.data(), box.data());
+      } catch (const std::runtime_error &) {
+      }
       continue;
     }
     std::vector<const double *> pos(static_cast<size_t>(m)), bx(pos.size());
@@ -206,7 +256,11 @@ void RgpotPot::serveWorker() {
       frc[static_cast<size_t>(j)] = F.data() + 3 * n * j;
       bx[static_cast<size_t>(j)] = box.data() + 9 * j;
     }
-    computeBatch(m, n, pos.data(), nrs.data(), frc.data(), U.data(), bx.data());
+    try {
+      computeBatch(m, n, pos.data(), nrs.data(), frc.data(), U.data(),
+                   bx.data());
+    } catch (const std::runtime_error &) {
+    }
   }
 }
 
@@ -223,8 +277,10 @@ void RgpotPot::force(long N, const double *R, const int *atomicNrs, double *F,
   impl_->broadcastFromDriver(const_cast<double *>(R), 3 * N * sizeof(double));
   impl_->broadcastFromDriver(const_cast<int *>(atomicNrs), N * sizeof(int));
   impl_->broadcastFromDriver(const_cast<double *>(box), 9 * sizeof(double));
-  computeSingle(N, R, atomicNrs, F, U, box);
+  // Before the evaluation, so a failure that ends the job still stops
+  // the workers.
   releaseWorkersAtExit();
+  computeSingle(N, R, atomicNrs, F, U, box);
 }
 
 bool RgpotPot::supportsBatchEvaluation() const noexcept {
@@ -252,8 +308,8 @@ void RgpotPot::forceBatch(long nSystems, long nAtoms,
     impl_->broadcastFromDriver(Z.data(), Z.size() * sizeof(int));
     impl_->broadcastFromDriver(box.data(), box.size() * sizeof(double));
   }
-  computeBatch(nSystems, nAtoms, positions, atomicNrs, forces, energies, boxes);
   releaseWorkersAtExit();
+  computeBatch(nSystems, nAtoms, positions, atomicNrs, forces, energies, boxes);
   for (long j = 0; j < nSystems; j++) {
     if (variances)
       variances[j] = 0.0;

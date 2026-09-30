@@ -301,19 +301,24 @@ void RGPotEngine::broadcastFromDriver(void *data, std::size_t bytes) const {
     throw std::runtime_error("RGPOT: could not broadcast from the driver rank");
 }
 
-void RGPotEngine::shareResult(int owner, long N, double *F, double *U) const {
+bool RGPotEngine::shareResult(int owner, long N, double *F, double *U,
+                              bool ok) const {
   if (!impl_ || impl_->world <= 1)
-    return;
-  std::vector<double> buf(static_cast<size_t>(3 * N + 1));
+    return ok;
+  // Slot 0 carries the owner's status, so a failed evaluation reaches
+  // every rank through the same broadcast as a good one.
+  std::vector<double> buf(static_cast<size_t>(3 * N + 2));
   if (owner == impl_->group) {
-    buf[0] = *U;
-    std::copy(F, F + 3 * N, buf.begin() + 1);
+    buf[0] = ok ? 1.0 : 0.0;
+    buf[1] = *U;
+    std::copy(F, F + 3 * N, buf.begin() + 2);
   }
   if (::rgpot::shareFromCalculator(owner, buf.data(),
                                    buf.size() * sizeof(double)) == 0)
     throw std::runtime_error("RGPOT: could not share a calculator result");
-  *U = buf[0];
-  std::copy(buf.begin() + 1, buf.end(), F);
+  *U = buf[1];
+  std::copy(buf.begin() + 2, buf.end(), F);
+  return buf[0] == 1.0;
 }
 
 bool RGPotEngine::available() const {

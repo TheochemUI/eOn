@@ -70,8 +70,9 @@ public:
   /// Collective on MPI_COMM_WORLD: every rank leaves with the energy and
   /// the 3N forces computed by the first rank of group `owner`. Only
   /// CPMD's parent rank holds the true forces, so this also keeps the
-  /// ranks of one group on the same step.
-  void shareResult(int owner, long N, double *F, double *U) const;
+  /// ranks of one group on the same step. `ok` is the owner's status;
+  /// the return value is the owner's status on every rank.
+  bool shareResult(int owner, long N, double *F, double *U, bool ok) const;
 
 private:
   struct Impl;
