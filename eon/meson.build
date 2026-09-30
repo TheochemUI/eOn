@@ -13,7 +13,7 @@ py.install_sources(
         'config.py',
         'config.yaml',
         'displace.py',
-        'eon_kdb.py',
+        'process_catalog.py',
         'escaperate.py',
         'explorer.py',
         'fileio.py',
