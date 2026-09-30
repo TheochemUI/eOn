@@ -2,7 +2,7 @@
 myst:
   html_meta:
     "description": "Tunnelling splittings between two minima in eOn, and the thermal rate through a saddle below the crossover: WKB along a NEB band and the ring-polymer instanton job."
-    "keywords": "eOn instanton, tunnelling splitting, two-level system, WKB, ring polymer, instanton rate"
+    "keywords": "eOn instanton, tunnelling splitting, two-level system, WKB, ring polymer, instanton rate."
 ---
 
 # Tunnelling splittings
@@ -28,16 +28,17 @@ mass-weighted lengths are in amu^0.5 Å.
 
 ## WKB along a NEB band
 
-Every NEB job writes `reaction_coordinate_mw`, the mass-weighted arc length, on
-each frame of `neb.con`. The first frame also carries the band's WKB estimate:
+Every nudged elastic band (NEB) job writes `reaction_coordinate_mw`, the mass-weighted arc length, on
+each frame of `neb.con`. The first frame also carries the band's Wentzel-Kramers-Brillouin (WKB) estimate.
+The keys are:
 
 | Key | Meaning |
 |---|---|
-| `hbar_omega_reactant`, `hbar_omega_product` | {math}`\hbar\omega` of each well along the band, from a fit of {math}`a s^2 + b s^3` to the images within half the barrier |
-| `tunnel_action` | {math}`S = \hbar^{-1} \int \sqrt{2 (V(s) - E)}\, ds` over the forbidden region |
-| `tunnel_splitting` | {math}`\Delta_0 = (\hbar\omega / \pi) e^{-S}`, with {math}`\omega` the geometric mean of the wells |
-| `tls_energy` | {math}`\sqrt{\Delta^2 + \Delta_0^2}` |
-| `tunnel_deep_wells` | 1 when both barriers exceed {math}`\hbar\omega`; below that, WKB is the wrong tool |
+| `hbar_omega_reactant`, `hbar_omega_product` | Wells: {math}`\hbar\omega` of each well along the band, from a fit of {math}`a s^2 + b s^3` to the images within half the barrier |
+| `tunnel_action` | Action: {math}`S = \hbar^{-1} \int \sqrt{2 (V(s) - E)}\, ds` over the forbidden region |
+| `tunnel_splitting` | Estimate: {math}`\Delta_0 = (\hbar\omega / \pi) e^{-S}`, with {math}`\omega` the geometric mean of the wells |
+| `tls_energy` | Energy: {math}`\sqrt{\Delta^2 + \Delta_0^2}` |
+| `tunnel_deep_wells` | Flag: 1 when both barriers exceed {math}`\hbar\omega`; below that, WKB is the wrong tool |
 
 The profile between images is a monotone cubic, so it cannot dip below the
 data. The level {math}`E` is the higher of the two harmonic ground states. A
@@ -62,7 +63,7 @@ S = \sum_j \frac{|q_{j+1} - q_j|^2}{2\,\delta\tau} + \delta\tau \sum_j V(q_j),
 
 in mass-weighted coordinates {math}`q`. The splitting comes from the ratio of
 the off-diagonal to the diagonal imaginary-time propagator, both taken in the
-same steepest-descent approximation:
+same steepest-descent approximation.
 
 ```{math}
 \Delta_0 = 2\hbar \sqrt{\frac{S_0}{2\pi\hbar\,\delta\tau}}
@@ -102,25 +103,24 @@ mode. Values above {math}`10^3` mean the kink is isolated; small values mean
 to the reactant first: its mass-weighted mean displacement is removed, and
 for a cluster its best rotation as well.
 
-Each iteration evaluates every interior bead in one call. Under
-`[RgpotPot] ranks_per_image`, that call spreads the beads over the CPMD
+With that reactant rotation removed, each iteration evaluates every interior bead of the kink in one call. Under
+`[RgpotPot] ranks_per_image`, that call spreads the beads over the Car-Parrinello molecular dynamics (CPMD)
 calculator groups the same way a NEB spreads its images.
 
-`instanton.con` holds one frame per bead, with `imaginary_time_fs`. Its first
-frame and `results.dat` carry:
+`instanton.con` writes one frame per bead, with `imaginary_time_fs`. The keys are:
 
 | Key | Meaning |
 |---|---|
-| `tunnel_splitting_instanton` | {math}`\Delta_0`, eV |
-| `instanton_action` | {math}`(S - S_\text{well})/\hbar` |
-| `tls_energy_instanton` | {math}`\sqrt{\Delta^2 + \Delta_0^2}`, eV |
-| `tunnel_asymmetry` | {math}`V(\text{product}) - V(\text{reactant})`, eV |
-| `instanton_temperature_K` | {math}`1/(k_B \beta)` for the imaginary time used |
-| `instanton_mode_separation` | how well the kink's translation separates from the other modes |
-| `instanton_symmetric` | 1 when {math}`\beta|\Delta| < 0.1` |
-| `instanton_beta_asymmetry` | {math}`\beta|\Delta|` |
+| `tunnel_splitting_instanton` | Splitting: {math}`\Delta_0`, eV |
+| `instanton_action` | Action: {math}`(S - S_\text{well})/\hbar` |
+| `tls_energy_instanton` | Energy: {math}`\sqrt{\Delta^2 + \Delta_0^2}`, eV |
+| `tunnel_asymmetry` | Asymmetry: {math}`V(\text{product}) - V(\text{reactant})`, eV |
+| `instanton_temperature_K` | Temperature: {math}`1/(k_B \beta)` for the imaginary time used |
+| `instanton_mode_separation` | Separation: how well the kink's translation separates from the other modes |
+| `instanton_symmetric` | Symmetry: 1 when {math}`\beta|\Delta| < 0.1` |
+| `instanton_beta_asymmetry` | Magnitude: {math}`\beta|\Delta|` |
 
-The propagator ratio measures {math}`\Delta_0` when the two wells lie within
+The propagator ratio measures the splitting {math}`\Delta_0` when the two wells lie within
 a small fraction of {math}`k_B T` of each other. `instanton_symmetric = 0`
 flags a pair outside that window. The job still writes the path and the
 action, but no `tunnel_splitting_instanton`, and reports success: the flag
@@ -131,16 +131,18 @@ temperature below the crossover, and read the rate in the next sections.
 
 NEB images and ring-polymer beads are different objects. An image is a point
 on a path in configuration space between two minima. Its springs are
-fictitious, and only the force perpendicular to the path is kept. A bead is
+fictitious. The parallel force is removed. A bead is
 one imaginary-time slice of a single quantum system. Its springs are
 physical, with stiffness fixed by the temperature and the number of beads.
 
+The columns are:
+
 | Object | Points | Springs | What it returns |
 |---|---|---|---|
-| `mode = splitting` | open string between two minima, optionally started from a band | Euclidean action, no tangent projection | tunnelling splitting when the wells are close in energy |
+| `mode = splitting` | open string between two minima, started from a band when one is present | Euclidean action, no tangent projection | tunnelling splitting when the wells are close in energy |
 | `mode = rate` | closed ring through one saddle | same action, stiffness set by {math}`T` and {math}`N` | thermal rate below the crossover temperature |
-| Centroid PMF | one ring per image, centroid held on the image | sampled, not minimised | quantum free-energy barrier along the path |
-| Harmonic centroid string | one ring per image, optimised | local harmonic quantum correction | a free-energy estimate only as good as that harmonic well |
+| Centroid potential of mean force (PMF) | one ring per image, centroid held on the image | sampled, not minimised | quantum free-energy barrier along the path |
+| Harmonic centroid string | a ring at each image, optimised | local harmonic quantum correction | a free-energy estimate as good as that harmonic well |
 
 The first two rows are `job = instanton`. The centroid potential of mean
 force is a constrained path-integral molecular dynamics sample, one
@@ -171,7 +173,7 @@ out the cyclic zero mode and the rigid translations and rotations.
 The crossover temperature is {math}`T_c = \hbar \omega_b / (2\pi k_B)`, with
 {math}`\omega_b` the imaginary frequency at the saddle. At or above {math}`T_c`
 the ring collapses onto the saddle. The rate there is a parabolic barrier
-correction, and classical transition-state theory is only the one-bead limit
+correction, and classical transition-state theory is the one-bead limit
 of that correction. The job does not evaluate it: it stops and says so.
 
 ```{code-block} ini
@@ -203,7 +205,7 @@ free cluster has and a crystal does not. A cluster in a large periodic cell
 is told apart by that Hessian, not by the periodic flag. The springs along
 those directions stay, so they cancel between the instanton and the reactant.
 
-`results.dat` then carries:
+`results.dat` reports the rate. The keys are:
 
 | Key | Meaning |
 |---|---|
@@ -226,9 +228,8 @@ decay of {cite:t}`inst-caldeiraQuantumTunnellingDissipative1983`.
 
 ## Checks
 
-The Catch2 cases `Instanton splitting in a curved valley matches the exact
-gap` and `The instanton cuts the corner the minimum energy path takes` use
-{math}`V = V_0 (x^2 - 1)^2 + \tfrac{K}{2} (y - C (1 - x^2))^2` at unit mass
+These checks use two Catch2 cases. The curved-valley case is `Instanton splitting in a curved valley matches the exact gap`. The corner case is `The instanton cuts the corner the minimum energy path takes`.
+The potential is {math}`V = V_0 (x^2 - 1)^2 + \tfrac{K}{2} (y - C (1 - x^2))^2` at unit mass
 with {math}`K = 4` eV/Å². The exact gap comes from a fourth-order
 finite-difference Hamiltonian, converged to {math}`10^{-5}`.
 
