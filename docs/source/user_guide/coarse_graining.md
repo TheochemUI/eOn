@@ -65,31 +65,52 @@ the approximate amount of error the user might expect in eventual superbasin
 exit direction and time compared to normal KMC simulation
 ({any}`eon.schema.CoarseGrainingConfig.askmc_confidence`).
 
-## Optional AMSEl discover/decide hook
+## amsel discover_decide
 
-When MCAMC superbasins are active, an optional pre-step can call
-`amsel.discover_decide_status` on the superbasin process graph before
-`Superbasin.step`. Enable it under **[amsel]** (default off):
+`[amsel] discover_decide = true` runs on the current state's process table.
+The state list can hold one state. `use_mcamc` stays off.
+
+A barrier strictly below `e_min_init` counts as an in-basin edge. A barrier
+at or above `e_min_init` counts as an exit. On Si6N8 isomer 1 the back
+barrier is 0.20 eV and the flip-out barrier is 0.30 eV. With `e_min_init`
+at 0.25 eV the 0.20 eV edge stays in the basin and the 0.30 eV edge leaves.
+
+The basin comes from `amsel.discover_decide_status`. The exit time and the
+exit channel come from the mean-rate method (MRM) or from first-passage-time
+analysis (FPTA). `debug_use_mean_time` selects MRM. The mean exit time is
+the MRM value `tau_total`. Otherwise, FPTA draws one first-passage time.
+Both kernels live in the `amsel` package. With that package absent, the log
+line reads `amsel discover_decide status=unavailable` and the step stays
+ordinary kinetic Monte Carlo.
 
 ```{code-block} ini
 [amsel]
-discover_decide = True
-e_min_init = 0.5
+discover_decide = true
+e_min_init = 0.25
 e_min_step = 0.05
 e_min_floor = 0.05
 cv_threshold = 10.0
+on_error = fallback_single
 ```
 
-If the `amsel` Python package is not installed, the hook is a no-op and legacy
-MCAMC behaviour is unchanged. Status outcomes:
+One status list:
 
-- **accepted** / **retightened** — proceed with MCAMC as usual
-- **split_required** — restrict the superbasin to the primary transient set
-  (entry state is always retained; membership is persisted via `write_data`)
-- **rejected_no_metastable_basin** — AKMC skips the superbasin step and uses
-  ordinary single-state KMC for that iteration
+- `unavailable`, `available` off: `amsel` did not import, or `on_error` is `unavailable_mcamc` after a failed call
+- `fallback_single`, `available` on: the call failed and `on_error` is `fallback_single`; the step stays ordinary kinetic Monte Carlo
+- `accepted` or `retightened`: one basin, and the exit comes from MRM or FPTA
+- `split_required`: the exit is the primary basin that contains the entry state
+- `rejected_no_metastable_basin`: no basin, and the step stays ordinary kinetic Monte Carlo
 
-Configuration is under the `[amsel]` INI section (`discover_decide`, `e_min_*`, `cv_threshold`).
+`unavailable` together with `available` on sits outside this list.
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.AmselConfig
+```
+
+With `use_mcamc` on as well, an accepted basin still leaves through MRM or
+FPTA. A rejected basin falls through to the MCAMC superbasin step.
+`split_required` on that MCAMC object keeps the entry state and writes the
+reduced member list.
 
 ## Configuration
 

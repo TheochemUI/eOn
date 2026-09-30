@@ -169,6 +169,17 @@ def get_statelist(kT, config: ConfigClass = None):
         config=config,
     )
 
+def _resolve_akmc_state(states, number):
+    """Return a state by number, or None when the list has no such state."""
+    getter = getattr(states, "get_state", None)
+    if getter is None:
+        return None
+    try:
+        return getter(int(number))
+    except Exception:
+        return None
+
+
 def get_superbasin_scheme(states, config):
     kT = config.main_temperature / 11604.5
     if config.sb_scheme == 'transition_counting':
@@ -214,7 +225,27 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
         # Do a KMC step.
         steps += 1
         used_superbasin = False
-        if config.sb_on and sb:
+        amsel_exit = None
+        # discover_decide runs from [amsel] alone. use_mcamc is not required.
+        if getattr(config, "amsel_discover_decide", False):
+            from eon.amsel_superbasin_gate import amsel_discover_exit
+
+            amsel_exit = amsel_discover_exit(
+                current_state,
+                lambda number: _resolve_akmc_state(states, number),
+                config,
+                uniform=np.random.random_sample,
+            )
+        if amsel_exit is not None:
+            mean_time = amsel_exit.mean_time
+            exit_state = _resolve_akmc_state(states, amsel_exit.exit_number)
+            if exit_state is None:
+                exit_state = current_state
+            current_state = exit_state
+            next_state = states.get_product_state(
+                amsel_exit.exit_number, amsel_exit.proc_id
+            )
+        elif config.sb_on and sb:
             from eon.amsel_superbasin_gate import AmselSuperbasinReject
 
             try:
@@ -230,7 +261,7 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
                 )
                 sb = None
 
-        if not used_superbasin:
+        if amsel_exit is None and not used_superbasin:
             if config.askmc_on:
                 rate_table = asKMC.get_ratetable(current_state)
             else:
@@ -302,8 +333,10 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
             next_state = states.get_product_state(current_state.number, rate_table[nsid][0])
             mean_time = 1.0/ratesum
 
-        # Accounting for time
-        if config.debug_use_mean_time:
+        # Accounting for time. An FPTA exit is already one sample.
+        if amsel_exit is not None and amsel_exit.time_is_sample:
+            step_time = mean_time
+        elif config.debug_use_mean_time:
             step_time = mean_time
         else:
             #np.random.random_sample() uses [0,1)
@@ -318,7 +351,9 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
         if config.sb_on:
             superbasining.register_transition(current_state, next_state)
 
-        if config.sb_on and sb:
+        if amsel_exit is not None:
+            proc_id_out = amsel_exit.proc_id
+        elif config.sb_on and sb:
             proc_id_out = -1
         else:
             proc_id_out = rate_table[nsid][0]
@@ -328,7 +363,7 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
         if proc_id_out != -1:
             proc = current_state.get_process(proc_id_out)
             dynamics.append(current_state.number, proc_id_out, next_state.number, step_time, time, proc['barrier'], proc['rate'], current_state.get_energy())
-            logger.info("KMC step from state %i through process %i to state %i ", current_state.number, rate_table[nsid][0], next_state.number)
+            logger.info("KMC step from state %i through process %i to state %i ", current_state.number, proc_id_out, next_state.number)
         else:
             # Superbasin hop: process id is not a single-state table row.
             dynamics.append_sb(current_state.number, sb_proc_id_out, next_state.number, step_time, time, sb_id, 1.0/mean_time, current_state.get_energy())
