@@ -1388,17 +1388,19 @@ class AmselConfig(BaseModel):
 
     discover_decide: bool = Field(
         default=False,
-        description="Call amsel discover_decide on the current state's process table at each KMC step.",
+        description="Call amsel discover_decide on the current state's process table at each KMC step, without waiting for the repeat-count confidence.",
     )
     """
     Independent of :any:`eon.schema.CoarseGrainingConfig.use_mcamc`.
-    A barrier strictly below ``e_min_init`` is an in-basin edge. A
-    barrier at or above ``e_min_init`` is an exit. On an accepted basin
-    the exit time and the exit channel come from the mean-rate method
-    (MRM) or from first-passage-time analysis (FPTA). Those kernels are
-    the ``amsel`` package. When that package is absent the log line is
-    ``amsel discover_decide status=unavailable`` and the step is ordinary
-    KMC.
+    The repeat-count confidence scheme does not hold this step. A barrier
+    strictly below ``e_min_init`` is an in-basin edge. A barrier at or
+    above ``e_min_init`` is an exit. A table with no faster edge still
+    leaves: the transient set is the entry state. The exit time and the
+    exit channel come from the mean-rate method (MRM) or from
+    first-passage-time analysis (FPTA). Those kernels are the ``amsel``
+    package. When that package is absent the log line is
+    ``amsel discover_decide status=unavailable`` and no step is taken
+    until the confidence threshold is met.
     """
     e_min_init: float = Field(
         default=0.5,

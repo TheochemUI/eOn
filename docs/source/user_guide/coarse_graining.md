@@ -68,19 +68,26 @@ exit direction and time compared to normal KMC simulation
 ## amsel discover_decide
 
 `[amsel] discover_decide = true` runs on the current state's process table.
-The state list can hold one state. `use_mcamc` stays off.
+The state list can hold one state. `use_mcamc` stays off. The repeat-count
+confidence scheme does not hold this step. A run that leaves
+`discover_decide` off still waits for `confidence` under
+`confidence_scheme`.
 
 A barrier strictly below `e_min_init` counts as an in-basin edge. A barrier
 at or above `e_min_init` counts as an exit. On Si6N8 isomer 1 the back
 barrier is 0.20 eV and the flip-out barrier is 0.30 eV. With `e_min_init`
 at 0.25 eV the 0.20 eV edge stays in the basin and the 0.30 eV edge leaves.
+A table that has only the 0.30 eV saddle, and no faster edge, still leaves.
+The transient set is that state. The product is absorbing.
 
-The basin comes from `amsel.discover_decide_status`. The exit time and the
-exit channel come from the mean-rate method (MRM) or from first-passage-time
-analysis (FPTA). `debug_use_mean_time` selects MRM. The mean exit time is
-the MRM value `tau_total`. Otherwise, FPTA draws one first-passage time.
-Both kernels live in the `amsel` package. With that package absent, the log
-line reads `amsel discover_decide status=unavailable` and the step stays
+The basin comes from `amsel.discover_decide_status` when a faster edge is
+present. The exit time and the exit channel come from the mean-rate method
+(MRM) or from first-passage-time analysis (FPTA). `debug_use_mean_time`
+selects MRM. The mean exit time is the MRM value `tau_total`. Otherwise,
+FPTA draws one first-passage time. Both kernels live in the `amsel`
+package. With that package absent, the log line reads
+`amsel discover_decide status=unavailable` and no step is taken until the
+confidence threshold is met. Once that threshold is met, the step is
 ordinary kinetic Monte Carlo.
 
 ```{code-block} ini

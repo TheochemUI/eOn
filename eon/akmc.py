@@ -216,18 +216,26 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
     else:
         sb = None
 
-    while ((
-            (not sb and current_state.get_confidence() >= config.akmc_confidence) or
-            (sb and sb.get_confidence() >= config.akmc_confidence)
-           ) and
-           (steps < config.akmc_max_kmc_steps or config.akmc_max_kmc_steps == 0)):
+    # discover_decide does not wait on the repeat-count confidence.
+    # One exit is taken and the product is left for the outer search.
+    # A state that already meets the threshold keeps the multi-step loop.
+    discover_decide = bool(getattr(config, "amsel_discover_decide", False))
+    unconfident_exit_taken = False
 
-        # Do a KMC step.
-        steps += 1
+    while steps < config.akmc_max_kmc_steps or config.akmc_max_kmc_steps == 0:
+        if unconfident_exit_taken:
+            break
+        confident = (
+            (not sb and current_state.get_confidence() >= config.akmc_confidence)
+            or (sb and sb.get_confidence() >= config.akmc_confidence)
+        )
+        if not confident and not discover_decide:
+            break
+
         used_superbasin = False
         amsel_exit = None
         # discover_decide runs from [amsel] alone. use_mcamc is not required.
-        if getattr(config, "amsel_discover_decide", False):
+        if discover_decide:
             from eon.amsel_superbasin_gate import amsel_discover_exit
 
             amsel_exit = amsel_discover_exit(
@@ -236,6 +244,13 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
                 config,
                 uniform=np.random.random_sample,
             )
+        if not confident:
+            if amsel_exit is None:
+                break
+            unconfident_exit_taken = True
+
+        # Do a KMC step.
+        steps += 1
         if amsel_exit is not None:
             mean_time = amsel_exit.mean_time
             exit_state = _resolve_akmc_state(states, amsel_exit.exit_number)

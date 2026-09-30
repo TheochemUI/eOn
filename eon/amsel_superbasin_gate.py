@@ -14,9 +14,10 @@
 ``[amsel] discover_decide`` does not require ``use_mcamc``.
 ``amsel_discover_exit`` reads the current state's process table. A barrier
 strictly below ``e_min_init`` is in-basin. A higher barrier is an exit.
-The exit time and channel come from MRM (mean time) or FPTA (one sample).
-The kernels are the ``amsel`` package. A missing package logs
-``unavailable`` and leaves the step as ordinary KMC.
+A table with no in-basin edge still exits: the transient set is the entry
+state and the products are absorbing. The exit time and channel come from
+MRM (mean time) or FPTA (one sample). The kernels are the ``amsel``
+package. A missing package logs ``unavailable`` and returns no exit.
 """
 from __future__ import annotations
 
@@ -550,6 +551,39 @@ def _kernel_exit(
     return None
 
 
+def _direct_escape_partition(
+    view: Any, entry: int, e_min_init: float
+) -> tuple[list[int], list[int], list] | None:
+    """Entry state plus its exit edges, when nothing is below the cutoff.
+
+    The transient set is that one state. Products of barriers at or above
+    ``e_min_init`` are absorbing. A non-positive rate is dropped.
+    """
+    cutoff = float(e_min_init)
+    state = view.state_dict.get(int(entry))
+    if state is None:
+        return None
+    absorbing: list[int] = []
+    seen: set[int] = set()
+    rates: list[tuple[int, int, float]] = []
+    for proc in state.get_process_table().values():
+        pid = _product_id(proc)
+        if pid is None or pid == int(entry):
+            continue
+        if _process_barrier_eV(proc) < cutoff:
+            continue
+        rate = float(proc.get("rate", 0.0) or 0.0)
+        if rate <= 0.0:
+            continue
+        if pid not in seen:
+            seen.add(pid)
+            absorbing.append(pid)
+        rates.append((int(entry), int(pid), rate))
+    if not absorbing or not rates:
+        return None
+    return [int(entry)], absorbing, rates
+
+
 def _exit_process(
     state_dict: Mapping[int, Any],
     transient: list[int],
@@ -597,13 +631,16 @@ def amsel_discover_exit(
     """Log ``amsel discover_decide status`` and maybe return an MRM or FPTA exit.
 
     The log line is written for every call, including a table with one
-    state and a missing ``amsel`` package. An exit is returned only when
-    the table has an in-basin edge below ``e_min_init``, discover_decide
-    accepts the basin (or retightens it, or splits it), and MRM or FPTA
-    names an absorbing state reached by a slower edge.
+    state and a missing ``amsel`` package. An in-basin edge is a barrier
+    strictly below ``e_min_init``. With such an edge, an exit is returned
+    when discover accepts the basin, retightens it, or splits it. With no
+    such edge, a barrier at or above the cutoff is a direct exit. The
+    transient set is the entry state, the products are absorbing, and the
+    logged status is ``accepted``.
 
     ``debug_use_mean_time`` selects MRM. Otherwise the clock is one FPTA
     sample. The other kernel is used when the selected one is missing.
+    A missing package logs ``unavailable`` and returns no exit.
     """
     if uniform is None:
         import random
@@ -620,6 +657,23 @@ def amsel_discover_exit(
         cv_threshold=knobs["cv_threshold"],
         on_error=knobs["on_error"],
     )
+    entry = int(entry_state.number)
+    # A lone exit has no fast edge for discover to call a basin. The
+    # absorbing states are the products, and the transient set is the entry.
+    # A missing package stays ``unavailable`` and does not hop.
+    direct = None
+    if str(decision.get("status", "unavailable")) != "unavailable" and not _has_in_basin_edge(
+        view, knobs["e_min_init"]
+    ):
+        direct = _direct_escape_partition(view, entry, knobs["e_min_init"])
+    if direct is not None:
+        transient, absorbing, rates = direct
+        decision = {
+            "available": True,
+            "status": "accepted",
+            "primary_transient": list(transient),
+            "raw": ("accepted", list(transient), list(absorbing), list(rates)),
+        }
     status = _log_status(decision)
     if not status_pair(status, bool(decision.get("available"))):
         logger.warning(
@@ -629,15 +683,13 @@ def amsel_discover_exit(
         )
     if status not in _EXIT_STATUSES or not decision.get("available"):
         return None
-    if not _has_in_basin_edge(view, knobs["e_min_init"]):
-        return None
-    parts = _partition(decision)
-    if parts is None:
-        return None
-    transient, absorbing, rates = parts
-    entry = int(entry_state.number)
-    if entry not in transient:
-        transient = [entry] + [n for n in transient if n != entry]
+    if direct is None:
+        parts = _partition(decision)
+        if parts is None:
+            return None
+        transient, absorbing, rates = parts
+        if entry not in transient:
+            transient = [entry] + [n for n in transient if n != entry]
     prefer = "mrm" if bool(getattr(config, "debug_use_mean_time", False)) else "fpta"
     chosen = _kernel_exit(prefer, transient, absorbing, rates, entry, uniform)
     if chosen is None:
