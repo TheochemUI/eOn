@@ -283,6 +283,40 @@ TEST_CASE_METHOD(HessianScratch,
   }
 }
 
+TEST_CASE("Trivial modes are counted from the structure's symmetries",
+          "[hessian]") {
+  REQUIRE(trivialModeCountIsPhysical(6, 0)); // free cluster
+  REQUIRE(trivialModeCountIsPhysical(5, 0)); // linear molecule
+  REQUIRE(trivialModeCountIsPhysical(3, 0)); // periodic cell
+  REQUIRE(trivialModeCountIsPhysical(0, 4)); // fixed atoms pin everything
+  REQUIRE_FALSE(trivialModeCountIsPhysical(4, 0));
+  REQUIRE_FALSE(trivialModeCountIsPhysical(3, 4));
+}
+
+TEST_CASE_METHOD(HessianScratch,
+                 "removeZeroFreqs drops the modes under the zero threshold",
+                 "[hessian]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto matter = std::make_shared<Matter>(pot, params);
+  matter->con2matter(std::string("reactant.con"));
+  const long n = 3 * matter->numberOfAtoms();
+  const double zero = params.hessian_options().zero_freq_value;
+  // A free cluster's spectrum: six modes under the threshold, the rest above.
+  VectorXd freqs = VectorXd::LinSpaced(n, 1.0, 2.0);
+  for (int i = 0; i < 6; ++i) {
+    freqs(5 * i) = 0.1 * zero * (i % 2 == 0 ? 1.0 : -1.0);
+  }
+  Hessian hess(params, matter.get());
+  const VectorXd kept = hess.removeZeroFreqs(freqs);
+  REQUIRE(kept.size() == n - 6);
+  REQUIRE((kept.array().abs() > zero).all());
+  // A spectrum that is not 3N long is not the whole structure's; it is left
+  // alone.
+  REQUIRE(hess.removeZeroFreqs(freqs.head(n - 1)).size() == n - 1);
+}
+
 TEST_CASE("Colored FD Hessian matches serial central difference",
           "[hessian][color]") {
   Parameters params;

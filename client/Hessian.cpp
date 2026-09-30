@@ -630,12 +630,21 @@ VectorXd Hessian::removeZeroFreqs(const VectorXd &freqs) {
     }
   }
 
-  if (nremoved != 6) {
-    QUILL_LOG_ERROR(
-        log, "[Hessian] [error] Found {} trivial eigenmodes instead of 6",
-        nremoved);
+  if (!trivialModeCountIsPhysical(nremoved, matter->numberOfFixedAtoms())) {
+    QUILL_LOG_WARNING(log,
+                      "[Hessian] found {} trivial eigenmodes; a free cluster "
+                      "has 6 (5 if linear), a periodic cell 3, and a "
+                      "structure with fixed atoms none",
+                      nremoved);
   }
   return newfreqs.head(size - nremoved);
+}
+
+bool trivialModeCountIsPhysical(long removed, long fixedAtoms) {
+  if (fixedAtoms > 0) {
+    return removed == 0;
+  }
+  return removed == 3 || removed == 5 || removed == 6;
 }
 
 } // namespace eonc

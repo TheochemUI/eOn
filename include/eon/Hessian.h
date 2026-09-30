@@ -21,6 +21,12 @@
 
 namespace eonc {
 
+/// Whether `removed` zero-frequency modes are what the structure's
+/// symmetries give: 6 for a free cluster (3 translations and 3 rotations), 5
+/// for a linear one, 3 for a periodic cell, where rotations are no symmetry
+/// of the lattice, and none once any atom is fixed.
+bool trivialModeCountIsPhysical(long removed, long fixedAtoms);
+
 class Hessian {
 public:
   Hessian(const Parameters &params, Matter *matter);
