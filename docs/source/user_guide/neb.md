@@ -158,11 +158,12 @@ ci_mmf = true
 
 ### Parallel evaluation
 
-When compiled with TBB (`-Dwith_parallel_neb=true`) or nvc++
-(`-Dstdpar=cpu` / `-Dstdpar=gpu`), dirty-image force calls use
-`std::execution::par`. nvc++ does not need TBB; see {doc}`stdpar`.
-Without those flags, `parallel = true` still fans out with one
-`std::thread` per image. Python-based potentials fall back to serial
+With `parallel = true`, dirty-image force calls run on at most
+`std::thread::hardware_concurrency()` threads, each taking the next image,
+so a 20-image band on 8 cores keeps 8 threads busy. An error in one image is
+reported after the other images finish. No extra library is needed.
+nvc++ builds with `-Dstdpar=cpu` / `-Dstdpar=gpu` use
+`std::execution::par` instead; see {doc}`stdpar`. Python-based potentials fall back to serial
 evaluation unless they report thread-safe shared instances or per-image
 copies. Morse and other host potentials stay on the CPU.
 

@@ -6,12 +6,11 @@ That last flag is a QMCPACK CMake option. It is not an eOn meson option.
 
 ## What eOn offloads
 
-The NEB image-force loop is already `std::for_each(std::execution::par, …)`
-behind `-DEON_PARALLEL_NEB`. Two ways to turn that on:
+With nvc++, the NEB image-force loop is `std::for_each(std::execution::par, …)`
+behind `-DEON_PARALLEL_NEB`:
 
 | Meson option | Compiler | Backend |
 |---|---|---|
-| `-Dwith_parallel_neb=true` | GCC / Clang | TBB (`libstdc++`) |
 | `-Dstdpar=cpu` | nvc++ | `-stdpar=multicore` |
 | `-Dstdpar=gpu` | nvc++ | `-stdpar=gpu` plus `-gpu=` |
 
@@ -39,8 +38,9 @@ pair). Override with `-Dstdpar_gpu_cc=cc90` or `-Dstdpar_gpu_cc=native` to
 omit `-gpu=`. That is the same lesson as QMCPACK `QMC_GPU_ARCHS=sm_80;sm_90`,
 written in nvc++'s flag language.
 
-`parallel = true` in `config.ini` still fans out with one `std::thread` per
-image when `EON_PARALLEL_NEB` is off. Set `[Potential] thread_safe = false`
+GCC and Clang builds run the images on a bounded `std::thread` pool when
+`parallel = true` in `config.ini`; `-Dwith_parallel_neb` is deprecated and
+has no effect. Set `[Potential] thread_safe = false`
 to keep one shared Potential serial (EAM cell lists, EMT ASAP objects,
 Metatomic, ExtPot, SocketNWChem, and XTB already refuse shared-instance
 threading).
