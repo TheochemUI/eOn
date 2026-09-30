@@ -2,7 +2,7 @@ _rgpot_deps = _deps
 _rgpot_cpp = _args
 # A system mpic++ adds -I/usr/include. That path breaks a sysroot compiler,
 # so MPI is the same switch as the MPI potential.
-if get_option('with_mpi')
+if get_option('with_mpi').enabled()
     _rgpot_mpi = dependency('mpi', language: 'cpp', required: false)
     if _rgpot_mpi.found()
         _rgpot_deps += [_rgpot_mpi]
