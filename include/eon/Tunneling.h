@@ -22,6 +22,7 @@
 
 #include "Matter.h"
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -95,5 +96,86 @@ Splitting wkbSplitting(const Profile &p, double hwReactant, double hwProduct);
 /// band's curvature at each end.
 Splitting bandSplitting(const std::vector<std::shared_ptr<Matter>> &band,
                         double referenceEnergy);
+
+// Ring-polymer instanton for the splitting between two minima.
+//
+// A path of P + 1 beads in mass-weighted coordinates q runs from one minimum
+// to the other in imaginary time beta hbar, the ends fixed at the minima. The
+// instanton is the path that minimises the discretised Euclidean action
+//
+//   S = sum_j |q_{j+1} - q_j|^2 / (2 dtau) + dtau sum_j' V(q_j),
+//
+// dtau = beta hbar / P, with half weight on the two ends (trapezoid). The
+// splitting follows from the ratio of the off-diagonal to the diagonal
+// imaginary-time propagator, both in the same steepest-descent
+// approximation:
+//
+//   delta0 = 2 hbar sqrt(S0 / (2 pi hbar dtau))
+//            sqrt(det J_well / det' J) exp(-(S - S_well) / hbar),
+//
+// with J the Hessian of S over the interior beads, det' leaving out its
+// zero mode (the kink's position in imaginary time), S0 the integral of
+// |dq/dtau|^2 and J_well the same Hessian with every bead at a minimum.
+// Time runs in amu^0.5 Angstrom eV^-0.5, so hbar is kHbar. Where the minimum
+// energy path curves, the instanton cuts the corner and follows the
+// transverse zero-point energy, which a one-dimensional WKB integral along
+// the path cannot.
+
+struct InstantonOptions {
+  long beads = 256;             ///< P: segments from one minimum to the other
+  double betaHbarOmega = 30.0;  ///< beta hbar omega of the stiffer end along
+                                ///< the path; sets the imaginary time
+  long maxIterations = 5000;    ///< L-BFGS iterations
+  double forceTolerance = 1e-4; ///< largest per-bead |dS/dq| / dtau,
+                                ///< eV / (amu^0.5 Angstrom)
+  long memory = 20;             ///< L-BFGS correction pairs
+};
+
+/// V (eV) and dV/dq (eV / (amu^0.5 Angstrom)) at every point of `q`, all in
+/// one call so a potential can spread the beads over its calculators.
+using BatchPotential =
+    std::function<void(const std::vector<VectorXd> &q, std::vector<double> &v,
+                       std::vector<VectorXd> &grad)>;
+
+/// The mass-weighted Hessian d2V/dq2 at interior bead j (1..P-1).
+using BeadHessian = std::function<MatrixXd(long j, const VectorXd &q)>;
+
+struct Instanton {
+  std::vector<VectorXd> path;   ///< P + 1 beads, ends at the minima
+  std::vector<double> energies; ///< V at every bead, eV
+  double betaHbar = 0.0;        ///< imaginary time the path spans
+  double dtau = 0.0;            ///< betaHbar / P
+  double action = 0.0;          ///< (S - S_well) / hbar
+  double s0 = 0.0;              ///< integral of |dq/dtau|^2 dtau
+  double zeroMode = 0.0;        ///< the eigenvalue det' leaves out
+  double delta0 = 0.0;          ///< tunnelling splitting, eV
+  double asymmetry = 0.0;       ///< V(end) - V(start), eV
+  long iterations = 0;
+  bool converged = false;
+  /// beta |asymmetry| < 0.1: the propagator ratio reads delta0 only when
+  /// the wells lie within a small fraction of kB T of each other.
+  bool symmetricEnough = false;
+  /// The second smallest eigenvalue of J over the zero mode's: small means
+  /// the kink is not isolated in imaginary time and beta hbar is too short.
+  double modeSeparation = 0.0;
+};
+
+/// omega along the straight line between the minima from the curvature of
+/// each well there, the larger of the two; in 1 / time.
+double pathOmega(const MatrixXd &hessStart, const MatrixXd &hessEnd,
+                 const VectorXd &start, const VectorXd &end);
+
+/// Minimises the action from `guess` (P + 1 beads, ends at the minima, or
+/// empty for a tanh kink along the straight line). Evaluates the interior
+/// beads once per iteration and line-search step.
+Instanton optimizeInstanton(const VectorXd &start, const VectorXd &end,
+                            double betaHbar, std::vector<VectorXd> guess,
+                            const BatchPotential &potential,
+                            const InstantonOptions &options);
+
+/// Fills delta0, zeroMode and modeSeparation from the bead Hessians and the
+/// Hessians of the two minima.
+void instantonSplitting(Instanton &inst, const BeadHessian &hessian,
+                        const MatrixXd &hessStart, const MatrixXd &hessEnd);
 
 } // namespace eonc::tunneling

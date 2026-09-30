@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <deque>
 #include <numbers>
 #include <stdexcept>
 
@@ -178,6 +179,363 @@ Splitting bandSplitting(const std::vector<std::shared_ptr<Matter>> &band,
   const Profile p(massWeightedPath(band), std::move(v));
   return wkbSplitting(p, hbarOmega(wellCurvature(p, true)),
                       hbarOmega(wellCurvature(p, false)));
+}
+
+namespace {
+
+// J = c T (x) I + blockdiag(A_k), T the tridiagonal (2, -1) spring matrix;
+// the diagonal blocks hold 2c already, the off-diagonal blocks are -c I.
+// Block LU: D_1 = A_1, D_k = A_k - c^2 D_{k-1}^-1.
+class BlockChain {
+public:
+  BlockChain(double c, const std::vector<MatrixXd> &diag)
+      : c_(c) {
+    lu_.reserve(diag.size());
+    for (size_t k = 0; k < diag.size(); ++k) {
+      MatrixXd d = diag[k];
+      if (k > 0) {
+        d -= c_ * c_ * lu_.back().inverse();
+      }
+      lu_.emplace_back(d);
+      const auto &f = lu_.back();
+      sign_ *= static_cast<int>(std::lround(f.permutationP().determinant()));
+      for (long i = 0; i < d.rows(); ++i) {
+        const double u = f.matrixLU()(i, i);
+        if (u == 0.0) {
+          throw std::runtime_error("instanton: singular chain Hessian block");
+        }
+        sign_ *= u < 0.0 ? -1 : 1;
+        logAbsDet_ += std::log(std::abs(u));
+      }
+    }
+  }
+  double logAbsDet() const { return logAbsDet_; }
+  int sign() const { return sign_; }
+  // x = J^-1 b, b and x stacked by bead.
+  std::vector<VectorXd> solve(const std::vector<VectorXd> &b) const {
+    const size_t m = b.size();
+    std::vector<VectorXd> y(m), x(m);
+    y[0] = b[0];
+    for (size_t k = 1; k < m; ++k) {
+      y[k] = b[k] + c_ * lu_[k - 1].solve(y[k - 1]);
+    }
+    x[m - 1] = lu_[m - 1].solve(y[m - 1]);
+    for (size_t k = m - 1; k-- > 0;) {
+      x[k] = lu_[k].solve(y[k] + c_ * x[k + 1]);
+    }
+    return x;
+  }
+
+private:
+  double c_;
+  std::vector<Eigen::PartialPivLU<MatrixXd>> lu_;
+  double logAbsDet_ = 0.0;
+  int sign_ = 1;
+};
+
+double dot(const std::vector<VectorXd> &a, const std::vector<VectorXd> &b) {
+  double s = 0.0;
+  for (size_t k = 0; k < a.size(); ++k) {
+    s += a[k].dot(b[k]);
+  }
+  return s;
+}
+
+void scale(std::vector<VectorXd> &a, double f) {
+  for (auto &v : a) {
+    v *= f;
+  }
+}
+
+// Point at arc-length fraction f along a polyline.
+VectorXd alongPolyline(const std::vector<VectorXd> &pts,
+                       const std::vector<double> &cum, double f) {
+  const double target = f * cum.back();
+  const auto it = std::upper_bound(cum.begin(), cum.end(), target);
+  const size_t k = std::clamp<size_t>(
+      static_cast<size_t>(std::distance(cum.begin(), it)), 1, pts.size() - 1);
+  const double seg = cum[k] - cum[k - 1];
+  const double t = seg > 0.0 ? (target - cum[k - 1]) / seg : 0.0;
+  return pts[k - 1] + std::clamp(t, 0.0, 1.0) * (pts[k] - pts[k - 1]);
+}
+
+struct ActionEval {
+  double action = 0.0;
+  std::vector<double> v;         // interior beads
+  std::vector<VectorXd> grad;    // dS/dq over interior beads
+  std::vector<VectorXd> potGrad; // dV/dq over interior beads
+};
+
+ActionEval evaluateAction(const std::vector<VectorXd> &interior,
+                          const VectorXd &start, const VectorXd &end,
+                          double vStart, double vEnd, double dtau,
+                          const BatchPotential &potential) {
+  ActionEval out;
+  potential(interior, out.v, out.potGrad);
+  const size_t m = interior.size();
+  if (out.v.size() != m || out.potGrad.size() != m) {
+    throw std::runtime_error("instanton: potential returned the wrong count");
+  }
+  auto bead = [&](size_t j) -> const VectorXd & {
+    return j == 0 ? start : (j == m + 1 ? end : interior[j - 1]);
+  };
+  double kinetic = 0.0;
+  for (size_t j = 0; j <= m; ++j) {
+    kinetic += (bead(j + 1) - bead(j)).squaredNorm();
+  }
+  double pot = 0.5 * (vStart + vEnd);
+  for (double vj : out.v) {
+    pot += vj;
+  }
+  out.action = 0.5 * kinetic / dtau + dtau * pot;
+  out.grad.resize(m);
+  for (size_t j = 1; j <= m; ++j) {
+    out.grad[j - 1] = (2.0 * bead(j) - bead(j - 1) - bead(j + 1)) / dtau +
+                      dtau * out.potGrad[j - 1];
+  }
+  return out;
+}
+
+double largestBeadNorm(const std::vector<VectorXd> &g) {
+  double m = 0.0;
+  for (const auto &v : g) {
+    m = std::max(m, v.norm());
+  }
+  return m;
+}
+
+} // namespace
+
+double pathOmega(const MatrixXd &hessStart, const MatrixXd &hessEnd,
+                 const VectorXd &start, const VectorXd &end) {
+  const VectorXd d = (end - start).normalized();
+  const double k = std::max(d.dot(hessStart * d), d.dot(hessEnd * d));
+  if (!(k > 0.0)) {
+    throw std::invalid_argument(
+        "pathOmega: no positive curvature along the path at either minimum");
+  }
+  return std::sqrt(k);
+}
+
+Instanton optimizeInstanton(const VectorXd &start, const VectorXd &end,
+                            double betaHbar, std::vector<VectorXd> guess,
+                            const BatchPotential &potential,
+                            const InstantonOptions &options) {
+  const long P = options.beads;
+  if (P < 4 || !(betaHbar > 0.0) || start.size() != end.size()) {
+    throw std::invalid_argument("optimizeInstanton: need P >= 4, beta hbar > 0 "
+                                "and ends of one dimension");
+  }
+  Instanton inst;
+  inst.betaHbar = betaHbar;
+  inst.dtau = betaHbar / static_cast<double>(P);
+  const double dtau = inst.dtau;
+
+  std::vector<double> vEnds;
+  std::vector<VectorXd> gEnds;
+  potential({start, end}, vEnds, gEnds);
+  if (vEnds.size() != 2) {
+    throw std::runtime_error("instanton: potential returned the wrong count");
+  }
+  inst.asymmetry = vEnds[1] - vEnds[0];
+
+  // Beads along the guess (or the straight line) on a tanh kink centred at
+  // beta hbar / 2 whose width follows the harmonic decay of a well.
+  if (guess.size() < 2) {
+    guess = {start, end};
+  }
+  std::vector<double> cum(guess.size(), 0.0);
+  for (size_t k = 1; k < guess.size(); ++k) {
+    cum[k] = cum[k - 1] + (guess[k] - guess[k - 1]).norm();
+  }
+  if (!(cum.back() > 0.0)) {
+    throw std::invalid_argument("optimizeInstanton: the two minima coincide");
+  }
+  const double width = betaHbar / (2.0 * options.betaHbarOmega);
+  std::vector<VectorXd> x(static_cast<size_t>(P - 1));
+  for (long j = 1; j < P; ++j) {
+    const double tau = static_cast<double>(j) * dtau - 0.5 * betaHbar;
+    const double f = 0.5 * (1.0 + std::tanh(tau / width));
+    x[static_cast<size_t>(j - 1)] = alongPolyline(guess, cum, f);
+  }
+
+  // L-BFGS with a backtracking Armijo line search.
+  ActionEval cur =
+      evaluateAction(x, start, end, vEnds[0], vEnds[1], dtau, potential);
+  std::deque<std::pair<std::vector<VectorXd>, std::vector<VectorXd>>> pairs;
+  for (long it = 0; it < options.maxIterations; ++it) {
+    inst.iterations = it;
+    if (largestBeadNorm(cur.grad) / dtau < options.forceTolerance) {
+      inst.converged = true;
+      break;
+    }
+    std::vector<VectorXd> q = cur.grad;
+    std::vector<double> alpha(pairs.size());
+    for (size_t i = pairs.size(); i-- > 0;) {
+      const double rho = 1.0 / dot(pairs[i].second, pairs[i].first);
+      alpha[i] = rho * dot(pairs[i].first, q);
+      for (size_t k = 0; k < q.size(); ++k) {
+        q[k] -= alpha[i] * pairs[i].second[k];
+      }
+    }
+    // Without history, half the inverse spring stiffness 2 / dtau.
+    double gamma = dtau / 4.0;
+    if (!pairs.empty()) {
+      gamma = dot(pairs.back().first, pairs.back().second) /
+              dot(pairs.back().second, pairs.back().second);
+    }
+    scale(q, gamma);
+    for (size_t i = 0; i < pairs.size(); ++i) {
+      const double rho = 1.0 / dot(pairs[i].second, pairs[i].first);
+      const double beta = rho * dot(pairs[i].second, q);
+      for (size_t k = 0; k < q.size(); ++k) {
+        q[k] += (alpha[i] - beta) * pairs[i].first[k];
+      }
+    }
+    // q is now the inverse-Hessian estimate times the gradient; step -q.
+    double slope = -dot(cur.grad, q);
+    if (!(slope < 0.0)) {
+      pairs.clear();
+      q = cur.grad;
+      scale(q, dtau / 4.0);
+      slope = -dot(cur.grad, q);
+    }
+    double step = 1.0;
+    ActionEval next;
+    std::vector<VectorXd> trial(x.size());
+    bool accepted = false;
+    for (int ls = 0; ls < 30; ++ls) {
+      for (size_t k = 0; k < x.size(); ++k) {
+        trial[k] = x[k] - step * q[k];
+      }
+      next = evaluateAction(trial, start, end, vEnds[0], vEnds[1], dtau,
+                            potential);
+      if (next.action <= cur.action + 1e-4 * step * slope) {
+        accepted = true;
+        break;
+      }
+      step *= 0.5;
+    }
+    if (!accepted) {
+      break;
+    }
+    std::vector<VectorXd> sk(x.size()), yk(x.size());
+    for (size_t k = 0; k < x.size(); ++k) {
+      sk[k] = trial[k] - x[k];
+      yk[k] = next.grad[k] - cur.grad[k];
+    }
+    if (dot(sk, yk) > 0.0) {
+      pairs.emplace_back(std::move(sk), std::move(yk));
+      if (static_cast<long>(pairs.size()) > options.memory) {
+        pairs.pop_front();
+      }
+    }
+    x = std::move(trial);
+    cur = std::move(next);
+  }
+  if (!inst.converged &&
+      largestBeadNorm(cur.grad) / dtau < options.forceTolerance) {
+    inst.converged = true;
+  }
+
+  inst.path.reserve(static_cast<size_t>(P + 1));
+  inst.path.push_back(start);
+  inst.path.insert(inst.path.end(), x.begin(), x.end());
+  inst.path.push_back(end);
+  inst.energies.reserve(static_cast<size_t>(P + 1));
+  inst.energies.push_back(vEnds[0]);
+  inst.energies.insert(inst.energies.end(), cur.v.begin(), cur.v.end());
+  inst.energies.push_back(vEnds[1]);
+  const double sWell = betaHbar * 0.5 * (vEnds[0] + vEnds[1]);
+  inst.action = (cur.action - sWell) / kHbar;
+  double s0 = 0.0;
+  for (long j = 0; j < P; ++j) {
+    s0 += (inst.path[static_cast<size_t>(j + 1)] -
+           inst.path[static_cast<size_t>(j)])
+              .squaredNorm();
+  }
+  inst.s0 = s0 / dtau;
+  inst.symmetricEnough = std::abs(inst.asymmetry) * betaHbar / kHbar < 0.1;
+  return inst;
+}
+
+void instantonSplitting(Instanton &inst, const BeadHessian &hessian,
+                        const MatrixXd &hessStart, const MatrixXd &hessEnd) {
+  const long P = static_cast<long>(inst.path.size()) - 1;
+  if (P < 4 || !(inst.dtau > 0.0)) {
+    throw std::invalid_argument("instantonSplitting: no optimised path");
+  }
+  const double dtau = inst.dtau;
+  const double c = 1.0 / dtau;
+  const long n = inst.path.front().size();
+  const MatrixXd spring = 2.0 * c * MatrixXd::Identity(n, n);
+
+  std::vector<MatrixXd> diag;
+  diag.reserve(static_cast<size_t>(P - 1));
+  for (long j = 1; j < P; ++j) {
+    const MatrixXd h = hessian(j, inst.path[static_cast<size_t>(j)]);
+    if (h.rows() != n || h.cols() != n) {
+      throw std::runtime_error("instantonSplitting: bead Hessian size");
+    }
+    diag.push_back(spring + dtau * 0.5 * (h + h.transpose()));
+  }
+  const BlockChain chain(c, diag);
+
+  auto wellLogDet = [&](const MatrixXd &h) {
+    const std::vector<MatrixXd> d(static_cast<size_t>(P - 1),
+                                  spring + dtau * 0.5 * (h + h.transpose()));
+    const BlockChain well(c, d);
+    if (well.sign() < 0) {
+      throw std::runtime_error(
+          "instantonSplitting: a well Hessian is not positive definite");
+    }
+    return well.logAbsDet();
+  };
+  const double logDetWell = 0.5 * (wellLogDet(hessStart) + wellLogDet(hessEnd));
+
+  // The zero mode is the kink's translation in imaginary time, along the
+  // discrete velocity v; det' J = det J (v^T J^-1 v) for v its eigenvector.
+  std::vector<VectorXd> v(static_cast<size_t>(P - 1));
+  for (long j = 1; j < P; ++j) {
+    v[static_cast<size_t>(j - 1)] = inst.path[static_cast<size_t>(j + 1)] -
+                                    inst.path[static_cast<size_t>(j - 1)];
+  }
+  scale(v, 1.0 / std::sqrt(dot(v, v)));
+  const double vJv = dot(v, chain.solve(v));
+  const int signPrime = chain.sign() * (vJv < 0.0 ? -1 : 1);
+  if (signPrime < 0) {
+    throw std::runtime_error(
+        "instantonSplitting: the path is not a minimum of the action "
+        "(a negative mode besides the kink's translation)");
+  }
+  inst.zeroMode = 1.0 / vJv;
+  const double logDetPrime = chain.logAbsDet() + std::log(std::abs(vJv));
+
+  // Next eigenvalue: inverse iteration orthogonal to v.
+  std::vector<VectorXd> w(v.size());
+  for (size_t k = 0; k < w.size(); ++k) {
+    w[k].resize(n);
+    for (long i = 0; i < n; ++i) {
+      w[k](i) = std::sin(0.7 * static_cast<double>(k) +
+                         1.3 * static_cast<double>(i) + 0.1);
+    }
+  }
+  double lambda1 = 0.0;
+  for (int it = 0; it < 40; ++it) {
+    const double proj = dot(v, w);
+    for (size_t k = 0; k < w.size(); ++k) {
+      w[k] -= proj * v[k];
+    }
+    scale(w, 1.0 / std::sqrt(dot(w, w)));
+    std::vector<VectorXd> z = chain.solve(w);
+    lambda1 = 1.0 / dot(w, z);
+    w = std::move(z);
+  }
+  inst.modeSeparation = std::abs(lambda1 / inst.zeroMode);
+
+  inst.delta0 = 2.0 * kHbar *
+                std::sqrt(inst.s0 / (2.0 * std::numbers::pi * kHbar * dtau)) *
+                std::exp(0.5 * (logDetWell - logDetPrime) - inst.action);
 }
 
 } // namespace eonc::tunneling

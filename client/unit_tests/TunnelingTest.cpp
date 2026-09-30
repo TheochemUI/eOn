@@ -205,3 +205,139 @@ TEST_CASE("Mass-weighted distance takes the masses and the minimum image",
   a.setMasses(zero);
   REQUIRE_THROWS(massWeightedDistance(a, b));
 }
+
+namespace {
+
+// V0 (x^2 - 1)^2 + (K / 2) (y - C (1 - x^2))^2 at unit mass: minima at
+// (-1, 0) and (1, 0), a valley that bows out to y = C at the barrier.
+struct CurvedValley {
+  double v0, k, c;
+  double value(const VectorXd &q) const {
+    const double x = q(0), t = q(1) - c * (1.0 - x * x);
+    return v0 * (x * x - 1.0) * (x * x - 1.0) + 0.5 * k * t * t;
+  }
+  VectorXd gradient(const VectorXd &q) const {
+    const double x = q(0), t = q(1) - c * (1.0 - x * x);
+    VectorXd g(2);
+    g << 4.0 * v0 * x * (x * x - 1.0) + 2.0 * k * c * x * t, k * t;
+    return g;
+  }
+  MatrixXd hessian(const VectorXd &q) const {
+    const double x = q(0), t = q(1) - c * (1.0 - x * x);
+    MatrixXd h(2, 2);
+    h(0, 0) = 4.0 * v0 * (3.0 * x * x - 1.0) + 2.0 * k * c * t +
+              4.0 * k * c * c * x * x;
+    h(0, 1) = h(1, 0) = 2.0 * k * c * x;
+    h(1, 1) = k;
+    return h;
+  }
+  BatchPotential batch() const {
+    return [this](const std::vector<VectorXd> &q, std::vector<double> &v,
+                  std::vector<VectorXd> &g) {
+      v.resize(q.size());
+      g.resize(q.size());
+      for (size_t i = 0; i < q.size(); ++i) {
+        v[i] = value(q[i]);
+        g[i] = gradient(q[i]);
+      }
+    };
+  }
+};
+
+Instanton valleyInstanton(const CurvedValley &pes, long beads,
+                          double betaHbarOmega) {
+  VectorXd a(2), b(2);
+  a << -1.0, 0.0;
+  b << 1.0, 0.0;
+  const double omega = pathOmega(pes.hessian(a), pes.hessian(b), a, b);
+  InstantonOptions opt;
+  opt.beads = beads;
+  opt.betaHbarOmega = betaHbarOmega;
+  opt.forceTolerance = 1e-9;
+  opt.maxIterations = 20000;
+  Instanton inst =
+      optimizeInstanton(a, b, betaHbarOmega / omega, {}, pes.batch(), opt);
+  instantonSplitting(
+      inst, [&](long, const VectorXd &q) { return pes.hessian(q); },
+      pes.hessian(a), pes.hessian(b));
+  return inst;
+}
+
+} // namespace
+
+// Exact splittings of the two-dimensional valley from the lowest two
+// eigenvalues of a fourth-order finite-difference Hamiltonian on a 361 x 181
+// grid over [-2.2, 2.2] x [-1.2, 1.6] (converged to 1e-5 against 241 x 121),
+// K = 4 eV / Angstrom^2, unit mass. The instanton values beside them are an
+// independent implementation of the same discretisation (scipy L-BFGS to a
+// gradient of 1e-12, dense eigenvalues of the chain Hessian) at P = 512 and
+// beta hbar omega = 40.
+TEST_CASE("Instanton splitting in a curved valley matches the exact gap",
+          "[Tunneling][Instanton]") {
+  struct Case {
+    double v0, c, exact, reference;
+  };
+  const Case cases[] = {
+      {0.12, 0.35, 2.5195793978e-05, 2.949267463340166e-05},
+      {0.30, 0.35, 9.8178409097e-08, 1.0623251042029217e-07},
+      {0.12, 0.00, 2.0396238276e-05, 2.2784988974931514e-05},
+      {0.30, 0.00, 1.1953758103e-07, 1.2776094740454857e-07},
+  };
+  for (const auto &cs : cases) {
+    CAPTURE(cs.v0, cs.c);
+    const CurvedValley pes{cs.v0, 4.0, cs.c};
+    const Instanton inst = valleyInstanton(pes, 512, 40.0);
+    REQUIRE(inst.converged);
+    REQUIRE(inst.symmetricEnough);
+    REQUIRE(inst.modeSeparation > 1e3);
+    REQUIRE_THAT(inst.delta0, WithinRel(cs.reference, 2e-3));
+    // Semiclassical error: 17 and 12 percent at V0 = 0.12 eV (V0 about
+    // 2.2 hbar omega), 8 and 7 percent at 0.3 eV.
+    REQUIRE_THAT(inst.delta0, WithinRel(cs.exact, cs.v0 < 0.2 ? 0.2 : 0.09));
+  }
+}
+
+TEST_CASE("The instanton cuts the corner the minimum energy path takes",
+          "[Tunneling][Instanton]") {
+  const CurvedValley pes{0.12, 4.0, 0.35};
+  const Instanton inst = valleyInstanton(pes, 256, 30.0);
+  REQUIRE(inst.converged);
+  // Halfway in imaginary time the instanton sits inside the valley's bow.
+  const VectorXd &mid = inst.path[inst.path.size() / 2];
+  REQUIRE(std::abs(mid(0)) < 1e-4);
+  REQUIRE(mid(1) > 0.0);
+  REQUIRE(mid(1) < 0.35);
+  // One-dimensional WKB along the valley floor misses the gap by a factor
+  // of 2.8; the instanton lands within 20 percent.
+  std::vector<double> s, v;
+  VectorXd prev(2);
+  for (int i = 0; i <= 400; ++i) {
+    const double x = -1.0 + 2.0 * i / 400.0;
+    VectorXd q(2);
+    q << x, 0.35 * (1.0 - x * x);
+    s.push_back(i == 0 ? 0.0 : s.back() + (q - prev).norm());
+    v.push_back(pes.value(q));
+    prev = q;
+  }
+  const Profile floor(s, v);
+  const double hw = hbarOmega(wellCurvature(floor, true));
+  const Splitting wkb = wkbSplitting(floor, hw, hw);
+  const double exact = 2.5195793978e-05;
+  REQUIRE(wkb.delta0 < 0.5 * exact);
+  REQUIRE_THAT(inst.delta0, WithinRel(exact, 0.2));
+}
+
+TEST_CASE("Instanton inputs are checked", "[Tunneling][Instanton]") {
+  const CurvedValley pes{0.12, 4.0, 0.0};
+  VectorXd a(2);
+  a << -1.0, 0.0;
+  InstantonOptions opt;
+  opt.beads = 2;
+  REQUIRE_THROWS_AS(optimizeInstanton(a, a, 1.0, {}, pes.batch(), opt),
+                    std::invalid_argument);
+  opt.beads = 16;
+  REQUIRE_THROWS_AS(optimizeInstanton(a, a, 1.0, {}, pes.batch(), opt),
+                    std::invalid_argument);
+  MatrixXd flat = MatrixXd::Zero(2, 2);
+  REQUIRE_THROWS_AS(pathOmega(flat, flat, a, -a), std::invalid_argument);
+}
