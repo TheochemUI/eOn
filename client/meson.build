@@ -1618,7 +1618,9 @@ if get_option('with_tests')
         ['test_impldim', 'ImpDimerTest.cpp', 'saddle_search'],
         ['strparse_run', 'StringHelpersTest.cpp', ''],
         ['test_matter', 'MatterTest.cpp', 'neb_morse'],
-        ['test_tunneling', 'TunnelingTest.cpp', ''],
+        # The cubic rate at 600 beads, and its half-ring comparison, run
+        # past the default 30s.
+        ['test_tunneling', 'TunnelingTest.cpp', '', 1200],
         ['test_pot', 'PotTest.cpp', 'neb_morse'],
         ['test_rgpot_adapter', 'RgpotAdapterTest.cpp', 'neb_morse'],
         # ['approve_params', 'ApproveParams.cpp', ''], # needs to handle additional parameters
@@ -1650,7 +1652,8 @@ if get_option('with_tests')
         ['test_optimizer', 'OptimizerTest.cpp', ''],
         ['test_fpe_handler', 'FPEHandlerTest.cpp', ''],
         ['test_dynamics', 'DynamicsTest.cpp', 'neb_morse'],
-        ['test_jobs', 'JobIntegrationTest.cpp', 'neb_morse'],
+        # The LJ13 rate is three cooled ring searches.
+        ['test_jobs', 'JobIntegrationTest.cpp', 'neb_morse', 1200],
         ['test_ohtst_scan', 'OHTSTScanTest.cpp', ''],
         ['test_hessian', 'HessianTest.cpp', 'neb_morse'],
         ['test_geom', 'GeometryAnalysisTest.cpp', 'neb_morse'],
