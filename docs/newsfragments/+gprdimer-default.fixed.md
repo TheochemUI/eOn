@@ -1,1 +1,1 @@
-The default Linux build links the Gaussian process dimer (`-Dwith_gprd=auto`) from `subprojects/gpr_optim` at `b55c89e2`. On the Morse Pt cell, `min_mode_method = gprdimer` reaches the same saddle as `dimer` in fewer force calls.
+On the Morse Pt cell, `gprdimer` and `dimer` both stop at -1462.008706 eV. `gprdimer` uses 17 force calls and `dimer` uses 38. The default Linux build links that method (`-Dwith_gprd=auto`) from `subprojects/gpr_optim` at `b55c89e2`.
