@@ -28,7 +28,8 @@ Plotting conventions:
 - relative energy on the landscape colorbar for readable ticks
 
 The benchmark geometry is under the force tolerance, so the client would write one frame.
-The setup cell moves the first atom by 0.15 angstroms along x, and the minimizer then takes a real step.
+The setup cell moves the first atom by 0.001 angstroms along x, and the minimizer then takes a real step.
+The landscape cell passes `--ira-kmax 1.8`.
 
 ## Setup and run
 
@@ -57,7 +58,7 @@ plot_dir.mkdir()
 shutil.copy(DATA / "pos.con", work / "pos.con")
 
 
-def shift_first_atom(path: Path, dx: float = 0.15) -> None:
+def shift_first_atom(path: Path, dx: float = 0.001) -> None:
     lines = path.read_text().splitlines()
     start = lines.index("Coordinates of Component 1") + 1
     parts = lines[start].split()
@@ -157,6 +158,8 @@ run_rgpycrumbs(
     str(work),
     "--label",
     "lj cluster",
+    "--ira-kmax",
+    "1.8",
     "--plot-type",
     "landscape",
     "--project-path",
