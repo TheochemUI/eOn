@@ -19,9 +19,11 @@
 #include "eon/Potential.h"
 #include "eon/Tunneling.h"
 
+#include <Eigen/QR>
 #include <Eigen/SVD>
 #include <cmath>
 #include <filesystem>
+#include <functional>
 #include <map>
 #include <memory>
 #include <stdexcept>
@@ -83,6 +85,41 @@ public:
     }
     m.setPositions(r);
   }
+  /// With no atom fixed, an orthonormal basis of the rigid motions of m in
+  /// these coordinates: three translations, and for a cluster three
+  /// rotations about the centre of mass. Empty when an atom is fixed.
+  MatrixXd rigidBasis(const Matter &m) const {
+    if (static_cast<long>(free_.size()) != m.numberOfAtoms()) {
+      return {};
+    }
+    const long n = dimension();
+    const bool cluster = !m.getPeriodic();
+    MatrixXd b = MatrixXd::Zero(n, cluster ? 6 : 3);
+    const AtomMatrix r = m.getPositions();
+    Eigen::RowVector3d com = Eigen::RowVector3d::Zero();
+    double total = 0.0;
+    for (size_t k = 0; k < free_.size(); ++k) {
+      const double w = sqrtMass_[k] * sqrtMass_[k];
+      com += w * r.row(free_[k]);
+      total += w;
+    }
+    com /= total;
+    for (size_t k = 0; k < free_.size(); ++k) {
+      const long i = static_cast<long>(3 * k);
+      const Eigen::Vector3d x = (r.row(free_[k]) - com).transpose();
+      for (int c = 0; c < 3; ++c) {
+        b(i + c, c) = sqrtMass_[k];
+        if (cluster) {
+          Eigen::Vector3d e = Eigen::Vector3d::Zero();
+          e(c) = 1.0;
+          b.block(i, 3 + c, 3, 1) = sqrtMass_[k] * e.cross(x);
+        }
+      }
+    }
+    // Rank-revealing: a linear molecule has two rotations, not three.
+    const Eigen::ColPivHouseholderQR<MatrixXd> qr(b);
+    return qr.householderQ() * MatrixXd::Identity(n, qr.rank());
+  }
   VectorXd gradient(const AtomMatrix &forces) const {
     VectorXd g(dimension());
     for (size_t k = 0; k < free_.size(); ++k) {
@@ -138,6 +175,173 @@ void alignRigid(const Matter &ref, Matter &m) {
 
 } // namespace
 
+namespace {
+
+/// Mode rate: the ring-polymer instanton through the saddle out of the
+/// reactant, and its thermal rate.
+std::vector<std::string>
+runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
+        const Matter &reactant, const MassWeighted &mw,
+        const tunneling::BatchPotential &evaluate,
+        const std::function<MatrixXd(const VectorXd &)> &hessianAt) {
+  const auto &o = params.instanton_options();
+  const std::string resultsFile = "results.dat";
+  const std::string pathFile = "instanton.con";
+  std::vector<std::string> returnFiles{resultsFile};
+
+  Matter saddle(pot, params);
+  if (!io::io_ok(saddle.con2matter(o.saddle_filename))) {
+    throw std::runtime_error("instanton: cannot read " + o.saddle_filename);
+  }
+  if (saddle.numberOfAtoms() != reactant.numberOfAtoms()) {
+    throw std::runtime_error(
+        "instanton: the saddle and the reactant differ in atom count");
+  }
+  if (!(o.temperature > 0.0)) {
+    throw std::invalid_argument("instanton: mode rate needs [Instanton] "
+                                "temperature in K");
+  }
+  alignRigid(reactant, saddle);
+  const long n = mw.dimension();
+  const VectorXd qSaddle = mw.toQ(saddle);
+  const double vReactant = Matter(reactant).getPotentialEnergy();
+  const double vSaddle = saddle.getPotentialEnergy();
+  const MatrixXd hReactant = hessianAt(VectorXd::Zero(n));
+  const MatrixXd hSaddle = hessianAt(qSaddle);
+  const double tc = tunneling::crossoverTemperature(hSaddle);
+  const long rigidModes = mw.rigidBasis(reactant).cols();
+  const double beta = 1.0 / (tunneling::kBoltzmann * o.temperature);
+  EONC_LOG_INFO("[Instanton] rate: {} beads at {:.4g} K, crossover {:.4g} K, "
+                "barrier {:.6f} eV, {} degrees of freedom",
+                o.beads, o.temperature, tc, vSaddle - vReactant, n);
+
+  std::vector<std::pair<std::string, double>> extras{
+      {"instanton_temperature_K", o.temperature},
+      {"instanton_crossover_K", tc},
+      {"barrier_classical", vSaddle - vReactant}};
+  auto write = [&](RunStatus status) {
+    auto env = JobResultEnvelope::fromMinimization(
+        status, params.potential_options().potential,
+        PotRegistry::get().total_force_calls(), false, 0.0);
+    env.job_type = "instanton";
+    env.extras.emplace_back("force_calls",
+                            static_cast<double>(env.force_calls));
+    for (const auto &kv : extras) {
+      env.extras.push_back(kv);
+    }
+    env.writeResultsDat(resultsFile);
+  };
+
+  if (!(o.temperature < tc)) {
+    // Above T_c the ring collapses onto the saddle and the rate is the
+    // classical one with a quantum prefactor; no instanton exists.
+    EONC_LOG_ERROR("[Instanton] {:.4g} K is at or above the crossover "
+                   "temperature {:.4g} K",
+                   o.temperature, tc);
+    write(RunStatus::FAIL_POTENTIAL_FAILED);
+    return returnFiles;
+  }
+
+  tunneling::RateInstantonOptions ro;
+  ro.beads = o.beads;
+  ro.maxIterations = o.max_iterations;
+  ro.forceTolerance = o.force_tolerance;
+  tunneling::RateInstanton inst = tunneling::optimizeRateInstanton(
+      qSaddle, hSaddle, beta, {}, evaluate, ro);
+  EONC_LOG_INFO("[Instanton] ring U_N {:.6f} eV after {} iterations{}",
+                inst.ringPotential, inst.iterations,
+                inst.converged ? "" : " (not converged)");
+
+  bool rateOk = false;
+  if (inst.converged) {
+    // Bead Hessians on every stride-th bead of the ring, linear in
+    // between, wrapping from the last anchor back to bead 0.
+    const long stride = std::max<long>(1, o.hessian_stride);
+    const long N = o.beads;
+    std::map<long, MatrixXd> anchors;
+    auto anchor = [&](long j) -> const MatrixXd & {
+      auto it = anchors.find(j);
+      if (it == anchors.end()) {
+        it = anchors.emplace(j, hessianAt(inst.beads[static_cast<size_t>(j)]))
+                 .first;
+      }
+      return it->second;
+    };
+    auto beadHessian = [&](long j, const VectorXd &) -> MatrixXd {
+      const long lo = (j / stride) * stride;
+      if (j == lo) {
+        return anchor(lo);
+      }
+      const long hi = lo + stride < N ? lo + stride : 0;
+      const long span = (hi == 0 ? N : hi) - lo;
+      const double t = static_cast<double>(j - lo) / static_cast<double>(span);
+      return (1.0 - t) * anchor(lo) + t * anchor(hi);
+    };
+    try {
+      tunneling::instantonRate(inst, beadHessian, hReactant, vReactant, hSaddle,
+                               vSaddle, rigidModes);
+      rateOk = std::isfinite(inst.logRate) && inst.negativeModes == 1;
+      if (inst.negativeModes != 1) {
+        EONC_LOG_ERROR("[Instanton] the ring Hessian has {} negative modes, "
+                       "not one: the ring is not a first-order saddle of U_N",
+                       inst.negativeModes);
+      }
+    } catch (const std::runtime_error &ex) {
+      EONC_LOG_ERROR("[Instanton] {}", ex.what());
+    }
+  }
+
+  // ln(k s): the rate itself underflows a double for deep tunnelling.
+  const double logSecond = std::log(tunneling::kTimeUnitSeconds);
+  Matter frame(reactant);
+  for (size_t j = 0; j < inst.beads.size(); ++j) {
+    mw.place(inst.beads[j], frame);
+    io::ConFrameMetadata meta;
+    meta.frame_index = static_cast<uint64_t>(j);
+    meta.energy = inst.energies[j];
+    meta.write_con_forces = false;
+    meta.scalars = {{"imaginary_time_fs", static_cast<double>(j) * inst.betaN *
+                                              tunneling::kHbar * kTimeUnitFs}};
+    if (j == 0) {
+      meta.scalars.push_back({"instanton_temperature_K", o.temperature});
+      meta.scalars.push_back({"instanton_crossover_K", tc});
+      meta.scalars.push_back(
+          {"instanton_converged", inst.converged ? 1.0 : 0.0});
+      if (rateOk) {
+        meta.scalars.push_back(
+            {"rate_instanton_log", inst.logRate - logSecond});
+        meta.scalars.push_back(
+            {"barrier_effective_instanton", inst.effectiveBarrier});
+      }
+    }
+    if (!io::io_ok(frame.matter2con(pathFile, j > 0, &meta))) {
+      throw std::runtime_error("instanton: cannot write " + pathFile);
+    }
+  }
+  returnFiles.push_back(pathFile);
+
+  extras.emplace_back("instanton_iterations",
+                      static_cast<double>(inst.iterations));
+  extras.emplace_back("instanton_ring_potential", inst.ringPotential);
+  extras.emplace_back("instanton_bN", inst.bN);
+  if (rateOk) {
+    extras.emplace_back("rate_instanton", inst.rate);
+    extras.emplace_back("rate_instanton_log", inst.logRate - logSecond);
+    extras.emplace_back("rate_htst", inst.classicalRate);
+    extras.emplace_back("rate_htst_log", inst.classicalLogRate - logSecond);
+    extras.emplace_back("barrier_effective_instanton", inst.effectiveBarrier);
+    extras.emplace_back("instanton_negative_modes",
+                        static_cast<double>(inst.negativeModes));
+    extras.emplace_back("instanton_zero_mode", inst.zeroEigenvalue);
+  }
+  write(rateOk ? RunStatus::GOOD
+               : (inst.converged ? RunStatus::FAIL_POTENTIAL_FAILED
+                                 : RunStatus::FAIL_MAX_ITERATIONS));
+  return returnFiles;
+}
+
+} // namespace
+
 std::vector<std::string> InstantonJob::run(void) {
   const auto &o = params.instanton_options();
   std::vector<std::string> returnFiles;
@@ -146,20 +350,12 @@ std::vector<std::string> InstantonJob::run(void) {
   returnFiles.push_back(resultsFile);
 
   auto reactant = std::make_unique<Matter>(pot, params);
-  auto product = std::make_unique<Matter>(pot, params);
-  if (!io::io_ok(reactant->con2matter(o.reactant_filename)) ||
-      !io::io_ok(product->con2matter(o.product_filename))) {
-    throw std::runtime_error("instanton: cannot read " + o.reactant_filename +
-                             " or " + o.product_filename);
+  if (!io::io_ok(reactant->con2matter(o.reactant_filename))) {
+    throw std::runtime_error("instanton: cannot read " + o.reactant_filename);
   }
-  if (reactant->numberOfAtoms() != product->numberOfAtoms()) {
-    throw std::runtime_error("instanton: the minima differ in atom count");
-  }
-  alignRigid(*reactant, *product);
   const MassWeighted mw(*reactant);
   const long n = mw.dimension();
   const VectorXd qStart = VectorXd::Zero(n);
-  const VectorXd qEnd = mw.toQ(*product);
 
   // Bead evaluations: one batch per call, through forceBatch when the
   // potential spreads a batch over calculators.
@@ -215,8 +411,29 @@ std::vector<std::string> InstantonJob::run(void) {
     if (out.rows() != n) {
       throw std::runtime_error("instanton: a bead Hessian failed");
     }
+    // A finite-difference Hessian of a free structure has small nonzero
+    // rigid eigenvalues of either sign; project them to zero.
+    const MatrixXd rigid = mw.rigidBasis(m);
+    if (rigid.cols() > 0) {
+      const MatrixXd p = MatrixXd::Identity(n, n) - rigid * rigid.transpose();
+      out = p * out * p;
+    }
     return out;
   };
+
+  if (o.mode == "rate") {
+    return runRate(params, pot, *reactant, mw, evaluate, hessianAt);
+  }
+
+  auto product = std::make_unique<Matter>(pot, params);
+  if (!io::io_ok(product->con2matter(o.product_filename))) {
+    throw std::runtime_error("instanton: cannot read " + o.product_filename);
+  }
+  if (reactant->numberOfAtoms() != product->numberOfAtoms()) {
+    throw std::runtime_error("instanton: the minima differ in atom count");
+  }
+  alignRigid(*reactant, *product);
+  const VectorXd qEnd = mw.toQ(*product);
 
   // Starting path: a band from file, else the straight line.
   std::vector<VectorXd> guess;
@@ -352,9 +569,6 @@ std::vector<std::string> InstantonJob::run(void) {
   env.extras.emplace_back("instanton_action", inst.action);
   env.extras.emplace_back("instanton_temperature_K", kelvin);
   env.extras.emplace_back("tunnel_asymmetry", inst.asymmetry);
-  env.extras.emplace_back("instanton_beta_asymmetry", betaAsymmetry);
-  env.extras.emplace_back("instanton_symmetric",
-                          inst.symmetricEnough ? 1.0 : 0.0);
   env.extras.emplace_back("instanton_beta_asymmetry", betaAsymmetry);
   env.extras.emplace_back("instanton_symmetric",
                           inst.symmetricEnough ? 1.0 : 0.0);

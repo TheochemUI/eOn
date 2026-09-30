@@ -178,4 +178,105 @@ Instanton optimizeInstanton(const VectorXd &start, const VectorXd &end,
 void instantonSplitting(Instanton &inst, const BeadHessian &hessian,
                         const MatrixXd &hessStart, const MatrixXd &hessEnd);
 
+// Ring-polymer instanton for the thermal rate below the crossover
+// temperature (Richardson and Althorpe, J. Chem. Phys. 131, 214106 (2009)).
+//
+// A closed ring of N beads in mass-weighted coordinates q, beta_N = beta / N,
+// has the potential
+//
+//   U_N = sum_j V(q_j) + sum_j |q_{j+1} - q_j|^2 / (2 beta_N^2 hbar^2),
+//
+// q_N = q_0. Below T_c = hbar omega_b / (2 pi kB), omega_b the imaginary
+// frequency at the saddle, the instanton is a first-order saddle of U_N:
+// one negative mode, and one zero mode that cycles the beads. The rate is
+//
+//   k Z_r = (1 / (beta_N hbar)) sqrt(B_N / (2 pi beta_N hbar^2))
+//           prod'_k 1 / (beta_N hbar |omega_k|) exp(-beta_N U_N),
+//
+// B_N = sum_j |q_{j+1} - q_j|^2, omega_k^2 the eigenvalues of the
+// mass-weighted Hessian of U_N with the zero mode left out, and Z_r the
+// ring-polymer partition function of the harmonic reactant,
+//
+//   Z_r = exp(-beta V_r) prod_{k=0}^{N-1} prod_m
+//         1 / (beta_N hbar sqrt(lambda_m + 4 sin^2(pi k / N) / (beta_N
+//         hbar)^2)),
+//
+// lambda_m the eigenvalues of the reactant's mass-weighted Hessian. Above
+// T_c the ring collapses onto the saddle and the formula no longer applies.
+
+/// One unit of time, sqrt(amu Angstrom^2 / eV), in seconds.
+inline constexpr double kTimeUnitSeconds = 1.0180505717871193e-14;
+
+/// T_c = hbar omega_b / (2 pi kB) from the mass-weighted Hessian at the
+/// saddle, in K; throws when the Hessian has no negative eigenvalue.
+double crossoverTemperature(const MatrixXd &hessSaddle);
+
+struct RateInstantonOptions {
+  long beads = 32;              ///< N, beads on the ring
+  long maxIterations = 1000;    ///< translation steps
+  double forceTolerance = 1e-3; ///< largest per-bead |dU_N/dq|,
+                                ///< eV / (amu^0.5 Angstrom)
+  long lanczosFirst = 30;       ///< Lanczos steps for the first minimum mode
+  long lanczosRestart = 6;      ///< Lanczos steps from the previous mode
+  double lanczosStep = 1e-4;    ///< finite-difference step, amu^0.5 Angstrom
+  double maxStep = 0.05;        ///< largest bead move per step,
+                                ///< amu^0.5 Angstrom
+  long memory = 10;             ///< L-BFGS correction pairs
+};
+
+struct RateInstanton {
+  std::vector<VectorXd> beads;     ///< N beads, q_N = q_0 implied
+  std::vector<double> energies;    ///< V at every bead, eV
+  double beta = 0.0;               ///< 1 / (kB T), 1 / eV
+  double betaN = 0.0;              ///< beta / N
+  double temperature = 0.0;        ///< K
+  double crossover = 0.0;          ///< T_c, K
+  double ringPotential = 0.0;      ///< U_N, eV
+  double bN = 0.0;                 ///< sum_j |q_{j+1} - q_j|^2, amu Angstrom^2
+  double negativeEigenvalue = 0.0; ///< of the ring Hessian, 1 / time^2
+  double zeroEigenvalue = 0.0;     ///< the eigenvalue left out
+  long negativeModes = 0;          ///< eigenvalues below the zero mode
+  long iterations = 0;
+  bool converged = false;
+  double logRateTimesZr = 0.0; ///< ln(k Z_r), k in 1 / time
+  double logZr = 0.0;          ///< ln Z_r
+  double logRate = 0.0;        ///< ln k, k in 1 / time
+  double rate = 0.0;           ///< k in 1 / s
+  /// -kB T ln(2 pi hbar beta k): the barrier an Eyring rate would need, eV.
+  double effectiveBarrier = 0.0;
+  /// Classical harmonic transition-state theory at the same T, 1 / s,
+  /// when the saddle Hessian was given; its logarithm (k in 1 / time) does
+  /// not underflow.
+  double classicalRate = 0.0;
+  double classicalLogRate = 0.0;
+};
+
+/// Finds the rate instanton at inverse temperature `beta` (1 / eV) by
+/// minimum-mode following on U_N. `guess` holds N beads, or is empty for a
+/// ring stretched along the saddle's unstable mode to where V has dropped by
+/// (1 - T / T_c) of the lower of the two barriers. `saddle` and `hessSaddle`
+/// are the mass-weighted saddle and its Hessian. Each step costs one batch of
+/// N potential calls plus one batch per Lanczos step.
+RateInstanton optimizeRateInstanton(const VectorXd &saddle,
+                                    const MatrixXd &hessSaddle, double beta,
+                                    std::vector<VectorXd> guess,
+                                    const BatchPotential &potential,
+                                    const RateInstantonOptions &options);
+
+/// The mass-weighted Hessian d2V/dq2 at ring bead j (0..N-1).
+using RingBeadHessian = std::function<MatrixXd(long j, const VectorXd &q)>;
+
+/// Fills the rate from the bead Hessians, the reactant minimum's Hessian and
+/// energy, and optionally the saddle's Hessian and energy for the classical
+/// comparison (pass an empty matrix to skip it). rigidModes is the count of
+/// rigid-body zero modes every Hessian carries (6 for a free cluster, 3 for a
+/// free periodic cell, 0 with atoms fixed); they leave the centroid factors,
+/// so the rotational and translational partition functions of reactant and
+/// instanton cancel. Uses the dense ring Hessian, N times the degrees of
+/// freedom on a side.
+void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
+                   const MatrixXd &hessReactant, double vReactant,
+                   const MatrixXd &hessSaddle = MatrixXd(),
+                   double vSaddle = 0.0, long rigidModes = 0);
+
 } // namespace eonc::tunneling

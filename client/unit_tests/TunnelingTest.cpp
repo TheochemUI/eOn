@@ -341,3 +341,106 @@ TEST_CASE("Instanton inputs are checked", "[Tunneling][Instanton]") {
   MatrixXd flat = MatrixXd::Zero(2, 2);
   REQUIRE_THROWS_AS(pathOmega(flat, flat, a, -a), std::invalid_argument);
 }
+
+namespace {
+
+// Metastable cubic well on a mass-weighted coordinate,
+// V(q) = omega0^2 q^2 / 2 - g q^3 / 3, reactant at 0, barrier at
+// q_b = omega0^2 / g with V_b = omega0^6 / (6 g^2) and curvature -omega0^2.
+struct CubicWell {
+  double omega0, g;
+  double vb() const { return std::pow(omega0, 6) / (6.0 * g * g); }
+  double qb() const { return omega0 * omega0 / g; }
+  BatchPotential batch() const {
+    return [this](const std::vector<VectorXd> &q, std::vector<double> &v,
+                  std::vector<VectorXd> &grad) {
+      v.resize(q.size());
+      grad.resize(q.size());
+      for (size_t j = 0; j < q.size(); ++j) {
+        const double x = q[j](0);
+        v[j] = 0.5 * omega0 * omega0 * x * x - g * x * x * x / 3.0;
+        grad[j] = VectorXd::Constant(1, omega0 * omega0 * x - g * x * x);
+      }
+    };
+  }
+  MatrixXd hessian(const VectorXd &q) const {
+    return MatrixXd::Constant(1, 1, omega0 * omega0 - 2.0 * g * q(0));
+  }
+};
+
+} // namespace
+
+// Deep below the crossover the ring-polymer instanton rate approaches the
+// zero-temperature decay rate of the cubic well (Caldeira and Leggett, Ann.
+// Phys. 149, 374 (1983)),
+//   Gamma = (omega0 / 2 pi) sqrt(864 pi V_b / (hbar omega0))
+//           exp(-36 V_b / (5 hbar omega0)),
+// whose leading semiclassical correction is of order hbar omega0 / V_b.
+TEST_CASE("The rate instanton of a cubic well matches its decay rate",
+          "[Tunneling][Instanton]") {
+  const double omega0 = 1.0;
+  const double hw = kHbar * omega0;
+  const double vb = 16.0 * hw;
+  const CubicWell pes{omega0, std::sqrt(std::pow(omega0, 6) / (6.0 * vb))};
+  REQUIRE_THAT(pes.vb(), WithinRel(vb, 1e-12));
+  const VectorXd saddle = VectorXd::Constant(1, pes.qb());
+  const MatrixXd hs = pes.hessian(saddle);
+  const double tc = crossoverTemperature(hs);
+  REQUIRE_THAT(tc,
+               WithinRel(hw / (2.0 * std::numbers::pi * kBoltzmann), 1e-12));
+
+  const double beta = 60.0 / hw; // T about T_c / 10
+  RateInstantonOptions opt;
+  opt.beads = 300;
+  opt.forceTolerance = 1e-8;
+  opt.maxStep = 0.05;
+  RateInstanton inst =
+      optimizeRateInstanton(saddle, hs, beta, {}, pes.batch(), opt);
+  REQUIRE(inst.converged);
+  instantonRate(
+      inst, [&](long, const VectorXd &q) { return pes.hessian(q); },
+      pes.hessian(VectorXd::Zero(1)), 0.0, hs, vb);
+  REQUIRE(inst.negativeModes == 1);
+  REQUIRE(std::abs(inst.zeroEigenvalue) < 1e-3 * omega0 * omega0);
+
+  const double gammaLog = std::log(omega0 / (2.0 * std::numbers::pi)) +
+                          0.5 * std::log(864.0 * std::numbers::pi * vb / hw) -
+                          36.0 * vb / (5.0 * hw);
+  CAPTURE(inst.logRate, gammaLog, inst.iterations, inst.temperature, tc);
+  // 300 beads at beta hbar omega0 = 60 is within 15 percent.
+  REQUIRE(std::abs(std::exp(inst.logRate - gammaLog) - 1.0) < 0.15);
+  // Tunnelling beats the classical rate by many orders at T_c / 10.
+  REQUIRE(inst.logRate > inst.classicalLogRate + std::log(1e10));
+
+  // The discretisation error falls as 1 / N^2, so doubling the beads and
+  // extrapolating removes it; what is left is the semiclassical error of the
+  // instanton against Gamma.
+  opt.beads = 600;
+  RateInstanton fine =
+      optimizeRateInstanton(saddle, hs, beta, {}, pes.batch(), opt);
+  REQUIRE(fine.converged);
+  instantonRate(
+      fine, [&](long, const VectorXd &q) { return pes.hessian(q); },
+      pes.hessian(VectorXd::Zero(1)), 0.0, hs, vb);
+  REQUIRE(fine.negativeModes == 1);
+  const double extrapolated = (4.0 * fine.logRate - inst.logRate) / 3.0;
+  CAPTURE(fine.logRate, extrapolated);
+  REQUIRE(std::abs(fine.logRate - gammaLog) <
+          std::abs(inst.logRate - gammaLog));
+  REQUIRE(std::abs(std::exp(extrapolated - gammaLog) - 1.0) < 0.01);
+}
+
+TEST_CASE("The rate instanton refuses a temperature above the crossover",
+          "[Tunneling][Instanton]") {
+  const double hw = kHbar;
+  const CubicWell pes{1.0, std::sqrt(1.0 / (6.0 * 16.0 * hw))};
+  const VectorXd saddle = VectorXd::Constant(1, pes.qb());
+  const MatrixXd hs = pes.hessian(saddle);
+  const double tc = crossoverTemperature(hs);
+  REQUIRE_THROWS_AS(optimizeRateInstanton(saddle, hs,
+                                          1.0 / (kBoltzmann * 1.5 * tc), {},
+                                          pes.batch(), RateInstantonOptions{}),
+                    std::invalid_argument);
+  REQUIRE_THROWS_AS(crossoverTemperature(pes.hessian(VectorXd::Zero(1))),
+                    std::invalid_argument);
+}

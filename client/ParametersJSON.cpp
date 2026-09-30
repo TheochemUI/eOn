@@ -284,6 +284,7 @@ json to_json(const Parameters &p) {
   {
     const auto &o = ParametersLoadAccess::instanton_options(p);
     j["Instanton"] = {
+        {"mode", o.mode},
         {"reactant_filename", o.reactant_filename},
         {"product_filename", o.product_filename},
         {"initial_path", o.initial_path},
@@ -292,6 +293,8 @@ json to_json(const Parameters &p) {
         {"max_iterations", o.max_iterations},
         {"force_tolerance", o.force_tolerance},
         {"hessian_stride", o.hessian_stride},
+        {"saddle_filename", o.saddle_filename},
+        {"temperature", o.temperature},
     };
   }
 

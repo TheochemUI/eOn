@@ -2420,6 +2420,14 @@ class HessianConfig(BaseModel):
 class InstantonConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
+    mode: Literal["splitting", "rate"] = Field(
+        default="splitting",
+        description=(
+            "splitting: the tunnelling splitting between two minima. rate:"
+            " the thermal rate out of the reactant through the saddle, below"
+            " the crossover temperature."
+        ),
+    )
     reactant_filename: str = Field(
         default="reactant.con", description="The first minimum."
     )
@@ -2456,6 +2464,15 @@ class InstantonConfig(BaseModel):
             "Finite-difference Hessians on every stride-th bead, linear in"
             " between; 1 takes one on every bead."
         ),
+    )
+    saddle_filename: str = Field(
+        default="saddle.con",
+        description="Mode rate: the first-order saddle out of the reactant.",
+    )
+    temperature: float = Field(
+        default=0.0,
+        ge=0.0,
+        description="Mode rate: T in K, below the crossover temperature.",
     )
 
 

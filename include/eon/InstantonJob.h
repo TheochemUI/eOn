@@ -15,9 +15,10 @@
 
 namespace eonc {
 
-/// Ring-polymer instanton between two minima ([Instanton]): the tunnelling
-/// splitting beyond one-dimensional WKB, written to instanton.con and
-/// results.dat.
+/// Ring-polymer instanton ([Instanton]): the tunnelling splitting between
+/// two minima beyond one-dimensional WKB (mode splitting), or the thermal
+/// rate through a saddle below the crossover temperature (mode rate),
+/// written to instanton.con and results.dat.
 class InstantonJob : public Job {
 public:
   InstantonJob(std::unique_ptr<Parameters> parameters, Runtime &rt)

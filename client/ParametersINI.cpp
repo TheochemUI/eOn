@@ -1839,6 +1839,7 @@ int load_ini(INIReader &ini, Parameters &params) {
   // [Instanton] //
   {
     auto &o = ParametersLoadAccess::instanton_options(params);
+    o.mode = ini.Get("Instanton", "mode", o.mode);
     o.reactant_filename =
         ini.Get("Instanton", "reactant_filename", o.reactant_filename);
     o.product_filename =
@@ -1853,6 +1854,14 @@ int load_ini(INIReader &ini, Parameters &params) {
         ini.GetReal("Instanton", "force_tolerance", o.force_tolerance);
     o.hessian_stride =
         ini.GetInteger("Instanton", "hessian_stride", o.hessian_stride);
+    o.saddle_filename =
+        ini.Get("Instanton", "saddle_filename", o.saddle_filename);
+    o.temperature = ini.GetReal("Instanton", "temperature", o.temperature);
+    if (o.mode != "splitting" && o.mode != "rate") {
+      throw std::invalid_argument("[Instanton] mode must be splitting or rate, "
+                                  "not " +
+                                  o.mode);
+    }
   }
 
   // [OH_TST] //

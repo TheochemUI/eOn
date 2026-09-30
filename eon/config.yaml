@@ -1121,6 +1121,14 @@ Hessian:
 
 Instanton:
     options:
+        # splitting: two minima; rate: a minimum and the saddle out of it.
+        mode:
+            kind: string
+            default: splitting
+            values:
+                - splitting
+                - rate
+
         reactant_filename:
             kind: string
             default: reactant.con
@@ -1153,6 +1161,15 @@ Instanton:
         hessian_stride:
             kind: int
             default: 1
+
+        saddle_filename:
+            kind: string
+            default: saddle.con
+
+        # K, below the crossover temperature of the saddle.
+        temperature:
+            kind: float
+            default: 0.0
 
 ################################################################################
 

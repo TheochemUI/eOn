@@ -778,9 +778,12 @@ struct debug_options_t {
 };
 
 // [Instanton] //
-// Ring-polymer instanton for the tunnelling splitting between two minima
-// (eonc::tunneling::optimizeInstanton).
+// Ring-polymer instanton: the tunnelling splitting between two minima
+// (mode "splitting", eonc::tunneling::optimizeInstanton) or the thermal rate
+// out of a minimum through a saddle below the crossover temperature (mode
+// "rate", eonc::tunneling::optimizeRateInstanton).
 struct instanton_options_t {
+  std::string mode{"splitting"};
   std::string reactant_filename{"reactant.con"};
   std::string product_filename{"product.con"};
   // Optional band to start from (neb.con or any multi-frame con file whose
@@ -792,6 +795,9 @@ struct instanton_options_t {
   double force_tolerance{1e-3}; // eV / (amu^0.5 A), largest bead residual
   // FD Hessians on every stride-th bead, linear in between; 1 is every bead.
   long hessian_stride{1};
+  // Mode "rate": the first-order saddle out of the reactant, and T in K.
+  std::string saddle_filename{"saddle.con"};
+  double temperature{0.0};
 };
 
 // [OH_TST] //
