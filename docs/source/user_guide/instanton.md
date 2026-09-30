@@ -194,7 +194,8 @@ of 32 beads at 5 K does not resolve a stiff bond: the path integral starts
 to converge once the bead count exceeds {math}`\beta \hbar \omega` of the
 stiffest mode. `hessian_stride` of 1 takes a Hessian on every bead. A larger
 stride keeps a Hessian on every stride-th bead and interpolates linearly
-between those anchors.
+between those anchors. That interpolation is an approximation: the rate
+formula uses the Hessian of every bead.
 
 With no atom fixed, the three translations are omitted on both sides. A
 rotation is omitted when it is a zero mode of the reactant Hessian, which a
