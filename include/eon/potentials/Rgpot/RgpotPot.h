@@ -50,8 +50,7 @@ public:
                        const double *const *positions,
                        const int *const *atomicNrs, double *const *forces,
                        double *energies, double *variances,
-                       const double *const *boxes,
-                       const long *owners) override;
+                       const double *const *boxes, const long *owners) override;
   /// NWChem molecular SCF does not support PBC; CPMD may be periodic.
   [[nodiscard]] bool requiresIsolatedMoleculeLayout() const noexcept override {
     return backend_ == "nwchemc";
@@ -71,10 +70,13 @@ private:
                     double *energies, const double *const *boxes,
                     const std::int64_t *owners);
   void sendStop();
+  void stopAndDrop();
   void releaseWorkersAtExit();
 
   std::unique_ptr<RGPotEngine> impl_;
   std::string backend_;
   bool driver_{true};
   bool stopped_{false};
+  bool dropped_{false};
+  bool acked_{false};
 };

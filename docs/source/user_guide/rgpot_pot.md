@@ -125,6 +125,10 @@ meson compile -C bbdir
 The flag configures the wrap. A `pkg-config` rgpot must already be an MPI
 build. If it is not, `ranks_per_image` greater than 0 raises.
 
+eOn's `-Dwith_mpi` option builds the client/server program. Calculator
+groups are this page's launch, `mpirun -np N eonclient`, with rgpot built
+`-Drgpot:with_mpi=enabled`.
+
 ### CPMDParams file
 
 `params_path` loads a CPMDParams message from disk. The message carries
@@ -134,6 +138,8 @@ the sections, the pseudopotentials, and the cell. It replaces
 After the file is read, `engine_path`, `engine_library`, `engine_root`,
 `scratch_dir`, `permanent_dir`, and `input_block` still apply.
 `RGPOT_PARAMS_PATH` overrides `params_path` when the variable is set.
+Every rank reads the file before `MPI_Comm_split`. When any rank cannot
+read it, every rank throws that error and the split does not run.
 
 Write the message as Cap'n Proto text. The field names are in the
 [write-cpmdparams how-to](https://github.com/OmniPotentRPC/cpmdc/blob/main/docs/source/howto/write-cpmdparams.rst).
@@ -274,8 +280,12 @@ mpirun -np 28 eonclient
 ```
 
 Rank 0 runs the job and writes the files. The other ranks serve force
-requests. At exit, rank 0 sends a stop and every rank calls
-`MPI_Finalize`.
+requests. At exit, rank 0 sends a stop. Every rank calls `cpmdc_finalize`
+while MPI is still up, then `MPI_Finalize`, then `_Exit`. `_Exit` returns
+to the kernel, and the dynamic linker does not run the CPMD or MPI
+library destructors on a finalized world. Worker ranks use status 0.
+Rank 0 uses the job status, and a calculator error on another rank is
+part of the message it prints.
 
 The job writes `results.dat`, `neb.con`, `neb.dat`, and `sp.con`.
 `sp.con` is the highest-energy image. A spline maximum more than 0.05 eV

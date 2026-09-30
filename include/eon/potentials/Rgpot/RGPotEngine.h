@@ -67,12 +67,20 @@ public:
   /// Registers MPI_Finalize at exit (once per process) when the world has
   /// more than one rank.
   void finalizeMpiAtExit() const;
+  /// After MPI_Finalize, _Exit. Library destructors do not run on a
+  /// finalized MPI world. No-op unless this process was started as one
+  /// of several ranks.
+  void armGroupedExit() const;
+  /// Calls cpmdc_finalize while the engine is still mapped. MPI stays up.
+  void shutdownModule() noexcept;
   /// Collective on MPI_COMM_WORLD: every rank leaves with the energy and
   /// the 3N forces computed by the first rank of group `owner`. Only
   /// CPMD's parent rank holds the true forces, so this also keeps the
   /// ranks of one group on the same step. `ok` is the owner's status;
-  /// the return value is the owner's status on every rank.
-  bool shareResult(int owner, long N, double *F, double *U, bool ok) const;
+  /// the return value is the owner's status on every rank. `error` is
+  /// the owner's engine message on every rank.
+  bool shareResult(int owner, long N, double *F, double *U, bool ok,
+                   std::string &error) const;
 
 private:
   struct Impl;

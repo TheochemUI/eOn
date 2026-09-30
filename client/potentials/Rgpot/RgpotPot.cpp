@@ -113,19 +113,32 @@ RgpotPot::RgpotPot(const eonc::Parameters &p)
       << "RgpotPot: in-process rgpot backend=" << backend_
       << " (dlopen: libnwchemc/libcpmdc/libmetatomic_engine/libxtb_engine)"
       << std::endl;
-  // Registered first, so MPI_Finalize runs after the driver's stop handler.
+  // Finalize is registered first. The grouped-exit handler is next, and
+  // the stop handler is last, so exit runs stop, then Finalize, then _Exit.
   impl_->finalizeMpiAtExit();
+  impl_->armGroupedExit();
+  releaseWorkersAtExit();
   if (!driver_)
     serveWorker();
 }
 
-RgpotPot::~RgpotPot() { sendStop(); }
+RgpotPot::~RgpotPot() {
+  const bool grouped = impl_ && impl_->calculatorWorld() > 1;
+  stopAndDrop();
+  // ~CPMDPot dlcloses libcpmdc. On several ranks that runs Fortran
+  // destructors while another rank may already be in MPI_Finalize.
+  // The process reclaims the engine at _Exit.
+  if (grouped)
+    (void)impl_.release();
+}
 
 bool RgpotPot::engineAvailable() const { return impl_ && impl_->available(); }
 
 namespace {
 // Request header broadcast from the driver: kind, atoms, systems.
-enum : std::int64_t { kStop = 0, kSingle = 1, kBatch = 2 };
+// kDown is the second broadcast: every rank has dropped CPMD, and
+// workers may enter MPI_Finalize.
+enum : std::int64_t { kStop = 0, kSingle = 1, kBatch = 2, kDown = 3 };
 
 // The driver's live potential, so an exit that skips the destructor still
 // releases the workers before MPI_Finalize.
@@ -142,14 +155,31 @@ void RgpotPot::sendStop() {
     g_driver = nullptr;
 }
 
+void RgpotPot::stopAndDrop() {
+  if (!impl_)
+    return;
+  const bool grouped = driver_ && impl_->calculatorWorld() > 1;
+  if (grouped && !stopped_)
+    sendStop();
+  if (!dropped_) {
+    impl_->shutdownModule();
+    dropped_ = true;
+  }
+  if (grouped && !acked_) {
+    std::int64_t hdr[3] = {kDown, 0, 0};
+    impl_->broadcastFromDriver(hdr, sizeof(hdr));
+    acked_ = true;
+  }
+}
+
 void RgpotPot::releaseWorkersAtExit() {
-  if (g_driver || impl_->calculatorWorld() <= 1)
+  if (g_driver || !impl_ || impl_->calculatorWorld() <= 1)
     return;
   // Runs before the MPI_Finalize handler registered in the constructor.
   g_driver = this;
   std::atexit([] {
     if (g_driver)
-      g_driver->sendStop();
+      g_driver->stopAndDrop();
   });
 }
 
@@ -185,7 +215,7 @@ void RgpotPot::computeSingle(long N, const double *R, const int *atomicNrs,
   bool ok = true;
   if (impl_->calculatorIndex() == 0)
     ok = try_force(*impl_, N, R, atomicNrs, F, U, box, error);
-  if (!impl_->shareResult(0, N, F, U, ok))
+  if (!impl_->shareResult(0, N, F, U, ok, error))
     raise_failure(0, 0, error);
 }
 
@@ -219,7 +249,8 @@ void RgpotPot::computeBatch(long nSystems, long nAtoms,
   for (long j = 0; j < nSystems; j++) {
     const int owner = ownerOf(j);
     if (!impl_->shareResult(owner, nAtoms, forces[j], &energies[j],
-                            ok[static_cast<size_t>(j)] != 0) &&
+                            ok[static_cast<size_t>(j)] != 0,
+                            errors[static_cast<size_t>(j)]) &&
         failed < 0)
       failed = j;
   }
@@ -231,8 +262,17 @@ void RgpotPot::serveWorker() {
   for (;;) {
     std::int64_t hdr[3] = {kStop, 0, 0};
     impl_->broadcastFromDriver(hdr, sizeof(hdr));
-    if (hdr[0] == kStop)
+    if (hdr[0] == kStop) {
+      // Drop CPMD, wait until the driver has dropped it too, then exit 0.
+      // MPI_Finalize is collective and runs from the exit handler.
+      if (!dropped_) {
+        impl_->shutdownModule();
+        dropped_ = true;
+      }
+      std::int64_t ack[3] = {kDown, 0, 0};
+      impl_->broadcastFromDriver(ack, sizeof(ack));
       std::exit(0);
+    }
     const long n = static_cast<long>(hdr[1]);
     const long m = hdr[0] == kBatch ? static_cast<long>(hdr[2]) : 1;
     std::vector<double> R(static_cast<size_t>(3 * n * m));
