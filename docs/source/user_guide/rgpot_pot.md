@@ -169,10 +169,10 @@ is the fallback directory.
 
 ### Files from libcpmdc
 
-Each force call leaves `RESTART.1`, `LATEST`, `GEOMETRY`, and
-`GEOMETRY.xyz`. They go to `permanent_dir` when that key is set, otherwise
-to `scratch_dir`, otherwise to the working directory. Every calculator
-group uses that same directory.
+A library force call writes no `RESTART.1`, `LATEST`, `GEOMETRY`, or
+`GEOMETRY.xyz`. The orbitals for the next call stay in memory. `cpmd.x`
+writes those four files in `permanent_dir` when that key is set, otherwise
+in `scratch_dir`, otherwise in the working directory.
 
 eOn's own files are written by rank 0. The names depend on the job.
 
