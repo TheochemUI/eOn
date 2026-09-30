@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Benchmark batched vs sequential model.forward() for MetatomicPotential.
 
-Run on cosmolab with the eongpu pixi env:
+Run with the eongpu pixi env on a GPU host:
     pixi run -e eongpu python scripts/bench_batch_forward.py
 
 Measures wall time and peak GPU memory for:

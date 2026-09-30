@@ -396,7 +396,7 @@ _deps += nlohmann_json_dep
 # Highway SIMD (optional, for vectorized potentials)
 hwy_dep = dependency('libhwy', required: false)
 # cmake.subproject imports hwy_list_targets. Meson PGICompiler (nvc++)
-# has no get_pie_args, so that exe dies ninja-write (eOn-jqgs).
+# has no get_pie_args, so that exe dies ninja-write.
 _cxx_id = cppc.get_id()
 if (
     not hwy_dep.found()

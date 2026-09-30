@@ -26,7 +26,7 @@
 
 namespace eonc {
 
-/// In-memory JobResult scalars (eOn-4mrf). Matches schema/eon_job_result.capnp
+/// In-memory JobResult scalars. Matches schema/eon_job_result.capnp
 /// field names as results.dat keys. Geometries stay on Matter until capnp
 /// codegen lands.
 struct JobResultEnvelope {

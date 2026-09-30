@@ -63,7 +63,7 @@ public:
   ~ProcessSearchJob() = default;
   //! Kicks off the Process Search
   std::vector<std::string> run(void) override;
-  /// In-process entry: seed reactant Matter, no pos.con (eOn-gbkb).
+  /// In-process entry: seed reactant Matter, no pos.con.
   std::shared_ptr<Matter> runFromMatter(std::shared_ptr<Matter> seed);
 
   std::shared_ptr<Matter> getInitial() const { return initial; }

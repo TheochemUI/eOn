@@ -1,7 +1,7 @@
 {
-  "model": "/home/rgoswami/Git/Github/TheochemUI/eOn-pyeon-final/subprojects/gpr_optim/bench_data/petmad/pet-mad-s-v1.5.0.pt",
-  "pos": "/home/rgoswami/Git/Github/TheochemUI/eOn-pyeon-final/subprojects/gpr_optim/bench_data/petmad/d016_pos.con",
-  "engine": "/home/rgoswami/Git/Github/TheochemUI/eOn-pyeon-final/build-mta-compare/client/libmetatomic_engine.so",
+  "model": "pet-mad-s-v1.5.0.pt",
+  "pos": "d016_pos.con",
+  "engine": "libmetatomic_engine.so",
   "device": "cpu",
   "built_with_metatomic": true,
   "built_with_rgpot": true,

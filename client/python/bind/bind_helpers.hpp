@@ -77,7 +77,7 @@ con_frames_to_python(const std::vector<readcon::ConFrame> &frames) {
     return nb::list();
   }
   namespace fs = std::filesystem;
-  // Exclusive temp file (eOn-srwt): no guessable world-writable name.
+  // Exclusive temp file: no guessable world-writable name.
 #ifdef _WIN32
   const auto tmp =
       fs::temp_directory_path() /

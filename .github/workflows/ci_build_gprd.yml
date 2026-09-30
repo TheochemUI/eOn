@@ -18,7 +18,7 @@ permissions:
 jobs:
   # Fork PRs do not receive SUBMODULE_PRIVATE. A single job that exits 0
   # after skip reports Success. Split so the integration job is Skipped
-  # (not a fake pass) when the secret is missing (eOn-234v).
+  # (not a fake pass) when the secret is missing.
   gprd-gate:
     runs-on: ubuntu-latest
     outputs:

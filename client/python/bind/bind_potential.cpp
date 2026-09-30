@@ -127,7 +127,7 @@ class AseCalcPotential final : public eonc::Potential {
   }
 
   /// Do not alias ASE arrays onto Matter storage. ASE writes in place
-  /// and would skip setPositions, leaving energy/forces stale (eOn-wmfb).
+  /// and would skip setPositions, leaving energy/forces stale.
   bool try_share_positions(eonc::Matter &m) {
     (void)m;
     shared_positions_ = false;

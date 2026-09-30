@@ -390,6 +390,6 @@ class ConfigClass:
             self.init()
 
 # Process-edge default instance for CLI / ``python -m eon`` only.
-# Library code must take ConfigClass via parameter injection (see epic eOn-gmhl).
+# Library code must take ConfigClass via parameter injection.
 # Prefer: cfg = ConfigClass(); cfg.init(path); runner(cfg)
 config = ConfigClass()

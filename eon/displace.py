@@ -475,7 +475,7 @@ class ListedAtoms(Displace):
         # displace_atom_kmc_state_script sees savecon(Structure), which
         # writes atom_id / Structure order. Its printed indices are
         # already Structure rows; remapping them as original file-order
-        # sends the wrong atoms (eOn-4dm9).
+        # sends the wrong atoms.
         free = self.reactant.atom_is_free()
         listed = self.config.disp_listed_atoms
         if listed == -1:

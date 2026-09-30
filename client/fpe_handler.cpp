@@ -398,7 +398,7 @@ static void fpe_signal_handler(int sig, siginfo_t *sip, void *scp) {
 #elif defined(__linux__) && defined(__aarch64__)
   // ARM polarity is the opposite of MXCSR: FPCR trap-enable bits SET mean
   // trap. Clearing sticky FPSR flags alone re-executes with trapping still
-  // armed (eOn-qkuw / eOn-g7fl on aarch64). Clear the matching FPCR enables.
+  // armed on aarch64. Clear the matching FPCR enables.
   constexpr uint32_t kFpsimdMagic = 0x46508001u;
   constexpr unsigned kFpcrIoe = 1u << 8;
   constexpr unsigned kFpcrDze = 1u << 9;

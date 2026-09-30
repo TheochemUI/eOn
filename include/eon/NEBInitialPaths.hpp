@@ -82,7 +82,7 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
 
 /// Adjacent images closer than min_sep (RMSD, PBC) are a collapsed path.
 /// SIDPP + resample can emit bit-identical intermediates; those starve
-/// climbing_image_converged_only (eOn-bghy).
+/// climbing_image_converged_only.
 void ensureDistinctAdjacentImages(const std::vector<Matter> &path,
                                   double min_sep);
 

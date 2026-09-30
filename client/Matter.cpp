@@ -649,8 +649,8 @@ void Matter::computePotential() const {
     forceCalls = forceCalls + 1;
     recomputePotential = false;
 
-    // One free atom: subtracting the mean force is identically zero
-    // (eOn-zjri). NEB would then report immediate GOOD.
+    // One free atom: subtracting the mean force is identically zero,
+    // and NEB would then report immediate GOOD.
     if (impl_->isFixed.maxCoeff() < 0.5 && removeNetForce && nAtoms > 1) {
       Vector3d tempForce = impl_->forces.colwise().sum() / nAtoms;
       for (long int i = 0; i < nAtoms; i++) {
