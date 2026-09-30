@@ -758,6 +758,7 @@ eonclib_sources = [
     'NEBProjection.cpp',
     'NEBOcinebController.cpp',
     'NEBSplineExtrema.cpp',
+    'Tunneling.cpp',
     'NEBSpringForce.cpp',
     'NEBTangent.cpp',
     'NEBZoom.cpp',
@@ -1569,6 +1570,7 @@ if get_option('with_tests')
         ['test_impldim', 'ImpDimerTest.cpp', 'saddle_search'],
         ['strparse_run', 'StringHelpersTest.cpp', ''],
         ['test_matter', 'MatterTest.cpp', 'neb_morse'],
+        ['test_tunneling', 'TunnelingTest.cpp', ''],
         ['test_pot', 'PotTest.cpp', 'neb_morse'],
         ['test_rgpot_adapter', 'RgpotAdapterTest.cpp', 'neb_morse'],
         # ['approve_params', 'ApproveParams.cpp', ''], # needs to handle additional parameters
