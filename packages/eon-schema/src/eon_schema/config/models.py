@@ -1048,7 +1048,7 @@ class SaddleSearchConfig(BaseModel):
      - ``dimer``: Use the dimer min-mode method from :cite:t:`ss-henkelmanDimerMethodFinding1999`
      - ``lanczos``: Use the Lanczos min-mode method from :cite:t:`ss-malekDynamicsLennardJonesClusters2000`
      - ``davidson``: Davidson Ritz subspace with FD Hessian-vector products (alternative to dimer rotation).
-     - ``gprdimer``: Use the GP accelerated dimer method.
+     - ``gprdimer``: GP dimer. The Linux default is ``-Dwith_gprd=auto``, which links ``subprojects/gpr_optim`` when that tree is present.
      - ``artn``: Use ARTn as a drop-in for min-mode search. eOn's displacement
        seeds the initial mode; ARTn takes over from the displaced structure.
      """

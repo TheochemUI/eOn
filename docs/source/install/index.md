@@ -86,6 +86,20 @@ meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype=release
 meson install -C bbdir
 ```
 
+`min_mode_method = gprdimer` is the GP dimer. `-Dwith_gprd=auto` is the
+default, and on Linux that links the `gpr_optim` tree shipped in
+`subprojects/gpr_optim`. The `revision` line in
+`subprojects/gpr_optim.wrap` is the pin (`b55c89e2115388f901839aba2a5808bfcef06f68`).
+Replace the tree from a sibling checkout with:
+
+```{code-block} bash
+rsync -a ../gpr_optim/ subprojects/gpr_optim/
+```
+
+A build configured with `-Dwith_gprd=disabled` has no GP dimer. Asking
+for `gprdimer` then stops, and the message names `-Dwith_gprd=enabled`
+and that `rsync`.
+
 If that `meson setup` stops on glibc errors raised from inside `<cmath>`, add
 `--force-fallback-for=nlohmann_json` and read the rolling distro section below
 for what causes it.

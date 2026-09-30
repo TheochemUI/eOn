@@ -91,6 +91,16 @@ server:
 .. autopydantic_model:: eon.schema.SaddleSearchConfig
 ```
 
+## GP dimer
+
+`min_mode_method = gprdimer` runs the GP dimer. The build flag is
+`-Dwith_gprd=auto` (the default): on Linux it links `subprojects/gpr_optim`
+when that tree is present. The pin is the `revision` in
+`subprojects/gpr_optim.wrap`. A sibling checkout replaces the tree with
+`rsync -a ../gpr_optim/ subprojects/gpr_optim/`. `-Dwith_gprd=disabled`
+omits the method. The install page has the same `rsync` next to the
+default `meson setup`.
+
 ## Output
 
 The saddle search writes:
