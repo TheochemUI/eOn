@@ -1,9 +1,9 @@
 [wrap-git]
 directory = rgpot
 url = https://github.com/OmniPotentRPC/rgpot.git
-# rgpot main after 3.3.0: calculator groups that share results across MPI
-# ranks and MPI finalised at exit (OmniPotentRPC/rgpot#86), which RgpotPot's
-# ranks_per_image uses.
-revision = b3fa31557f953589c9c611f089586308d1fc9d61
+# rgpot 3.4.0: calculator groups that share results across MPI ranks, MPI
+# finalised at exit, the CPMD session kept across identical params and the
+# MPI world aborted after a failed engine call.
+revision = v3.4.0
 depth = 1
 diff_files = rgpot-capnp-includes.patch
