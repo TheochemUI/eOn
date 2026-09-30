@@ -13,6 +13,7 @@ myst:
 On non-Windows builds, potential type `RGPOT` links
 [rgpot](https://github.com/OmniPotentRPC/rgpot) NWChemPot / CPMDPot and loads
 `libnwchemc.so` / `libcpmdc.so` with `dlopen` in the eOn process.
+The cpmdc engine is documented at [cpmdc.rgoswami.me](https://cpmdc.rgoswami.me).
 
 Sibling roles live elsewhere: potserv Cap'n Proto clients, `eonclient --serve`
 ([Serve mode](project:serve_mode.md)), and SocketNWChem (i-PI to a standalone
