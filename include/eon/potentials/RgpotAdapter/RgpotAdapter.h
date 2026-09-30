@@ -86,7 +86,7 @@ public:
   }
 
   [[nodiscard]] bool computesStress() const noexcept override {
-    return pot_.caps().stress || haveStress_;
+    return haveStress_;
   }
 
   /// Cauchy stress from the last force() that reported one.
