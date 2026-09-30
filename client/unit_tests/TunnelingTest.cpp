@@ -496,7 +496,7 @@ TEST_CASE("The rate instanton of a cubic well matches its decay rate",
       optimizeRateInstanton(saddle, hs, beta, {}, counted(halfCalls), halfOpt);
   instantonRate(
       halfRing, [&](long, const VectorXd &q) { return pes.hessian(q); },
-      pes.hessian(VectorXd::Zero(1)), 0.0, hs, vb, 0, 0);
+      pes.hessian(VectorXd::Zero(1)), 0.0, hs, vb);
   CAPTURE(fullRing.logRate, halfRing.logRate, fullCalls, halfCalls,
           halfRing.converged, halfRing.iterations, fullRing.iterations,
           fullRing.ringPotential, halfRing.ringPotential, fullRing.bN,
@@ -567,7 +567,8 @@ TEST_CASE("Minimum-mode following copies one half of an even ring",
       optimizeRateInstanton(saddle, hs, beta, {}, counted(halfCalls), halfOpt);
   CAPTURE(fullRing.logRate, halfRing.logRate, fullCalls, halfCalls,
           fullRing.converged, halfRing.converged, fullRing.iterations,
-          halfRing.iterations);
+          halfRing.iterations, fullRing.ringPotential,
+          halfRing.ringPotential);
   REQUIRE(fullRing.converged);
   REQUIRE(halfRing.converged);
   instantonRate(
@@ -577,7 +578,8 @@ TEST_CASE("Minimum-mode following copies one half of an even ring",
       halfRing, [&](long, const VectorXd &q) { return pes.hessian(q); },
       pes.hessian(VectorXd::Zero(1)), 0.0, hs, vb);
   CAPTURE(fullRing.logRate, halfRing.logRate, fullRing.negativeModes,
-          halfRing.negativeModes);
+          halfRing.negativeModes, fullRing.ringPotential,
+          halfRing.ringPotential);
   REQUIRE(fullRing.negativeModes == 1);
   REQUIRE(halfRing.negativeModes == 1);
   REQUIRE(std::abs(halfRing.logRate - fullRing.logRate) < 1e-6);

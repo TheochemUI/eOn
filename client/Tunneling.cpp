@@ -878,8 +878,11 @@ double lowestMode(const std::vector<VectorXd> &x, const RingEval &here,
     }
     const long m = static_cast<long>(n) / 2;
     for (long j = 1; j < m; ++j) {
-      q[static_cast<size_t>(n - static_cast<size_t>(j))] =
-          q[static_cast<size_t>(j)];
+      const size_t a = static_cast<size_t>(j);
+      const size_t b = n - a;
+      const VectorXd mid = 0.5 * (q[a] + q[b]);
+      q[a] = mid;
+      q[b] = mid;
     }
   };
   auto hv = [&](const std::vector<VectorXd> &u) {
@@ -1309,6 +1312,36 @@ std::vector<VectorXd> cyclicRingSolve(double c,
 
 namespace {
 
+// Central difference of dV/dq. One batch of 2 f displaced beads.
+MatrixXd fdPhysicalHessian(const VectorXd &q, const BatchPotential &potential,
+                           double eps) {
+  const long f = q.size();
+  std::vector<VectorXd> pts;
+  pts.reserve(static_cast<size_t>(2 * f));
+  for (long a = 0; a < f; ++a) {
+    VectorXd qp = q;
+    VectorXd qm = q;
+    qp[a] += eps;
+    qm[a] -= eps;
+    pts.push_back(std::move(qp));
+    pts.push_back(std::move(qm));
+  }
+  std::vector<double> v;
+  std::vector<VectorXd> g;
+  potential(pts, v, g);
+  if (static_cast<long>(g.size()) != 2 * f) {
+    throw std::runtime_error(
+        "rate instanton: the Hessian sample returned the wrong count");
+  }
+  MatrixXd h(f, f);
+  for (long a = 0; a < f; ++a) {
+    h.col(a) = (g[static_cast<size_t>(2 * a)] -
+                g[static_cast<size_t>(2 * a + 1)]) /
+               (2.0 * eps);
+  }
+  return (0.5 * (h + h.transpose())).eval();
+}
+
 // Bofill mix of Powell's symmetric Broyden and SR1. H is d2V/dq2.
 void bofillUpdate(MatrixXd &h, const VectorXd &dq, const VectorXd &dg) {
   const double dq2 = dq.squaredNorm();
@@ -1643,7 +1676,19 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   }
   const long f = x.front().size();
   const MatrixXd hS = (0.5 * (hessSaddle + hessSaddle.transpose())).eval();
-  std::vector<MatrixXd> physical(x.size(), hS);
+  // A one-dimensional well is already the saddle curvature. In more
+  // dimensions the turning points are not the saddle, so each bead starts
+  // from its own curvature and the Bofill update carries it.
+  std::vector<MatrixXd> physical;
+  if (f == 1) {
+    physical.assign(x.size(), hS);
+  } else {
+    const double eps = options.lanczosStep > 0.0 ? options.lanczosStep : 1e-4;
+    physical.resize(x.size());
+    for (size_t j = 0; j < x.size(); ++j) {
+      physical[j] = fdPhysicalHessian(x[j], potential, eps);
+    }
+  }
 
   struct Obj {
     std::vector<VectorXd> grad;
@@ -1768,10 +1813,8 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       converged = true;
       break;
     }
-    // A ratio outside [0.1, 3] still counts when the closed-ring residual
-    // falls: the model Hessian starts at the saddle and is a poor match
-    // far from it. A rejected Newton step is retried shorter, then as a
-    // climb along the lowest mode.
+    // A shorter Newton step when the quadratic model does not match. A step
+    // that only reduces the residual is a walk into a well.
     auto accept = [&](VectorXd dir) {
       if (dir.size() == 0 || !dir.array().isFinite().all()) {
         return false;
@@ -1800,7 +1843,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
         ratio = std::abs(pred) > 1e-30 ? (next.u - cur.u) / pred : 1.0;
         ratioOk = std::isfinite(ratio) && ratio >= 0.1 && ratio <= 3.0;
       }
-      if (!ratioOk && !(closedGmax(next) < v.gmax)) {
+      if (!ratioOk) {
         return false;
       }
       for (size_t k = 0; k < x.size(); ++k) {
@@ -1822,22 +1865,6 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     for (int bt = 0; bt < 4 && !moved; ++bt) {
       moved = accept(dir);
       dir *= 0.5;
-    }
-    if (!moved) {
-      VectorXd alt = -packBeads(cur.grad);
-      if (v.climb.index >= 0 && v.sp.vectors.cols() > v.climb.index) {
-        const VectorXd mode = v.sp.vectors.col(v.climb.index);
-        if (mode.size() == alt.size()) {
-          alt -= 2.0 * (alt.dot(mode)) * mode;
-        }
-      }
-      if (v.tau.size() == alt.size()) {
-        alt -= alt.dot(v.tau) * v.tau;
-      }
-      for (int bt = 0; bt < 6 && !moved; ++bt) {
-        moved = accept(alt);
-        alt *= 0.5;
-      }
     }
     if (!moved) {
       trust = std::max(0.5 * trust, trustFloor);
@@ -2112,7 +2139,11 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
     }
     const long m = N / 2;
     for (long j = 1; j < m; ++j) {
-      q[static_cast<size_t>(N - j)] = q[static_cast<size_t>(j)];
+      const size_t a = static_cast<size_t>(j);
+      const size_t b = static_cast<size_t>(N - j);
+      const VectorXd mid = 0.5 * (q[a] + q[b]);
+      q[a] = mid;
+      q[b] = mid;
     }
   };
   symmetrize(x);
@@ -2181,7 +2212,7 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
     symmetrize(trial);
     RingEval next = evaluateRing(trial, c, evalPot, options.energyShift);
     const double prevCurv = curvature;
-    const long restart = fold ? 4L : options.lanczosRestart;
+    const long restart = options.lanczosRestart;
     curvature = lowestMode(trial, next, c, evalPot, mode, restart,
                            options.lanczosStep, fold);
     std::vector<VectorXd> geffNext = effective(next.grad);
