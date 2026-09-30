@@ -24,6 +24,7 @@ Main:
                 - global_optimization
                 - gp_surrogate
                 - hessian
+                - instanton
                 - minimization
                 - molecular_dynamics
                 - monte_carlo
@@ -1115,6 +1116,43 @@ Hessian:
         write_modes:
             kind: bool
             default: true
+
+################################################################################
+
+Instanton:
+    options:
+        reactant_filename:
+            kind: string
+            default: reactant.con
+
+        product_filename:
+            kind: string
+            default: product.con
+
+        # A band (neb.con) to start from; empty is a straight line.
+        initial_path:
+            kind: string
+            default: ""
+
+        beads:
+            kind: int
+            default: 256
+
+        beta_hbar_omega:
+            kind: float
+            default: 30.0
+
+        max_iterations:
+            kind: int
+            default: 5000
+
+        force_tolerance:
+            kind: float
+            default: 1e-3
+
+        hessian_stride:
+            kind: int
+            default: 1
 
 ################################################################################
 

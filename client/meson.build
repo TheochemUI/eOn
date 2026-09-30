@@ -747,6 +747,7 @@ eonclib_sources = [
     'Davidson.cpp',
     'MobileAtoms.cpp',
     'HessianJob.cpp',
+    'InstantonJob.cpp',
     'ReplicaDynamicsJob.cpp',
     'TADJob.cpp',
     'ProcessSearchJob.cpp',

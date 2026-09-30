@@ -277,7 +277,23 @@ json to_json(const Parameters &p) {
       {"resume", ParametersLoadAccess::hessian_options(p).resume},
       {"checkpoint_path",
        ParametersLoadAccess::hessian_options(p).checkpoint_path},
+      {"write_modes", ParametersLoadAccess::hessian_options(p).write_modes},
   };
+
+  // [Instanton]
+  {
+    const auto &o = ParametersLoadAccess::instanton_options(p);
+    j["Instanton"] = {
+        {"reactant_filename", o.reactant_filename},
+        {"product_filename", o.product_filename},
+        {"initial_path", o.initial_path},
+        {"beads", o.beads},
+        {"beta_hbar_omega", o.beta_hbar_omega},
+        {"max_iterations", o.max_iterations},
+        {"force_tolerance", o.force_tolerance},
+        {"hessian_stride", o.hessian_stride},
+    };
+  }
 
   // [Debug]
   j["Debug"] = {

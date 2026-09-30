@@ -134,6 +134,7 @@ dimer
 lanczos
 artn
 hessian
+instanton
 prefactor
 ```
 

@@ -1,0 +1,351 @@
+/*
+** This file is part of eOn.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eOn Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eOn
+*/
+#include "eon/InstantonJob.h"
+#include "eon/ConFileIO.h"
+#include "eon/EonLogger.h"
+#include "eon/Hessian.h"
+#include "eon/JobResult.h"
+#include "eon/Matter.h"
+#include "eon/PotRegistry.h"
+#include "eon/Potential.h"
+#include "eon/Tunneling.h"
+
+#include <Eigen/SVD>
+#include <cmath>
+#include <filesystem>
+#include <map>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+namespace eonc {
+
+namespace {
+
+/// One unit of imaginary time, sqrt(amu Angstrom^2 / eV), in fs.
+constexpr double kTimeUnitFs = 10.180505717871193;
+
+/// Mass-weighted coordinates over the free atoms, measured from a reference
+/// structure under its minimum image.
+class MassWeighted {
+public:
+  explicit MassWeighted(const Matter &reference)
+      : ref_(reference) {
+    for (long i = 0; i < reference.numberOfAtoms(); ++i) {
+      if (reference.getFixed(i)) {
+        continue;
+      }
+      const double m = reference.getMass(i);
+      if (!(m > 0.0)) {
+        throw std::invalid_argument("instanton: a free atom without a mass");
+      }
+      free_.push_back(i);
+      sqrtMass_.push_back(std::sqrt(m));
+    }
+    if (free_.empty()) {
+      throw std::invalid_argument("instanton: every atom is fixed");
+    }
+  }
+  long dimension() const { return 3 * static_cast<long>(free_.size()); }
+  VectorXi freeAtoms() const {
+    VectorXi out(static_cast<long>(free_.size()));
+    for (size_t k = 0; k < free_.size(); ++k) {
+      out(static_cast<long>(k)) = static_cast<int>(free_[k]);
+    }
+    return out;
+  }
+  VectorXd toQ(const Matter &m) const {
+    const AtomMatrix d = ref_.pbc(m.getPositions() - ref_.getPositions());
+    VectorXd q(dimension());
+    for (size_t k = 0; k < free_.size(); ++k) {
+      for (int c = 0; c < 3; ++c) {
+        q(static_cast<long>(3 * k) + c) = sqrtMass_[k] * d(free_[k], c);
+      }
+    }
+    return q;
+  }
+  void place(const VectorXd &q, Matter &m) const {
+    AtomMatrix r = ref_.getPositions();
+    for (size_t k = 0; k < free_.size(); ++k) {
+      for (int c = 0; c < 3; ++c) {
+        r(free_[k], c) += q(static_cast<long>(3 * k) + c) / sqrtMass_[k];
+      }
+    }
+    m.setPositions(r);
+  }
+  VectorXd gradient(const AtomMatrix &forces) const {
+    VectorXd g(dimension());
+    for (size_t k = 0; k < free_.size(); ++k) {
+      for (int c = 0; c < 3; ++c) {
+        g(static_cast<long>(3 * k) + c) = -forces(free_[k], c) / sqrtMass_[k];
+      }
+    }
+    return g;
+  }
+
+private:
+  const Matter &ref_;
+  std::vector<long> free_;
+  std::vector<double> sqrtMass_;
+};
+
+/// With no atom fixed, removes the rigid part of m's displacement from
+/// ref: the mass-weighted mean (translation), and for a cluster the
+/// mass-weighted best rotation (Kabsch). A path that carried either would
+/// pay kinetic action for motion that costs no energy.
+void alignRigid(const Matter &ref, Matter &m) {
+  const long n = ref.numberOfAtoms();
+  for (long i = 0; i < n; ++i) {
+    if (ref.getFixed(i)) {
+      return;
+    }
+  }
+  AtomMatrix d = ref.pbc(m.getPositions() - ref.getPositions());
+  VectorXd w(n);
+  for (long i = 0; i < n; ++i) {
+    w(i) = ref.getMass(i);
+  }
+  const double total = w.sum();
+  const Eigen::RowVector3d shift = (w.transpose() * d) / total;
+  d.rowwise() -= shift;
+  if (!ref.getPeriodic()) {
+    const Eigen::RowVector3d com = (w.transpose() * ref.getPositions()) / total;
+    AtomMatrix x = ref.getPositions();
+    x.rowwise() -= com;
+    const AtomMatrix y = x + d;
+    const Eigen::Matrix3d h = y.transpose() * w.asDiagonal() * x;
+    Eigen::JacobiSVD<Eigen::Matrix3d> svd(h, Eigen::ComputeFullU |
+                                                 Eigen::ComputeFullV);
+    Eigen::Matrix3d fix = Eigen::Matrix3d::Identity();
+    fix(2, 2) = (svd.matrixV() * svd.matrixU().transpose()).determinant() < 0.0
+                    ? -1.0
+                    : 1.0;
+    const Eigen::Matrix3d rot = svd.matrixV() * fix * svd.matrixU().transpose();
+    d = (y * rot.transpose()) - x;
+  }
+  m.setPositions(ref.getPositions() + d);
+}
+
+} // namespace
+
+std::vector<std::string> InstantonJob::run(void) {
+  const auto &o = params.instanton_options();
+  std::vector<std::string> returnFiles;
+  const std::string resultsFile = "results.dat";
+  const std::string pathFile = "instanton.con";
+  returnFiles.push_back(resultsFile);
+
+  auto reactant = std::make_unique<Matter>(pot, params);
+  auto product = std::make_unique<Matter>(pot, params);
+  if (!io::io_ok(reactant->con2matter(o.reactant_filename)) ||
+      !io::io_ok(product->con2matter(o.product_filename))) {
+    throw std::runtime_error("instanton: cannot read " + o.reactant_filename +
+                             " or " + o.product_filename);
+  }
+  if (reactant->numberOfAtoms() != product->numberOfAtoms()) {
+    throw std::runtime_error("instanton: the minima differ in atom count");
+  }
+  alignRigid(*reactant, *product);
+  const MassWeighted mw(*reactant);
+  const long n = mw.dimension();
+  const VectorXd qStart = VectorXd::Zero(n);
+  const VectorXd qEnd = mw.toQ(*product);
+
+  // Bead evaluations: one batch per call, through forceBatch when the
+  // potential spreads a batch over calculators.
+  std::vector<std::unique_ptr<Matter>> pool;
+  auto evaluate = [&](const std::vector<VectorXd> &q, std::vector<double> &v,
+                      std::vector<VectorXd> &grad) {
+    while (pool.size() < q.size()) {
+      pool.push_back(std::make_unique<Matter>(*reactant));
+    }
+    for (size_t j = 0; j < q.size(); ++j) {
+      mw.place(q[j], *pool[j]);
+    }
+    v.resize(q.size());
+    grad.resize(q.size());
+    if (pot->supportsBatchEvaluation() && q.size() > 1) {
+      const long atoms = reactant->numberOfAtoms();
+      std::vector<VectorXi> nrs(q.size());
+      std::vector<Matrix3d> boxes(q.size());
+      std::vector<const double *> posPtr, boxPtr;
+      std::vector<const int *> nrsPtr;
+      std::vector<double *> frcPtr;
+      for (size_t j = 0; j < q.size(); ++j) {
+        nrs[j] = pool[j]->getAtomicNrs();
+        boxes[j] = pool[j]->getPeriodic() ? pool[j]->getCell()
+                                          : Matrix3d::Zero().eval();
+      }
+      for (size_t j = 0; j < q.size(); ++j) {
+        posPtr.push_back(pool[j]->getPositions().data());
+        nrsPtr.push_back(nrs[j].data());
+        frcPtr.push_back(pool[j]->forcesData());
+        boxPtr.push_back(boxes[j].data());
+      }
+      std::vector<double> energies(q.size()), variances(q.size());
+      pot->forceBatch(static_cast<long>(q.size()), atoms, posPtr.data(),
+                      nrsPtr.data(), frcPtr.data(), energies.data(),
+                      variances.data(), boxPtr.data());
+      for (size_t j = 0; j < q.size(); ++j) {
+        pool[j]->setComputedPotential(energies[j], variances[j]);
+      }
+    }
+    for (size_t j = 0; j < q.size(); ++j) {
+      v[j] = pool[j]->getPotentialEnergy();
+      grad[j] = mw.gradient(pool[j]->getForces());
+    }
+  };
+
+  auto hessianAt = [&](const VectorXd &q) {
+    Matter m(*reactant);
+    mw.place(q, m);
+    Hessian h(params, &m);
+    h.writeHessianFile(false);
+    MatrixXd out = h.getHessian(&m, mw.freeAtoms());
+    if (out.rows() != n) {
+      throw std::runtime_error("instanton: a bead Hessian failed");
+    }
+    return out;
+  };
+
+  // Starting path: a band from file, else the straight line.
+  std::vector<VectorXd> guess;
+  if (!o.initial_path.empty()) {
+    const auto frames = readcon::read_all_frames(o.initial_path);
+    for (const auto &frame : frames) {
+      Matter m(*reactant);
+      if (!io::io_ok(io::con2matter(m, frame))) {
+        throw std::runtime_error("instanton: cannot read " + o.initial_path);
+      }
+      alignRigid(*reactant, m);
+      guess.push_back(mw.toQ(m));
+    }
+    if (guess.size() >= 2) {
+      guess.front() = qStart;
+      guess.back() = qEnd;
+    }
+  }
+
+  const MatrixXd hStart = hessianAt(qStart);
+  const MatrixXd hEnd = hessianAt(qEnd);
+  const double omega = tunneling::pathOmega(hStart, hEnd, qStart, qEnd);
+  const double betaHbar = o.beta_hbar_omega / omega;
+  tunneling::InstantonOptions opt;
+  opt.beads = o.beads;
+  opt.betaHbarOmega = o.beta_hbar_omega;
+  opt.maxIterations = o.max_iterations;
+  opt.forceTolerance = o.force_tolerance;
+  EONC_LOG_INFO("[Instanton] {} beads over beta hbar = {:.4f} fs, {} degrees "
+                "of freedom",
+                o.beads, betaHbar * kTimeUnitFs, n);
+
+  tunneling::Instanton inst = tunneling::optimizeInstanton(
+      qStart, qEnd, betaHbar, guess, evaluate, opt);
+  EONC_LOG_INFO("[Instanton] action {:.6f} after {} iterations{}", inst.action,
+                inst.iterations, inst.converged ? "" : " (not converged)");
+
+  bool splitOk = false;
+  std::string failure;
+  if (inst.converged) {
+    const long stride = std::max<long>(1, o.hessian_stride);
+    const long P = o.beads;
+    std::map<long, MatrixXd> anchors;
+    auto anchor = [&](long j) -> const MatrixXd & {
+      auto it = anchors.find(j);
+      if (it == anchors.end()) {
+        it = anchors.emplace(j, hessianAt(inst.path[static_cast<size_t>(j)]))
+                 .first;
+      }
+      return it->second;
+    };
+    auto beadHessian = [&](long j, const VectorXd &) -> MatrixXd {
+      if (stride == 1) {
+        return anchor(j);
+      }
+      const long lo = 1 + ((j - 1) / stride) * stride;
+      const long hi = std::min(lo + stride, P - 1);
+      if (j == lo || hi == lo) {
+        return anchor(lo);
+      }
+      const double t =
+          static_cast<double>(j - lo) / static_cast<double>(hi - lo);
+      return (1.0 - t) * anchor(lo) + t * anchor(hi);
+    };
+    try {
+      tunneling::instantonSplitting(inst, beadHessian, hStart, hEnd);
+      splitOk = std::isfinite(inst.delta0);
+    } catch (const std::runtime_error &ex) {
+      failure = ex.what();
+      EONC_LOG_ERROR("[Instanton] {}", failure);
+    }
+  }
+
+  // The path, one frame per bead; the splitting on the first frame.
+  const double kelvin = tunneling::kHbar / (tunneling::kBoltzmann * betaHbar);
+  Matter frame(*reactant);
+  for (size_t j = 0; j < inst.path.size(); ++j) {
+    mw.place(inst.path[j], frame);
+    io::ConFrameMetadata meta;
+    meta.frame_index = static_cast<uint64_t>(j);
+    meta.energy = inst.energies[j];
+    meta.write_con_forces = false;
+    meta.scalars = {{"imaginary_time_fs",
+                     static_cast<double>(j) * inst.dtau * kTimeUnitFs}};
+    if (j == 0) {
+      meta.scalars.push_back({"instanton_action", inst.action});
+      meta.scalars.push_back(
+          {"instanton_beta_hbar_fs", betaHbar * kTimeUnitFs});
+      meta.scalars.push_back({"instanton_temperature_K", kelvin});
+      meta.scalars.push_back(
+          {"instanton_converged", inst.converged ? 1.0 : 0.0});
+      meta.scalars.push_back({"tunnel_asymmetry", inst.asymmetry});
+      if (splitOk) {
+        meta.scalars.push_back({"tunnel_splitting_instanton", inst.delta0});
+        meta.scalars.push_back(
+            {"tls_energy_instanton", std::hypot(inst.asymmetry, inst.delta0)});
+        meta.scalars.push_back({"instanton_zero_mode", inst.zeroMode});
+        meta.scalars.push_back(
+            {"instanton_mode_separation", inst.modeSeparation});
+        meta.scalars.push_back(
+            {"instanton_symmetric", inst.symmetricEnough ? 1.0 : 0.0});
+      }
+    }
+    if (!io::io_ok(frame.matter2con(pathFile, j > 0, &meta))) {
+      throw std::runtime_error("instanton: cannot write " + pathFile);
+    }
+  }
+  returnFiles.push_back(pathFile);
+
+  const auto status = splitOk
+                          ? RunStatus::GOOD
+                          : (inst.converged ? RunStatus::FAIL_POTENTIAL_FAILED
+                                            : RunStatus::FAIL_MAX_ITERATIONS);
+  auto env = JobResultEnvelope::fromMinimization(
+      status, params.potential_options().potential,
+      PotRegistry::get().total_force_calls(), false, 0.0);
+  env.job_type = "instanton";
+  env.extras.emplace_back("force_calls", static_cast<double>(env.force_calls));
+  env.extras.emplace_back("instanton_iterations",
+                          static_cast<double>(inst.iterations));
+  env.extras.emplace_back("instanton_action", inst.action);
+  env.extras.emplace_back("instanton_temperature_K", kelvin);
+  env.extras.emplace_back("tunnel_asymmetry", inst.asymmetry);
+  if (splitOk) {
+    env.extras.emplace_back("tunnel_splitting_instanton", inst.delta0);
+    env.extras.emplace_back("instanton_mode_separation", inst.modeSeparation);
+  }
+  env.writeResultsDat(resultsFile);
+  return returnFiles;
+}
+
+} // namespace eonc

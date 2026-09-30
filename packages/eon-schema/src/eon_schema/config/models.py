@@ -37,6 +37,7 @@ class MainConfig(BaseModel):
         "global_optimization",
         "gp_surrogate",
         "hessian",
+        "instanton",
         "minimization",
         "monte_carlo",
         "molecular_dynamics",
@@ -2320,6 +2321,48 @@ class HessianConfig(BaseModel):
     )
 
 
+class InstantonConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    reactant_filename: str = Field(
+        default="reactant.con", description="The first minimum."
+    )
+    product_filename: str = Field(
+        default="product.con", description="The second minimum."
+    )
+    initial_path: str = Field(
+        default="",
+        description=(
+            "A multi-frame con file (neb.con) to start the path from; empty"
+            " starts from the straight line between the minima."
+        ),
+    )
+    beads: int = Field(
+        default=256, ge=4, description="Segments from one minimum to the other."
+    )
+    beta_hbar_omega: float = Field(
+        default=30.0,
+        gt=0.0,
+        description=(
+            "Imaginary time the path spans, in units of 1 / omega of the"
+            " stiffer minimum along the line between them."
+        ),
+    )
+    max_iterations: int = Field(default=5000, description="L-BFGS iterations.")
+    force_tolerance: float = Field(
+        default=1e-3,
+        description="Largest bead residual at convergence, eV / (amu^0.5 Angstrom).",
+    )
+    hessian_stride: int = Field(
+        default=1,
+        ge=1,
+        description=(
+            "Finite-difference Hessians on every stride-th bead, linear in"
+            " between; 1 takes one on every bead."
+        ),
+    )
+
+
 class DynamicsConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
@@ -2517,6 +2560,7 @@ class Config(BaseModel):
     lanczos: LanczosConfig
     davidson: DavidsonConfig
     hessian: HessianConfig
+    instanton: InstantonConfig = Field(default_factory=InstantonConfig)
     communicator: CommunicatorConfig
     process_search: ProcessSearchConfig
     prefactor: PrefactorConfig

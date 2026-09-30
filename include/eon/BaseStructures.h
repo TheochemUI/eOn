@@ -96,7 +96,8 @@ enum class JobType {
   Monte_Carlo,
   Test,
   GP_Surrogate,
-  OH_TST
+  OH_TST,
+  Instanton
 };
 
 enum class OptType {

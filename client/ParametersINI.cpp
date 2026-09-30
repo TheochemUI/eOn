@@ -1836,6 +1836,25 @@ int load_ini(INIReader &ini, Parameters &params) {
       ini.GetInteger("Monte Carlo", "steps",
                      ParametersLoadAccess::monte_carlo_options(params).steps));
 
+  // [Instanton] //
+  {
+    auto &o = ParametersLoadAccess::instanton_options(params);
+    o.reactant_filename =
+        ini.Get("Instanton", "reactant_filename", o.reactant_filename);
+    o.product_filename =
+        ini.Get("Instanton", "product_filename", o.product_filename);
+    o.initial_path = ini.Get("Instanton", "initial_path", o.initial_path);
+    o.beads = ini.GetInteger("Instanton", "beads", o.beads);
+    o.beta_hbar_omega =
+        ini.GetReal("Instanton", "beta_hbar_omega", o.beta_hbar_omega);
+    o.max_iterations =
+        ini.GetInteger("Instanton", "max_iterations", o.max_iterations);
+    o.force_tolerance =
+        ini.GetReal("Instanton", "force_tolerance", o.force_tolerance);
+    o.hessian_stride =
+        ini.GetInteger("Instanton", "hessian_stride", o.hessian_stride);
+  }
+
   // [OH_TST] //
 
   ParametersLoadAccess::oh_tst_options(params).reactant_filename =

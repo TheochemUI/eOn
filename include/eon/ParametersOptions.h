@@ -777,6 +777,23 @@ struct debug_options_t {
   std::string neb_mmf{"dimer"};
 };
 
+// [Instanton] //
+// Ring-polymer instanton for the tunnelling splitting between two minima
+// (eonc::tunneling::optimizeInstanton).
+struct instanton_options_t {
+  std::string reactant_filename{"reactant.con"};
+  std::string product_filename{"product.con"};
+  // Optional band to start from (neb.con or any multi-frame con file whose
+  // first and last frames are the two minima); empty is a straight line.
+  std::string initial_path{""};
+  long beads{256};              // P, segments from one minimum to the other
+  double beta_hbar_omega{30.0}; // imaginary time, in units of 1 / omega
+  long max_iterations{5000};    // L-BFGS iterations on the action
+  double force_tolerance{1e-3}; // eV / (amu^0.5 A), largest bead residual
+  // FD Hessians on every stride-th bead, linear in between; 1 is every bead.
+  long hessian_stride{1};
+};
+
 // [OH_TST] //
 // Optimized hyperplanar TST (Johannesson-Jonsson, JCP 115, 9644
 // (2001)): reversible-work progression of a hyperplanar dividing

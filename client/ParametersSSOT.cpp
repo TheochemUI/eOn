@@ -58,6 +58,8 @@ JobType job_from_ssot(std::string_view j) {
     return JobType::Finite_Difference;
   if (j == "global_optimization")
     return JobType::Global_Optimization;
+  if (j == "instanton")
+    return JobType::Instanton;
   return JobType::Process_Search;
 }
 

@@ -560,7 +560,7 @@ bool Hessian::finalizeHessian(int size) {
   if (!parameters.main_options().quiet) {
     QUILL_LOG_DEBUG(log, "[Hessian] writing hessian\n");
   }
-  {
+  if (writeFile) {
     // A previous case in the same process can still hold hessian.dat on
     // Windows. Replace it, and try once more after removing the old file.
     std::ofstream hessfile("hessian.dat", std::ios::out | std::ios::trunc);

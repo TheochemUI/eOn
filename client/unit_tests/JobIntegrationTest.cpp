@@ -20,6 +20,7 @@
 #include "eon/BaseStructures.h"
 #include "eon/BasinHoppingJob.h"
 #include "eon/Bundling.h"
+#include "eon/ConFileIO.h"
 #include "eon/Job.h"
 #include "eon/Matter.h"
 #include "eon/OHTSTJob.h"
@@ -2694,6 +2695,43 @@ TEST_CASE("OH-TST symmetry distance uses the half-line endpoint",
   REQUIRE_FALSE(OHTSTSymmetryTest::reflect(job, anchor, x, v, previous));
   REQUIRE(x[0] == Catch::Approx(2.0).margin(1e-12));
   REQUIRE(v[1] == Catch::Approx(1.0).margin(1e-12));
+}
+
+TEST_CASE_METHOD(
+    JobIntegrationFixture,
+    "InstantonJob writes the path and a splitting between LJ13 minima",
+    "[job][instanton][integration]") {
+  if (!copyTestData("neb_lj13")) {
+    SKIP("neb_lj13 test system not found");
+  }
+  writeConfig(R"(
+[Main]
+job = instanton
+
+[Potential]
+potential = lj
+
+[Instanton]
+beads = 32
+beta_hbar_omega = 12
+hessian_stride = 4
+max_iterations = 4000
+force_tolerance = 1e-3
+)");
+  auto results = runJob();
+  REQUIRE(results.at("termination_reason") == "0");
+  REQUIRE(std::filesystem::exists(workdir / "instanton.con"));
+  const auto frames =
+      readcon::read_all_frames((workdir / "instanton.con").string());
+  REQUIRE(frames.size() == 33);
+  const double action = std::stod(results.at("instanton_action"));
+  const double delta0 = std::stod(results.at("tunnel_splitting_instanton"));
+  REQUIRE(std::isfinite(action));
+  REQUIRE(action > 0.0);
+  REQUIRE(delta0 > 0.0);
+  REQUIRE(delta0 < 1.0);
+  // The kink sits inside imaginary time, away from both ends.
+  REQUIRE(std::stod(results.at("instanton_mode_separation")) > 10.0);
 }
 
 } /* namespace tests */

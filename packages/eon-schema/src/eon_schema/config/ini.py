@@ -60,6 +60,7 @@ MODEL_INI_SECTION: dict[str, str] = {
     "RecyclingConfig": "Recycling",
     "CoarseGrainingConfig": "Coarse Graining",
     "HessianConfig": "Hessian",
+    "InstantonConfig": "Instanton",
     "ServeConfig": "Serve",
     "RefineConfig": "Refine",
     "Metatomic": "Metatomic",

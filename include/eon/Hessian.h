@@ -56,6 +56,9 @@ public:
   /// of getFreqs(), over the mobile degrees of freedom. Empty unless
   /// [Hessian] write_modes is set.
   [[nodiscard]] const MatrixXd &getModes() const noexcept { return modes; }
+  /// Whether a finished Hessian goes to hessian.dat (on by default). A
+  /// caller that takes many Hessians, one per instanton bead, turns it off.
+  void writeHessianFile(bool on) noexcept { writeFile = on; }
 
 private:
   Matter *matter;
@@ -64,6 +67,7 @@ private:
   MatrixXd hessian;
   VectorXd freqs;
   MatrixXd modes;
+  bool writeFile = true;
 
   VectorXi atoms;
   bool calculate();
