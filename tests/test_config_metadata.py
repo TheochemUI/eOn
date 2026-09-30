@@ -12,7 +12,13 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 # Authoritative L1 models live in eon-schema; eon/schema.py is a re-export stub
 # (star-import only) so AST drift checks must parse models.py, not the stub.
 SCHEMA_PATH = (
-    REPO_ROOT / "packages" / "eon-schema" / "src" / "eon_schema" / "config" / "models.py"
+    REPO_ROOT
+    / "packages"
+    / "eon-schema"
+    / "src"
+    / "eon_schema"
+    / "config"
+    / "models.py"
 )
 
 
@@ -85,7 +91,9 @@ def _extract_fields(class_node: ast.ClassDef) -> dict[str, dict[str, Any]]:
     for node in class_node.body:
         if not isinstance(node, ast.AnnAssign) or not isinstance(node.target, ast.Name):
             continue
-        if not isinstance(node.value, ast.Call) or not isinstance(node.value.func, ast.Name):
+        if not isinstance(node.value, ast.Call) or not isinstance(
+            node.value.func, ast.Name
+        ):
             continue
         if node.value.func.id != "Field":
             continue
@@ -141,7 +149,9 @@ class ConfigMetadataDriftTest(unittest.TestCase):
                     )
 
                     if field_info["values"]:
-                        self.assertEqual(field_info["values"], config_options[field_name]["values"])
+                        self.assertEqual(
+                            field_info["values"], config_options[field_name]["values"]
+                        )
 
     def test_saddle_search_method_contract(self) -> None:
         self.assertEqual(
