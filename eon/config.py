@@ -282,9 +282,9 @@ class ConfigClass:
         self.kdb_path = parser.get('Paths', 'kdb')
         self.kdb_nodupes = parser.getboolean('KDB', 'remove_duplicates')
         self.kdb_name = parser.get('KDB', 'kdb_name')
-        self.kdb_nf = parser.get('KDB', 'kdb_nf')
-        self.kdb_dc = parser.get('KDB', 'kdb_dc')
-        self.kdb_mac = parser.get('KDB', 'kdb_mac')
+        self.kdb_nf = parser.getfloat('KDB', 'kdb_nf')
+        self.kdb_dc = parser.getfloat('KDB', 'kdb_dc')
+        self.kdb_mac = parser.getfloat('KDB', 'kdb_mac')
 
         # Recycling
         self.recycling_on = parser.getboolean('Recycling', 'use_recycling')

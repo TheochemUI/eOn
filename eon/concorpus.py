@@ -86,6 +86,50 @@ def mirror_con_text(path, text: str) -> None:
         logger.debug("readcon-db mirror skipped for %s: %s", resolved, exc)
 
 
+def store_frame_text(path, text: str) -> tuple[int, int] | None:
+    """Store one con blob. Returns ``(traj_id, 0)`` for a single frame.
+
+    The corpus takes the con text only. A barrier or a mode is not an
+    argument: those stay on the process row.
+    """
+    if not text or not text.strip():
+        return None
+    con_path = Path(path)
+    try:
+        resolved = str(con_path.resolve())
+    except OSError:
+        resolved = str(con_path)
+    db = _corpus(corpus_dir(con_path))
+    if db is None:
+        return None
+    key = traj_id(resolved, text)
+    try:
+        db.append_trajectory_str(key, text, source=resolved)
+    except Exception as exc:
+        if "already exists" not in str(exc):
+            logger.warning("readcon-db store failed for %s: %s", resolved, exc)
+            return None
+    return key, 0
+
+
+def load_frame_text(directory: Path, traj: int, frame_idx: int) -> str | None:
+    """Frame text for a key in this corpus, or None when it is absent."""
+    db = _corpus(Path(directory))
+    if db is None:
+        return None
+    try:
+        return db.get_frame_text(int(traj), int(frame_idx))
+    except Exception:
+        logger.warning(
+            "readcon-db get_frame_text failed for %s frame %s:%s",
+            directory,
+            traj,
+            frame_idx,
+            exc_info=True,
+        )
+        return None
+
+
 def stored_frame_text(path) -> str | None:
     """Frame text for this path's current blob, or None when the corpus has no copy."""
     con_path = Path(path)

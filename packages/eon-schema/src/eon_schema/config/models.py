@@ -1313,11 +1313,36 @@ class KDBConfig(BaseModel):
         default=False,
         description="KDB will not make duplicate suggestions. This can slow KDB querying, so it may be best to use this only for slow potentials (DFT, etc.).",
     )
-    kdb_name: str = "kdb.db"
-    # TODO(rg): These are in config.yaml, not sure what they do..
-    kdb_nf: float = 0.2
-    kdb_dc: float = 0.3
-    kdb_mac: float = 0.7
+    kdb_name: str = Field(
+        default="kdb.db",
+        description=(
+            "Unused name kept so old ini files still parse. "
+            "The catalog directory is Paths.kdb."
+        ),
+    )
+    kdb_nf: float = Field(
+        default=0.2,
+        description=(
+            "Neighbor fudge, a fraction. The match tolerance is "
+            "kdb_dc * (1 + kdb_nf) angstroms."
+        ),
+    )
+    kdb_dc: float = Field(
+        default=0.3,
+        description=(
+            "Distance cutoff in angstroms. A stored reactant whose atoms "
+            "sit farther than kdb_dc * (1 + kdb_nf) from the current state "
+            "is not a match."
+        ),
+    )
+    kdb_mac: float = Field(
+        default=0.7,
+        description=(
+            "Minimum cosine between the stored mode and the "
+            "reactant-to-saddle displacement. A suggestion below this "
+            "cosine is dropped."
+        ),
+    )
 
 
 class RecyclingConfig(BaseModel):

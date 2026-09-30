@@ -13,7 +13,7 @@ from eon import communicator
 from eon import displace
 from eon import fileio as io
 from eon import recycling
-from eon import eon_kdb as kdb
+from eon import process_catalog as catalog
 
 from eon.config import ConfigClass # Typing
 
@@ -114,18 +114,10 @@ class MinModeExplorer(Explorer):
             moved_atoms = None
 
         if self.config.kdb_on:
-            kdb_scratch = Path(self.config.kdb_scratch_path)
-            kdb_scratch.mkdir(parents=True, exist_ok=True)
-            queried_path = kdb_scratch / "queried"
-            try:
-                with queried_path.open() as f:
-                    queried = [int(q) for q in f]
-            except (OSError, ValueError):
-                queried = []
-            if self.state.number not in queried:
-                queried.append(self.state.number)
-                queried_path.write_text("".join("%d\n" % q for q in queried))
-                kdb.query(self.state, self.config)
+            Path(self.config.kdb_scratch_path).mkdir(parents=True, exist_ok=True)
+            # queried is written inside query, and only after lookup returns.
+            if not catalog.was_queried(self.state, self.config):
+                catalog.query(self.state, self.config)
 
         # If a per-state displacement atom list script was used, inject the
         # cached result into the config so DisplacementManager's ListedAtoms
@@ -152,14 +144,6 @@ class MinModeExplorer(Explorer):
             num_cancelled = self.comm.cancel_state(self.state.number)
             logger.info("Cancelled %i workunits from state %i",
                         num_cancelled, self.state.number)
-            if self.config.kdb_on:
-                marker = Path(self.state.path) / "kdb_inserted"
-                if not marker.is_file():
-                    logger.info("Adding relevant processes to kinetic database")
-                    for process_id in self.state.get_process_ids():
-                        output = kdb.insert(self.state, process_id, self.config)
-                        logger.debug("kdb insert: %s", output)
-                    marker.write_text("")
 
     def generate_displacement(self):
         if self.config.recycling_on and self.state.number != 0:
@@ -169,11 +153,13 @@ class MinModeExplorer(Explorer):
                 return displacement, mode, 'recycling'
 
         if self.config.kdb_on:
-            displacement, mode = kdb.make_suggestion(self.config)
-            if displacement:
+            displacement, mode = catalog.make_suggestion(self.config, self.state)
+            if displacement is not None:
                 displacement.mass = self.reactant.mass
                 logger.info('Made a KDB suggestion')
                 return displacement, mode, 'kdb'
+            if self.config.kdb_only:
+                return None, None, 'kdb-empty'
 
         if self.config.saddle_method == 'dynamics':
             return None, None, 'dynamics'
@@ -239,6 +225,9 @@ class ClientMinModeExplorer(MinModeExplorer):
             # mode - an Nx3 numpy array containing the initial mode
             search['id'] = "%d_%d" % (self.state.number, self.wuid)
             displacement, mode, disp_type = self.generate_displacement()
+            if disp_type == 'kdb-empty':
+                logger.info("kdb_only is set and no catalog suggestion remains")
+                break
             self.job_table.add_row( {'state':self.state.number,
                                      'wuid':self.wuid,
                                      'type':disp_type } )
