@@ -199,18 +199,34 @@ stride keeps a Hessian on every stride-th bead and interpolates linearly
 between those anchors. That interpolation is an approximation: the rate
 formula uses the Hessian of every bead.
 
-`half_ring` defaults to enabled. On an even bead count the search runs from
-one turning point to the other and the closed ring is the mirror of that
-chain. An odd count keeps every bead. `energy_shift` (default 0, in eV) is
+`half_ring` defaults to enabled. On an even bead count the potential is
+evaluated from one turning point to the other and copied onto the mirror.
+An odd count keeps every bead. `energy_shift` (default 0, in eV) is
 subtracted from every bead potential and from the reactant and saddle
 energies in the rate.
 
-Below three quarters of the crossover, a search that starts without a ring
-walks down from 0.85 of the crossover, and each warmer ring starts the next.
-Up to 4096 active coordinates the step climbs one mode and turns every other
-negative curvature downhill. Its Hessian starts at the saddle and follows
-accepted moves with a Bofill update. The rate uses the bead Hessians, not
-that update. A larger ring keeps minimum-mode following.
+A ring of at most 4096 active coordinates takes an index-1 Newton step.
+Below three quarters of the crossover, that search starts at 0.85 of the
+crossover and each warmer ring starts the next. The step climbs one mode
+and turns every other negative curvature downhill. The curvature estimate
+starts at the saddle and follows accepted moves with a Bofill update. The
+rate uses the bead Hessians, not that update. A larger ring follows the
+minimum mode, and an even count still copies that potential.
+
+`temperatures` is a comma-separated list in kelvin. The search starts at
+the highest and each ring starts the next, colder one. An empty list uses
+`temperature`. `bead_ladder` (default off) starts a ring of at least 16
+beads at a quarter of that count and doubles. `hessian_final` is
+`recomputed`: the rate takes a Hessian on every stride-th bead.
+
+On a rate calculation, `initial_path` is a band over the barrier. The ring
+starts on the closed orbit of that band whose period is {math}`\beta \hbar`,
+and the same band carries a one-dimensional WKB rate.
+`rate_instanton.dat` has one row per temperature, with columns `T_K`,
+`T_c_K`, `beads`, `converged`, `iterations`, `U_N_eV`, `negative_modes`,
+`ln_k_per_s`, `k_per_s`, `ln_k_htst_per_s`, `barrier_effective_eV` and
+`ln_k_wkb_path_per_s`. Several temperatures also write
+`instanton_<T>K.con`. The coldest temperature is written to `instanton.con`.
 
 With no atom fixed, the three translations are omitted on both sides. A
 rotation is omitted when it is a zero mode of the reactant Hessian, which a

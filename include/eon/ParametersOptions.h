@@ -813,10 +813,18 @@ struct instanton_options_t {
   // Mode "rate": the first-order saddle out of the reactant, and T in K.
   std::string saddle_filename{"saddle.con"};
   double temperature{0.0};
+  // Mode rate: kelvin values, searched from the highest down. Empty uses
+  // temperature.
+  std::vector<double> temperatures{};
   // Mode rate: even bead count evaluates one half of a symmetric ring
   // and copies it. An odd count evaluates every bead.
   bool half_ring{true};
   double energy_shift{0.0}; // eV, subtracted from each bead potential
+  // Mode rate: start at a quarter of the beads and double. Off leaves the
+  // requested count alone.
+  bool bead_ladder{false};
+  // Mode rate: the rate uses a Hessian on every stride-th bead.
+  std::string hessian_final{"recomputed"};
 };
 
 // [OH_TST] //

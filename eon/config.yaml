@@ -1184,6 +1184,12 @@ Instanton:
             kind: float
             default: 0.0
 
+        # Comma-separated kelvin values. The highest is searched first
+        # and each ring starts the next. Empty uses temperature.
+        temperatures:
+            kind: string
+            default: ""
+
         # Even bead count: search one turning point to the other and
         # mirror the closed ring. An odd count keeps every bead.
         half_ring:
@@ -1193,6 +1199,17 @@ Instanton:
         energy_shift:
             kind: float
             default: 0.0
+
+        # Start at a quarter of the beads and double up to the requested
+        # count. Off searches the requested count directly.
+        bead_ladder:
+            kind: bool
+            default: false
+
+        # The rate uses a Hessian on every stride-th bead.
+        hessian_final:
+            kind: string
+            default: recomputed
 
 ################################################################################
 

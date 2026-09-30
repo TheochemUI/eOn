@@ -300,8 +300,11 @@ json to_json(const Parameters &p) {
         {"hessian_stride", o.hessian_stride},
         {"saddle_filename", o.saddle_filename},
         {"temperature", o.temperature},
+        {"temperatures", o.temperatures},
         {"half_ring", o.half_ring},
         {"energy_shift", o.energy_shift},
+        {"bead_ladder", o.bead_ladder},
+        {"hessian_final", o.hessian_final},
     };
   }
 

@@ -1890,8 +1890,32 @@ int load_ini(INIReader &ini, Parameters &params) {
     o.saddle_filename =
         ini.Get("Instanton", "saddle_filename", o.saddle_filename);
     o.temperature = ini.GetReal("Instanton", "temperature", o.temperature);
+    o.temperatures.clear();
+    {
+      const std::string list = ini.Get("Instanton", "temperatures", "");
+      std::stringstream ss(list);
+      std::string token;
+      while (std::getline(ss, token, ',')) {
+        const size_t start = token.find_first_not_of(" \t");
+        const size_t end = token.find_last_not_of(" \t");
+        if (start == std::string::npos) {
+          continue;
+        }
+        try {
+          o.temperatures.push_back(
+              std::stod(token.substr(start, end - start + 1)));
+        } catch (const std::exception &) {
+          throw std::invalid_argument(
+              "[Instanton] temperatures must be comma-separated kelvin "
+              "values, not " +
+              token);
+        }
+      }
+    }
     o.half_ring = ini.GetBoolean("Instanton", "half_ring", o.half_ring);
     o.energy_shift = ini.GetReal("Instanton", "energy_shift", o.energy_shift);
+    o.bead_ladder = ini.GetBoolean("Instanton", "bead_ladder", o.bead_ladder);
+    o.hessian_final = ini.Get("Instanton", "hessian_final", o.hessian_final);
     if (o.mode != "splitting" && o.mode != "rate") {
       throw std::invalid_argument("[Instanton] mode must be splitting or rate, "
                                   "not " +

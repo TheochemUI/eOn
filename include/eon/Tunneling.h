@@ -97,6 +97,20 @@ Splitting wkbSplitting(const Profile &p, double hwReactant, double hwProduct);
 Splitting bandSplitting(const std::vector<std::shared_ptr<Matter>> &band,
                         double referenceEnergy);
 
+/// Closed ring of `beads` samples of `path` whose imaginary-time period is
+/// `betaHbar`. Bead 0 is the reactant-side turning point and bead N/2 the
+/// other; bead N - j repeats bead j. Throws when the path has no barrier,
+/// or when the period at the barrier top already exceeds `betaHbar`.
+std::vector<VectorXd> ringFromPath(const std::vector<VectorXd> &path,
+                                   const std::vector<double> &energies,
+                                   double betaHbar, long beads);
+
+/// ln(k), k in 1/time, for the one-dimensional thermal rate along `profile`.
+/// `hwReactant` is hbar omega of the reactant well, in eV. Below the barrier
+/// the transmission is the WKB factor; above it, the parabolic continuation.
+double wkbLogRateAlongPath(const Profile &profile, double beta,
+                           double hwReactant);
+
 // Ring-polymer instanton for the splitting between two minima.
 //
 // A path of P + 1 beads in mass-weighted coordinates q runs from one minimum
@@ -227,6 +241,9 @@ struct RateInstantonOptions {
   /// An odd N, or a guess without that symmetry, evaluates every bead.
   bool halfRing = true;
   double energyShift = 0.0; ///< subtracted from every bead potential, eV
+  /// Active coordinates at or below this take the Newton step. Zero keeps
+  /// minimum-mode following.
+  long newtonLimit = 4096;
 };
 
 struct RateInstanton {
@@ -259,12 +276,12 @@ struct RateInstanton {
 /// Finds the rate instanton at inverse temperature `beta` (1 / eV).
 /// `guess` holds N beads, or is empty for a ring stretched along the saddle's
 /// unstable mode to where V has dropped by (1 - T / T_c) of the lower of the
-/// two barriers. Below 0.75 T_c an empty guess cools from 0.85 T_c. Up to
-/// 4096 active coordinates each step is an index-1 Newton step on a Bofill
-/// Hessian and costs one potential batch. Beyond that the step is
-/// minimum-mode following: one batch plus a Lanczos batch. `saddle` and
-/// `hessSaddle` are mass-weighted. An even ring whose beads match under
-/// j -> N - j is optimised from one turning point to the other and mirrored.
+/// two barriers. At or below `newtonLimit` active coordinates the step is an
+/// index-1 Newton step on a Bofill Hessian, and below 0.75 T_c an empty
+/// guess cools from 0.85 T_c. Beyond that limit the step is minimum-mode
+/// following. An even ring whose beads match under j -> N - j is evaluated
+/// from one turning point to the other and mirrored. `saddle` and
+/// `hessSaddle` are mass-weighted.
 RateInstanton optimizeRateInstanton(const VectorXd &saddle,
                                     const MatrixXd &hessSaddle, double beta,
                                     std::vector<VectorXd> guess,

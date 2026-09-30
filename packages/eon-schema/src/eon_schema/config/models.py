@@ -2576,7 +2576,16 @@ class InstantonConfig(BaseModel):
         ge=0.0,
         description=(
             "Mode rate: T in K, below the crossover temperature. 0 leaves it"
-            " unset, and mode rate then refuses to run."
+            " unset, and mode rate then refuses to run unless temperatures"
+            " is set."
+        ),
+    )
+    temperatures: str = Field(
+        default="",
+        description=(
+            "Mode rate: comma-separated temperatures in K. The highest is"
+            " searched first and each ring starts the next. Empty uses"
+            " temperature."
         ),
     )
     half_ring: bool = Field(
@@ -2590,6 +2599,19 @@ class InstantonConfig(BaseModel):
     energy_shift: float = Field(
         default=0.0,
         description="Subtracted from every bead potential, in eV.",
+    )
+    bead_ladder: bool = Field(
+        default=False,
+        description=(
+            "Mode rate: start at a quarter of the beads and double up to"
+            " the requested count. Off searches that count directly."
+        ),
+    )
+    hessian_final: str = Field(
+        default="recomputed",
+        description=(
+            "Mode rate: recomputed takes a Hessian on every stride-th bead."
+        ),
     )
 
 
