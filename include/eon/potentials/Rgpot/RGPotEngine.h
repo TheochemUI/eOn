@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <memory>
 #include <string>
 
@@ -20,6 +21,8 @@ struct RGPotEngineOptions {
   std::string scratch_dir;
   std::string input_block;   // raw input text for NWChem or CPMD inputBlocks
   std::string permanent_dir; // CPMD FILEPATH for RESTART files (cpmdc)
+  std::string params_path;   // optional CPMDParams message file (cpmdc)
+  int ranks_per_image{0};    // cpmdc: ranks per calculator group, 0 = off
   // Metatomic (backend=metatomic): dlopen libmetatomic_engine.so
   std::string model_path;
   std::string device{"cpu"};
@@ -49,6 +52,26 @@ public:
   [[nodiscard]] bool available() const;
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, const double *box) const;
+
+  /// Number of calculator groups the MPI world is split into (1 when
+  /// ranks_per_image is off) and the group this rank belongs to.
+  [[nodiscard]] int calculatorGroups() const noexcept;
+  [[nodiscard]] int calculatorIndex() const noexcept;
+  /// Ranks in the MPI world the groups were bound on (1 without MPI).
+  [[nodiscard]] int calculatorWorld() const noexcept;
+  /// This process's rank in that world (0 without MPI).
+  [[nodiscard]] int worldRank() const noexcept;
+  /// Collective on MPI_COMM_WORLD: every rank leaves with world rank 0's
+  /// bytes. A no-op on one rank.
+  void broadcastFromDriver(void *data, std::size_t bytes) const;
+  /// Registers MPI_Finalize at exit (once per process) when the world has
+  /// more than one rank.
+  void finalizeMpiAtExit() const;
+  /// Collective on MPI_COMM_WORLD: every rank leaves with the energy and
+  /// the 3N forces computed by the first rank of group `owner`. Only
+  /// CPMD's parent rank holds the true forces, so this also keeps the
+  /// ranks of one group on the same step.
+  void shareResult(int owner, long N, double *F, double *U) const;
 
 private:
   struct Impl;

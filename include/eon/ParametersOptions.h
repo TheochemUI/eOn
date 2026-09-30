@@ -152,6 +152,13 @@ struct rgpot_options_t {
   std::string scratch_dir{};
   std::string input_block{};
   std::string permanent_dir{};
+  // Serialized Cap'n Proto CPMDParams message (with inputSections); for
+  // backend=cpmdc it replaces the scalar method keys above.
+  std::string params_path{};
+  // cpmdc: split the MPI world into groups of this many ranks, one CPMD
+  // session per group, and spread NEB images over the groups. 0 keeps one
+  // session on every rank.
+  int ranks_per_image{0};
   // Metatomic dlopen (backend=metatomic)
   std::string model_path{};
   std::string device{"cpu"};
