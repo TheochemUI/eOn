@@ -105,6 +105,64 @@ TEST_CASE("The well curvature of a 21-image band recovers hbar omega",
   REQUIRE_THROWS(hbarOmega(0.0));
 }
 
+TEST_CASE("A barrier path becomes a closed ring at the requested period",
+          "[Tunneling][Instanton]") {
+  const double a = 1.0;
+  const double v0 = 1.0;
+  const int images = 401;
+  std::vector<VectorXd> path;
+  std::vector<double> energies;
+  path.reserve(static_cast<size_t>(images));
+  for (int i = 0; i < images; ++i) {
+    const double x = -a + 2.0 * a * static_cast<double>(i) / (images - 1);
+    const double q = x * x / (a * a) - 1.0;
+    path.push_back(VectorXd::Constant(1, x));
+    energies.push_back(v0 * q * q);
+  }
+  // The full period at the barrier top is pi. A shorter imaginary time is
+  // above the crossover along this path.
+  const long n = 16;
+  REQUIRE_THROWS_AS(ringFromPath(path, energies, 1.0, n),
+                    std::invalid_argument);
+  REQUIRE_THROWS_AS(ringFromPath(path, energies, 30.0, 3),
+                    std::invalid_argument);
+  REQUIRE_THROWS_AS(
+      ringFromPath(path, std::vector<double>(path.size(), 1.0), 30.0, n),
+      std::invalid_argument);
+
+  const auto ring = ringFromPath(path, energies, 30.0, n);
+  REQUIRE(static_cast<long>(ring.size()) == n);
+  REQUIRE(ring.front()(0) < 0.0);
+  REQUIRE(ring[static_cast<size_t>(n / 2)](0) > 0.0);
+  REQUIRE(std::abs(ring.front()(0)) > 0.2);
+  for (long j = 1; j < n / 2; ++j) {
+    REQUIRE(ring[static_cast<size_t>(j)](0) ==
+            ring[static_cast<size_t>(n - j)](0));
+    REQUIRE(ring[static_cast<size_t>(j)](0) >
+            ring[static_cast<size_t>(j - 1)](0));
+  }
+}
+
+TEST_CASE("The one-dimensional WKB rate falls as the barrier grows",
+          "[Tunneling]") {
+  const Profile low = quarticBand(0.3, 1.0, 201);
+  const Profile high = quarticBand(1.0, 1.0, 201);
+  const double hwLow = hbarOmega(wellCurvature(low, true));
+  const double hwHigh = hbarOmega(wellCurvature(high, true));
+  const double coldLow = wkbLogRateAlongPath(low, 40.0, hwLow);
+  const double coldHigh = wkbLogRateAlongPath(high, 40.0, hwHigh);
+  const double hotHigh = wkbLogRateAlongPath(high, 10.0, hwHigh);
+  REQUIRE(std::isfinite(coldLow));
+  REQUIRE(std::isfinite(coldHigh));
+  REQUIRE(coldHigh < coldLow);
+  REQUIRE(hotHigh > coldHigh);
+  REQUIRE_THROWS_AS(wkbLogRateAlongPath(low, 0.0, hwLow),
+                    std::invalid_argument);
+  REQUIRE_THROWS_AS(wkbLogRateAlongPath(
+                        Profile({0.0, 1.0, 2.0}, {1.0, 1.0, 1.0}), 40.0, hwLow),
+                    std::invalid_argument);
+}
+
 TEST_CASE("The WKB action lands in sollya's certified enclosures",
           "[Tunneling]") {
   // Enclosures from data/tunneling/wkb_quartic.sollya (diam = 1e-5).
@@ -397,6 +455,7 @@ TEST_CASE("The rate instanton of a cubic well matches its decay rate",
   opt.halfRing = false;
   RateInstanton inst =
       optimizeRateInstanton(saddle, hs, beta, {}, pes.batch(), opt);
+  CAPTURE(inst.iterations, inst.converged, inst.temperature, tc);
   REQUIRE(inst.converged);
   instantonRate(
       inst, [&](long, const VectorXd &q) { return pes.hessian(q); },
@@ -424,7 +483,7 @@ TEST_CASE("The rate instanton of a cubic well matches its decay rate",
   };
   RateInstantonOptions fullOpt = opt;
   fullOpt.halfRing = false;
-  fullOpt.forceTolerance = 1e-10;
+  fullOpt.forceTolerance = 1e-8;
   RateInstanton fullRing =
       optimizeRateInstanton(saddle, hs, beta, {}, counted(fullCalls), fullOpt);
   instantonRate(
@@ -432,14 +491,16 @@ TEST_CASE("The rate instanton of a cubic well matches its decay rate",
       pes.hessian(VectorXd::Zero(1)), 0.0, hs, vb);
   RateInstantonOptions halfOpt = opt;
   halfOpt.halfRing = true;
-  halfOpt.forceTolerance = 1e-10;
+  halfOpt.forceTolerance = 1e-8;
   RateInstanton halfRing =
       optimizeRateInstanton(saddle, hs, beta, {}, counted(halfCalls), halfOpt);
   instantonRate(
       halfRing, [&](long, const VectorXd &q) { return pes.hessian(q); },
       pes.hessian(VectorXd::Zero(1)), 0.0, hs, vb, 0, 0);
   CAPTURE(fullRing.logRate, halfRing.logRate, fullCalls, halfCalls,
-          halfRing.converged, halfRing.iterations);
+          halfRing.converged, halfRing.iterations, fullRing.iterations,
+          fullRing.ringPotential, halfRing.ringPotential, fullRing.bN,
+          halfRing.bN);
   REQUIRE(halfRing.converged);
   REQUIRE(std::abs(halfRing.logRate - fullRing.logRate) < 1e-6);
   REQUIRE(halfCalls < fullCalls);
@@ -472,6 +533,55 @@ TEST_CASE("The rate instanton of a cubic well matches its decay rate",
   REQUIRE(std::abs(fine.logRate - gammaLog) <
           std::abs(inst.logRate - gammaLog));
   REQUIRE(std::abs(std::exp(extrapolated - gammaLog) - 1.0) < 0.01);
+}
+
+TEST_CASE("Minimum-mode following copies one half of an even ring",
+          "[Tunneling][Instanton]") {
+  const double omega0 = 1.0;
+  const double hw = kHbar * omega0;
+  const double vb = 16.0 * hw;
+  const CubicWell pes{omega0, std::sqrt(std::pow(omega0, 6) / (6.0 * vb))};
+  const VectorXd saddle = VectorXd::Constant(1, pes.qb());
+  const MatrixXd hs = pes.hessian(saddle);
+  const double beta = 60.0 / hw;
+  long fullCalls = 0;
+  long halfCalls = 0;
+  auto counted = [&](long &calls) {
+    return [&](const std::vector<VectorXd> &q, std::vector<double> &v,
+               std::vector<VectorXd> &g) {
+      calls += static_cast<long>(q.size());
+      pes.batch()(q, v, g);
+    };
+  };
+  RateInstantonOptions fullOpt;
+  fullOpt.beads = 64;
+  fullOpt.forceTolerance = 1e-8;
+  fullOpt.maxStep = 0.05;
+  fullOpt.halfRing = false;
+  fullOpt.newtonLimit = 0;
+  RateInstanton fullRing =
+      optimizeRateInstanton(saddle, hs, beta, {}, counted(fullCalls), fullOpt);
+  RateInstantonOptions halfOpt = fullOpt;
+  halfOpt.halfRing = true;
+  RateInstanton halfRing =
+      optimizeRateInstanton(saddle, hs, beta, {}, counted(halfCalls), halfOpt);
+  CAPTURE(fullRing.logRate, halfRing.logRate, fullCalls, halfCalls,
+          fullRing.converged, halfRing.converged, fullRing.iterations,
+          halfRing.iterations);
+  REQUIRE(fullRing.converged);
+  REQUIRE(halfRing.converged);
+  instantonRate(
+      fullRing, [&](long, const VectorXd &q) { return pes.hessian(q); },
+      pes.hessian(VectorXd::Zero(1)), 0.0, hs, vb);
+  instantonRate(
+      halfRing, [&](long, const VectorXd &q) { return pes.hessian(q); },
+      pes.hessian(VectorXd::Zero(1)), 0.0, hs, vb);
+  CAPTURE(fullRing.logRate, halfRing.logRate, fullRing.negativeModes,
+          halfRing.negativeModes);
+  REQUIRE(fullRing.negativeModes == 1);
+  REQUIRE(halfRing.negativeModes == 1);
+  REQUIRE(std::abs(halfRing.logRate - fullRing.logRate) < 1e-6);
+  REQUIRE(halfCalls < fullCalls);
 }
 
 TEST_CASE("The rate instanton refuses a temperature above the crossover",

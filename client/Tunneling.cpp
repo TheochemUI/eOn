@@ -26,6 +26,7 @@
 #include <numbers>
 #include <numeric>
 #include <stdexcept>
+#include <utility>
 
 namespace eonc::tunneling {
 
@@ -177,6 +178,250 @@ Splitting wkbSplitting(const Profile &p, double hwReactant, double hwProduct) {
   out.deepWells =
       (top - v.front()) > hwReactant && (top - v.back()) > hwProduct;
   return out;
+}
+
+namespace {
+
+std::vector<double> arcLengths(const std::vector<VectorXd> &path) {
+  std::vector<double> s(path.size(), 0.0);
+  for (size_t k = 1; k < path.size(); ++k) {
+    s[k] = s[k - 1] + (path[k] - path[k - 1]).norm();
+  }
+  return s;
+}
+
+VectorXd atArcLength(const std::vector<VectorXd> &path,
+                     const std::vector<double> &s, double target) {
+  const auto it = std::upper_bound(s.begin(), s.end(), target);
+  const size_t k = std::clamp<size_t>(
+      static_cast<size_t>(std::distance(s.begin(), it)), 1, path.size() - 1);
+  const double seg = s[k] - s[k - 1];
+  const double t = seg > 0.0 ? (target - s[k - 1]) / seg : 0.0;
+  return path[k - 1] + std::clamp(t, 0.0, 1.0) * (path[k] - path[k - 1]);
+}
+
+// Crossings V(s) = e nearest the barrier top, one on each side.
+std::pair<double, double> turningPoints(const Profile &p, double sTop,
+                                        double energy) {
+  const double s0 = p.s().front();
+  const double s1 = p.s().back();
+  auto cross = [&](double from, double to) {
+    const int steps = 2000;
+    double a = from;
+    double b = to;
+    for (int k = 1; k <= steps; ++k) {
+      const double sk = from + (to - from) * static_cast<double>(k) / steps;
+      if (p(sk) <= energy) {
+        a = from + (to - from) * static_cast<double>(k - 1) / steps;
+        b = sk;
+        break;
+      }
+      if (k == steps) {
+        return to;
+      }
+    }
+    for (int k = 0; k < 60; ++k) {
+      const double m = 0.5 * (a + b);
+      if (p(m) > energy) {
+        a = m;
+      } else {
+        b = m;
+      }
+    }
+    return 0.5 * (a + b);
+  };
+  return {cross(sTop, s0), cross(sTop, s1)};
+}
+
+// int_{s-}^{s+} ds / sqrt(2 (V - E)). The cosine substitution keeps the
+// integrand finite at the turning points. Optional tables are the running
+// integral and the arc length at the end of each panel.
+double halfPeriod(const Profile &p, double sMinus, double sPlus, double energy,
+                  std::vector<double> *cumulative = nullptr,
+                  std::vector<double> *positions = nullptr) {
+  const int panels = 4000;
+  const double mid = 0.5 * (sMinus + sPlus);
+  const double half = 0.5 * (sPlus - sMinus);
+  double total = 0.0;
+  if (cumulative != nullptr) {
+    cumulative->assign(1, 0.0);
+    positions->assign(1, sMinus);
+  }
+  for (int k = 0; k < panels; ++k) {
+    const double phi =
+        std::numbers::pi * (static_cast<double>(k) + 0.5) / panels;
+    const double s = mid - half * std::cos(phi);
+    const double under = 2.0 * (p(s) - energy);
+    const double integrand =
+        half * std::sin(phi) / std::sqrt(std::max(under, 1e-300));
+    total += integrand * std::numbers::pi / panels;
+    if (cumulative != nullptr) {
+      cumulative->push_back(total);
+      positions->push_back(
+          mid - half * std::cos(std::numbers::pi * (k + 1.0) / panels));
+    }
+  }
+  return total;
+}
+
+} // namespace
+
+std::vector<VectorXd> ringFromPath(const std::vector<VectorXd> &path,
+                                   const std::vector<double> &energies,
+                                   double betaHbar, long beads) {
+  if (path.size() < 3 || path.size() != energies.size() || beads < 4 ||
+      !(betaHbar > 0.0)) {
+    throw std::invalid_argument(
+        "ringFromPath: a path of at least three points with energies, "
+        "N >= 4 and beta hbar > 0");
+  }
+  const long width = path.front().size();
+  for (const auto &q : path) {
+    if (q.size() != width) {
+      throw std::invalid_argument("ringFromPath: the path changes dimension");
+    }
+  }
+  const std::vector<double> s = arcLengths(path);
+  const Profile profile(s, energies);
+  double sTop = s.front();
+  double vTop = -std::numeric_limits<double>::infinity();
+  const int grid = 4000;
+  for (int k = 0; k <= grid; ++k) {
+    const double sk =
+        s.front() + (s.back() - s.front()) * static_cast<double>(k) / grid;
+    if (profile(sk) > vTop) {
+      vTop = profile(sk);
+      sTop = sk;
+    }
+  }
+  const double vLow = std::max(energies.front(), energies.back());
+  if (!(vTop > vLow)) {
+    throw std::invalid_argument("ringFromPath: the path has no barrier");
+  }
+  auto period = [&](double energy) {
+    const auto [sMinus, sPlus] = turningPoints(profile, sTop, energy);
+    return 2.0 * halfPeriod(profile, sMinus, sPlus, energy);
+  };
+  const double span = vTop - vLow;
+  double eHi = vTop - 1e-9 * span;
+  double eLo = vLow + 1e-9 * span;
+  if (period(eHi) > betaHbar) {
+    throw std::invalid_argument(
+        "ringFromPath: the period at the barrier top exceeds beta hbar; "
+        "the temperature is above the crossover along this path");
+  }
+  if (period(eLo) < betaHbar) {
+    // The path does not reach a long enough orbit. The lowest one it
+    // holds is the start.
+    eHi = eLo;
+  }
+  for (int k = 0; k < 80 && eHi > eLo; ++k) {
+    const double energy = 0.5 * (eLo + eHi);
+    if (period(energy) > betaHbar) {
+      eLo = energy;
+    } else {
+      eHi = energy;
+    }
+  }
+  const double energy = 0.5 * (eLo + eHi);
+  const auto [sMinus, sPlus] = turningPoints(profile, sTop, energy);
+  std::vector<double> tau;
+  std::vector<double> pos;
+  const double half = halfPeriod(profile, sMinus, sPlus, energy, &tau, &pos);
+  if (tau.size() < 2 || tau.size() != pos.size()) {
+    throw std::invalid_argument("ringFromPath: the orbit has no length");
+  }
+  // Bead j sits at imaginary time j * beta hbar / N on the way from the
+  // reactant-side turning point to the other side. The return repeats it.
+  std::vector<VectorXd> ring(static_cast<size_t>(beads), VectorXd::Zero(width));
+  for (long j = 0; j <= beads / 2; ++j) {
+    const double t =
+        std::min(half, half * 2.0 * static_cast<double>(j) / beads);
+    const auto it = std::upper_bound(tau.begin(), tau.end(), t);
+    const size_t k = std::clamp<size_t>(
+        static_cast<size_t>(std::distance(tau.begin(), it)), 1, tau.size() - 1);
+    const double seg = tau[k] - tau[k - 1];
+    const double w = seg > 0.0 ? (t - tau[k - 1]) / seg : 0.0;
+    const double sj =
+        pos[k - 1] + std::clamp(w, 0.0, 1.0) * (pos[k] - pos[k - 1]);
+    ring[static_cast<size_t>(j)] = atArcLength(path, s, sj);
+    if (j > 0 && j < beads - j) {
+      ring[static_cast<size_t>(beads - j)] = ring[static_cast<size_t>(j)];
+    }
+  }
+  return ring;
+}
+
+double wkbLogRateAlongPath(const Profile &profile, double beta,
+                           double hwReactant) {
+  if (!(beta > 0.0) || !(hwReactant > 0.0)) {
+    throw std::invalid_argument(
+        "wkbLogRateAlongPath: beta and hbar omega must be positive");
+  }
+  const double vReactant = profile.v().front();
+  const double s0 = profile.s().front();
+  const double s1 = profile.s().back();
+  double vTop = vReactant;
+  double sTop = s0;
+  const int grid = 2000;
+  for (int k = 0; k <= grid; ++k) {
+    const double sk = s0 + (s1 - s0) * static_cast<double>(k) / grid;
+    const double vk = profile(sk);
+    if (vk >= vTop) {
+      vTop = vk;
+      sTop = sk;
+    }
+  }
+  const double barrier = vTop - vReactant;
+  if (!(barrier > 0.0)) {
+    throw std::invalid_argument(
+        "wkbLogRateAlongPath: no barrier above the reactant");
+  }
+  double ds = 1e-3 * (s1 - s0);
+  ds = std::min(ds, std::min(sTop - s0, s1 - sTop));
+  if (!(ds > 0.0)) {
+    throw std::invalid_argument(
+        "wkbLogRateAlongPath: the barrier top is at an end of the path");
+  }
+  const double curvature =
+      std::max(1e-12, -(profile(sTop + ds) - 2.0 * vTop + profile(sTop - ds)) /
+                          (ds * ds));
+  const double hwBarrier = kHbar * std::sqrt(curvature);
+  // int P(E) exp(-beta E) dE from the reactant up to where the Boltzmann
+  // factor has died. E is measured from the reactant.
+  const double eMax = barrier + 40.0 / beta;
+  const int points = 600;
+  auto logAdd = [](double a, double b) {
+    if (a == -std::numeric_limits<double>::infinity()) {
+      return b;
+    }
+    const double m = std::max(a, b);
+    return m + std::log(std::exp(a - m) + std::exp(b - m));
+  };
+  double logTerms = -std::numeric_limits<double>::infinity();
+  double prevLog = -std::numeric_limits<double>::infinity();
+  double prevE = 0.0;
+  for (int k = 0; k <= points; ++k) {
+    const double energy = eMax * static_cast<double>(k) / points;
+    double theta = 0.0;
+    if (energy < barrier) {
+      theta = wkbAction(profile, vReactant + energy);
+    } else {
+      theta = -std::numbers::pi * (energy - barrier) / hwBarrier;
+    }
+    const double logP =
+        theta > 20.0 ? -2.0 * theta : -std::log1p(std::exp(2.0 * theta));
+    const double logF = logP - beta * energy;
+    if (k > 0) {
+      const double segment =
+          std::log(0.5 * (energy - prevE)) + logAdd(prevLog, logF);
+      logTerms = logAdd(logTerms, segment);
+    }
+    prevLog = logF;
+    prevE = energy;
+  }
+  const double logFlux = logTerms - std::log(2.0 * std::numbers::pi * kHbar);
+  return logFlux + std::log(2.0 * std::sinh(0.5 * beta * hwReactant));
 }
 
 Splitting bandSplitting(const std::vector<std::shared_ptr<Matter>> &band,
@@ -624,22 +869,37 @@ double lowestMode(const std::vector<VectorXd> &x, const RingEval &here,
                   std::vector<VectorXd> &mode, long steps, double eps,
                   bool mirror = false) {
   const size_t n = x.size();
-  (void)mirror;
+  // The thermal instanton retraces, so the unstable mode is even. Probes
+  // and products stay on that mirror and the potential call sees one half.
+  const bool reflect = mirror && n % 2 == 0;
+  auto snap = [&](std::vector<VectorXd> &q) {
+    if (!reflect) {
+      return;
+    }
+    const long m = static_cast<long>(n) / 2;
+    for (long j = 1; j < m; ++j) {
+      q[static_cast<size_t>(n - static_cast<size_t>(j))] =
+          q[static_cast<size_t>(j)];
+    }
+  };
   auto hv = [&](const std::vector<VectorXd> &u) {
     std::vector<VectorXd> xp(n);
     for (size_t j = 0; j < n; ++j) {
       xp[j] = x[j] + eps * u[j];
     }
+    snap(xp);
     const RingEval e = evaluateRing(xp, c, potential);
     std::vector<VectorXd> out(n);
     for (size_t j = 0; j < n; ++j) {
       out[j] = (e.grad[j] - here.grad[j]) / eps;
     }
+    snap(out);
     return out;
   };
   std::vector<std::vector<VectorXd>> basis;
   std::vector<double> alpha, beta;
   std::vector<VectorXd> q = mode;
+  snap(q);
   scale(q, 1.0 / std::sqrt(dot(q, q)));
   for (long k = 0; k < steps; ++k) {
     basis.push_back(q);
@@ -652,6 +912,7 @@ double lowestMode(const std::vector<VectorXd> &x, const RingEval &here,
         w[j] -= p * b[j];
       }
     }
+    snap(w);
     const double bnorm = std::sqrt(dot(w, w));
     if (!(bnorm > 1e-12) || k + 1 == steps) {
       break;
@@ -680,6 +941,11 @@ double lowestMode(const std::vector<VectorXd> &x, const RingEval &here,
     }
   }
   scale(ritz, 1.0 / std::sqrt(dot(ritz, ritz)));
+  snap(ritz);
+  const double rnorm = std::sqrt(dot(ritz, ritz));
+  if (rnorm > 0.0) {
+    scale(ritz, 1.0 / rnorm);
+  }
   mode = std::move(ritz);
   return es.eigenvalues()(0);
 }
@@ -1219,13 +1485,22 @@ Climb classify(const RingSpectrum &sp, const VectorXd &tau, double spring) {
     if (overlapsTau(sp.vectors.col(i), tau)) {
       continue;
     }
-    if (sp.values(i) < cut) {
-      ++out.negative;
-    }
     if (sp.values(i) < lowest) {
       lowest = sp.values(i);
       out.index = i;
       out.curvature = sp.values(i);
+    }
+  }
+  if (!(out.curvature < 0.0)) {
+    return out;
+  }
+  for (long i = 0; i < sp.values.size(); ++i) {
+    if (overlapsTau(sp.vectors.col(i), tau)) {
+      continue;
+    }
+    // A near-zero eigenvalue is not a second unstable mode.
+    if (sp.values(i) < cut && sp.values(i) <= 1e-3 * out.curvature) {
+      ++out.negative;
     }
   }
   return out;
@@ -1241,6 +1516,10 @@ VectorXd indexOneStep(const RingSpectrum &sp, const Climb &climb,
     return VectorXd();
   }
   const double cut = -1e-8 * std::max(1.0, spring);
+  // A rigid translation sits closer to zero than this. Parking it keeps
+  // the solve off that direction, which otherwise consumes the whole step.
+  const double tiny = 1e-8 * std::max(1.0, spring);
+  const double parked = std::max(1.0, spring);
   ColMajorXd jt = sp.ring;
   if (tau.size() == gflat.size()) {
     jt.noalias() += spring * (tau * tau.transpose());
@@ -1250,13 +1529,14 @@ VectorXd indexOneStep(const RingSpectrum &sp, const Climb &climb,
       continue;
     }
     const double li = sp.values(i);
+    const VectorXd v = sp.vectors.col(i);
     const bool flip =
         (i == climb.index && li > 0.0) || (i != climb.index && li < cut);
-    if (!flip) {
-      continue;
+    if (flip) {
+      jt.noalias() -= (2.0 * li) * (v * v.transpose());
+    } else if (i != climb.index && std::abs(li) <= tiny) {
+      jt.noalias() += (parked - li) * (v * v.transpose());
     }
-    const VectorXd v = sp.vectors.col(i);
-    jt.noalias() -= (2.0 * li) * (v * v.transpose());
   }
   jt = (0.5 * (jt + jt.transpose())).eval();
   const Eigen::PartialPivLU<ColMajorXd> lu(jt);
@@ -1264,7 +1544,21 @@ VectorXd indexOneStep(const RingSpectrum &sp, const Climb &climb,
   const double rhs = std::max(1.0, gflat.norm());
   if (!step.array().isFinite().all() ||
       (jt * step + gflat).norm() > 1e-6 * rhs) {
-    return VectorXd();
+    step = VectorXd::Zero(gflat.size());
+    for (long i = 0; i < sp.values.size(); ++i) {
+      if (overlapsTau(sp.vectors.col(i), tau)) {
+        continue;
+      }
+      const double li = sp.values(i);
+      const bool flip =
+          (i == climb.index && li > 0.0) || (i != climb.index && li < cut);
+      const double mu = flip ? -li : li;
+      if (!(std::abs(mu) > tiny)) {
+        continue;
+      }
+      const VectorXd v = sp.vectors.col(i);
+      step.noalias() += -(v.dot(gflat) / mu) * v;
+    }
   }
   if (tau.size() == step.size()) {
     step -= step.dot(tau) * tau;
@@ -1432,6 +1726,20 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     Climb climb;
     double gmax = 0.0;
   };
+  // Turning-point blocks store half the closed-ring derivative. The
+  // residual that stops the climb is the closed-ring residual.
+  auto closedGmax = [&](const Obj &ev) {
+    if (!half || ev.grad.size() < 2) {
+      return largestBeadNorm(ev.grad);
+    }
+    double big = 2.0 * ev.grad.front().norm();
+    big = std::max(big, 2.0 * ev.grad.back().norm());
+    const long last = static_cast<long>(ev.grad.size()) - 1;
+    for (long j = 1; j < last; ++j) {
+      big = std::max(big, ev.grad[static_cast<size_t>(j)].norm());
+    }
+    return big;
+  };
   auto viewOf = [&](const Obj &ev) {
     View v;
     v.tau = half ? VectorXd() : timeTranslation(x);
@@ -1439,7 +1747,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
                            : closedRingMatrix(physical, c));
     if (v.sp.ok) {
       v.climb = classify(v.sp, v.tau, c);
-      v.gmax = largestBeadNorm(ev.grad);
+      v.gmax = closedGmax(ev);
     }
     return v;
   };
@@ -1460,38 +1768,79 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       converged = true;
       break;
     }
-    VectorXd step = indexOneStep(v.sp, v.climb, packBeads(cur.grad), v.tau, c);
-    if (step.size() == 0) {
+    // A ratio outside [0.1, 3] still counts when the closed-ring residual
+    // falls: the model Hessian starts at the saddle and is a poor match
+    // far from it. A rejected Newton step is retried shorter, then as a
+    // climb along the lowest mode.
+    auto accept = [&](VectorXd dir) {
+      if (dir.size() == 0 || !dir.array().isFinite().all()) {
+        return false;
+      }
+      const double big = packedBeadNorm(dir, f);
+      if (!(big > 0.0)) {
+        return false;
+      }
+      if (big > trust) {
+        dir *= trust / big;
+      }
+      std::vector<VectorXd> trial = x;
+      addPacked(trial, dir);
+      if (!finiteBeads(trial)) {
+        return false;
+      }
+      Obj next = objective(trial);
+      if (!finiteBeads(next.grad) || !std::isfinite(next.u)) {
+        return false;
+      }
+      bool ratioOk = false;
+      double ratio = 0.0;
+      if (v.sp.ok && v.sp.ring.cols() == dir.size()) {
+        const VectorXd gflat = packBeads(cur.grad);
+        const double pred = gflat.dot(dir) + 0.5 * dir.dot(v.sp.ring * dir);
+        ratio = std::abs(pred) > 1e-30 ? (next.u - cur.u) / pred : 1.0;
+        ratioOk = std::isfinite(ratio) && ratio >= 0.1 && ratio <= 3.0;
+      }
+      if (!ratioOk && !(closedGmax(next) < v.gmax)) {
+        return false;
+      }
+      for (size_t k = 0; k < x.size(); ++k) {
+        bofillUpdate(physical[k], trial[k] - x[k],
+                     next.gradPot[k] - cur.gradPot[k]);
+      }
+      x = std::move(trial);
+      cur = std::move(next);
+      if (ratioOk && ratio > 0.75 && ratio < 1.25 &&
+          packedBeadNorm(dir, f) >= 0.99 * trust) {
+        trust = std::min(2.0 * trust, options.maxStep);
+      }
+      return true;
+    };
+    const VectorXd step =
+        indexOneStep(v.sp, v.climb, packBeads(cur.grad), v.tau, c);
+    bool moved = false;
+    VectorXd dir = step;
+    for (int bt = 0; bt < 4 && !moved; ++bt) {
+      moved = accept(dir);
+      dir *= 0.5;
+    }
+    if (!moved) {
+      VectorXd alt = -packBeads(cur.grad);
+      if (v.climb.index >= 0 && v.sp.vectors.cols() > v.climb.index) {
+        const VectorXd mode = v.sp.vectors.col(v.climb.index);
+        if (mode.size() == alt.size()) {
+          alt -= 2.0 * (alt.dot(mode)) * mode;
+        }
+      }
+      if (v.tau.size() == alt.size()) {
+        alt -= alt.dot(v.tau) * v.tau;
+      }
+      for (int bt = 0; bt < 6 && !moved; ++bt) {
+        moved = accept(alt);
+        alt *= 0.5;
+      }
+    }
+    if (!moved) {
       trust = std::max(0.5 * trust, trustFloor);
-      continue;
-    }
-    const double big = packedBeadNorm(step, f);
-    if (big > trust) {
-      step *= trust / big;
-    }
-    const VectorXd gflat = packBeads(cur.grad);
-    const double pred = gflat.dot(step) + 0.5 * step.dot(v.sp.ring * step);
-    std::vector<VectorXd> trial = x;
-    addPacked(trial, step);
-    if (!finiteBeads(trial)) {
-      trust = std::max(0.5 * trust, trustFloor);
-      continue;
-    }
-    Obj next = objective(trial);
-    const double ratio = std::abs(pred) > 1e-30 ? (next.u - cur.u) / pred : 1.0;
-    if (!std::isfinite(ratio) || ratio < 0.1 || ratio > 3.0 ||
-        !finiteBeads(next.grad) || !std::isfinite(next.u)) {
-      trust = std::max(0.5 * trust, trustFloor);
-      continue;
-    }
-    for (size_t k = 0; k < x.size(); ++k) {
-      bofillUpdate(physical[k], trial[k] - x[k],
-                   next.gradPot[k] - cur.gradPot[k]);
-    }
-    x = std::move(trial);
-    cur = std::move(next);
-    if (ratio > 0.75 && ratio < 1.25 && big >= 0.99 * trust) {
-      trust = std::min(2.0 * trust, options.maxStep);
     }
   }
   if (!converged && done(viewOf(cur))) {
@@ -1661,7 +2010,8 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
     }
   }
   const long active = mirror ? (N / 2 + 1) : N;
-  if (active * saddle.size() <= 4096) {
+  if (options.newtonLimit > 0 &&
+      active * saddle.size() <= options.newtonLimit) {
     return optimizeRateByNewton(saddle, hessSaddle, beta, std::move(guess),
                                 potential, options);
   }
@@ -1704,9 +2054,8 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
   }
 
   // An even count whose beads already match under j -> N-j is the
-  // out-and-back instanton. The potential on one half is copied onto the
-  // other. The step stays in the closed-ring product, because the
-  // derivative on an interior bead is the sum of both images.
+  // out-and-back instanton. The images are assigned equal, so the
+  // potential on one half is copied, and the step stays on the closed ring.
   const bool wantMirror = options.halfRing && N % 2 == 0;
   std::vector<VectorXd> x = std::move(guess);
   bool fold = false;
@@ -1728,8 +2077,6 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
       const long m = N / 2;
       bool sym = true;
       for (long j = 1; j < m; ++j) {
-        // A few ulps: the image force matches, and the log rate stays put.
-        // A looser threshold of 1e-10 moves the LJ13 rate.
         if ((q[static_cast<size_t>(j)] - q[static_cast<size_t>(N - j)])
                 .squaredNorm() != 0.0) {
           sym = false;
@@ -1759,6 +2106,16 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
       }
     };
   }
+  auto symmetrize = [&](std::vector<VectorXd> &q) {
+    if (!fold) {
+      return;
+    }
+    const long m = N / 2;
+    for (long j = 1; j < m; ++j) {
+      q[static_cast<size_t>(N - j)] = q[static_cast<size_t>(j)];
+    }
+  };
+  symmetrize(x);
 
   RingEval cur = evaluateRing(x, c, evalPot, options.energyShift);
   // The unstable mode of the ring starts as every bead moving along the
@@ -1821,6 +2178,7 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
     for (size_t k = 0; k < x.size(); ++k) {
       trial[k] = x[k] - d[k];
     }
+    symmetrize(trial);
     RingEval next = evaluateRing(trial, c, evalPot, options.energyShift);
     const double prevCurv = curvature;
     const long restart = fold ? 4L : options.lanczosRestart;
