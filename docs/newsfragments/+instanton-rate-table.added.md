@@ -1,1 +1,1 @@
-The rate instanton accepts a comma-separated list of temperatures, highest first, and writes one row per temperature to rate_instanton.dat. A band given as initial_path seeds the ring and carries a one-dimensional WKB rate.
+The search accepts a list of temperatures and starts at the highest. Each temperature writes one row of the rate table. A supplied band seeds the ring and reports a one-dimensional semiclassical rate.

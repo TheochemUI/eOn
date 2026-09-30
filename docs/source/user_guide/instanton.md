@@ -225,10 +225,11 @@ and the same band carries a one-dimensional WKB rate.
 `rate_instanton.dat` has one row per temperature, with columns `T_K`,
 `T_c_K`, `beads`, `converged`, `iterations`, `U_N_eV`, `negative_modes`,
 `ln_k_per_s`, `k_per_s`, `ln_k_htst_per_s`, `barrier_effective_eV` and
-`ln_k_wkb_path_per_s`. Several temperatures also write
+`ln_k_wkb_path_per_s`. A run at more than one temperature also writes
 `instanton_<T>K.con`. The coldest temperature is written to `instanton.con`.
 
-With no atom fixed, the three translations are omitted on both sides. A
+That barrier ring has no fixed atom at the coldest temperature, so the
+three translations are omitted. A
 rotation is omitted when it is a zero mode of the reactant Hessian, which a
 free cluster has and a crystal does not. A cluster in a large periodic cell
 is told apart by that Hessian, not by the periodic flag. The springs along
