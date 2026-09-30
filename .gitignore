@@ -612,6 +612,11 @@ Temporary Items
 !/subprojects/*.wrap
 !/subprojects/packagefiles/
 !/subprojects/packagefiles/**
+# gpr_optim pin tracked so the default Linux build can link gprdimer
+# without a private clone. Wraps of its own dependencies stay ignored
+# once meson extracts them into the top-level subprojects directory.
+!/subprojects/gpr_optim/
+!/subprojects/gpr_optim/**
 
 # Meson Directories
 meson-logs

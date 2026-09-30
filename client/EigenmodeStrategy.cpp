@@ -48,7 +48,8 @@ buildEigenmodeStrategy(std::shared_ptr<Matter> matter, const Parameters &params,
     return std::make_shared<AtomicGPDimer>(matter, params, pot);
 #else
     throw std::runtime_error(
-        "min_mode_method=gprdimer requires -Dwith_gprd=true (WITH_GPRD)");
+        "min_mode_method=gprdimer requires -Dwith_gprd=enabled "
+        "(rsync -a ../gpr_optim/ subprojects/gpr_optim/)");
 #endif
   }
   return std::make_shared<ImprovedDimer>(matter, params, pot);

@@ -817,14 +817,31 @@ eonclib_sources += [
 # gpr_optim (+ nested rgpot) must not land in the shared pot-plugin dep set:
 # those plugins link with --no-undefined and would inherit HDF5/zlib (and
 # rgpot) link flags they do not need. Attach only to eonclib / executables.
+#
+# -Dwith_gprd=auto is the default. On Linux the shipped
+# subprojects/gpr_optim tree turns the GP dimer on, so
+# `meson setup` with no extra feature flag links min_mode_method=gprdimer.
+# A sibling checkout replaces that tree with:
+#   rsync -a ../gpr_optim/ subprojects/gpr_optim/
+_gprd_opt = get_option('with_gprd')
+_gprd_tree = fs.exists(meson.project_source_root() / 'subprojects' / 'gpr_optim' / 'meson.build')
+if _gprd_opt.enabled() and not _gprd_tree
+    error('with_gprd=enabled needs subprojects/gpr_optim. rsync -a ../gpr_optim/ subprojects/gpr_optim/ and reconfigure. The pin is the revision in subprojects/gpr_optim.wrap.')
+endif
+with_gprd = _gprd_opt.enabled() or (
+    _gprd_opt.auto() and host_system == 'linux' and _gprd_tree
+)
 _gprd_extra_deps = []
-if get_option('with_gprd')
+if with_gprd
     gprd_opts = {
         'default_library': 'static',
         'use_mkl': get_option('use_mkl'),
         # AtomicGPDimer does not use gpr_optim HDF5 logs; keep HDF5 off so
         # gpr_optim_deps do not require -lz in lean CI envs.
         'use_hdf5': false,
+        # The gpr_optim default looks up an installed rgmin and stops when
+        # that package is absent. Disabled keeps the C++ solvers.
+        'use_rgmin': 'disabled',
         'do_install': true,
         'buildtype': 'release',
         'linalg_backend': get_option('gprd_linalg_backend'),
@@ -1661,7 +1678,7 @@ if get_option('with_tests')
     if get_option('with_ira')
         test_array += [['test_ira', 'IRATest.cpp', 'saddle_search']]
     endif
-    if get_option('with_gprd')
+    if with_gprd
         test_array += [['test_gpr_helpers', 'GPRHelpersTest.cpp', '']]
     endif
     # Build the Fortran potential library search path for tests.
