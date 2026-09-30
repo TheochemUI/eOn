@@ -79,6 +79,33 @@ public:
     }
     return out;
   }
+  /// The mean of a set of beads, and the root-mean-square spread of each
+  /// free atom's position about it along x, y and z in Angstrom (row-major
+  /// over every atom of m, zero for a fixed atom).
+  std::vector<double> spreadAbout(const std::vector<VectorXd> &beads,
+                                  VectorXd &centroid, long atoms) const {
+    centroid = VectorXd::Zero(dimension());
+    for (const auto &q : beads) {
+      centroid += q;
+    }
+    centroid /= static_cast<double>(std::max<size_t>(1, beads.size()));
+    std::vector<double> out(static_cast<size_t>(3 * atoms), 0.0);
+    for (size_t k = 0; k < free_.size(); ++k) {
+      for (int c = 0; c < 3; ++c) {
+        const long i = static_cast<long>(3 * k) + c;
+        double ss = 0.0;
+        for (const auto &q : beads) {
+          const double d = q(i) - centroid(i);
+          ss += d * d;
+        }
+        out[static_cast<size_t>(3 * free_[k] + c)] =
+            std::sqrt(ss /
+                      static_cast<double>(std::max<size_t>(1, beads.size()))) /
+            sqrtMass_[k];
+      }
+    }
+    return out;
+  }
   VectorXd toQ(const Matter &m) const {
     const AtomMatrix d = ref_.pbc(m.getPositions() - ref_.getPositions());
     VectorXd q(dimension());
@@ -224,6 +251,31 @@ void alignRigid(const Matter &ref, Matter &m) {
     d = (y * rot.transpose()) - x;
   }
   m.setPositions(ref.getPositions() + d);
+}
+
+/// One frame at the beads' centroid with the readcon spreads section: the
+/// delocalised configuration as centroid plus per-atom root-mean-square
+/// spread, which a path-integral trajectory writes the same way.
+void writeCentroid(const std::string &file, const std::vector<VectorXd> &beads,
+                   const MassWeighted &mw, const Matter &reactant,
+                   std::vector<io::ConMetadataValue> scalars) {
+  VectorXd centroid;
+  Matter frame(reactant);
+  io::ConFrameMetadata meta;
+  meta.spreads = mw.spreadAbout(beads, centroid, reactant.numberOfAtoms());
+  mw.place(centroid, frame);
+  meta.frame_index = 0;
+  meta.write_con_forces = false;
+  double largest = 0.0;
+  for (const double s : meta.spreads) {
+    largest = std::max(largest, s);
+  }
+  scalars.push_back({"beads", static_cast<double>(beads.size())});
+  scalars.push_back({"spread_max", largest});
+  meta.scalars = std::move(scalars);
+  if (!io::io_ok(frame.matter2con(file, false, &meta))) {
+    throw std::runtime_error("instanton: cannot write " + file);
+  }
 }
 
 /// One bead between every neighbour. A ring of N becomes a ring of 2N.
@@ -627,6 +679,18 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         returnFiles.push_back(file);
       }
     }
+    {
+      const std::string centroidFile =
+          last ? "instanton_centroid.con"
+               : "instanton_centroid_" +
+                     files.back().substr(std::string("instanton_").size());
+      writeCentroid(centroidFile, inst.beads, mw, reactant,
+                    {{"instanton_temperature_K", temperature},
+                     {"instanton_crossover_K", tc},
+                     {"instanton_converged", inst.converged ? 1.0 : 0.0}});
+      returnFiles.push_back(centroidFile);
+    }
+
     ring = inst.beads;
     if (!last) {
       continue;
@@ -885,6 +949,10 @@ std::vector<std::string> InstantonJob::run(void) {
     }
   }
   returnFiles.push_back(pathFile);
+  writeCentroid("instanton_centroid.con", inst.path, mw, *reactant,
+                {{"instanton_temperature_K", kelvin},
+                 {"instanton_converged", inst.converged ? 1.0 : 0.0}});
+  returnFiles.push_back("instanton_centroid.con");
 
   // A converged path between wells too far apart is a result, not a
   // failure: the flags say why no splitting was written.

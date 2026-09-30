@@ -431,6 +431,12 @@ void apply_geometry(readcon::ConFrameBuilder &builder, Matter &m,
     }
     builder.set_displacements_from_flat(metadata->displacements);
   }
+  if (metadata != nullptr && !metadata->spreads.empty()) {
+    if (metadata->spreads.size() != static_cast<size_t>(3 * n)) {
+      throw std::invalid_argument("spreads size is not 3 x atoms");
+    }
+    builder.set_spreads_from_flat(metadata->spreads);
+  }
 
   if (with_velocities) {
     const AtomMatrix vel = m.getVelocities();

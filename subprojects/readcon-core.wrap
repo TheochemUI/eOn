@@ -1,7 +1,7 @@
 [wrap-git]
 directory = readcon-core
 url = https://github.com/lode-org/readcon-core.git
-revision = v0.15.0
+revision = aa8a2d9327e88c9f79eca52d2046da8a2606a38e
 depth = 1
 patch_directory = readcon-core
 

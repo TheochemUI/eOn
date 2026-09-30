@@ -285,6 +285,19 @@ The cubic metastable well, {math}`V = \omega_0^2 q^2/2 - g q^3/3`, is the
 check. Deep below the crossover its rate approaches the zero-temperature
 decay of {cite:t}`inst-caldeiraQuantumTunnellingDissipative1983`.
 
+## Centroid and spread
+
+Both modes also write `instanton_centroid.con` (and
+`instanton_centroid_<T>K.con` per temperature): one frame at the mean of
+the beads, with the readcon `spreads` section holding each atom's
+root-mean-square displacement from that mean along x, y and z in Å. This is
+the delocalised configuration as a centroid plus a per-atom spread, the same
+representation a path-integral trajectory collapses to, so the atoms that
+tunnel and how far they spread read off one frame. Below the crossover the
+density is bimodal along the reaction path and the spread there is a width,
+not a Gaussian; the beads in `instanton.con` keep the full path. The frame
+carries `spread_max`, the largest entry, beside the temperature.
+
 ## Checks
 
 These checks use two Catch2 cases. The curved-valley case is `Instanton splitting in a curved valley matches the exact gap`. The corner case is `The instanton cuts the corner the minimum energy path takes`.

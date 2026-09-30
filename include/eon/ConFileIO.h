@@ -83,6 +83,11 @@ struct ConFrameMetadata {
   /// dimer direction). Written as the readcon displacements section when
   /// not empty.
   std::vector<double> displacements;
+  /// Per-atom root-mean-square spread of the position distribution about
+  /// the written coordinates, row-major N x 3 in Angstrom (a ring-polymer
+  /// centroid's beads, a path-integral trajectory). Written as the readcon
+  /// spreads section when not empty.
+  std::vector<double> spreads;
   /// When set, this write includes or omits force sections regardless of
   /// Parameters.main_options().writeConForces or the process-wide flag.
   std::optional<bool> write_con_forces;
