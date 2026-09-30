@@ -16,9 +16,11 @@ myst:
 
 # Morse Pt NEB (built-in potential)
 
-A compact **Pt surface / adatom** NEB using the built-in `morse_pt` potential.
-Geometries match `benchmarks/data/neb_morse_pt/`. The system is small, uses only
-a built-in potential, and is suitable for docs CI.
+A compact **Pt surface / adatom** band on the built-in `morse_pt` potential.
+Geometries match `benchmarks/data/neb_morse_pt/`.
+Both plot cells pass `--ira-kmax 1.8`.
+That value is the usual factor on the basis search for similar structures.
+A larger factor leaves this match unchanged and the search then dominates the plot.
 
 Workflow:
 
@@ -140,6 +142,8 @@ run_rgpycrumbs(
     str(work / "neb.con"),
     "--input-dat-pattern",
     str(work / "neb_*.dat"),
+    "--ira-kmax",
+    "1.8",
     "--plot-type",
     "profile",
     "--highlight-last",
@@ -183,6 +187,8 @@ run_rgpycrumbs(
     str(work / "neb_*.dat"),
     "--input-path-pattern",
     str(work / "neb_path_*.con"),
+    "--ira-kmax",
+    "1.8",
     "--plot-type",
     "landscape",
     "--rc-mode",
