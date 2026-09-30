@@ -2442,7 +2442,12 @@ class InstantonConfig(BaseModel):
         ),
     )
     beads: int = Field(
-        default=256, ge=4, description="Segments from one minimum to the other."
+        default=256,
+        ge=4,
+        description=(
+            "Beads on the path. The splitting uses this many segments between"
+            " the minima; the rate uses this many on the closed ring."
+        ),
     )
     beta_hbar_omega: float = Field(
         default=30.0,
@@ -2472,7 +2477,10 @@ class InstantonConfig(BaseModel):
     temperature: float = Field(
         default=0.0,
         ge=0.0,
-        description="Mode rate: T in K, below the crossover temperature.",
+        description=(
+            "Mode rate: T in K, below the crossover temperature. 0 leaves it"
+            " unset, and mode rate then refuses to run."
+        ),
     )
 
 

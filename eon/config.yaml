@@ -1166,7 +1166,8 @@ Instanton:
             kind: string
             default: saddle.con
 
-        # K, below the crossover temperature of the saddle.
+        # K. 0 means unset. mode rate requires a positive value below
+        # the crossover temperature of the saddle.
         temperature:
             kind: float
             default: 0.0

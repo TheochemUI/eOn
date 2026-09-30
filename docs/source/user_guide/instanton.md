@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Tunnelling splittings between two minima in eOn: WKB along a NEB band and the ring-polymer instanton job."
-    "keywords": "eOn instanton, tunnelling splitting, two-level system, WKB, ring polymer"
+    "description": "Tunnelling splittings between two minima in eOn, and the thermal rate through a saddle below the crossover: WKB along a NEB band and the ring-polymer instanton job."
+    "keywords": "eOn instanton, tunnelling splitting, two-level system, WKB, ring polymer, instanton rate"
 ---
 
 # Tunnelling splittings
@@ -19,6 +19,9 @@ ways:
 | Dimensions | one, along the mass-weighted band | every free degree of freedom |
 | Cost | the NEB itself | one batch of forces per iteration over the beads, plus a Hessian per bead |
 | Output | first frame of `neb.con` | `instanton.con` and `results.dat` |
+
+With `mode = rate` the same job estimates the thermal rate through a saddle
+instead of a splitting.
 
 Energies are in eV, lengths in Å and masses in amu throughout, so
 mass-weighted lengths are in amu^0.5 Å.
@@ -121,7 +124,22 @@ The propagator ratio measures {math}`\Delta_0` when the two wells lie within
 a small fraction of {math}`k_B T` of each other. `instanton_symmetric = 0`
 flags a pair outside that window. The job still writes the path and the
 action, but no `tunnel_splitting_instanton`, and reports success: the flag
-says why. For such a pair, use the WKB estimate along a band.
+says why. For such a pair, use the WKB estimate along a band, or
+`mode = rate` with the saddle and a temperature below the crossover.
+
+## Which path object
+
+An NEB image is a point on a path between two minima. Its springs are
+fictitious. A ring-polymer bead is one imaginary-time slice of one system.
+Its springs are physical, with a stiffness fixed by the temperature and the
+bead count.
+
+| Object | Points | Springs | What it returns |
+|---|---|---|---|
+| `mode = splitting` | open string between two minima | Euclidean action, no tangent projection | tunnelling splitting when the wells are close in energy |
+| `mode = rate` | closed ring through one saddle | same action, stiffness set by temperature and bead count | thermal rate below the crossover temperature |
+| Centroid potential of mean force | one ring per image, centroid held on the image | sampled | quantum free-energy barrier along the path |
+| Harmonic centroid string | one ring per image | local harmonic quantum correction | a free-energy estimate only as good as that harmonic well |
 
 ## Checks
 
