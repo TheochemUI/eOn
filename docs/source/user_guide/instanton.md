@@ -218,13 +218,24 @@ An odd count keeps every bead. `energy_shift` (default 0, in eV) is
 subtracted from every bead potential and from the reactant and saddle
 energies in the rate.
 
-A ring of at most 4096 active coordinates takes an index-1 Newton step.
-Below three quarters of the crossover, that search starts at 0.85 of the
-crossover and each warmer ring starts the next. The step climbs one mode
-and turns every other negative curvature downhill. The curvature estimate
-starts at the saddle and follows accepted moves with a Bofill update. The
-rate uses the bead Hessians, not that update. A larger ring follows the
-minimum mode, and an even count still copies that potential.
+The search is an index-1 Newton step on the ring Hessian. Below three
+quarters of the crossover an empty start cools from 0.85 of the crossover,
+each warmer ring starting the next. The step climbs one mode and turns
+every other negative curvature downhill; the imaginary-time cycle is held
+in place and left out of the step. The ring Hessian is block cyclic
+tridiagonal in the beads, and every solve, determinant and inertia count
+goes through a block LU of the open chain plus a low-rank Woodbury
+correction for the closure, the cycle, the rigid modes and each
+eigenvector-following flip: {math}`O(N f^3)` for {math}`f` degrees of
+freedom, and the {math}`Nf \times Nf` matrix is never formed, so the same
+step serves a seven-atom cluster and a 254-atom cell. The lowest ring
+modes come from Lanczos on matrix-vector products. The bead curvature
+blocks start from the saddle Hessian (`initial_hessians = saddle`, no force
+calls) and follow accepted moves with a Bofill update;
+`initial_hessians = finite_difference` takes {math}`2f` gradient calls per
+bead first. The rate uses the bead Hessians chosen by `hessian_final`, not
+that update. On the one-dimensional Eckart barrier the search converges
+in 4 to 7 steps from either seed.
 
 `temperatures` is a comma-separated list in kelvin. The search starts at
 the highest and each ring starts the next, colder one. An empty list uses
@@ -291,6 +302,27 @@ finite-difference Hamiltonian, converged to {math}`10^{-5}`.
 The instanton's error falls as the barrier deepens, the regime glass TLS sit
 in. The same cases tie the C++ path and splitting to an independent
 implementation of the discretisation to {math}`2 \times 10^{-3}`.
+
+For the rate, `The Eckart rate instanton matches the exact flux to its
+semiclassical error` compares {math}`k Z_r` through the symmetric Eckart
+barrier {math}`V_0 / \cosh^2(x/a)` ({math}`V_0 = 0.425` eV, {math}`a =
+0.734` amu^0.5 Å, {math}`T_c = 150` K) with the exact flux
+{math}`(2\pi\hbar)^{-1}\int P(E) e^{-\beta E} dE` from Eckart's transmission
+probability, at {math}`T = 0.5\,T_c` and {math}`0.35\,T_c`:
+
+| beads | instanton / exact |
+|---|---|
+| 64 | 0.94 to 0.96 |
+| 128 | 0.93 to 0.94 |
+| {math}`N \to \infty` (1/N² extrapolation) | 0.928 |
+
+In one dimension the instanton is the steepest-descent evaluation of the
+WKB thermal integral, so its limit shares the uniform WKB error; the Kemble
+integral along the path gives the same 0.928. `The ring spectrum from the
+block chain matches the dense Hessian` ties the chain's determinant and
+inertia to a dense eigendecomposition, and `A rigid mode leaves the
+instanton rate unchanged` checks the rigid-mode bookkeeping through the
+search.
 
 ## References
 
