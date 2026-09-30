@@ -600,6 +600,33 @@ TEST_CASE("The rate instanton refuses a temperature above the crossover",
                     std::invalid_argument);
 }
 
+TEST_CASE("The parabolic factor multiplies harmonic TST above the crossover",
+          "[Tunneling][Instanton]") {
+  const double tc = 100.0;
+  const double hot = 1.0e6;
+  const double x = std::numbers::pi * tc / 200.0;
+  REQUIRE(parabolicFactor(200.0, tc) == Catch::Approx(x / std::sin(x)));
+  REQUIRE(parabolicFactor(hot, tc) == Catch::Approx(1.0).margin(1e-4));
+  REQUIRE_THROWS_AS(parabolicFactor(tc, tc), std::invalid_argument);
+  REQUIRE_THROWS_AS(parabolicFactor(0.5 * tc, tc), std::invalid_argument);
+
+  MatrixXd reactant(1, 1);
+  MatrixXd saddle(1, 1);
+  reactant(0, 0) = 1.0;
+  saddle(0, 0) = -1.0;
+  const double crossover = crossoverTemperature(saddle);
+  const double temperature = 4.0 * crossover;
+  const double beta = 1.0 / (kBoltzmann * temperature);
+  const double barrier = 0.1;
+  const double logRate = harmonicTstLogRate(reactant, saddle, beta, barrier, 0);
+  REQUIRE(logRate ==
+          Catch::Approx(-std::log(2.0 * std::numbers::pi) - beta * barrier));
+  const double factor = parabolicFactor(temperature, crossover);
+  const double phase = std::numbers::pi / 4.0;
+  REQUIRE(factor == Catch::Approx(phase / std::sin(phase)));
+  REQUIRE(factor > 1.0);
+}
+
 namespace {
 
 MatrixXd toyBead(long j, long f, double shift) {

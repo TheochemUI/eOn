@@ -225,6 +225,18 @@ inline constexpr double kTimeUnitSeconds = 1.0180505717871193e-14;
 /// saddle, in K; throws when the Hessian has no negative eigenvalue.
 double crossoverTemperature(const MatrixXd &hessSaddle);
 
+/// (pi T_c / T) / sin(pi T_c / T). Defined only above T_c. The factor
+/// diverges as T approaches T_c from above and tends to 1 at high T.
+double parabolicFactor(double temperature, double crossover);
+
+/// ln(k) for classical harmonic transition-state theory, k in 1/time.
+/// rigidModes eigenvalues nearest zero are omitted at each Hessian. The
+/// saddle's most negative eigenvalue is the barrier mode and leaves the
+/// product.
+double harmonicTstLogRate(const MatrixXd &hessReactant,
+                          const MatrixXd &hessSaddle, double beta,
+                          double barrier, long rigidModes);
+
 struct RateInstantonOptions {
   long beads = 32;              ///< N, beads on the ring
   long maxIterations = 1000;    ///< translation steps

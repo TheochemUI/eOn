@@ -2588,26 +2588,68 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
       inst.logRate / inst.beta;
 
   if (hessSaddle.size() > 0) {
-    const Eigen::SelfAdjointEigenSolver<MatrixXd> ets(
-        0.5 * (hessSaddle + hessSaddle.transpose()), Eigen::EigenvaluesOnly);
-    const VectorXd &ls = ets.eigenvalues();
-    const std::vector<bool> rigidS = nearestZero(ls, rigidModes);
-    double logRatio = 0.0;
-    for (long m = 0; m < lr.size(); ++m) {
-      if (!rigidR[static_cast<size_t>(m)]) {
-        logRatio += 0.5 * std::log(lr(m));
-      }
-    }
-    // Eigenvalue 0 is the unstable mode, the most negative.
-    for (long m = 1; m < ls.size(); ++m) {
-      if (!rigidS[static_cast<size_t>(m)]) {
-        logRatio -= 0.5 * std::log(std::abs(ls(m)));
-      }
-    }
-    inst.classicalLogRate = logRatio - std::log(2.0 * std::numbers::pi) -
-                            inst.beta * (vSaddle - vReactant);
+    inst.classicalLogRate = harmonicTstLogRate(
+        hessReactant, hessSaddle, inst.beta, vSaddle - vReactant, rigidModes);
     inst.classicalRate = std::exp(inst.classicalLogRate) / kTimeUnitSeconds;
   }
+}
+
+double parabolicFactor(double temperature, double crossover) {
+  if (!(temperature > 0.0) || !(crossover > 0.0)) {
+    throw std::invalid_argument(
+        "parabolicFactor: temperature and crossover must be positive");
+  }
+  if (!(temperature > crossover)) {
+    throw std::invalid_argument(
+        "parabolicFactor: T is at or below the crossover; the factor "
+        "diverges there");
+  }
+  // beta hbar omega_b / 2 = pi T_c / T, since T_c = hbar omega_b / (2 pi kB).
+  const double phase = std::numbers::pi * crossover / temperature;
+  const double s = std::sin(phase);
+  if (!(s > 0.0)) {
+    throw std::invalid_argument(
+        "parabolicFactor: the sine of the barrier phase is not positive");
+  }
+  return phase / s;
+}
+
+double harmonicTstLogRate(const MatrixXd &hessReactant,
+                          const MatrixXd &hessSaddle, double beta,
+                          double barrier, long rigidModes) {
+  if (!(beta > 0.0) || hessReactant.size() == 0 || hessSaddle.size() == 0 ||
+      hessReactant.rows() != hessReactant.cols() ||
+      hessSaddle.rows() != hessSaddle.cols() ||
+      hessReactant.rows() != hessSaddle.rows() || rigidModes < 0) {
+    throw std::invalid_argument(
+        "harmonicTstLogRate: need beta > 0, matching square Hessians and a "
+        "non-negative rigid-mode count");
+  }
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> er(
+      0.5 * (hessReactant + hessReactant.transpose()), Eigen::EigenvaluesOnly);
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> es(
+      0.5 * (hessSaddle + hessSaddle.transpose()), Eigen::EigenvaluesOnly);
+  const VectorXd &lr = er.eigenvalues();
+  const VectorXd &ls = es.eigenvalues();
+  if (!(ls(0) < 0.0)) {
+    throw std::invalid_argument(
+        "harmonicTstLogRate: the saddle Hessian has no negative eigenvalue");
+  }
+  const std::vector<bool> rigidR = nearestZero(lr, rigidModes);
+  const std::vector<bool> rigidS = nearestZero(ls, rigidModes);
+  double logRatio = 0.0;
+  for (long m = 0; m < lr.size(); ++m) {
+    if (!rigidR[static_cast<size_t>(m)]) {
+      logRatio += 0.5 * std::log(lr(m));
+    }
+  }
+  // Eigenvalue 0 is the unstable mode, the most negative.
+  for (long m = 1; m < ls.size(); ++m) {
+    if (!rigidS[static_cast<size_t>(m)]) {
+      logRatio -= 0.5 * std::log(std::abs(ls(m)));
+    }
+  }
+  return logRatio - std::log(2.0 * std::numbers::pi) - beta * barrier;
 }
 
 } // namespace eonc::tunneling

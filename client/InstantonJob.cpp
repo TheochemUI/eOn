@@ -378,7 +378,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   }
   table << "# T_K T_c_K beads converged iterations U_N_eV negative_modes "
            "ln_k_per_s k_per_s ln_k_htst_per_s barrier_effective_eV "
-           "ln_k_wkb_path_per_s\n";
+           "ln_k_wkb_path_per_s ln_k_parabolic_per_s parabolic_factor\n";
   table << std::setprecision(10);
   returnFiles.push_back(tableFile);
   const double logSecond = std::log(tunneling::kTimeUnitSeconds);
@@ -397,27 +397,68 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
 
   std::vector<VectorXd> ring;
   RunStatus status = RunStatus::GOOD;
-  bool aboveCrossover = false;
+  bool rateFailed = false;
   for (size_t ti = 0; ti < temperatures.size(); ++ti) {
     const double temperature = temperatures[ti];
     const double beta = 1.0 / (tunneling::kBoltzmann * temperature);
     const bool last = ti + 1 == temperatures.size();
     const double wkbLog = wkbAt(beta);
     if (!(temperature < tc)) {
-      // Above T_c the ring collapses onto the saddle. The rate there is
-      // the parabolic barrier correction, which this job does not evaluate.
-      EONC_LOG_ERROR("[Instanton] {:.4g} K is at or above the crossover "
-                     "temperature {:.4g} K; the parabolic barrier correction "
-                     "applies and this job does not evaluate it",
-                     temperature, tc);
-      table << temperature << ' ' << tc << ' ' << o.beads
-            << " 0 0 nan 0 nan nan nan nan " << wkbLog << '\n';
-      aboveCrossover = true;
-      status = RunStatus::FAIL_POTENTIAL_FAILED;
-      if (last) {
-        extras.emplace_back("instanton_temperature_K", temperature);
-        if (std::isfinite(wkbLog)) {
-          extras.emplace_back("rate_wkb_path_log", wkbLog);
+      // The ring collapses onto the saddle. Above T_c the rate is the
+      // parabolic factor times harmonic TST. At T_c the factor diverges.
+      bool wrote = false;
+      if (temperature > tc) {
+        try {
+          const double factor = tunneling::parabolicFactor(temperature, tc);
+          const double logHtst = tunneling::harmonicTstLogRate(
+              hReactant, hSaddle, beta, vSaddle - vReactant, rigidModes);
+          const double logPar = logHtst + std::log(factor);
+          const double kPar = std::exp(logPar) / tunneling::kTimeUnitSeconds;
+          const double kHtst = std::exp(logHtst) / tunneling::kTimeUnitSeconds;
+          EONC_LOG_INFO("[Instanton] {:.4g} K is above the crossover {:.4g} "
+                        "K; parabolic factor {:.6g}, ln(k s) = {:.4f}",
+                        temperature, tc, factor, logPar - logSecond);
+          if (factor > 10.0) {
+            EONC_LOG_WARNING(
+                "[Instanton] parabolic factor {:.6g} is large; this close "
+                "to the crossover a uniform theory is the finite rate",
+                factor);
+          }
+          table << temperature << ' ' << tc << ' ' << o.beads
+                << " 0 0 nan 0 nan nan " << (logHtst - logSecond) << " nan "
+                << wkbLog << ' ' << (logPar - logSecond) << ' ' << factor
+                << '\n';
+          if (last) {
+            extras.emplace_back("instanton_temperature_K", temperature);
+            extras.emplace_back("parabolic_factor", factor);
+            extras.emplace_back("rate_parabolic", kPar);
+            extras.emplace_back("rate_parabolic_log", logPar - logSecond);
+            extras.emplace_back("rate_htst", kHtst);
+            extras.emplace_back("rate_htst_log", logHtst - logSecond);
+            if (std::isfinite(wkbLog)) {
+              extras.emplace_back("rate_wkb_path_log", wkbLog);
+            }
+          }
+          wrote = true;
+        } catch (const std::exception &ex) {
+          EONC_LOG_ERROR("[Instanton] {}", ex.what());
+        }
+      }
+      if (!wrote) {
+        if (!(temperature > tc)) {
+          EONC_LOG_ERROR("[Instanton] {:.4g} K is at the crossover temperature "
+                         "{:.4g} K; the parabolic factor diverges there",
+                         temperature, tc);
+        }
+        table << temperature << ' ' << tc << ' ' << o.beads
+              << " 0 0 nan 0 nan nan nan nan " << wkbLog << " nan nan\n";
+        rateFailed = true;
+        status = RunStatus::FAIL_POTENTIAL_FAILED;
+        if (last) {
+          extras.emplace_back("instanton_temperature_K", temperature);
+          if (std::isfinite(wkbLog)) {
+            extras.emplace_back("rate_wkb_path_log", wkbLog);
+          }
         }
       }
       continue;
@@ -542,7 +583,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     } else {
       table << "nan nan nan nan";
     }
-    table << ' ' << wkbLog << '\n';
+    table << ' ' << wkbLog << " nan nan\n";
 
     std::vector<std::string> files;
     if (last) {
@@ -606,13 +647,14 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       extras.emplace_back("instanton_negative_modes",
                           static_cast<double>(inst.negativeModes));
       extras.emplace_back("instanton_zero_mode", inst.zeroEigenvalue);
-      if (!aboveCrossover) {
-        status = RunStatus::GOOD;
-      }
     } else {
+      rateFailed = true;
       status = inst.converged ? RunStatus::FAIL_POTENTIAL_FAILED
                               : RunStatus::FAIL_MAX_ITERATIONS;
     }
+  }
+  if (!rateFailed) {
+    status = RunStatus::GOOD;
   }
   write(status);
   return returnFiles;
