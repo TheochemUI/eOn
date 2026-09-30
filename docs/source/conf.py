@@ -159,6 +159,7 @@ latex_elements = {
         r"verbatimhintsturnover=false"
     ),
     "preamble": r"""
+\makeatletter
 \renewcommand{\sphinxmaketitle}{%
   \let\sphinxrestorepageanchorsetting\relax
   \ifHy@pageanchor\def\sphinxrestorepageanchorsetting{\Hy@pageanchortrue}\fi
@@ -198,6 +199,7 @@ latex_elements = {
   \if@openright\cleardoublepage\else\clearpage\fi
   \sphinxrestorepageanchorsetting
 }
+\makeatother
 """,
 }
 
