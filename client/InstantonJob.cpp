@@ -469,6 +469,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     ro.maxIterations = o.max_iterations;
     ro.forceTolerance = o.force_tolerance;
     ro.halfRing = o.half_ring;
+    ro.initialHessians = o.initial_hessians;
     ro.energyShift = o.energy_shift;
     std::vector<VectorXd> guess = ring;
     if (guess.empty() && profile) {

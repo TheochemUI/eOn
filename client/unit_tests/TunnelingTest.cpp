@@ -434,6 +434,271 @@ struct CubicWell {
 //   Gamma = (omega0 / 2 pi) sqrt(864 pi V_b / (hbar omega0))
 //           exp(-36 V_b / (5 hbar omega0)),
 // whose leading semiclassical correction is of order hbar omega0 / V_b.
+namespace {
+
+// Symmetric Eckart barrier V = V0 / cosh^2(x / a) at unit mass, the H + H2
+// like barrier every instanton paper tests on: V0 = 0.425 eV, a = 0.734
+// amu^0.5 Angstrom, T_c = 150 K.
+struct Eckart {
+  double v0 = 0.425, a = 0.734;
+  double value(double x) const { return v0 / std::pow(std::cosh(x / a), 2); }
+  double slope(double x) const {
+    return -2.0 * v0 * std::tanh(x / a) / (a * std::pow(std::cosh(x / a), 2));
+  }
+  double curvature(double x) const {
+    const double s = std::sinh(x / a), c = std::cosh(x / a);
+    return 2.0 * v0 * (2.0 * s * s - 1.0) / (a * a * std::pow(c, 4));
+  }
+  MatrixXd hessian_at(const VectorXd &q) const {
+    return MatrixXd::Constant(1, 1, curvature(q(0)));
+  }
+  MatrixXd hessian_at_top() const {
+    return MatrixXd::Constant(1, 1, -2.0 * v0 / (a * a));
+  }
+  BatchPotential batch() const {
+    return [this](const std::vector<VectorXd> &q, std::vector<double> &v,
+                  std::vector<VectorXd> &grad) {
+      v.resize(q.size());
+      grad.resize(q.size());
+      for (size_t j = 0; j < q.size(); ++j) {
+        v[j] = value(q[j](0));
+        grad[j] = VectorXd::Constant(1, slope(q[j](0)));
+      }
+    };
+  }
+  // Exact transmission probability (Eckart 1930).
+  double transmission(double e) const {
+    const double alpha = a * std::sqrt(2.0 * e) / kHbar;
+    const double d2 = 8.0 * v0 * a * a / (kHbar * kHbar) - 1.0;
+    const double ch = d2 > 0.0 ? std::cosh(std::numbers::pi * std::sqrt(d2))
+                               : std::cos(std::numbers::pi * std::sqrt(-d2));
+    const double ca = std::cosh(2.0 * std::numbers::pi * alpha);
+    return (ca - 1.0) / (ca + ch);
+  }
+  // ln of the exact thermal flux (1 / 2 pi hbar) int P(E) e^{-beta E} dE,
+  // k Z_r for a free reactant per unit mass-weighted length.
+  double logExactFlux(double beta) const {
+    const double eMax = v0 + 60.0 / beta;
+    const int n = 200000;
+    double sum = 0.0;
+    for (int k = 0; k <= n; ++k) {
+      const double e = eMax * k / n + 1e-9;
+      const double w = (k == 0 || k == n) ? 0.5 : 1.0;
+      sum += w * transmission(e) * std::exp(-beta * e);
+    }
+    return std::log(sum * eMax / n / (2.0 * std::numbers::pi * kHbar));
+  }
+};
+
+// The ring Hessian of random bead blocks, dense, for checking the chain.
+MatrixXd denseRing(const std::vector<MatrixXd> &h, double c) {
+  const long n = static_cast<long>(h.size()), f = h.front().rows();
+  MatrixXd j = MatrixXd::Zero(n * f, n * f);
+  for (long b = 0; b < n; ++b) {
+    j.block(b * f, b * f, f, f) =
+        h[static_cast<size_t>(b)] + 2.0 * c * MatrixXd::Identity(f, f);
+    const long k = (b + 1) % n;
+    j.block(b * f, k * f, f, f) -= c * MatrixXd::Identity(f, f);
+    j.block(k * f, b * f, f, f) -= c * MatrixXd::Identity(f, f);
+  }
+  return j;
+}
+
+} // namespace
+
+TEST_CASE("The ring spectrum from the block chain matches the dense Hessian",
+          "[Tunneling][Instanton]") {
+  const long n = 9, f = 4;
+  const double c = 2.7;
+  std::vector<MatrixXd> h;
+  std::vector<VectorXd> tau;
+  unsigned seed = 12345u;
+  auto rnd = [&]() {
+    seed = 1664525u * seed + 1013904223u;
+    return static_cast<double>(seed >> 8) / static_cast<double>(1u << 24) - 0.5;
+  };
+  for (long b = 0; b < n; ++b) {
+    MatrixXd a(f, f);
+    for (long i = 0; i < f; ++i) {
+      for (long k = 0; k < f; ++k) {
+        a(i, k) = rnd();
+      }
+    }
+    a = 0.5 * (a + a.transpose()).eval();
+    if (b == 0) {
+      a -= 6.0 * MatrixXd::Identity(f, f);
+    }
+    h.push_back(a);
+    VectorXd t(f);
+    for (long i = 0; i < f; ++i) {
+      t(i) = rnd();
+    }
+    tau.push_back(t);
+  }
+  double norm = 0.0;
+  for (const auto &t : tau) {
+    norm += t.squaredNorm();
+  }
+  for (auto &t : tau) {
+    t /= std::sqrt(norm);
+  }
+  MatrixXd dense = denseRing(h, c);
+  VectorXd tauFlat(n * f);
+  for (long b = 0; b < n; ++b) {
+    tauFlat.segment(b * f, f) = tau[static_cast<size_t>(b)];
+  }
+  const MatrixXd primed = dense + tauFlat * tauFlat.transpose();
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> es(primed,
+                                                   Eigen::EigenvaluesOnly);
+  double logDet = 0.0;
+  long negative = 0;
+  for (long i = 0; i < es.eigenvalues().size(); ++i) {
+    logDet += std::log(std::abs(es.eigenvalues()(i)));
+    negative += es.eigenvalues()(i) < 0.0 ? 1 : 0;
+  }
+  const RingSpectrum spec = ringSpectrum(h, c, tau);
+  REQUIRE_THAT(spec.logDetPrime, WithinRel(logDet, 1e-9));
+  REQUIRE(spec.negativeModes == negative);
+  REQUIRE_THAT(spec.zeroEigenvalue,
+               WithinRel(tauFlat.dot(dense * tauFlat), 1e-9));
+}
+
+// The instanton flux through the Eckart barrier against the exact quantum
+// flux. In one dimension the instanton is the steepest-descent evaluation of
+// the WKB thermal integral, so its N -> infinity limit shares the uniform
+// WKB error, 7 percent low for this barrier at both temperatures, and the
+// Kemble integral along the path gives the same number.
+TEST_CASE("The Eckart rate instanton matches the exact flux to its "
+          "semiclassical error",
+          "[Tunneling][Instanton]") {
+  const Eckart pes;
+  const VectorXd saddle = VectorXd::Zero(1);
+  const MatrixXd hs = pes.hessian_at_top();
+  const double tc = crossoverTemperature(hs);
+  REQUIRE_THAT(tc, WithinRel(149.988, 1e-3));
+  for (const double frac : {0.5, 0.35}) {
+    const double beta = 1.0 / (kBoltzmann * frac * tc);
+    const double exact = pes.logExactFlux(beta);
+    RateInstantonOptions opt;
+    opt.forceTolerance = 1e-8;
+    std::vector<double> logs;
+    std::vector<long> iterations;
+    for (const long n : {64L, 128L}) {
+      opt.beads = n;
+      RateInstanton inst =
+          optimizeRateInstanton(saddle, hs, beta, {}, pes.batch(), opt);
+      CAPTURE(frac, n, inst.iterations);
+      REQUIRE(inst.converged);
+      REQUIRE(inst.iterations <= 12);
+      instantonRate(
+          inst, [&](long, const VectorXd &q) { return pes.hessian_at(q); },
+          MatrixXd::Identity(1, 1), 0.0);
+      REQUIRE(inst.negativeModes == 1);
+      REQUIRE(std::abs(inst.zeroEigenvalue) < 1e-3);
+      logs.push_back(inst.logRateTimesZr);
+      iterations.push_back(inst.iterations);
+    }
+    // 1 / N^2 extrapolation from 64 and 128 beads.
+    const double extrapolated = (4.0 * logs[1] - logs[0]) / 3.0;
+    CAPTURE(frac, logs[0], logs[1], extrapolated, exact);
+    REQUIRE_THAT(std::exp(logs[1] - exact),
+                 Catch::Matchers::WithinAbs(0.935, 0.01));
+    REQUIRE_THAT(std::exp(extrapolated - exact),
+                 Catch::Matchers::WithinAbs(0.928, 0.01));
+
+    // The Kemble WKB flux along the path shares the semiclassical error.
+    std::vector<VectorXd> path;
+    std::vector<double> energies, s;
+    for (int k = 0; k <= 80; ++k) {
+      const double x = -3.0 * pes.a + 6.0 * pes.a * k / 80;
+      path.push_back(VectorXd::Constant(1, x));
+      energies.push_back(pes.value(x));
+      s.push_back(x + 3.0 * pes.a);
+    }
+    const Profile profile(s, energies);
+    // The path integral references energies to the path's reactant end,
+    // V(-3a) = 4.2 meV here, while the exact flux counts from V = 0 at
+    // infinity; the Boltzmann factor of that offset moves the comparison.
+    const double hw = 0.1;
+    const double wkb = wkbLogRateAlongPath(profile, beta, hw) -
+                       std::log(2.0 * std::sinh(0.5 * beta * hw)) -
+                       beta * energies.front();
+    CAPTURE(wkb);
+    REQUIRE_THAT(std::exp(wkb - exact),
+                 Catch::Matchers::WithinAbs(0.928, 0.01));
+
+    // A ring seeded from the path by the period condition converges to the
+    // same instanton, in no more steps than the cosine seed.
+    opt.beads = 64;
+    const std::vector<VectorXd> seed =
+        ringFromPath(path, energies, beta * kHbar, 64);
+    REQUIRE(seed.size() == 64);
+    REQUIRE_THAT(seed[0](0), Catch::Matchers::WithinAbs(-seed[32](0), 1e-6));
+    RateInstanton seeded =
+        optimizeRateInstanton(saddle, hs, beta, seed, pes.batch(), opt);
+    REQUIRE(seeded.converged);
+    REQUIRE(seeded.iterations <= iterations[1]);
+    instantonRate(
+        seeded, [&](long, const VectorXd &q) { return pes.hessian_at(q); },
+        MatrixXd::Identity(1, 1), 0.0);
+    REQUIRE_THAT(seeded.logRateTimesZr,
+                 Catch::Matchers::WithinAbs(logs[1], 1e-6));
+  }
+}
+
+// A free transverse coordinate is a rigid mode: its centroid factor leaves
+// both the ring and the reactant, and its k > 0 factors cancel, so the rate
+// is the one-dimensional one.
+TEST_CASE("A rigid mode leaves the instanton rate unchanged",
+          "[Tunneling][Instanton]") {
+  const double omega0 = 1.0;
+  const double hw = kHbar * omega0;
+  const double vb = 16.0 * hw;
+  const CubicWell pes{omega0, std::sqrt(std::pow(omega0, 6) / (6.0 * vb))};
+  const double beta = 60.0 / hw;
+  RateInstantonOptions opt;
+  opt.beads = 64;
+  opt.forceTolerance = 1e-8;
+  const VectorXd saddle1 = VectorXd::Constant(1, pes.qb());
+  RateInstanton one = optimizeRateInstanton(saddle1, pes.hessian(saddle1), beta,
+                                            {}, pes.batch(), opt);
+  REQUIRE(one.converged);
+  instantonRate(
+      one, [&](long, const VectorXd &q) { return pes.hessian(q); },
+      pes.hessian(VectorXd::Zero(1)), 0.0);
+
+  BatchPotential two = [&](const std::vector<VectorXd> &q,
+                           std::vector<double> &v,
+                           std::vector<VectorXd> &grad) {
+    std::vector<VectorXd> x(q.size());
+    for (size_t j = 0; j < q.size(); ++j) {
+      x[j] = q[j].head(1);
+    }
+    std::vector<VectorXd> g1;
+    pes.batch()(x, v, g1);
+    grad.resize(q.size());
+    for (size_t j = 0; j < q.size(); ++j) {
+      grad[j] = VectorXd::Zero(2);
+      grad[j](0) = g1[j](0);
+    }
+  };
+  auto hess2 = [&](const VectorXd &q) {
+    MatrixXd h = MatrixXd::Zero(2, 2);
+    h(0, 0) = pes.hessian(q.head(1))(0, 0);
+    return h;
+  };
+  VectorXd saddle2 = VectorXd::Zero(2);
+  saddle2(0) = pes.qb();
+  RateInstanton both =
+      optimizeRateInstanton(saddle2, hess2(saddle2), beta, {}, two, opt);
+  REQUIRE(both.converged);
+  instantonRate(
+      both, [&](long, const VectorXd &q) { return hess2(q); },
+      hess2(VectorXd::Zero(2)), 0.0, MatrixXd(), 0.0, 1);
+  REQUIRE(both.negativeModes == 1);
+  REQUIRE_THAT(both.logRate, Catch::Matchers::WithinAbs(one.logRate, 1e-6));
+}
+
 TEST_CASE("The rate instanton of a cubic well matches its decay rate",
           "[Tunneling][Instanton]") {
   const double omega0 = 1.0;

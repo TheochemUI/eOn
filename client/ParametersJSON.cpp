@@ -314,6 +314,7 @@ json to_json(const Parameters &p) {
         {"temperature", o.temperature},
         {"temperatures", o.temperatures},
         {"half_ring", o.half_ring},
+        {"initial_hessians", o.initial_hessians},
         {"energy_shift", o.energy_shift},
         {"bead_ladder", o.bead_ladder},
         {"hessian_final", o.hessian_final},

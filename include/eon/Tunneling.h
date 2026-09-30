@@ -254,9 +254,33 @@ struct RateInstantonOptions {
   bool halfRing = true;
   double energyShift = 0.0; ///< subtracted from every bead potential, eV
   /// Active coordinates at or below this take the Newton step. Zero keeps
-  /// minimum-mode following.
-  long newtonLimit = 4096;
+  /// minimum-mode following. The step solves through the block chain, so
+  /// the default admits every size a batch potential can evaluate.
+  long newtonLimit = 1L << 40;
+  /// Where the bead Hessian blocks start: "saddle" copies the saddle's
+  /// Hessian to every bead and lets the Bofill update carry it, at no force
+  /// calls; "finite_difference" takes 2 f gradient calls per bead first.
+  std::string initialHessians = "saddle";
 };
+
+/// Spectrum of a closed ring's Hessian without forming it.
+struct RingSpectrum {
+  /// ln |det' J|: the product over every eigenvalue but the one along tau.
+  double logDetPrime = 0.0;
+  /// Eigenvalues below zero, the one along tau left out.
+  long negativeModes = 0;
+  /// tau . J tau, the eigenvalue the prime leaves out; small when the ring
+  /// is a converged instanton.
+  double zeroEigenvalue = 0.0;
+};
+
+/// The ring Hessian of bead Hessians `beadHessians` (d2V/dq2 at each of the
+/// N beads) and spring constant c, with the normalised direction `tau`
+/// (N beads) projected out through the determinant lemma
+/// det(J + tau tau^T) = det' J when J tau = 0. Block LU of the open chain
+/// plus a low-rank correction for the closure and tau, O(N f^3).
+RingSpectrum ringSpectrum(const std::vector<MatrixXd> &beadHessians, double c,
+                          const std::vector<VectorXd> &tau);
 
 struct RateInstanton {
   std::vector<VectorXd> beads;     ///< N beads, q_N = q_0 implied

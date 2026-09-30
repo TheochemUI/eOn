@@ -1940,6 +1940,14 @@ int load_ini(INIReader &ini, Parameters &params) {
       }
     }
     o.half_ring = ini.GetBoolean("Instanton", "half_ring", o.half_ring);
+    o.initial_hessians =
+        ini.Get("Instanton", "initial_hessians", o.initial_hessians);
+    if (o.initial_hessians != "saddle" &&
+        o.initial_hessians != "finite_difference") {
+      throw std::invalid_argument("[Instanton] initial_hessians must be saddle "
+                                  "or finite_difference, not " +
+                                  o.initial_hessians);
+    }
     o.energy_shift = ini.GetReal("Instanton", "energy_shift", o.energy_shift);
     o.bead_ladder = ini.GetBoolean("Instanton", "bead_ladder", o.bead_ladder);
     o.hessian_final = ini.Get("Instanton", "hessian_final", o.hessian_final);

@@ -828,6 +828,10 @@ struct instanton_options_t {
   // and copies it. An odd count evaluates every bead.
   bool half_ring{true};
   double energy_shift{0.0}; // eV, subtracted from each bead potential
+  // Mode rate: where the bead Hessian blocks start. "saddle" copies the
+  // saddle Hessian to every bead (no force calls); "finite_difference"
+  // takes 2 f gradient calls per bead first.
+  std::string initial_hessians{"saddle"};
   // Mode rate: start at a quarter of the beads and double. Off leaves the
   // requested count alone.
   bool bead_ladder{false};

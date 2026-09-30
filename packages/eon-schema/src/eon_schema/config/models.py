@@ -2598,6 +2598,14 @@ class InstantonConfig(BaseModel):
             " half. An odd count evaluates every bead."
         ),
     )
+    initial_hessians: Literal["saddle", "finite_difference"] = Field(
+        default="saddle",
+        description=(
+            "Mode rate: where the bead Hessian blocks start. saddle copies the"
+            " saddle Hessian to every bead at no force calls; finite_difference"
+            " takes 2 f gradient calls per bead first."
+        ),
+    )
     energy_shift: float = Field(
         default=0.0,
         description="Subtracted from every bead potential, in eV.",

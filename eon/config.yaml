@@ -1196,6 +1196,16 @@ Instanton:
             kind: bool
             default: true
 
+        # Mode rate: where the bead Hessian blocks start. saddle copies the
+        # saddle Hessian to every bead at no force calls; finite_difference
+        # takes 2 f gradient calls per bead first.
+        initial_hessians:
+            kind: string
+            default: saddle
+            values:
+                - saddle
+                - finite_difference
+
         energy_shift:
             kind: float
             default: 0.0

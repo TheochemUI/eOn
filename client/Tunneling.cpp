@@ -302,25 +302,55 @@ std::vector<VectorXd> ringFromPath(const std::vector<VectorXd> &path,
     const auto [sMinus, sPlus] = turningPoints(profile, sTop, energy);
     return 2.0 * halfPeriod(profile, sMinus, sPlus, energy);
   };
+  // The crossover along the path from a parabola through the three input
+  // points around the barrier top, not from the interpolant, whose slope is
+  // clamped to zero at the top node.
+  {
+    size_t top = 0;
+    for (size_t k = 1; k < energies.size(); ++k) {
+      if (energies[k] > energies[top]) {
+        top = k;
+      }
+    }
+    if (top == 0 || top + 1 == energies.size()) {
+      throw std::invalid_argument(
+          "ringFromPath: the barrier top is an end of the path");
+    }
+    const double h1 = s[top] - s[top - 1], h2 = s[top + 1] - s[top];
+    const double curvature =
+        2.0 *
+        (h1 * energies[top + 1] - (h1 + h2) * energies[top] +
+         h2 * energies[top - 1]) /
+        (h1 * h2 * (h1 + h2));
+    if (!(curvature < 0.0)) {
+      throw std::invalid_argument("ringFromPath: no curvature at the top");
+    }
+    const double tc = kHbar * std::sqrt(-curvature) / (2.0 * std::numbers::pi);
+    if (!(kHbar / betaHbar < tc)) {
+      throw std::invalid_argument(
+          "ringFromPath: the temperature is at or above the crossover along "
+          "this path");
+    }
+  }
+  // Bracket the orbit energy geometrically above the lower end: the period
+  // grows only logarithmically as E approaches a well bottom.
   const double span = vTop - vLow;
   double eHi = vTop - 1e-9 * span;
-  double eLo = vLow + 1e-9 * span;
-  if (period(eHi) > betaHbar) {
-    throw std::invalid_argument(
-        "ringFromPath: the period at the barrier top exceeds beta hbar; "
-        "the temperature is above the crossover along this path");
-  }
+  double eLo = vLow + 1e-14 * span;
   if (period(eLo) < betaHbar) {
     // The path does not reach a long enough orbit. The lowest one it
     // holds is the start.
     eHi = eLo;
   }
-  for (int k = 0; k < 80 && eHi > eLo; ++k) {
-    const double energy = 0.5 * (eLo + eHi);
-    if (period(energy) > betaHbar) {
-      eLo = energy;
+  for (int k = 0; k < 200 && eHi > eLo; ++k) {
+    const double e = vLow + std::sqrt((eLo - vLow) * (eHi - vLow));
+    if (period(e) > betaHbar) {
+      eLo = e;
     } else {
-      eHi = energy;
+      eHi = e;
+    }
+    if (eHi - eLo < 1e-15 * span) {
+      break;
     }
   }
   const double energy = 0.5 * (eLo + eHi);
@@ -1005,43 +1035,7 @@ double sideDrop(const VectorXd &saddle, const VectorXd &dir, double vSaddle,
     }
     lowest = std::min(lowest, vk);
   }
-  return std::numeric_limits<double>::infinity(); // still falling
-}
-
-// sum_{k=1}^{N-1} log(4 c sin^2(pi k / N)). The product of those sines is N,
-// so the sum is 2 log N + (N - 1) log c.
-double flatSpringLog(long n, double c) {
-  return 2.0 * std::log(static_cast<double>(n)) +
-         static_cast<double>(n - 1) * std::log(c);
-}
-
-// Orthonormal complement of a full-rank thin basis. The leading columns of
-// the Householder Q span the basis, and the rest are orthogonal to it.
-MatrixXd complementOf(const MatrixXd &nullBasis) {
-  const long f = nullBasis.rows();
-  const long k = nullBasis.cols();
-  const Eigen::HouseholderQR<MatrixXd> qr(nullBasis);
-  const MatrixXd q = qr.householderQ() * MatrixXd::Identity(f, f);
-  return q.rightCols(f - k);
-}
-
-std::vector<MatrixXd> congruences(const std::vector<MatrixXd> &diag,
-                                  const MatrixXd &cred) {
-  std::vector<MatrixXd> out;
-  out.reserve(diag.size());
-  const MatrixXd ct = cred.transpose();
-  for (const auto &block : diag) {
-    out.push_back(ct * block * cred);
-  }
-  return out;
-}
-
-bool logAbsAgrees(double a, double b) {
-  if (!std::isfinite(a) || !std::isfinite(b)) {
-    return false;
-  }
-  const double d = std::abs(a - b);
-  return d <= 1e-6 || d <= 1e-6 * std::max(1.0, std::abs(a));
+  return vSaddle - lowest; // still falling: the drop to the last point
 }
 
 struct RingMode {
@@ -1189,75 +1183,232 @@ struct CyclicFactor {
   }
 };
 
-struct OmittedMode {
-  double theta = 0.0;
-  std::vector<VectorXd> vector;
+// Block LU of an open block-tridiagonal chain with given diagonal blocks
+// and -c I between neighbours. Solves, and the inertia and log-determinant
+// from the Schur complements (Haynsworth: the inertia of the chain is the
+// sum over its Schur blocks).
+class HaynsworthChain {
+public:
+  HaynsworthChain(double c, const std::vector<MatrixXd> &diag, bool spectrum)
+      : c_(c) {
+    lu_.reserve(diag.size());
+    for (size_t k = 0; k < diag.size(); ++k) {
+      const long f = diag[k].rows();
+      MatrixXd d = 0.5 * (diag[k] + diag[k].transpose());
+      if (k > 0) {
+        const MatrixXd inv = lu_.back().inverse();
+        d -= c * c * 0.5 * (inv + inv.transpose());
+      }
+      if (spectrum) {
+        const ColMajorXd sym = d;
+        const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(
+            sym, Eigen::EigenvaluesOnly);
+        for (long i = 0; i < f; ++i) {
+          const double lam = es.eigenvalues()(i);
+          if (lam == 0.0) {
+            throw std::runtime_error("instanton: singular chain Hessian block");
+          }
+          if (lam < 0.0) {
+            ++negative_;
+          }
+          logAbsDet_ += std::log(std::abs(lam));
+        }
+      }
+      lu_.emplace_back(ColMajorXd(d));
+    }
+  }
+  double logAbsDet() const { return logAbsDet_; }
+  long negative() const { return negative_; }
+  std::vector<VectorXd> solve(const std::vector<VectorXd> &b) const {
+    const size_t m = b.size();
+    std::vector<VectorXd> y(m), x(m);
+    y[0] = b[0];
+    for (size_t k = 1; k < m; ++k) {
+      y[k] = b[k] + c_ * lu_[k - 1].solve(y[k - 1]);
+    }
+    x[m - 1] = lu_[m - 1].solve(y[m - 1]);
+    for (size_t k = m - 1; k-- > 0;) {
+      x[k] = lu_[k].solve(y[k] + c_ * x[k + 1]);
+    }
+    return x;
+  }
+
+private:
+  double c_;
+  std::vector<Eigen::PartialPivLU<ColMajorXd>> lu_;
+  double logAbsDet_ = 0.0;
+  long negative_ = 0;
 };
 
-void projectOut(std::vector<VectorXd> &v,
-                const std::vector<std::vector<VectorXd>> &locked) {
-  for (const auto &p : locked) {
-    const double s = dot(v, p);
-    for (size_t j = 0; j < v.size(); ++j) {
-      v[j] -= s * p[j];
+// J = T + G K G^T over the chain T: the closure blocks (-c I between the
+// last bead and the first) when `closed`, and symmetric rank-one terms
+// kappa_i u_i u_i^T. Woodbury gives J^{-1} b, the determinant lemma
+// ln|det J| and Haynsworth the inertia, all O(N f^3), so the N f by N f
+// matrix is never formed.
+class WoodburyRing {
+public:
+  WoodburyRing(double c, const std::vector<MatrixXd> &diag, bool closed,
+               const std::vector<std::vector<VectorXd>> &extras,
+               const std::vector<double> &kappas, bool spectrum)
+      : c_(c),
+        n_(static_cast<long>(diag.size())),
+        f_(diag.front().rows()),
+        closed_(closed),
+        chain_(c, diag, spectrum),
+        extras_(extras) {
+    const long base = closed ? 2 * f_ : 0;
+    const long m = base + static_cast<long>(extras.size());
+    kinv_ = MatrixXd::Zero(m, m);
+    MatrixXd k = MatrixXd::Zero(m, m);
+    if (closed) {
+      kinv_.block(0, f_, f_, f_) = -MatrixXd::Identity(f_, f_) / c;
+      kinv_.block(f_, 0, f_, f_) = -MatrixXd::Identity(f_, f_) / c;
+      k.block(0, f_, f_, f_) = -c * MatrixXd::Identity(f_, f_);
+      k.block(f_, 0, f_, f_) = -c * MatrixXd::Identity(f_, f_);
+    }
+    for (size_t i = 0; i < extras.size(); ++i) {
+      const long r = base + static_cast<long>(i);
+      kinv_(r, r) = 1.0 / kappas[i];
+      k(r, r) = kappas[i];
+    }
+    if (m == 0) {
+      ok_ = true;
+      logAbsDet_ = chain_.logAbsDet();
+      negative_ = chain_.negative();
+      return;
+    }
+    gtg_ = MatrixXd::Zero(m, m);
+    for (long col = 0; col < m; ++col) {
+      gtg_.col(col) = pieces(chain_.solve(column(col)));
+    }
+    woodbury_.compute(ColMajorXd(kinv_ + gtg_));
+    ok_ = gtg_.array().isFinite().all();
+    if (spectrum) {
+      const Eigen::PartialPivLU<ColMajorXd> lu(
+          ColMajorXd(MatrixXd::Identity(m, m) + k * gtg_));
+      double logDet = 0.0;
+      for (long i = 0; i < m; ++i) {
+        const double u = lu.matrixLU()(i, i);
+        if (u == 0.0) {
+          ok_ = false;
+          logAbsDet_ = -std::numeric_limits<double>::infinity();
+          return;
+        }
+        logDet += std::log(std::abs(u));
+      }
+      logAbsDet_ = chain_.logAbsDet() + logDet;
+      // neg(J) = neg(T) + neg(S) - neg(-K^{-1}), S = -K^{-1} - G^T T^{-1} G.
+      const ColMajorXd sMat = -kinv_ - gtg_;
+      const ColMajorXd sSym = 0.5 * (sMat + sMat.transpose());
+      const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(
+          sSym, Eigen::EigenvaluesOnly);
+      const ColMajorXd kn = -kinv_;
+      const Eigen::SelfAdjointEigenSolver<ColMajorXd> ek(
+          kn, Eigen::EigenvaluesOnly);
+      negative_ = chain_.negative() + (es.eigenvalues().array() < 0.0).count() -
+                  (ek.eigenvalues().array() < 0.0).count();
     }
   }
+  bool ok() const { return ok_; }
+  std::vector<VectorXd> solve(const std::vector<VectorXd> &b) const {
+    std::vector<VectorXd> tb = chain_.solve(b);
+    if (kinv_.rows() == 0) {
+      return tb;
+    }
+    const VectorXd y = woodbury_.solve(pieces(tb));
+    const std::vector<VectorXd> gy = chain_.solve(expand(y));
+    for (size_t j = 0; j < tb.size(); ++j) {
+      tb[j] -= gy[j];
+    }
+    return tb;
+  }
+  double logAbsDet() const { return logAbsDet_; }
+  long negative() const { return negative_; }
+
+private:
+  std::vector<VectorXd> column(long col) const {
+    const long base = closed_ ? 2 * f_ : 0;
+    if (col < base) {
+      std::vector<VectorXd> g(static_cast<size_t>(n_), VectorXd::Zero(f_));
+      g[static_cast<size_t>(col < f_ ? 0 : n_ - 1)](col % f_) = 1.0;
+      return g;
+    }
+    return extras_[static_cast<size_t>(col - base)];
+  }
+  VectorXd pieces(const std::vector<VectorXd> &x) const {
+    const long base = closed_ ? 2 * f_ : 0;
+    VectorXd out(base + static_cast<long>(extras_.size()));
+    if (closed_) {
+      out.head(f_) = x[0];
+      out.segment(f_, f_) = x[static_cast<size_t>(n_ - 1)];
+    }
+    for (size_t i = 0; i < extras_.size(); ++i) {
+      out(base + static_cast<long>(i)) = dot(extras_[i], x);
+    }
+    return out;
+  }
+  std::vector<VectorXd> expand(const VectorXd &y) const {
+    const long base = closed_ ? 2 * f_ : 0;
+    std::vector<VectorXd> g(static_cast<size_t>(n_), VectorXd::Zero(f_));
+    if (closed_) {
+      g[0] += y.head(f_);
+      g[static_cast<size_t>(n_ - 1)] += y.segment(f_, f_);
+    }
+    for (size_t i = 0; i < extras_.size(); ++i) {
+      const double w = y(base + static_cast<long>(i));
+      for (long j = 0; j < n_; ++j) {
+        g[static_cast<size_t>(j)] += w * extras_[i][static_cast<size_t>(j)];
+      }
+    }
+    return g;
+  }
+
+  double c_;
+  long n_, f_;
+  bool closed_;
+  HaynsworthChain chain_;
+  std::vector<std::vector<VectorXd>> extras_;
+  MatrixXd kinv_, gtg_;
+  Eigen::PartialPivLU<ColMajorXd> woodbury_;
+  bool ok_ = false;
+  double logAbsDet_ = 0.0;
+  long negative_ = 0;
+};
+
+// Diagonal blocks of the closed ring (H + 2 c I) or of the half chain from
+// one turning point to the other (end blocks H / 2 + c I).
+std::vector<MatrixXd> ringDiagonal(const std::vector<MatrixXd> &physical,
+                                   double c, bool half) {
+  const long beads = static_cast<long>(physical.size());
+  const long f = physical.front().rows();
+  std::vector<MatrixXd> diag(static_cast<size_t>(beads));
+  for (long j = 0; j < beads; ++j) {
+    const bool end = half && (j == 0 || j + 1 == beads);
+    MatrixXd block = 0.5 * (physical[static_cast<size_t>(j)] +
+                            physical[static_cast<size_t>(j)].transpose());
+    if (end) {
+      block *= 0.5;
+    }
+    block += (end ? c : 2.0 * c) * MatrixXd::Identity(f, f);
+    diag[static_cast<size_t>(j)] = block;
+  }
+  return diag;
 }
 
-// Eigenvalues closest to zero, by inverse iteration on a factored ring.
-// `apply` is that same operator, used for the Rayleigh quotient.
-std::vector<OmittedMode> modesClosestToZero(
-    const CyclicFactor &fac,
-    const std::function<std::vector<VectorXd>(const std::vector<VectorXd> &)>
-        &apply,
-    const std::vector<VectorXd> &seed, long count) {
-  const long n = static_cast<long>(seed.size());
-  const long f = seed.empty() ? 0 : seed.front().size();
-  if (count < 1 || f < 1 || fac.singular) {
-    throw std::runtime_error(
-        "instantonRate: the cyclic zero mode is not resolved");
-  }
-  std::vector<std::vector<VectorXd>> locked;
-  std::vector<OmittedMode> out;
-  out.reserve(static_cast<size_t>(count));
-  for (long m = 0; m < count; ++m) {
-    std::vector<VectorXd> v;
-    if (m == 0) {
-      v = seed;
-    } else {
-      v.assign(static_cast<size_t>(n), VectorXd::Zero(f));
-      v[static_cast<size_t>(m % n)](m % f) = 1.0;
+// (diag - c neighbours) v for the closed ring or the open half chain.
+std::vector<VectorXd> applyDiagonal(const std::vector<MatrixXd> &diag, double c,
+                                    bool closed,
+                                    const std::vector<VectorXd> &v) {
+  const size_t n = v.size();
+  std::vector<VectorXd> out(n);
+  for (size_t j = 0; j < n; ++j) {
+    out[j] = diag[j] * v[j];
+    if (j > 0 || closed) {
+      out[j] -= c * v[(j + n - 1) % n];
     }
-    double theta = 0.0;
-    for (int it = 0; it < 40; ++it) {
-      projectOut(v, locked);
-      const double nv = std::sqrt(dot(v, v));
-      if (!(nv > 1e-14)) {
-        throw std::runtime_error(
-            "instantonRate: the cyclic zero mode is not resolved");
-      }
-      scale(v, 1.0 / nv);
-      std::vector<VectorXd> y = fac.solve(v);
-      projectOut(y, locked);
-      const double ny = std::sqrt(dot(y, y));
-      if (!(ny > 0.0) || !std::isfinite(ny)) {
-        throw std::runtime_error(
-            "instantonRate: the cyclic zero mode is not resolved");
-      }
-      scale(y, 1.0 / ny);
-      const std::vector<VectorXd> hy = apply(y);
-      theta = dot(y, hy);
-      v = std::move(y);
+    if (j + 1 < n || closed) {
+      out[j] -= c * v[(j + 1) % n];
     }
-    if (!std::isfinite(theta)) {
-      throw std::runtime_error(
-          "instantonRate: the cyclic zero mode is not resolved");
-    }
-    OmittedMode mode;
-    mode.theta = theta;
-    mode.vector = std::move(v);
-    locked.push_back(mode.vector);
-    out.push_back(std::move(mode));
   }
   return out;
 }
@@ -1287,6 +1438,24 @@ void requireCyclicBlocks(double c, const std::vector<MatrixXd> &diag,
 }
 
 } // namespace
+
+RingSpectrum ringSpectrum(const std::vector<MatrixXd> &beadHessians, double c,
+                          const std::vector<VectorXd> &tau) {
+  if (beadHessians.empty() || beadHessians.size() != tau.size()) {
+    throw std::invalid_argument(
+        "ringSpectrum: N bead Hessians and N tau blocks");
+  }
+  const std::vector<MatrixXd> diag = ringDiagonal(beadHessians, c, false);
+  const WoodburyRing ring(c, diag, true, {tau}, {1.0}, true);
+  if (!ring.ok()) {
+    throw std::runtime_error("ringSpectrum: singular ring");
+  }
+  RingSpectrum out;
+  out.logDetPrime = ring.logAbsDet();
+  out.negativeModes = ring.negative();
+  out.zeroEigenvalue = dot(tau, applyDiagonal(diag, c, true, tau));
+  return out;
+}
 
 double cyclicRingLogAbsDet(double c, const std::vector<MatrixXd> &diag) {
   requireCyclicBlocks(c, diag, "cyclicRingLogAbsDet");
@@ -1432,175 +1601,11 @@ std::vector<VectorXd> physicalGradient(const std::vector<VectorXd> &x,
   return g;
 }
 
-// Closed ring: diagonal H + 2 c I, neighbour coupling -c I, including the
-// corner. Each edge is written once.
-ColMajorXd closedRingMatrix(const std::vector<MatrixXd> &physical, double c) {
-  const long nBeads = static_cast<long>(physical.size());
-  const long f = physical.front().rows();
-  ColMajorXd big = ColMajorXd::Zero(nBeads * f, nBeads * f);
-  const ColMajorXd eye = ColMajorXd::Identity(f, f);
-  for (long j = 0; j < nBeads; ++j) {
-    ColMajorXd block = 0.5 * (physical[static_cast<size_t>(j)] +
-                              physical[static_cast<size_t>(j)].transpose());
-    block += 2.0 * c * eye;
-    big.block(j * f, j * f, f, f) = block;
-  }
-  for (long j = 0; j < nBeads; ++j) {
-    const long k = (j + 1) % nBeads;
-    if (j < k) {
-      big.block(j * f, k * f, f, f) = -c * eye;
-      big.block(k * f, j * f, f, f) = -c * eye;
-    }
-  }
-  if (nBeads > 1) {
-    const long last = nBeads - 1;
-    big.block(last * f, 0, f, f) = -c * eye;
-    big.block(0, last * f, f, f) = -c * eye;
-  }
-  return big;
-}
-
-// Half chain from one turning point to the other. End blocks hold half the
-// physical Hessian, interior blocks the whole of it. Neighbour coupling is
-// -c I. On a symmetric ring this is the Hessian of half the closed-ring energy.
-ColMajorXd halfRingMatrix(const std::vector<MatrixXd> &physical, double c) {
-  const long beads = static_cast<long>(physical.size());
-  const long f = physical.front().rows();
-  ColMajorXd big = ColMajorXd::Zero(beads * f, beads * f);
-  const ColMajorXd eye = ColMajorXd::Identity(f, f);
-  for (long j = 0; j < beads; ++j) {
-    const bool end = j == 0 || j + 1 == beads;
-    ColMajorXd block = 0.5 * (physical[static_cast<size_t>(j)] +
-                              physical[static_cast<size_t>(j)].transpose());
-    if (end) {
-      block *= 0.5;
-    }
-    block += (end ? c : 2.0 * c) * eye;
-    big.block(j * f, j * f, f, f) = block;
-    if (j + 1 < beads) {
-      big.block(j * f, (j + 1) * f, f, f) = -c * eye;
-      big.block((j + 1) * f, j * f, f, f) = -c * eye;
-    }
-  }
-  return big;
-}
-
-struct RingSpectrum {
-  VectorXd values;
-  ColMajorXd vectors;
-  ColMajorXd ring;
-  bool ok = false;
-};
-
-RingSpectrum spectrumOf(ColMajorXd ring) {
-  RingSpectrum out;
-  const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(ring);
-  out.ok = es.info() == Eigen::Success && ring.array().isFinite().all();
-  if (out.ok) {
-    out.values = es.eigenvalues();
-    out.vectors = es.eigenvectors();
-    out.ring = std::move(ring);
-  }
-  return out;
-}
-
 struct Climb {
   long index = -1;
   double curvature = 0.0;
   long negative = 0;
 };
-
-Climb classify(const RingSpectrum &sp, const VectorXd &tau, double spring) {
-  Climb out;
-  const double cut = -1e-8 * std::max(1.0, spring);
-  double lowest = std::numeric_limits<double>::infinity();
-  for (long i = 0; i < sp.values.size(); ++i) {
-    if (overlapsTau(sp.vectors.col(i), tau)) {
-      continue;
-    }
-    if (sp.values(i) < lowest) {
-      lowest = sp.values(i);
-      out.index = i;
-      out.curvature = sp.values(i);
-    }
-  }
-  if (!(out.curvature < 0.0)) {
-    return out;
-  }
-  for (long i = 0; i < sp.values.size(); ++i) {
-    if (overlapsTau(sp.vectors.col(i), tau)) {
-      continue;
-    }
-    // A near-zero eigenvalue is not a second unstable mode.
-    if (sp.values(i) < cut && sp.values(i) <= 1e-3 * out.curvature) {
-      ++out.negative;
-    }
-  }
-  return out;
-}
-
-// Leave a negative climb eigenvalue in place: a raw Newton step climbs it.
-// Flip every other negative eigenvalue. The imaginary-time cycle is left out,
-// and a shift along it keeps the solve off that direction.
-VectorXd indexOneStep(const RingSpectrum &sp, const Climb &climb,
-                      const VectorXd &gflat, const VectorXd &tau,
-                      double spring) {
-  if (!sp.ok || climb.index < 0 || gflat.size() != sp.values.size()) {
-    return VectorXd();
-  }
-  const double cut = -1e-8 * std::max(1.0, spring);
-  // A rigid translation sits closer to zero than this. Parking it keeps
-  // the solve off that direction, which otherwise consumes the whole step.
-  const double tiny = 1e-8 * std::max(1.0, spring);
-  const double parked = std::max(1.0, spring);
-  ColMajorXd jt = sp.ring;
-  if (tau.size() == gflat.size()) {
-    jt.noalias() += spring * (tau * tau.transpose());
-  }
-  for (long i = 0; i < sp.values.size(); ++i) {
-    if (overlapsTau(sp.vectors.col(i), tau)) {
-      continue;
-    }
-    const double li = sp.values(i);
-    const VectorXd v = sp.vectors.col(i);
-    const bool flip =
-        (i == climb.index && li > 0.0) || (i != climb.index && li < cut);
-    if (flip) {
-      jt.noalias() -= (2.0 * li) * (v * v.transpose());
-    } else if (i != climb.index && std::abs(li) <= tiny) {
-      jt.noalias() += (parked - li) * (v * v.transpose());
-    }
-  }
-  jt = (0.5 * (jt + jt.transpose())).eval();
-  const Eigen::PartialPivLU<ColMajorXd> lu(jt);
-  VectorXd step = lu.solve(-gflat);
-  const double rhs = std::max(1.0, gflat.norm());
-  if (!step.array().isFinite().all() ||
-      (jt * step + gflat).norm() > 1e-6 * rhs) {
-    step = VectorXd::Zero(gflat.size());
-    for (long i = 0; i < sp.values.size(); ++i) {
-      if (overlapsTau(sp.vectors.col(i), tau)) {
-        continue;
-      }
-      const double li = sp.values(i);
-      const bool flip =
-          (i == climb.index && li > 0.0) || (i != climb.index && li < cut);
-      const double mu = flip ? -li : li;
-      if (!(std::abs(mu) > tiny)) {
-        continue;
-      }
-      const VectorXd v = sp.vectors.col(i);
-      step.noalias() += -(v.dot(gflat) / mu) * v;
-    }
-  }
-  if (tau.size() == step.size()) {
-    step -= step.dot(tau) * tau;
-  }
-  if (!step.array().isFinite().all()) {
-    return VectorXd();
-  }
-  return step;
-}
 
 // Cosine between the turning points, opened by (1 - T / Tc) of the lower
 // barrier. The far turning point sits on bead 0.
@@ -1618,7 +1623,7 @@ std::vector<VectorXd> cosineSeed(const VectorXd &saddle, const VectorXd &dir,
   const double dMinus = sideDrop(saddle, dir, vS, -1.0, h, pts, potential);
   const double dMin = std::min(dPlus, dMinus);
   const double drop = (1.0 - temperature / crossover) *
-                      (std::isfinite(dMin) ? dMin : kBoltzmann * crossover);
+                      (dMin > 0.0 ? dMin : kBoltzmann * crossover);
   const double sPlus =
       turningDistance(saddle, dir, vS, drop, 1.0, h, pts, potential);
   const double sMinus =
@@ -1631,6 +1636,72 @@ std::vector<VectorXd> cosineSeed(const VectorXd &saddle, const VectorXd &dir,
         saddle + dir * (ct >= 0.0 ? sPlus * ct : sMinus * ct);
   }
   return guess;
+}
+
+// Index-1 Newton step through the block chain: a negative climb eigenvalue
+// stays and a raw Newton step climbs it; a positive one is flipped, as is
+// every other negative Ritz value off the cycle; a tiny one is parked at a
+// spring-sized curvature; the cycle itself is held with a spring-sized
+// curvature and its component removed from the step. Each flip is a
+// rank-one term in the Woodbury correction, so the solve stays O(N f^3).
+VectorXd chainIndexOneStep(const std::vector<RingMode> &ritz,
+                           const Climb &climb,
+                           const std::vector<MatrixXd> &diag, double spring,
+                           bool closed, const std::vector<VectorXd> &grad,
+                           const VectorXd &tau) {
+  if (climb.index < 0 || ritz.empty() || grad.empty()) {
+    return VectorXd();
+  }
+  const long f = grad.front().size();
+  const long dim = static_cast<long>(grad.size()) * f;
+  const double cut = -1e-8 * std::max(1.0, spring);
+  const double tiny = 1e-8 * std::max(1.0, spring);
+  const double parked = std::max(1.0, spring);
+  std::vector<std::vector<VectorXd>> extras;
+  std::vector<double> kappas;
+  std::vector<VectorXd> tauRing;
+  if (tau.size() == dim) {
+    tauRing.assign(grad.size(), VectorXd::Zero(f));
+    for (size_t j = 0; j < grad.size(); ++j) {
+      tauRing[j] = tau.segment(static_cast<long>(j) * f, f);
+    }
+    extras.push_back(tauRing);
+    kappas.push_back(spring);
+  }
+  for (size_t i = 0; i < ritz.size(); ++i) {
+    if (!tauRing.empty() && std::abs(dot(ritz[i].vector, tauRing)) > 0.5) {
+      continue;
+    }
+    const double li = ritz[i].theta;
+    const bool isClimb = static_cast<long>(i) == climb.index;
+    if ((isClimb && li > 0.0) || (!isClimb && li < cut)) {
+      extras.push_back(ritz[i].vector);
+      kappas.push_back(-2.0 * li);
+    } else if (!isClimb && std::abs(li) <= tiny) {
+      extras.push_back(ritz[i].vector);
+      kappas.push_back(parked - li);
+    }
+  }
+  std::vector<VectorXd> rhs = grad;
+  scale(rhs, -1.0);
+  std::vector<VectorXd> stepRing;
+  try {
+    const WoodburyRing ring(spring, diag, closed, extras, kappas, false);
+    if (!ring.ok()) {
+      return VectorXd();
+    }
+    stepRing = ring.solve(rhs);
+  } catch (const std::runtime_error &) {
+    return VectorXd();
+  }
+  VectorXd step = packBeads(stepRing);
+  if (tau.size() == step.size()) {
+    step -= step.dot(tau) * tau;
+  }
+  if (!step.array().isFinite().all()) {
+    return VectorXd();
+  }
+  return step;
 }
 
 struct NewtonOut {
@@ -1680,7 +1751,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   // dimensions the turning points are not the saddle, so each bead starts
   // from its own curvature and the Bofill update carries it.
   std::vector<MatrixXd> physical;
-  if (f == 1) {
+  if (f == 1 || options.initialHessians != "finite_difference") {
     physical.assign(x.size(), hS);
   } else {
     const double eps = options.lanczosStep > 0.0 ? options.lanczosStep : 1e-4;
@@ -1766,7 +1837,9 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   };
 
   struct View {
-    RingSpectrum sp;
+    bool ok = false;
+    std::vector<RingMode> ritz; // lowest Ritz pairs, ascending
+    std::vector<MatrixXd> diag; // ring blocks the step solves with
     VectorXd tau;
     Climb climb;
     double gmax = 0.0;
@@ -1785,20 +1858,74 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     }
     return big;
   };
+  // Lowest modes of the ring Hessian from matrix-vector products alone,
+  // started along the saddle's unstable direction on every bead.
+  std::vector<VectorXd> ritzStart(x.size(), VectorXd::Zero(f));
+  {
+    const ColMajorXd hs0 = hS;
+    const Eigen::SelfAdjointEigenSolver<ColMajorXd> es0(hs0);
+    for (auto &v : ritzStart) {
+      v = es0.eigenvectors().col(0);
+    }
+  }
   auto viewOf = [&](const Obj &ev) {
     View v;
     v.tau = half ? VectorXd() : timeTranslation(x);
-    v.sp = spectrumOf(half ? halfRingMatrix(physical, c)
-                           : closedRingMatrix(physical, c));
-    if (v.sp.ok) {
-      v.climb = classify(v.sp, v.tau, c);
+    v.diag = ringDiagonal(physical, c, half);
+    auto apply = [&](const std::vector<VectorXd> &vec) {
+      return applyDiagonal(v.diag, c, !half, vec);
+    };
+    const long dim = static_cast<long>(x.size()) * f;
+    const long steps = std::min(dim, static_cast<long>(60));
+    std::vector<VectorXd> start = ritzStart;
+    start.front()(0) += 1e-3;
+    v.ritz = lowestRingModes(apply, std::move(start), steps);
+    v.ok = !v.ritz.empty();
+    if (v.ok) {
+      // Classify from the Ritz values: the lowest mode off the cycle is
+      // the climb; further negatives below a thousandth of it count.
+      const double cut = -1e-8 * std::max(1.0, c);
+      v.climb = Climb{};
+      std::vector<VectorXd> tauRing;
+      if (v.tau.size() == dim) {
+        tauRing.assign(x.size(), VectorXd::Zero(f));
+        for (size_t j = 0; j < x.size(); ++j) {
+          tauRing[j] = v.tau.segment(static_cast<long>(j) * f, f);
+        }
+      }
+      auto onCycle = [&](const std::vector<VectorXd> &m) {
+        return !tauRing.empty() && std::abs(dot(m, tauRing)) > 0.5;
+      };
+      for (size_t i = 0; i < v.ritz.size(); ++i) {
+        if (onCycle(v.ritz[i].vector)) {
+          continue;
+        }
+        if (v.climb.index < 0 || v.ritz[i].theta < v.climb.curvature) {
+          v.climb.index = static_cast<long>(i);
+          v.climb.curvature = v.ritz[i].theta;
+        }
+      }
+      if (v.climb.curvature < 0.0) {
+        for (size_t i = 0; i < v.ritz.size(); ++i) {
+          if (onCycle(v.ritz[i].vector)) {
+            continue;
+          }
+          if (v.ritz[i].theta < cut &&
+              v.ritz[i].theta <= 1e-3 * v.climb.curvature) {
+            ++v.climb.negative;
+          }
+        }
+      }
       v.gmax = closedGmax(ev);
+      if (v.climb.index >= 0) {
+        ritzStart = v.ritz[static_cast<size_t>(v.climb.index)].vector;
+      }
     }
     return v;
   };
   auto done = [&](const View &v) {
-    return v.sp.ok && v.gmax < options.forceTolerance &&
-           v.climb.negative == 1 && v.climb.curvature < 0.0;
+    return v.ok && v.gmax < options.forceTolerance && v.climb.negative == 1 &&
+           v.climb.curvature < 0.0;
   };
 
   Obj cur = objective(x);
@@ -1837,9 +1964,14 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       }
       bool ratioOk = false;
       double ratio = 0.0;
-      if (v.sp.ok && v.sp.ring.cols() == dir.size()) {
+      if (v.ok && static_cast<long>(x.size()) * f == dir.size()) {
         const VectorXd gflat = packBeads(cur.grad);
-        const double pred = gflat.dot(dir) + 0.5 * dir.dot(v.sp.ring * dir);
+        std::vector<VectorXd> dirRing(x.size(), VectorXd::Zero(f));
+        for (size_t k = 0; k < x.size(); ++k) {
+          dirRing[k] = dir.segment(static_cast<long>(k) * f, f);
+        }
+        const VectorXd jd = packBeads(applyDiagonal(v.diag, c, !half, dirRing));
+        const double pred = gflat.dot(dir) + 0.5 * dir.dot(jd);
         ratio = std::abs(pred) > 1e-30 ? (next.u - cur.u) / pred : 1.0;
         ratioOk = std::isfinite(ratio) && ratio >= 0.1 && ratio <= 3.0;
       }
@@ -1859,7 +1991,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       return true;
     };
     const VectorXd step =
-        indexOneStep(v.sp, v.climb, packBeads(cur.grad), v.tau, c);
+        chainIndexOneStep(v.ritz, v.climb, v.diag, c, !half, cur.grad, v.tau);
     bool moved = false;
     VectorXd dir = step;
     for (int bt = 0; bt < 4 && !moved; ++bt) {
@@ -2282,7 +2414,6 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
   }
   const double bnh = inst.betaN * kHbar;
   const double c = 1.0 / (bnh * bnh);
-  const double zeroCut = 1e-8 * c;
   const MatrixXd eye = MatrixXd::Identity(f, f);
 
   std::vector<MatrixXd> hBead(static_cast<size_t>(N));
@@ -2302,257 +2433,73 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
   const VectorXd &lr = er.eigenvalues();
   const std::vector<bool> rigidR = nearestZero(lr, rigidModes);
   MatrixXd nullBasis(f, 0);
-  bool exactRigid = rigidModes > 0;
+  // The rigid vectors leave the product whether or not every bead Hessian
+  // annihilates them exactly; a finite-difference Hessian never does, and
+  // the reactant side drops the same modes at k = 0.
   for (long m = 0; m < lr.size(); ++m) {
     if (!rigidR[static_cast<size_t>(m)]) {
       continue;
     }
-    if (!(std::abs(lr(m)) < zeroCut)) {
-      exactRigid = false;
-    }
     nullBasis.conservativeResize(f, nullBasis.cols() + 1);
     nullBasis.col(nullBasis.cols() - 1) = er.eigenvectors().col(m);
   }
-  if (exactRigid && rigidModes > 0) {
-    for (long j = 0; j < N; ++j) {
-      const double residual =
-          (hBead[static_cast<size_t>(j)] * nullBasis).norm();
-      if (residual > std::sqrt(zeroCut) * static_cast<double>(rigidModes)) {
-        exactRigid = false;
-        break;
-      }
-    }
-  }
-  if (!exactRigid) {
-    nullBasis.resize(f, 0);
-  } else if (rigidModes >= f) {
+  if (rigidModes >= f) {
     throw std::runtime_error("instantonRate: every direction is a rigid mode");
   }
-
-  auto flatFraction = [&](const std::vector<VectorXd> &vec) {
-    if (nullBasis.cols() == 0) {
-      return 0.0;
-    }
-    double flat = 0.0;
-    double total = 0.0;
-    for (const auto &bead : vec) {
-      total += bead.squaredNorm();
-      flat += (nullBasis.transpose() * bead).squaredNorm();
-    }
-    return total > 0.0 ? flat / total : 0.0;
-  };
-
-  double logProd = 0.0;
-  const bool useDense =
-      denseLimit < 0 || (denseLimit > 0 && N * f <= denseLimit);
-  if (useDense) {
-    MatrixXd big = MatrixXd::Zero(N * f, N * f);
-    for (long j = 0; j < N; ++j) {
-      big.block(j * f, j * f, f, f) = diag[static_cast<size_t>(j)];
-      const long k = (j + 1) % N;
-      big.block(j * f, k * f, f, f) -= c * eye;
-      big.block(k * f, j * f, f, f) -= c * eye;
-    }
-    // MatrixXd is row-major. The self-adjoint solver reads a column-major
-    // triangle, so the ring matrix is copied before the decomposition.
-    const ColMajorXd ring = big;
-    const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(ring,
-                                                       Eigen::EigenvaluesOnly);
-    const VectorXd lam = es.eigenvalues();
-    if (exactRigid) {
-      std::vector<long> order(static_cast<size_t>(lam.size()));
-      std::iota(order.begin(), order.end(), 0L);
-      std::sort(order.begin(), order.end(), [&](long a, long b) {
-        return std::abs(lam(a)) < std::abs(lam(b));
-      });
-      double denseKept = 0.0;
-      for (long k = rigidModes; k < lam.size(); ++k) {
-        denseKept += std::log(std::abs(lam(order[static_cast<size_t>(k)])));
-      }
-      const double blockLog =
-          cyclicRingLogAbsDet(c, congruences(diag, complementOf(nullBasis))) +
-          static_cast<double>(rigidModes) * flatSpringLog(N, c);
-      if (!logAbsAgrees(denseKept, blockLog)) {
-        throw std::runtime_error(
-            "instantonRate: the reduced ring determinant disagrees with the "
-            "dense product (" +
-            std::to_string(blockLog) + " against " + std::to_string(denseKept) +
-            ")");
-      }
-    } else {
-      double denseLog = 0.0;
-      for (long k = 0; k < lam.size(); ++k) {
-        denseLog += std::log(std::abs(lam(k)));
-      }
-      // A numerical null mode makes log|det| disagree by tens of nats while
-      // the modes kept in the rate still match. Check only a definite ring.
-      const double blockLog = cyclicRingLogAbsDet(c, diag);
-      if (lam.cwiseAbs().minCoeff() > zeroCut &&
-          !logAbsAgrees(blockLog, denseLog)) {
-        throw std::runtime_error(
-            "instantonRate: the cyclic block determinant disagrees with the "
-            "dense ring Hessian (" +
-            std::to_string(blockLog) + " against " + std::to_string(denseLog) +
-            ")");
-      }
-    }
-    // The zero mode (the ring's translation in imaginary time) and the rigid
-    // modes are the 1 + rigidModes eigenvalues nearest zero.
-    const std::vector<bool> dropped = nearestZero(lam, 1 + rigidModes);
-    inst.zeroEigenvalue = 0.0;
-    for (long k = 0; k < lam.size(); ++k) {
-      if (dropped[static_cast<size_t>(k)] &&
-          std::abs(lam(k)) > std::abs(inst.zeroEigenvalue)) {
-        inst.zeroEigenvalue = lam(k);
-      }
-    }
-    inst.negativeModes = 0;
-    inst.negativeEigenvalue = 0.0;
-    for (long k = 0; k < lam.size(); ++k) {
-      if (dropped[static_cast<size_t>(k)]) {
-        continue;
-      }
-      if (lam(k) < 0.0) {
-        ++inst.negativeModes;
-        inst.negativeEigenvalue = std::min(inst.negativeEigenvalue, lam(k));
-      }
-      logProd += std::log(bnh) + 0.5 * std::log(std::abs(lam(k)));
-    }
-  } else {
-    const long nDrop = 1 + rigidModes;
-    const long nMore = exactRigid ? 1 : nDrop;
-    const MatrixXd cred = exactRigid ? complementOf(nullBasis) : MatrixXd();
-    const std::vector<MatrixXd> blocks =
-        exactRigid ? congruences(diag, cred) : diag;
-    const CyclicFactor fac(c, blocks);
-    double logAbs = fac.logAbs;
-    if (exactRigid) {
-      logAbs += static_cast<double>(rigidModes) * flatSpringLog(N, c);
-    }
-    if (!std::isfinite(logAbs)) {
-      throw std::runtime_error(
-          "instantonRate: the ring Hessian is singular and the zero mode was "
-          "not removed with the rigid modes");
-    }
-    std::vector<VectorXd> cycleFull(static_cast<size_t>(N));
-    double cycleNorm = 0.0;
-    for (long j = 0; j < N; ++j) {
-      cycleFull[static_cast<size_t>(j)] =
-          inst.beads[static_cast<size_t>((j + 1) % N)] -
-          inst.beads[static_cast<size_t>((j + N - 1) % N)];
-      cycleNorm += cycleFull[static_cast<size_t>(j)].squaredNorm();
-    }
-    if (!(cycleNorm > 0.0)) {
-      throw std::runtime_error(
-          "instantonRate: the beads coincide, so the ring has collapsed");
-    }
-    scale(cycleFull, 1.0 / std::sqrt(cycleNorm));
-    std::vector<VectorXd> cycle = cycleFull;
-    if (exactRigid) {
-      for (long j = 0; j < N; ++j) {
-        cycle[static_cast<size_t>(j)] =
-            cred.transpose() * cycleFull[static_cast<size_t>(j)];
-      }
-      const double reducedNorm = std::sqrt(dot(cycle, cycle));
-      if (!(reducedNorm > 1e-8)) {
-        throw std::runtime_error(
-            "instantonRate: the cyclic zero mode is not resolved");
-      }
-      scale(cycle, 1.0 / reducedNorm);
-    }
+  // det' through the block chain: the cyclic zero mode and the rigid null
+  // vectors leave the product by the determinant lemma, the inertia comes
+  // from the Schur complements, and the N f by N f matrix is never formed.
+  std::vector<VectorXd> cycle(static_cast<size_t>(N));
+  double cycleNorm = 0.0;
+  for (long j = 0; j < N; ++j) {
+    cycle[static_cast<size_t>(j)] =
+        0.5 * (inst.beads[static_cast<size_t>((j + 1) % N)] -
+               inst.beads[static_cast<size_t>((j + N - 1) % N)]);
+    cycleNorm += cycle[static_cast<size_t>(j)].squaredNorm();
+  }
+  if (!(cycleNorm > 0.0)) {
+    throw std::runtime_error(
+        "instantonRate: the beads coincide, so the ring has collapsed");
+  }
+  scale(cycle, 1.0 / std::sqrt(cycleNorm));
+  std::vector<std::vector<VectorXd>> dropped{cycle};
+  std::vector<double> kappas{1.0};
+  for (long r = 0; r < nullBasis.cols(); ++r) {
+    dropped.emplace_back(
+        static_cast<size_t>(N),
+        (nullBasis.col(r) / std::sqrt(static_cast<double>(N))).eval());
+    kappas.push_back(1.0);
+  }
+  const WoodburyRing ring(c, diag, true, dropped, kappas, true);
+  if (!ring.ok() || !std::isfinite(ring.logAbsDet())) {
+    throw std::runtime_error(
+        "instantonRate: the ring Hessian is singular and the zero mode was "
+        "not removed with the rigid modes");
+  }
+  inst.zeroEigenvalue = dot(cycle, applyDiagonal(diag, c, true, cycle));
+  inst.negativeModes = ring.negative();
+  // The lowest ring eigenvalue, for the report, from products alone.
+  {
     auto applyFull = [&](const std::vector<VectorXd> &vec) {
-      std::vector<VectorXd> out(static_cast<size_t>(N));
-      for (long j = 0; j < N; ++j) {
-        const long prev = (j + N - 1) % N;
-        const long next = (j + 1) % N;
-        out[static_cast<size_t>(j)] =
-            hBead[static_cast<size_t>(j)] * vec[static_cast<size_t>(j)] +
-            c * (2.0 * vec[static_cast<size_t>(j)] -
-                 vec[static_cast<size_t>(prev)] -
-                 vec[static_cast<size_t>(next)]);
-      }
-      return out;
+      return applyDiagonal(diag, c, true, vec);
     };
-    auto applyBlocks = [&](const std::vector<VectorXd> &vec) {
-      if (!exactRigid) {
-        return applyFull(vec);
-      }
-      std::vector<VectorXd> full(static_cast<size_t>(N));
-      for (long j = 0; j < N; ++j) {
-        full[static_cast<size_t>(j)] = cred * vec[static_cast<size_t>(j)];
-      }
-      const std::vector<VectorXd> acted = applyFull(full);
-      std::vector<VectorXd> out(static_cast<size_t>(N));
-      for (long j = 0; j < N; ++j) {
-        out[static_cast<size_t>(j)] =
-            cred.transpose() * acted[static_cast<size_t>(j)];
-      }
-      return out;
-    };
-    // The product divides by these eigenvalues. Inverse iteration on the
-    // factored ring resolves a near-zero mode; Lanczos of an interior
-    // eigenvalue does not, once the ring is long.
-    const std::vector<OmittedMode> omitted =
-        modesClosestToZero(fac, applyBlocks, cycle, nMore);
-    inst.zeroEigenvalue = 0.0;
-    double bestOverlap = 0.0;
-    for (const auto &mode : omitted) {
-      const double overlap = std::abs(dot(mode.vector, cycle));
-      if (overlap >= bestOverlap) {
-        bestOverlap = overlap;
-        inst.zeroEigenvalue = mode.theta;
-      }
-      logAbs -= std::log(std::abs(mode.theta));
-    }
-    if (!(bestOverlap > 0.5) || !std::isfinite(logAbs)) {
-      throw std::runtime_error(
-          "instantonRate: the cyclic zero mode is not resolved (overlap " +
-          std::to_string(bestOverlap) + ")");
-    }
-    // A negative Ritz value along the bead velocity is the cyclic zero,
-    // already omitted. Any other resolved negative value is an extra
-    // unstable mode.
-    const double residualCut = 1e-4 * c;
     const long dim = N * f;
-    const long steps = dim <= 1024 ? dim : std::min(dim, static_cast<long>(80));
-    std::vector<VectorXd> start = cycleFull;
+    const long steps = std::min(dim, static_cast<long>(60));
+    std::vector<VectorXd> start = cycle;
     start.front()(0) += 0.1;
     const std::vector<RingMode> modes =
         lowestRingModes(applyFull, std::move(start), steps);
-    inst.negativeModes = 0;
     inst.negativeEigenvalue = 0.0;
-    double unresolved = 0.0;
-    std::vector<double> negative;
     for (const auto &mode : modes) {
-      if (!(mode.theta < 0.0)) {
-        continue;
-      }
-      const double overlap = std::abs(dot(mode.vector, cycleFull));
-      if (overlap > 0.5 || flatFraction(mode.vector) > 0.5) {
-        continue;
-      }
-      if (mode.residual > residualCut) {
-        unresolved = std::max(unresolved, mode.residual);
-        continue;
-      }
-      negative.push_back(mode.theta);
-      inst.negativeEigenvalue = std::min(inst.negativeEigenvalue, mode.theta);
-    }
-    // A numerical null eigenvalue can sit just below zero. It is not a
-    // second unstable mode when it is tiny next to the barrier curvature.
-    for (const double theta : negative) {
-      if (theta <= 1e-3 * inst.negativeEigenvalue) {
-        ++inst.negativeModes;
+      if (mode.theta < inst.negativeEigenvalue &&
+          std::abs(dot(mode.vector, cycle)) < 0.5) {
+        inst.negativeEigenvalue = mode.theta;
       }
     }
-    if (inst.negativeModes == 0 && unresolved > 0.0) {
-      throw std::runtime_error(
-          "instantonRate: the negative ring mode is not resolved (residual " +
-          std::to_string(unresolved) + ")");
-    }
-    const long nKept = N * f - nDrop;
-    logProd = static_cast<double>(nKept) * std::log(bnh) + 0.5 * logAbs;
   }
+  const long nDrop = 1 + nullBasis.cols();
+  const double logProd = static_cast<double>(N * f - nDrop) * std::log(bnh) +
+                         0.5 * ring.logAbsDet();
 
   inst.logRateTimesZr = -std::log(bnh) +
                         0.5 * std::log(inst.bN / (2.0 * std::numbers::pi *
