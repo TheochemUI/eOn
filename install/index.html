@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="teal" data-content_root="../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Installation - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Tutorials" href="../tutorials/index.html" /><link rel="prev" title="eOn team" href="../team.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Installation - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Build develop on EESSI" href="eessi.html" /><link rel="prev" title="eOn team" href="../team.html" />
       <link rel="canonical" href="https://eondocs.org/install/" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
@@ -84,8 +84,12 @@ data-aria-dark="Switch to auto color mode">
         <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
 <ul class="current">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../team.html">eOn team</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="eessi.html">Build develop on EESSI</a></li>
+</ul>
+</li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="#obtaining-sources">Obtaining sources</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="#european-environment-for-scientific-software-installations-eessi">European environment for scientific software installations (EESSI)</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="#licenses">Licenses</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/systems/index.html">Real systems for documentation</a><ul>
@@ -322,13 +326,14 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li><a class="reference internal" href="#obtaining-sources">Obtaining sources</a><ul>
 <li><a class="reference internal" href="#building-from-source">Building from source</a><ul>
-<li><a class="reference internal" href="#troubleshooting-rolling-distros-arch-fedora">Troubleshooting: rolling distros (Arch, Fedora)</a></li>
+<li><a class="reference internal" href="#troubleshooting-on-rolling-distros">Troubleshooting on rolling distros</a></li>
 <li><a class="reference internal" href="#troubleshooting-a-global-cargo-linker-setting">Troubleshooting: a global cargo linker setting</a></li>
 <li><a class="reference internal" href="#optional-packages">Optional packages</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li><a class="reference internal" href="#european-environment-for-scientific-software-installations-eessi">European environment for scientific software installations (EESSI)</a></li>
 <li><a class="reference internal" href="#licenses">Licenses</a><ul>
 <li><a class="reference internal" href="#vendored">Vendored</a></li>
 </ul>
@@ -423,13 +428,15 @@ data-aria-dark="Switch to auto color mode">
 </div><article class="yue dark-code" role="main">
           <section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
 <p>eOn is divided up into two separate programs: a server and a client. The client
 does most of the computation (e.g. saddle searches, minimizations, and molecular
-dynamics) while the server creates the input for the client and processes its
-results.</p>
+dynamics) while the server creates the input for the client and processes that
+output.</p>
 <section id="getting-started">
 <h2>Getting started<a class="headerlink" href="#getting-started" title="Link to this heading">¶</a></h2>
-<p>The simplest way to hit the ground running is with the <code class="docutils literal notranslate"><span class="pre">conda</span></code> package:</p>
+<p>The shortest start is the <code class="docutils literal notranslate"><span class="pre">conda</span></code> package:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># best with pixi</span>
 </span><span data-line="2">pixi<span class="w"> </span>init
 </span><span data-line="3">pixi<span class="w"> </span>add<span class="w"> </span>eon
@@ -437,7 +444,7 @@ results.</p>
 </span><span data-line="5">micromamba<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>eon
 </span></pre></div>
 </div>
-<p>At this point any of the many examples should be good to go.</p>
+<p>Those commands install the conda-forge release package. They do not check out <code class="docutils literal notranslate"><span class="pre">develop</span></code>. A source build of <code class="docutils literal notranslate"><span class="pre">develop</span></code> is the section below. The examples in this book run against the release package. <code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code> on <code class="docutils literal notranslate"><span class="pre">develop</span></code> records version 3.4.0, and the conda-forge package can be an older release.</p>
 <p>The conda package is a maximalist build with the following potentials and
 features enabled:</p>
 <ul class="simple">
@@ -445,7 +452,7 @@ features enabled:</p>
 <li><p><a class="reference external" href="https://xtb-docs.readthedocs.io/">xTB</a> (semi-empirical tight-binding)</p></li>
 <li><p><a class="reference internal" href="../user_guide/rgpot_integration.html"><span class="std std-doc">rgpot integration</span></a> (direct dlopen vs serve vs potserv client)</p></li>
 <li><p><a class="reference internal" href="../user_guide/rgpot_pot.html"><span class="std std-doc">RgpotPot / RGPOT</span></a> (in-process NWChemPot/CPMDPot; always linked except on Windows)</p></li>
-<li><p><a class="reference internal" href="../user_guide/serve_mode.html"><span class="std std-doc">Serve mode</span></a> (<code class="docutils literal notranslate"><span class="pre">-Dwith_serve</span></code>: eOn as rgpot-compatible RPC <em>server</em>)</p></li>
+<li><p><a class="reference internal" href="../user_guide/serve_mode.html"><span class="std std-doc">Serve mode</span></a> (<code class="docutils literal notranslate"><span class="pre">-Dwith_serve</span></code>: eOn as an rgpot-compatible remote procedure call server)</p></li>
 </ul>
 <p>The server is accessed through <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">eon.server</span></code>, and the <code class="docutils literal notranslate"><span class="pre">eonclient</span></code>
 binary is automatically made available in the activated environment.</p>
@@ -459,17 +466,17 @@ binary is automatically made available in the activated environment.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 2.0: </span><code class="docutils literal notranslate"><span class="pre">eOn</span></code> is now developed and distributed primarily via GitHub.</p>
 </div>
-<p>Once git is present<a class="footnote-reference brackets" href="#id3" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">git<span class="w"> </span>clone<span class="w"> </span>https://github.com/TheochemUI/eOn.git
+<p>Once git is present<a class="footnote-reference brackets" href="#id3" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, clone <code class="docutils literal notranslate"><span class="pre">develop</span></code>. A clone with no branch name follows the repository default.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">git<span class="w"> </span>clone<span class="w"> </span>-b<span class="w"> </span>develop<span class="w"> </span>https://github.com/TheochemUI/eOn.git
 </span><span data-line="2"><span class="nb">cd</span><span class="w"> </span>eOn
 </span></pre></div>
 </div>
 <section id="building-from-source">
 <h2>Building from source<a class="headerlink" href="#building-from-source" title="Link to this heading">¶</a></h2>
-<p>We provide a <code class="docutils literal notranslate"><span class="pre">conda</span></code> environment and <code class="docutils literal notranslate"><span class="pre">pixi</span></code> setup, with dependencies handled by <code class="docutils literal notranslate"><span class="pre">conda-lock</span></code>.</p>
+<p>Pixi installs the dependencies recorded in <code class="docutils literal notranslate"><span class="pre">pixi.lock</span></code>. <code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">shell</span></code> opens the default environment. <code class="docutils literal notranslate"><span class="pre">dev-lite</span></code> is the lighter shell: the <code class="docutils literal notranslate"><span class="pre">lint</span></code> and <code class="docutils literal notranslate"><span class="pre">develop</span></code> features from <code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code>.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pixi<span class="w"> </span>shell
 </span><span data-line="2"><span class="c1"># or</span>
-</span><span data-line="3">pixi<span class="w"> </span>s<span class="w"> </span>-e<span class="w"> </span>dev-lite
+</span><span data-line="3">pixi<span class="w"> </span>shell<span class="w"> </span>-e<span class="w"> </span>dev-lite
 </span></pre></div>
 </div>
 <p>Other environments can be found by inspecting the <code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code> file.</p>
@@ -477,21 +484,22 @@ binary is automatically made available in the activated environment.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># conda-compilers may try to install to</span>
 </span><span data-line="2"><span class="c1"># $CONDA_PREFIX/lib/x86_64-linux-gnu</span>
 </span><span data-line="3"><span class="c1"># without --libdir</span>
-</span><span data-line="4">meson<span class="w"> </span>setup<span class="w"> </span>bbdir<span class="w"> </span>--prefix<span class="o">=</span><span class="nv">$CONDA_PREFIX</span><span class="w"> </span>--libdir<span class="o">=</span>lib<span class="w"> </span>--buildtype<span class="o">=</span>release
-</span><span data-line="5">meson<span class="w"> </span>install<span class="w"> </span>-C<span class="w"> </span>bbdir
+</span><span data-line="4">meson<span class="w"> </span>setup<span class="w"> </span>bbdir<span class="w"> </span>--prefix<span class="o">=</span><span class="nv">$CONDA_PREFIX</span><span class="w"> </span>--libdir<span class="o">=</span>lib<span class="w"> </span>--buildtype<span class="o">=</span>release<span class="w"> </span><span class="se">\</span>
+</span><span data-line="5"><span class="w">  </span>--force-fallback-for<span class="o">=</span>nlohmann_json
+</span><span data-line="6">meson<span class="w"> </span>compile<span class="w"> </span>-C<span class="w"> </span>bbdir
+</span><span data-line="7">meson<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-C<span class="w"> </span>bbdir<span class="w"> </span>--suite<span class="w"> </span>eon
+</span><span data-line="8">meson<span class="w"> </span>install<span class="w"> </span>-C<span class="w"> </span>bbdir
 </span></pre></div>
 </div>
-<p>If that <code class="docutils literal notranslate"><span class="pre">meson</span> <span class="pre">setup</span></code> stops on glibc errors raised from inside <code class="docutils literal notranslate"><span class="pre">&lt;cmath&gt;</span></code>, add
-<code class="docutils literal notranslate"><span class="pre">--force-fallback-for=nlohmann_json</span></code> and read the rolling distro section below
-for what causes it.</p>
+<p>The setup line already passes <code class="docutils literal notranslate"><span class="pre">--force-fallback-for=nlohmann_json</span></code>. The rolling distro section below says why a host <code class="docutils literal notranslate"><span class="pre">nlohmann_json</span></code> breaks the conda compiler. The test line should finish with a fail count of 0.</p>
 <p>Some additional performance can be gained with <code class="docutils literal notranslate"><span class="pre">ccache</span></code> and <code class="docutils literal notranslate"><span class="pre">mold</span></code>, which can be
 passed with <code class="docutils literal notranslate"><span class="pre">--native-file</span></code>:</p>
 <ul class="simple">
 <li><p>With <code class="docutils literal notranslate"><span class="pre">ccache</span></code> installed, add <code class="docutils literal notranslate"><span class="pre">--native-file</span> <span class="pre">nativeFiles/ccache_gnu.ini</span></code></p></li>
 <li><p>With <code class="docutils literal notranslate"><span class="pre">mold</span></code> installed, add <code class="docutils literal notranslate"><span class="pre">--native-file</span> <span class="pre">nativeFiles/mold.ini</span></code></p></li>
 </ul>
-<section id="troubleshooting-rolling-distros-arch-fedora">
-<h3>Troubleshooting: rolling distros (Arch, Fedora)<a class="headerlink" href="#troubleshooting-rolling-distros-arch-fedora" title="Link to this heading">¶</a></h3>
+<section id="troubleshooting-on-rolling-distros">
+<h3>Troubleshooting on rolling distros<a class="headerlink" href="#troubleshooting-on-rolling-distros" title="Link to this heading">¶</a></h3>
 <p>On rolling-release distributions with newer system packages, the conda-forge
 compiler sysroot conflicts with system headers. <code class="docutils literal notranslate"><span class="pre">meson</span> <span class="pre">setup</span></code> stops during the
 compiler checks with errors such as <code class="docutils literal notranslate"><span class="pre">__iseqsigf128</span> <span class="pre">was</span> <span class="pre">not</span> <span class="pre">declared</span></code> or
@@ -513,12 +521,9 @@ dependency lookup.</p>
 <section id="troubleshooting-a-global-cargo-linker-setting">
 <h3>Troubleshooting: a global cargo linker setting<a class="headerlink" href="#troubleshooting-a-global-cargo-linker-setting" title="Link to this heading">¶</a></h3>
 <p>readcon-core is built by cargo, which reads <code class="docutils literal notranslate"><span class="pre">~/.cargo/config.toml</span></code> in addition
-to the environment. A <code class="docutils literal notranslate"><span class="pre">rustflags</span></code> entry there applies to every crate eOn builds,
-including inside a conda or pixi environment where the compiler is
-conda-forge’s rather than the system one.</p>
-<p>The case that comes up is a linker override. <code class="docutils literal notranslate"><span class="pre">-C</span> <span class="pre">link-arg=-fuse-ld=mold</span></code> works
-with a system GCC new enough to resolve <code class="docutils literal notranslate"><span class="pre">mold</span></code> by name, but the absolute form
-<code class="docutils literal notranslate"><span class="pre">-fuse-ld=/usr/bin/mold</span></code> is rejected by conda-forge’s GCC 13:</p>
+to the environment. A <code class="docutils literal notranslate"><span class="pre">rustflags</span></code> entry there applies to every crate eOn builds.
+That includes a conda or pixi environment. The compiler there is conda-forge’s.</p>
+<p>One failure is a linker override. A system GCC that can resolve <code class="docutils literal notranslate"><span class="pre">mold</span></code> by name accepts <code class="docutils literal notranslate"><span class="pre">-C</span> <span class="pre">link-arg=-fuse-ld=mold</span></code>. conda-forge’s GCC 13 rejects <code class="docutils literal notranslate"><span class="pre">-fuse-ld=/usr/bin/mold</span></code>:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span data-line="1">error: linking with `x86_64-conda-linux-gnu-cc` failed: exit status: 1
 </span><span data-line="2">  = note: x86_64-conda-linux-gnu-cc: error: unrecognized command-line option
 </span><span data-line="3">          &#39;-fuse-ld=/usr/bin/mold&#39;
@@ -539,13 +544,16 @@ readcon-core through cargo as part of the wheel.</p>
 <p>The full listing of options is found in the <code class="docutils literal notranslate"><span class="pre">meson_options.txt</span></code> file. These can
 all be turned on and off at the command line. As an example see the <a class="reference internal" href="../user_guide/lammps_pot.html"><span class="std std-doc">LAMMPS
 integration instructions</span></a>.</p>
-<p>For optional wrapped dependencies such as ARTn and IRA, download the
-subproject sources before configuring:</p>
+<p>For an optional wrapped dependency, download the subproject sources before configuring:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">meson<span class="w"> </span>subprojects<span class="w"> </span>download<span class="w"> </span>artn-plugin<span class="w"> </span>ira
 </span></pre></div>
 </div>
 </section>
 </section>
+</section>
+<section id="european-environment-for-scientific-software-installations-eessi">
+<h1>European environment for scientific software installations (EESSI)<a class="headerlink" href="#european-environment-for-scientific-software-installations-eessi" title="Link to this heading">¶</a></h1>
+<p>A <code class="docutils literal notranslate"><span class="pre">develop</span></code> checkout on this 2026.06 release uses EESSI-extend, the <code class="docutils literal notranslate"><span class="pre">eOn-devel</span></code> bundle, CapnProto 1.4.0, and <code class="docutils literal notranslate"><span class="pre">foss/2026.1</span></code>. The run-path list and the calculator groups are on the <a class="reference internal" href="eessi.html"><span class="std std-doc">build page</span></a>.</p>
 </section>
 <section id="licenses">
 <h1>Licenses<a class="headerlink" href="#licenses" title="Link to this heading">¶</a></h1>
@@ -597,10 +605,10 @@ License</a>.</p>
         <span>Previous</span><div class="title">eOn team</div></div>
     </a>
   </div><div class="navigation-next">
-    <a href="../tutorials/index.html">
+    <a href="eessi.html">
       <div class="page-info">
         <span>Next</span>
-        <div class="title">Tutorials</div>
+        <div class="title">Build develop on EESSI</div>
       </div>
       <i class="i-lucide chevron-right"></i>
     </a>
