@@ -34,10 +34,14 @@ Snapshots of Carboxyl group on an Au(111). (a) Hydrogen of carboxyl transfers to
 ## Where a process is stored
 
 The reactant, saddle, and product frames go into the run's readcon-db
-corpus (`readcon.db` next to `config.ini`). The barrier in eV, the
-prefactor in s^-1, the mode, and the readcon-db frame keys go into
-`amsel.KdbStore`. The catalog directory is `Paths.kdb` (default
-`<main_directory>/kdb/`). `KdbStore` opens that directory.
+corpus (`readcon.db` next to `config.ini`). The saddle frame carries the
+process mode in its `displacements` section, and the line-2 JSON names
+that section. `readcon` returns the mode as `frame.disp`, an N by 3
+array in file order. The barrier in eV, the prefactor in s^-1, the same
+mode components, and the readcon-db frame keys go into `amsel.KdbStore`.
+The catalog directory is `Paths.kdb` (default `<main_directory>/kdb/`).
+`KdbStore` opens that directory. `mode_<id>.dat` remains the file the
+client wrote beside the process.
 
 A suggestion refines from the stored saddle. The direction is the stored
 mode when its absolute cosine with the reactant-to-saddle vector is at

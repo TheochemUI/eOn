@@ -89,8 +89,9 @@ def mirror_con_text(path, text: str) -> None:
 def store_frame_text(path, text: str) -> tuple[int, int] | None:
     """Store one con blob. Returns ``(traj_id, 0)`` for a single frame.
 
-    The corpus takes the con text only. A barrier or a mode is not an
-    argument: those stay on the process row.
+    The corpus takes the con text only. A barrier is not an argument.
+    A mode is not an argument either: it rides in the saddle frame as
+    the displacements section.
     """
     if not text or not text.strip():
         return None

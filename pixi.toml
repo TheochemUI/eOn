@@ -42,7 +42,7 @@ capnproto = ">=1.0,<2"
 
 [pypi-dependencies]
 towncrier = ">=25.8.0, <26"
-readcon = ">=0.14.9"
+readcon = ">=0.15.0"
 readcon-db = ">=0.1.6"
 readcon-ops = { git = "https://github.com/lode-org/readcon-ops.git", rev = "4d7881a3cec5952143b8ec9f859f054c5eddfd6e" }
 vesin = ">=0.6.1, <0.7"

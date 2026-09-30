@@ -1,0 +1,1 @@
+The saddle frame stored in `readcon.db` carries the process mode in its `displacements` section. A suggestion reads that section. `mode_<id>.dat` remains the client sidecar, and `amsel.KdbProcess.mode` keeps the same components.

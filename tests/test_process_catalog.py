@@ -204,6 +204,14 @@ def test_first_find_is_suggested_before_confidence(tmp_path, caplog):
     assert text
     stored = io.loadcon(io.StringIO(text))
     assert np.allclose(stored.r, saddle.r)
+    import readcon
+    from eon.structure import structure_order
+
+    parsed = readcon.read_con_string(text)
+    assert parsed[0].disp is not None
+    file_ids = np.array([atom.atom_id for atom in parsed[0].atoms], dtype=np.uint64)
+    assert np.allclose(np.asarray(parsed[0].disp)[structure_order(file_ids)], mode)
+    assert "displacements" in text
 
     caplog.set_level(logging.INFO, logger="kdb")
     assert catalog.query(state0, cfg)
@@ -235,9 +243,53 @@ def test_first_find_is_suggested_before_confidence(tmp_path, caplog):
     assert "0.3007" in caplog.text
     assert "readcon.db" in caplog.text
     assert mode_out.shape == (2, 3)
+    assert np.allclose(mode_out, mode)
     assert np.allclose(displacement.r, saddle.r, atol=1e-5)
     assert not saddle_file.is_file()
     again, _, kind_again = MinModeExplorer.generate_displacement(expl)
     assert kind_again == "random"
     assert expl.displace.called is True
     assert again is reactant
+
+
+def test_saddle_frame_keeps_a_mode_across_species_grouping(tmp_path):
+    pytest.importorskip("amsel")
+    pytest.importorskip("readcon_db")
+    import readcon
+    from eon.structure import structure_order
+
+    def three(shift):
+        atoms = Structure(3)
+        atoms.names = ["Pt", "Au", "Pt"]
+        atoms.mass[:] = 195.084
+        atoms.box = np.diag([20.0, 20.0, 20.0])
+        atoms.r[0] = [1.0, 2.0, 3.0]
+        atoms.r[1] = [2.4, 2.0, 3.0]
+        atoms.r[2] = [3.8, 2.0, 3.0]
+        atoms.r[0] = atoms.r[0] + np.asarray(shift, dtype=float)
+        return atoms
+
+    (tmp_path / "config.ini").write_text("[Main]\njob = akmc\n")
+    reactant = three([0.0, 0.0, 0.0])
+    saddle = three([0.2, -0.4, 0.1])
+    product = three([0.4, -0.8, 0.2])
+    mode = np.array(
+        [[0.3, -0.1, 0.2], [-0.5, 0.4, 0.0], [0.1, 0.0, -0.2]],
+        dtype=float,
+    )
+    state = _write_process(tmp_path / "state_0", reactant, saddle, product, mode)
+    cfg = _cfg(tmp_path)
+    assert catalog.insert(state, 1, cfg)
+    from amsel import KdbStore
+    from eon.concorpus import corpus_dir, load_frame_text
+
+    hits = KdbStore(str(cfg.kdb_path)).lookup(catalog.env_hash(reactant))
+    traj_id, frame_idx = catalog.unpack_frame_key(bytes(hits[0].saddle_frame_key))
+    text = load_frame_text(
+        corpus_dir(tmp_path / "state_0" / "reactant.con"), traj_id, frame_idx
+    )
+    parsed = readcon.read_con_string(text)
+    assert [atom.symbol for atom in parsed[0].atoms] == ["Pt", "Pt", "Au"]
+    file_ids = np.array([atom.atom_id for atom in parsed[0].atoms], dtype=np.uint64)
+    assert not np.array_equal(structure_order(file_ids), np.arange(3))
+    assert np.allclose(np.asarray(parsed[0].disp)[structure_order(file_ids)], mode)
