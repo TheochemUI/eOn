@@ -8,6 +8,21 @@ import numpy as np
 import yaml
 
 
+def canonical_listed_value(raw, values):
+    """Return the listed spelling.
+
+    An exact entry wins. Otherwise the first entry with the same casefold
+    matches. None when nothing matches.
+    """
+    if raw in values:
+        return raw
+    folded = raw.casefold()
+    for token in values:
+        if token.casefold() == folded:
+            return token
+    return None
+
+
 class ConfigSection:
     def __init__(self, name):
         self.name = name
@@ -129,10 +144,17 @@ class ConfigClass:
                                         sys.stderr.write('option "%s" of section "%s" should be boolean\n' %(o,psection))
                                 elif k.kind == "string" and len(k.values) !=0:
                                     values = k.values
-                                    if parser.get(psection,k.name) not in values:
+                                    raw = parser.get(psection, k.name)
+                                    if k.name == "potential":
+                                        chosen = canonical_listed_value(raw, values)
+                                    else:
+                                        chosen = raw if raw in values else None
+                                    if chosen is None:
                                         Vnames = ", ".join(k.values)
                                         config_error = True
-                                        sys.stderr.write('option "%s" should be one of: %s\n' %(parser.get(psection,k.name),Vnames))
+                                        sys.stderr.write('option "%s" should be one of: %s\n' %(raw, Vnames))
+                                    elif chosen != raw:
+                                        parser.set(psection, k.name, chosen)
 
         if config_error:
             sys.stderr.write("aborting: could not parse config.ini\n")

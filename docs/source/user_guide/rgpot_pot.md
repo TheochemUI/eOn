@@ -13,6 +13,7 @@ myst:
 On non-Windows builds, potential `rgpot` links
 [rgpot](https://github.com/OmniPotentRPC/rgpot) and loads `libnwchemc.so` or
 `libcpmdc.so` with `dlopen` in the eOn process.
+`RGPOT` and `rgpot` name the same potential.
 
 Potserv clients, `eonclient --serve`
 ([Serve mode](project:serve_mode.md)), and SocketNWChem are separate.

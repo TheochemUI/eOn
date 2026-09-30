@@ -112,6 +112,10 @@ SPCE {cite:p}`pot-berendsenMissingTermEffective1987`
 
 ## Configuration
 
+A known potential name matches in any case.
+`RGPOT` is stored as `rgpot`.
+An exact listed spelling wins, so `SocketNWChem` stays distinct from `socketnwchem`.
+
 ```{code-block} ini
 [Potential]
 ```

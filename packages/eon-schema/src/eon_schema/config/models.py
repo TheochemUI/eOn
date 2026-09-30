@@ -12,7 +12,7 @@ Parity is enforced by tests/test_params_ssot.py.
 import math
 import random
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, get_args
 
 from pydantic import (
     BaseModel,
@@ -594,7 +594,10 @@ class PotentialConfig(BaseModel):
         "zbl",
     ] = Field(
         default="lj",
-        description="Type of potential to execute.",
+        description=(
+            "Type of potential to execute. A known name matches in any "
+            "case. An exact listed spelling wins."
+        ),
     )
     """
     Options:
@@ -644,6 +647,19 @@ class PotentialConfig(BaseModel):
         default=None,
         description="If true, write timing information about each force call to client.log.",
     )
+
+    @validator("potential", pre=True)
+    def canonicalize_potential(cls, value):
+        if not isinstance(value, str):
+            return value
+        allowed = get_args(cls.__annotations__["potential"])
+        if value in allowed:
+            return value
+        folded = value.casefold()
+        for token in allowed:
+            if token.casefold() == folded:
+                return token
+        return value
 
     @validator("log_potential", always=True)
     def set_log_potential(cls, v, values):

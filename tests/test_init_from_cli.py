@@ -2,7 +2,9 @@
 
 from pathlib import Path
 
-from eon.config import ConfigClass
+import pytest
+
+from eon.config import ConfigClass, canonical_listed_value
 
 
 def test_init_from_cli_uses_positional_path(tmp_path, monkeypatch):
@@ -12,3 +14,35 @@ def test_init_from_cli_uses_positional_path(tmp_path, monkeypatch):
     cfg = ConfigClass()
     cfg.init_from_cli([str(cfgfile)])
     assert Path(cfg.config_path).resolve() == cfgfile.resolve()
+
+
+def test_canonical_listed_value_keeps_exact_spelling():
+    values = ["socketnwchem", "SocketNWChem", "rgpot"]
+    assert canonical_listed_value("RGPOT", values) == "rgpot"
+    assert canonical_listed_value("SocketNWChem", values) == "SocketNWChem"
+    assert canonical_listed_value("socketnwchem", values) == "socketnwchem"
+    assert canonical_listed_value("SOCKETNWCHEM", values) == "socketnwchem"
+    assert canonical_listed_value("nope", values) is None
+
+
+def test_server_accepts_potential_spellings(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    for raw in ("RGPOT", "rgpot", "lenosky_si", "lenosky_Si"):
+        cfgfile = tmp_path / f"{raw}.ini"
+        cfgfile.write_text(
+            "[Main]\njob = point\n[Potential]\npotential = %s\n" % raw
+        )
+        cfg = ConfigClass()
+        cfg.init(str(cfgfile))
+        assert cfg.init_done
+
+
+def test_server_rejects_unknown_potential(tmp_path, monkeypatch):
+    cfgfile = tmp_path / "config.ini"
+    cfgfile.write_text(
+        "[Main]\njob = point\n[Potential]\npotential = not-a-potential\n"
+    )
+    monkeypatch.chdir(tmp_path)
+    cfg = ConfigClass()
+    with pytest.raises(SystemExit):
+        cfg.init(str(cfgfile))

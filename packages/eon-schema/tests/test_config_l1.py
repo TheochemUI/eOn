@@ -1,5 +1,8 @@
 """L1 job-config models live in eon-schema (shared with eon-akmc)."""
 
+import pytest
+from pydantic import ValidationError
+
 from eon_schema.config import (
     Config,
     MainConfig,
@@ -8,6 +11,17 @@ from eon_schema.config import (
     SaddleSearchConfig,
     XtsciConfig,
 )
+
+
+def test_potential_name_case():
+    assert PotentialConfig(potential="RGPOT").potential == "rgpot"
+    assert PotentialConfig(potential="rgpot").potential == "rgpot"
+    assert PotentialConfig(potential="RgPot").potential == "rgpot"
+    assert PotentialConfig(potential="SocketNWChem").potential == "SocketNWChem"
+    assert PotentialConfig(potential="socketnwchem").potential == "socketnwchem"
+    assert PotentialConfig(potential="SOCKETNWCHEM").potential == "socketnwchem"
+    with pytest.raises(ValidationError):
+        PotentialConfig(potential="not-a-potential")
 
 
 def test_main_config_defaults():
