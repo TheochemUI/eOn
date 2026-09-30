@@ -610,6 +610,16 @@ struct neb_options_t {
     bool minimize{false};
     bool use_path_file{false};
   } endpoints;
+
+  /// Interior images relax a lower-triangular cell with the atoms.
+  /// doi:10.1063/1.3684549
+  struct solid_state_options_t {
+    bool enabled{false};
+    double weight{1.0};
+    /// Hydrostatic pressure in eV/Angstrom^3. Positive pressure favors a
+    /// smaller cell. Zero keeps the potential-energy band.
+    double pressure{0.0};
+  } solid_state;
 };
 
 // [Molecular Dynamics] //

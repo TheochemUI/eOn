@@ -214,6 +214,18 @@ Nudged Elastic Band:
             kind: float
             default: 5.0
 
+        solid_state:
+            kind: boolean
+            default: false
+
+        solid_state_weight:
+            kind: float
+            default: 1.0
+
+        solid_state_pressure:
+            kind: float
+            default: 0.0
+
         climbing_image_method:
             kind: boolean
             default: true

@@ -10,18 +10,36 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/NudgedElasticBand.h"
+#include "eon/SolidStateNEB.h"
 
 namespace eonc {
+namespace {
+
+long nebSegment(const NudgedElasticBand &neb) {
+  return 3L * neb.atoms + (neb.solidState() ? 9L : 0L);
+}
+
+} // namespace
 
 VectorXd NEBObjectiveFunction::getGradient(bool fdstep) {
   if (neb->movedAfterForceCall)
     neb->updateForces();
-  const long seg = 3 * neb->atoms;
+  const long seg = nebSegment(*neb);
+  const long atomDof = 3L * neb->atoms;
   VectorXd gradV(seg * neb->numImages);
   for (long i = 1; i <= neb->numImages; i++) {
     // Negate in-place during copy to avoid a second pass over 40KB
-    gradV.segment(seg * (i - 1), seg) =
-        -VectorXd::Map(neb->projectedForce[i]->data(), seg);
+    gradV.segment(seg * (i - 1), atomDof) =
+        -VectorXd::Map(neb->projectedForce[i]->data(), atomDof);
+    if (neb->solidState()) {
+      const eonc::neb::CartesianStep step = eonc::neb::solidStateCartesianStep(
+          *neb->path[i], *neb->projectedForce[i], neb->cellForce(i),
+          neb->solidJacobian());
+      gradV.segment(seg * (i - 1), atomDof) =
+          -VectorXd::Map(step.positions.data(), atomDof);
+      gradV.segment(seg * (i - 1) + atomDof, 9) =
+          -VectorXd::Map(step.cell.data(), 9);
+    }
   }
   return gradV;
 }
@@ -40,25 +58,40 @@ double NEBObjectiveFunction::getEnergy() {
 
 void NEBObjectiveFunction::setPositions(const VectorXd &x) {
   neb->movedAfterForceCall = true;
+  const long seg = nebSegment(*neb);
+  const long atomDof = 3L * neb->atoms;
   for (long i = 1; i <= neb->numImages; i++) {
-    neb->path[i]->setPositions(AtomMatrix::Map(
-        x.segment(3 * neb->atoms * (i - 1), 3 * neb->atoms).data(), neb->atoms,
-        3));
+    const long offset = seg * (i - 1);
+    if (neb->solidState()) {
+      Matrix3d cell = Matrix3d::Map(x.segment(offset + atomDof, 9).data());
+      cell(0, 1) = 0.0;
+      cell(0, 2) = 0.0;
+      cell(1, 2) = 0.0;
+      neb->path[i]->setCell(cell);
+    }
+    neb->path[i]->setPositions(
+        AtomMatrix::Map(x.segment(offset, atomDof).data(), neb->atoms, 3));
   }
 }
 
 VectorXd NEBObjectiveFunction::getPositions() {
-  VectorXd posV;
-  posV.resize(3 * neb->atoms * neb->numImages);
+  const long seg = nebSegment(*neb);
+  const long atomDof = 3L * neb->atoms;
+  VectorXd posV(seg * neb->numImages);
   for (long i = 1; i <= neb->numImages; i++) {
-    posV.segment(3 * neb->atoms * (i - 1), 3 * neb->atoms) =
-        VectorXd::Map(neb->path[i]->getPositions().data(), 3 * neb->atoms);
+    const long offset = seg * (i - 1);
+    posV.segment(offset, atomDof) =
+        VectorXd::Map(neb->path[i]->getPositions().data(), atomDof);
+    if (neb->solidState()) {
+      posV.segment(offset + atomDof, 9) =
+          VectorXd::Map(neb->path[i]->getCell().data(), 9);
+    }
   }
   return posV;
 }
 
 int NEBObjectiveFunction::degreesOfFreedom() {
-  return 3 * neb->numImages * neb->atoms;
+  return static_cast<int>(nebSegment(*neb) * neb->numImages);
 }
 
 bool NEBObjectiveFunction::isUncertain() {
@@ -88,12 +121,17 @@ double NEBObjectiveFunction::getConvergence() {
 
 VectorXd NEBObjectiveFunction::difference(const VectorXd &a,
                                           const VectorXd &b) {
-  VectorXd pbcDiff(3 * neb->numImages * neb->atoms);
+  const long seg = nebSegment(*neb);
+  const long atomDof = 3L * neb->atoms;
+  VectorXd pbcDiff(seg * neb->numImages);
   for (int i = 1; i <= neb->numImages; i++) {
-    int n = (i - 1) * 3 * neb->atoms;
-    int m = 3 * neb->atoms;
-    pbcDiff.segment(n, m) =
-        neb->path[i]->pbcV(a.segment(n, m) - b.segment(n, m));
+    const int n = (i - 1) * static_cast<int>(seg);
+    pbcDiff.segment(n, atomDof) =
+        neb->path[i]->pbcV(a.segment(n, atomDof) - b.segment(n, atomDof));
+    if (neb->solidState()) {
+      pbcDiff.segment(n + atomDof, 9) =
+          a.segment(n + atomDof, 9) - b.segment(n + atomDof, 9);
+    }
   }
   return pbcDiff;
 }

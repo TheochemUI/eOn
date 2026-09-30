@@ -1184,6 +1184,16 @@ int load_ini(INIReader &ini, Parameters &params) {
   ParametersLoadAccess::neb_options(params).image_count =
       ini.GetInteger(neb_section, "images",
                      ParametersLoadAccess::neb_options(params).image_count);
+  ParametersLoadAccess::neb_options(params).solid_state.enabled =
+      ini.GetBoolean(
+          neb_section, "solid_state",
+          ParametersLoadAccess::neb_options(params).solid_state.enabled);
+  ParametersLoadAccess::neb_options(params).solid_state.weight =
+      ini.GetReal(neb_section, "solid_state_weight",
+                  ParametersLoadAccess::neb_options(params).solid_state.weight);
+  ParametersLoadAccess::neb_options(params).solid_state.pressure = ini.GetReal(
+      neb_section, "solid_state_pressure",
+      ParametersLoadAccess::neb_options(params).solid_state.pressure);
   ParametersLoadAccess::neb_options(params).max_iterations = ini.GetInteger(
       neb_section, "max_iterations",
       ParametersLoadAccess::optimizer_options(params).max_iterations);

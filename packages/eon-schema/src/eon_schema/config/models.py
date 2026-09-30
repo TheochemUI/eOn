@@ -2111,6 +2111,36 @@ class NudgedElasticBandConfig(BaseModel):
     spring: float = Field(
         default=5.0, description="The spring constant, in eV/Ang^2 between the images."
     )
+    solid_state: bool = Field(
+        default=False,
+        description="Relax the lattice vectors of each interior image with the atoms.",
+    )
+    """
+    The cell of each interior image moves with the atoms. The cell stays
+    lower triangular: the first lattice vector lies on x and the second lies
+    in the xy plane, so the band cannot rotate as a rigid body. Atomic
+    displacements and cell strain share one Jacobian
+    (doi:10.1063/1.3684549). Periodic boundaries are required. A potential
+    that does not report the stress tensor is differentiated on the cell.
+    ``ci_mmf``, ``zoom_neb``, ``onsager_machlup``, ``neb_doubly_nudged``,
+    and ``neb_elastic_band`` are refused, and ``initializer`` must be
+    ``linear`` or ``file``.
+    """
+    solid_state_weight: float = Field(
+        default=1.0,
+        description=(
+            "Multiplier on the cell block of the solid-state Jacobian "
+            "(doi:10.1063/1.3684549). 1 weights a cell strain like an atomic move."
+        ),
+    )
+    solid_state_pressure: float = Field(
+        default=0.0,
+        description=(
+            "External hydrostatic pressure in eV/Angstrom^3 on the solid-state "
+            "band. Positive pressure favors a smaller cell. 0 keeps the "
+            "potential-energy band."
+        ),
+    )
     climbing_image_method: bool = Field(
         default=True, description="Indicates if the climbing image method is used."
     )

@@ -791,6 +791,20 @@ size_t Matter::getPotentialCalls() const {
 
 double Matter::getEnergyVariance() const { return this->energyVariance; }
 
+Matrix3d Matter::cauchyStress() {
+  if (!potential || !potential->computesStress()) {
+    throw std::logic_error(
+        "Matter::cauchyStress requires a potential that reports stress");
+  }
+  recomputePotential = true;
+  computePotential();
+  Matrix3d sigma = potential->cauchyStress();
+  if (!sigma.allFinite()) {
+    throw std::runtime_error("Potential returned a non-finite stress tensor");
+  }
+  return sigma;
+}
+
 std::shared_ptr<Potential> Matter::getPotential() { return this->potential; }
 
 AtomMatrix Matter::pbc(const AtomMatrix &diff) const {

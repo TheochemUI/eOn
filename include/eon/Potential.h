@@ -167,6 +167,16 @@ public:
     return false;
   }
 
+  /// True when force() leaves a Cauchy stress that cauchyStress() can read
+  /// until the next force() on this instance.
+  [[nodiscard]] virtual bool computesStress() const noexcept { return false; }
+
+  /// Cauchy stress in eV/Angstrom^3. sigma = (1/V) dE/dε for the right
+  /// strain h <- h (I+ε) at fixed fractional coordinates.
+  [[nodiscard]] virtual Matrix3d cauchyStress() const {
+    throw std::logic_error("Potential::cauchyStress is not implemented");
+  }
+
   /// Evaluate forces for N systems in a single call. Default: loops over
   /// force(). Override in potentials that support native batching (e.g.
   /// MetatomicPotential uses a single model.forward() for all N systems).
