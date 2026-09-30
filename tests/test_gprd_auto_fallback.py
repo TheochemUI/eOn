@@ -17,10 +17,24 @@ MIGRATE = ROOT / "scripts" / "migrate_with_gprd_option.py"
 
 
 def _meson() -> str:
-    meson = shutil.which("meson")
-    if meson is None:
+    meson = os.environ.get("MESON") or shutil.which("meson")
+    if not meson:
         pytest.fail("meson is not on PATH")
     return meson
+
+
+def _meson_argv() -> list[str]:
+    """Run the meson entry point with the interpreter that imports mesonbuild.
+
+    A ``#!/usr/bin/env python`` entry point follows PATH. A pytest runner
+    whose Python does not ship mesonbuild still needs the interpreter that
+    configured the build, named by ``MESON_PYTHON``.
+    """
+    meson = _meson()
+    py = os.environ.get("MESON_PYTHON")
+    if py:
+        return [py, meson]
+    return [meson]
 
 
 def _run(cmd: list[str], cwd: Path) -> subprocess.CompletedProcess[str]:
@@ -99,7 +113,7 @@ def test_auto_configure_survives_a_failed_minimage_fetch(tmp_path: Path):
         "option('with_gprd', type: 'feature', value: 'auto')\n",
         "opt",
     )
-    result = _run([_meson(), "setup", str(tmp_path / "bb"), str(tmp_path)], tmp_path)
+    result = _run([*_meson_argv(), "setup", str(tmp_path / "bb"), str(tmp_path)], tmp_path)
     assert result.returncode == 0, result.stdout
     assert "gpr_optim configured" not in result.stdout
     lowered = result.stdout.lower()
@@ -113,7 +127,7 @@ def test_enabled_configure_stops_when_minimage_cannot_be_fetched(tmp_path: Path)
         "opt",
     )
     result = _run(
-        [_meson(), "setup", str(tmp_path / "bb"), str(tmp_path), "-Dwith_gprd=enabled"],
+        [*_meson_argv(), "setup", str(tmp_path / "bb"), str(tmp_path), "-Dwith_gprd=enabled"],
         tmp_path,
     )
     assert result.returncode != 0, result.stdout
@@ -134,24 +148,25 @@ def test_boolean_build_dir_reconfigures_after_migration(
         f"option('with_gprd', type: 'boolean', value: {stored})\n"
     )
     build = tmp_path / "bb"
-    setup = _run([_meson(), "setup", str(build), str(src)], src)
+    setup = _run([*_meson_argv(), "setup", str(build), str(src)], src)
     assert setup.returncode == 0, setup.stdout
 
     (src / "meson_options.txt").write_text(
         "option('with_gprd', type: 'feature', value: 'auto',\n"
         "       description: 'GP dimer')\n"
     )
-    bare = _run([_meson(), "setup", "--reconfigure", str(build)], src)
+    bare = _run([*_meson_argv(), "setup", "--reconfigure", str(build)], src)
     assert bare.returncode != 0, bare.stdout
     assert "not boolean" in bare.stdout
 
-    migrated = _run([_meson_python(), str(MIGRATE), str(build)], src)
+    py = os.environ.get("MESON_PYTHON") or _meson_python()
+    migrated = _run([py, str(MIGRATE), str(build)], src)
     assert migrated.returncode == 0, migrated.stdout
     assert mapped in migrated.stdout
 
-    again = _run([_meson(), "setup", "--reconfigure", str(build)], src)
+    again = _run([*_meson_argv(), "setup", "--reconfigure", str(build)], src)
     assert again.returncode == 0, again.stdout
-    intro = _run([_meson(), "introspect", "--buildoptions", str(build)], src)
+    intro = _run([*_meson_argv(), "introspect", "--buildoptions", str(build)], src)
     assert intro.returncode == 0, intro.stdout
     options = json.loads(intro.stdout)
     found = [opt for opt in options if opt.get("name") == "with_gprd"]
