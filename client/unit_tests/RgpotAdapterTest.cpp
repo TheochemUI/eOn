@@ -51,8 +51,7 @@ TEST_CASE("Adapter LJCluster matches the pinned reference",
   AtomMatrix pos = matter->getPositionsCopy();
   pos(0, 2) = -1.0e-6;
   matter->setPositions(pos);
-  REQUIRE(matter->getPositions()(0, 2) ==
-          Catch::Approx(-1.0e-6).margin(1e-12));
+  REQUIRE(matter->getPositions()(0, 2) == Catch::Approx(-1.0e-6).margin(1e-12));
 }
 
 TEST_CASE("Adapter Morse evaluates and reports shared-safe",
