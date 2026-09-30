@@ -21,7 +21,7 @@ ways:
 | Output | first frame of `neb.con` | `instanton.con` and `results.dat` |
 
 With `mode = rate` the same job estimates the thermal rate through a saddle
-instead of a splitting.
+instead of a splitting. That path is below.
 
 Energies are in eV, lengths in Å and masses in amu throughout, so
 mass-weighted lengths are in amu^0.5 Å.
@@ -124,22 +124,105 @@ The propagator ratio measures {math}`\Delta_0` when the two wells lie within
 a small fraction of {math}`k_B T` of each other. `instanton_symmetric = 0`
 flags a pair outside that window. The job still writes the path and the
 action, but no `tunnel_splitting_instanton`, and reports success: the flag
-says why. For such a pair, use the WKB estimate along a band, or
-`mode = rate` with the saddle and a temperature below the crossover.
+says why. For such a pair, set `mode = rate`, give the saddle and a
+temperature below the crossover, and read the rate in the next sections.
 
 ## Which path object
 
-An NEB image is a point on a path between two minima. Its springs are
-fictitious. A ring-polymer bead is one imaginary-time slice of one system.
-Its springs are physical, with a stiffness fixed by the temperature and the
-bead count.
+NEB images and ring-polymer beads are different objects. An image is a point
+on a path in configuration space between two minima. Its springs are
+fictitious, and only the force perpendicular to the path is kept. A bead is
+one imaginary-time slice of a single quantum system. Its springs are
+physical, with stiffness fixed by the temperature and the number of beads.
 
 | Object | Points | Springs | What it returns |
 |---|---|---|---|
-| `mode = splitting` | open string between two minima | Euclidean action, no tangent projection | tunnelling splitting when the wells are close in energy |
-| `mode = rate` | closed ring through one saddle | same action, stiffness set by temperature and bead count | thermal rate below the crossover temperature |
-| Centroid potential of mean force | one ring per image, centroid held on the image | sampled | quantum free-energy barrier along the path |
-| Harmonic centroid string | one ring per image | local harmonic quantum correction | a free-energy estimate only as good as that harmonic well |
+| `mode = splitting` | open string between two minima, optionally started from a band | Euclidean action, no tangent projection | tunnelling splitting when the wells are close in energy |
+| `mode = rate` | closed ring through one saddle | same action, stiffness set by {math}`T` and {math}`N` | thermal rate below the crossover temperature |
+| Centroid PMF | one ring per image, centroid held on the image | sampled, not minimised | quantum free-energy barrier along the path |
+| Harmonic centroid string | one ring per image, optimised | local harmonic quantum correction | a free-energy estimate only as good as that harmonic well |
+
+The first two rows are `job = instanton`. The centroid potential of mean
+force is a constrained path-integral molecular dynamics sample, one
+thermostatted ring per image. That sample is not an optimisation, and it
+does not belong in this job. A string of harmonically corrected rings is a
+different calculation again, and this page does not implement it.
+
+## The rate below the crossover
+
+`mode = rate` reads the reactant and `saddle_filename` (default `saddle.con`).
+The instanton is a closed ring, a first-order saddle of the ring-polymer
+potential, with one negative eigenvalue and one zero eigenvalue that cycles
+the beads. Richardson and Althorpe, J. Chem. Phys. 131, 214106 (2009), give
+
+```{math}
+k Z_r = \frac{1}{\beta_N \hbar}
+\sqrt{\frac{B_N}{2\pi \beta_N \hbar^2}}
+\prod_k' \frac{1}{\beta_N \hbar |\omega_k|}
+\exp(-\beta_N U_N).
+```
+
+{math}`B_N` is the sum of squared steps around the ring, {math}`\omega_k^2`
+are the eigenvalues of the mass-weighted ring Hessian, and the prime leaves
+out the cyclic zero mode and the rigid translations and rotations.
+{math}`Z_r` is the harmonic ring-polymer partition function of the reactant.
+{math}`U_N` is the ring-polymer potential, the bead potentials plus the springs.
+
+The crossover temperature is {math}`T_c = \hbar \omega_b / (2\pi k_B)`, with
+{math}`\omega_b` the imaginary frequency at the saddle. At or above {math}`T_c`
+the ring collapses onto the saddle. The rate there is a parabolic barrier
+correction, and classical transition-state theory is only the one-bead limit
+of that correction. The job does not evaluate it: it stops and says so.
+
+```{code-block} ini
+[Main]
+job = instanton
+
+[Instanton]
+mode = rate
+reactant_filename = reactant.con
+saddle_filename = saddle.con
+temperature = 5
+beads = 256
+hessian_stride = 1
+```
+
+`temperature` is in kelvin. It must be positive and below {math}`T_c`. The
+default 0 means the temperature was not set, and `mode = rate` then refuses
+to run. `beads` defaults to 256, the same default as the splitting. A ring
+of 32 beads at 5 K does not resolve a stiff bond: the path integral starts
+to converge once the bead count exceeds {math}`\beta \hbar \omega` of the
+stiffest mode. `hessian_stride` of 1 takes a Hessian on every bead. A larger
+stride keeps a Hessian on every stride-th bead and interpolates linearly
+between those anchors.
+
+With no atom fixed, the three translations are omitted on both sides. A
+rotation is omitted when it is a zero mode of the reactant Hessian, which a
+free cluster has and a crystal does not. A cluster in a large periodic cell
+is told apart by that Hessian, not by the periodic flag. The springs along
+those directions stay, so they cancel between the instanton and the reactant.
+
+`results.dat` then carries:
+
+| Key | Meaning |
+|---|---|
+| `rate_instanton` | {math}`k` in s^{-1} |
+| `rate_instanton_log` | {math}`\ln(k\,/\,\mathrm{s}^{-1})` |
+| `rate_htst_log` | classical harmonic transition-state theory, the same logarithm |
+| `instanton_crossover_K` | {math}`T_c`, K |
+| `instanton_negative_modes` | negative eigenvalues of the ring Hessian; a first-order saddle has 1 |
+| `instanton_zero_mode` | the eigenvalue left out |
+
+Habershon, Manolopoulos, Markland and Miller, Annu. Rev. Phys. Chem. 64, 387
+(2013), doi:10.1146/annurev-physchem-040412-110122, expect the sampled
+ring-polymer rate to lie within about a factor of two of the exact quantum
+rate between {math}`T_c` and {math}`T_c/2`. That bound compares the sampled
+rate with the exact rate. It is not a comparison of this instanton with a
+free-energy profile.
+
+The cubic metastable well, {math}`V = \omega_0^2 q^2/2 - g q^3/3`, is the
+check. Deep below the crossover its rate approaches the zero-temperature
+decay of Caldeira and Leggett, Ann. Phys. 149, 374 (1983).
 
 ## Checks
 
