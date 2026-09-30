@@ -567,8 +567,7 @@ TEST_CASE("Minimum-mode following copies one half of an even ring",
       optimizeRateInstanton(saddle, hs, beta, {}, counted(halfCalls), halfOpt);
   CAPTURE(fullRing.logRate, halfRing.logRate, fullCalls, halfCalls,
           fullRing.converged, halfRing.converged, fullRing.iterations,
-          halfRing.iterations, fullRing.ringPotential,
-          halfRing.ringPotential);
+          halfRing.iterations, fullRing.ringPotential, halfRing.ringPotential);
   REQUIRE(fullRing.converged);
   REQUIRE(halfRing.converged);
   instantonRate(

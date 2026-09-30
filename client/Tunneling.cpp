@@ -1335,9 +1335,9 @@ MatrixXd fdPhysicalHessian(const VectorXd &q, const BatchPotential &potential,
   }
   MatrixXd h(f, f);
   for (long a = 0; a < f; ++a) {
-    h.col(a) = (g[static_cast<size_t>(2 * a)] -
-                g[static_cast<size_t>(2 * a + 1)]) /
-               (2.0 * eps);
+    h.col(a) =
+        (g[static_cast<size_t>(2 * a)] - g[static_cast<size_t>(2 * a + 1)]) /
+        (2.0 * eps);
   }
   return (0.5 * (h + h.transpose())).eval();
 }
