@@ -75,7 +75,7 @@ TEST_CASE("input_block appends and leaves params_path sections",
   REQUIRE(std::string(built.getInputBlocks()[0].cStr()) == "BLOCK_FROM_FILE");
   REQUIRE(std::string(built.getInputBlocks()[1].cStr()) == "FROM_INI");
   REQUIRE(std::string(built.getFunctional().cStr()) == "PBE");
-  REQUIRE(built.getCutOffRy() == Approx(55.5));
+  REQUIRE(built.getCutOffRy() == Catch::Approx(55.5));
   REQUIRE(built.getCharge() == 4);
   REQUIRE(std::string(built.getScratchDir().cStr()) == "/scratch/run");
 
@@ -124,7 +124,7 @@ TEST_CASE("scalars fill the message when params_path is empty",
   ::capnp::MallocMessageBuilder msg;
   auto built = eon::fillCpmdParams(msg, opt);
   REQUIRE(std::string(built.getFunctional().cStr()) == "PBE");
-  REQUIRE(built.getCutOffRy() == Approx(40.0));
+  REQUIRE(built.getCutOffRy() == Catch::Approx(40.0));
   REQUIRE(built.getCharge() == 2);
   REQUIRE(built.getMultiplicity() == 3);
   REQUIRE(built.getInputSections().size() == 0);
