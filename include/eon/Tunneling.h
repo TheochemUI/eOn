@@ -30,7 +30,7 @@ namespace eonc::tunneling {
 
 /// hbar in eV^0.5 amu^0.5 Angstrom: 1.054571817e-34 J s over
 /// sqrt(1.602176634e-19 J * 1.66053906660e-27 kg) * 1e-10 m.
-inline constexpr double kHbar = 0.06465415130134121;
+inline constexpr double kHbar = 0.06465415130134122;
 
 /// Boltzmann constant in eV / K.
 inline constexpr double kBoltzmann = 8.617333262e-5;

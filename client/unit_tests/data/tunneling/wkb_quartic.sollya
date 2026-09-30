@@ -1,0 +1,29 @@
+/* Certified WKB actions for V(x) = V0 (x^2 - 1)^2 on a mass-weighted
+   coordinate (a = 1 amu^0.5 Angstrom), at the level E = hbar omega / 2 with
+   omega = sqrt(8 V0), and hbar in eV^0.5 amu^0.5 Angstrom correctly rounded.
+   With c = sqrt(E/V0) and x_t^2 = 1 - c, V - E = V0 (1 + c - x^2)(x_t^2 - x^2),
+   and x = x_t sin(t) makes the integrand smooth and positive on [-pi/2, pi/2],
+   which interval arithmetic needs. TunnelingTest.cpp takes its references
+   from the enclosures this prints. Run: sollya wkb_quartic.sollya */
+prec = 200!;
+diam = 1e-5!;
+display = decimal!;
+hbar_si = 1.054571817e-34;
+ev = 1.602176634e-19;
+amu = 1.66053906660e-27;
+hbar = hbar_si / (sqrt(ev * amu) * 1e-10);
+print("hbar_native =", hbar);
+print("hbar_double =", D(hbar));
+procedure action(v0) {
+  var e, c, xt, s;
+  e = hbar * sqrt(8 * v0) / 2;
+  c = sqrt(e / v0);
+  xt = sqrt(1 - c);
+  s = integral(sqrt(2 * v0) * sqrt(1 + c - xt^2 * sin(x)^2) * xt^2 * cos(x)^2, [-pi/2; pi/2]) / hbar;
+  print("V0 =", v0, " E =", D(e), " x_turn =", D(xt), " S in", s);
+  return s;
+};
+action(0.08);
+action(0.15);
+action(0.3);
+quit;

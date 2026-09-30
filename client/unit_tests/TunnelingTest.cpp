@@ -102,6 +102,28 @@ TEST_CASE("The well curvature of a 21-image band recovers hbar omega",
   REQUIRE_THROWS(hbarOmega(0.0));
 }
 
+TEST_CASE("The WKB action lands in sollya's certified enclosures",
+          "[Tunneling]") {
+  // Enclosures from data/tunneling/wkb_quartic.sollya (diam = 1e-5).
+  const struct {
+    double v0, lo, hi;
+  } refs[] = {{0.08, 5.063598114982421, 5.063808157187389},
+              {0.15, 7.961002614930021, 7.961336192948115},
+              {0.3, 12.473664499991103, 12.474192880487013}};
+  for (const auto &r : refs) {
+    const double level = 0.5 * kHbar * std::sqrt(8.0 * r.v0);
+    // A dense band: the quadrature and the interpolant, nothing else.
+    const double dense = wkbAction(quarticBand(r.v0, 1.0, 801), level);
+    INFO("V0 = " << r.v0 << ", dense action " << dense);
+    REQUIRE(dense > r.lo - 1e-5);
+    REQUIRE(dense < r.hi + 1e-5);
+    // The 21 images a band has: within 3e-4 of the certified midpoint,
+    // which moves the splitting by under 0.4 percent.
+    const double sparse = wkbAction(quarticBand(r.v0, 1.0, 21), level);
+    REQUIRE_THAT(sparse, WithinRel(0.5 * (r.lo + r.hi), 3e-4));
+  }
+}
+
 TEST_CASE("WKB splittings match the exact double well as it deepens",
           "[Tunneling]") {
   // V0 / hbar omega of about 1.5, 2.1 and 3.0.
