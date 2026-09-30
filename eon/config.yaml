@@ -1112,6 +1112,10 @@ Hessian:
             kind: string
             default: ""
 
+        write_modes:
+            kind: bool
+            default: true
+
 ################################################################################
 
 Lanczos:

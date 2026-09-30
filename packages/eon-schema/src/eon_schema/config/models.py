@@ -2310,6 +2310,14 @@ class HessianConfig(BaseModel):
     zero_freq_value: float = Field(
         default=1e-6, description="The value assigned to zero frequencies."
     )
+    write_modes: bool = Field(
+        default=True,
+        description=(
+            "Write every normal mode to modes.con: the Cartesian mode as a"
+            " displacements section, with its eigenvalue, hbar omega and"
+            " wavenumber as frame metadata."
+        ),
+    )
 
 
 class DynamicsConfig(BaseModel):

@@ -502,6 +502,10 @@ struct hessian_options_t {
   bool resume{false};
   // Column checkpoint file (e.g. hessian.ckpt). Cleared on successful finish.
   std::string checkpoint_path{""};
+  // Write every normal mode to modes.con: the Cartesian mode as a
+  // readcon displacements section, its eigenvalue and hbar omega as
+  // frame metadata.
+  bool write_modes{true};
 };
 
 // [Nudged Elastic Band] //

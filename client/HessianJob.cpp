@@ -48,9 +48,17 @@ std::vector<std::string> HessianJob::run(void) {
       matter.get(), params.hessian_options().phva_atoms);
   const bool no_mobile = mobile.size() == 0;
   bool freqs_ok = false;
+  bool modes_ok = false;
   if (!no_mobile) {
     const VectorXd freqs = hessian.getFreqs(matter.get(), mobile);
     freqs_ok = freqs.size() > 0;
+    if (freqs_ok && params.hessian_options().write_modes) {
+      modes_ok = writeNormalModes(*matter, mobile, freqs, hessian.getModes(),
+                                  "modes.con");
+      if (!modes_ok) {
+        EONC_LOG_ERROR("[Hessian] failed to write modes.con");
+      }
+    }
   }
 
   std::string results_file("results.dat");
@@ -66,6 +74,9 @@ std::vector<std::string> HessianJob::run(void) {
   env.writeResultsDat(results_file);
   if (std::filesystem::exists("hessian.dat")) {
     returnFiles.push_back("hessian.dat");
+  }
+  if (modes_ok) {
+    returnFiles.push_back("modes.con");
   }
 
   return returnFiles;

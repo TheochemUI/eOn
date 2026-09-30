@@ -13,14 +13,17 @@
 #include "eon/Hessian.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/ConFileIO.h"
 #include "eon/Davidson.h"
 #include "eon/FiniteDifference.h"
 #include "eon/Lanczos.h"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
 #include "eon/SafeMath.h"
+#include "eon/Tunneling.h"
 #include "eon/potentials/RgpotAdapter/RgpotAdapter.h"
 #include "rgpot/LennardJones/LJPot.hpp"
+#include <nlohmann/json.hpp>
 
 #include <algorithm>
 #include <complex>
@@ -533,6 +536,78 @@ TEST_CASE("Colored fourth-order FD matches the serial stencil",
   Davidson davidson(matter, params, pot);
   davidson.compute(matter, direction);
   REQUIRE(std::isfinite(davidson.getEigenvalue()));
+}
+
+TEST_CASE_METHOD(HessianScratch,
+                 "modes.con carries each mode as a displacements section",
+                 "[hessian]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter matter(pot, params);
+  matter.con2matter(std::string("reactant.con"));
+  const long n = matter.numberOfAtoms();
+
+  // Two mobile atoms and the unit mass-weighted modes: mode k moves one
+  // coordinate, so its Cartesian mode is that coordinate with norm 1.
+  VectorXi mobile(2);
+  mobile << 1, 4;
+  VectorXd eigenvalues(6);
+  eigenvalues << -0.5, 1e-9, 0.25, 1.0, 2.0, 4.0;
+  const MatrixXd modes = MatrixXd::Identity(6, 6);
+  REQUIRE(writeNormalModes(matter, mobile, eigenvalues, modes, "modes.con"));
+
+  const auto frames = readcon::read_all_frames("modes.con");
+  REQUIRE(frames.size() == 6);
+  for (size_t k = 0; k < frames.size(); ++k) {
+    REQUIRE(frames[k].has_displacements());
+    std::vector<double> d(static_cast<size_t>(3 * n));
+    REQUIRE(frames[k].copy_displacements(d.data(), d.size()) ==
+            readcon::RKR_STATUS_SUCCESS);
+    const long atom = mobile(static_cast<long>(k) / 3);
+    for (long i = 0; i < 3 * n; ++i) {
+      const double want =
+          (i == 3 * atom + static_cast<long>(k) % 3) ? 1.0 : 0.0;
+      REQUIRE_THAT(d[static_cast<size_t>(i)],
+                   Catch::Matchers::WithinAbs(want, 1e-12));
+    }
+    const auto md = nlohmann::json::parse(frames[k].metadata_json());
+    const double lambda = eigenvalues(static_cast<long>(k));
+    const double hw =
+        std::copysign(tunneling::kHbar * std::sqrt(std::abs(lambda)), lambda);
+    REQUIRE_THAT(md.at("mode_eigenvalue").get<double>(),
+                 Catch::Matchers::WithinRel(lambda, 1e-12));
+    REQUIRE_THAT(md.at("hbar_omega").get<double>(),
+                 Catch::Matchers::WithinRel(hw, 1e-12));
+    REQUIRE_THAT(md.at("wavenumber").get<double>(),
+                 Catch::Matchers::WithinRel(hw * kEvToWavenumber, 1e-12));
+  }
+  // The imaginary mode reads negative.
+  REQUIRE(nlohmann::json::parse(frames[0].metadata_json())
+              .at("wavenumber")
+              .get<double>() < 0.0);
+}
+
+TEST_CASE("cartesianMode divides by sqrt(mass) and normalizes", "[hessian]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter matter(pot, params);
+  matter.resize(2);
+  matter.setMass(0, 1.0);
+  matter.setMass(1, 4.0);
+  VectorXi atoms(2);
+  atoms << 0, 1;
+  VectorXd q = VectorXd::Zero(6);
+  q(0) = 1.0; // atom 0, x
+  q(3) = 1.0; // atom 1, x
+  const auto x = cartesianMode(matter, atoms, q);
+  // x = (1/1, 1/2) along x, then unit norm.
+  const double norm = std::sqrt(1.0 + 0.25);
+  REQUIRE_THAT(x[0], Catch::Matchers::WithinAbs(1.0 / norm, 1e-12));
+  REQUIRE_THAT(x[3], Catch::Matchers::WithinAbs(0.5 / norm, 1e-12));
+  REQUIRE_THROWS_AS(cartesianMode(matter, atoms, VectorXd::Zero(3)),
+                    std::invalid_argument);
 }
 
 } /* namespace tests */

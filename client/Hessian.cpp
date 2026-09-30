@@ -13,6 +13,7 @@
 #include "eon/EonLogger.h"
 #include "eon/HelperFunctions.h"
 #include "eon/SafeMath.h"
+#include "eon/Tunneling.h"
 #include "eon/VesinNeighbors.h"
 
 #include <algorithm>
@@ -592,8 +593,10 @@ bool Hessian::finalizeHessian(int size) {
   using ColMajorXd =
       Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
   ColMajorXd hessianCol = hessian;
-  Eigen::SelfAdjointEigenSolver<ColMajorXd> es(hessianCol,
-                                               Eigen::EigenvaluesOnly);
+  const bool withModes = parameters.hessian_options().write_modes;
+  Eigen::SelfAdjointEigenSolver<ColMajorXd> es(
+      hessianCol,
+      withModes ? Eigen::ComputeEigenvectors : Eigen::EigenvaluesOnly);
   eonc::helpers::getTime(&t1, nullptr, nullptr);
   QUILL_LOG_DEBUG(log, "[Hessian] eigenvalue problem took {:.4e} seconds\n",
                   t1 - t0);
@@ -608,6 +611,11 @@ bool Hessian::finalizeHessian(int size) {
   if (!freqs.allFinite()) {
     QUILL_LOG_ERROR(log, "[Hessian] non-finite eigenvalues; aborting");
     return false;
+  }
+  if (withModes) {
+    modes = es.eigenvectors();
+  } else {
+    modes.resize(0, 0);
   }
 
   return true;
@@ -638,6 +646,56 @@ VectorXd Hessian::removeZeroFreqs(const VectorXd &freqs) {
                       nremoved);
   }
   return newfreqs.head(size - nremoved);
+}
+
+std::vector<double> cartesianMode(const Matter &matter, const VectorXi &atoms,
+                                  const Eigen::Ref<const VectorXd> &mode) {
+  const long n = matter.numberOfAtoms();
+  std::vector<double> out(static_cast<size_t>(3 * n), 0.0);
+  if (mode.size() != 3 * atoms.size()) {
+    throw std::invalid_argument("cartesianMode: mode length is not 3 x atoms");
+  }
+  double norm2 = 0.0;
+  for (long j = 0; j < mode.size(); ++j) {
+    const long atom = atoms(j / 3);
+    const double mass = matter.getMass(atom);
+    if (!(mass > 0.0)) {
+      throw std::invalid_argument("cartesianMode: atom without a mass");
+    }
+    const double x = mode(j) / std::sqrt(mass);
+    out[static_cast<size_t>(3 * atom + j % 3)] = x;
+    norm2 += x * x;
+  }
+  if (norm2 > 0.0) {
+    const double scale = 1.0 / std::sqrt(norm2);
+    for (double &x : out) {
+      x *= scale;
+    }
+  }
+  return out;
+}
+
+bool writeNormalModes(Matter &matter, const VectorXi &atoms,
+                      const VectorXd &eigenvalues, const MatrixXd &modes,
+                      const std::string &path) {
+  if (modes.cols() != eigenvalues.size() || modes.rows() != 3 * atoms.size()) {
+    return false;
+  }
+  for (long k = 0; k < eigenvalues.size(); ++k) {
+    const double lambda = eigenvalues(k);
+    const double hw =
+        std::copysign(tunneling::kHbar * std::sqrt(std::abs(lambda)), lambda);
+    io::ConFrameMetadata meta;
+    meta.frame_index = static_cast<uint64_t>(k);
+    meta.scalars = {{"mode_eigenvalue", lambda},
+                    {"hbar_omega", hw},
+                    {"wavenumber", hw * kEvToWavenumber}};
+    meta.displacements = cartesianMode(matter, atoms, modes.col(k));
+    if (!io::io_ok(matter.matter2con(path, k > 0, &meta))) {
+      return false;
+    }
+  }
+  return true;
 }
 
 bool trivialModeCountIsPhysical(long removed, long fixedAtoms) {

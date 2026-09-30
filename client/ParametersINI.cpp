@@ -1152,6 +1152,9 @@ int load_ini(INIReader &ini, Parameters &params) {
   ParametersLoadAccess::hessian_options(params).checkpoint_path =
       ini.Get("Hessian", "checkpoint_path",
               ParametersLoadAccess::hessian_options(params).checkpoint_path);
+  ParametersLoadAccess::hessian_options(params).write_modes =
+      ini.GetBoolean("Hessian", "write_modes",
+                     ParametersLoadAccess::hessian_options(params).write_modes);
 
   // [Nudged Elastic Band] //
   const std::string neb_section = "Nudged Elastic Band";

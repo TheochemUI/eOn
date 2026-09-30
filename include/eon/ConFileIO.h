@@ -79,6 +79,10 @@ struct ConFrameMetadata {
   std::vector<ConMetadataValue> scalars;
   std::vector<ConMetadataText> strings;
   std::optional<std::string> raw_json;
+  /// Per-atom displacement, row-major N x 3 in Angstrom (a normal mode, a
+  /// dimer direction). Written as the readcon displacements section when
+  /// not empty.
+  std::vector<double> displacements;
   /// When set, this write includes or omits force sections regardless of
   /// Parameters.main_options().writeConForces or the process-wide flag.
   std::optional<bool> write_con_forces;
