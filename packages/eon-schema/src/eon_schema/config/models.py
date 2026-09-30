@@ -715,6 +715,40 @@ class SocketNWChemPot(BaseModel):
     )
 
 
+class Cpmd(BaseModel):
+    """Scalar CPMD message used when ``[RgpotPot] params_path`` is empty.
+
+    ``cutOffRy`` is the cutoff key. The C++ reader also accepts ``cutoff_ry``
+    and ``cpmd_cut_off_ry``. A ``params_path`` file owns these fields, and
+    ``input_block`` is still appended to that file's blocks.
+    """
+
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    functional: str = Field(
+        default="BLYP",
+        description="XC functional. Overrides [RgpotPot] functional.",
+    )
+    cutOffRy: float = Field(
+        default=70.0,
+        description="Plane-wave cutoff in Rydberg. Overrides [RgpotPot] cutoff_ry.",
+    )
+    charge: int = Field(default=0, description="Total charge.")
+    multiplicity: int = Field(default=1, description="Spin multiplicity (2S+1).")
+    title: str = Field(default="", description="Comment header in the rendered deck.")
+    memory_mb: int = Field(
+        default=0,
+        description="Engine memory limit in MB. 0 uses the engine default.",
+    )
+    input_block: str = Field(
+        default="",
+        description=(
+            "CPMD &SECTION text appended to inputBlocks. Sections loaded"
+            " from params_path stay."
+        ),
+    )
+
+
 class RgpotPot(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
@@ -734,10 +768,18 @@ class RgpotPot(BaseModel):
     )
     scf_type: str = Field(default="rhf", description="SCF type for the NWChem backend.")
     functional: str = Field(
-        default="BLYP", description="XC functional for the CPMD backend."
+        default="BLYP",
+        description=(
+            "XC functional for the CPMD backend. [cpmd] functional overrides"
+            " this key when params_path is empty."
+        ),
     )
     cutoff_ry: float = Field(
-        default=70.0, description="Plane-wave cutoff (Ry) for the CPMD backend."
+        default=70.0,
+        description=(
+            "Plane-wave cutoff (Ry) for the CPMD backend. [cpmd] cutOffRy"
+            " overrides this key when params_path is empty."
+        ),
     )
     charge: int = Field(default=0, description="Total charge.")
     multiplicity: int = Field(default=1, description="Spin multiplicity.")
@@ -806,8 +848,9 @@ class RgpotPot(BaseModel):
     input_block: str = Field(
         default="",
         description=(
-            "Verbatim input block for the engine: NWChem inputBlocks, or CPMD"
-            " &SECTION text placed ahead of the sections cpmdc generates."
+            "Verbatim input block. For NWChem this is inputBlocks. For CPMD,"
+            " [cpmd] input_block overrides this key and the text is appended"
+            " to the message inputBlocks."
         ),
     )
     permanent_dir: str = Field(
@@ -817,9 +860,11 @@ class RgpotPot(BaseModel):
     params_path: str = Field(
         default="",
         description=(
-            "Path to a Cap'n Proto CPMDParams message. The message is the"
-            " CPMD method (sections, pseudopotentials, and cell) and replaces"
-            " functional, cutoff_ry, charge, and multiplicity."
+            "Path to a Cap'n Proto CPMDParams message. The file owns the"
+            " CPMD method, including inputSections and inputBlocks, and the"
+            " scalar keys are not written over it. input_block is appended"
+            " to inputBlocks. engine_path, engine_root, scratch_dir, and"
+            " permanent_dir still place the run."
         ),
     )
     ranks_per_image: int = Field(

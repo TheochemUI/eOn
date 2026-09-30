@@ -2238,6 +2238,38 @@ RgpotPot:
 
 ################################################################################
 
+cpmd:
+    options:
+        functional:
+            kind: string
+            default: "BLYP"
+
+        cutOffRy:
+            kind: float
+            default: 70.0
+
+        charge:
+            kind: int
+            default: 0
+
+        multiplicity:
+            kind: int
+            default: 1
+
+        title:
+            kind: string
+            default: ""
+
+        memory_mb:
+            kind: int
+            default: 0
+
+        input_block:
+            kind: string
+            default: ""
+
+################################################################################
+
 Metatomic:
     options:
         model_path:

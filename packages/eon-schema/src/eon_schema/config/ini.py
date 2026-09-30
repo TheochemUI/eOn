@@ -69,6 +69,7 @@ MODEL_INI_SECTION: dict[str, str] = {
     "ZBLPot": "ZBLPot",
     "SocketNWChemPot": "SocketNWChemPot",
     "RgpotPot": "RgpotPot",
+    "Cpmd": "cpmd",
     "ASE_NWCHEM": "ASE_NWCHEM",
     "ASE_ORCA": "ASE_ORCA",
     "LBFGSConfig": "LBFGS",

@@ -41,6 +41,7 @@ SECTION_CLASS_NAMES = {
     "IRA": "IRAConfig",
     "BGSD": "BGSDConfig",
     "RgpotPot": "RgpotPot",
+    "cpmd": "Cpmd",
     "amsel": "AmselConfig",
 }
 

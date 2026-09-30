@@ -307,10 +307,13 @@ int load_ini(INIReader &ini, Parameters &params) {
         sec, "functional",
         ini.Get(sec, "cpmd_functional",
                 ParametersLoadAccess::rgpot_options(params).functional));
+    // cutOffRy is the schema name. cutoff_ry and cpmd_cut_off_ry still load.
     ParametersLoadAccess::rgpot_options(params).cutoff_ry = ini.GetReal(
-        sec, "cutoff_ry",
-        ini.GetReal(sec, "cpmd_cut_off_ry",
-                    ParametersLoadAccess::rgpot_options(params).cutoff_ry));
+        sec, "cutOffRy",
+        ini.GetReal(sec, "cutoff_ry",
+                    ini.GetReal(sec, "cpmd_cut_off_ry",
+                                ParametersLoadAccess::rgpot_options(params)
+                                    .cutoff_ry)));
     ParametersLoadAccess::rgpot_options(params).charge = ini.GetInteger(
         sec, "charge",
         ini.GetInteger(sec, "nwchem_charge",
@@ -426,6 +429,25 @@ int load_ini(INIReader &ini, Parameters &params) {
       ParametersLoadAccess::rgpot_options(params).xtb_charge =
           ini.GetReal("XTBPot", "charge",
                       ParametersLoadAccess::rgpot_options(params).xtb_charge);
+    }
+    // [RgpotPot] is the backend switch. [cpmd] is the scalar CPMD message
+    // and overrides that section when the backend is CPMD. A params_path
+    // file, applied later, owns the same fields and is not overwritten
+    // by either section. input_block from here is appended to the file.
+    if (be == "cpmd" || be == "cpmdc" || be == "cpmdpot") {
+      auto &rg = ParametersLoadAccess::rgpot_options(params);
+      rg.functional = ini.Get(
+          "cpmd", "functional",
+          ini.Get("cpmd", "cpmd_functional", rg.functional));
+      rg.cutoff_ry = ini.GetReal(
+          "cpmd", "cutOffRy",
+          ini.GetReal("cpmd", "cutoff_ry",
+                      ini.GetReal("cpmd", "cpmd_cut_off_ry", rg.cutoff_ry)));
+      rg.charge = ini.GetInteger("cpmd", "charge", rg.charge);
+      rg.multiplicity = ini.GetInteger("cpmd", "multiplicity", rg.multiplicity);
+      rg.title = ini.Get("cpmd", "title", rg.title);
+      rg.memory_mb = ini.GetInteger("cpmd", "memory_mb", rg.memory_mb);
+      rg.input_block = ini.Get("cpmd", "input_block", rg.input_block);
     }
   }
 

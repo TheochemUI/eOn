@@ -144,6 +144,49 @@ TEST_CASE("RgpotPot reads params_path and ranks_per_image from INI",
   REQUIRE(p.rgpot_options().ranks_per_image == 6);
 }
 
+TEST_CASE("cpmd section supplies cutOffRy and overrides RgpotPot",
+          "[params][ini][RGPOT]") {
+  Parameters p;
+  REQUIRE(p.load_ini_text("[Potential]\npotential = rgpot\n\n"
+                          "[RgpotPot]\nbackend = cpmdc\n"
+                          "cutOffRy = 10\ncharge = 1\n"
+                          "input_block = FROM_SHARED\n"
+                          "params_path = /data/si3n4.bin\n\n"
+                          "[cpmd]\nfunctional = PBE\n"
+                          "cutOffRy = 55.5\ncharge = 4\n"
+                          "input_block = DEMO_BLOCK\n") == 0);
+  REQUIRE(p.rgpot_options().functional == "PBE");
+  REQUIRE(p.rgpot_options().cutoff_ry == Catch::Approx(55.5));
+  REQUIRE(p.rgpot_options().charge == 4);
+  REQUIRE(p.rgpot_options().input_block == "DEMO_BLOCK");
+  REQUIRE(p.rgpot_options().params_path == "/data/si3n4.bin");
+}
+
+TEST_CASE("cpmd section still loads the older cutoff keys",
+          "[params][ini][RGPOT]") {
+  Parameters legacy;
+  REQUIRE(legacy.load_ini_text("[Potential]\npotential = rgpot\n\n"
+                               "[RgpotPot]\nbackend = cpmdc\n\n"
+                               "[cpmd]\ncutoff_ry = 40\n") == 0);
+  REQUIRE(legacy.rgpot_options().cutoff_ry == Catch::Approx(40.0));
+
+  Parameters older;
+  REQUIRE(older.load_ini_text("[Potential]\npotential = rgpot\n\n"
+                              "[RgpotPot]\nbackend = cpmdc\n\n"
+                              "[cpmd]\ncpmd_cut_off_ry = 33\n") == 0);
+  REQUIRE(older.rgpot_options().cutoff_ry == Catch::Approx(33.0));
+}
+
+TEST_CASE("nwchemc ignores the cpmd section", "[params][ini][RGPOT]") {
+  Parameters p;
+  REQUIRE(p.load_ini_text("[Potential]\npotential = rgpot\n\n"
+                          "[RgpotPot]\nbackend = nwchemc\n\n"
+                          "[cpmd]\ncutOffRy = 12.5\n"
+                          "input_block = SHOULD_NOT_APPLY\n") == 0);
+  REQUIRE(p.rgpot_options().cutoff_ry == Catch::Approx(70.0));
+  REQUIRE(p.rgpot_options().input_block.empty());
+}
+
 TEST_CASE("RgpotPot cpmdc refuses a params_path it cannot read",
           "[PotTest][RGPOT][cpmdc]") {
 #ifndef WITH_RGPOT

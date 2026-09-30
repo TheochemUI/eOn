@@ -19,9 +19,11 @@ struct RGPotEngineOptions {
   std::string title;
   int memory_mb{0};
   std::string scratch_dir;
-  std::string input_block;   // raw input text for NWChem or CPMD inputBlocks
+  // NWChem inputBlocks, or CPMD text appended to inputBlocks.
+  std::string input_block;
   std::string permanent_dir; // CPMD FILEPATH for RESTART files (cpmdc)
-  std::string params_path;   // optional CPMDParams message file (cpmdc)
+  // CPMDParams file. When set, scalar method keys are not written over it.
+  std::string params_path;
   int ranks_per_image{0};    // cpmdc: ranks per calculator group, 0 = off
   // Metatomic (backend=metatomic): dlopen libmetatomic_engine.so
   std::string model_path;

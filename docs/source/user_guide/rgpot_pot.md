@@ -129,17 +129,53 @@ eOn's `-Dwith_mpi=enabled` option builds the client/server program. Calculator
 groups are this page's launch, `mpirun -np N eonclient`, with rgpot built
 `-Drgpot:with_mpi=enabled`.
 
-### CPMDParams file
+### CPMDParams file and the cpmd section
 
-`params_path` loads a CPMDParams message from disk. The message carries
-the sections, the pseudopotentials, and the cell. It replaces
-`functional`, `cutoff_ry`, `charge`, and `multiplicity`.
+Three layers build the message CPMD receives.
 
-After the file is read, `engine_path`, `engine_library`, `engine_root`,
-`scratch_dir`, `permanent_dir`, and `input_block` still apply.
-`RGPOT_PARAMS_PATH` overrides `params_path` when the variable is set.
-Every rank reads the file before `MPI_Comm_split`. When any rank cannot
-read it, every rank throws that error and the split does not run.
+`params_path` on `[RgpotPot]` is a Cap'n Proto CPMDParams file. It owns
+`functional`, `cutOffRy`, `charge`, `multiplicity`, `title`, `memoryMb`,
+`inputSections`, and `inputBlocks`. `RGPOT_PARAMS_PATH` overrides the
+ini key. Scalar keys are not written over a file that loaded. Every rank
+reads the file before `MPI_Comm_split`. When any rank cannot read it,
+every rank throws that error and the split does not run.
+
+When `params_path` is empty, `[cpmd]` supplies those scalars and overrides
+the copies on `[RgpotPot]`. `cutOffRy` is the cutoff key. `cutoff_ry` and
+`cpmd_cut_off_ry` still load, on `[cpmd]` or on `[RgpotPot]`. `functional`
+and `cpmd_functional` still load. `[cpmd]` is read only when `backend` is
+`cpmd`, `cpmdc`, or `cpmdpot`.
+
+`engine_path`, `engine_library`, `engine_root`, `scratch_dir`,
+`permanent_dir`, and `ranks_per_image` stay on `[RgpotPot]`. They place
+the process and apply after either source.
+
+`input_block` is one more `inputBlocks` entry. `[cpmd]` supplies it, then
+`[RgpotPot]`, then `RGPOT_CPMD_INPUT_BLOCK` when those strings are empty.
+Sections loaded from the file stay. A block already in the file stays,
+and the ini text follows it. An empty `input_block` leaves the file's
+blocks unchanged.
+
+```{code-block} ini
+[Potential]
+potential = rgpot
+
+[RgpotPot]
+backend = cpmdc
+
+[cpmd]
+functional = BLYP
+cutOffRy = 70.0
+charge = 0
+multiplicity = 1
+```
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.Cpmd
+```
+
+That example is the scalar layer. The point, minimization, and band
+examples below keep `params_path`, which is the file layer.
 
 Write the message as Cap'n Proto text. The field names are in the
 [write-cpmdparams how-to](https://github.com/OmniPotentRPC/cpmdc/blob/main/docs/source/howto/write-cpmdparams.rst).
@@ -166,9 +202,10 @@ then tries `RGPOT_CPMD_ENGINE`, then `libcpmdc.so` on the loader path.
 libcpmdc reads `CPMDC_PSEUDO_DIR` for the pseudopotential directory. When
 that variable is unset, it reads `CPMD_PP_LIBRARY_PATH`.
 
-`RGPOT_CPMD_INPUT_BLOCK` fills `input_block` when the ini key is empty.
-For this backend the text is CPMD `&SECTION` lines. cpmdc places that
-text ahead of the sections it generates.
+`RGPOT_CPMD_INPUT_BLOCK` fills `input_block` when the `[cpmd]` key and
+the `[RgpotPot]` key are empty. The text is appended to `inputBlocks`.
+cpmdc places those blocks ahead of the sections it generates. Sections
+in the CPMDParams file are not removed.
 
 `permanent_dir` is the CPMD `FILEPATH` for `RESTART` files. `scratch_dir`
 is the fallback directory.

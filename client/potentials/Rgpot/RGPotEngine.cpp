@@ -6,6 +6,7 @@
 #define _GNU_SOURCE
 #endif
 #include "eon/potentials/Rgpot/RGPotEngine.h"
+#include "eon/potentials/Rgpot/CpmdMessage.h"
 
 #include <algorithm>
 #include <array>
@@ -180,6 +181,59 @@ bool agree_construction(std::string &message) {
 
 } // namespace
 
+namespace eon {
+::CPMDParams::Builder fillCpmdParams(::capnp::MallocMessageBuilder &msg,
+                                     const RGPotEngineOptions &opt) {
+  ::CPMDParams::Builder params = msg.initRoot<::CPMDParams>();
+  if (!opt.params_path.empty()) {
+    const auto words = read_params_file(opt.params_path);
+    ::capnp::FlatArrayMessageReader reader(
+        kj::arrayPtr(words.data(), words.size()));
+    msg.setRoot(reader.getRoot<::CPMDParams>());
+    params = msg.getRoot<::CPMDParams>();
+  } else {
+    params.setFunctional(opt.functional);
+    params.setCutOffRy(opt.cutoff_ry);
+    params.setCharge(opt.charge);
+    params.setMultiplicity(opt.multiplicity);
+    if (!opt.title.empty())
+      params.setTitle(opt.title);
+    if (opt.memory_mb > 0)
+      params.setMemoryMb(static_cast<uint32_t>(opt.memory_mb));
+  }
+  if (!opt.engine_path.empty())
+    params.setEnginePath(opt.engine_path);
+  else if (!opt.engine_library.empty())
+    params.setEnginePath(opt.engine_library);
+  if (!opt.engine_root.empty())
+    params.setCpmdRoot(opt.engine_root);
+  if (!opt.scratch_dir.empty())
+    params.setScratchDir(opt.scratch_dir);
+  if (!opt.permanent_dir.empty())
+    params.setPermanentDir(opt.permanent_dir);
+
+  std::string block = opt.input_block;
+  if (block.empty()) {
+    if (const char *env = std::getenv("RGPOT_CPMD_INPUT_BLOCK"))
+      block = env;
+  }
+  if (!block.empty()) {
+    std::vector<std::string> kept;
+    {
+      auto existing = params.getInputBlocks();
+      kept.reserve(existing.size());
+      for (auto text : existing)
+        kept.emplace_back(text.cStr());
+    }
+    auto blocks = params.initInputBlocks(kept.size() + 1);
+    for (std::size_t i = 0; i < kept.size(); ++i)
+      blocks.set(i, kept[i]);
+    blocks.set(kept.size(), block);
+  }
+  return params;
+}
+} // namespace eon
+
 struct RGPotEngine::Impl {
   enum class Backend { Nwchemc, Cpmdc, Metatomic, Xtb };
   Backend backend{Backend::Nwchemc};
@@ -250,47 +304,7 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
     std::string local_error;
     try {
       ::capnp::MallocMessageBuilder msg;
-      ::CPMDParams::Builder params = msg.initRoot<::CPMDParams>();
-      if (!opt.params_path.empty()) {
-        // The whole CPMDParams message from disk: functional, cutoff, and the
-        // inputSections (cell, symmetry, pseudopotential channels, optimizer).
-        // The keys below only place the engine and its scratch.
-        const auto words = read_params_file(opt.params_path);
-        ::capnp::FlatArrayMessageReader reader(
-            kj::arrayPtr(words.data(), words.size()));
-        msg.setRoot(reader.getRoot<::CPMDParams>());
-        params = msg.getRoot<::CPMDParams>();
-      } else {
-        params.setFunctional(opt.functional);
-        params.setCutOffRy(opt.cutoff_ry);
-        params.setCharge(opt.charge);
-        params.setMultiplicity(opt.multiplicity);
-        if (!opt.title.empty())
-          params.setTitle(opt.title);
-        if (opt.memory_mb > 0)
-          params.setMemoryMb(static_cast<uint32_t>(opt.memory_mb));
-      }
-      if (!opt.engine_path.empty())
-        params.setEnginePath(opt.engine_path);
-      else if (!opt.engine_library.empty())
-        params.setEnginePath(opt.engine_library);
-      if (!opt.engine_root.empty())
-        params.setCpmdRoot(opt.engine_root);
-      if (!opt.scratch_dir.empty())
-        params.setScratchDir(opt.scratch_dir);
-      if (!opt.permanent_dir.empty())
-        params.setPermanentDir(opt.permanent_dir);
-      // Raw &SECTION text goes ahead of the sections cpmdc generates, so a
-      // periodic &SYSTEM or a full &DFT here replaces the isolated cold deck.
-      std::string block = opt.input_block;
-      if (block.empty()) {
-        if (const char *env = std::getenv("RGPOT_CPMD_INPUT_BLOCK"))
-          block = env;
-      }
-      if (!block.empty()) {
-        auto blocks = params.initInputBlocks(1);
-        blocks.set(0, block);
-      }
+      ::CPMDParams::Builder params = eon::fillCpmdParams(msg, opt);
       impl_->cpmd = std::make_unique<rgpot::CPMDPot>(params.asReader());
       pin_cpmd_library(opt.engine_path.empty() ? opt.engine_library
                                                : opt.engine_path);

@@ -141,6 +141,8 @@ struct rgpot_options_t {
   std::string theory{"scf"};
   std::string scf_type{"rhf"};
   std::string functional{"BLYP"};
+  // [cpmd] cutOffRy wins when params_path is empty. cutoff_ry and
+  // cpmd_cut_off_ry on [cpmd] or [RgpotPot] still load.
   double cutoff_ry{70.0};
   int charge{0};
   int multiplicity{1};
@@ -150,10 +152,13 @@ struct rgpot_options_t {
   std::string title{};
   int memory_mb{0};
   std::string scratch_dir{};
+  // [cpmd] input_block wins over this [RgpotPot] key for a CPMD backend.
+  // The text is appended to inputBlocks and does not replace inputSections.
   std::string input_block{};
   std::string permanent_dir{};
-  // Serialized Cap'n Proto CPMDParams message (with inputSections); for
-  // backend=cpmdc it replaces the scalar method keys above.
+  // Serialized Cap'n Proto CPMDParams. When set, it is the method and the
+  // scalar keys above are not written over it. [cpmd] supplies those
+  // scalars when this path is empty.
   std::string params_path{};
   // cpmdc: split the MPI world into groups of this many ranks, one CPMD
   // session per group, and spread NEB images over the groups. 0 keeps one
