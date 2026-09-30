@@ -28,7 +28,7 @@ option('with_rgpot', type : 'boolean', value : true, deprecated : true,
 option('with_serve', type : 'boolean', value : false,
        description : 'eOn as rgpot-compatible Cap\'n Proto RPC *server* (eonclient --serve); clients connect TO eOn (NOT RGPOT pot, NOT potserv client)')
 # (RPC *client* to potserv is not an eOn pot type; use rgpot potserv + external client.)
-option('with_parallel_neb', type : 'boolean', value : false, description : 'Enable parallel NEB bead force evaluations (TBB on GCC/Clang; nvc++ uses -Dstdpar instead)')
+option('with_parallel_neb', type : 'boolean', value : false, description : 'Deprecated, no effect: NEB images use a bounded std::thread pool; nvc++ uses -Dstdpar')
 option('stdpar', type : 'combo', choices : ['none', 'cpu', 'gpu'], value : 'none',
        description : 'nvc++ std::execution offload for NEB image forces. cpu=-stdpar=multicore, gpu=-stdpar=gpu. Morse and other host potentials stay on the CPU. Not QMCPACK QMC_GPU.')
 option('stdpar_gpu_cc', type : 'string', value : 'cc80,cc90',

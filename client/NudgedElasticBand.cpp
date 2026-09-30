@@ -27,6 +27,7 @@
 #include "eon/SafeMath.h"
 #include "magic_enum/magic_enum.hpp"
 
+#include "ForEachImage.h"
 #include "eon/EonLogger.h"
 #include <format>
 #include <stdexcept>
@@ -638,31 +639,14 @@ void NudgedElasticBand::updateForces(bool ci_active) {
         eonc::potAllowsSharedInstance(*pot) || perImagePotentials_;
     if (numImages > 1 && params.main_options().parallel && canParallel) {
 #ifdef EON_PARALLEL_NEB
-      // TBB-backed std::execution::par (meson -Dwith_parallel_neb=true).
-      // One thread per image oversubscribes a 20-bead band on 8 cores.
+      // nvc++ -stdpar=multicore|gpu (meson -Dstdpar=cpu|gpu).
       std::vector<long> beads(static_cast<size_t>(numImages));
       std::iota(beads.begin(), beads.end(), 1);
       std::for_each(std::execution::par, beads.begin(), beads.end(),
                     [this](long i) { path[i]->getForcesRaw(); });
 #else
-      // std::thread rather than std::jthread -- Apple Clang libc++ lacks the
-      // latter. Wrap launch + join so a throw from any lambda still joins the
-      // remaining threads before we rethrow; otherwise the unjoined std::thread
-      // destructors call std::terminate().
-      std::vector<std::thread> threads;
-      threads.reserve(static_cast<size_t>(numImages));
-      try {
-        for (long i = 1; i <= numImages; i++) {
-          threads.emplace_back([this, i] { path[i]->getForcesRaw(); });
-        }
-        for (auto &t : threads)
-          t.join();
-      } catch (...) {
-        for (auto &t : threads)
-          if (t.joinable())
-            t.join();
-        throw;
-      }
+      eonc::forEachImage(numImages,
+                         [this](long i) { path[i]->getForcesRaw(); });
 #endif
     } else {
       for (long i = 1; i <= numImages; i++) {

@@ -1239,9 +1239,8 @@ for name in ("metatensor", "metatensor_torch", "metatomic", "vesin"):
     potentials += [metatomic_pot]
 endif
 
-# NEB image-force std::execution::par.
-# GCC/Clang: -Dwith_parallel_neb=true pulls TBB (libstdc++ backend).
-# nvc++: -Dstdpar=cpu|gpu adds -stdpar=multicore|gpu and does not need TBB.
+# NEB image forces. GCC/Clang: a bounded std::thread pool, no dependency.
+# nvc++: -Dstdpar=cpu|gpu adds -stdpar=multicore|gpu and std::execution::par.
 # The potential is the cost. Do not wrap Morse / LJ atom loops in
 # std::for_each(std::execution::par); that is cargo-cult vs the surf-notes
 # nvc++ / -mp=gpu / QMC_GPU=openmp;cuda path (QMCPACK, not eOn).
@@ -1269,14 +1268,10 @@ if stdpar != 'none'
     _args += ['-DEON_PARALLEL_NEB']
 endif
 
-if get_option('with_parallel_neb')
-    if stdpar == 'none'
-        tbb_dep = dependency('tbb', required : true)
-        _deps += [tbb_dep]
-    endif
-    if '-DEON_PARALLEL_NEB' not in _args
-        _args += ['-DEON_PARALLEL_NEB']
-    endif
+if get_option('with_parallel_neb') and stdpar == 'none'
+    warning('with_parallel_neb no longer needs TBB and changes nothing: ' +
+            'NEB images run on a bounded std::thread pool whenever ' +
+            '[Main] parallel = true. Use -Dstdpar=cpu|gpu for nvc++.')
 endif
 
 if get_option('with_artn')
@@ -1582,6 +1577,7 @@ if get_option('with_tests')
         ['test_proj_rot_trans', 'ProjectOutRotTransTest.cpp', ''],
         ['test_epicenters', 'EpiCentersTest.cpp', 'Pt_Heptamer_FrozenLayers'],
         ['test_storage_order', 'StorageOrderTest.cpp', ''],
+        ['test_for_each_image', 'ForEachImageTest.cpp', ''],
         # neb_morse workdir: displacement synth test needs reactant.con (#189)
         ['test_helpers', 'HelperFunctionsTest.cpp', 'neb_morse'],
         ['test_bundling', 'BundlingTest.cpp', ''],
