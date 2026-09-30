@@ -25,9 +25,19 @@ def test_morse_akmc_inserts_then_suggests(tmp_path, monkeypatch, eon):
         eon()
         if log_path.is_file() and "Made a KDB suggestion" in log_path.read_text():
             break
-    text = log_path.read_text()
+    text = log_path.read_text() if log_path.is_file() else ""
+    details = [
+        f"kdb_mdb={(tmp_path / 'kdb' / 'data.mdb').is_file()}",
+        f"corpus={(tmp_path / 'readcon.db' / 'data.mdb').is_file()}",
+    ]
+    for path in sorted(tmp_path.rglob("search_results.txt")):
+        details.append(f"--- {path.relative_to(tmp_path)}\n{path.read_text()[-800:]}")
+    for path in sorted(tmp_path.rglob("stderr.dat")):
+        err = path.read_text(errors="replace")[-500:]
+        if err.strip():
+            details.append(f"--- {path.relative_to(tmp_path)}\n{err}")
     assert "Python module kdb not found" not in text
-    assert "Made a KDB suggestion" in text
+    assert "Made a KDB suggestion" in text, "\n".join(details + [text[-2500:]])
     assert "readcon.db" in text
     assert (tmp_path / "kdb" / "data.mdb").is_file()
     assert (tmp_path / "readcon.db" / "data.mdb").is_file()

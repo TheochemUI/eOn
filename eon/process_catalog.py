@@ -7,9 +7,10 @@ refines from the stored saddle, then a random displacement follows when
 no suggestion remains.
 
 ``kdb_nf`` is the neighbor fudge (a fraction). ``kdb_dc`` is the distance
-cutoff in angstroms. ``kdb_mac`` is the minimum cosine between the stored
-mode and the reactant-to-saddle displacement. ``Paths.kdb`` is the
-directory ``amsel.KdbStore`` opens.
+cutoff in angstroms. ``kdb_mac`` is the minimum absolute cosine at which
+the stored mode is the refine direction; below it the direction is the
+reactant-to-saddle vector. ``Paths.kdb`` is the directory
+``amsel.KdbStore`` opens.
 """
 
 from __future__ import annotations
@@ -167,24 +168,49 @@ def _load_frame(corpus_directory: Path, key: bytes):
     return text, traj_id, frame_idx
 
 
-def _accepts(process, reactant, corpus_directory: Path, nf: float, dc: float, mac: float) -> bool:
+def _suggestion_mode(process, reactant, saddle, mac: float) -> np.ndarray:
+    """Direction for a refine.
+
+    The stored mode is used when its cosine with the reactant-to-saddle
+    vector is at least ``mac``. A negative cosine flips the mode. Below
+    ``mac`` the direction is that vector, so a curved path is still offered.
+    """
+    stored = np.asarray(list(process.mode), dtype=float).reshape(-1, 3)
+    cosine = _mode_cosine(stored, reactant, saddle)
+    if abs(cosine) >= float(mac) and float(np.linalg.norm(stored)) > 0.0:
+        if cosine < 0.0:
+            return -stored
+        return stored
+    logger.info(
+        "kdb mode cosine=%.3f is below mac=%s; using the reactant-to-saddle vector",
+        cosine,
+        mac,
+    )
+    return np.asarray(saddle.r, dtype=float) - np.asarray(reactant.r, dtype=float)
+
+
+def _accepts(process, reactant, corpus_directory: Path, nf: float, dc: float):
+    """Return (reactant, saddle) frames when the stored reactant matches."""
     if not process.saddle_frame_key or not process.reactant_frame_key:
-        return False
+        return None
     try:
         reactant_text, _, _ = _load_frame(corpus_directory, process.reactant_frame_key)
         saddle_text, _, _ = _load_frame(corpus_directory, process.saddle_frame_key)
     except Exception:
         logger.exception("readcon-db frame load failed")
-        return False
+        return None
     stored_reactant = io.loadcon(io.StringIO(reactant_text))
     stored_saddle = io.loadcon(io.StringIO(saddle_text))
     allowed = float(dc) * (1.0 + float(nf))
-    if _max_distance(reactant, stored_reactant) > allowed:
-        return False
-    mode = np.asarray(list(process.mode), dtype=float)
-    if _mode_cosine(mode, stored_reactant, stored_saddle) < float(mac):
-        return False
-    return True
+    mismatch = _max_distance(reactant, stored_reactant)
+    if mismatch > allowed:
+        logger.info(
+            "kdb reactant mismatch %.4f A, allowed %.4f A",
+            mismatch,
+            allowed,
+        )
+        return None
+    return stored_reactant, stored_saddle
 
 
 def insert(state, process_id, config) -> bool:
@@ -225,12 +251,13 @@ def insert(state, process_id, config) -> bool:
         keys.append(pack_frame_key(*key))
     reactant_key, saddle_key, product_key = keys
     mode = np.asarray(state.get_process_mode(process_id), dtype=float)
-    reactant = io.loadcon(str(reactant_path))
     product = io.loadcon(str(product_path))
     store = _open_store(config)
     if store is None:
         return False
-    env = env_hash(reactant)
+    # Key by the state reactant. The client's reactant file is the same
+    # minimum rewritten, and a 1e-4 A grid would miss it.
+    env = env_hash(state.get_reactant())
     try:
         existing = store.lookup(env)
     except Exception:
@@ -300,8 +327,10 @@ def _materialize(state, config, store) -> None:
     for index, process in enumerate(processes):
         if index in done:
             continue
-        if not _accepts(process, reactant, corpus_directory, nf, dc, mac):
+        pair = _accepts(process, reactant, corpus_directory, nf, dc)
+        if pair is None:
             continue
+        stored_reactant, stored_saddle = pair
         saddle_text, traj_id, frame_idx = _load_frame(
             corpus_directory, process.saddle_frame_key
         )
@@ -311,7 +340,7 @@ def _materialize(state, config, store) -> None:
         done_path = directory / f".done_{index}"
         if not saddle_path.is_file():
             saddle_path.write_text(saddle_text)
-            mode = np.asarray(list(process.mode), dtype=float).reshape(-1, 3)
+            mode = _suggestion_mode(process, stored_reactant, stored_saddle, mac)
             io.save_mode(str(mode_path), mode)
             barrier_path.write_text(f"{float(process.barrier_ev):.10f}\n")
             (directory / f"KEY_{index}").write_text(f"{traj_id} {frame_idx}\n")
@@ -353,7 +382,6 @@ def make_suggestion(config, state):
     and the saddle frame is loaded from readcon-db. Each process is
     offered once; the caller then uses a random displacement.
     """
-    _nf, _dc, mac = _floats(config)
     store = _open_store(config)
     if store is None:
         return None, None
@@ -385,10 +413,6 @@ def make_suggestion(config, state):
         if path.is_file():
             path.unlink()
     _mark_consumed(config, state, int(number))
-    # A file written before mac was raised is not a suggestion.
-    reactant = state.get_reactant()
-    if _mode_cosine(mode, reactant, displacement) < mac:
-        return make_suggestion(config, state)
     logger.info(
         "KDB suggestion barrier=%.4f eV saddle frame %s:%s from readcon.db",
         barrier,

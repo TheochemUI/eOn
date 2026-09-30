@@ -54,9 +54,10 @@ The three match numbers are `kdb_nf`, `kdb_dc`, and `kdb_mac`:
 - `kdb_dc` is the distance cutoff in angstroms. The default is 0.3.
   A stored reactant matches the current state when every atom is within
   `kdb_dc * (1 + kdb_nf)` angstroms.
-- `kdb_mac` is the minimum cosine between the stored mode and the
-  reactant-to-saddle displacement. The default is 0.7. A suggestion
-  below that cosine is dropped.
+- `kdb_mac` is the minimum absolute cosine between the stored mode and
+  the reactant-to-saddle displacement. The default is 0.7. At or above
+  that cosine the refine uses the stored mode, flipped when the cosine
+  is negative. Below it, the refine uses the reactant-to-saddle vector.
 
 A query log line contains the `kdb_nf` value from the ini.
 

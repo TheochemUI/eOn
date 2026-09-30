@@ -1338,9 +1338,10 @@ class KDBConfig(BaseModel):
     kdb_mac: float = Field(
         default=0.7,
         description=(
-            "Minimum cosine between the stored mode and the "
-            "reactant-to-saddle displacement. A suggestion below this "
-            "cosine is dropped."
+            "Minimum absolute cosine between the stored mode and the "
+            "reactant-to-saddle displacement. At or above this value the "
+            "refine uses the stored mode. Below it, the refine uses the "
+            "reactant-to-saddle vector."
         ),
     )
 
