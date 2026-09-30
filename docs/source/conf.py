@@ -136,6 +136,71 @@ html_theme_options = {
     },
 }
 
+# Each configuration model is a field list, in class order, with its default.
+autodoc_pydantic_model_show_json = False
+autodoc_pydantic_model_show_config_summary = False
+autodoc_pydantic_model_show_validator_summary = False
+autodoc_pydantic_model_show_validator_members = False
+autodoc_pydantic_model_hide_paramlist = True
+autodoc_pydantic_model_show_field_summary = True
+autodoc_pydantic_model_summary_list_order = "bysource"
+autodoc_pydantic_model_member_order = "bysource"
+autodoc_pydantic_field_list_validators = False
+
+# The PDF is a manual: logo and title centered, no blank verso, no wrap arrows.
+latex_engine = "xelatex"
+latex_logo = "_static/favicons/android-chrome-512x512.png"
+latex_elements = {
+    "extraclassoptions": "openany",
+    "fncychap": "",
+    "sphinxsetup": (
+        r"verbatimvisiblespace=\mbox{}, "
+        r"verbatimcontinued=\mbox{}, "
+        r"verbatimhintsturnover=false"
+    ),
+    "preamble": r"""
+\renewcommand{\sphinxmaketitle}{%
+  \let\sphinxrestorepageanchorsetting\relax
+  \ifHy@pageanchor\def\sphinxrestorepageanchorsetting{\Hy@pageanchortrue}\fi
+  \hypersetup{pageanchor=false}%
+  \begin{titlepage}%
+    \let\footnotesize\small
+    \let\footnoterule\relax
+    \begingroup
+      \def\endgraf{ }\def\and{\& }%
+      \pdfstringdefDisableCommands{\def\\{, }}%
+      \hypersetup{pdfauthor={\@author}, pdftitle={\@title}}%
+    \endgroup
+    \vspace*{1.6cm}%
+    \begin{center}%
+      \sphinxincludegraphics[height=3.2cm]{android-chrome-512x512.png}\par
+      \vspace{1.2cm}%
+      {\py@HeaderFamily\Huge \@title \par}
+      \vspace{0.45cm}%
+      {\large long timescale dynamics software \par}
+      \vspace{0.7cm}%
+      {\itshape\large \py@release \releaseinfo \par}
+      \vspace{1.4cm}%
+      {\Large
+        \begin{tabular}[t]{c}
+          \@author
+        \end{tabular}\kern-\tabcolsep \par}
+      \vfill
+      {\large \@date \par}
+      \py@authoraddress \par
+    \end{center}%
+    \@thanks
+  \end{titlepage}%
+  \setcounter{footnote}{0}%
+  \let\thanks\relax\let\maketitle\relax
+  \clearpage
+  \ifdefined\sphinxbackoftitlepage\sphinxbackoftitlepage\fi
+  \if@openright\cleardoublepage\else\clearpage\fi
+  \sphinxrestorepageanchorsetting
+}
+""",
+}
+
 # --- Plugin options -------------------------------------------------
 
 # --- autodoc2 options
