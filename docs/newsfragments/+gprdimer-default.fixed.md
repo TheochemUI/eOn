@@ -1,1 +1,1 @@
-The default Linux build links the GP dimer (`-Dwith_gprd=auto`) from `subprojects/gpr_optim` at `b55c89e2`. `min_mode_method = gprdimer` on the Morse Pt cell is the same saddle as `dimer`, in fewer force calls.
+The default Linux build links the Gaussian process dimer (`-Dwith_gprd=auto`) from `subprojects/gpr_optim` at `b55c89e2`. On the Morse Pt cell, `min_mode_method = gprdimer` reaches the same saddle as `dimer` in fewer force calls.

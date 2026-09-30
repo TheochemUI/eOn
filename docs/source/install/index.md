@@ -87,7 +87,7 @@ meson install -C bbdir
 ```
 
 `min_mode_method = gprdimer` is the GP dimer. `-Dwith_gprd=auto` is the
-default, and on Linux that links the `gpr_optim` tree shipped in
+default, and on Linux that links the `gpr_optim` tree in
 `subprojects/gpr_optim`. The `revision` line in
 `subprojects/gpr_optim.wrap` is the pin (`b55c89e2115388f901839aba2a5808bfcef06f68`).
 Replace the tree from a sibling checkout with:

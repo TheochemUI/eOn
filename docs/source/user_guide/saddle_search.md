@@ -91,10 +91,10 @@ server:
 .. autopydantic_model:: eon.schema.SaddleSearchConfig
 ```
 
-## GP dimer
+## Gaussian process dimer
 
-`min_mode_method = gprdimer` runs the GP dimer. The build flag is
-`-Dwith_gprd=auto` (the default): on Linux it links `subprojects/gpr_optim`
+`min_mode_method = gprdimer` runs the Gaussian process dimer. The option
+is `-Dwith_gprd=auto` (the default): on Linux it links `subprojects/gpr_optim`
 when that tree is present. The pin is the `revision` in
 `subprojects/gpr_optim.wrap`. A sibling checkout replaces the tree with
 `rsync -a ../gpr_optim/ subprojects/gpr_optim/`. `-Dwith_gprd=disabled`
