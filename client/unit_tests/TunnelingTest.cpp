@@ -412,6 +412,18 @@ TEST_CASE("The rate instanton of a cubic well matches its decay rate",
   // Tunnelling beats the classical rate by many orders at T_c / 10.
   REQUIRE(inst.logRate > inst.classicalLogRate + std::log(1e10));
 
+  // The same ring through the block determinant, which a large system uses.
+  {
+    const double logDense = inst.logRate;
+    instantonRate(
+        inst, [&](long, const VectorXd &q) { return pes.hessian(q); },
+        pes.hessian(VectorXd::Zero(1)), 0.0, hs, vb, 0, 0);
+    CAPTURE(inst.logRate, logDense, inst.zeroEigenvalue, inst.negativeModes);
+    REQUIRE(inst.negativeModes == 1);
+    REQUIRE(std::abs(inst.logRate - logDense) < 1e-5);
+    inst.logRate = logDense;
+  }
+
   // The discretisation error falls as 1 / N^2, so doubling the beads and
   // extrapolating removes it; what is left is the semiclassical error of the
   // instanton against Gamma.
@@ -443,4 +455,181 @@ TEST_CASE("The rate instanton refuses a temperature above the crossover",
                     std::invalid_argument);
   REQUIRE_THROWS_AS(crossoverTemperature(pes.hessian(VectorXd::Zero(1))),
                     std::invalid_argument);
+}
+
+namespace {
+
+MatrixXd toyBead(long j, long f, double shift) {
+  MatrixXd h(f, f);
+  for (long a = 0; a < f; ++a) {
+    for (long b = 0; b < f; ++b) {
+      h(a, b) = std::sin(0.37 * (a + 1) + 0.17 * j) *
+                std::cos(0.23 * (b + 1) + 0.11 * j);
+    }
+  }
+  h = 0.5 * (h + h.transpose());
+  h.diagonal().array() += shift;
+  return h;
+}
+
+double denseRingLog(double c, const std::vector<MatrixXd> &diag) {
+  const long f = diag.front().rows();
+  const long n = static_cast<long>(diag.size());
+  MatrixXd big = MatrixXd::Zero(n * f, n * f);
+  const MatrixXd eye = MatrixXd::Identity(f, f);
+  for (long j = 0; j < n; ++j) {
+    big.block(j * f, j * f, f, f) = diag[static_cast<size_t>(j)];
+    const long k = (j + 1) % n;
+    big.block(j * f, k * f, f, f) -= c * eye;
+    big.block(k * f, j * f, f, f) -= c * eye;
+  }
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> es(big, Eigen::EigenvaluesOnly);
+  double sum = 0.0;
+  for (long i = 0; i < es.eigenvalues().size(); ++i) {
+    sum += std::log(std::abs(es.eigenvalues()(i)));
+  }
+  return sum;
+}
+
+} // namespace
+
+TEST_CASE("The cyclic ring determinant matches a dense factorisation",
+          "[Tunneling][Instanton]") {
+  const double c = 1.3;
+  const long n = 7;
+  const long f = 3;
+  std::vector<MatrixXd> diag(static_cast<size_t>(n));
+  for (long j = 0; j < n; ++j) {
+    diag[static_cast<size_t>(j)] =
+        toyBead(j, f, 5.0) + 2.0 * c * MatrixXd::Identity(f, f);
+  }
+  REQUIRE(std::abs(cyclicRingLogAbsDet(c, diag) - denseRingLog(c, diag)) <
+          1e-8);
+  {
+    const long fSolve = diag.front().rows();
+    std::vector<VectorXd> rhs(static_cast<size_t>(n));
+    VectorXd rhsStack(n * fSolve);
+    MatrixXd big = MatrixXd::Zero(n * fSolve, n * fSolve);
+    const MatrixXd eye = MatrixXd::Identity(fSolve, fSolve);
+    for (long j = 0; j < n; ++j) {
+      rhs[static_cast<size_t>(j)] =
+          VectorXd::LinSpaced(fSolve, 0.2 * static_cast<double>(j),
+                              0.2 * static_cast<double>(j) + fSolve);
+      rhsStack.segment(j * fSolve, fSolve) = rhs[static_cast<size_t>(j)];
+      big.block(j * fSolve, j * fSolve, fSolve, fSolve) =
+          diag[static_cast<size_t>(j)];
+      const long k = (j + 1) % n;
+      big.block(j * fSolve, k * fSolve, fSolve, fSolve) -= c * eye;
+      big.block(k * fSolve, j * fSolve, fSolve, fSolve) -= c * eye;
+    }
+    const std::vector<VectorXd> sol = cyclicRingSolve(c, diag, rhs);
+    VectorXd stacked(n * fSolve);
+    for (long j = 0; j < n; ++j) {
+      stacked.segment(j * fSolve, fSolve) = sol[static_cast<size_t>(j)];
+    }
+    REQUIRE((big * stacked - rhsStack).norm() < 1e-8 * rhsStack.norm());
+  }
+
+  for (long j = 0; j < n; ++j) {
+    diag[static_cast<size_t>(j)] =
+        toyBead(j, f, -1.0) + 2.0 * c * MatrixXd::Identity(f, f);
+  }
+  REQUIRE(std::abs(cyclicRingLogAbsDet(c, diag) - denseRingLog(c, diag)) <
+          1e-8);
+
+  // One flat direction. The closed product keeps the spring eigenvalues and
+  // drops the constant mode: their log sum is 2 log N + (N - 1) log c.
+  const long nf = 2;
+  const long nn = 8;
+  const double cf = 1.7;
+  std::vector<MatrixXd> flat(static_cast<size_t>(nn));
+  std::vector<MatrixXd> reduced(static_cast<size_t>(nn));
+  for (long j = 0; j < nn; ++j) {
+    MatrixXd h = MatrixXd::Zero(nf, nf);
+    h(0, 0) = 0.8 + 0.05 * static_cast<double>(j);
+    flat[static_cast<size_t>(j)] = h + 2.0 * cf * MatrixXd::Identity(nf, nf);
+    reduced[static_cast<size_t>(j)] =
+        MatrixXd::Constant(1, 1, h(0, 0) + 2.0 * cf);
+  }
+  const double spring = 2.0 * std::log(static_cast<double>(nn)) +
+                        static_cast<double>(nn - 1) * std::log(cf);
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> es([&] {
+    MatrixXd big = MatrixXd::Zero(nn * nf, nn * nf);
+    const MatrixXd eye = MatrixXd::Identity(nf, nf);
+    for (long j = 0; j < nn; ++j) {
+      big.block(j * nf, j * nf, nf, nf) = flat[static_cast<size_t>(j)];
+      const long k = (j + 1) % nn;
+      big.block(j * nf, k * nf, nf, nf) -= cf * eye;
+      big.block(k * nf, j * nf, nf, nf) -= cf * eye;
+    }
+    return big;
+  }());
+  double kept = 0.0;
+  long zeros = 0;
+  for (long i = 0; i < es.eigenvalues().size(); ++i) {
+    if (std::abs(es.eigenvalues()(i)) < 1e-8) {
+      ++zeros;
+      continue;
+    }
+    kept += std::log(std::abs(es.eigenvalues()(i)));
+  }
+  REQUIRE(zeros == 1);
+  REQUIRE(std::abs(cyclicRingLogAbsDet(cf, reduced) + spring - kept) < 1e-8);
+}
+
+TEST_CASE("A flat coordinate cancels in the instanton rate",
+          "[Tunneling][Instanton]") {
+  const double omega0 = 1.0;
+  const double hw = kHbar * omega0;
+  const double vb = 16.0 * hw;
+  const CubicWell pes{omega0, std::sqrt(std::pow(omega0, 6) / (6.0 * vb))};
+  const long nBeads = 16;
+  const double beta = 10.0;
+  const double amp = 0.4 * pes.qb();
+  auto rateOf = [&](long dim, long rigid) {
+    RateInstanton inst;
+    inst.beta = beta;
+    inst.betaN = beta / static_cast<double>(nBeads);
+    inst.beads.resize(static_cast<size_t>(nBeads));
+    inst.bN = 0.0;
+    inst.ringPotential = 0.0;
+    const double c = 1.0 / std::pow(inst.betaN * kHbar, 2);
+    for (long j = 0; j < nBeads; ++j) {
+      VectorXd q = VectorXd::Zero(dim);
+      q(0) = pes.qb() +
+             amp * std::cos(2.0 * std::numbers::pi * static_cast<double>(j) /
+                            static_cast<double>(nBeads));
+      inst.beads[static_cast<size_t>(j)] = q;
+    }
+    for (long j = 0; j < nBeads; ++j) {
+      const double x = inst.beads[static_cast<size_t>(j)](0);
+      inst.ringPotential +=
+          0.5 * omega0 * omega0 * x * x - pes.g * x * x * x / 3.0;
+      const VectorXd step = inst.beads[static_cast<size_t>((j + 1) % nBeads)] -
+                            inst.beads[static_cast<size_t>(j)];
+      inst.bN += step.squaredNorm();
+    }
+    inst.ringPotential += 0.5 * c * inst.bN;
+    MatrixXd reactant = MatrixXd::Zero(dim, dim);
+    reactant(0, 0) = omega0 * omega0;
+    MatrixXd saddle = MatrixXd::Zero(dim, dim);
+    saddle(0, 0) = omega0 * omega0 - 2.0 * pes.g * pes.qb();
+    instantonRate(
+        inst,
+        [&](long, const VectorXd &q) {
+          MatrixXd h = MatrixXd::Zero(dim, dim);
+          h(0, 0) = omega0 * omega0 - 2.0 * pes.g * q(0);
+          return h;
+        },
+        reactant, 0.0, saddle, vb, rigid);
+    return inst;
+  };
+  const RateInstanton line = rateOf(1, 0);
+  const RateInstanton flat = rateOf(2, 1);
+  CAPTURE(line.logRate, flat.logRate, line.classicalLogRate,
+          flat.classicalLogRate);
+  REQUIRE(std::isfinite(line.logRate));
+  REQUIRE(std::isfinite(flat.logRate));
+  REQUIRE(std::abs(line.logRate - flat.logRate) < 1e-6);
+  REQUIRE(std::abs(line.classicalLogRate - flat.classicalLogRate) < 1e-6);
 }

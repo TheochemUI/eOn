@@ -187,6 +187,9 @@ Splitting bandSplitting(const std::vector<std::shared_ptr<Matter>> &band,
 
 namespace {
 
+using ColMajorXd =
+    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
+
 // J = c T (x) I + blockdiag(A_k), T the tridiagonal (2, -1) spring matrix;
 // the diagonal blocks hold 2c already, the off-diagonal blocks are -c I.
 // Block LU: D_1 = A_1, D_k = A_k - c^2 D_{k-1}^-1.
@@ -196,11 +199,11 @@ public:
       : c_(c) {
     lu_.reserve(diag.size());
     for (size_t k = 0; k < diag.size(); ++k) {
-      MatrixXd d = diag[k];
+      ColMajorXd d = diag[k];
       if (k > 0) {
         d -= c_ * c_ * lu_.back().inverse();
       }
-      lu_.emplace_back(d);
+      lu_.emplace_back(std::move(d));
       const auto &f = lu_.back();
       sign_ *= static_cast<int>(std::lround(f.permutationP().determinant()));
       for (long i = 0; i < d.rows(); ++i) {
@@ -229,10 +232,24 @@ public:
     }
     return x;
   }
+  // Same recurrence, several right-hand sides per bead.
+  std::vector<MatrixXd> solve(const std::vector<MatrixXd> &b) const {
+    const size_t m = b.size();
+    std::vector<MatrixXd> y(m), x(m);
+    y[0] = b[0];
+    for (size_t k = 1; k < m; ++k) {
+      y[k] = b[k] + c_ * lu_[k - 1].solve(y[k - 1]);
+    }
+    x[m - 1] = lu_[m - 1].solve(y[m - 1]);
+    for (size_t k = m - 1; k-- > 0;) {
+      x[k] = lu_[k].solve(y[k] + c_ * x[k + 1]);
+    }
+    return x;
+  }
 
 private:
   double c_;
-  std::vector<Eigen::PartialPivLU<MatrixXd>> lu_;
+  std::vector<Eigen::PartialPivLU<ColMajorXd>> lu_;
   double logAbsDet_ = 0.0;
   int sign_ = 1;
 };
@@ -710,7 +727,307 @@ double sideDrop(const VectorXd &saddle, const VectorXd &dir, double vSaddle,
   return std::numeric_limits<double>::infinity(); // still falling
 }
 
+// sum_{k=1}^{N-1} log(4 c sin^2(pi k / N)). The product of those sines is N,
+// so the sum is 2 log N + (N - 1) log c.
+double flatSpringLog(long n, double c) {
+  return 2.0 * std::log(static_cast<double>(n)) +
+         static_cast<double>(n - 1) * std::log(c);
+}
+
+// Orthonormal complement of a full-rank thin basis. The leading columns of
+// the Householder Q span the basis, and the rest are orthogonal to it.
+MatrixXd complementOf(const MatrixXd &nullBasis) {
+  const long f = nullBasis.rows();
+  const long k = nullBasis.cols();
+  const Eigen::HouseholderQR<MatrixXd> qr(nullBasis);
+  const MatrixXd q = qr.householderQ() * MatrixXd::Identity(f, f);
+  return q.rightCols(f - k);
+}
+
+std::vector<MatrixXd> congruences(const std::vector<MatrixXd> &diag,
+                                  const MatrixXd &cred) {
+  std::vector<MatrixXd> out;
+  out.reserve(diag.size());
+  const MatrixXd ct = cred.transpose();
+  for (const auto &block : diag) {
+    out.push_back(ct * block * cred);
+  }
+  return out;
+}
+
+bool logAbsAgrees(double a, double b) {
+  if (!std::isfinite(a) || !std::isfinite(b)) {
+    return false;
+  }
+  const double d = std::abs(a - b);
+  return d <= 1e-6 || d <= 1e-6 * std::max(1.0, std::abs(a));
+}
+
+struct RingMode {
+  double theta = 0.0;
+  double residual = 0.0;
+  std::vector<VectorXd> vector;
+};
+
+// Lowest Ritz pairs of a symmetric ring operator, full reorthogonalisation.
+// `steps` at the dimension is the whole spectrum.
+std::vector<RingMode> lowestRingModes(
+    const std::function<std::vector<VectorXd>(const std::vector<VectorXd> &)>
+        &apply,
+    std::vector<VectorXd> start, long steps) {
+  const size_t n = start.size();
+  const long f = start.empty() ? 0 : start.front().size();
+  const double n0 = std::sqrt(dot(start, start));
+  if (!(n0 > 0.0) || f < 1) {
+    throw std::runtime_error("instantonRate: Lanczos was given a zero vector");
+  }
+  scale(start, 1.0 / n0);
+  std::vector<std::vector<VectorXd>> basis;
+  std::vector<double> alpha;
+  std::vector<double> beta;
+  std::vector<VectorXd> q = std::move(start);
+  for (long k = 0; k < steps; ++k) {
+    basis.push_back(q);
+    std::vector<VectorXd> w = apply(q);
+    alpha.push_back(dot(w, q));
+    for (int pass = 0; pass < 2; ++pass) {
+      for (const auto &b : basis) {
+        const double p = dot(w, b);
+        for (size_t j = 0; j < n; ++j) {
+          w[j] -= p * b[j];
+        }
+      }
+    }
+    const double bnorm = std::sqrt(dot(w, w));
+    if (!(bnorm > 1e-14) || k + 1 == steps) {
+      break;
+    }
+    beta.push_back(bnorm);
+    scale(w, 1.0 / bnorm);
+    q = std::move(w);
+  }
+  const long m = static_cast<long>(alpha.size());
+  MatrixXd tridiag = MatrixXd::Zero(m, m);
+  for (long i = 0; i < m; ++i) {
+    tridiag(i, i) = alpha[static_cast<size_t>(i)];
+    if (i + 1 < m) {
+      tridiag(i, i + 1) = tridiag(i + 1, i) = beta[static_cast<size_t>(i)];
+    }
+  }
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> es(tridiag);
+  std::vector<RingMode> modes;
+  modes.reserve(static_cast<size_t>(m));
+  for (long i = 0; i < m; ++i) {
+    RingMode mode;
+    mode.theta = es.eigenvalues()(i);
+    mode.vector.assign(n, VectorXd::Zero(f));
+    const VectorXd y = es.eigenvectors().col(i);
+    for (long s = 0; s < m; ++s) {
+      for (size_t j = 0; j < n; ++j) {
+        mode.vector[j] += y(s) * basis[static_cast<size_t>(s)][j];
+      }
+    }
+    scale(mode.vector, 1.0 / std::sqrt(dot(mode.vector, mode.vector)));
+    const std::vector<VectorXd> applied = apply(mode.vector);
+    double residual = 0.0;
+    for (size_t j = 0; j < n; ++j) {
+      residual += (applied[j] - mode.theta * mode.vector[j]).squaredNorm();
+    }
+    mode.residual = std::sqrt(residual);
+    modes.push_back(std::move(mode));
+  }
+  return modes;
+}
+
+// Factored cyclic ring Hessian: the open chain plus the corner coupling
+// M between bead 0 and bead N-1.
+// det(H_open + P M P^T) = det(H_open) det(M) det(M^{-1} + P^T H_open^{-1} P),
+// and |det M| = c^{2f}. A singular ring makes the last factor zero.
+struct CyclicFactor {
+  BlockChain open;
+  Eigen::PartialPivLU<ColMajorXd> cornerLu;
+  double c;
+  long f;
+  long n;
+  double logAbs;
+  bool singular;
+
+  CyclicFactor(double cIn, const std::vector<MatrixXd> &diag)
+      : open(cIn, diag),
+        c(cIn),
+        f(diag.front().rows()),
+        n(static_cast<long>(diag.size())),
+        logAbs(0.0),
+        singular(false) {
+    const MatrixXd eye = MatrixXd::Identity(f, f);
+    const MatrixXd zero = MatrixXd::Zero(f, f);
+    std::vector<MatrixXd> rhs(static_cast<size_t>(n), zero);
+    rhs.front() = eye;
+    const std::vector<MatrixXd> fromFirst = open.solve(rhs);
+    rhs.front() = zero;
+    rhs.back() = eye;
+    const std::vector<MatrixXd> fromLast = open.solve(rhs);
+    MatrixXd corner(2 * f, 2 * f);
+    corner.topLeftCorner(f, f) = fromFirst.front();
+    corner.bottomLeftCorner(f, f) = fromFirst.back();
+    corner.topRightCorner(f, f) = fromLast.front();
+    corner.bottomRightCorner(f, f) = fromLast.back();
+    corner.topRightCorner(f, f) -= eye / c;
+    corner.bottomLeftCorner(f, f) -= eye / c;
+    cornerLu.compute(ColMajorXd(corner));
+    logAbs = open.logAbsDet() + 2.0 * static_cast<double>(f) * std::log(c);
+    const MatrixXd &upper = cornerLu.matrixLU();
+    for (long i = 0; i < upper.rows(); ++i) {
+      const double pivot = upper(i, i);
+      if (pivot == 0.0) {
+        singular = true;
+        logAbs = -std::numeric_limits<double>::infinity();
+        return;
+      }
+      logAbs += std::log(std::abs(pivot));
+    }
+  }
+
+  std::vector<VectorXd> solve(const std::vector<VectorXd> &rhs) const {
+    if (singular || static_cast<long>(rhs.size()) != n) {
+      throw std::runtime_error("cyclic ring: singular");
+    }
+    std::vector<VectorXd> y = open.solve(rhs);
+    VectorXd g(2 * f);
+    g.head(f) = y.front();
+    g.tail(f) = y.back();
+    const VectorXd z = cornerLu.solve(g);
+    std::vector<VectorXd> bump(static_cast<size_t>(n), VectorXd::Zero(f));
+    bump.front() = z.head(f);
+    bump.back() = z.tail(f);
+    const std::vector<VectorXd> corr = open.solve(bump);
+    for (long j = 0; j < n; ++j) {
+      y[static_cast<size_t>(j)] -= corr[static_cast<size_t>(j)];
+    }
+    return y;
+  }
+};
+
+struct OmittedMode {
+  double theta = 0.0;
+  std::vector<VectorXd> vector;
+};
+
+void projectOut(std::vector<VectorXd> &v,
+                const std::vector<std::vector<VectorXd>> &locked) {
+  for (const auto &p : locked) {
+    const double s = dot(v, p);
+    for (size_t j = 0; j < v.size(); ++j) {
+      v[j] -= s * p[j];
+    }
+  }
+}
+
+// Eigenvalues closest to zero, by inverse iteration on a factored ring.
+// `apply` is that same operator, used for the Rayleigh quotient.
+std::vector<OmittedMode> modesClosestToZero(
+    const CyclicFactor &fac,
+    const std::function<std::vector<VectorXd>(const std::vector<VectorXd> &)>
+        &apply,
+    const std::vector<VectorXd> &seed, long count) {
+  const long n = static_cast<long>(seed.size());
+  const long f = seed.empty() ? 0 : seed.front().size();
+  if (count < 1 || f < 1 || fac.singular) {
+    throw std::runtime_error(
+        "instantonRate: the cyclic zero mode is not resolved");
+  }
+  std::vector<std::vector<VectorXd>> locked;
+  std::vector<OmittedMode> out;
+  out.reserve(static_cast<size_t>(count));
+  for (long m = 0; m < count; ++m) {
+    std::vector<VectorXd> v;
+    if (m == 0) {
+      v = seed;
+    } else {
+      v.assign(static_cast<size_t>(n), VectorXd::Zero(f));
+      v[static_cast<size_t>(m % n)](m % f) = 1.0;
+    }
+    double theta = 0.0;
+    for (int it = 0; it < 40; ++it) {
+      projectOut(v, locked);
+      const double nv = std::sqrt(dot(v, v));
+      if (!(nv > 1e-14)) {
+        throw std::runtime_error(
+            "instantonRate: the cyclic zero mode is not resolved");
+      }
+      scale(v, 1.0 / nv);
+      std::vector<VectorXd> y = fac.solve(v);
+      projectOut(y, locked);
+      const double ny = std::sqrt(dot(y, y));
+      if (!(ny > 0.0) || !std::isfinite(ny)) {
+        throw std::runtime_error(
+            "instantonRate: the cyclic zero mode is not resolved");
+      }
+      scale(y, 1.0 / ny);
+      const std::vector<VectorXd> hy = apply(y);
+      theta = dot(y, hy);
+      v = std::move(y);
+    }
+    if (!std::isfinite(theta)) {
+      throw std::runtime_error(
+          "instantonRate: the cyclic zero mode is not resolved");
+    }
+    OmittedMode mode;
+    mode.theta = theta;
+    mode.vector = std::move(v);
+    locked.push_back(mode.vector);
+    out.push_back(std::move(mode));
+  }
+  return out;
+}
+
 } // namespace
+
+namespace {
+
+void requireCyclicBlocks(double c, const std::vector<MatrixXd> &diag,
+                         const char *what) {
+  if (!(c > 0.0) || diag.empty()) {
+    throw std::invalid_argument(std::string(what) +
+                                ": need a positive spring constant and blocks");
+  }
+  const long f = diag.front().rows();
+  const long n = static_cast<long>(diag.size());
+  if (f < 1 || n < 2) {
+    throw std::invalid_argument(std::string(what) +
+                                ": need at least two beads and one coordinate");
+  }
+  for (const auto &block : diag) {
+    if (block.rows() != f || block.cols() != f) {
+      throw std::invalid_argument(std::string(what) +
+                                  ": the blocks differ in size");
+    }
+  }
+}
+
+} // namespace
+
+double cyclicRingLogAbsDet(double c, const std::vector<MatrixXd> &diag) {
+  requireCyclicBlocks(c, diag, "cyclicRingLogAbsDet");
+  return CyclicFactor(c, diag).logAbs;
+}
+
+std::vector<VectorXd> cyclicRingSolve(double c,
+                                      const std::vector<MatrixXd> &diag,
+                                      const std::vector<VectorXd> &rhs) {
+  requireCyclicBlocks(c, diag, "cyclicRingSolve");
+  if (static_cast<long>(rhs.size()) != static_cast<long>(diag.size())) {
+    throw std::invalid_argument(
+        "cyclicRingSolve: one right-hand side per bead");
+  }
+  for (const auto &row : rhs) {
+    if (row.size() != diag.front().rows()) {
+      throw std::invalid_argument(
+          "cyclicRingSolve: the right-hand side does not match the blocks");
+    }
+  }
+  return CyclicFactor(c, diag).solve(rhs);
+}
 
 RateInstanton optimizeRateInstanton(const VectorXd &saddle,
                                     const MatrixXd &hessSaddle, double beta,
@@ -731,8 +1048,9 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
   if (!(inst.temperature < inst.crossover)) {
     throw std::invalid_argument(
         "optimizeRateInstanton: T is at or above the crossover temperature; "
-        "the ring collapses onto the saddle and classical transition-state "
-        "theory applies");
+        "the ring collapses onto the saddle and steepest descent needs the "
+        "parabolic barrier correction, of which classical transition-state "
+        "theory is only the one-bead limit");
   }
   const double bnh = inst.betaN * kHbar;
   const double c = 1.0 / (bnh * bnh);
@@ -891,61 +1209,281 @@ std::vector<bool> nearestZero(const VectorXd &lam, long count) {
 
 void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
                    const MatrixXd &hessReactant, double vReactant,
-                   const MatrixXd &hessSaddle, double vSaddle,
-                   long rigidModes) {
+                   const MatrixXd &hessSaddle, double vSaddle, long rigidModes,
+                   long denseLimit) {
   const long N = static_cast<long>(inst.beads.size());
   if (N < 4 || !(inst.betaN > 0.0)) {
     throw std::invalid_argument("instantonRate: no optimised ring");
   }
   const long f = inst.beads.front().size();
+  if (rigidModes < 0 || rigidModes > f) {
+    throw std::invalid_argument(
+        "instantonRate: rigidModes exceeds the degrees of freedom");
+  }
   const double bnh = inst.betaN * kHbar;
   const double c = 1.0 / (bnh * bnh);
-  MatrixXd big = MatrixXd::Zero(N * f, N * f);
+  const double zeroCut = 1e-8 * c;
+  const MatrixXd eye = MatrixXd::Identity(f, f);
+
+  std::vector<MatrixXd> hBead(static_cast<size_t>(N));
+  std::vector<MatrixXd> diag(static_cast<size_t>(N));
   for (long j = 0; j < N; ++j) {
     const MatrixXd h = hessian(j, inst.beads[static_cast<size_t>(j)]);
     if (h.rows() != f || h.cols() != f) {
       throw std::runtime_error("instantonRate: bead Hessian size");
     }
-    big.block(j * f, j * f, f, f) =
-        0.5 * (h + h.transpose()) + 2.0 * c * MatrixXd::Identity(f, f);
-    const long k = (j + 1) % N;
-    big.block(j * f, k * f, f, f) -= c * MatrixXd::Identity(f, f);
-    big.block(k * f, j * f, f, f) -= c * MatrixXd::Identity(f, f);
+    hBead[static_cast<size_t>(j)] = 0.5 * (h + h.transpose());
+    diag[static_cast<size_t>(j)] =
+        hBead[static_cast<size_t>(j)] + 2.0 * c * eye;
   }
-  const Eigen::SelfAdjointEigenSolver<MatrixXd> es(big, Eigen::EigenvaluesOnly);
-  const VectorXd &lam = es.eigenvalues();
-  // The zero mode (the ring's translation in imaginary time) and the rigid
-  // modes are the 1 + rigidModes eigenvalues nearest zero.
-  const std::vector<bool> dropped = nearestZero(lam, 1 + rigidModes);
-  inst.zeroEigenvalue = 0.0;
-  for (long k = 0; k < lam.size(); ++k) {
-    if (dropped[static_cast<size_t>(k)] &&
-        std::abs(lam(k)) > std::abs(inst.zeroEigenvalue)) {
-      inst.zeroEigenvalue = lam(k);
-    }
-  }
-  inst.negativeModes = 0;
-  inst.negativeEigenvalue = 0.0;
-  double logProd = 0.0;
-  for (long k = 0; k < lam.size(); ++k) {
-    if (dropped[static_cast<size_t>(k)]) {
+
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> er(
+      0.5 * (hessReactant + hessReactant.transpose()));
+  const VectorXd &lr = er.eigenvalues();
+  const std::vector<bool> rigidR = nearestZero(lr, rigidModes);
+  MatrixXd nullBasis(f, 0);
+  bool exactRigid = rigidModes > 0;
+  for (long m = 0; m < lr.size(); ++m) {
+    if (!rigidR[static_cast<size_t>(m)]) {
       continue;
     }
-    if (lam(k) < 0.0) {
-      ++inst.negativeModes;
-      inst.negativeEigenvalue = std::min(inst.negativeEigenvalue, lam(k));
+    if (!(std::abs(lr(m)) < zeroCut)) {
+      exactRigid = false;
     }
-    logProd += std::log(bnh) + 0.5 * std::log(std::abs(lam(k)));
+    nullBasis.conservativeResize(f, nullBasis.cols() + 1);
+    nullBasis.col(nullBasis.cols() - 1) = er.eigenvectors().col(m);
   }
+  if (exactRigid && rigidModes > 0) {
+    for (long j = 0; j < N; ++j) {
+      const double residual =
+          (hBead[static_cast<size_t>(j)] * nullBasis).norm();
+      if (residual > std::sqrt(zeroCut) * static_cast<double>(rigidModes)) {
+        exactRigid = false;
+        break;
+      }
+    }
+  }
+  if (!exactRigid) {
+    nullBasis.resize(f, 0);
+  } else if (rigidModes >= f) {
+    throw std::runtime_error("instantonRate: every direction is a rigid mode");
+  }
+
+  auto flatFraction = [&](const std::vector<VectorXd> &vec) {
+    if (nullBasis.cols() == 0) {
+      return 0.0;
+    }
+    double flat = 0.0;
+    double total = 0.0;
+    for (const auto &bead : vec) {
+      total += bead.squaredNorm();
+      flat += (nullBasis.transpose() * bead).squaredNorm();
+    }
+    return total > 0.0 ? flat / total : 0.0;
+  };
+
+  double logProd = 0.0;
+  const bool useDense =
+      denseLimit < 0 || (denseLimit > 0 && N * f <= denseLimit);
+  if (useDense) {
+    MatrixXd big = MatrixXd::Zero(N * f, N * f);
+    for (long j = 0; j < N; ++j) {
+      big.block(j * f, j * f, f, f) = diag[static_cast<size_t>(j)];
+      const long k = (j + 1) % N;
+      big.block(j * f, k * f, f, f) -= c * eye;
+      big.block(k * f, j * f, f, f) -= c * eye;
+    }
+    const Eigen::SelfAdjointEigenSolver<MatrixXd> es(big,
+                                                     Eigen::EigenvaluesOnly);
+    const VectorXd &lam = es.eigenvalues();
+    if (exactRigid) {
+      std::vector<long> order(static_cast<size_t>(lam.size()));
+      std::iota(order.begin(), order.end(), 0L);
+      std::sort(order.begin(), order.end(), [&](long a, long b) {
+        return std::abs(lam(a)) < std::abs(lam(b));
+      });
+      double denseKept = 0.0;
+      for (long k = rigidModes; k < lam.size(); ++k) {
+        denseKept += std::log(std::abs(lam(order[static_cast<size_t>(k)])));
+      }
+      const double blockLog =
+          cyclicRingLogAbsDet(c, congruences(diag, complementOf(nullBasis))) +
+          static_cast<double>(rigidModes) * flatSpringLog(N, c);
+      if (!logAbsAgrees(denseKept, blockLog)) {
+        throw std::runtime_error(
+            "instantonRate: the reduced ring determinant disagrees with the "
+            "dense product (" +
+            std::to_string(blockLog) + " against " + std::to_string(denseKept) +
+            ")");
+      }
+    } else {
+      double denseLog = 0.0;
+      for (long k = 0; k < lam.size(); ++k) {
+        denseLog += std::log(std::abs(lam(k)));
+      }
+      const double blockLog = cyclicRingLogAbsDet(c, diag);
+      if (!logAbsAgrees(denseLog, blockLog)) {
+        throw std::runtime_error(
+            "instantonRate: the cyclic block determinant disagrees with the "
+            "dense ring Hessian (" +
+            std::to_string(blockLog) + " against " + std::to_string(denseLog) +
+            ")");
+      }
+    }
+    // The zero mode (the ring's translation in imaginary time) and the rigid
+    // modes are the 1 + rigidModes eigenvalues nearest zero.
+    const std::vector<bool> dropped = nearestZero(lam, 1 + rigidModes);
+    inst.zeroEigenvalue = 0.0;
+    for (long k = 0; k < lam.size(); ++k) {
+      if (dropped[static_cast<size_t>(k)] &&
+          std::abs(lam(k)) > std::abs(inst.zeroEigenvalue)) {
+        inst.zeroEigenvalue = lam(k);
+      }
+    }
+    inst.negativeModes = 0;
+    inst.negativeEigenvalue = 0.0;
+    for (long k = 0; k < lam.size(); ++k) {
+      if (dropped[static_cast<size_t>(k)]) {
+        continue;
+      }
+      if (lam(k) < 0.0) {
+        ++inst.negativeModes;
+        inst.negativeEigenvalue = std::min(inst.negativeEigenvalue, lam(k));
+      }
+      logProd += std::log(bnh) + 0.5 * std::log(std::abs(lam(k)));
+    }
+  } else {
+    const long nDrop = 1 + rigidModes;
+    const long nMore = exactRigid ? 1 : nDrop;
+    const MatrixXd cred = exactRigid ? complementOf(nullBasis) : MatrixXd();
+    const std::vector<MatrixXd> blocks =
+        exactRigid ? congruences(diag, cred) : diag;
+    const CyclicFactor fac(c, blocks);
+    double logAbs = fac.logAbs;
+    if (exactRigid) {
+      logAbs += static_cast<double>(rigidModes) * flatSpringLog(N, c);
+    }
+    if (!std::isfinite(logAbs)) {
+      throw std::runtime_error(
+          "instantonRate: the ring Hessian is singular and the zero mode was "
+          "not removed with the rigid modes");
+    }
+    std::vector<VectorXd> cycleFull(static_cast<size_t>(N));
+    double cycleNorm = 0.0;
+    for (long j = 0; j < N; ++j) {
+      cycleFull[static_cast<size_t>(j)] =
+          inst.beads[static_cast<size_t>((j + 1) % N)] -
+          inst.beads[static_cast<size_t>((j + N - 1) % N)];
+      cycleNorm += cycleFull[static_cast<size_t>(j)].squaredNorm();
+    }
+    if (!(cycleNorm > 0.0)) {
+      throw std::runtime_error(
+          "instantonRate: the beads coincide, so the ring has collapsed");
+    }
+    scale(cycleFull, 1.0 / std::sqrt(cycleNorm));
+    std::vector<VectorXd> cycle = cycleFull;
+    if (exactRigid) {
+      for (long j = 0; j < N; ++j) {
+        cycle[static_cast<size_t>(j)] =
+            cred.transpose() * cycleFull[static_cast<size_t>(j)];
+      }
+      const double reducedNorm = std::sqrt(dot(cycle, cycle));
+      if (!(reducedNorm > 1e-8)) {
+        throw std::runtime_error(
+            "instantonRate: the cyclic zero mode is not resolved");
+      }
+      scale(cycle, 1.0 / reducedNorm);
+    }
+    auto applyFull = [&](const std::vector<VectorXd> &vec) {
+      std::vector<VectorXd> out(static_cast<size_t>(N));
+      for (long j = 0; j < N; ++j) {
+        const long prev = (j + N - 1) % N;
+        const long next = (j + 1) % N;
+        out[static_cast<size_t>(j)] =
+            hBead[static_cast<size_t>(j)] * vec[static_cast<size_t>(j)] +
+            c * (2.0 * vec[static_cast<size_t>(j)] -
+                 vec[static_cast<size_t>(prev)] -
+                 vec[static_cast<size_t>(next)]);
+      }
+      return out;
+    };
+    auto applyBlocks = [&](const std::vector<VectorXd> &vec) {
+      if (!exactRigid) {
+        return applyFull(vec);
+      }
+      std::vector<VectorXd> full(static_cast<size_t>(N));
+      for (long j = 0; j < N; ++j) {
+        full[static_cast<size_t>(j)] = cred * vec[static_cast<size_t>(j)];
+      }
+      const std::vector<VectorXd> acted = applyFull(full);
+      std::vector<VectorXd> out(static_cast<size_t>(N));
+      for (long j = 0; j < N; ++j) {
+        out[static_cast<size_t>(j)] =
+            cred.transpose() * acted[static_cast<size_t>(j)];
+      }
+      return out;
+    };
+    // The product divides by these eigenvalues. Inverse iteration on the
+    // factored ring resolves a near-zero mode; Lanczos of an interior
+    // eigenvalue does not, once the ring is long.
+    const std::vector<OmittedMode> omitted =
+        modesClosestToZero(fac, applyBlocks, cycle, nMore);
+    inst.zeroEigenvalue = 0.0;
+    double bestOverlap = 0.0;
+    for (const auto &mode : omitted) {
+      const double overlap = std::abs(dot(mode.vector, cycle));
+      if (overlap >= bestOverlap) {
+        bestOverlap = overlap;
+        inst.zeroEigenvalue = mode.theta;
+      }
+      logAbs -= std::log(std::abs(mode.theta));
+    }
+    if (!(bestOverlap > 0.5) || !std::isfinite(logAbs)) {
+      throw std::runtime_error(
+          "instantonRate: the cyclic zero mode is not resolved (overlap " +
+          std::to_string(bestOverlap) + ")");
+    }
+    // A negative Ritz value along the bead velocity is the cyclic zero,
+    // already omitted. Any other resolved negative value is an extra
+    // unstable mode.
+    const double residualCut = 1e-4 * c;
+    const long steps = std::min(N * f, static_cast<long>(80));
+    std::vector<VectorXd> start = cycleFull;
+    start.front()(0) += 0.1;
+    const std::vector<RingMode> modes =
+        lowestRingModes(applyFull, std::move(start), steps);
+    inst.negativeModes = 0;
+    inst.negativeEigenvalue = 0.0;
+    double unresolved = 0.0;
+    for (const auto &mode : modes) {
+      if (!(mode.theta < 0.0)) {
+        continue;
+      }
+      const double overlap = std::abs(dot(mode.vector, cycleFull));
+      if (overlap > 0.5 || flatFraction(mode.vector) > 0.5) {
+        continue;
+      }
+      if (mode.residual > residualCut) {
+        unresolved = std::max(unresolved, mode.residual);
+        continue;
+      }
+      ++inst.negativeModes;
+      inst.negativeEigenvalue = std::min(inst.negativeEigenvalue, mode.theta);
+    }
+    if (inst.negativeModes == 0 && unresolved > 0.0) {
+      throw std::runtime_error(
+          "instantonRate: the negative ring mode is not resolved (residual " +
+          std::to_string(unresolved) + ")");
+    }
+    const long nKept = N * f - nDrop;
+    logProd = static_cast<double>(nKept) * std::log(bnh) + 0.5 * logAbs;
+  }
+
   inst.logRateTimesZr = -std::log(bnh) +
                         0.5 * std::log(inst.bN / (2.0 * std::numbers::pi *
                                                   inst.betaN * kHbar * kHbar)) -
                         logProd - inst.betaN * inst.ringPotential;
 
-  const Eigen::SelfAdjointEigenSolver<MatrixXd> er(
-      0.5 * (hessReactant + hessReactant.transpose()), Eigen::EigenvaluesOnly);
-  const VectorXd &lr = er.eigenvalues();
-  const std::vector<bool> rigidR = nearestZero(lr, rigidModes);
   for (long m = 0; m < lr.size(); ++m) {
     if (!rigidR[static_cast<size_t>(m)] && !(lr(m) > 0.0)) {
       throw std::runtime_error(

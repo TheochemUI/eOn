@@ -269,14 +269,31 @@ using RingBeadHessian = std::function<MatrixXd(long j, const VectorXd &q)>;
 /// Fills the rate from the bead Hessians, the reactant minimum's Hessian and
 /// energy, and optionally the saddle's Hessian and energy for the classical
 /// comparison (pass an empty matrix to skip it). rigidModes is the count of
-/// rigid-body zero modes every Hessian carries (6 for a free cluster, 3 for a
-/// free periodic cell, 0 with atoms fixed); they leave the centroid factors,
-/// so the rotational and translational partition functions of reactant and
-/// instanton cancel. Uses the dense ring Hessian, N times the degrees of
-/// freedom on a side.
+/// rigid-body zero modes to omit: the translations, plus a rotation only when
+/// the reactant Hessian leaves it null (a free cluster has them, a crystal
+/// does not, and an atom held fixed has none). They leave the centroid
+/// factors, so the rotational and translational partition functions of
+/// reactant and instanton cancel. Up to denseLimit ring degrees of freedom
+/// the product is the dense eigenproduct, checked against the cyclic block
+/// determinant. Beyond that, and for a limit of 0, the block determinant is
+/// used and the eigenvalues nearest zero come from inverse iteration on that
+/// factorisation. A negative limit forces the dense product.
 void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
                    const MatrixXd &hessReactant, double vReactant,
                    const MatrixXd &hessSaddle = MatrixXd(),
-                   double vSaddle = 0.0, long rigidModes = 0);
+                   double vSaddle = 0.0, long rigidModes = 0,
+                   long denseLimit = 4096);
+
+/// log|det| of the cyclic block-tridiagonal ring Hessian. Each diag[j]
+/// already contains the bead Hessian plus 2 c I, and the neighbour coupling
+/// is -c I, including the corner that closes the ring. A singular ring
+/// returns -infinity. Throws when the open chain is singular.
+double cyclicRingLogAbsDet(double c, const std::vector<MatrixXd> &diag);
+
+/// Solves that same cyclic ring Hessian. Throws when the ring is singular
+/// or the right-hand side does not match the blocks.
+std::vector<VectorXd> cyclicRingSolve(double c,
+                                      const std::vector<MatrixXd> &diag,
+                                      const std::vector<VectorXd> &rhs);
 
 } // namespace eonc::tunneling
