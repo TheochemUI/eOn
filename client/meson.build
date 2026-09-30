@@ -828,11 +828,14 @@ _gprd_tree = fs.exists(meson.project_source_root() / 'subprojects' / 'gpr_optim'
 if _gprd_opt.enabled() and not _gprd_tree
     error('with_gprd=enabled needs subprojects/gpr_optim. rsync -a ../gpr_optim/ subprojects/gpr_optim/ and reconfigure. The pin is the revision in subprojects/gpr_optim.wrap.')
 endif
-with_gprd = _gprd_opt.enabled() or (
+# auto: try the subproject and leave the dimer off when it cannot be
+# fetched. enabled: the same failure stops configuration.
+_gprd_try = _gprd_opt.enabled() or (
     _gprd_opt.auto() and host_system == 'linux' and _gprd_tree
 )
 _gprd_extra_deps = []
-if with_gprd
+with_gprd = false
+if _gprd_try
     gprd_opts = {
         'default_library': 'static',
         'use_mkl': get_option('use_mkl'),
@@ -846,14 +849,25 @@ if with_gprd
         'buildtype': 'release',
         'linalg_backend': get_option('gprd_linalg_backend'),
     }
-    libgprd_proj = subproject('gpr_optim', default_options: gprd_opts)
-    libgprd = libgprd_proj.get_variable('gpr_optim_dep')
-    gprd_deps = libgprd_proj.get_variable('gpr_optim_deps')
-    # subdir('potentials/GPRPotential')
-    # potentials += [ gprpot ]
-    _args += ['-DWITH_GPRD']
-    eonclib_sources += ['AtomicGPDimer.cpp', 'GPRHelpers.cpp']
-    _gprd_extra_deps = [libgprd, gprd_deps]
+    libgprd_proj = subproject(
+        'gpr_optim',
+        default_options: gprd_opts,
+        required: _gprd_opt,
+    )
+    if libgprd_proj.found()
+        with_gprd = true
+        libgprd = libgprd_proj.get_variable('gpr_optim_dep')
+        gprd_deps = libgprd_proj.get_variable('gpr_optim_deps')
+        # subdir('potentials/GPRPotential')
+        # potentials += [ gprpot ]
+        _args += ['-DWITH_GPRD']
+        eonclib_sources += ['AtomicGPDimer.cpp', 'GPRHelpers.cpp']
+        _gprd_extra_deps = [libgprd, gprd_deps]
+    elif _gprd_opt.enabled()
+        error('with_gprd=enabled: subproject gpr_optim did not configure.')
+    else
+        message('with_gprd=auto: subproject gpr_optim did not configure. GP dimer disabled.')
+    endif
 endif
 
 if get_option('with_gp_surrogate')

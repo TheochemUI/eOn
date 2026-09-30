@@ -95,7 +95,8 @@ server:
 
 `min_mode_method = gprdimer` runs the Gaussian process dimer. The option
 is `-Dwith_gprd=auto` (the default): on Linux it links `subprojects/gpr_optim`
-when that tree is present. The pin is the `revision` in
+when that subproject configures. A failed fetch leaves the dimer off.
+`-Dwith_gprd=enabled` stops configuration instead. The pin is the `revision` in
 `subprojects/gpr_optim.wrap`. A sibling checkout replaces the tree with
 `rsync -a ../gpr_optim/ subprojects/gpr_optim/`. `-Dwith_gprd=disabled`
 omits the method. The install page has the same `rsync` next to the

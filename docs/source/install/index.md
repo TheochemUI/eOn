@@ -88,7 +88,12 @@ meson install -C bbdir
 
 `min_mode_method = gprdimer` is the GP dimer. `-Dwith_gprd=auto` is the
 default, and on Linux that links the `gpr_optim` tree in
-`subprojects/gpr_optim`. The `revision` line in
+`subprojects/gpr_optim` when the subproject configures. A failed fetch
+leaves the dimer off. `-Dwith_gprd=enabled` stops configuration.
+A build directory that stored `with_gprd` as `true` or `false` rejects
+`meson setup --reconfigure` (`Option "with_gprd" value auto is not boolean`).
+Run `python scripts/migrate_with_gprd_option.py <builddir>` once: `true`
+becomes `enabled` and `false` becomes `disabled`. The `revision` line in
 `subprojects/gpr_optim.wrap` is the pin (`b55c89e2115388f901839aba2a5808bfcef06f68`).
 Replace the tree from a sibling checkout with:
 
