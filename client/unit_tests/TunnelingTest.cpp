@@ -64,10 +64,13 @@ double exactSplitting(double v0, double a, int n = 900) {
 } // namespace
 
 TEST_CASE("hbar in eV amu Angstrom units", "[Tunneling]") {
+  // h / (2 pi) with the exact SI h, over sqrt(eV * dalton) * Angstrom with the
+  // CODATA 2022 dalton; kHbar is sollya's correctly rounded double of this.
   const double expected =
-      1.054571817e-34 /
-      (std::sqrt(1.602176634e-19 * 1.66053906660e-27) * 1e-10);
-  REQUIRE_THAT(kHbar, WithinRel(expected, 1e-12));
+      6.62607015e-34 / (2.0 * std::numbers::pi) /
+      (std::sqrt(1.602176634e-19 * 1.66053906892e-27) * 1e-10);
+  REQUIRE_THAT(kHbar, WithinRel(expected, 1e-14));
+  REQUIRE_THAT(kBoltzmann, WithinRel(1.380649e-23 / 1.602176634e-19, 1e-14));
 }
 
 TEST_CASE("The profile passes through the band and never overshoots it",
@@ -107,9 +110,9 @@ TEST_CASE("The WKB action lands in sollya's certified enclosures",
   // Enclosures from data/tunneling/wkb_quartic.sollya (diam = 1e-5).
   const struct {
     double v0, lo, hi;
-  } refs[] = {{0.08, 5.063598114982421, 5.063808157187389},
-              {0.15, 7.961002614930021, 7.961336192948115},
-              {0.3, 12.473664499991103, 12.474192880487013}};
+  } refs[] = {{0.08, 5.063598115650122, 5.063808157855117},
+              {0.15, 7.961002615858806, 7.961336193876939},
+              {0.3, 12.473664501321133, 12.474192881817101}};
   for (const auto &r : refs) {
     const double level = 0.5 * kHbar * std::sqrt(8.0 * r.v0);
     // A dense band: the quadrature and the interpolant, nothing else.

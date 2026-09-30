@@ -28,12 +28,14 @@
 
 namespace eonc::tunneling {
 
-/// hbar in eV^0.5 amu^0.5 Angstrom: 1.054571817e-34 J s over
-/// sqrt(1.602176634e-19 J * 1.66053906660e-27 kg) * 1e-10 m.
-inline constexpr double kHbar = 0.06465415130134122;
+/// hbar in eV^0.5 amu^0.5 Angstrom, correctly rounded from the exact SI
+/// values (h = 6.62607015e-34 J s, e = 1.602176634e-19 C) and the CODATA
+/// 2022 dalton, 1.66053906892e-27 kg.
+inline constexpr double kHbar = 0.06465415129579072;
 
-/// Boltzmann constant in eV / K.
-inline constexpr double kBoltzmann = 8.617333262e-5;
+/// Boltzmann constant in eV / K, correctly rounded from the exact
+/// 1.380649e-23 J / K.
+inline constexpr double kBoltzmann = 8.617333262145177e-5;
 
 /// sqrt(sum_i m_i |b_i - a_i|^2) under the minimum image of a's cell.
 double massWeightedDistance(const Matter &a, const Matter &b);
