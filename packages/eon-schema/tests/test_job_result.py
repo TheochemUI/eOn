@@ -35,7 +35,7 @@ def test_job_result_capnp_exists():
     assert "atomId @9 :List(UInt64);" in text
     assert "fixedAxes @10 :List(UInt8);" in text
     assert "struct OptimizerProvenance" in text
-    assert "optimizer @35 :OptimizerProvenance;" in text
+    assert "optimizer @36 :OptimizerProvenance;" in text
     assert "struct EindirAbi" in text
     assert "rgpot @38 :RgpotIdentity;" in text
 

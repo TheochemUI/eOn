@@ -31,7 +31,7 @@ def test_schema_file_in_monorepo():
     assert "struct EngineCompatibility" in text
     assert "struct EindirAbi" in text
     assert "struct RgpotIdentity" in text
-    assert "optimizer @35 :OptimizerProvenance;" in text
+    assert "optimizer @36 :OptimizerProvenance;" in text
     assert "compatibility @37 :EngineCompatibility;" in text
     assert "rgpot @38 :RgpotIdentity;" in text
     assert "termination @30" in text
