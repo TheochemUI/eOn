@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <deque>
 #include <limits>
 #include <numbers>
@@ -1964,8 +1965,19 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     };
     long steps = std::min(dim, std::max(60L, 4 * (negatives + 2)));
     for (;;) {
+      // J commutes with the ring's mirror about any bead, so a start that
+      // is mirror-symmetric spans no antisymmetric mode at all; a fixed
+      // pseudo-random admixture reaches every symmetry sector.
       std::vector<VectorXd> start = ritzStart;
-      start.front()(0) += 1e-3;
+      std::uint64_t h = 0x9E3779B97F4A7C15ULL;
+      for (auto &bead : start) {
+        for (long a2 = 0; a2 < bead.size(); ++a2) {
+          h ^= h << 13;
+          h ^= h >> 7;
+          h ^= h << 17;
+          bead(a2) += 1e-2 * (static_cast<double>(h >> 11) * 0x1.0p-53 - 0.5);
+        }
+      }
       v.ritz = lowestRingModes(apply, std::move(start), steps);
       if (steps >= dim || resolvedNegatives(v.ritz) >= negatives) {
         break;
@@ -2598,7 +2610,15 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
     const long dim = N * f;
     const long steps = std::min(dim, static_cast<long>(60));
     std::vector<VectorXd> start = cycle;
-    start.front()(0) += 0.1;
+    std::uint64_t h = 0x9E3779B97F4A7C15ULL;
+    for (auto &bead : start) {
+      for (long a2 = 0; a2 < bead.size(); ++a2) {
+        h ^= h << 13;
+        h ^= h >> 7;
+        h ^= h << 17;
+        bead(a2) += 0.1 * (static_cast<double>(h >> 11) * 0x1.0p-53 - 0.5);
+      }
+    }
     const std::vector<RingMode> modes =
         lowestRingModes(applyFull, std::move(start), steps);
     inst.negativeEigenvalue = 0.0;
@@ -2623,47 +2643,8 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
     }
   }
   const long nDrop = 1 + nullBasis.cols();
-  double logDetPrime =
+  const double logDetPrime =
       ring.logAbsDet() - static_cast<double>(nDrop) * std::log(c);
-  if (N * f <= 2048) {
-    // A small ring takes the product and the inertia from a dense
-    // eigendecomposition, which a near-zero Schur pivot of the open chain
-    // cannot disturb. The omitted modes are the 1 + rigid eigenvalues
-    // nearest zero.
-    ColMajorXd big = ColMajorXd::Zero(N * f, N * f);
-    for (long j = 0; j < N; ++j) {
-      std::vector<VectorXd> e(static_cast<size_t>(N), VectorXd::Zero(f));
-      for (long a2 = 0; a2 < f; ++a2) {
-        e[static_cast<size_t>(j)].setZero();
-        e[static_cast<size_t>(j)](a2) = 1.0;
-        big.col(j * f + a2) = packBeads(applyDiagonal(diag, c, true, e));
-      }
-    }
-    const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(big,
-                                                       Eigen::EigenvaluesOnly);
-    const VectorXd lam = es.eigenvalues();
-    std::vector<long> order(static_cast<size_t>(lam.size()));
-    std::iota(order.begin(), order.end(), 0L);
-    std::sort(order.begin(), order.end(), [&](long p, long q) {
-      return std::abs(lam(p)) < std::abs(lam(q));
-    });
-    logDetPrime = 0.0;
-    double lowest = 0.0;
-    for (long k = nDrop; k < lam.size(); ++k) {
-      const double l = lam(order[static_cast<size_t>(k)]);
-      logDetPrime += std::log(std::abs(l));
-      lowest = std::min(lowest, l);
-    }
-    long negative = 0;
-    for (long k = nDrop; k < lam.size(); ++k) {
-      const double l = lam(order[static_cast<size_t>(k)]);
-      if (l < 0.0 && l <= 1e-3 * lowest) {
-        ++negative;
-      }
-    }
-    inst.negativeModes = negative;
-    inst.negativeEigenvalue = lowest;
-  }
   const double logProd =
       static_cast<double>(N * f - nDrop) * std::log(bnh) + 0.5 * logDetPrime;
 
