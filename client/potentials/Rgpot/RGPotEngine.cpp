@@ -329,8 +329,9 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
     if (mpi_world_hint() <= 1 && !local_error.empty())
       throw std::runtime_error(local_error);
 #if defined(__linux__) && defined(EON_RGPOT_MPI)
-    if (::rgpot::calculatorsUseMpi() && mpi_world_hint() > 1 &&
-        !agree_construction(local_error)) {
+    // rgpot reports MPI only once MPI_Init has run, and agree_construction
+    // is what initialises it, so the agreement keys on the launch size.
+    if (mpi_world_hint() > 1 && !agree_construction(local_error)) {
       armGroupedExit();
       throw std::runtime_error(
           local_error.empty()
