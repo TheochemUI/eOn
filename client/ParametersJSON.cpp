@@ -11,6 +11,7 @@
 */
 #include "eon/ParametersJSON.h"
 #include "eon/HelperFunctions.h"
+#include "eon/PIQTST.h"
 #include "eon/Parameters.h"
 #include "eon/ParametersINI.h"
 #include "magic_enum/magic_enum.hpp"
@@ -322,6 +323,18 @@ json to_json(const Parameters &p) {
         {"bead_ladder", o.bead_ladder},
         {"hessian_final", o.hessian_final},
         {"springs", o.springs},
+        {"pi_planes", o.pi_planes},
+        {"pi_beads", o.pi_beads},
+        {"pi_equilibration_steps", o.pi_equilibration_steps},
+        {"pi_sampling_steps", o.pi_sampling_steps},
+        {"pi_time_step", o.pi_time_step},
+        {"pi_thermostat", o.pi_thermostat},
+        {"pi_gle_file", o.pi_gle_file},
+        {"pi_pile_tau", o.pi_pile_tau},
+        {"pi_pile_scale", o.pi_pile_scale},
+        {"pi_seed", o.pi_seed},
+        {"pi_direction", o.pi_direction},
+        {"pi_reactant_extent", o.pi_reactant_extent},
     };
   }
 
@@ -780,6 +793,23 @@ void from_json(const json &j, Parameters &p) {
                                   "rate, not " +
                                   o.mode);
     }
+    JSON_OPT(s, "pi_planes", o.pi_planes);
+    JSON_OPT(s, "pi_beads", o.pi_beads);
+    JSON_OPT(s, "pi_equilibration_steps", o.pi_equilibration_steps);
+    JSON_OPT(s, "pi_sampling_steps", o.pi_sampling_steps);
+    JSON_OPT(s, "pi_time_step", o.pi_time_step);
+    if (s.contains("pi_thermostat")) {
+      o.pi_thermostat = lowerCopy(s.at("pi_thermostat").get<std::string>());
+    }
+    JSON_OPT(s, "pi_gle_file", o.pi_gle_file);
+    JSON_OPT(s, "pi_pile_tau", o.pi_pile_tau);
+    JSON_OPT(s, "pi_pile_scale", o.pi_pile_scale);
+    JSON_OPT(s, "pi_seed", o.pi_seed);
+    if (s.contains("pi_direction")) {
+      o.pi_direction = lowerCopy(s.at("pi_direction").get<std::string>());
+    }
+    JSON_OPT(s, "pi_reactant_extent", o.pi_reactant_extent);
+    eonc::piqtst::validateOptions(o);
   }
 
   // The ini loader derives these from the femtosecond inputs whether or

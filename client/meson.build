@@ -791,6 +791,7 @@ eonclib_sources = [
     'Dynamics.cpp',
     'PathIntegral.cpp',
     'PIQTST.cpp',
+    'PIQTSTJob.cpp',
     'GlobalOptimizationJob.cpp',
     'BiasedGradientSquaredDescent.cpp',
     'SafeHyperJob.cpp',

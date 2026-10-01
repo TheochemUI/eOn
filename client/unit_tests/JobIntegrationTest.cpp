@@ -2978,4 +2978,50 @@ force_tolerance = 1e-6
   REQUIRE(halfCalls < fullCalls);
 }
 
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "InstantonJob rate writes PI-QTST planes after the ring",
+                 "[job][instanton][piqtst][integration]") {
+  if (!copyTestData("neb_lj13")) {
+    SKIP("neb_lj13 test system not found");
+  }
+  // A short run: the plumbing, the files and the keys, not converged
+  // numbers. 400 K is above the 330 K crossover, so the rate step is the
+  // parabolic factor and no ring is searched.
+  writeConfig(R"(
+[Main]
+job = instanton
+
+[Potential]
+potential = lj
+
+[Instanton]
+mode = rate
+temperature = 400
+pi_planes = 4
+pi_beads = 4
+pi_equilibration_steps = 10
+pi_sampling_steps = 40
+pi_time_step = 1.0
+)");
+  auto results = runJob();
+  REQUIRE(results.at("termination_reason") == "0");
+  for (const char *key :
+       {"barrier_piqtst", "barrier_piqtst_error", "rate_piqtst_log",
+        "rate_piqtst_log_error", "piqtst_s_star", "barrier_classical",
+        "rate_parabolic_log"}) {
+    CAPTURE(key);
+    REQUIRE(results.count(key) == 1);
+    REQUIRE(std::isfinite(std::stod(results.at(key))));
+  }
+  REQUIRE(std::stod(results.at("piqtst_planes")) == 4.0);
+  REQUIRE(std::stod(results.at("barrier_piqtst")) >= 0.0);
+  REQUIRE(std::filesystem::exists(workdir / "rate_piqtst.dat"));
+  const auto frames =
+      readcon::read_all_frames((workdir / "piqtst_planes.con").string());
+  REQUIRE(frames.size() == 4);
+  for (const auto &frame : frames) {
+    REQUIRE(frame.has_spreads());
+  }
+}
+
 } /* namespace tests */

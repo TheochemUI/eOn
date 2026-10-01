@@ -1270,6 +1270,74 @@ Instanton:
                 - eco
                 - trotter
 
+        # Mode rate: path-integral quantum TST after the instanton. Planes
+        # from behind the reactant to the saddle hold the centroid of a
+        # sampled ring; 0 leaves it off, otherwise at least 2.
+        pi_planes:
+            kind: int
+            default: 0
+
+        pi_beads:
+            kind: int
+            default: 16
+
+        pi_equilibration_steps:
+            kind: int
+            default: 500
+
+        # Production steps per plane, split into ten blocks for the error.
+        pi_sampling_steps:
+            kind: int
+            default: 2000
+
+        # fs
+        pi_time_step:
+            kind: float
+            default: 0.5
+
+        # piglet reads pi_gle_file, the [Dynamics] path_gle_file format.
+        pi_thermostat:
+            kind: string
+            default: pile
+            values:
+                - pile
+                - piglet
+
+        pi_gle_file:
+            kind: string
+            default: ""
+
+        # fs, the centroid Langevin time.
+        pi_pile_tau:
+            kind: float
+            default: 100.0
+
+        # Scales the critical PILE damping of the internal modes. Below the
+        # crossover the lowest modes are soft at the barrier and 0.5
+        # samples them faster.
+        pi_pile_scale:
+            kind: float
+            default: 1.0
+
+        pi_seed:
+            kind: int
+            default: 1
+
+        # Plane normal: the saddle's unstable mode, or the mass-weighted
+        # reactant-to-saddle line.
+        pi_direction:
+            kind: string
+            default: mode
+            values:
+                - mode
+                - line
+
+        # The first plane sits this fraction of the reactant-to-saddle
+        # distance behind the reactant.
+        pi_reactant_extent:
+            kind: float
+            default: 0.5
+
 ################################################################################
 
 Lanczos:

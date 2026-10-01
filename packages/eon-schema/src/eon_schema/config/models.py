@@ -2663,6 +2663,75 @@ class InstantonConfig(BaseModel):
             " Trotter springs."
         ),
     )
+    pi_planes: int = Field(
+        default=0,
+        ge=0,
+        description=(
+            "Mode rate: planes for path-integral quantum TST after the"
+            " instanton, from behind the reactant to the saddle. 0 leaves it"
+            " off; otherwise at least 2."
+        ),
+    )
+    pi_beads: int = Field(
+        default=16, ge=1, description="Beads of each plane's ring."
+    )
+    pi_equilibration_steps: int = Field(
+        default=500, ge=0, description="Equilibration steps per plane."
+    )
+    pi_sampling_steps: int = Field(
+        default=2000,
+        ge=20,
+        description=(
+            "Production steps per plane, split into ten blocks for the"
+            " standard error."
+        ),
+    )
+    pi_time_step: float = Field(
+        default=0.5, gt=0.0, description="Ring time step, in femtoseconds."
+    )
+    pi_thermostat: Literal["pile", "piglet"] = Field(
+        default="pile",
+        description=(
+            "pile, or piglet with the normal-mode GLE matrices in"
+            " pi_gle_file."
+        ),
+    )
+    pi_gle_file: str = Field(
+        default="",
+        description="GLE matrices for piglet, in the [Dynamics] path_gle_file format.",
+    )
+    pi_pile_tau: float = Field(
+        default=100.0,
+        gt=0.0,
+        description="Centroid Langevin damping time, in femtoseconds.",
+    )
+    pi_pile_scale: float = Field(
+        default=1.0,
+        gt=0.0,
+        description=(
+            "Scales the critical PILE damping of the internal modes; below"
+            " the crossover 0.5 samples the soft modes at the barrier faster."
+        ),
+    )
+    pi_seed: int = Field(
+        default=1, ge=0, description="Seed for the plane sampling."
+    )
+    pi_direction: Literal["mode", "line"] = Field(
+        default="mode",
+        description=(
+            "Plane normal: the saddle's unstable mode, or the mass-weighted"
+            " reactant-to-saddle line. mode falls back to line when the mode"
+            " is more than 60 degrees off the line."
+        ),
+    )
+    pi_reactant_extent: float = Field(
+        default=0.5,
+        ge=0.0,
+        description=(
+            "The first plane sits this fraction of the reactant-to-saddle"
+            " distance behind the reactant."
+        ),
+    )
 
 
 class DynamicsConfig(BaseModel):

@@ -13,11 +13,15 @@
 
 #include "EckartBarrier.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/Parameters.h"
+#include "eon/ParametersJSON.h"
 #include "eon/Tunneling.h"
 
+#include <nlohmann/json.hpp>
 
 #include <cmath>
 #include <numbers>
+#include <stdexcept>
 #include <vector>
 
 using namespace eonc;
@@ -25,23 +29,34 @@ using eonc::testing::Eckart;
 
 namespace {
 
-// V(x, y) = V0 sech^2(x / a) + k0 (1 + c sech^2(x / a)) y^2 / 2 at unit
-// mass. With c = 0 and y fixed it is the one-dimensional Eckart barrier.
+// In mass-weighted coordinates q = sqrt(mass) (x, y), rotated by theta to
+// xi along u = (cos theta, sin theta) and eta across it,
+// V = V0 sech^2(xi / a) + k0 (1 + c sech^2(xi / a)) eta^2 / 2.
+// With unit mass, theta = 0, c = 0 and y fixed it is the one-dimensional
+// Eckart barrier.
 struct EckartPot final : Potential {
   Eckart pes;
   double k0{0.0};
   double c{0.0};
+  double mass{1.0};
+  double theta{0.0};
 
   EckartPot()
       : Potential(PotType::LJ) {}
 
   void evaluate(const double *x, double *f, double *e) const {
-    const double sech2 = 1.0 / std::pow(std::cosh(x[0] / pes.a), 2);
+    const double sm = std::sqrt(mass);
+    const double ct = std::cos(theta), st = std::sin(theta);
+    const double xi = sm * (ct * x[0] + st * x[1]);
+    const double eta = sm * (-st * x[0] + ct * x[1]);
+    const double sech2 = 1.0 / std::pow(std::cosh(xi / pes.a), 2);
     const double k = k0 * (1.0 + c * sech2);
-    const double dsech2 = -2.0 * sech2 * std::tanh(x[0] / pes.a) / pes.a;
-    *e = pes.value(x[0]) + 0.5 * k * x[1] * x[1];
-    f[0] = -pes.slope(x[0]) - 0.5 * k0 * c * dsech2 * x[1] * x[1];
-    f[1] = -k * x[1];
+    const double dsech2 = -2.0 * sech2 * std::tanh(xi / pes.a) / pes.a;
+    *e = pes.value(xi) + 0.5 * k * eta * eta;
+    const double dxi = pes.slope(xi) + 0.5 * k0 * c * dsech2 * eta * eta;
+    const double deta = k * eta;
+    f[0] = -sm * (ct * dxi - st * deta);
+    f[1] = -sm * (st * dxi + ct * deta);
     f[2] = 0.0;
   }
 
@@ -69,15 +84,17 @@ struct EckartPot final : Potential {
   }
 };
 
-piqtst::Coordinate line(bool transverse) {
+piqtst::Coordinate line(bool transverse, double mass = 1.0,
+                        double theta = 0.0) {
   piqtst::Coordinate c;
   c.atoms = 1;
-  c.masses = {1.0};
+  c.masses = {mass};
   c.numbers = {1};
   c.free = {1, static_cast<char>(transverse ? 1 : 0), 0};
   c.reference = VectorXd::Zero(3);
   c.direction = VectorXd::Zero(3);
-  c.direction(0) = 1.0;
+  c.direction(0) = std::cos(theta);
+  c.direction(1) = std::sin(theta);
   return c;
 }
 
@@ -185,9 +202,11 @@ TEST_CASE("PI-QTST matches the exact Eckart flux near and below the "
 }
 
 // One bead is classical TST along s. A transverse mode whose stiffness
-// rises by 1 + c at the top adds (kT / 2) ln((1 + c sech^2) / ...) to the
-// free energy, sampled by the centroid thermostat within each plane; c = 0
-// leaves the bare barrier and the rate exp(-beta V0) / (2 pi beta hbar).
+// rises by 1 + c at the top adds (kT / 2) ln((1 + c sech^2(xi / a)) / ...)
+// to the free energy, sampled by the centroid thermostat within each
+// plane; c = 0 leaves the bare barrier and the rate
+// exp(-beta V0) / (2 pi beta hbar). A mass of 4 amu with the barrier along
+// a rotated mass-weighted direction is the same profile in s.
 TEST_CASE("One bead gives classical TST on the free-energy profile",
           "[PIQTST]") {
   const Eckart pes;
@@ -195,33 +214,46 @@ TEST_CASE("One bead gives classical TST on the free-energy profile",
   const double beta = 1.0 / (tunneling::kBoltzmann * t);
   const double s0 = -5.0 * pes.a;
   const double sech0 = 1.0 / std::pow(std::cosh(s0 / pes.a), 2);
-  for (const double c : {0.0, 1.0}) {
+  struct Case {
+    double c, mass, theta;
+  };
+  for (const Case cs :
+       {Case{0.0, 1.0, 0.0}, Case{1.0, 1.0, 0.0}, Case{1.0, 4.0, 0.6}}) {
     EckartPot pot;
     pot.k0 = 1.0;
-    pot.c = c;
+    pot.c = cs.c;
+    pot.mass = cs.mass;
+    pot.theta = cs.theta;
     piqtst::ScanOptions o;
     o.planes = planes(pes.a, 40);
     o.equilibration = 100;
     o.production = 1000;
     o.blocks = 10;
     o.ring = ring(t, 1, 0.1);
-    const auto result = piqtst::scan(pot, line(true), o);
+    const auto result = piqtst::scan(pot, line(true, cs.mass, cs.theta), o);
     const double barrier = result.back().freeEnergy;
     const double error = result.back().freeEnergyError;
-    const double exact = pes.v0 - pes.value(s0) +
-                         0.5 / beta * std::log((1.0 + c) / (1.0 + c * sech0));
-    CAPTURE(c, barrier, error, exact);
+    const double exact =
+        pes.v0 - pes.value(s0) +
+        0.5 / beta * std::log((1.0 + cs.c) / (1.0 + cs.c * sech0));
+    CAPTURE(cs.c, cs.mass, cs.theta, barrier, error, exact);
     REQUIRE(std::abs(barrier - exact) < 3.0 * error + 5e-4);
     const double logRate = logFlux(barrier, beta);
     const double classical = -beta * pes.v0 - std::log(2.0 * std::numbers::pi *
                                                        beta * tunneling::kHbar);
-    if (c == 0.0) {
-      // No transverse sampling: the error is the trapezoid rule alone.
+    if (cs.c == 0.0) {
+      // No transverse coupling: the error is the trapezoid rule alone.
       REQUIRE(error < 1e-12);
       REQUIRE(std::abs(logRate - classical) < beta * 5e-4);
     } else {
       REQUIRE(error > 0.0);
     }
+    // The centroid stays on the line it was seeded on, within three
+    // transverse thermal widths sqrt(kT / k0) in mass-weighted units.
+    const VectorXd mid = result[result.size() / 2].centroid;
+    const double across = std::sqrt(cs.mass) * (-std::sin(cs.theta) * mid(0) +
+                                                std::cos(cs.theta) * mid(1));
+    REQUIRE(std::abs(across) < 3.0 * std::sqrt(1.0 / (beta * pot.k0)));
   }
 }
 
@@ -274,4 +306,57 @@ TEST_CASE("PI-QTST errors propagate through the trapezoid rule", "[PIQTST]") {
   REQUIRE_THAT(r.barrierError,
                Catch::Matchers::WithinRel(0.025 * std::sqrt(6.0), 1e-12));
   REQUIRE(r.logRateError > 0.0);
+}
+
+TEST_CASE("PI-QTST options round-trip through JSON and are checked",
+          "[PIQTST][params]") {
+  nlohmann::json j = {{"Instanton",
+                       {{"mode", "rate"},
+                        {"pi_planes", 9},
+                        {"pi_beads", 12},
+                        {"pi_equilibration_steps", 30},
+                        {"pi_sampling_steps", 400},
+                        {"pi_time_step", 0.25},
+                        {"pi_thermostat", "PILE"},
+                        {"pi_pile_tau", 50.0},
+                        {"pi_pile_scale", 0.5},
+                        {"pi_seed", 7},
+                        {"pi_direction", "Line"},
+                        {"pi_reactant_extent", 0.75}}}};
+  Parameters p;
+  eonc::config::from_json(j, p);
+  const auto &o = p.instanton_options();
+  REQUIRE(o.pi_planes == 9);
+  REQUIRE(o.pi_beads == 12);
+  REQUIRE(o.pi_equilibration_steps == 30);
+  REQUIRE(o.pi_sampling_steps == 400);
+  REQUIRE(o.pi_time_step == Catch::Approx(0.25));
+  REQUIRE(o.pi_thermostat == "pile");
+  REQUIRE(o.pi_pile_tau == Catch::Approx(50.0));
+  REQUIRE(o.pi_pile_scale == Catch::Approx(0.5));
+  REQUIRE(o.pi_seed == 7);
+  REQUIRE(o.pi_direction == "line");
+  REQUIRE(o.pi_reactant_extent == Catch::Approx(0.75));
+  const nlohmann::json back = eonc::config::to_json(p);
+  Parameters again;
+  eonc::config::from_json(back, again);
+  REQUIRE(again.instanton_options().pi_planes == 9);
+  REQUIRE(again.instanton_options().pi_direction == "line");
+  REQUIRE(again.instanton_options().pi_pile_scale == Catch::Approx(0.5));
+
+  for (const nlohmann::json &bad :
+       {nlohmann::json{{"Instanton", {{"pi_planes", 4}}}},
+        nlohmann::json{{"Instanton", {{"mode", "rate"}, {"pi_planes", 1}}}},
+        nlohmann::json{{"Instanton",
+                        {{"mode", "rate"},
+                         {"pi_planes", 4},
+                         {"pi_thermostat", "piglet"}}}},
+        nlohmann::json{{"Instanton",
+                        {{"mode", "rate"},
+                         {"pi_planes", 4},
+                         {"pi_direction", "sideways"}}}}}) {
+    Parameters q;
+    CAPTURE(bad.dump());
+    REQUIRE_THROWS_AS(eonc::config::from_json(bad, q), std::invalid_argument);
+  }
 }

@@ -286,6 +286,138 @@ The cubic metastable well, {math}`V = \omega_0^2 q^2/2 - g q^3/3`, is the
 check. Deep below the crossover its rate approaches the zero-temperature
 decay of {cite:t}`inst-caldeiraQuantumTunnellingDissipative1983`.
 
+## Path-integral quantum TST on planes
+
+With `pi_planes` above 0, `mode = rate` follows the instanton with
+path-integral quantum transition-state theory (PI-QTST,
+{cite:t}`inst-vothRigorousFormulationQuantum1989`; review in
+{cite:t}`inst-vothFeynmanPathIntegral1993`). A ring polymer is sampled with
+its centroid held on each of a set of parallel planes. The centroid
+potential of mean force along the plane coordinate gives a free-energy
+barrier and a rate at every temperature in `temperature` or `temperatures`.
+
+```ini
+[Instanton]
+mode = rate
+saddle_filename = saddle.con
+temperatures = 150, 105
+pi_planes = 21
+pi_beads = 32
+pi_equilibration_steps = 500
+pi_sampling_steps = 4000
+pi_time_step = 0.5
+pi_thermostat = pile
+pi_direction = mode
+pi_reactant_extent = 0.5
+```
+
+The coordinate. With {math}`q` the mass-weighted displacement from the
+reactant over the free atoms and {math}`\hat n` a unit vector in those
+coordinates, the plane coordinate is {math}`s = \hat n \cdot q`, in
+amu^0.5 Å. The reactant sits at {math}`s = 0` and the saddle at
+{math}`s^* = \hat n \cdot q_\mathrm{saddle}`. `pi_direction = mode` (the
+default) takes {math}`\hat n` from the unstable eigenvector of the saddle's
+mass-weighted Hessian, oriented toward the saddle, so the last plane is the
+dividing surface normal to the barrier mode. When that mode makes more than
+60 degrees with the reactant-saddle line, or the saddle has no negative
+eigenvalue, the job warns and uses `pi_direction = line`, the straight
+mass-weighted line from the reactant to the saddle. One normal serves every
+plane, so {math}`s` is a linear coordinate and its mean force integrates to
+its free energy with no metric correction. The planes are fixed in the reactant's frame. Translations
+of a structure with no atom fixed lie within every plane, because the
+unstable mode of the projected Hessian has no rigid component, but a
+rotation of a free cluster changes {math}`s`; fix an atom, or use a cell,
+when the sampling is long enough for the cluster to turn. The job warns
+when no atom is fixed in an aperiodic cell. `pi_planes` planes are spaced
+uniformly from {math}`s_0 = -\,\mathtt{pi\_reactant\_extent}\; s^*`, behind
+the reactant, to {math}`s^*`.
+
+The sampling. On each plane the ring's centroid starts where
+`initial_path` crosses the plane, or on the reactant-saddle line when no
+band is given. Projecting the centroid position and momentum holds it on
+the plane. The ring is carried from plane to plane: its centroid moves to
+the next plane and its internal modes keep their thermalised state.
+The free-ring springs are propagated exactly, so `pi_time_step` is
+limited by the physical vibrations, as for classical dynamics.
+`pi_equilibration_steps` are discarded, then `pi_sampling_steps` steps of
+`pi_time_step` fs record {math}`n \cdot f_c`, the centroid force along the
+plane normal. The bead forces of a step are one batch, so a calculator
+group carries the beads. `pi_thermostat = pile` puts PILE on the internal
+modes and a Langevin thermostat of time `pi_pile_tau` fs on the centroid
+within the plane, and `pi_pile_scale` (default 1) scales the critical
+damping of the internal modes. Below the crossover the lowest ring modes
+are soft at the barrier and overdamped at critical damping; on the Eckart
+check 0.5 cuts the mean-force error at 0.7 {math}`T_c` by a third. `piglet` reads a normal-mode GLE from `pi_gle_file`, in
+the same format and with the same meaning as `[Dynamics] path_gle_file`.
+`pi_seed` seeds the noise.
+
+The free energy. The mean force on the plane at {math}`s` is
+
+```{math}
+F'(s) = -\left\langle \hat n \cdot M^{-1/2} f_c \right\rangle_s ,
+```
+
+in eV per amu^0.5 Å, and {math}`F(s)` is its trapezoid integral from
+{math}`s_0`. The production run is cut into ten equal blocks. The standard
+error of the block means is the error of {math}`F'(s)`. The errors of
+{math}`F` and of the rate follow by linear propagation, with the planes
+taken as independent. The quantum free-energy barrier is
+{math}`\Delta F = F(s^*) - \min_{s < s^*} F(s)`. The log and `results.dat`
+give it beside the classical barrier
+{math}`V(\mathrm{saddle}) - V(\mathrm{reactant})` and the instanton's
+effective barrier.
+
+The rate. With {math}`s` a unit-mass coordinate,
+
+```{math}
+k_\mathrm{PI\text{-}QTST} = \frac{1}{2}\sqrt{\frac{2}{\pi\beta}}\;
+\frac{e^{-\beta F(s^*)}}{\int_{s_0}^{s^*} e^{-\beta F(s)}\,ds},
+```
+
+with {math}`\beta = 1/k_B T` in eV^{-1}. The prefactor is
+{math}`\tfrac12\langle|\dot s|\rangle`, half the mean speed of a free unit
+mass, in amu^0.5 Å per time unit of
+{math}`\sqrt{\mathrm{amu}\,\mathrm{Å}^2/\mathrm{eV}}` (10.18 fs). The
+integral, again the trapezoid rule over the planes, is the reactant's
+centroid density along {math}`s`. The job reports {math}`k` in s^{-1}. The
+integral stops at the first plane, so that plane must sit several
+{math}`k_B T` above the reactant minimum of {math}`F`; the job warns below
+5 {math}`k_B T`. It also warns when {math}`F'(s^*)` differs from zero by
+more than three standard errors: the maximum of the centroid free energy
+then lies off the classical saddle's plane.
+
+The formula is classical TST on the centroid free-energy surface. With one
+bead, {math}`F` is the classical free energy and the rate is classical TST
+along {math}`s`. Near and above the crossover it carries the tunnelling
+correction of a symmetric barrier. For strongly asymmetric barriers well
+below the crossover it fails {cite:p}`inst-vothFeynmanPathIntegral1993`,
+and the instanton gives the rate there.
+
+Output. `rate_piqtst.dat` has one row per temperature and plane, with
+columns `T_K`, `s_amu05A`, `dF_ds_eV_per_amu05A`, `dF_ds_error`, `F_eV`,
+`F_error_eV` and `spread_max_A`. `piqtst_planes.con` holds one frame per
+plane at the coldest temperature, at the production-averaged centroid. Its
+readcon `spreads` section holds each atom's root-mean-square bead
+displacement from the centroid along x, y and z in Å. The scalars carry
+{math}`s`, {math}`F'` and {math}`F` with their errors, the temperature and
+the bead count. A run at more than one temperature also writes
+`piqtst_planes_<T>K.con`. `results.dat` gains, for the coldest temperature:
+
+| Key | Meaning |
+|---|---|
+| `barrier_piqtst` | {math}`\Delta F`, eV |
+| `barrier_piqtst_error` | its standard error, eV |
+| `rate_piqtst` | {math}`k_\mathrm{PI\text{-}QTST}`, s^{-1} |
+| `rate_piqtst_log` | {math}`\ln(k\,/\,\mathrm{s}^{-1})` |
+| `rate_piqtst_log_error` | standard error of that logarithm |
+| `piqtst_s_star` | {math}`s^*`, amu^0.5 Å |
+| `piqtst_dF_ds_star`, `piqtst_dF_ds_star_error` | {math}`F'(s^*)` and its error |
+| `piqtst_first_plane_kT` | {math}`\beta (F(s_0) - \min F)` |
+| `piqtst_temperature_K`, `piqtst_planes`, `piqtst_beads` | the run |
+
+Cost: `pi_planes` times (`pi_equilibration_steps` plus `pi_sampling_steps`)
+steps per temperature, each step two force batches of `pi_beads` beads.
+
 ## Centroid and spread
 
 Both modes also write `instanton_centroid.con` (and

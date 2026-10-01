@@ -15,6 +15,7 @@
 #include "eon/Hessian.h"
 #include "eon/JobResult.h"
 #include "eon/Matter.h"
+#include "eon/PIQTST.h"
 #include "eon/PathIntegral.h"
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
@@ -732,6 +733,11 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   }
   if (!rateFailed) {
     status = RunStatus::GOOD;
+  }
+  if (o.pi_planes > 0) {
+    const auto planeFiles = piqtst::runAfterInstanton(
+        params, *pot, reactant, saddle, hSaddle, pathQ, temperatures, extras);
+    returnFiles.insert(returnFiles.end(), planeFiles.begin(), planeFiles.end());
   }
   write(status);
   return returnFiles;

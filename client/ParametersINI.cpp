@@ -28,6 +28,7 @@
 #include <string>
 
 #include "eon/EonLogger.h"
+#include "eon/PIQTST.h"
 
 namespace {
 std::string toLowerCase(std::string s) {
@@ -1961,6 +1962,25 @@ int load_ini(INIReader &ini, Parameters &params) {
                                   "not " +
                                   o.mode);
     }
+    o.pi_planes = ini.GetInteger("Instanton", "pi_planes", o.pi_planes);
+    o.pi_beads = ini.GetInteger("Instanton", "pi_beads", o.pi_beads);
+    o.pi_equilibration_steps = ini.GetInteger(
+        "Instanton", "pi_equilibration_steps", o.pi_equilibration_steps);
+    o.pi_sampling_steps =
+        ini.GetInteger("Instanton", "pi_sampling_steps", o.pi_sampling_steps);
+    o.pi_time_step = ini.GetReal("Instanton", "pi_time_step", o.pi_time_step);
+    o.pi_thermostat =
+        toLowerCase(ini.Get("Instanton", "pi_thermostat", o.pi_thermostat));
+    o.pi_gle_file = ini.Get("Instanton", "pi_gle_file", o.pi_gle_file);
+    o.pi_pile_tau = ini.GetReal("Instanton", "pi_pile_tau", o.pi_pile_tau);
+    o.pi_pile_scale =
+        ini.GetReal("Instanton", "pi_pile_scale", o.pi_pile_scale);
+    o.pi_seed = ini.GetInteger("Instanton", "pi_seed", o.pi_seed);
+    o.pi_direction =
+        toLowerCase(ini.Get("Instanton", "pi_direction", o.pi_direction));
+    o.pi_reactant_extent =
+        ini.GetReal("Instanton", "pi_reactant_extent", o.pi_reactant_extent);
+    eonc::piqtst::validateOptions(o);
   }
 
   // [OH_TST] //

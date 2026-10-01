@@ -840,6 +840,27 @@ struct instanton_options_t {
   // "trotter" or "eco". Economised springs are refused: the instanton
   // is a Trotter discretisation.
   std::string springs{"trotter"};
+  // Mode rate: path-integral quantum TST after the instanton. Planes
+  // from behind the reactant to the saddle, each holding the centroid of
+  // a sampled ring; 0 leaves it off.
+  long pi_planes{0};
+  long pi_beads{16};
+  long pi_equilibration_steps{500};
+  long pi_sampling_steps{2000};
+  double pi_time_step{0.5}; // fs
+  // "pile", or "piglet" with pi_gle_file (the [Dynamics] path_gle_file
+  // format).
+  std::string pi_thermostat{"pile"};
+  std::string pi_gle_file{""};
+  double pi_pile_tau{100.0}; // fs, centroid Langevin time
+  double pi_pile_scale{1.0}; // scales the internal-mode PILE damping
+  long pi_seed{1};
+  // Plane normal: "mode" is the saddle's unstable mode, "line" the
+  // mass-weighted reactant-to-saddle line.
+  std::string pi_direction{"mode"};
+  // The first plane sits this fraction of the reactant-to-saddle distance
+  // behind the reactant.
+  double pi_reactant_extent{0.5};
 };
 
 // [OH_TST] //
