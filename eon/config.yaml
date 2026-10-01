@@ -1338,6 +1338,28 @@ Instanton:
             kind: float
             default: 0.5
 
+        # Ring-polymer MD transmission factor on the top plane: parent
+        # configurations sampled on the plane. 0 leaves it off; otherwise
+        # at least 2.
+        pi_recrossing_parents:
+            kind: int
+            default: 0
+
+        # Momentum draws per parent, each run forward and reversed.
+        pi_recrossing_children:
+            kind: int
+            default: 20
+
+        # fs, the length of each child trajectory.
+        pi_recrossing_time:
+            kind: float
+            default: 100.0
+
+        # Thermostatted steps between parents.
+        pi_recrossing_spacing:
+            kind: int
+            default: 50
+
 ################################################################################
 
 Lanczos:

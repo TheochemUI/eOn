@@ -2732,6 +2732,32 @@ class InstantonConfig(BaseModel):
             " distance behind the reactant."
         ),
     )
+    pi_recrossing_parents: int = Field(
+        default=0,
+        ge=0,
+        description=(
+            "Parent configurations on the top plane for the ring-polymer MD"
+            " transmission factor kappa. 0 leaves it off; otherwise at"
+            " least 2."
+        ),
+    )
+    pi_recrossing_children: int = Field(
+        default=20,
+        ge=1,
+        description=(
+            "Momentum draws per parent, each run forward and reversed."
+        ),
+    )
+    pi_recrossing_time: float = Field(
+        default=100.0,
+        gt=0.0,
+        description="Length of each child trajectory, in femtoseconds.",
+    )
+    pi_recrossing_spacing: int = Field(
+        default=50,
+        ge=1,
+        description="Thermostatted plane steps between parents.",
+    )
 
 
 class DynamicsConfig(BaseModel):

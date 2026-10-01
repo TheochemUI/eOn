@@ -19,8 +19,10 @@
 
 #include <nlohmann/json.hpp>
 
+#include <algorithm>
 #include <cmath>
 #include <numbers>
+#include <random>
 #include <stdexcept>
 #include <vector>
 
@@ -355,6 +357,234 @@ TEST_CASE("PI-QTST options round-trip through JSON and are checked",
                         {{"mode", "rate"},
                          {"pi_planes", 4},
                          {"pi_direction", "sideways"}}}}}) {
+    Parameters q;
+    CAPTURE(bad.dump());
+    REQUIRE_THROWS_AS(eonc::config::from_json(bad, q), std::invalid_argument);
+  }
+}
+
+namespace {
+
+piqtst::RecrossingOptions recrossingAtTop(double temperature, long beads,
+                                          long parents, long children) {
+  piqtst::RecrossingOptions o;
+  o.s = 0.0;
+  o.equilibration = 200;
+  o.parents = parents;
+  o.spacing = 20;
+  o.children = children;
+  o.steps = 100;
+  o.ring = ring(temperature, beads, 0.1);
+  return o;
+}
+
+struct Estimate {
+  double kappa{0.0};
+  double error{0.0};
+};
+
+// Classical flux-side transmission through x = 0 on the rotated barrier by
+// a separate sampler: Metropolis on y along the line x = 0, Gaussian
+// velocities at kT, plain velocity Verlet, and the same estimator as the
+// RPMD children (momentum-reversed pairs, mean of kappa(t) over the last
+// quarter, jackknife over blocks of pairs).
+Estimate classicalTransmission(const EckartPot &pot, double beta, long pairs,
+                               long blocks, long steps, double dt) {
+  std::mt19937_64 rng(4242);
+  std::normal_distribution<double> gauss(0.0, 1.0);
+  std::uniform_real_distribution<double> uniform(0.0, 1.0);
+  auto energy = [&](double x, double y) {
+    const double q[3] = {x, y, 0.0};
+    double f[3];
+    double e = 0.0;
+    pot.evaluate(q, f, &e);
+    return e;
+  };
+  double y = 0.0;
+  double ey = energy(0.0, y);
+  const double width = 0.5 / std::sqrt(beta * pot.k0);
+  auto metropolis = [&]() {
+    for (int sweep = 0; sweep < 10; ++sweep) {
+      const double trial = y + width * (2.0 * uniform(rng) - 1.0);
+      const double et = energy(0.0, trial);
+      if (uniform(rng) < std::exp(-beta * (et - ey))) {
+        y = trial;
+        ey = et;
+      }
+    }
+  };
+  for (int burn = 0; burn < 200; ++burn) {
+    metropolis();
+  }
+  const long first = steps - steps / 4;
+  const double span = static_cast<double>(steps + 1 - first);
+  const double sigma = 1.0 / std::sqrt(beta * pot.mass);
+  std::vector<double> num(static_cast<size_t>(blocks), 0.0);
+  std::vector<double> den(static_cast<size_t>(blocks), 0.0);
+  const long perBlock = pairs / blocks;
+  for (long block = 0; block < blocks; ++block) {
+    for (long pair = 0; pair < perBlock; ++pair) {
+      metropolis();
+      const double vx0 = sigma * gauss(rng);
+      const double vy0 = sigma * gauss(rng);
+      for (const double sign : {1.0, -1.0}) {
+        double q[3] = {0.0, y, 0.0};
+        double v[2] = {sign * vx0, sign * vy0};
+        double f[3];
+        double e = 0.0;
+        pot.evaluate(q, f, &e);
+        const double sdot = std::sqrt(pot.mass) * v[0];
+        den[static_cast<size_t>(block)] += std::max(sdot, 0.0);
+        for (long i = 1; i <= steps; ++i) {
+          for (int a = 0; a < 2; ++a) {
+            v[a] += 0.5 * dt * f[a] / pot.mass;
+            q[a] += dt * v[a];
+          }
+          pot.evaluate(q, f, &e);
+          for (int a = 0; a < 2; ++a) {
+            v[a] += 0.5 * dt * f[a] / pot.mass;
+          }
+          if (i >= first && q[0] > 0.0) {
+            num[static_cast<size_t>(block)] += sdot / span;
+          }
+        }
+      }
+    }
+  }
+  double sumNum = 0.0, sumDen = 0.0;
+  for (long b = 0; b < blocks; ++b) {
+    sumNum += num[static_cast<size_t>(b)];
+    sumDen += den[static_cast<size_t>(b)];
+  }
+  Estimate out;
+  out.kappa = sumNum / sumDen;
+  double mean = 0.0;
+  std::vector<double> leave(static_cast<size_t>(blocks));
+  for (long b = 0; b < blocks; ++b) {
+    leave[static_cast<size_t>(b)] = (sumNum - num[static_cast<size_t>(b)]) /
+                                    (sumDen - den[static_cast<size_t>(b)]);
+    mean += leave[static_cast<size_t>(b)];
+  }
+  mean /= static_cast<double>(blocks);
+  double var = 0.0;
+  for (const double l : leave) {
+    var += (l - mean) * (l - mean);
+  }
+  const double nb = static_cast<double>(blocks);
+  out.error = std::sqrt((nb - 1.0) / nb * var);
+  return out;
+}
+
+} // namespace
+
+// One classical particle leaving the top of a one-dimensional barrier never
+// returns: energy conservation keeps its kinetic energy above zero on the
+// product side. Every forward child ends on the product side and every
+// reversed child on the reactant side, so kappa(t) = 1 at every t.
+TEST_CASE("The classical transmission at the top of a 1D barrier is one",
+          "[PIQTST][recrossing]") {
+  EckartPot pot;
+  const auto o = recrossingAtTop(300.0, 1, 20, 10);
+  const auto k = piqtst::recrossing(pot, line(false), o);
+  CAPTURE(k.plateau, k.plateauError, k.trajectories);
+  REQUIRE(k.trajectories == 2 * o.parents * o.children);
+  REQUIRE(k.kappa.size() == static_cast<size_t>(o.steps + 1));
+  REQUIRE(std::abs(k.plateau - 1.0) <= 3.0 * k.plateauError + 1e-12);
+  for (const double v : k.kappa) {
+    REQUIRE_THAT(v, Catch::Matchers::WithinAbs(1.0, 1e-12));
+  }
+}
+
+// The barrier rotated by theta from the dividing line x = 0, with transverse
+// stiffness k0 = 4 omega_b^2: the harmonic saddle gives
+// kappa = sqrt(cos^2 theta - sin^2 theta omega_b^2 / k0) = 0.7755 for
+// theta = 0.6. One-bead RPMD is classical MD and must agree with plain
+// velocity Verlet from an independent sampler of the same line, and both
+// with the harmonic value, which the Eckart anharmonicity moves by 1e-3 at
+// 300 K.
+TEST_CASE("One-bead RPMD recrossing matches classical trajectories on a "
+          "rotated barrier",
+          "[PIQTST][recrossing]") {
+  const Eckart pes;
+  const double t = 300.0;
+  const double beta = 1.0 / (tunneling::kBoltzmann * t);
+  const double omegaB2 = 2.0 * pes.v0 / (pes.a * pes.a);
+  const double theta = 0.6;
+  EckartPot pot;
+  pot.k0 = 4.0 * omegaB2;
+  pot.theta = theta;
+  const auto o = recrossingAtTop(t, 1, 100, 20);
+  const auto k = piqtst::recrossing(pot, line(true), o);
+  const Estimate md = classicalTransmission(pot, beta, 20000, 50, o.steps, 0.1);
+  const double harmonic =
+      std::sqrt(std::pow(std::cos(theta), 2) -
+                std::pow(std::sin(theta), 2) * omegaB2 / pot.k0);
+  const double combined = std::hypot(k.plateauError, md.error);
+  CAPTURE(k.plateau, k.plateauError, md.kappa, md.error, harmonic);
+  REQUIRE(k.plateauError > 0.0);
+  REQUIRE(k.plateauError < 0.02);
+  REQUIRE(k.plateau + 5.0 * k.plateauError < 0.9);
+  REQUIRE(std::abs(k.plateau - md.kappa) < 3.0 * combined);
+  REQUIRE(std::abs(k.plateau - harmonic) < 3.0 * k.plateauError + 0.005);
+  REQUIRE(std::abs(md.kappa - harmonic) < 3.0 * md.error + 0.005);
+  REQUIRE_THAT(k.kappa.front(), Catch::Matchers::WithinAbs(1.0, 1e-12));
+  // Recrossing only lowers the flux-side correlation from its t = 0 value.
+  REQUIRE(k.kappa.back() < 1.0);
+}
+
+// kappa(0) takes the side of each child from the sign of sdot(0), so the
+// numerator and denominator are the same sum. A quantum ring below the
+// crossover, where the internal modes and the centroid exchange energy,
+// still starts at 1, and the time axis is steps of the ring time step.
+TEST_CASE("The transmission curve starts at one", "[PIQTST][recrossing]") {
+  const Eckart pes;
+  const double tc = tunneling::crossoverTemperature(pes.hessian_at_top());
+  EckartPot pot;
+  pot.k0 = 1.0;
+  auto o = recrossingAtTop(0.8 * tc, 8, 4, 4);
+  o.steps = 20;
+  const auto k = piqtst::recrossing(pot, line(true), o);
+  REQUIRE(k.time.front() == 0.0);
+  REQUIRE_THAT(k.time.back(), Catch::Matchers::WithinRel(20 * 0.1, 1e-12));
+  REQUIRE_THAT(k.kappa.front(), Catch::Matchers::WithinAbs(1.0, 1e-14));
+  for (const double v : k.kappa) {
+    REQUIRE(std::isfinite(v));
+  }
+}
+
+TEST_CASE("PI-QTST recrossing options round-trip and are checked",
+          "[PIQTST][params]") {
+  nlohmann::json j = {{"Instanton",
+                       {{"mode", "rate"},
+                        {"pi_planes", 9},
+                        {"pi_recrossing_parents", 12},
+                        {"pi_recrossing_children", 6},
+                        {"pi_recrossing_time", 80.0},
+                        {"pi_recrossing_spacing", 25}}}};
+  Parameters p;
+  eonc::config::from_json(j, p);
+  const auto &o = p.instanton_options();
+  REQUIRE(o.pi_recrossing_parents == 12);
+  REQUIRE(o.pi_recrossing_children == 6);
+  REQUIRE(o.pi_recrossing_time == Catch::Approx(80.0));
+  REQUIRE(o.pi_recrossing_spacing == 25);
+  Parameters again;
+  eonc::config::from_json(eonc::config::to_json(p), again);
+  REQUIRE(again.instanton_options().pi_recrossing_parents == 12);
+  REQUIRE(again.instanton_options().pi_recrossing_time == Catch::Approx(80.0));
+  REQUIRE(Parameters{}.instanton_options().pi_recrossing_parents == 0);
+
+  auto rate = [](nlohmann::json extra) {
+    nlohmann::json s = {{"mode", "rate"}, {"pi_planes", 4}};
+    s.update(extra);
+    return nlohmann::json{{"Instanton", s}};
+  };
+  for (const nlohmann::json &bad :
+       {rate({{"pi_recrossing_parents", 1}}),
+        rate({{"pi_recrossing_parents", -2}}),
+        rate({{"pi_recrossing_parents", 4}, {"pi_recrossing_children", 0}}),
+        rate({{"pi_recrossing_parents", 4}, {"pi_recrossing_spacing", 0}}),
+        rate({{"pi_recrossing_parents", 4}, {"pi_recrossing_time", 1.0}})}) {
     Parameters q;
     CAPTURE(bad.dump());
     REQUIRE_THROWS_AS(eonc::config::from_json(bad, q), std::invalid_argument);

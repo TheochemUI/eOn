@@ -861,6 +861,14 @@ struct instanton_options_t {
   // The first plane sits this fraction of the reactant-to-saddle distance
   // behind the reactant.
   double pi_reactant_extent{0.5};
+  // Ring-polymer MD transmission factor on the top plane: parents sampled
+  // on the plane every pi_recrossing_spacing steps, each launching
+  // pi_recrossing_children momentum pairs for pi_recrossing_time fs.
+  // 0 parents leaves it off.
+  long pi_recrossing_parents{0};
+  long pi_recrossing_children{20};
+  double pi_recrossing_time{100.0}; // fs
+  long pi_recrossing_spacing{50};
 };
 
 // [OH_TST] //

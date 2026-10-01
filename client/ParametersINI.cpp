@@ -1980,6 +1980,14 @@ int load_ini(INIReader &ini, Parameters &params) {
         toLowerCase(ini.Get("Instanton", "pi_direction", o.pi_direction));
     o.pi_reactant_extent =
         ini.GetReal("Instanton", "pi_reactant_extent", o.pi_reactant_extent);
+    o.pi_recrossing_parents = ini.GetInteger(
+        "Instanton", "pi_recrossing_parents", o.pi_recrossing_parents);
+    o.pi_recrossing_children = ini.GetInteger(
+        "Instanton", "pi_recrossing_children", o.pi_recrossing_children);
+    o.pi_recrossing_time =
+        ini.GetReal("Instanton", "pi_recrossing_time", o.pi_recrossing_time);
+    o.pi_recrossing_spacing = ini.GetInteger(
+        "Instanton", "pi_recrossing_spacing", o.pi_recrossing_spacing);
     eonc::piqtst::validateOptions(o);
   }
 

@@ -15,7 +15,9 @@
 // Miller, J. Chem. Phys. 91, 7749 (1989)): the centroid potential of mean
 // force along a linear mass-weighted coordinate s from ring polymers whose
 // centroid is held on parallel planes, and the rate from its value on the
-// dividing plane.
+// dividing plane, optionally times the ring-polymer MD transmission factor
+// on that plane (Craig and Manolopoulos, J. Chem. Phys. 122, 084106 (2005);
+// Suleimanov, Allen and Green, Comput. Phys. Commun. 184, 833 (2013)).
 
 #include "eon/Eigen.h"
 #include "eon/ParametersOptions.h"
@@ -112,15 +114,59 @@ struct Rate {
 /// integral is the trapezoid rule over the planes; the last is s*.
 Rate rate(const std::vector<Plane> &planes, double beta);
 
+struct RecrossingOptions {
+  /// The dividing plane s*, amu^0.5 Angstrom.
+  double s{0.0};
+  /// Thermostatted steps on the plane before the first parent.
+  long equilibration{500};
+  /// Parent configurations, each this many thermostatted steps after the
+  /// last.
+  long parents{0};
+  long spacing{50};
+  /// Momentum draws per parent; each runs forward and reversed.
+  long children{20};
+  /// Unconstrained, thermostat-free steps per child of ring.dt.
+  long steps{0};
+  /// The parents' ring and thermostat. The children use its beads,
+  /// temperature and time step.
+  pathintegral::Options ring;
+  /// Cartesian centroid to start the parent ring at. Empty starts on
+  /// reference + s M^(-1/2) n.
+  std::function<VectorXd(double)> seed;
+};
+
+struct Recrossing {
+  /// t = step * ring.dt, from 0 to steps * ring.dt, and
+  /// kappa(t) = <sdot(0) h(s(t) - s*)> / <sdot(0) h(sdot(0))>.
+  /// At t = 0 the side is that of sdot(0), the t -> 0+ limit, so
+  /// kappa(0) = 1.
+  std::vector<double> time;
+  std::vector<double> kappa;
+  /// Mean of kappa(t) over the last quarter of the times, and its
+  /// jackknife standard error over parents.
+  double plateau{0.0};
+  double plateauError{0.0};
+  long trajectories{0};
+  long batches{0};
+};
+
+/// Bennett-Chandler transmission at s*: parents sampled with the centroid
+/// held on the plane, children with Maxwell-Boltzmann ring momenta at
+/// beta / P and the plane released, propagated by RPMD. The centroid
+/// velocity along s is sdot = n . M^(1/2) v_centroid.
+Recrossing recrossing(Potential &pot, const Coordinate &coordinate,
+                      const RecrossingOptions &options);
+
 /// Throws std::invalid_argument on an inconsistent [Instanton] pi_* key.
 void validateOptions(const instanton_options_t &o);
 
 /// [Instanton] mode rate with pi_planes > 0: the planes and rate at each
-/// temperature. hSaddle and the band in pathQ are in the instanton's
-/// mass-weighted coordinates over the free atoms, measured from the
-/// reactant; saddle is aligned to the reactant. Appends results.dat keys
-/// for the last (lowest) temperature to extras and returns the files
-/// written.
+/// temperature, and with pi_recrossing_parents > 0 the transmission factor
+/// on the top plane and k_RPMD = kappa k_PI-QTST. hSaddle and the band in pathQ
+/// are in the instanton's mass-weighted coordinates over the free atoms,
+/// measured from the reactant; saddle is aligned to the reactant. Appends
+/// results.dat keys for the last (lowest) temperature to extras and returns the
+/// files written.
 std::vector<std::string>
 runAfterInstanton(const Parameters &params, Potential &pot,
                   const Matter &reactant, const Matter &saddle,

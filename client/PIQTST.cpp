@@ -48,6 +48,39 @@ double propagated(const VectorXd &gradient, const VectorXd &errors) {
   return std::sqrt(gradient.cwiseProduct(errors).squaredNorm());
 }
 
+/// Cartesian normal a = M^(1/2) n and step b = M^(-1/2) n. With n a unit
+/// vector, a . b = 1, so the plane through reference + s b holds s, and
+/// dF/ds = -<a . f> / |a|^2 = -<a_hat . f> / |a|.
+struct Axes {
+  VectorXd a;
+  VectorXd b;
+};
+
+Axes axes(const Coordinate &c) {
+  const long dof = 3 * c.atoms;
+  if (c.atoms < 1 || static_cast<long>(c.masses.size()) != c.atoms ||
+      static_cast<long>(c.free.size()) != dof || c.reference.size() != dof ||
+      c.direction.size() != dof) {
+    throw std::invalid_argument("piqtst: coordinate sizes do not match");
+  }
+  Axes out{VectorXd::Zero(dof), VectorXd::Zero(dof)};
+  double nn = 0.0;
+  for (long i = 0; i < dof; ++i) {
+    if (!c.free[static_cast<size_t>(i)]) {
+      continue;
+    }
+    const double sm = std::sqrt(c.masses[static_cast<size_t>(i / 3)]);
+    out.a(i) = sm * c.direction(i);
+    out.b(i) = c.direction(i) / sm;
+    nn += c.direction(i) * c.direction(i);
+  }
+  if (std::abs(nn - 1.0) > 1e-8) {
+    throw std::invalid_argument(
+        "piqtst: the direction must be a unit vector on the free coordinates");
+  }
+  return out;
+}
+
 } // namespace
 
 void integrate(std::vector<Plane> &planes) {
@@ -71,11 +104,9 @@ void integrate(std::vector<Plane> &planes) {
 std::vector<Plane> scan(Potential &pot, const Coordinate &c,
                         const ScanOptions &o) {
   const long dof = 3 * c.atoms;
-  if (c.atoms < 1 || static_cast<long>(c.masses.size()) != c.atoms ||
-      static_cast<long>(c.free.size()) != dof || c.reference.size() != dof ||
-      c.direction.size() != dof) {
-    throw std::invalid_argument("piqtst: coordinate sizes do not match");
-  }
+  const Axes ax = axes(c);
+  const VectorXd &a = ax.a;
+  const VectorXd &b = ax.b;
   if (o.planes.size() < 2) {
     throw std::invalid_argument("piqtst: at least two planes are needed");
   }
@@ -89,25 +120,6 @@ std::vector<Plane> scan(Potential &pot, const Coordinate &c,
     throw std::invalid_argument(
         "piqtst: sampling needs at least as many steps as blocks, and two "
         "blocks");
-  }
-  // Cartesian normal a = M^(1/2) n and step b = M^(-1/2) n. With n a unit
-  // vector, a . b = 1, so the plane through reference + s b holds s, and
-  // dF/ds = -<a . f> / |a|^2 = -<a_hat . f> / |a|.
-  VectorXd a = VectorXd::Zero(dof);
-  VectorXd b = VectorXd::Zero(dof);
-  double nn = 0.0;
-  for (long i = 0; i < dof; ++i) {
-    if (!c.free[static_cast<size_t>(i)]) {
-      continue;
-    }
-    const double sm = std::sqrt(c.masses[static_cast<size_t>(i / 3)]);
-    a(i) = sm * c.direction(i);
-    b(i) = c.direction(i) / sm;
-    nn += c.direction(i) * c.direction(i);
-  }
-  if (std::abs(nn - 1.0) > 1e-8) {
-    throw std::invalid_argument(
-        "piqtst: the direction must be a unit vector on the free coordinates");
   }
   const double aNorm = a.norm();
   auto seedAt = [&](double s) -> VectorXd {
@@ -246,6 +258,132 @@ Rate rate(const std::vector<Plane> &planes, double beta) {
       -beta * w.row(top).transpose() + beta * (w.transpose() * weight);
   r.logRateError = propagated(gradient, errors);
   return r;
+}
+
+Recrossing recrossing(Potential &pot, const Coordinate &c,
+                      const RecrossingOptions &o) {
+  const long dof = 3 * c.atoms;
+  const Axes ax = axes(c);
+  if (o.parents < 2 || o.children < 1 || o.spacing < 1 || o.steps < 4 ||
+      o.equilibration < 0) {
+    throw std::invalid_argument(
+        "piqtst: recrossing needs two parents, one child, a positive "
+        "spacing and four steps");
+  }
+  const VectorXd origin = c.reference + o.s * ax.b;
+  VectorXd start = origin;
+  if (o.seed) {
+    start = o.seed(o.s);
+    if (start.size() != dof) {
+      throw std::invalid_argument("piqtst: a seed has the wrong length");
+    }
+  }
+  pathintegral::RingPolymer parent(c.atoms, c.masses, c.numbers, c.free,
+                                   o.ring);
+  parent.setAllBeads(start.data());
+  parent.setHyperplane(ax.a, origin);
+  for (long step = 0; step < o.equilibration; ++step) {
+    parent.step(pot, c.box, false);
+  }
+
+  // The children draw every normal mode from the free-ring Boltzmann
+  // distribution at beta / P, which PILE's initial momenta are, and carry
+  // their own stream so parent and child noise stay independent.
+  pathintegral::Options childOptions = o.ring;
+  childOptions.thermostat = pathintegral::Thermostat::Pile;
+  childOptions.gleFile.clear();
+  childOptions.seed = o.ring.seed + 0x9E3779B97F4A7C15ULL;
+  pathintegral::RingPolymer child(c.atoms, c.masses, c.numbers, c.free,
+                                  childOptions);
+
+  const long n = o.steps + 1;
+  // Per parent: sum over children of sdot(0) h(s(t) - s*) at each time,
+  // and of sdot(0) h(sdot(0)).
+  std::vector<VectorXd> numerator(static_cast<size_t>(o.parents),
+                                  VectorXd::Zero(n));
+  std::vector<double> denominator(static_cast<size_t>(o.parents), 0.0);
+  Recrossing out;
+  for (long p = 0; p < o.parents; ++p) {
+    for (long step = 0; step < o.spacing; ++step) {
+      parent.step(pot, c.box, false);
+    }
+    const std::vector<VectorXd> beads = parent.beads();
+    VectorXd &num = numerator[static_cast<size_t>(p)];
+    double &den = denominator[static_cast<size_t>(p)];
+    for (long k = 0; k < o.children; ++k) {
+      child.setBeads(beads);
+      child.thermalMomenta();
+      std::vector<VectorXd> reversed = child.momenta();
+      const double forward = ax.a.dot(child.centroidVelocity());
+      for (int sign = 0; sign < 2; ++sign) {
+        if (sign == 1) {
+          for (auto &v : reversed) {
+            v = -v;
+          }
+          child.setBeads(beads);
+          child.setMomenta(reversed);
+        }
+        const double sdot = sign == 0 ? forward : -forward;
+        const double flux = sdot > 0.0 ? sdot : 0.0;
+        den += flux;
+        num(0) += flux;
+        for (long i = 1; i < n; ++i) {
+          child.nveStep(pot, c.box);
+          const double s = ax.a.dot(child.centroid() - c.reference);
+          if (s > o.s) {
+            num(i) += sdot;
+          }
+        }
+        ++out.trajectories;
+      }
+    }
+  }
+
+  VectorXd total = VectorXd::Zero(n);
+  double totalDen = 0.0;
+  for (long p = 0; p < o.parents; ++p) {
+    total += numerator[static_cast<size_t>(p)];
+    totalDen += denominator[static_cast<size_t>(p)];
+  }
+  if (!(totalDen > 0.0)) {
+    throw std::runtime_error("piqtst: no child left the plane forward");
+  }
+  out.time.resize(static_cast<size_t>(n));
+  out.kappa.resize(static_cast<size_t>(n));
+  for (long i = 0; i < n; ++i) {
+    out.time[static_cast<size_t>(i)] = static_cast<double>(i) * o.ring.dt;
+    out.kappa[static_cast<size_t>(i)] = total(i) / totalDen;
+  }
+
+  // Plateau numerators per parent, averaged over the last quarter, and the
+  // leave-one-parent-out ratios.
+  const long first = n - 1 - o.steps / 4;
+  const double span = static_cast<double>(n - first);
+  std::vector<double> plateauNum(static_cast<size_t>(o.parents), 0.0);
+  double sumNum = 0.0;
+  for (long p = 0; p < o.parents; ++p) {
+    plateauNum[static_cast<size_t>(p)] =
+        numerator[static_cast<size_t>(p)].tail(n - first).sum() / span;
+    sumNum += plateauNum[static_cast<size_t>(p)];
+  }
+  out.plateau = sumNum / totalDen;
+  const double np = static_cast<double>(o.parents);
+  std::vector<double> leaveOut(static_cast<size_t>(o.parents), 0.0);
+  double meanLeave = 0.0;
+  for (long p = 0; p < o.parents; ++p) {
+    leaveOut[static_cast<size_t>(p)] =
+        (sumNum - plateauNum[static_cast<size_t>(p)]) /
+        (totalDen - denominator[static_cast<size_t>(p)]);
+    meanLeave += leaveOut[static_cast<size_t>(p)];
+  }
+  meanLeave /= np;
+  double var = 0.0;
+  for (const double v : leaveOut) {
+    var += (v - meanLeave) * (v - meanLeave);
+  }
+  out.plateauError = std::sqrt((np - 1.0) / np * var);
+  out.batches = parent.batches() + child.batches();
+  return out;
 }
 
 } // namespace eonc::piqtst

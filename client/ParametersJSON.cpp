@@ -335,6 +335,10 @@ json to_json(const Parameters &p) {
         {"pi_seed", o.pi_seed},
         {"pi_direction", o.pi_direction},
         {"pi_reactant_extent", o.pi_reactant_extent},
+        {"pi_recrossing_parents", o.pi_recrossing_parents},
+        {"pi_recrossing_children", o.pi_recrossing_children},
+        {"pi_recrossing_time", o.pi_recrossing_time},
+        {"pi_recrossing_spacing", o.pi_recrossing_spacing},
     };
   }
 
@@ -809,6 +813,10 @@ void from_json(const json &j, Parameters &p) {
       o.pi_direction = lowerCopy(s.at("pi_direction").get<std::string>());
     }
     JSON_OPT(s, "pi_reactant_extent", o.pi_reactant_extent);
+    JSON_OPT(s, "pi_recrossing_parents", o.pi_recrossing_parents);
+    JSON_OPT(s, "pi_recrossing_children", o.pi_recrossing_children);
+    JSON_OPT(s, "pi_recrossing_time", o.pi_recrossing_time);
+    JSON_OPT(s, "pi_recrossing_spacing", o.pi_recrossing_spacing);
     eonc::piqtst::validateOptions(o);
   }
 

@@ -75,6 +75,21 @@ void validateOptions(const instanton_options_t &o) {
     throw std::invalid_argument(
         "[Instanton] pi_reactant_extent must not be negative");
   }
+  if (o.pi_recrossing_parents < 0 || o.pi_recrossing_parents == 1) {
+    throw std::invalid_argument(
+        "[Instanton] pi_recrossing_parents must be 0 or at least 2");
+  }
+  if (o.pi_recrossing_parents == 0) {
+    return;
+  }
+  if (o.pi_recrossing_children < 1 || o.pi_recrossing_spacing < 1) {
+    throw std::invalid_argument("[Instanton] pi_recrossing_children and "
+                                "pi_recrossing_spacing must be positive");
+  }
+  if (!(o.pi_recrossing_time >= 4.0 * o.pi_time_step)) {
+    throw std::invalid_argument(
+        "[Instanton] pi_recrossing_time must be at least four pi_time_step");
+  }
 }
 
 namespace {
@@ -266,8 +281,13 @@ runAfterInstanton(const Parameters &params, Potential &pot,
   if (!table) {
     throw std::runtime_error("piqtst: cannot write " + tableFile);
   }
+  const bool kappaOn = o.pi_recrossing_parents > 0;
   table << "# T_K s_amu05A dF_ds_eV_per_amu05A dF_ds_error F_eV F_error_eV "
-           "spread_max_A\n";
+           "spread_max_A";
+  if (kappaOn) {
+    table << " kappa kappa_error ln_k_rpmd_s ln_k_rpmd_s_error";
+  }
+  table << '\n';
   table << std::setprecision(10);
   std::vector<std::string> files{tableFile};
 
@@ -298,6 +318,56 @@ runAfterInstanton(const Parameters &params, Potential &pot,
     so.seed = seed;
     const std::vector<Plane> planes = scan(pot, c, so);
     const Rate r = rate(planes, beta);
+    const double lnPerSecond = r.logRate - logSecond;
+
+    Recrossing kappa;
+    double lnRpmd = std::numeric_limits<double>::quiet_NaN();
+    double lnRpmdError = std::numeric_limits<double>::quiet_NaN();
+    if (kappaOn) {
+      RecrossingOptions ro;
+      ro.s = planes.back().s;
+      ro.equilibration = o.pi_equilibration_steps;
+      ro.parents = o.pi_recrossing_parents;
+      ro.spacing = o.pi_recrossing_spacing;
+      ro.children = o.pi_recrossing_children;
+      ro.steps = std::lround(o.pi_recrossing_time / o.pi_time_step);
+      ro.ring = so.ring;
+      ro.seed = seed;
+      kappa = recrossing(pot, c, ro);
+      if (kappa.plateau > 0.0) {
+        lnRpmd = lnPerSecond + std::log(kappa.plateau);
+        lnRpmdError =
+            std::hypot(r.logRateError, kappa.plateauError / kappa.plateau);
+      } else {
+        EONC_LOG_WARNING("[Instanton] piqtst {:.4g} K: the transmission "
+                         "factor {:.4g} +- {:.2g} is not positive; ln k_RPMD "
+                         "is undefined (raise pi_recrossing_parents)",
+                         t, kappa.plateau, kappa.plateauError);
+      }
+      EONC_LOG_INFO("[Instanton] piqtst {:.4g} K: transmission factor "
+                    "kappa = {:.4f} +- {:.4f} from {} trajectories, "
+                    "ln(k_RPMD s) = {:.4f} +- {:.4f}",
+                    t, kappa.plateau, kappa.plateauError, kappa.trajectories,
+                    lnRpmd, lnRpmdError);
+      std::vector<std::string> curveFiles;
+      if (last) {
+        curveFiles.push_back("kappa_piqtst.dat");
+      }
+      if (sorted.size() > 1) {
+        curveFiles.push_back("kappa_piqtst_" + kelvinTag(t) + ".dat");
+      }
+      for (const auto &file : curveFiles) {
+        std::ofstream curve(file);
+        if (!curve) {
+          throw std::runtime_error("piqtst: cannot write " + file);
+        }
+        curve << "# t_fs kappa\n" << std::setprecision(10);
+        for (size_t i = 0; i < kappa.time.size(); ++i) {
+          curve << kappa.time[i] * timeUnit << ' ' << kappa.kappa[i] << '\n';
+        }
+        files.push_back(file);
+      }
+    }
 
     std::vector<std::string> conFiles;
     if (last) {
@@ -313,8 +383,13 @@ runAfterInstanton(const Parameters &params, Potential &pot,
         largest = std::max(largest, sp);
       }
       table << t << ' ' << p.s << ' ' << p.meanForce << ' ' << p.meanForceError
-            << ' ' << p.freeEnergy << ' ' << p.freeEnergyError << ' ' << largest
-            << '\n';
+            << ' ' << p.freeEnergy << ' ' << p.freeEnergyError << ' '
+            << largest;
+      if (kappaOn) {
+        table << ' ' << kappa.plateau << ' ' << kappa.plateauError << ' '
+              << lnRpmd << ' ' << lnRpmdError;
+      }
+      table << '\n';
       Matter frame(reactant);
       AtomMatrix pos = frame.getPositions();
       for (long i = 0; i < c.atoms; ++i) {
@@ -345,7 +420,6 @@ runAfterInstanton(const Parameters &params, Potential &pot,
       files.push_back(file);
     }
 
-    const double lnPerSecond = r.logRate - logSecond;
     const Plane &top = planes.back();
     EONC_LOG_INFO("[Instanton] piqtst {:.4g} K: free-energy barrier {:.5f} "
                   "+- {:.5f} eV (classical {:.5f} eV, instanton effective "
@@ -380,6 +454,13 @@ runAfterInstanton(const Parameters &params, Potential &pot,
     extras.emplace_back("rate_piqtst", std::exp(lnPerSecond));
     extras.emplace_back("rate_piqtst_log", lnPerSecond);
     extras.emplace_back("rate_piqtst_log_error", r.logRateError);
+    if (kappaOn) {
+      extras.emplace_back("piqtst_kappa", kappa.plateau);
+      extras.emplace_back("piqtst_kappa_error", kappa.plateauError);
+      extras.emplace_back("rate_rpmd", std::exp(lnRpmd));
+      extras.emplace_back("rate_rpmd_log", lnRpmd);
+      extras.emplace_back("rate_rpmd_log_error", lnRpmdError);
+    }
   }
   return files;
 }
