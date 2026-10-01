@@ -137,6 +137,8 @@ def test_landfold_artifact_roundtrip():
     assert int(compat["abi_minor"]) == 4
     assert int(compat["layout_revision"]) == 9
     assert compat["build_identity"] == "eon-schema"
+
+
 def test_legacy_backend_omits_engine_compatibility():
     parsed = job_result_scalars_from_results_dat(
         "cg optimizer_backend\n"
