@@ -62,6 +62,15 @@ The three match numbers are `kdb_nf`, `kdb_dc`, and `kdb_mac`:
 
 A query log line contains the `kdb_nf` value from the ini.
 
+## Resetting a run
+
+`python -m eon.server --reset` removes the catalog directory `Paths.kdb`
+with the rest of the run's data, wherever that path points. A catalog
+shared between runs or curated by hand needs a copy outside the run, or
+a `Paths.kdb` that names a copy. The readcon-db corpus `readcon.db` is
+not removed, so after a reset it holds frames that no catalog
+references. Delete it as well to start from an empty database.
+
 ## Configuration
 
 ```{code-block} ini

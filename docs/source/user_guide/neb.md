@@ -84,7 +84,7 @@ Via the surrogate potential interface, a native C++ implementation of the Gaussi
 ```{versionadded} 2.12
 - Onsager-Machlup action-based NEB for minimum action paths.
 - OCINEB (Off-Path Climbing Image NEB) {cite:t}`neb-goswamiEnhancedClimbingImage2026`: hybrid CI-NEB + Min-Mode Following with hessian eigenmode alignment for automated saddle point refinement.
-- Parallel image force evaluation (requires TBB, `-Dwith_parallel_neb=true`).
+- Parallel image force evaluation (`[Main] parallel = true`). In 2.12 it required TBB and `-Dwith_parallel_neb=true`; see the note under Parallel evaluation.
 - IDPP (Image Dependent Pair Potential) path initialization.
 - Modular strategy pattern for tangent, projection, and spring force components.
 ```
@@ -196,6 +196,11 @@ solid_state_pressure = 0.0
 ```
 
 ### Parallel evaluation
+
+```{versionchanged} 3.5.0
+The image pool is plain `std::thread`, so GCC and Clang builds need no TBB.
+`-Dwith_parallel_neb` is deprecated and has no effect.
+```
 
 With `parallel = true`, dirty-image force calls run on at most
 `std::thread::hardware_concurrency()` threads, each taking the next image,

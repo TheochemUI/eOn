@@ -91,8 +91,20 @@ springs fitted to harmonic radii of gyration up to `path_eco_omega_max`.
 Economised springs are refused with `piglet`. The instanton refuses them
 as well, because that discretisation assumes Trotter springs.
 
+`path_eco_omega_max` is an angular frequency in inverse internal time
+units. One internal time unit is 10.18 fs, so 1.0 is 9.82e13 rad/s and
+hbar omega = 0.0647 eV.
+
 `piglet` reads one drift matrix and one covariance per internal mode from
-`path_gle_file`. The centroid keeps a separate Langevin thermostat.
+`path_gle_file`. The file holds the mode count and the matrix size, then
+for each mode the drift matrix and the covariance, row by row. The drift
+matrix is in inverse internal time units. The covariance is in kelvin:
+kB times it is the covariance of the mass-scaled extended momenta in eV,
+so a canonical GLE at the ring temperature has N T on the diagonal, with
+N = `path_beads` and T the `[Main]` temperature. A file with one matrix
+pair fewer than the bead count covers the internal modes; one with a pair
+per bead skips the first, centroid, pair. The centroid keeps a separate
+Langevin thermostat.
 `path_pile_tau` is that damping time in femtoseconds, and
 `path_pile_scale` multiplies the critical damping of the internal modes
 when the thermostat is `pile`. `path_seed` seeds the path-integral

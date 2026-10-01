@@ -126,6 +126,14 @@ meson compile -C bbdir
 The flag configures the wrap. A `pkg-config` rgpot must already be an MPI
 build. If it is not, `ranks_per_image` greater than 0 raises.
 
+The construction agreement and the grouped exit handler below compile
+when rgpot links MPI: the wrap with `-Drgpot:with_mpi=enabled`, or an
+installed rgpot whose `rgpot.pc` defines `RGPOT_HAS_MPI`. Against an
+installed rgpot without that define, eOn's `-Dwith_mpi=enabled` turns
+them on. After a failed engine call rgpot asks for `MPI_Abort` at exit,
+and the exit handler aborts the world instead of waiting in
+`MPI_Finalize` for ranks left inside a CPMD collective.
+
 eOn's `-Dwith_mpi=enabled` option builds the client/server program. Calculator
 groups are this page's launch, `mpirun -np N eonclient`, with rgpot built
 `-Drgpot:with_mpi=enabled`.
@@ -142,10 +150,12 @@ reads the file before `MPI_Comm_split`. When any rank cannot read it,
 every rank throws that error and the split does not run.
 
 When `params_path` is empty, `[cpmd]` supplies those scalars and overrides
-the copies on `[RgpotPot]`. `cutOffRy` is the cutoff key. `cutoff_ry` and
-`cpmd_cut_off_ry` still load, on `[cpmd]` or on `[RgpotPot]`. `functional`
-and `cpmd_functional` still load. `[cpmd]` is read only when `backend` is
-`cpmd`, `cpmdc`, or `cpmdpot`.
+the copies on `[RgpotPot]`. Three spellings set the cutoff on either
+section: `cutOffRy`, then `cutoff_ry`, then `cpmd_cut_off_ry`. The first
+one present wins. `functional` wins over `cpmd_functional`. The client and
+the Python server accept every spelling; the `Cpmd` and `RgpotPot` models
+write only `cutOffRy` on `[cpmd]` and `cutoff_ry` on `[RgpotPot]`.
+`[cpmd]` is read only when `backend` is `cpmd`, `cpmdc`, or `cpmdpot`.
 
 `engine_path`, `engine_library`, `engine_root`, `scratch_dir`,
 `permanent_dir`, and `ranks_per_image` stay on `[RgpotPot]`. They place
