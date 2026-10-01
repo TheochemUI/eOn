@@ -988,6 +988,115 @@ double lowestMode(const std::vector<VectorXd> &x, const RingEval &here,
   return es.eigenvalues()(0);
 }
 
+// Lowest curvature of the ring Hessian over vectors odd under j -> N-j and
+// orthogonal to the cycle mode x[j+1] - x[j-1], at a mirror-symmetric ring
+// of even N. A search confined to the even sector cannot see these. The
+// products move the ring off the mirror, so `potential` evaluates every bead.
+// Returns +inf when no odd direction is left to probe.
+double lowestOddMode(const std::vector<VectorXd> &x, const RingEval &here,
+                     double c, const BatchPotential &potential,
+                     std::vector<VectorXd> &mode, long steps, double eps) {
+  const size_t n = x.size();
+  const size_t m = n / 2;
+  std::vector<VectorXd> cycle(n);
+  for (size_t j = 0; j < n; ++j) {
+    cycle[j] = x[(j + 1) % n] - x[(j + n - 1) % n];
+  }
+  auto odd = [&](std::vector<VectorXd> &q) {
+    q[0].setZero();
+    q[m].setZero();
+    for (size_t a = 1; a < m; ++a) {
+      const VectorXd half = 0.5 * (q[a] - q[n - a]);
+      q[a] = half;
+      q[n - a] = -half;
+    }
+  };
+  odd(cycle);
+  const double cnorm = std::sqrt(dot(cycle, cycle));
+  if (cnorm > 0.0) {
+    scale(cycle, 1.0 / cnorm);
+  }
+  auto project = [&](std::vector<VectorXd> &q) {
+    odd(q);
+    if (cnorm > 0.0) {
+      const double p = dot(q, cycle);
+      for (size_t j = 0; j < n; ++j) {
+        q[j] -= p * cycle[j];
+      }
+    }
+  };
+  auto hv = [&](const std::vector<VectorXd> &u) {
+    std::vector<VectorXd> xp(n);
+    for (size_t j = 0; j < n; ++j) {
+      xp[j] = x[j] + eps * u[j];
+    }
+    const RingEval e = evaluateRing(xp, c, potential);
+    std::vector<VectorXd> out(n);
+    for (size_t j = 0; j < n; ++j) {
+      out[j] = (e.grad[j] - here.grad[j]) / eps;
+    }
+    project(out);
+    return out;
+  };
+  // Start from the bead displacements with opposite signs on the two
+  // halves: two copies of the turning region moving against each other.
+  VectorXd mean = VectorXd::Zero(x[0].size());
+  for (const auto &b : x) {
+    mean += b;
+  }
+  mean /= static_cast<double>(n);
+  std::vector<VectorXd> q(n);
+  for (size_t j = 0; j < n; ++j) {
+    q[j] = (j < m ? 1.0 : -1.0) * (x[j] - mean);
+  }
+  project(q);
+  const double qnorm = std::sqrt(dot(q, q));
+  if (!(qnorm > 1e-12)) {
+    return std::numeric_limits<double>::infinity();
+  }
+  scale(q, 1.0 / qnorm);
+  std::vector<std::vector<VectorXd>> basis;
+  std::vector<double> alpha, beta;
+  for (long k = 0; k < steps; ++k) {
+    basis.push_back(q);
+    std::vector<VectorXd> w = hv(q);
+    alpha.push_back(dot(w, q));
+    for (const auto &b : basis) {
+      const double p = dot(w, b);
+      for (size_t j = 0; j < n; ++j) {
+        w[j] -= p * b[j];
+      }
+    }
+    project(w);
+    const double bnorm = std::sqrt(dot(w, w));
+    if (!(bnorm > 1e-12) || k + 1 == steps) {
+      break;
+    }
+    beta.push_back(bnorm);
+    scale(w, 1.0 / bnorm);
+    q = std::move(w);
+  }
+  const long dim = static_cast<long>(alpha.size());
+  MatrixXd t = MatrixXd::Zero(dim, dim);
+  for (long i = 0; i < dim; ++i) {
+    t(i, i) = alpha[static_cast<size_t>(i)];
+    if (i + 1 < dim) {
+      t(i, i + 1) = t(i + 1, i) = beta[static_cast<size_t>(i)];
+    }
+  }
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> es(t);
+  const VectorXd y = es.eigenvectors().col(0);
+  mode.assign(n, VectorXd::Zero(x[0].size()));
+  for (long i = 0; i < dim; ++i) {
+    for (size_t j = 0; j < n; ++j) {
+      mode[j] += y(i) * basis[static_cast<size_t>(i)][j];
+    }
+  }
+  project(mode);
+  scale(mode, 1.0 / std::sqrt(dot(mode, mode)));
+  return es.eigenvalues()(0);
+}
+
 // Distance along +dir (sign = 1) or -dir (sign = -1) from the saddle at which
 // V has dropped by `drop`, from a scan in steps of h; the lowest point found
 // when V never drops that far.
@@ -2455,11 +2564,36 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
     return e;
   };
   std::vector<VectorXd> geff = effective(cur.grad);
-  for (long it = 0; it < options.maxIterations; ++it) {
+  long limit = options.maxIterations;
+  for (long it = 0; it < limit; ++it) {
     inst.iterations = it;
     if (curvature < 0.0 && largestBeadNorm(cur.grad) < options.forceTolerance) {
-      inst.converged = true;
-      break;
+      std::vector<VectorXd> oddMode;
+      const double oddCurv =
+          fold ? lowestOddMode(x, cur, c, potential, oddMode,
+                               options.lanczosFirst, options.lanczosStep)
+               : 0.0;
+      if (!(oddCurv < -1e-3 * std::abs(curvature))) {
+        inst.converged = true;
+        break;
+      }
+      // A mirror-symmetric stationary point with a second unstable mode
+      // odd under the mirror, such as two copies of the instanton on one
+      // ring. The rest of the search runs on the whole ring from a kick
+      // along that mode which lowers beta_N U_N by one in the quadratic
+      // model.
+      fold = false;
+      evalPot = potential;
+      const double kick = std::sqrt(2.0 / (inst.betaN * -oddCurv));
+      for (size_t k = 0; k < x.size(); ++k) {
+        x[k] += kick * oddMode[k];
+      }
+      cur = evaluateRing(x, c, evalPot, options.energyShift);
+      curvature = lowestMode(x, cur, c, evalPot, mode, options.lanczosFirst,
+                             options.lanczosStep, fold);
+      pairs.clear();
+      geff = effective(cur.grad);
+      limit = it + options.maxIterations;
     }
     std::vector<VectorXd> trial(x.size());
     std::vector<VectorXd> d = geff;
