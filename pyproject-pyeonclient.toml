@@ -1,6 +1,6 @@
 [project]
 name = "pyeonclient"
-version = "0.4.1"
+version = "0.4.2"
 description = "Nanobind bindings to the eOn C++ client (Matter, Parameters, Potential, Jobs, NEB, RGPOT)"
 authors = [
     {name = "Rohit Goswami", email = "rgoswami@ieee.org"},
