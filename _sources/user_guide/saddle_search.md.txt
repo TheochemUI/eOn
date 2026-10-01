@@ -98,8 +98,7 @@ server:
 `rsync -a ../gpr_optim/ subprojects/gpr_optim/`. Under `-Dwith_gprd=auto`
 (the default) a Linux build links that checkout when it is there and leaves
 the dimer off when it is not. `-Dwith_gprd=enabled` stops configuration
-instead. The pin is the `revision` in `subprojects/gpr_optim.wrap`.
-`-Dwith_gprd=disabled` omits the method. The install page has the same `rsync` next to the
+instead. `-Dwith_gprd=disabled` omits the method. The install page has the same `rsync` next to the
 default `meson setup`.
 
 ## Output
