@@ -790,6 +790,7 @@ eonclib_sources = [
     'Dimer.cpp',
     'Dynamics.cpp',
     'PathIntegral.cpp',
+    'PIQTST.cpp',
     'GlobalOptimizationJob.cpp',
     'BiasedGradientSquaredDescent.cpp',
     'SafeHyperJob.cpp',
@@ -1631,6 +1632,7 @@ if get_option('with_tests')
     test_array = [  #
         ['test_impldim', 'ImpDimerTest.cpp', 'saddle_search'],
         ['test_path_integral', 'PathIntegralTest.cpp', '', 300],
+        ['test_piqtst', 'PIQTSTTest.cpp', '', 120],
         ['strparse_run', 'StringHelpersTest.cpp', ''],
         ['test_matter', 'MatterTest.cpp', 'neb_morse'],
         # The cubic rate at 600 beads, and its half-ring comparison, run
