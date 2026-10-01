@@ -1876,10 +1876,57 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       return applyDiagonal(v.diag, c, !half, vec);
     };
     const long dim = static_cast<long>(x.size()) * f;
-    const long steps = std::min(dim, static_cast<long>(60));
-    std::vector<VectorXd> start = ritzStart;
-    start.front()(0) += 1e-3;
-    v.ritz = lowestRingModes(apply, std::move(start), steps);
+    // The number of negative curvatures off the cycle, exactly, from the
+    // inertia of the same chain with the cycle lifted by c.
+    long negatives = 0;
+    {
+      std::vector<std::vector<VectorXd>> lift;
+      std::vector<double> kap;
+      if (v.tau.size() == dim) {
+        std::vector<VectorXd> tauRing(x.size(), VectorXd::Zero(f));
+        for (size_t j = 0; j < x.size(); ++j) {
+          tauRing[j] = v.tau.segment(static_cast<long>(j) * f, f);
+        }
+        lift.push_back(std::move(tauRing));
+        kap.push_back(c);
+      }
+      try {
+        negatives = WoodburyRing(c, v.diag, !half, lift, kap, true).negative();
+      } catch (const std::runtime_error &) {
+        negatives = 0;
+      }
+    }
+    // Lanczos deepens until every one of those negative curvatures is a
+    // resolved Ritz pair; a flip on an unresolved vector corrupts the step.
+    // The ring spectrum reaches 4 c, so residuals scale with c.
+    const double resolvedTol = 1e-8 * std::max(1.0, 4.0 * c);
+    auto resolvedNegatives = [&](const std::vector<RingMode> &modes) {
+      long count = 0;
+      for (const auto &m : modes) {
+        if (m.theta < 0.0 && m.residual <= resolvedTol) {
+          ++count;
+        }
+      }
+      return count;
+    };
+    long steps = std::min(dim, std::max(60L, 4 * (negatives + 2)));
+    for (;;) {
+      std::vector<VectorXd> start = ritzStart;
+      start.front()(0) += 1e-3;
+      v.ritz = lowestRingModes(apply, std::move(start), steps);
+      if (steps >= dim || resolvedNegatives(v.ritz) >= negatives) {
+        break;
+      }
+      steps = std::min(dim, 2 * steps);
+    }
+    // Only resolved pairs enter the classification and the flips.
+    v.ritz.erase(std::remove_if(v.ritz.begin(), v.ritz.end(),
+                                [](const RingMode &m) {
+                                  return m.residual >
+                                         1e-6 *
+                                             std::max(1.0, std::abs(m.theta));
+                                }),
+                 v.ritz.end());
     v.ok = !v.ritz.empty();
     if (v.ok) {
       // Classify from the Ritz values: the lowest mode off the cycle is

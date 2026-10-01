@@ -587,9 +587,15 @@ TEST_CASE("The Eckart rate instanton matches the exact flux to its "
       opt.beads = n;
       RateInstanton inst =
           optimizeRateInstanton(saddle, hs, beta, {}, pes.batch(), opt);
-      CAPTURE(frac, n, inst.iterations);
+      // Below 0.75 T_c an empty start cools from 0.85 T_c in steps of 0.75,
+      // and the iteration count adds over the stages: at most 12 each.
+      long stages = 1;
+      for (double t = 0.85 * tc; t > frac * tc * 1.05; t *= 0.75) {
+        ++stages;
+      }
+      CAPTURE(frac, n, inst.iterations, stages);
       REQUIRE(inst.converged);
-      REQUIRE(inst.iterations <= 12);
+      REQUIRE(inst.iterations <= 12 * stages);
       instantonRate(
           inst, [&](long, const VectorXd &q) { return pes.hessian_at(q); },
           MatrixXd::Identity(1, 1), 0.0);
