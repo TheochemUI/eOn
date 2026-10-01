@@ -59,7 +59,8 @@ protected:
     ParametersLoadAccess::main_options(params).randomSeed = 42;
     eonc::rng::random(42);
 
-    pot = eonc::helpers::makePotential(PotType::LJ, params);
+    pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, params));
     matter = new Matter(pot, params);
     matter->con2matter(std::string("reactant.con"));
   }
@@ -211,7 +212,8 @@ TEST_CASE("Nose-Hoover targets unfixed axes of a partly fixed atom",
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   ParametersLoadAccess::main_options(params).temperature = 300.0;
   ParametersLoadAccess::thermostat_options(params).kind = Dynamics::NOSE_HOOVER;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter matter(pot, params);
   matter.resize(1);
   matter.setAtomicNr(0, 18);

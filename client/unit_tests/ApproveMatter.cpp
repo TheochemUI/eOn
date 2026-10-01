@@ -141,7 +141,8 @@ std::vector<Matter> getMatter() {
   // Return test data for Matter
   // TODO(rg): Add more objects
   auto params = Parameters{};
-  auto pot_default = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot_default = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m1 = Matter(pot_default, params);
   std::string confile("pos.con"); // Sulfolene
   m1.con2matter(confile);

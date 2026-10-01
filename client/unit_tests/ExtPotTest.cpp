@@ -38,8 +38,8 @@ public:
     auto ext_pot_script = std::filesystem::canonical("ext_pot").string();
     ParametersLoadAccess::potential_options(params).extPotPath = ext_pot_script;
 
-    pot_ext = eonc::helpers::makePotential(params.potential_options().potential,
-                                           params);
+    pot_ext = eonc::helpers::sharePotential(eonc::helpers::makePotential(
+        params.potential_options().potential, params));
     matter = std::make_shared<Matter>(pot_ext, params);
 
     const std::string confile("pos.con");

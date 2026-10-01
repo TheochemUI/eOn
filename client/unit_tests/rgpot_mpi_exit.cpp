@@ -82,7 +82,8 @@ int main(int argc, char **argv) {
       mode == "params" ? 0 : 1;
 
   try {
-    auto pot = eonc::helpers::makePotential(eonc::PotType::RGPOT, params);
+    auto pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(eonc::PotType::RGPOT, params));
     if (mode == "abort") {
       // Only the driver returns from the grouped constructor. std::exit
       // keeps pot alive, so no stop message reaches rank 1.

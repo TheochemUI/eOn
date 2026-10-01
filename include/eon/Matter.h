@@ -23,6 +23,7 @@
 #include <memory>
 #include <span>
 #include <string>
+#include <utility>
 #include <vector>
 
 // This is a forward declaration of BondBoost to avoid a circular dependency.
@@ -92,6 +93,10 @@ class Matter {
 public:
   ~Matter();
   Matter(std::shared_ptr<Potential> pot, const Parameters &params);
+  /// Exclusive handoff. A later copy shares this instance; it does not clone
+  /// it.
+  Matter(std::unique_ptr<Potential> pot, const Parameters &params)
+      : Matter(std::shared_ptr<Potential>(std::move(pot)), params) {}
   Matter(const Matter &matter);                  // create a copy of matter
   const Matter &operator=(const Matter &matter); // copy the matter object
   /// Move: transfers retained movie ConFrames (move-only). User copy

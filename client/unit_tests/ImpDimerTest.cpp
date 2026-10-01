@@ -47,7 +47,8 @@ TEST_CASE("ImprovedDimer computes eigenvalue on displaced cluster",
   ParametersLoadAccess::saddle_search_options(parameters).minmode_method =
       LowestEigenmode::MINMODE_DIMER;
 
-  auto pot = eonc::helpers::makePotential(parameters);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(parameters));
   auto initial = std::make_shared<Matter>(pot, parameters);
   auto displacement = std::make_shared<Matter>(pot, parameters);
   auto saddle = std::make_shared<Matter>(pot, parameters);

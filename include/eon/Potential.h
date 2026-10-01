@@ -18,6 +18,7 @@
 #include <memory>
 #include <span>
 #include <stdexcept>
+#include <utility>
 
 namespace eonc {
 
@@ -213,11 +214,20 @@ public:
 };
 
 namespace helpers {
-std::shared_ptr<Potential> makePotential(const Parameters &params);
-std::shared_ptr<Potential> makePotential(PotType ptype,
-                                         const Parameters &params);
-std::shared_ptr<Potential>
+/// Exclusive ownership. Share only at a multi-owner boundary via
+/// sharePotential().
+[[nodiscard]] std::unique_ptr<Potential> makePotential(const Parameters &params);
+[[nodiscard]] std::unique_ptr<Potential>
+makePotential(PotType ptype, const Parameters &params);
+[[nodiscard]] std::unique_ptr<Potential>
 makePotential(PotType ptype, const Parameters &params, Runtime &runtime);
+
+/// Multi-owner boundary: one instance observed by several Matters, images, or a
+/// binding.
+[[nodiscard]] inline std::shared_ptr<Potential>
+sharePotential(std::unique_ptr<Potential> pot) {
+  return std::shared_ptr<Potential>(std::move(pot));
+}
 } // namespace helpers
 
 } // namespace eonc

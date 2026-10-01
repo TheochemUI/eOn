@@ -238,7 +238,8 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
     if (perImagePotentials_ && i > 0 && i <= numImages) {
       auto cloned = pot->clonePotential();
       path[i]->setPotential(cloned ? cloned
-                                   : eonc::helpers::makePotential(params));
+                                   : eonc::helpers::sharePotential(
+                                         eonc::helpers::makePotential(params)));
     }
 
     tangent[i] = std::make_shared<AtomMatrix>();
@@ -309,8 +310,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
   } else
 #endif
   {
-    optim = eonc::helpers::create::mkOptim(objf, params.neb_options().opt_method,
-                                          params);
+    optim = eonc::helpers::create::mkOptim(
+        objf, params.neb_options().opt_method, params);
     if (params.optimizer_options().refine.method != OptType::None) {
       refine_optim = eonc::helpers::create::mkOptim(
           objf, params.optimizer_options().refine.method, params);

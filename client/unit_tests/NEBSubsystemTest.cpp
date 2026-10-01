@@ -554,7 +554,8 @@ TEST_CASE("findExtrema: no extremum when derivative has no real root in [0,1]",
 eonc::neb::ExtremaResult bandExtrema(double energy0, double force0,
                                      double energy1, double force1) {
   Parameters params;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto image = [&](double x, double energy, double forceX) {
     auto matter = std::make_shared<Matter>(pot, params);
     matter->resize(1);

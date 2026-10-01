@@ -70,7 +70,8 @@ protected:
     ParametersLoadAccess::saddle_search_options(params).minmode_method =
         LowestEigenmode::MINMODE_DIMER;
 
-    pot = eonc::helpers::makePotential(PotType::LJ, params);
+    pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, params));
     matter = std::make_shared<Matter>(pot, params);
     matter->con2matter(std::string("reactant.con"));
 
@@ -373,7 +374,8 @@ protected:
     ParametersLoadAccess::saddle_search_options(params).minmode_method =
         LowestEigenmode::MINMODE_DIMER;
 
-    pot = eonc::helpers::makePotential(PotType::LJ, params);
+    pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, params));
     matter = std::make_shared<Matter>(pot, params);
     matter->con2matter(std::string("reactant.con"));
 
@@ -937,4 +939,3 @@ TEST_CASE_METHOD(DimerFixture, "XtsciMinMode returns a finite curvature",
 #endif
 
 } /* namespace tests */
-

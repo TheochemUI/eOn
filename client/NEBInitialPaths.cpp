@@ -24,7 +24,8 @@ std::shared_ptr<Potential> createZBLPotential() {
   ParametersLoadAccess::zbl_options(zbl_params).cut_inner = 0.5;
   // Cutoff sufficient to push overlapping atoms apart
   ParametersLoadAccess::zbl_options(zbl_params).cut_global = 3.0;
-  return eonc::helpers::makePotential(PotType::ZBL, zbl_params);
+  return eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::ZBL, zbl_params));
 }
 
 std::vector<Matter> linearPath(const Matter &initImg, const Matter &finalImg,

@@ -24,7 +24,8 @@ TEST_F(ObsTest, TestMatter) {
   Parameters parameters;
   ParametersLoadAccess::potential_options(parameters).potential =
       PotType::MORSE_PT;
-  auto pot = eonc::helpers::makePotential(parameters);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(parameters));
   auto matter = std::make_shared<Matter>(pot, parameters);
   matter->con2matter(confile);
   gpr::Observation o = eonc::helpers::eon_matter_to_init_obs(matter.get());

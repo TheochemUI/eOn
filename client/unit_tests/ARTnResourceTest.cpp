@@ -261,7 +261,8 @@ public:
 
 std::unique_ptr<ARTnSaddleSearch> make_artn_search(Parameters &params) {
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->resize(2);
   VectorXi nrs(2);
@@ -321,7 +322,8 @@ TEST_CASE("ARTnSaddleSearch run refuses success without tau_sad",
           "[artn][resource][inject]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->resize(2);
   VectorXi nrs(2);

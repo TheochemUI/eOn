@@ -61,7 +61,8 @@ void serveMode(const Parameters &params, const std::string &host,
   EONC_LOG_INFO("Creating potential: {}",
                 std::string(magic_enum::enum_name(pot_type)));
 
-  auto eon_pot = eonc::helpers::makePotential(params);
+  auto eon_pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   if (!eon_pot) {
     EONC_LOG_ERROR("Failed to create potential of type {}",
                    std::string(magic_enum::enum_name(pot_type)));
@@ -109,7 +110,8 @@ void serveMultiple(const std::vector<ServeEndpoint> &endpoints,
       EONC_LOG_INFO("[{}:{}] Creating potential: {}", ep.host, ep.port,
                     pot_name);
 
-      auto eon_pot = eonc::helpers::makePotential(params);
+      auto eon_pot =
+          eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
       if (!eon_pot) {
         EONC_LOG_ERROR("[{}:{}] Failed to create potential {}", ep.host,
                        ep.port, pot_name);
@@ -183,7 +185,8 @@ void serveGateway(const Parameters &params, const std::string &host,
   pool.reserve(pool_size);
 
   for (size_t i = 0; i < pool_size; ++i) {
-    auto eon_pot = eonc::helpers::makePotential(params);
+    auto eon_pot =
+        eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
     if (!eon_pot) {
       EONC_LOG_ERROR("Failed to create potential instance {}/{}", i + 1,
                      pool_size);

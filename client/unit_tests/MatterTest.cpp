@@ -38,11 +38,31 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 static std::pair<std::shared_ptr<Matter>, Parameters> makeLJCluster() {
   auto params = std::make_shared<Parameters>();
   ParametersLoadAccess::potential_options(*params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, *params);
-  std::shared_ptr<Matter> m(new Matter(pot, *params),
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, *params));
+  std::shared_ptr<Matter> m(new Matter(std::move(pot), *params),
                             [params](Matter *owned) { delete owned; });
   m->con2matter(std::string("reactant.con"));
   return {m, *params};
+}
+
+TEST_CASE("Matter takes exclusive Potential ownership", "[MatterTest]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto owned = eonc::helpers::makePotential(PotType::LJ, params);
+  Potential *raw = owned.get();
+  REQUIRE(raw != nullptr);
+  Matter a(std::move(owned), params);
+  REQUIRE(owned == nullptr);
+  // use_count includes the temporary returned by getPotential().
+  REQUIRE(a.getPotential().get() == raw);
+  REQUIRE(a.getPotential().use_count() == 2);
+  {
+    Matter b(a);
+    REQUIRE(b.getPotential().get() == raw);
+    REQUIRE(a.getPotential().use_count() == 3);
+  }
+  REQUIRE(a.getPotential().use_count() == 2);
 }
 
 TEST_CASE("TestCell", "[MatterTest]") {
@@ -82,7 +102,8 @@ TEST_CASE("SetPotential changes energy", "[MatterTest]") {
   REQUIRE(e_lj < 0.0); // LJ cluster has negative binding energy
 
   ParametersLoadAccess::potential_options(params).potential = PotType::MORSE_PT;
-  auto pot_morse = eonc::helpers::makePotential(PotType::MORSE_PT, params);
+  auto pot_morse = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::MORSE_PT, params));
   REQUIRE(m1->getPotential() != pot_morse);
   m1->setPotential(pot_morse);
 
@@ -126,7 +147,8 @@ TEST_CASE("Copy constructor preserves positions, cell, and atomic numbers",
 TEST_CASE("pbc is identity when periodic is off", "[MatterTest][acc]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter m(pot, params);
   m.resize(2);
   m.setAtomicNr(0, 1);
@@ -143,7 +165,8 @@ TEST_CASE("OH-TST symmetry products share rigid-drift removal",
           "[MatterTest][ohtst]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter m(pot, params);
   m.resize(3);
   m.setAtomicNr(0, 1);
@@ -181,7 +204,8 @@ TEST_CASE("removeNetForce is skipped for a single free atom",
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   ParametersLoadAccess::main_options(params).removeNetForce = true;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter one(pot, params);
   one.resize(1);
   one.setAtomicNr(0, 18);
@@ -347,7 +371,8 @@ TEST_CASE("PBC wrap matches floor and fmod on a wide matrix",
           "[MatterTest][pbc][simd]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter m(pot, params);
   constexpr long n = 67;
   m.resize(n);
@@ -486,7 +511,8 @@ TEST_CASE("relax converges LJ cluster", "[MatterTest][relax]") {
   ParametersLoadAccess::optimizer_options(params).converged_force = 0.001;
   ParametersLoadAccess::optimizer_options(params).max_iterations = 50;
   ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m1 = std::make_shared<Matter>(pot, params);
   m1->con2matter(std::string("reactant.con"));
 
@@ -510,7 +536,8 @@ TEST_CASE("setMasses and distanceTo reject size mismatch", "[MatterTest]") {
   shortMasses.setConstant(1.0);
   REQUIRE_THROWS_AS(m1->setMasses(shortMasses), std::invalid_argument);
 
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m2 = std::make_shared<Matter>(pot, params);
   m2->resize(2);
   REQUIRE_THROWS_AS(m1->distanceTo(*m2), std::invalid_argument);

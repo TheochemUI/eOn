@@ -23,18 +23,21 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 TEST_CASE("Potential type identification", "[pot]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   REQUIRE(pot->getType() == PotType::LJ);
 
   ParametersLoadAccess::potential_options(params).potential = PotType::MORSE_PT;
-  auto pot2 = eonc::helpers::makePotential(PotType::MORSE_PT, params);
+  auto pot2 = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::MORSE_PT, params));
   REQUIRE(pot2->getType() == PotType::MORSE_PT);
 }
 
 TEST_CASE("LJ potential returns finite energy and forces", "[pot][lj]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));
 
@@ -49,7 +52,8 @@ TEST_CASE("LJ potential returns finite energy and forces", "[pot][lj]") {
 TEST_CASE("Morse potential energy matches SVN", "[pot][morse]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::MORSE_PT;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));
 
@@ -64,7 +68,8 @@ TEST_CASE("Morse forces identical from cached and freshly built pair lists",
           "[pot][morse][nlcache]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::MORSE_PT;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));
 
@@ -110,12 +115,14 @@ TEST_CASE("Morse forces identical from cached and freshly built pair lists",
 TEST_CASE("Different potentials give different energies", "[pot]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot_lj = eonc::helpers::makePotential(params);
+  auto pot_lj =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   auto m1 = std::make_shared<Matter>(pot_lj, params);
   m1->con2matter(std::string("reactant.con"));
 
   ParametersLoadAccess::potential_options(params).potential = PotType::MORSE_PT;
-  auto pot_morse = eonc::helpers::makePotential(params);
+  auto pot_morse =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   auto m2 = std::make_shared<Matter>(pot_morse, params);
   m2->con2matter(std::string("reactant.con"));
 
@@ -128,7 +135,8 @@ TEST_CASE("LJCluster energy matches SVN", "[pot][ljcluster]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential =
       PotType::LJCLUSTER;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));
   // SVN reference: -39.965379
@@ -139,7 +147,8 @@ TEST_CASE("LJCluster energy matches SVN", "[pot][ljcluster]") {
 TEST_CASE("EMT potential returns finite energy", "[pot][emt]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::EMT;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));
   // EMT may not support all element types, but should not crash
@@ -151,7 +160,8 @@ TEST_CASE("EMT potential returns finite energy", "[pot][emt]") {
 TEST_CASE("EAM potential can be created", "[pot][eam]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::EAM_AL;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   REQUIRE(pot != nullptr);
   REQUIRE(pot->getType() == PotType::EAM_AL);
 }
@@ -159,7 +169,8 @@ TEST_CASE("EAM potential can be created", "[pot][eam]") {
 TEST_CASE("Potential span force rejects size mismatch", "[pot][span]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   double pos[6] = {};
   int z[2] = {1, 1};
   double f[6] = {};
@@ -176,7 +187,8 @@ TEST_CASE("SW potential can be created and returns finite energy",
           "[pot][sw]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::SW_SI;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   REQUIRE(pot != nullptr);
   REQUIRE(pot->getType() == PotType::SW_SI);
 }
@@ -185,7 +197,8 @@ TEST_CASE("Tersoff potential can be created", "[pot][tersoff]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential =
       PotType::TERSOFF_SI;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   REQUIRE(pot != nullptr);
   REQUIRE(pot->getType() == PotType::TERSOFF_SI);
 }
@@ -193,7 +206,8 @@ TEST_CASE("Tersoff potential can be created", "[pot][tersoff]") {
 TEST_CASE("EDIP potential can be created", "[pot][edip]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::EDIP;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   REQUIRE(pot != nullptr);
   REQUIRE(pot->getType() == PotType::EDIP);
 }
@@ -202,7 +216,8 @@ TEST_CASE("Lenosky potential can be created", "[pot][lenosky]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential =
       PotType::LENOSKY_SI;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   REQUIRE(pot != nullptr);
   REQUIRE(pot->getType() == PotType::LENOSKY_SI);
 }
@@ -210,7 +225,8 @@ TEST_CASE("Lenosky potential can be created", "[pot][lenosky]") {
 TEST_CASE("FeHe potential can be created", "[pot][fehe]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::FEHE;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   REQUIRE(pot != nullptr);
   REQUIRE(pot->getType() == PotType::FEHE);
 }
@@ -220,7 +236,8 @@ TEST_CASE("makePotential returns nullptr for unknown type", "[pot][factory]") {
   ParametersLoadAccess::potential_options(params).potential = PotType::UNKNOWN;
   // Unknown type should throw or return nullptr
   try {
-    auto pot = eonc::helpers::makePotential(params);
+    auto pot =
+        eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
     // If it doesn't throw, it should be nullptr or a valid fallback
     CHECK(true);
   } catch (...) {

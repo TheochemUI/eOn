@@ -29,7 +29,8 @@ TEST_F(GPRDimerTest, TestMatter) {
   AtomMatrix mode;
   Parameters parameters;
   parameters.load("config.ini");
-  auto pot = eonc::helpers::makePotential(parameters);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(parameters));
   auto initial = std::make_shared<Matter>(pot, parameters);
   auto saddle = std::make_shared<Matter>(pot, parameters);
   initial->con2matter(reactantFilename);

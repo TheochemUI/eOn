@@ -38,7 +38,8 @@ TEST_CASE("rgsaddle band steps a short LJ path", "[neb][rgsaddle]") {
   ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
   ParametersLoadAccess::optimizer_options(params).xtsci.method = "fire";
 
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto reactant = std::make_shared<Matter>(pot, params);
   auto product = std::make_shared<Matter>(pot, params);
   reactant->con2matter(std::string("reactant.con"));

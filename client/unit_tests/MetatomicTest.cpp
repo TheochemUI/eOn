@@ -14,7 +14,8 @@ TEST_CASE("Metatomic LJ model evaluates finite energy and forces",
       PotType::METATOMIC;
   ParametersLoadAccess::metatomic_options(params).model_path =
       "lennard-jones.pt";
-  auto pot = eonc::helpers::makePotential(PotType::METATOMIC, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::METATOMIC, params));
   auto m1 = std::make_shared<Matter>(pot, params);
   m1->con2matter(std::string("pos.con"));
   double e_mta = 0.0;

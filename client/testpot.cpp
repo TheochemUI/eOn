@@ -24,7 +24,8 @@ int main() {
   eonc::ensure_interpreter();
   ParametersLoadAccess::potential_options(*params).potential =
       eonc::PotType::CatLearn;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   auto matter = std::make_unique<eonc::Matter>(pot, params);
   matter->con2matter(confile);
   auto [energy, forces] = pot->get_ef(

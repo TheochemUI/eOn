@@ -43,7 +43,8 @@ int main(int argc, char **argv) {
   ParametersLoadAccess::xtb_options(params).charge = 0.0;
   ParametersLoadAccess::xtb_options(params).uhf = 0;
 
-  auto pot = eonc::helpers::makePotential(PotType::XTB, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::XTB, params));
   double energy = 0;
   std::vector<double> forces(9, 0.0);
   auto once = [&] {

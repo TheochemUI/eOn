@@ -21,8 +21,8 @@ public:
     ParametersLoadAccess::zbl_options(params).cut_inner = 2.0;
     ParametersLoadAccess::zbl_options(params).cut_global = 2.5;
 
-    pot_zbl = eonc::helpers::makePotential(params.potential_options().potential,
-                                           params);
+    pot_zbl = eonc::helpers::sharePotential(eonc::helpers::makePotential(
+        params.potential_options().potential, params));
     matter = std::make_shared<Matter>(pot_zbl, params);
 
     const std::string confile("pos.con");

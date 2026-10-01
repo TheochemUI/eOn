@@ -22,7 +22,8 @@ TEST_CASE("EAM_AL potential returns finite energy on Al FCC cluster",
           "[pot][eam][al]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::EAM_AL;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
 
@@ -38,7 +39,8 @@ TEST_CASE("EAM_AL opts out of shared-instance threading",
           "[pot][eam][al][thread_safety]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::EAM_AL;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
 
   REQUIRE_FALSE(pot->isSharedInstanceThreadSafe());
   REQUIRE_FALSE(pot->needsPerImageInstance());
@@ -51,7 +53,8 @@ TEST_CASE("EAM_AL minimization converges on Al FCC",
   ParametersLoadAccess::optimizer_options(params).method = OptType::LBFGS;
   ParametersLoadAccess::optimizer_options(params).converged_force = 0.01;
   ParametersLoadAccess::optimizer_options(params).max_iterations = 50;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
 
@@ -71,7 +74,8 @@ TEST_CASE("EAM_AL FIRE minimization matches SVN",
   ParametersLoadAccess::optimizer_options(params).method = OptType::FIRE;
   ParametersLoadAccess::optimizer_options(params).converged_force = 0.01;
   ParametersLoadAccess::optimizer_options(params).max_iterations = 200;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
 

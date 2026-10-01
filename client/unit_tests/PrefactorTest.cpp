@@ -10,10 +10,10 @@
 ** https://github.com/TheochemUI/eOn
 */
 
+#include "eon/Prefactor.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Matter.h"
-#include "eon/Prefactor.h"
 
 #include <filesystem>
 #include <fstream>
@@ -24,12 +24,14 @@ namespace tests {
 static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 static std::pair<std::shared_ptr<Matter>, Parameters> makeLJCluster() {
-  Parameters params;
-  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
-  auto m = std::make_shared<Matter>(pot, params);
+  auto params = std::make_shared<Parameters>();
+  ParametersLoadAccess::potential_options(*params).potential = PotType::LJ;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, *params));
+  std::shared_ptr<Matter> m(new Matter(pot, *params),
+                            [params](Matter *owned) { delete owned; });
   m->con2matter(std::string("reactant.con"));
-  return {m, params};
+  return {m, *params};
 }
 
 TEST_CASE("getPrefactors rejects a null Matter", "[prefactor]") {
@@ -70,8 +72,8 @@ TEST_CASE("movedAtoms includes the displaced atom and a neighbor",
   saddle->setPositions(pos);
   ParametersLoadAccess::prefactor_options(params).min_displacement = 0.2;
   ParametersLoadAccess::prefactor_options(params).within_radius = 3.3;
-  VectorXi moved = eonc::Prefactor::movedAtoms(params, min1.get(), saddle.get(),
-                                               min2.get());
+  VectorXi moved =
+      eonc::Prefactor::movedAtoms(params, min1.get(), saddle.get(), min2.get());
   REQUIRE(moved.size() > 1);
   bool sawDisplaced = false;
   for (int i = 0; i < moved.size(); ++i) {

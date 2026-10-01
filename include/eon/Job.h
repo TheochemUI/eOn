@@ -60,7 +60,21 @@ protected:
   std::unique_ptr<Runtime> owned_runtime_;
   /// Always valid: either owned_runtime_.get() or a caller-owned Runtime.
   Runtime *runtime_;
+  /// Exclusive until a multi-owner job promotes it in the public constructor.
+  std::unique_ptr<Potential> ownedPot;
+  /// Set when one Potential is shared across Matters, images, or a caller.
   std::shared_ptr<Potential> pot;
+
+  /// Point and Minimization keep ownedPot. Other jobs share in the public ctor.
+  struct ExclusivePotential {};
+
+  Job(std::unique_ptr<Parameters> parameters, Runtime &rt, ExclusivePotential)
+      : jtype{parameters->main_options().job},
+        params{*std::move(parameters)},
+        owned_runtime_{},
+        runtime_{&rt},
+        ownedPot{helpers::makePotential(params.potential_options().potential,
+                                        params, rt)} {}
 
 public:
   /// Take ownership of a Runtime previously passed as Runtime&.
@@ -73,13 +87,11 @@ public:
   }
 
   /// Borrow: caller keeps Runtime alive (CLI stack / Python Session).
+  /// The potential is shared. Point and minimization use ExclusivePotential.
   Job(std::unique_ptr<Parameters> parameters, Runtime &rt)
-      : jtype{parameters->main_options().job},
-        params{*std::move(parameters)},
-        owned_runtime_{},
-        runtime_{&rt},
-        pot{helpers::makePotential(params.potential_options().potential, params,
-                                   rt)} {}
+      : Job(std::move(parameters), rt, ExclusivePotential{}) {
+    pot = helpers::sharePotential(std::move(ownedPot));
+  }
   /// Own a Runtime (one-shot makeJob / rvalue).
   Job(std::unique_ptr<Parameters> parameters, std::unique_ptr<Runtime> rt)
       : Job(std::move(parameters), *rt) {
@@ -93,7 +105,7 @@ public:
         params{parameters},
         owned_runtime_{std::make_unique<Runtime>()},
         runtime_{owned_runtime_.get()},
-        pot{potPassed} {}
+        pot{std::move(potPassed)} {}
   virtual ~Job() = default;
   //! Virtual run; used solely for dynamic dispatch
   virtual std::vector<std::string> run() = 0;

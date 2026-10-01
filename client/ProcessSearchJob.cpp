@@ -32,8 +32,8 @@
 #include <string>
 
 #include "eon/ConFileIO.h"
-#include "eon/JobResult.h"
 #include "eon/EonLogger.h"
+#include "eon/JobResult.h"
 
 namespace eonc {
 
@@ -51,13 +51,15 @@ std::vector<std::string> ProcessSearchJob::run() {
     displacement = nullptr;
   }
   saddle = std::make_shared<Matter>(pot, params);
-  // Give min2 its own potential for parallel endpoint minimization
+  // Give min2 its own potential for parallel endpoint minimization.
   // A clone keeps this job's potential; makePotential rebuilds from the
   // configuration and is the fallback for backends that cannot clone.
   std::shared_ptr<Potential> min2Pot = pot;
   if (pot->needsPerImageInstance() && params.main_options().parallel) {
     auto cloned = pot->clonePotential();
-    min2Pot = cloned ? cloned : eonc::helpers::makePotential(params);
+    min2Pot = cloned ? cloned
+                     : eonc::helpers::sharePotential(
+                           eonc::helpers::makePotential(params));
   }
   min1 = std::make_shared<Matter>(pot, params);
   min2 = std::make_shared<Matter>(min2Pot, params);
@@ -193,7 +195,9 @@ ProcessSearchJob::runFromMatter(std::shared_ptr<Matter> seed) {
   std::shared_ptr<Potential> min2Pot = pot;
   if (pot->needsPerImageInstance() && params.main_options().parallel) {
     auto cloned = pot->clonePotential();
-    min2Pot = cloned ? cloned : eonc::helpers::makePotential(params);
+    min2Pot = cloned ? cloned
+                     : eonc::helpers::sharePotential(
+                           eonc::helpers::makePotential(params));
   }
   displacement = std::make_shared<Matter>(pot, params);
   saddle = std::make_shared<Matter>(pot, params);

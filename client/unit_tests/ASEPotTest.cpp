@@ -38,8 +38,8 @@ public:
     auto script = std::filesystem::canonical("ase_lj.py").string();
     ParametersLoadAccess::potential_options(params).extPotPath = script;
 
-    pot = eonc::helpers::makePotential(params.potential_options().potential,
-                                       params);
+    pot = eonc::helpers::sharePotential(eonc::helpers::makePotential(
+        params.potential_options().potential, params));
     matter = std::make_shared<Matter>(pot, params);
 
     const std::string confile("pos.con");

@@ -42,7 +42,7 @@ std::vector<std::string> MinimizationJob::run() {
   std::vector<std::string> returnFiles;
   returnFiles.push_back(posOutFilename);
 
-  auto pos = std::make_shared<Matter>(pot, params);
+  auto pos = std::make_shared<Matter>(std::move(ownedPot), params);
   if (!eonc::io::io_ok(pos->con2matter(posInFilename))) {
     QUILL_LOG_CRITICAL(log, "Failed to load {}", posInFilename);
     throw std::runtime_error("failed to load " + posInFilename);
@@ -89,7 +89,7 @@ std::vector<std::string> MinimizationJob::run() {
   const double energy = hasE ? pos->getPotentialEnergy() : 0.0;
   auto env = JobResultEnvelope::fromMinimization(
       status, params.potential_options().potential,
-      this->pot->forceCallCounter.load(), hasE, energy);
+      pos->getPotential()->forceCallCounter.load(), hasE, energy);
   env.tags.emplace_back("optimizer", std::string(magic_enum::enum_name(
                                          params.optimizer_options().method)));
   if (params.optimizer_options().method == OptType::XTSCI) {

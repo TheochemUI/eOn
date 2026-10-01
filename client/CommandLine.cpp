@@ -368,7 +368,8 @@ void commandLine(int argc, char **argv) {
         .check_rotation = true;
   }
 
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   auto matter = std::make_unique<Matter>(pot, params);
   auto matter2 = std::make_unique<Matter>(pot, params);
   if (!eonc::io::io_ok(matter->con2matter(confile))) {

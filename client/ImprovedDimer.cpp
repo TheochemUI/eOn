@@ -32,13 +32,15 @@ ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
                              const Parameters &params,
                              std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
-  // Each dimer image gets its own potential for lock-free parallel evaluation
+  // Each dimer image gets its own potential for lock-free parallel evaluation.
   // A clone keeps the caller's potential; makePotential rebuilds from the
   // configuration and is the fallback for backends that cannot clone.
   std::shared_ptr<Potential> x1Pot = pot;
   if (pot->needsPerImageInstance() && params.main_options().parallel) {
     auto cloned = pot->clonePotential();
-    x1Pot = cloned ? cloned : eonc::helpers::makePotential(params);
+    x1Pot = cloned ? cloned
+                   : eonc::helpers::sharePotential(
+                         eonc::helpers::makePotential(params));
   }
   x0 = std::make_shared<Matter>(pot, params);
   x1 = std::make_shared<Matter>(x1Pot, params);

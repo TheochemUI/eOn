@@ -188,7 +188,8 @@ TEST_CASE("HelperFunctions: loadOrSynthesizeDisplacement from mode (#189/#79)",
   // Standalone saddle_search needs displacement without AKMC (#189).
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter initial(pot, params);
   REQUIRE(eonc::io::io_ok(initial.con2matter(std::string("reactant.con"))));
   const long nAtoms = initial.numberOfAtoms();
@@ -222,7 +223,8 @@ TEST_CASE("loadOrSynthesizeDisplacement keeps reactant atom ids",
           "[helpers][displacement][mtxr]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter initial(pot, params);
   REQUIRE(eonc::io::io_ok(initial.con2matter(std::string("reactant.con"))));
   const long nAtoms = initial.numberOfAtoms();
@@ -296,7 +298,8 @@ TEST_CASE("SaddleSearchJob listed_atoms moves a free atom",
   ParametersLoadAccess::saddle_search_options(params).displace_atom_list = {0};
   ParametersLoadAccess::saddle_search_options(params).displace_radius = 0.0;
   ParametersLoadAccess::saddle_search_options(params).displace_magnitude = 0.2;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter initial(pot, params);
   initial.resize(2);
   AtomMatrix pos(2, 3);
@@ -322,7 +325,8 @@ TEST_CASE("applyClientDisplacement load type is a no-op",
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   ParametersLoadAccess::saddle_search_options(params).displace_type =
       std::string(eonc::EpiCenters::DISP_LOAD);
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter initial(pot, params);
   initial.resize(1);
   AtomMatrix pos(1, 3);

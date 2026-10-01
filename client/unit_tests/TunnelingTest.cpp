@@ -240,7 +240,8 @@ TEST_CASE("Mass-weighted distance takes the masses and the minimum image",
           "[Tunneling]") {
   auto params = std::make_shared<Parameters>();
   ParametersLoadAccess::potential_options(*params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, *params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, *params));
   Matter a(pot, *params);
   a.resize(2);
   Matrix3d cell = Matrix3d::Identity() * 10.0;

@@ -71,7 +71,8 @@ TEST_CASE_METHOD(HessianScratch, "Hessian on LJ cluster is symmetric",
                  "[hessian]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));
 
@@ -98,7 +99,8 @@ TEST_CASE_METHOD(HessianScratch, "Hessian getFreqs returns finite eigenvalues",
                  "[hessian]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));
 
@@ -119,7 +121,8 @@ TEST_CASE_METHOD(HessianScratch,
                  "[hessian]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));
 
@@ -139,7 +142,8 @@ TEST_CASE_METHOD(HessianScratch,
   // Mobile/displaced set = hybrid/PHVA-class active list
   VectorXi subAtoms(2);
   subAtoms << 0, 1;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));
 
@@ -158,7 +162,8 @@ TEST_CASE_METHOD(HessianScratch,
   const std::string ckpt = "hessian_resume_test.ckpt";
   std::remove(ckpt.c_str());
 
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));
   VectorXi subAtoms(2);
@@ -234,7 +239,8 @@ TEST_CASE_METHOD(HessianScratch,
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   ParametersLoadAccess::hessian_options(params).fd_scheme = "central";
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));
   VectorXi subAtoms(3);
@@ -256,7 +262,8 @@ TEST_CASE_METHOD(HessianScratch,
                  "[hessian][morse_pt]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::MORSE_PT;
-  auto pot = eonc::helpers::makePotential(PotType::MORSE_PT, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::MORSE_PT, params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(ptPos.string());
 
@@ -301,7 +308,8 @@ TEST_CASE_METHOD(HessianScratch,
                  "[hessian]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));
   const long n = 3 * matter->numberOfAtoms();
@@ -543,7 +551,8 @@ TEST_CASE_METHOD(HessianScratch,
                  "[hessian]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter matter(pot, params);
   matter.con2matter(std::string("reactant.con"));
   const long n = matter.numberOfAtoms();
@@ -591,7 +600,8 @@ TEST_CASE_METHOD(HessianScratch,
 TEST_CASE("cartesianMode divides by sqrt(mass) and normalizes", "[hessian]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter matter(pot, params);
   matter.resize(2);
   matter.setMass(0, 1.0);
@@ -640,7 +650,8 @@ TEST_CASE_METHOD(HessianScratch,
     Parameters params;
     ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
     ParametersLoadAccess::hessian_options(params).fd_scheme = scheme;
-    auto lj = eonc::helpers::makePotential(PotType::LJ, params);
+    auto lj = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, params));
     auto serial = std::make_shared<WrappedLJ<false>>(lj, params);
     auto batched = std::make_shared<WrappedLJ<true>>(lj, params);
     Matter serialM(serial, params), batchedM(batched, params);
@@ -669,7 +680,8 @@ TEST_CASE_METHOD(HessianScratch,
                  "[matter][batch]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto lj = eonc::helpers::makePotential(PotType::LJ, params);
+  auto lj = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto batched = std::make_shared<WrappedLJ<true>>(lj, params);
   Matter a(batched, params), b(batched, params), ref(lj, params);
   a.con2matter(std::string("reactant.con"));

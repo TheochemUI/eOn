@@ -20,7 +20,7 @@ namespace eonc {
 class MinimizationJob : public Job {
 public:
   MinimizationJob(std::unique_ptr<Parameters> parameters, Runtime &rt)
-      : Job(std::move(parameters), rt) {}
+      : Job(std::move(parameters), rt, ExclusivePotential{}) {}
   ~MinimizationJob(void) = default;
   std::vector<std::string> run(void) override;
 

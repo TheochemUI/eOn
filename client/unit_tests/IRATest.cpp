@@ -36,7 +36,8 @@ protected:
         m1{nullptr},
         m2{nullptr} {
     ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-    pot = eonc::helpers::makePotential(PotType::LJ, params);
+    pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, params));
     m1 = std::make_shared<Matter>(pot, params);
     m2 = std::make_shared<Matter>(pot, params);
     m1->con2matter(std::string("reactant.con"));
