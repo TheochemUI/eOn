@@ -1974,6 +1974,15 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
         const double pred = gflat.dot(dir) + 0.5 * dir.dot(jd);
         ratio = std::abs(pred) > 1e-30 ? (next.u - cur.u) / pred : 1.0;
         ratioOk = std::isfinite(ratio) && ratio >= 0.1 && ratio <= 3.0;
+        // Near the saddle the predicted change sits at the round-off of
+        // U_N and the ratio is noise; there the step stands on the residual.
+        const double roundoff = 1e-11 * std::max(1.0, std::abs(cur.u)) *
+                                static_cast<double>(x.size());
+        if (!ratioOk && std::abs(pred) < roundoff &&
+            closedGmax(next) <= closedGmax(cur)) {
+          ratioOk = true;
+          ratio = 1.0;
+        }
       }
       if (!ratioOk) {
         return false;
@@ -2462,13 +2471,16 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
         "instantonRate: the beads coincide, so the ring has collapsed");
   }
   scale(cycle, 1.0 / std::sqrt(cycleNorm));
+  // Each omitted direction is lifted by a spring-sized curvature c, far
+  // above any physical near-zero eigenvalue, and the lift comes off the
+  // log-determinant again: det(J + c u u^T) = c det' J when J u = 0.
   std::vector<std::vector<VectorXd>> dropped{cycle};
-  std::vector<double> kappas{1.0};
+  std::vector<double> kappas{c};
   for (long r = 0; r < nullBasis.cols(); ++r) {
     dropped.emplace_back(
         static_cast<size_t>(N),
         (nullBasis.col(r) / std::sqrt(static_cast<double>(N))).eval());
-    kappas.push_back(1.0);
+    kappas.push_back(c);
   }
   const WoodburyRing ring(c, diag, true, dropped, kappas, true);
   if (!ring.ok() || !std::isfinite(ring.logAbsDet())) {
@@ -2496,10 +2508,25 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
         inst.negativeEigenvalue = mode.theta;
       }
     }
+    // A numerical null eigenvalue can sit just below zero off the cycle,
+    // where the lift along tau does not reach it; it is not a second
+    // unstable mode when it is tiny next to the barrier curvature.
+    if (inst.negativeModes > 1 && inst.negativeEigenvalue < 0.0) {
+      long tiny = 0;
+      for (const auto &mode : modes) {
+        if (mode.theta < 0.0 && mode.theta > 1e-3 * inst.negativeEigenvalue &&
+            std::abs(dot(mode.vector, cycle)) < 0.5) {
+          ++tiny;
+        }
+      }
+      inst.negativeModes = std::max(1L, inst.negativeModes - tiny);
+    }
   }
   const long nDrop = 1 + nullBasis.cols();
-  const double logProd = static_cast<double>(N * f - nDrop) * std::log(bnh) +
-                         0.5 * ring.logAbsDet();
+  const double logDetPrime =
+      ring.logAbsDet() - static_cast<double>(nDrop) * std::log(c);
+  const double logProd =
+      static_cast<double>(N * f - nDrop) * std::log(bnh) + 0.5 * logDetPrime;
 
   inst.logRateTimesZr = -std::log(bnh) +
                         0.5 * std::log(inst.bN / (2.0 * std::numbers::pi *
