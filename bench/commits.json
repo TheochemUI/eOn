@@ -160,11 +160,12 @@
     "8438": "fix(server): read remove_translation with a default in escaperate",
     "8439": "fix(wheels): move librgpot into the libs dir from wherever meson-python put it",
     "8440": "chore(version): 3.4.0",
-    "8600": "docs(release): v3.5.0 release notes",
-    "8601": "fix(instanton): probe a half ring that stalls at the wrong index",
-    "8602": "fix(instanton): default newtonLimit to the largest long",
-    "8603": "test(gprd): require the GP dimer only where the private checkout exists",
-    "8604": "chore(release): merge develop into main"
+    "8599": "docs(release): v3.5.0 release notes",
+    "8600": "fix(instanton): probe a half ring that stalls at the wrong index",
+    "8601": "fix(instanton): default newtonLimit to the largest long",
+    "8602": "test(gprd): require the GP dimer only where the private checkout exists",
+    "8603": "chore(release): merge develop into main",
+    "8607": "chore(version): v3.5.0"
   },
   "dcbade17ecc8386a4ee5804354b4994c8ba1d6d8": "update lammps webpage",
   "292bc143343709b10fb7ed150ae5bb493748b289": "gitig: Update",
@@ -330,5 +331,6 @@
   "ec1e5c199cb4c44c6f48c4fe505da7df49c82cd6": "fix(instanton): probe a half ring that stalls at the wrong index",
   "1fa4d0b902afb74c8e9c6caa8c098641ebad90bc": "fix(instanton): default newtonLimit to the largest long",
   "b36c4c719e82caecfbfa785ae51ed62a997ae0de": "test(gprd): require the GP dimer only where the private checkout exists",
-  "c3dad61e1cfae1f16d4992704e15be893387f662": "chore(release): merge develop into main"
+  "c3dad61e1cfae1f16d4992704e15be893387f662": "chore(release): merge develop into main",
+  "d9cc6c5bee432d625eb6c56d7ea74b723a37ee3b": "chore(version): v3.5.0"
 }
