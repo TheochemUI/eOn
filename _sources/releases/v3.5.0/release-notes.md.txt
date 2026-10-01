@@ -92,6 +92,5 @@ virial, LAMMPS pressure) is read on the force call.
 - `with_mpi` is a feature option and stays off unless `enabled`.
   `-Dwith_parallel_neb` has no effect; the NEB image pool uses
   `std::thread`.
-- The GP dimer builds when a checkout of the private gpr_optim
-  repository sits in `subprojects/gpr_optim`. That repository is not
-  part of eOn.
+- The GP dimer links a `gpr_optim` checkout in `subprojects/gpr_optim`
+  under `-Dwith_gprd=auto`.

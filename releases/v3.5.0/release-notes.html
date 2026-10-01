@@ -523,9 +523,8 @@ and the run’s readcon-db corpus. The tsase <code class="docutils literal notra
 <li><p><code class="docutils literal notranslate"><span class="pre">with_mpi</span></code> is a feature option and stays off unless <code class="docutils literal notranslate"><span class="pre">enabled</span></code>.
 <code class="docutils literal notranslate"><span class="pre">-Dwith_parallel_neb</span></code> has no effect; the NEB image pool uses
 <code class="docutils literal notranslate"><span class="pre">std::thread</span></code>.</p></li>
-<li><p>The GP dimer builds when a checkout of the private gpr_optim
-repository sits in <code class="docutils literal notranslate"><span class="pre">subprojects/gpr_optim</span></code>. That repository is not
-part of eOn.</p></li>
+<li><p>The GP dimer links a <code class="docutils literal notranslate"><span class="pre">gpr_optim</span></code> checkout in <code class="docutils literal notranslate"><span class="pre">subprojects/gpr_optim</span></code>
+under <code class="docutils literal notranslate"><span class="pre">-Dwith_gprd=auto</span></code>.</p></li>
 </ul>
 </section>
 </section>
