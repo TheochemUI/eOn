@@ -16,22 +16,26 @@ are authored in a Cap'n Proto schema.
 | Layer | Path | Role |
 |-------|------|------|
 | **Authoring SSoT** | {file}`schema/eon_params.capnp` | Sole place to add/rename covered fields and defaults |
-| **Codegen** | `python tools/params_ssot/codegen.py` | Emits catalog + C++ defaults + field index |
-| **Generated** | `schema/eon_params_catalog.json`, `eon/_params_ssot_catalog.py`, `client/generated/*` | Edit the schema and re-run codegen |
+| **Codegen** | `python tools/params_ssot/codegen.py` | Emits the catalog, C++ defaults, the field index, and the INI, JSON, and default-assignment projections |
+| **Generated** | `schema/eon_params_catalog.json`, `eon/_params_ssot_catalog.py`, `include/eon/generated/*` | Edit the schema and re-run codegen |
 | **Runtime store** | `client/Parameters.h` | Option-group structs; covered defaults applied via `apply_ssot_defaults()` |
 | **Adapters** | `ParametersINI.cpp`, `ParametersJSON.cpp` | Load/save user `config.ini` / JSON |
 | **Docs / validation** | `eon/schema.py`, `eon/config.yaml` | Must stay field-parity with SSoT for covered groups (`tests/test_params_ssot.py`) |
 
 Covered groups today: **Main**, **Potential**, **Optimizer** (with LBFGS/CG/Quickmin/SD),
-**Structure Comparison**, **Process Search**. Other groups still live primarily
+**Structure Comparison**, **Process Search**, and **RgpotPot**. A struct tagged
+`# project: ini,json` is generated into the INI reader, the JSON codec, and
+`apply_ssot_defaults()`. RgpotPot carries alias order and the `[cpmd]` and
+`[XTBPot]` overlays as schema comments. Untagged groups still live primarily
 in `Parameters.h` until folded into the schema (see `schema/README.md`).
 
 ### Adding a covered option
 
 1. Edit {file}`schema/eon_params.capnp` (new field, type, default, ordinal).
 2. Run `python tools/params_ssot/codegen.py`.
-3. Wire any INI/JSON load path if needed. Add the field in the Cap'n Proto
-   schema first, then in `config.yaml` / `schema.py` / `Parameters.h`.
+3. On a `# project: ini,json` struct that regen is the adapter. Untagged
+   structs stay handwritten in `ParametersINI.cpp` and `ParametersJSON.cpp`.
+   Keep `config.yaml` and the pydantic models in field parity with the catalog.
 
 Users still write ordinary **`config.ini`** (or JSON) files. Cap'n Proto
 authors the field graph.

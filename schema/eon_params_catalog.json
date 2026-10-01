@@ -740,6 +740,338 @@
       ],
       "struct": "ProcessSearchOptions"
     },
+    "RgpotPot": {
+      "accessor": "rgpot_options",
+      "fields": [
+        {
+          "capnp": "backend",
+          "default": "nwchemc",
+          "ordinal": 0,
+          "snake": "backend",
+          "type": "Text"
+        },
+        {
+          "capnp": "basis",
+          "default": "sto-3g",
+          "ini_order": [
+            "basis",
+            "nwchem_basis"
+          ],
+          "ordinal": 1,
+          "snake": "basis",
+          "type": "Text"
+        },
+        {
+          "capnp": "theory",
+          "default": "scf",
+          "ini_order": [
+            "theory",
+            "nwchem_theory"
+          ],
+          "ordinal": 2,
+          "snake": "theory",
+          "type": "Text"
+        },
+        {
+          "capnp": "scf_type",
+          "default": "rhf",
+          "ini_order": [
+            "scf_type",
+            "nwchem_scf_type"
+          ],
+          "ordinal": 3,
+          "snake": "scf_type",
+          "type": "Text"
+        },
+        {
+          "capnp": "functional",
+          "default": "BLYP",
+          "ini_order": [
+            "functional",
+            "cpmd_functional"
+          ],
+          "ordinal": 4,
+          "snake": "functional",
+          "type": "Text"
+        },
+        {
+          "capnp": "cutoff_ry",
+          "default": 70.0,
+          "ini_order": [
+            "cutOffRy",
+            "cutoff_ry",
+            "cpmd_cut_off_ry"
+          ],
+          "ordinal": 5,
+          "snake": "cutoff_ry",
+          "type": "Float64"
+        },
+        {
+          "capnp": "charge",
+          "default": 0,
+          "ini_order": [
+            "charge",
+            "nwchem_charge"
+          ],
+          "ordinal": 6,
+          "overlay_order": [
+            "charge"
+          ],
+          "snake": "charge",
+          "type": "Int32"
+        },
+        {
+          "capnp": "multiplicity",
+          "default": 1,
+          "ini_order": [
+            "multiplicity",
+            "nwchem_multiplicity"
+          ],
+          "ordinal": 7,
+          "overlay_order": [
+            "multiplicity"
+          ],
+          "snake": "multiplicity",
+          "type": "Int32"
+        },
+        {
+          "capnp": "engine_path",
+          "default": "",
+          "ordinal": 8,
+          "snake": "engine_path",
+          "type": "Text"
+        },
+        {
+          "capnp": "engine_library",
+          "default": "",
+          "ordinal": 9,
+          "snake": "engine_library",
+          "type": "Text"
+        },
+        {
+          "capnp": "engine_root",
+          "default": "",
+          "ordinal": 10,
+          "snake": "engine_root",
+          "type": "Text"
+        },
+        {
+          "capnp": "title",
+          "default": "",
+          "ordinal": 11,
+          "snake": "title",
+          "type": "Text"
+        },
+        {
+          "capnp": "memory_mb",
+          "default": 0,
+          "ordinal": 12,
+          "snake": "memory_mb",
+          "type": "Int32"
+        },
+        {
+          "capnp": "scratch_dir",
+          "default": "",
+          "ordinal": 13,
+          "snake": "scratch_dir",
+          "type": "Text"
+        },
+        {
+          "capnp": "input_block",
+          "default": "",
+          "ordinal": 14,
+          "snake": "input_block",
+          "type": "Text"
+        },
+        {
+          "capnp": "permanent_dir",
+          "default": "",
+          "ordinal": 15,
+          "snake": "permanent_dir",
+          "type": "Text"
+        },
+        {
+          "capnp": "params_path",
+          "default": "",
+          "ordinal": 16,
+          "snake": "params_path",
+          "type": "Text"
+        },
+        {
+          "capnp": "ranks_per_image",
+          "default": 0,
+          "ordinal": 17,
+          "snake": "ranks_per_image",
+          "type": "Int32"
+        },
+        {
+          "capnp": "model_path",
+          "default": "",
+          "ordinal": 18,
+          "snake": "model_path",
+          "type": "Text"
+        },
+        {
+          "capnp": "device",
+          "default": "cpu",
+          "ordinal": 19,
+          "snake": "device",
+          "type": "Text"
+        },
+        {
+          "capnp": "length_unit",
+          "default": "angstrom",
+          "ordinal": 20,
+          "snake": "length_unit",
+          "type": "Text"
+        },
+        {
+          "capnp": "extensions_directory",
+          "default": "",
+          "ordinal": 21,
+          "snake": "extensions_directory",
+          "type": "Text"
+        },
+        {
+          "capnp": "check_consistency",
+          "default": false,
+          "ordinal": 22,
+          "snake": "check_consistency",
+          "type": "Bool"
+        },
+        {
+          "capnp": "uncertainty_threshold",
+          "default": -1.0,
+          "ordinal": 23,
+          "snake": "uncertainty_threshold",
+          "type": "Float64"
+        },
+        {
+          "capnp": "torch_determinism_strict",
+          "default": false,
+          "ordinal": 24,
+          "snake": "torch_determinism_strict",
+          "type": "Bool"
+        },
+        {
+          "capnp": "xtb_paramset",
+          "default": "GFN2xTB",
+          "ini_order": [
+            "paramset",
+            "xtb_paramset"
+          ],
+          "ordinal": 25,
+          "snake": "xtb_paramset",
+          "type": "Text"
+        },
+        {
+          "capnp": "xtb_accuracy",
+          "default": 1.0,
+          "ini_order": [
+            "accuracy",
+            "xtb_accuracy"
+          ],
+          "ordinal": 26,
+          "snake": "xtb_accuracy",
+          "type": "Float64"
+        },
+        {
+          "capnp": "xtb_electronic_temperature",
+          "default": 300.0,
+          "ini_order": [
+            "electronic_temperature",
+            "xtb_electronic_temperature"
+          ],
+          "ordinal": 27,
+          "snake": "xtb_electronic_temperature",
+          "type": "Float64"
+        },
+        {
+          "capnp": "xtb_max_iterations",
+          "cxx_cast": "static_cast<int>",
+          "default": 250,
+          "ini_order": [
+            "max_iterations",
+            "xtb_max_iterations"
+          ],
+          "ordinal": 28,
+          "snake": "xtb_max_iterations",
+          "type": "Int32"
+        },
+        {
+          "capnp": "xtb_charge",
+          "default": 0.0,
+          "ini_fallback_member": "charge",
+          "ordinal": 29,
+          "snake": "xtb_charge",
+          "type": "Float64"
+        },
+        {
+          "capnp": "xtb_uhf",
+          "cxx_cast": "static_cast<int>",
+          "default": 0,
+          "ini_order": [
+            "uhf",
+            "xtb_uhf"
+          ],
+          "ordinal": 30,
+          "snake": "xtb_uhf",
+          "type": "Int32"
+        }
+      ],
+      "ini_when": "potential=RGPOT",
+      "json_name": "RgpotPot",
+      "overlays": [
+        {
+          "map": [
+            {
+              "key": "paramset",
+              "member": "xtb_paramset"
+            },
+            {
+              "key": "accuracy",
+              "member": "xtb_accuracy"
+            },
+            {
+              "key": "electronic_temperature",
+              "member": "xtb_electronic_temperature"
+            },
+            {
+              "key": "max_iterations",
+              "member": "xtb_max_iterations"
+            },
+            {
+              "key": "uhf",
+              "member": "xtb_uhf"
+            },
+            {
+              "key": "charge",
+              "member": "xtb_charge"
+            }
+          ],
+          "section": "XTBPot",
+          "when": "backend:xtb,xtbpot,gfn,gfnxtb"
+        },
+        {
+          "fields": [
+            "functional",
+            "cutoff_ry",
+            "charge",
+            "multiplicity",
+            "title",
+            "memory_mb",
+            "input_block"
+          ],
+          "section": "cpmd",
+          "when": "backend:cpmd,cpmdc,cpmdpot"
+        }
+      ],
+      "project": [
+        "ini",
+        "json"
+      ],
+      "struct": "RgpotPotOptions"
+    },
     "Structure Comparison": {
       "fields": [
         {

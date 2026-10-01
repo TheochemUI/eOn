@@ -17,6 +17,7 @@ COVERED_YAML_SECTIONS = frozenset(
         "Optimizer",
         "Structure Comparison",
         "Process Search",
+        "RgpotPot",
     }
 )
 
@@ -58,13 +59,15 @@ def has_field(section: str, key: str) -> bool:
 def allowed_yaml_keys(section: str) -> Set[str]:
     """Keys allowed under config.yaml for a covered section.
 
-    Includes top-level SSoT scalars for that section, plus Optimizer flat
-    aliases declared in the catalog.
+    Includes top-level SSoT scalars for that section, each ``ini_order``
+    alias, plus Optimizer flat aliases declared in the catalog.
     """
     keys: Set[str] = set()
     if section in CATALOG["sections"]:
         for f in scalar_fields(section):
             keys.add(f["snake"])
+            for name in f.get("ini_order") or []:
+                keys.add(name)
     # Nested Optimizer.* contribute only via flat_aliases under Optimizer
     if section == "Optimizer":
         for a in CATALOG.get("flat_aliases", []):
@@ -83,6 +86,7 @@ def yaml_default_map(section: str) -> Dict[str, Any]:
     """
     out: Dict[str, Any] = {}
     if section in CATALOG["sections"]:
+        # Snakes only. ini_order names are spellings, not required yaml keys.
         out.update(defaults_for(section))
     if section == "Optimizer":
         for a in CATALOG.get("flat_aliases", []):

@@ -187,6 +187,73 @@ TEST_CASE("nwchemc ignores the cpmd section", "[params][ini][RGPOT]") {
   REQUIRE(p.rgpot_options().input_block.empty());
 }
 
+TEST_CASE("RgpotPot cutOffRy wins over cutoff_ry and cpmd_cut_off_ry",
+          "[params][ini][RGPOT]") {
+  Parameters p;
+  REQUIRE(p.load_ini_text("[Potential]\npotential = rgpot\n\n"
+                          "[RgpotPot]\nbackend = nwchemc\n"
+                          "cutOffRy = 22\n"
+                          "cutoff_ry = 11\n"
+                          "cpmd_cut_off_ry = 9\n") == 0);
+  REQUIRE(p.rgpot_options().cutoff_ry == Catch::Approx(22.0));
+}
+
+TEST_CASE("nwchem_basis fills basis when basis is absent",
+          "[params][ini][RGPOT]") {
+  Parameters filled;
+  REQUIRE(filled.load_ini_text("[Potential]\npotential = rgpot\n\n"
+                               "[RgpotPot]\nbackend = nwchemc\n"
+                               "nwchem_basis = 6-31g\n") == 0);
+  REQUIRE(filled.rgpot_options().basis == "6-31g");
+
+  Parameters both;
+  REQUIRE(both.load_ini_text("[Potential]\npotential = rgpot\n\n"
+                             "[RgpotPot]\nbackend = nwchemc\n"
+                             "basis = sto-3g\n"
+                             "nwchem_basis = 6-31g\n") == 0);
+  REQUIRE(both.rgpot_options().basis == "sto-3g");
+}
+
+TEST_CASE("xtb_charge follows charge for backend nwchemc",
+          "[params][ini][RGPOT]") {
+  Parameters p;
+  REQUIRE(p.load_ini_text("[Potential]\npotential = rgpot\n\n"
+                          "[RgpotPot]\nbackend = nwchemc\n"
+                          "charge = 4\n") == 0);
+  REQUIRE(p.rgpot_options().xtb_charge == Catch::Approx(4.0));
+
+  Parameters ignored;
+  REQUIRE(ignored.load_ini_text("[Potential]\npotential = rgpot\n\n"
+                                "[RgpotPot]\nbackend = nwchemc\n"
+                                "charge = 4\n\n"
+                                "[XTBPot]\ncharge = -2\n") == 0);
+  REQUIRE(ignored.rgpot_options().xtb_charge == Catch::Approx(4.0));
+}
+
+TEST_CASE("XTBPot charge overlays xtb_charge for an xtb backend",
+          "[params][ini][RGPOT]") {
+  Parameters fromCharge;
+  REQUIRE(fromCharge.load_ini_text("[Potential]\npotential = rgpot\n\n"
+                                   "[RgpotPot]\nbackend = xtb\n"
+                                   "charge = 3\n") == 0);
+  REQUIRE(fromCharge.rgpot_options().xtb_charge == Catch::Approx(3.0));
+
+  Parameters explicitKey;
+  REQUIRE(explicitKey.load_ini_text("[Potential]\npotential = rgpot\n\n"
+                                    "[RgpotPot]\nbackend = xtb\n"
+                                    "charge = 3\n"
+                                    "xtb_charge = 1.5\n") == 0);
+  REQUIRE(explicitKey.rgpot_options().xtb_charge == Catch::Approx(1.5));
+
+  Parameters overlay;
+  REQUIRE(overlay.load_ini_text("[Potential]\npotential = rgpot\n\n"
+                                "[RgpotPot]\nbackend = xtb\n"
+                                "charge = 3\n"
+                                "xtb_charge = 1.5\n\n"
+                                "[XTBPot]\ncharge = -2\n") == 0);
+  REQUIRE(overlay.rgpot_options().xtb_charge == Catch::Approx(-2.0));
+}
+
 TEST_CASE("RgpotPot cpmdc refuses a params_path it cannot read",
           "[PotTest][RGPOT][cpmdc]") {
 #ifndef WITH_RGPOT

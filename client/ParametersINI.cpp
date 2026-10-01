@@ -41,6 +41,8 @@ std::string toLowerCase(std::string s) {
 
 namespace eonc::config {
 
+#include "eon/generated/ParametersSSOTIni.inc"
+
 int load_ini(INIReader &ini, Parameters &params) {
   int error = 0;
 
@@ -286,173 +288,9 @@ int load_ini(INIReader &ini, Parameters &params) {
                            .make_template_input);
   }
 
-  // [RgpotPot] — in-process NWChemPot/CPMDPot (also accept legacy [RGPot] keys)
-  if (params.potential_options().potential == PotType::RGPOT) {
-    const char *sec = "RgpotPot";
-    // Prefer [RgpotPot]; fall back to [RGPot] field names used by direct-link
-    // design
-    ParametersLoadAccess::rgpot_options(params).backend = ini.Get(
-        sec, "backend", ParametersLoadAccess::rgpot_options(params).backend);
-    ParametersLoadAccess::rgpot_options(params).basis =
-        ini.Get(sec, "basis",
-                ini.Get(sec, "nwchem_basis",
-                        ParametersLoadAccess::rgpot_options(params).basis));
-    ParametersLoadAccess::rgpot_options(params).theory =
-        ini.Get(sec, "theory",
-                ini.Get(sec, "nwchem_theory",
-                        ParametersLoadAccess::rgpot_options(params).theory));
-    ParametersLoadAccess::rgpot_options(params).scf_type =
-        ini.Get(sec, "scf_type",
-                ini.Get(sec, "nwchem_scf_type",
-                        ParametersLoadAccess::rgpot_options(params).scf_type));
-    ParametersLoadAccess::rgpot_options(params).functional = ini.Get(
-        sec, "functional",
-        ini.Get(sec, "cpmd_functional",
-                ParametersLoadAccess::rgpot_options(params).functional));
-    // cutOffRy is the schema name. cutoff_ry and cpmd_cut_off_ry still load.
-    ParametersLoadAccess::rgpot_options(params).cutoff_ry = ini.GetReal(
-        sec, "cutOffRy",
-        ini.GetReal(
-            sec, "cutoff_ry",
-            ini.GetReal(
-                sec, "cpmd_cut_off_ry",
-                ParametersLoadAccess::rgpot_options(params).cutoff_ry)));
-    ParametersLoadAccess::rgpot_options(params).charge = ini.GetInteger(
-        sec, "charge",
-        ini.GetInteger(sec, "nwchem_charge",
-                       ParametersLoadAccess::rgpot_options(params).charge));
-    ParametersLoadAccess::rgpot_options(params).multiplicity = ini.GetInteger(
-        sec, "multiplicity",
-        ini.GetInteger(
-            sec, "nwchem_multiplicity",
-            ParametersLoadAccess::rgpot_options(params).multiplicity));
-    ParametersLoadAccess::rgpot_options(params).engine_path =
-        ini.Get(sec, "engine_path",
-                ParametersLoadAccess::rgpot_options(params).engine_path);
-    ParametersLoadAccess::rgpot_options(params).engine_library =
-        ini.Get(sec, "engine_library",
-                ParametersLoadAccess::rgpot_options(params).engine_library);
-    ParametersLoadAccess::rgpot_options(params).engine_root =
-        ini.Get(sec, "engine_root",
-                ParametersLoadAccess::rgpot_options(params).engine_root);
-    ParametersLoadAccess::rgpot_options(params).title = ini.Get(
-        sec, "title", ParametersLoadAccess::rgpot_options(params).title);
-    ParametersLoadAccess::rgpot_options(params).memory_mb =
-        ini.GetInteger(sec, "memory_mb",
-                       ParametersLoadAccess::rgpot_options(params).memory_mb);
-    ParametersLoadAccess::rgpot_options(params).scratch_dir =
-        ini.Get(sec, "scratch_dir",
-                ParametersLoadAccess::rgpot_options(params).scratch_dir);
-    ParametersLoadAccess::rgpot_options(params).input_block =
-        ini.Get(sec, "input_block",
-                ParametersLoadAccess::rgpot_options(params).input_block);
-    ParametersLoadAccess::rgpot_options(params).permanent_dir =
-        ini.Get(sec, "permanent_dir",
-                ParametersLoadAccess::rgpot_options(params).permanent_dir);
-    ParametersLoadAccess::rgpot_options(params).params_path =
-        ini.Get(sec, "params_path",
-                ParametersLoadAccess::rgpot_options(params).params_path);
-    ParametersLoadAccess::rgpot_options(params).ranks_per_image =
-        ini.GetInteger(
-            sec, "ranks_per_image",
-            ParametersLoadAccess::rgpot_options(params).ranks_per_image);
-    ParametersLoadAccess::rgpot_options(params).model_path =
-        ini.Get(sec, "model_path",
-                ParametersLoadAccess::rgpot_options(params).model_path);
-    ParametersLoadAccess::rgpot_options(params).device = ini.Get(
-        sec, "device", ParametersLoadAccess::rgpot_options(params).device);
-    ParametersLoadAccess::rgpot_options(params).length_unit =
-        ini.Get(sec, "length_unit",
-                ParametersLoadAccess::rgpot_options(params).length_unit);
-    ParametersLoadAccess::rgpot_options(params).extensions_directory = ini.Get(
-        sec, "extensions_directory",
-        ParametersLoadAccess::rgpot_options(params).extensions_directory);
-    ParametersLoadAccess::rgpot_options(params).check_consistency =
-        ini.GetBoolean(
-            sec, "check_consistency",
-            ParametersLoadAccess::rgpot_options(params).check_consistency);
-    ParametersLoadAccess::rgpot_options(params).uncertainty_threshold =
-        ini.GetReal(
-            sec, "uncertainty_threshold",
-            ParametersLoadAccess::rgpot_options(params).uncertainty_threshold);
-    ParametersLoadAccess::rgpot_options(params).torch_determinism_strict =
-        ini.GetBoolean(sec, "torch_determinism_strict",
-                       ParametersLoadAccess::rgpot_options(params)
-                           .torch_determinism_strict);
-    // XTB dlopen knobs (also accept [XTBPot] when backend=xtb)
-    ParametersLoadAccess::rgpot_options(params).xtb_paramset = ini.Get(
-        sec, "paramset",
-        ini.Get(sec, "xtb_paramset",
-                ParametersLoadAccess::rgpot_options(params).xtb_paramset));
-    ParametersLoadAccess::rgpot_options(params).xtb_accuracy = ini.GetReal(
-        sec, "accuracy",
-        ini.GetReal(sec, "xtb_accuracy",
-                    ParametersLoadAccess::rgpot_options(params).xtb_accuracy));
-    ParametersLoadAccess::rgpot_options(params).xtb_electronic_temperature =
-        ini.GetReal(sec, "electronic_temperature",
-                    ini.GetReal(sec, "xtb_electronic_temperature",
-                                ParametersLoadAccess::rgpot_options(params)
-                                    .xtb_electronic_temperature));
-    ParametersLoadAccess::rgpot_options(params).xtb_max_iterations =
-        static_cast<int>(ini.GetInteger(
-            sec, "max_iterations",
-            ini.GetInteger(sec, "xtb_max_iterations",
-                           ParametersLoadAccess::rgpot_options(params)
-                               .xtb_max_iterations)));
-    ParametersLoadAccess::rgpot_options(params).xtb_charge =
-        ini.GetReal(sec, "xtb_charge",
-                    static_cast<double>(
-                        ParametersLoadAccess::rgpot_options(params).charge));
-    ParametersLoadAccess::rgpot_options(params).xtb_uhf =
-        static_cast<int>(ini.GetInteger(
-            sec, "uhf",
-            ini.GetInteger(
-                sec, "xtb_uhf",
-                ParametersLoadAccess::rgpot_options(params).xtb_uhf)));
-    const std::string be =
-        toLowerCase(ParametersLoadAccess::rgpot_options(params).backend);
-    if (be == "xtb" || be == "xtbpot" || be == "gfn" || be == "gfnxtb") {
-      ParametersLoadAccess::rgpot_options(params).xtb_paramset =
-          ini.Get("XTBPot", "paramset",
-                  ParametersLoadAccess::rgpot_options(params).xtb_paramset);
-      ParametersLoadAccess::rgpot_options(params).xtb_accuracy =
-          ini.GetReal("XTBPot", "accuracy",
-                      ParametersLoadAccess::rgpot_options(params).xtb_accuracy);
-      ParametersLoadAccess::rgpot_options(params).xtb_electronic_temperature =
-          ini.GetReal("XTBPot", "electronic_temperature",
-                      ParametersLoadAccess::rgpot_options(params)
-                          .xtb_electronic_temperature);
-      ParametersLoadAccess::rgpot_options(params).xtb_max_iterations =
-          static_cast<int>(ini.GetInteger(
-              "XTBPot", "max_iterations",
-              ParametersLoadAccess::rgpot_options(params).xtb_max_iterations));
-      ParametersLoadAccess::rgpot_options(params).xtb_uhf = static_cast<int>(
-          ini.GetInteger("XTBPot", "uhf",
-                         ParametersLoadAccess::rgpot_options(params).xtb_uhf));
-      ParametersLoadAccess::rgpot_options(params).xtb_charge =
-          ini.GetReal("XTBPot", "charge",
-                      ParametersLoadAccess::rgpot_options(params).xtb_charge);
-    }
-    // [RgpotPot] is the backend switch. [cpmd] is the scalar CPMD message
-    // and overrides that section when the backend is CPMD. A params_path
-    // file, applied later, owns the same fields and is not overwritten
-    // by either section. input_block from here is appended to the file.
-    if (be == "cpmd" || be == "cpmdc" || be == "cpmdpot") {
-      auto &rg = ParametersLoadAccess::rgpot_options(params);
-      rg.functional =
-          ini.Get("cpmd", "functional",
-                  ini.Get("cpmd", "cpmd_functional", rg.functional));
-      rg.cutoff_ry = ini.GetReal(
-          "cpmd", "cutOffRy",
-          ini.GetReal("cpmd", "cutoff_ry",
-                      ini.GetReal("cpmd", "cpmd_cut_off_ry", rg.cutoff_ry)));
-      rg.charge = ini.GetInteger("cpmd", "charge", rg.charge);
-      rg.multiplicity = ini.GetInteger("cpmd", "multiplicity", rg.multiplicity);
-      rg.title = ini.Get("cpmd", "title", rg.title);
-      rg.memory_mb = ini.GetInteger("cpmd", "memory_mb", rg.memory_mb);
-      rg.input_block = ini.Get("cpmd", "input_block", rg.input_block);
-    }
-  }
+  // [RgpotPot] scalars, alias order, and the cpmd / XTBPot overlays are
+  // projected from schema/eon_params.capnp.
+  project_ssot_ini(ini, params);
 
   // [Debug] //
 

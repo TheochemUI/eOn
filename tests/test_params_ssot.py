@@ -21,6 +21,18 @@ GENERATED = [
     REPO / "eon" / "_params_ssot_catalog.py",
     REPO / "include" / "eon" / "generated" / "ParametersSSOTDefaults.h",
     REPO / "include" / "eon" / "generated" / "ParametersSSOTFieldIndex.inc",
+    REPO / "include" / "eon" / "generated" / "ParametersSSOTIni.inc",
+    REPO / "include" / "eon" / "generated" / "ParametersSSOTJson.inc",
+    REPO / "include" / "eon" / "generated" / "ParametersSSOTApply.inc",
+    (
+        REPO
+        / "packages"
+        / "eon-schema"
+        / "src"
+        / "eon_schema"
+        / "ssot"
+        / "eon_params_catalog.json"
+    ),
 ]
 
 
@@ -87,7 +99,14 @@ def test_python_defaults_main_temperature():
 
 @pytest.mark.parametrize(
     "section",
-    ["Main", "Potential", "Optimizer", "Structure Comparison", "Process Search"],
+    [
+        "Main",
+        "Potential",
+        "Optimizer",
+        "Structure Comparison",
+        "Process Search",
+        "RgpotPot",
+    ],
 )
 def test_parity_yaml_keys_subset_of_ssot(section):
     from eon import params_ssot
@@ -101,26 +120,42 @@ def test_parity_yaml_keys_subset_of_ssot(section):
 
 @pytest.mark.parametrize(
     "section",
-    ["Main", "Potential", "Optimizer", "Structure Comparison", "Process Search"],
+    [
+        "Main",
+        "Potential",
+        "Optimizer",
+        "Structure Comparison",
+        "Process Search",
+        "RgpotPot",
+    ],
 )
 def test_parity_yaml_defaults_match_ssot(section):
     from eon import params_ssot
 
     opts = _load_yaml_options(section)
     expected = params_ssot.yaml_default_map(section)
+    by_snake = {f["snake"]: f for f in params_ssot.scalar_fields(section)}
     for key, exp in expected.items():
+        src = key
         if key not in opts:
-            # client-only keys may be absent from server config.yaml
-            if section == "Main" and key in {
+            order = (by_snake.get(key) or {}).get("ini_order") or []
+            alias = next(
+                (name for name in order if name != key and name in opts),
+                None,
+            )
+            if alias is not None:
+                # First present ini_order spelling stands in for the snake.
+                src = alias
+            elif section == "Main" and key in {
                 "parallel",
                 "ini_filename",
                 "con_filename",
             }:
                 continue
-            if section == "Potential" and key in {"potentials_path"}:
+            elif section == "Potential" and key in {"potentials_path"}:
                 continue
             # Optimizer nested scalars without flat alias only live nested
-            if section == "Optimizer" and key in {
+            elif section == "Optimizer" and key in {
                 "memory",
                 "inverse_curvature",
                 "max_inverse_curvature",
@@ -138,13 +173,46 @@ def test_parity_yaml_defaults_match_ssot(section):
                 "two_point",
             }:
                 continue
-            pytest.fail(f"yaml [{section}] missing SSoT key {key}")
-        if key not in opts:
-            continue
-        got = params_ssot.normalize_yaml_default(opts[key])
+            else:
+                pytest.fail(f"yaml [{section}] missing SSoT key {key}")
+        got = params_ssot.normalize_yaml_default(opts[src])
         assert got == exp or (isinstance(exp, float) and float(got) == float(exp)), (
-            f"yaml [{section}].{key} default {got!r} != SSoT {exp!r}"
+            f"yaml [{section}].{src} default {got!r} != SSoT {exp!r}"
         )
+
+
+def test_rgpot_model_fields_are_catalog_keys():
+    """RgpotPot pydantic names are snakes or ini_order spellings."""
+    from eon import params_ssot
+
+    model_fields = _pydantic_model_fields(SCHEMA_MODELS, "RgpotPot")
+    allowed: set[str] = set()
+    for field in params_ssot.scalar_fields("RgpotPot"):
+        allowed.add(field["snake"])
+        for name in field.get("ini_order") or []:
+            allowed.add(name)
+    extra = model_fields - allowed
+    assert not extra, f"RgpotPot fields not in SSoT snakes or ini_order: {extra}"
+
+
+def test_rgpot_ini_is_projected():
+    ini = (REPO / "include" / "eon" / "generated" / "ParametersSSOTIni.inc").read_text()
+    assert "project_ssot_ini" in ini
+    assert 'ini.Get("cpmd"' in ini
+    assert "static_cast<double>(o.charge)" in ini
+
+    cpp = (REPO / "client" / "ParametersINI.cpp").read_text()
+    assert '#include "eon/generated/ParametersSSOTIni.inc"' in cpp
+    assert "project_ssot_ini(ini, params)" in cpp
+    assert "cpmd_cut_off_ry" not in cpp
+
+    js = (REPO / "client" / "ParametersJSON.cpp").read_text()
+    assert "ParametersSSOTJson.inc" in js
+    assert "project_ssot_json_write" in js
+    assert "project_ssot_json_read" in js
+
+    ssot = (REPO / "client" / "ParametersSSOT.cpp").read_text()
+    assert "ParametersSSOTApply.inc" in ssot
 
 
 def test_parity_main_fields_in_schema_py():

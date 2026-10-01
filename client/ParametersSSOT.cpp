@@ -245,6 +245,7 @@ void apply_ssot_defaults(Parameters &p) {
   ParametersLoadAccess::optimizer_options(p).sd.alpha = GD::OPTIMIZER_SD_ALPHA;
   ParametersLoadAccess::optimizer_options(p).sd.two_point =
       GD::OPTIMIZER_SD_TWO_POINT;
+#include "eon/generated/ParametersSSOTApply.inc"
 }
 
 bool ssot_has_field(const char *section, const char *key) {

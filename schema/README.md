@@ -2,19 +2,28 @@
 
 **Authoring home:** `schema/eon_params.capnp`
 
-Edit field names, types, defaults, and wire ordinals here first, then:
+Edit field names, types, defaults, and wire ordinals here first. A struct
+tagged `# project: ini,json` is projected into the INI reader, the JSON codec,
+and the default assignment. Untagged structs stay handwritten.
 
 ```bash
 python tools/params_ssot/codegen.py
-./packages/eon-schema/scripts/sync_ssot_into_package.sh   # if packages/eon-schema is present
+./packages/eon-schema/scripts/sync_ssot_into_package.sh   # capnp sources into the split
 ```
 
-That regenerates:
+Codegen writes:
 
 - `schema/eon_params_catalog.json`
 - `eon/_params_ssot_catalog.py`
-- `client/generated/ParametersSSOT*`
-- vendored copy under `packages/eon-schema/src/eon_schema/ssot/` (PyPI split)
+- `include/eon/generated/ParametersSSOTDefaults.h`
+- `include/eon/generated/ParametersSSOTFieldIndex.inc`
+- `include/eon/generated/ParametersSSOTIni.inc`
+- `include/eon/generated/ParametersSSOTJson.inc`
+- `include/eon/generated/ParametersSSOTApply.inc`
+- `packages/eon-schema/src/eon_schema/ssot/eon_params_catalog.json`
+
+The sync script copies `eon_params.capnp` and `eon_job_result.capnp` into the
+split package. Codegen already writes the vendored catalog JSON.
 
 ## Release shapes (monorepo)
 

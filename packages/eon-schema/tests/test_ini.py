@@ -11,6 +11,7 @@ from eon_schema.config import (
     DimerConfig,
     PotentialConfig,
     XtsciConfig,
+    allowed_keys,
     defaults_from_catalog,
     hydrate_ini,
     model_to_ini_section,
@@ -114,3 +115,11 @@ def test_write_models_ini(tmp_path: Path):
 def test_models_to_ini_combined():
     secs = models_to_ini(MainConfig(job="point"), PotentialConfig(potential="emt"))
     assert set(secs) >= {"Main", "Potential"}
+
+
+def test_rgpot_cutoff_alias_is_allowed():
+    assert "cutOffRy" in allowed_keys("RgpotPot")
+    assert "cutoff_ry" in allowed_keys("RgpotPot")
+    bad = unknown_ini_keys({"RgpotPot": {"cutOffRy": 40, "not_a_key": 1}})
+    assert "RgpotPot.cutOffRy" not in bad
+    assert "RgpotPot.not_a_key" in bad

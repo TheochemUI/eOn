@@ -458,4 +458,56 @@ TEST_CASE("JSON derives the thermostat times the way the ini does",
           Catch::Approx(fromIni.thermostat_options().andersen_tcol));
 }
 
+TEST_CASE("JSON round-trips RgpotPot canonical keys", "[params][json]") {
+  Parameters written;
+  auto &o = ParametersLoadAccess::rgpot_options(written);
+  o.backend = "cpmdc";
+  o.functional = "PBE";
+  o.cutoff_ry = 55.5;
+  o.charge = 4;
+  o.params_path = "/data/si3n4.bin";
+  o.ranks_per_image = 6;
+
+  auto j = eonc::config::to_json(written);
+  REQUIRE(j["RgpotPot"].contains("cutoff_ry"));
+  REQUIRE_FALSE(j["RgpotPot"].contains("cutOffRy"));
+
+  Parameters loaded;
+  eonc::config::from_json(j, loaded);
+  REQUIRE(loaded.rgpot_options().backend == "cpmdc");
+  REQUIRE(loaded.rgpot_options().functional == "PBE");
+  REQUIRE(loaded.rgpot_options().cutoff_ry == Catch::Approx(55.5));
+  REQUIRE(loaded.rgpot_options().charge == 4);
+  REQUIRE(loaded.rgpot_options().params_path == "/data/si3n4.bin");
+  REQUIRE(loaded.rgpot_options().ranks_per_image == 6);
+}
+
+TEST_CASE("JSON reads RgpotPot cutOffRy and cpmd_functional aliases",
+          "[params][json]") {
+  nlohmann::json j = {
+      {"RgpotPot", {{"cutOffRy", 18.0}, {"cpmd_functional", "PBE"}}}};
+  Parameters p;
+  eonc::config::from_json(j, p);
+  REQUIRE(p.rgpot_options().cutoff_ry == Catch::Approx(18.0));
+  REQUIRE(p.rgpot_options().functional == "PBE");
+}
+
+TEST_CASE("JSON RgpotPot omits xtb_charge resets it from charge",
+          "[params][json]") {
+  Parameters reset;
+  ParametersLoadAccess::rgpot_options(reset).charge = 5;
+  ParametersLoadAccess::rgpot_options(reset).xtb_charge = 9.0;
+  nlohmann::json missing = {{"RgpotPot", {{"charge", 5}}}};
+  eonc::config::from_json(missing, reset);
+  REQUIRE(reset.rgpot_options().xtb_charge == Catch::Approx(5.0));
+
+  Parameters kept;
+  ParametersLoadAccess::rgpot_options(kept).charge = 5;
+  ParametersLoadAccess::rgpot_options(kept).xtb_charge = 9.0;
+  nlohmann::json present = {
+      {"RgpotPot", {{"charge", 5}, {"xtb_charge", 2.5}}}};
+  eonc::config::from_json(present, kept);
+  REQUIRE(kept.rgpot_options().xtb_charge == Catch::Approx(2.5));
+}
+
 } /* namespace tests */
