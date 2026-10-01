@@ -243,6 +243,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('Job_8cpp.html'
 <code>#include &quot;<a class="el" href="FiniteDifferenceJob_8h_source.html">eon/FiniteDifferenceJob.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="GlobalOptimizationJob_8h_source.html">eon/GlobalOptimizationJob.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="HessianJob_8h_source.html">eon/HessianJob.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="InstantonJob_8h_source.html">eon/InstantonJob.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="JobRegistry_8h_source.html">eon/JobRegistry.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="MinimizationJob_8h_source.html">eon/MinimizationJob.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="MonteCarloJob_8h_source.html">eon/MonteCarloJob.h</a>&quot;</code><br />
@@ -305,16 +306,16 @@ Functions</h2></td></tr>
 <div class="line">}()</div>
 <div class="ttc" id="aclasseonc_1_1Runtime_html"><div class="ttname"><a href="classeonc_1_1Runtime.html">eonc::Runtime</a></div><div class="ttdoc">Move-only composition root for process resources (dlopen loaders and the potential registry).</div><div class="ttdef"><b>Definition</b> <a href="Runtime_8h_source.html#l00027">Runtime.h:27</a></div></div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="Job_8cpp_source.html#l00049">49</a> of file <a class="el" href="Job_8cpp_source.html">Job.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   49</span><span class="preprocessor">#define EON_REG_JOB(TYPE, CLS)                                                 \</span></div>
-<div class="line"><span class="lineno">   50</span><span class="preprocessor">  const bool eon_reg_##CLS = [] {                                              \</span></div>
-<div class="line"><span class="lineno">   51</span><span class="preprocessor">    eonc::registerJob(                                                         \</span></div>
-<div class="line"><span class="lineno">   52</span><span class="preprocessor">        eonc::JobType::TYPE,                                                   \</span></div>
-<div class="line"><span class="lineno">   53</span><span class="preprocessor">        [](std::unique_ptr&lt;eonc::Parameters&gt; p, eonc::Runtime &amp;rt) {           \</span></div>
-<div class="line"><span class="lineno">   54</span><span class="preprocessor">          return std::make_unique&lt;eonc::CLS&gt;(std::move(p), rt);                \</span></div>
-<div class="line"><span class="lineno">   55</span><span class="preprocessor">        });                                                                    \</span></div>
-<div class="line"><span class="lineno">   56</span><span class="preprocessor">    return true;                                                               \</span></div>
-<div class="line"><span class="lineno">   57</span><span class="preprocessor">  }()</span></div>
+<p class="definition">Definition at line <a class="el" href="Job_8cpp_source.html#l00050">50</a> of file <a class="el" href="Job_8cpp_source.html">Job.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   50</span><span class="preprocessor">#define EON_REG_JOB(TYPE, CLS)                                                 \</span></div>
+<div class="line"><span class="lineno">   51</span><span class="preprocessor">  const bool eon_reg_##CLS = [] {                                              \</span></div>
+<div class="line"><span class="lineno">   52</span><span class="preprocessor">    eonc::registerJob(                                                         \</span></div>
+<div class="line"><span class="lineno">   53</span><span class="preprocessor">        eonc::JobType::TYPE,                                                   \</span></div>
+<div class="line"><span class="lineno">   54</span><span class="preprocessor">        [](std::unique_ptr&lt;eonc::Parameters&gt; p, eonc::Runtime &amp;rt) {           \</span></div>
+<div class="line"><span class="lineno">   55</span><span class="preprocessor">          return std::make_unique&lt;eonc::CLS&gt;(std::move(p), rt);                \</span></div>
+<div class="line"><span class="lineno">   56</span><span class="preprocessor">        });                                                                    \</span></div>
+<div class="line"><span class="lineno">   57</span><span class="preprocessor">    return true;                                                               \</span></div>
+<div class="line"><span class="lineno">   58</span><span class="preprocessor">  }()</span></div>
 </div><!-- fragment -->
 </div>
 </div>

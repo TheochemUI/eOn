@@ -262,6 +262,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac6d4be4522b1487195716c2dcbd44e79" id="r_ac6d4be4522b1487195716c2dcbd44e79"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ac6d4be4522b1487195716c2dcbd44e79">force</a> (long N, const double *R, const int *atomicNrs, double *F, double *U, double *variance, const double *box) override</td></tr>
 <tr class="memitem:aa3807f25df4a13d2563d53aac59e63cd" id="r_aa3807f25df4a13d2563d53aac59e63cd"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#aa3807f25df4a13d2563d53aac59e63cd">isThreadSafe</a> () const noexcept override</td></tr>
 <tr class="memdesc:aa3807f25df4a13d2563d53aac59e63cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this potential's <a class="el" href="#ac6d4be4522b1487195716c2dcbd44e79">force()</a> can be called from multiple threads on the SAME instance.  <br /></td></tr>
+<tr class="memitem:acde3cf6eb2174f747609504d1d717d80" id="r_acde3cf6eb2174f747609504d1d717d80"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#acde3cf6eb2174f747609504d1d717d80">supportsBatchEvaluation</a> () const noexcept override</td></tr>
+<tr class="memdesc:acde3cf6eb2174f747609504d1d717d80"><td class="mdescLeft">&#160;</td><td class="mdescRight">With cpmdc calculator groups ([<a class="el" href="classRgpotPot.html" title="Potential backed by rgpot NWChemPot / CPMDPot (in-process dlopen of libnwchemc / libcpmdc).">RgpotPot</a>] ranks_per_image), a batch is spread over the groups: system j runs on group j mod G, then every rank receives every result, so all ranks keep the same band.  <br /></td></tr>
+<tr class="memitem:a6fee72a91f6354157274b33d3341d385" id="r_a6fee72a91f6354157274b33d3341d385"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a6fee72a91f6354157274b33d3341d385">forceBatch</a> (long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes) override</td></tr>
+<tr class="memitem:a674bf337af44b7f429fb39cc8aa38995" id="r_a674bf337af44b7f429fb39cc8aa38995"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a674bf337af44b7f429fb39cc8aa38995">forceBatchOwned</a> (long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes, const long *owners) override</td></tr>
+<tr class="memdesc:a674bf337af44b7f429fb39cc8aa38995"><td class="mdescLeft">&#160;</td><td class="mdescRight">System j runs on group owners[j] mod G when owners is given (an owner below zero falls back to j), so a NEB image keeps its group across partial band updates.  <br /></td></tr>
 <tr class="memitem:a30439012a21f7aeae6a23c1cf66b1fc8" id="r_a30439012a21f7aeae6a23c1cf66b1fc8"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a30439012a21f7aeae6a23c1cf66b1fc8">requiresIsolatedMoleculeLayout</a> () const noexcept override</td></tr>
 <tr class="memdesc:a30439012a21f7aeae6a23c1cf66b1fc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">NWChem molecular SCF does not support PBC; CPMD may be periodic.  <br /></td></tr>
 <tr class="memitem:a983a98a576d9890e34930d3200927e04" id="r_a983a98a576d9890e34930d3200927e04"><td class="memItemLeft">const std::string &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a983a98a576d9890e34930d3200927e04">backend</a> () const noexcept</td></tr>
@@ -291,15 +296,28 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a8b83745c9898990f848daafa4c351c2f inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether NEB should create separate <a class="el" href="classeonc_1_1Potential.html">Potential</a> instances per image for true parallel force evaluation.  <br /></td></tr>
 <tr class="memitem:a59bc4af33d113751d3804054b79a4872 inherit pub_methods_classeonc_1_1Potential" id="r_a59bc4af33d113751d3804054b79a4872"><td class="memItemLeft">virtual std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a59bc4af33d113751d3804054b79a4872">clonePotential</a> () const</td></tr>
 <tr class="memdesc:a59bc4af33d113751d3804054b79a4872 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Independent instance that does not reload from disk.  <br /></td></tr>
-<tr class="memitem:a2d8781e3cbea888f88b7523c5d00bc43 inherit pub_methods_classeonc_1_1Potential" id="r_a2d8781e3cbea888f88b7523c5d00bc43"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a2d8781e3cbea888f88b7523c5d00bc43">supportsBatchEvaluation</a> () const noexcept</td></tr>
-<tr class="memdesc:a2d8781e3cbea888f88b7523c5d00bc43 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this potential supports batched evaluation of N systems in a single call.  <br /></td></tr>
-<tr class="memitem:aa66e1416134ff55639a6d20a34e3c1c1 inherit pub_methods_classeonc_1_1Potential" id="r_aa66e1416134ff55639a6d20a34e3c1c1"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#aa66e1416134ff55639a6d20a34e3c1c1">forceBatch</a> (long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes)</td></tr>
-<tr class="memdesc:aa66e1416134ff55639a6d20a34e3c1c1 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate forces for N systems in a single call.  <br /></td></tr>
+<tr class="memitem:a12bba5921cf3936f25d13563ac49f90f inherit pub_methods_classeonc_1_1Potential" id="r_a12bba5921cf3936f25d13563ac49f90f"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a12bba5921cf3936f25d13563ac49f90f">computesStress</a> () const noexcept</td></tr>
+<tr class="memdesc:a12bba5921cf3936f25d13563ac49f90f inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when <a class="el" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">force()</a> leaves a Cauchy stress that <a class="el" href="classeonc_1_1Potential.html#a98c3cc78cc840b21cb178a4d625437f2" title="Cauchy stress in eV/Angstrom^3.">cauchyStress()</a> can read until the next <a class="el" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">force()</a> on this instance.  <br /></td></tr>
+<tr class="memitem:a98c3cc78cc840b21cb178a4d625437f2 inherit pub_methods_classeonc_1_1Potential" id="r_a98c3cc78cc840b21cb178a4d625437f2"><td class="memItemLeft">virtual <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a98c3cc78cc840b21cb178a4d625437f2">cauchyStress</a> () const</td></tr>
+<tr class="memdesc:a98c3cc78cc840b21cb178a4d625437f2 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cauchy stress in eV/Angstrom^3.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:acab2b31e6271c7e676fa1ce814df2c49" id="r_acab2b31e6271c7e676fa1ce814df2c49"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#acab2b31e6271c7e676fa1ce814df2c49">serveWorker</a> ()</td></tr>
+<tr class="memitem:a3ce8766468e542b17c1703095c995dfe" id="r_a3ce8766468e542b17c1703095c995dfe"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a3ce8766468e542b17c1703095c995dfe">computeSingle</a> (long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box)</td></tr>
+<tr class="memitem:a84ebb25dd5ae5427213100da6d17ec9b" id="r_a84ebb25dd5ae5427213100da6d17ec9b"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a84ebb25dd5ae5427213100da6d17ec9b">computeBatch</a> (long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, const double *const *boxes, const std::int64_t *owners)</td></tr>
+<tr class="memitem:ae6c65b972ba91b1c5b4512fc03474e04" id="r_ae6c65b972ba91b1c5b4512fc03474e04"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ae6c65b972ba91b1c5b4512fc03474e04">sendStop</a> ()</td></tr>
+<tr class="memitem:ac0c86f60fd32c3cc3dfa34d6b0973ac3" id="r_ac0c86f60fd32c3cc3dfa34d6b0973ac3"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ac0c86f60fd32c3cc3dfa34d6b0973ac3">stopAndDrop</a> ()</td></tr>
+<tr class="memitem:ae87ceb0b49847c3ae9e3d0773dc49478" id="r_ae87ceb0b49847c3ae9e3d0773dc49478"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ae87ceb0b49847c3ae9e3d0773dc49478">releaseWorkersAtExit</a> ()</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
 <tr class="memitem:a5dc28ce178c64749350e33931c191d34" id="r_a5dc28ce178c64749350e33931c191d34"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classRGPotEngine.html">RGPotEngine</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a5dc28ce178c64749350e33931c191d34">impl_</a></td></tr>
 <tr class="memitem:a36cfb3ad59f4bc1bd797a9ef8c033976" id="r_a36cfb3ad59f4bc1bd797a9ef8c033976"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a36cfb3ad59f4bc1bd797a9ef8c033976">backend_</a></td></tr>
+<tr class="memitem:aa510f91f12397e12b96ccde20b0a3e9a" id="r_aa510f91f12397e12b96ccde20b0a3e9a"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#aa510f91f12397e12b96ccde20b0a3e9a">driver_</a> {true}</td></tr>
+<tr class="memitem:a79abcbb0876456ed0944f6b6446ba07f" id="r_a79abcbb0876456ed0944f6b6446ba07f"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a79abcbb0876456ed0944f6b6446ba07f">stopped_</a> {false}</td></tr>
+<tr class="memitem:a8bcb7ba8f038e0c27f7464f7790121de" id="r_a8bcb7ba8f038e0c27f7464f7790121de"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a8bcb7ba8f038e0c27f7464f7790121de">dropped_</a> {false}</td></tr>
+<tr class="memitem:a98ce20269344bb0ad538f70c46b050b6" id="r_a98ce20269344bb0ad538f70c46b050b6"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a98ce20269344bb0ad538f70c46b050b6">acked_</a> {false}</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -308,7 +326,7 @@ Additional Inherited Members</h2></td></tr>
 , <a class="el" href="classeonc_1_1Potential.html#a6a35357f6786a54c47eceedf6eab2056a7c188dee6d54a1cb92a7c95534b34e93">NeedsWorkingDirectory</a> = 1u &lt;&lt; 1
 , <a class="el" href="classeonc_1_1Potential.html#a6a35357f6786a54c47eceedf6eab2056aacfc9fac11fea7710fbe22b6ba4b3a9e">Subprocess</a> = 1u &lt;&lt; 2
  }</td></tr>
-<tr class="memdesc:a6a35357f6786a54c47eceedf6eab2056"><td class="mdescLeft">&#160;</td><td class="mdescRight">How the pot is executed (eOn-12x7). Combine with bitwise or.  <a href="classeonc_1_1Potential.html#a6a35357f6786a54c47eceedf6eab2056">More...</a><br /></td></tr>
+<tr class="memdesc:a6a35357f6786a54c47eceedf6eab2056"><td class="mdescLeft">&#160;</td><td class="mdescRight">How the pot is executed. Combine with bitwise or.  <a href="classeonc_1_1Potential.html#a6a35357f6786a54c47eceedf6eab2056">More...</a><br /></td></tr>
 <tr class="inherit_header pub_attribs_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
 <tr class="memitem:a2ae7cca425e3d69d2825c58d1c7704eb inherit pub_attribs_classeonc_1_1Potential" id="r_a2ae7cca425e3d69d2825c58d1c7704eb"><td class="memItemLeft">std::atomic&lt; size_t &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">forceCallCounter</a></td></tr>
 <tr class="inherit_header pro_attribs_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
@@ -343,135 +361,154 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00015">15</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   16</span>    : eonc::Potential(<a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a483ab577e2e85e858725c5ee67d8b470">eonc::PotType::RGPOT</a>, p) {</div>
-<div class="line"><span class="lineno">   17</span>  RGPotEngineOptions opt;</div>
-<div class="line"><span class="lineno">   18</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;o = p.<a class="code hl_function" href="classeonc_1_1Parameters.html#ad6988eb7a376b0aa777353ebbc0e253a">rgpot_options</a>();</div>
-<div class="line"><span class="lineno">   19</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a8dec74e532101f1ce4380e05489f6ad4">backend</a> = o.backend;</div>
-<div class="line"><span class="lineno">   20</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3cce8b08621932e92a7a234f47bfc314">basis</a> = o.basis;</div>
-<div class="line"><span class="lineno">   21</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ad922d97dfdfdabc9cb828a45247eb81a">theory</a> = o.theory;</div>
-<div class="line"><span class="lineno">   22</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a06e36eb8ac4cb37ce9691971cfb9d08e">scf_type</a> = o.scf_type;</div>
-<div class="line"><span class="lineno">   23</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a9fa540f49d27738ce93c1e35fc223b79">functional</a> = o.functional;</div>
-<div class="line"><span class="lineno">   24</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a684ca46659b5c02341399ba05cdd9a54">cutoff_ry</a> = o.cutoff_ry;</div>
-<div class="line"><span class="lineno">   25</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a9c7eab255bd69147d5909fc6907655d3">charge</a> = o.charge;</div>
-<div class="line"><span class="lineno">   26</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a34d4c067f03853de114c4d33a8c45224">multiplicity</a> = o.multiplicity;</div>
-<div class="line"><span class="lineno">   27</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = o.engine_path;</div>
-<div class="line"><span class="lineno">   28</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a948f90c314c2e469761f2b706cf34dc0">engine_library</a> = o.engine_library;</div>
-<div class="line"><span class="lineno">   29</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ac640a410bf18066058185cdc8a7d1d6d">engine_root</a> = o.engine_root;</div>
-<div class="line"><span class="lineno">   30</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a1bc5ed5c8b23207f381d0bf2fe34f3bd">title</a> = o.title;</div>
-<div class="line"><span class="lineno">   31</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a7d02521ee1febe74307e5e611f710118">memory_mb</a> = o.memory_mb;</div>
-<div class="line"><span class="lineno">   32</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a464193c68f85bdf6ccecf730f959c505">scratch_dir</a> = o.scratch_dir;</div>
-<div class="line"><span class="lineno">   33</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ada72be4995d9ae99c0ff2de2109ad237">input_block</a> = o.input_block;</div>
-<div class="line"><span class="lineno">   34</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb903d95fa45ace3ab69edcaa5cdd64">model_path</a> = o.model_path;</div>
-<div class="line"><span class="lineno">   35</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb38b12db96f664dd9c0ca9b8b9bb8a">device</a> = o.device;</div>
-<div class="line"><span class="lineno">   36</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#aab407eb3f992b78720bcd735acd9b0bb">length_unit</a> = o.length_unit;</div>
-<div class="line"><span class="lineno">   37</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a91dc280179d43f152dd50fcbb8762795">extensions_directory</a> = o.extensions_directory;</div>
-<div class="line"><span class="lineno">   38</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a0ff1f7f3fee0daa8b0017e4c470d4d1d">check_consistency</a> = o.check_consistency;</div>
-<div class="line"><span class="lineno">   39</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ad6c2d8b5cd78684e5bac6ae19dcdbe42">uncertainty_threshold</a> = o.uncertainty_threshold;</div>
-<div class="line"><span class="lineno">   40</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#aadaadd6c54afcc8c57a879938761ac4f">torch_determinism_strict</a> = o.torch_determinism_strict;</div>
-<div class="line"><span class="lineno">   41</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3a761a3378f874ca2e41764d5797cace">xtb_paramset</a> = o.xtb_paramset;</div>
-<div class="line"><span class="lineno">   42</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ac3f15f0a8041fdf192e328e2a35a7e37">xtb_accuracy</a> = o.xtb_accuracy;</div>
-<div class="line"><span class="lineno">   43</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a9b5a6f95eb4a8016c265fc197664b7a0">xtb_electronic_temperature</a> = o.xtb_electronic_temperature;</div>
-<div class="line"><span class="lineno">   44</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a7b78f1852bb38cf382a601c4f4ebfb93">xtb_max_iterations</a> = o.xtb_max_iterations;</div>
-<div class="line"><span class="lineno">   45</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#aece5083dcb8102323094779244c07f19">xtb_charge</a> = o.xtb_charge;</div>
-<div class="line"><span class="lineno">   46</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a05cbeb421682b503889b914da920aa08">xtb_uhf</a> = o.xtb_uhf;</div>
-<div class="line"><span class="lineno">   47</span> </div>
-<div class="line"><span class="lineno">   48</span>  <span class="comment">// Env overrides (CI / benchmarks)</span></div>
-<div class="line"><span class="lineno">   49</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_BACKEND&quot;</span>))</div>
-<div class="line"><span class="lineno">   50</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a8dec74e532101f1ce4380e05489f6ad4">backend</a> = e;</div>
-<div class="line"><span class="lineno">   51</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_NWCHEM_BASIS&quot;</span>))</div>
-<div class="line"><span class="lineno">   52</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3cce8b08621932e92a7a234f47bfc314">basis</a> = e;</div>
-<div class="line"><span class="lineno">   53</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_NWCHEM_THEORY&quot;</span>))</div>
-<div class="line"><span class="lineno">   54</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ad922d97dfdfdabc9cb828a45247eb81a">theory</a> = e;</div>
-<div class="line"><span class="lineno">   55</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_NWCHEM_SCF_TYPE&quot;</span>))</div>
-<div class="line"><span class="lineno">   56</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a06e36eb8ac4cb37ce9691971cfb9d08e">scf_type</a> = e;</div>
-<div class="line"><span class="lineno">   57</span>  <span class="comment">// Engine-path env overrides are backend-scoped: NWCHEMC_LIBRARY must not</span></div>
-<div class="line"><span class="lineno">   58</span>  <span class="comment">// leak into a cpmdc configure (CPMDPot resolves CPMDC_LIBRARY itself).</span></div>
-<div class="line"><span class="lineno">   59</span>  std::string backend_lc = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a8dec74e532101f1ce4380e05489f6ad4">backend</a>;</div>
-<div class="line"><span class="lineno">   60</span>  std::ranges::transform(backend_lc, backend_lc.begin(),</div>
-<div class="line"><span class="lineno">   61</span>                         [](<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> c) { return std::tolower(c); });</div>
-<div class="line"><span class="lineno">   62</span>  <span class="keywordflow">if</span> (backend_lc.rfind(<span class="stringliteral">&quot;nwchem&quot;</span>, 0) == 0) {</div>
-<div class="line"><span class="lineno">   63</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;NWCHEMC_LIBRARY&quot;</span>))</div>
-<div class="line"><span class="lineno">   64</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
-<div class="line"><span class="lineno">   65</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_NWCHEMC_ENGINE&quot;</span>))</div>
-<div class="line"><span class="lineno">   66</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
-<div class="line"><span class="lineno">   67</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_NWCHEM_ENGINE&quot;</span>))</div>
-<div class="line"><span class="lineno">   68</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
-<div class="line"><span class="lineno">   69</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (backend_lc.rfind(<span class="stringliteral">&quot;cpmd&quot;</span>, 0) == 0) {</div>
-<div class="line"><span class="lineno">   70</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;CPMDC_LIBRARY&quot;</span>))</div>
-<div class="line"><span class="lineno">   71</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
-<div class="line"><span class="lineno">   72</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_CPMDC_ENGINE&quot;</span>))</div>
-<div class="line"><span class="lineno">   73</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
-<div class="line"><span class="lineno">   74</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (backend_lc.rfind(<span class="stringliteral">&quot;meta&quot;</span>, 0) == 0 || backend_lc == <span class="stringliteral">&quot;mta&quot;</span>) {</div>
-<div class="line"><span class="lineno">   75</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_METATOMIC_ENGINE&quot;</span>))</div>
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00018">18</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   19</span>    : eonc::Potential(<a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a483ab577e2e85e858725c5ee67d8b470">eonc::PotType::RGPOT</a>, p) {</div>
+<div class="line"><span class="lineno">   20</span>  RGPotEngineOptions opt;</div>
+<div class="line"><span class="lineno">   21</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;o = p.<a class="code hl_function" href="classeonc_1_1Parameters.html#ad6988eb7a376b0aa777353ebbc0e253a">rgpot_options</a>();</div>
+<div class="line"><span class="lineno">   22</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a8dec74e532101f1ce4380e05489f6ad4">backend</a> = o.backend;</div>
+<div class="line"><span class="lineno">   23</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3cce8b08621932e92a7a234f47bfc314">basis</a> = o.basis;</div>
+<div class="line"><span class="lineno">   24</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ad922d97dfdfdabc9cb828a45247eb81a">theory</a> = o.theory;</div>
+<div class="line"><span class="lineno">   25</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a06e36eb8ac4cb37ce9691971cfb9d08e">scf_type</a> = o.scf_type;</div>
+<div class="line"><span class="lineno">   26</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a9fa540f49d27738ce93c1e35fc223b79">functional</a> = o.functional;</div>
+<div class="line"><span class="lineno">   27</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a684ca46659b5c02341399ba05cdd9a54">cutoff_ry</a> = o.cutoff_ry;</div>
+<div class="line"><span class="lineno">   28</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a9c7eab255bd69147d5909fc6907655d3">charge</a> = o.charge;</div>
+<div class="line"><span class="lineno">   29</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a34d4c067f03853de114c4d33a8c45224">multiplicity</a> = o.multiplicity;</div>
+<div class="line"><span class="lineno">   30</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = o.engine_path;</div>
+<div class="line"><span class="lineno">   31</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a948f90c314c2e469761f2b706cf34dc0">engine_library</a> = o.engine_library;</div>
+<div class="line"><span class="lineno">   32</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ac640a410bf18066058185cdc8a7d1d6d">engine_root</a> = o.engine_root;</div>
+<div class="line"><span class="lineno">   33</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a1bc5ed5c8b23207f381d0bf2fe34f3bd">title</a> = o.title;</div>
+<div class="line"><span class="lineno">   34</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a7d02521ee1febe74307e5e611f710118">memory_mb</a> = o.memory_mb;</div>
+<div class="line"><span class="lineno">   35</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a464193c68f85bdf6ccecf730f959c505">scratch_dir</a> = o.scratch_dir;</div>
+<div class="line"><span class="lineno">   36</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ada72be4995d9ae99c0ff2de2109ad237">input_block</a> = o.input_block;</div>
+<div class="line"><span class="lineno">   37</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a9b869368677a0173ca2b5f52e7f6e2b9">permanent_dir</a> = o.permanent_dir;</div>
+<div class="line"><span class="lineno">   38</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a7ae5836006e7a47ea0b75091b293e354">params_path</a> = o.params_path;</div>
+<div class="line"><span class="lineno">   39</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a4a902a596a803b78a6e51dd6225c822b">ranks_per_image</a> = o.ranks_per_image;</div>
+<div class="line"><span class="lineno">   40</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb903d95fa45ace3ab69edcaa5cdd64">model_path</a> = o.model_path;</div>
+<div class="line"><span class="lineno">   41</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb38b12db96f664dd9c0ca9b8b9bb8a">device</a> = o.device;</div>
+<div class="line"><span class="lineno">   42</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#aab407eb3f992b78720bcd735acd9b0bb">length_unit</a> = o.length_unit;</div>
+<div class="line"><span class="lineno">   43</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a91dc280179d43f152dd50fcbb8762795">extensions_directory</a> = o.extensions_directory;</div>
+<div class="line"><span class="lineno">   44</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a0ff1f7f3fee0daa8b0017e4c470d4d1d">check_consistency</a> = o.check_consistency;</div>
+<div class="line"><span class="lineno">   45</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ad6c2d8b5cd78684e5bac6ae19dcdbe42">uncertainty_threshold</a> = o.uncertainty_threshold;</div>
+<div class="line"><span class="lineno">   46</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#aadaadd6c54afcc8c57a879938761ac4f">torch_determinism_strict</a> = o.torch_determinism_strict;</div>
+<div class="line"><span class="lineno">   47</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3a761a3378f874ca2e41764d5797cace">xtb_paramset</a> = o.xtb_paramset;</div>
+<div class="line"><span class="lineno">   48</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ac3f15f0a8041fdf192e328e2a35a7e37">xtb_accuracy</a> = o.xtb_accuracy;</div>
+<div class="line"><span class="lineno">   49</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a9b5a6f95eb4a8016c265fc197664b7a0">xtb_electronic_temperature</a> = o.xtb_electronic_temperature;</div>
+<div class="line"><span class="lineno">   50</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a7b78f1852bb38cf382a601c4f4ebfb93">xtb_max_iterations</a> = o.xtb_max_iterations;</div>
+<div class="line"><span class="lineno">   51</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#aece5083dcb8102323094779244c07f19">xtb_charge</a> = o.xtb_charge;</div>
+<div class="line"><span class="lineno">   52</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a05cbeb421682b503889b914da920aa08">xtb_uhf</a> = o.xtb_uhf;</div>
+<div class="line"><span class="lineno">   53</span> </div>
+<div class="line"><span class="lineno">   54</span>  <span class="comment">// Env overrides (CI / benchmarks)</span></div>
+<div class="line"><span class="lineno">   55</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_BACKEND&quot;</span>))</div>
+<div class="line"><span class="lineno">   56</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a8dec74e532101f1ce4380e05489f6ad4">backend</a> = e;</div>
+<div class="line"><span class="lineno">   57</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_NWCHEM_BASIS&quot;</span>))</div>
+<div class="line"><span class="lineno">   58</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3cce8b08621932e92a7a234f47bfc314">basis</a> = e;</div>
+<div class="line"><span class="lineno">   59</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_NWCHEM_THEORY&quot;</span>))</div>
+<div class="line"><span class="lineno">   60</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ad922d97dfdfdabc9cb828a45247eb81a">theory</a> = e;</div>
+<div class="line"><span class="lineno">   61</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_NWCHEM_SCF_TYPE&quot;</span>))</div>
+<div class="line"><span class="lineno">   62</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a06e36eb8ac4cb37ce9691971cfb9d08e">scf_type</a> = e;</div>
+<div class="line"><span class="lineno">   63</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_PARAMS_PATH&quot;</span>))</div>
+<div class="line"><span class="lineno">   64</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a7ae5836006e7a47ea0b75091b293e354">params_path</a> = e;</div>
+<div class="line"><span class="lineno">   65</span>  <span class="comment">// Engine-path env overrides are backend-scoped: NWCHEMC_LIBRARY must not</span></div>
+<div class="line"><span class="lineno">   66</span>  <span class="comment">// leak into a cpmdc configure (CPMDPot resolves CPMDC_LIBRARY itself).</span></div>
+<div class="line"><span class="lineno">   67</span>  std::string backend_lc = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a8dec74e532101f1ce4380e05489f6ad4">backend</a>;</div>
+<div class="line"><span class="lineno">   68</span>  std::ranges::transform(backend_lc, backend_lc.begin(),</div>
+<div class="line"><span class="lineno">   69</span>                         [](<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> c) { return std::tolower(c); });</div>
+<div class="line"><span class="lineno">   70</span>  <span class="keywordflow">if</span> (backend_lc.rfind(<span class="stringliteral">&quot;nwchem&quot;</span>, 0) == 0) {</div>
+<div class="line"><span class="lineno">   71</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;NWCHEMC_LIBRARY&quot;</span>))</div>
+<div class="line"><span class="lineno">   72</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
+<div class="line"><span class="lineno">   73</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_NWCHEMC_ENGINE&quot;</span>))</div>
+<div class="line"><span class="lineno">   74</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
+<div class="line"><span class="lineno">   75</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_NWCHEM_ENGINE&quot;</span>))</div>
 <div class="line"><span class="lineno">   76</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
-<div class="line"><span class="lineno">   77</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;METATOMIC_ENGINE&quot;</span>))</div>
-<div class="line"><span class="lineno">   78</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
-<div class="line"><span class="lineno">   79</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_METATOMIC_MODEL&quot;</span>))</div>
-<div class="line"><span class="lineno">   80</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb903d95fa45ace3ab69edcaa5cdd64">model_path</a> = e;</div>
-<div class="line"><span class="lineno">   81</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (backend_lc == <span class="stringliteral">&quot;xtb&quot;</span> || backend_lc == <span class="stringliteral">&quot;xtbpot&quot;</span> ||</div>
-<div class="line"><span class="lineno">   82</span>             backend_lc == <span class="stringliteral">&quot;gfn&quot;</span> || backend_lc == <span class="stringliteral">&quot;gfnxtb&quot;</span>) {</div>
-<div class="line"><span class="lineno">   83</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_XTB_ENGINE&quot;</span>))</div>
+<div class="line"><span class="lineno">   77</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (backend_lc.rfind(<span class="stringliteral">&quot;cpmd&quot;</span>, 0) == 0) {</div>
+<div class="line"><span class="lineno">   78</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;CPMDC_LIBRARY&quot;</span>))</div>
+<div class="line"><span class="lineno">   79</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
+<div class="line"><span class="lineno">   80</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_CPMDC_ENGINE&quot;</span>))</div>
+<div class="line"><span class="lineno">   81</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
+<div class="line"><span class="lineno">   82</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (backend_lc.rfind(<span class="stringliteral">&quot;meta&quot;</span>, 0) == 0 || backend_lc == <span class="stringliteral">&quot;mta&quot;</span>) {</div>
+<div class="line"><span class="lineno">   83</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_METATOMIC_ENGINE&quot;</span>))</div>
 <div class="line"><span class="lineno">   84</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
-<div class="line"><span class="lineno">   85</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;XTB_ENGINE&quot;</span>))</div>
+<div class="line"><span class="lineno">   85</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;METATOMIC_ENGINE&quot;</span>))</div>
 <div class="line"><span class="lineno">   86</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
-<div class="line"><span class="lineno">   87</span>    <span class="keywordflow">if</span> (opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3a761a3378f874ca2e41764d5797cace">xtb_paramset</a>.empty() || opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3a761a3378f874ca2e41764d5797cace">xtb_paramset</a> == <span class="stringliteral">&quot;GFN2xTB&quot;</span>) {</div>
-<div class="line"><span class="lineno">   88</span>      <span class="keywordflow">if</span> (!p.<a class="code hl_function" href="classeonc_1_1Parameters.html#a30580f564a20e0ddaa54990c279df0de">xtb_options</a>().<a class="code hl_variable" href="structeonc_1_1xtb__options__t.html#a206f24650cc1424d68e592468c7a7a86">paramset</a>.empty())</div>
-<div class="line"><span class="lineno">   89</span>        opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3a761a3378f874ca2e41764d5797cace">xtb_paramset</a> = p.<a class="code hl_function" href="classeonc_1_1Parameters.html#a30580f564a20e0ddaa54990c279df0de">xtb_options</a>().<a class="code hl_variable" href="structeonc_1_1xtb__options__t.html#a206f24650cc1424d68e592468c7a7a86">paramset</a>;</div>
-<div class="line"><span class="lineno">   90</span>    }</div>
-<div class="line"><span class="lineno">   91</span>  }</div>
-<div class="line"><span class="lineno">   92</span> </div>
-<div class="line"><span class="lineno">   93</span>  <span class="comment">// Dual-read [Metatomic] when RGPOT backend is metatomic</span></div>
-<div class="line"><span class="lineno">   94</span>  <span class="keywordflow">if</span> ((backend_lc.rfind(<span class="stringliteral">&quot;meta&quot;</span>, 0) == 0 || backend_lc == <span class="stringliteral">&quot;mta&quot;</span>) &amp;&amp;</div>
-<div class="line"><span class="lineno">   95</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb903d95fa45ace3ab69edcaa5cdd64">model_path</a>.empty())</div>
-<div class="line"><span class="lineno">   96</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb903d95fa45ace3ab69edcaa5cdd64">model_path</a> = p.<a class="code hl_function" href="classeonc_1_1Parameters.html#a021fc65b0ee76c5adaea0ecdd803e706">metatomic_options</a>().<a class="code hl_variable" href="structeonc_1_1metatomic__options__t.html#a16029a798ddf5bea97fdfa3854253a64">model_path</a>;</div>
-<div class="line"><span class="lineno">   97</span>  <span class="keywordflow">if</span> ((backend_lc.rfind(<span class="stringliteral">&quot;meta&quot;</span>, 0) == 0 || backend_lc == <span class="stringliteral">&quot;mta&quot;</span>) &amp;&amp;</div>
-<div class="line"><span class="lineno">   98</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb38b12db96f664dd9c0ca9b8b9bb8a">device</a> == <span class="stringliteral">&quot;cpu&quot;</span> &amp;&amp; !p.<a class="code hl_function" href="classeonc_1_1Parameters.html#a021fc65b0ee76c5adaea0ecdd803e706">metatomic_options</a>().<a class="code hl_variable" href="structeonc_1_1metatomic__options__t.html#a0d3458d1458652392970a0a5a42d5ec4">device</a>.empty())</div>
-<div class="line"><span class="lineno">   99</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb38b12db96f664dd9c0ca9b8b9bb8a">device</a> = p.<a class="code hl_function" href="classeonc_1_1Parameters.html#a021fc65b0ee76c5adaea0ecdd803e706">metatomic_options</a>().<a class="code hl_variable" href="structeonc_1_1metatomic__options__t.html#a0d3458d1458652392970a0a5a42d5ec4">device</a>;</div>
+<div class="line"><span class="lineno">   87</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_METATOMIC_MODEL&quot;</span>))</div>
+<div class="line"><span class="lineno">   88</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb903d95fa45ace3ab69edcaa5cdd64">model_path</a> = e;</div>
+<div class="line"><span class="lineno">   89</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (backend_lc == <span class="stringliteral">&quot;xtb&quot;</span> || backend_lc == <span class="stringliteral">&quot;xtbpot&quot;</span> ||</div>
+<div class="line"><span class="lineno">   90</span>             backend_lc == <span class="stringliteral">&quot;gfn&quot;</span> || backend_lc == <span class="stringliteral">&quot;gfnxtb&quot;</span>) {</div>
+<div class="line"><span class="lineno">   91</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_XTB_ENGINE&quot;</span>))</div>
+<div class="line"><span class="lineno">   92</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
+<div class="line"><span class="lineno">   93</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;XTB_ENGINE&quot;</span>))</div>
+<div class="line"><span class="lineno">   94</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
+<div class="line"><span class="lineno">   95</span>    <span class="keywordflow">if</span> (opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3a761a3378f874ca2e41764d5797cace">xtb_paramset</a>.empty() || opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3a761a3378f874ca2e41764d5797cace">xtb_paramset</a> == <span class="stringliteral">&quot;GFN2xTB&quot;</span>) {</div>
+<div class="line"><span class="lineno">   96</span>      <span class="keywordflow">if</span> (!p.<a class="code hl_function" href="classeonc_1_1Parameters.html#a30580f564a20e0ddaa54990c279df0de">xtb_options</a>().<a class="code hl_variable" href="structeonc_1_1xtb__options__t.html#a206f24650cc1424d68e592468c7a7a86">paramset</a>.empty())</div>
+<div class="line"><span class="lineno">   97</span>        opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3a761a3378f874ca2e41764d5797cace">xtb_paramset</a> = p.<a class="code hl_function" href="classeonc_1_1Parameters.html#a30580f564a20e0ddaa54990c279df0de">xtb_options</a>().<a class="code hl_variable" href="structeonc_1_1xtb__options__t.html#a206f24650cc1424d68e592468c7a7a86">paramset</a>;</div>
+<div class="line"><span class="lineno">   98</span>    }</div>
+<div class="line"><span class="lineno">   99</span>  }</div>
 <div class="line"><span class="lineno">  100</span> </div>
-<div class="line"><span class="lineno">  101</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a> = std::make_unique&lt;RGPotEngine&gt;(opt);</div>
-<div class="line"><span class="lineno">  102</span>  <a class="code hl_variable" href="#a36cfb3ad59f4bc1bd797a9ef8c033976">backend_</a> = <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;backend();</div>
-<div class="line"><span class="lineno">  103</span>  std::cout</div>
-<div class="line"><span class="lineno">  104</span>      &lt;&lt; <span class="stringliteral">&quot;RgpotPot: in-process rgpot backend=&quot;</span> &lt;&lt; <a class="code hl_variable" href="#a36cfb3ad59f4bc1bd797a9ef8c033976">backend_</a></div>
-<div class="line"><span class="lineno">  105</span>      &lt;&lt; <span class="stringliteral">&quot; (dlopen: libnwchemc/libcpmdc/libmetatomic_engine/libxtb_engine)&quot;</span></div>
-<div class="line"><span class="lineno">  106</span>      &lt;&lt; std::endl;</div>
-<div class="line"><span class="lineno">  107</span>}</div>
-<div class="ttc" id="aclassRgpotPot_html_a36cfb3ad59f4bc1bd797a9ef8c033976"><div class="ttname"><a href="#a36cfb3ad59f4bc1bd797a9ef8c033976">RgpotPot::backend_</a></div><div class="ttdeci">std::string backend_</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8h_source.html#l00046">RgpotPot.h:46</a></div></div>
-<div class="ttc" id="aclassRgpotPot_html_a5dc28ce178c64749350e33931c191d34"><div class="ttname"><a href="#a5dc28ce178c64749350e33931c191d34">RgpotPot::impl_</a></div><div class="ttdeci">std::unique_ptr&lt; RGPotEngine &gt; impl_</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8h_source.html#l00045">RgpotPot.h:45</a></div></div>
+<div class="line"><span class="lineno">  101</span>  <span class="comment">// Dual-read [Metatomic] when RGPOT backend is metatomic</span></div>
+<div class="line"><span class="lineno">  102</span>  <span class="keywordflow">if</span> ((backend_lc.rfind(<span class="stringliteral">&quot;meta&quot;</span>, 0) == 0 || backend_lc == <span class="stringliteral">&quot;mta&quot;</span>) &amp;&amp;</div>
+<div class="line"><span class="lineno">  103</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb903d95fa45ace3ab69edcaa5cdd64">model_path</a>.empty())</div>
+<div class="line"><span class="lineno">  104</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb903d95fa45ace3ab69edcaa5cdd64">model_path</a> = p.<a class="code hl_function" href="classeonc_1_1Parameters.html#a021fc65b0ee76c5adaea0ecdd803e706">metatomic_options</a>().<a class="code hl_variable" href="structeonc_1_1metatomic__options__t.html#a16029a798ddf5bea97fdfa3854253a64">model_path</a>;</div>
+<div class="line"><span class="lineno">  105</span>  <span class="keywordflow">if</span> ((backend_lc.rfind(<span class="stringliteral">&quot;meta&quot;</span>, 0) == 0 || backend_lc == <span class="stringliteral">&quot;mta&quot;</span>) &amp;&amp;</div>
+<div class="line"><span class="lineno">  106</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb38b12db96f664dd9c0ca9b8b9bb8a">device</a> == <span class="stringliteral">&quot;cpu&quot;</span> &amp;&amp; !p.<a class="code hl_function" href="classeonc_1_1Parameters.html#a021fc65b0ee76c5adaea0ecdd803e706">metatomic_options</a>().<a class="code hl_variable" href="structeonc_1_1metatomic__options__t.html#a0d3458d1458652392970a0a5a42d5ec4">device</a>.empty())</div>
+<div class="line"><span class="lineno">  107</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb38b12db96f664dd9c0ca9b8b9bb8a">device</a> = p.<a class="code hl_function" href="classeonc_1_1Parameters.html#a021fc65b0ee76c5adaea0ecdd803e706">metatomic_options</a>().<a class="code hl_variable" href="structeonc_1_1metatomic__options__t.html#a0d3458d1458652392970a0a5a42d5ec4">device</a>;</div>
+<div class="line"><span class="lineno">  108</span> </div>
+<div class="line"><span class="lineno">  109</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a> = std::make_unique&lt;RGPotEngine&gt;(opt);</div>
+<div class="line"><span class="lineno">  110</span>  <a class="code hl_variable" href="#a36cfb3ad59f4bc1bd797a9ef8c033976">backend_</a> = <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;backend();</div>
+<div class="line"><span class="lineno">  111</span>  <a class="code hl_variable" href="#aa510f91f12397e12b96ccde20b0a3e9a">driver_</a> = <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;worldRank() == 0;</div>
+<div class="line"><span class="lineno">  112</span>  std::cout</div>
+<div class="line"><span class="lineno">  113</span>      &lt;&lt; <span class="stringliteral">&quot;RgpotPot: in-process rgpot backend=&quot;</span> &lt;&lt; <a class="code hl_variable" href="#a36cfb3ad59f4bc1bd797a9ef8c033976">backend_</a></div>
+<div class="line"><span class="lineno">  114</span>      &lt;&lt; <span class="stringliteral">&quot; (dlopen: libnwchemc/libcpmdc/libmetatomic_engine/libxtb_engine)&quot;</span></div>
+<div class="line"><span class="lineno">  115</span>      &lt;&lt; std::endl;</div>
+<div class="line"><span class="lineno">  116</span>  <span class="comment">// Finalize is registered first. The grouped-exit handler is next, and</span></div>
+<div class="line"><span class="lineno">  117</span>  <span class="comment">// the stop handler is last, so exit runs stop, then Finalize, then _Exit.</span></div>
+<div class="line"><span class="lineno">  118</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;finalizeMpiAtExit();</div>
+<div class="line"><span class="lineno">  119</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;armGroupedExit();</div>
+<div class="line"><span class="lineno">  120</span>  <a class="code hl_function" href="#ae87ceb0b49847c3ae9e3d0773dc49478">releaseWorkersAtExit</a>();</div>
+<div class="line"><span class="lineno">  121</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aa510f91f12397e12b96ccde20b0a3e9a">driver_</a>)</div>
+<div class="line"><span class="lineno">  122</span>    <a class="code hl_function" href="#acab2b31e6271c7e676fa1ce814df2c49">serveWorker</a>();</div>
+<div class="line"><span class="lineno">  123</span>}</div>
+<div class="ttc" id="aclassRgpotPot_html_a36cfb3ad59f4bc1bd797a9ef8c033976"><div class="ttname"><a href="#a36cfb3ad59f4bc1bd797a9ef8c033976">RgpotPot::backend_</a></div><div class="ttdeci">std::string backend_</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8h_source.html#l00077">RgpotPot.h:77</a></div></div>
+<div class="ttc" id="aclassRgpotPot_html_a5dc28ce178c64749350e33931c191d34"><div class="ttname"><a href="#a5dc28ce178c64749350e33931c191d34">RgpotPot::impl_</a></div><div class="ttdeci">std::unique_ptr&lt; RGPotEngine &gt; impl_</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8h_source.html#l00076">RgpotPot.h:76</a></div></div>
+<div class="ttc" id="aclassRgpotPot_html_aa510f91f12397e12b96ccde20b0a3e9a"><div class="ttname"><a href="#aa510f91f12397e12b96ccde20b0a3e9a">RgpotPot::driver_</a></div><div class="ttdeci">bool driver_</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8h_source.html#l00078">RgpotPot.h:78</a></div></div>
+<div class="ttc" id="aclassRgpotPot_html_acab2b31e6271c7e676fa1ce814df2c49"><div class="ttname"><a href="#acab2b31e6271c7e676fa1ce814df2c49">RgpotPot::serveWorker</a></div><div class="ttdeci">void serveWorker()</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00264">RgpotPot.cpp:264</a></div></div>
+<div class="ttc" id="aclassRgpotPot_html_ae87ceb0b49847c3ae9e3d0773dc49478"><div class="ttname"><a href="#ae87ceb0b49847c3ae9e3d0773dc49478">RgpotPot::releaseWorkersAtExit</a></div><div class="ttdeci">void releaseWorkersAtExit()</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00175">RgpotPot.cpp:175</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Parameters_html_a021fc65b0ee76c5adaea0ecdd803e706"><div class="ttname"><a href="classeonc_1_1Parameters.html#a021fc65b0ee76c5adaea0ecdd803e706">eonc::Parameters::metatomic_options</a></div><div class="ttdeci">const metatomic_options_t &amp; metatomic_options() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00160">ParametersAccess.cpp:160</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Parameters_html_a30580f564a20e0ddaa54990c279df0de"><div class="ttname"><a href="classeonc_1_1Parameters.html#a30580f564a20e0ddaa54990c279df0de">eonc::Parameters::xtb_options</a></div><div class="ttdeci">const xtb_options_t &amp; xtb_options() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00087">ParametersAccess.cpp:87</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Parameters_html_ad6988eb7a376b0aa777353ebbc0e253a"><div class="ttname"><a href="classeonc_1_1Parameters.html#ad6988eb7a376b0aa777353ebbc0e253a">eonc::Parameters::rgpot_options</a></div><div class="ttdeci">const rgpot_options_t &amp; rgpot_options() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00112">ParametersAccess.cpp:112</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a483ab577e2e85e858725c5ee67d8b470"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a483ab577e2e85e858725c5ee67d8b470">eonc::PotType::RGPOT</a></div><div class="ttdeci">@ RGPOT</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00070">BaseStructures.h:70</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_a05cbeb421682b503889b914da920aa08"><div class="ttname"><a href="structRGPotEngineOptions.html#a05cbeb421682b503889b914da920aa08">RGPotEngineOptions::xtb_uhf</a></div><div class="ttdeci">int xtb_uhf</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00036">RGPotEngine.h:36</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_a06e36eb8ac4cb37ce9691971cfb9d08e"><div class="ttname"><a href="structRGPotEngineOptions.html#a06e36eb8ac4cb37ce9691971cfb9d08e">RGPotEngineOptions::scf_type</a></div><div class="ttdeci">std::string scf_type</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00010">RGPotEngine.h:10</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_a0ff1f7f3fee0daa8b0017e4c470d4d1d"><div class="ttname"><a href="structRGPotEngineOptions.html#a0ff1f7f3fee0daa8b0017e4c470d4d1d">RGPotEngineOptions::check_consistency</a></div><div class="ttdeci">bool check_consistency</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00027">RGPotEngine.h:27</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_a1bc5ed5c8b23207f381d0bf2fe34f3bd"><div class="ttname"><a href="structRGPotEngineOptions.html#a1bc5ed5c8b23207f381d0bf2fe34f3bd">RGPotEngineOptions::title</a></div><div class="ttdeci">std::string title</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00018">RGPotEngine.h:18</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_a34d4c067f03853de114c4d33a8c45224"><div class="ttname"><a href="structRGPotEngineOptions.html#a34d4c067f03853de114c4d33a8c45224">RGPotEngineOptions::multiplicity</a></div><div class="ttdeci">int multiplicity</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00014">RGPotEngine.h:14</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_a3a761a3378f874ca2e41764d5797cace"><div class="ttname"><a href="structRGPotEngineOptions.html#a3a761a3378f874ca2e41764d5797cace">RGPotEngineOptions::xtb_paramset</a></div><div class="ttdeci">std::string xtb_paramset</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00031">RGPotEngine.h:31</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_a3cce8b08621932e92a7a234f47bfc314"><div class="ttname"><a href="structRGPotEngineOptions.html#a3cce8b08621932e92a7a234f47bfc314">RGPotEngineOptions::basis</a></div><div class="ttdeci">std::string basis</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00008">RGPotEngine.h:8</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_a464193c68f85bdf6ccecf730f959c505"><div class="ttname"><a href="structRGPotEngineOptions.html#a464193c68f85bdf6ccecf730f959c505">RGPotEngineOptions::scratch_dir</a></div><div class="ttdeci">std::string scratch_dir</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00020">RGPotEngine.h:20</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_a591d88061482f5def5fbc0e8ab7e2038"><div class="ttname"><a href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">RGPotEngineOptions::engine_path</a></div><div class="ttdeci">std::string engine_path</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00015">RGPotEngine.h:15</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_a684ca46659b5c02341399ba05cdd9a54"><div class="ttname"><a href="structRGPotEngineOptions.html#a684ca46659b5c02341399ba05cdd9a54">RGPotEngineOptions::cutoff_ry</a></div><div class="ttdeci">double cutoff_ry</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00012">RGPotEngine.h:12</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_a7b78f1852bb38cf382a601c4f4ebfb93"><div class="ttname"><a href="structRGPotEngineOptions.html#a7b78f1852bb38cf382a601c4f4ebfb93">RGPotEngineOptions::xtb_max_iterations</a></div><div class="ttdeci">int xtb_max_iterations</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00034">RGPotEngine.h:34</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_a7d02521ee1febe74307e5e611f710118"><div class="ttname"><a href="structRGPotEngineOptions.html#a7d02521ee1febe74307e5e611f710118">RGPotEngineOptions::memory_mb</a></div><div class="ttdeci">int memory_mb</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00019">RGPotEngine.h:19</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_a8dec74e532101f1ce4380e05489f6ad4"><div class="ttname"><a href="structRGPotEngineOptions.html#a8dec74e532101f1ce4380e05489f6ad4">RGPotEngineOptions::backend</a></div><div class="ttdeci">std::string backend</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00007">RGPotEngine.h:7</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_a91dc280179d43f152dd50fcbb8762795"><div class="ttname"><a href="structRGPotEngineOptions.html#a91dc280179d43f152dd50fcbb8762795">RGPotEngineOptions::extensions_directory</a></div><div class="ttdeci">std::string extensions_directory</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00026">RGPotEngine.h:26</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_a948f90c314c2e469761f2b706cf34dc0"><div class="ttname"><a href="structRGPotEngineOptions.html#a948f90c314c2e469761f2b706cf34dc0">RGPotEngineOptions::engine_library</a></div><div class="ttdeci">std::string engine_library</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00016">RGPotEngine.h:16</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_a9b5a6f95eb4a8016c265fc197664b7a0"><div class="ttname"><a href="structRGPotEngineOptions.html#a9b5a6f95eb4a8016c265fc197664b7a0">RGPotEngineOptions::xtb_electronic_temperature</a></div><div class="ttdeci">double xtb_electronic_temperature</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00033">RGPotEngine.h:33</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_a9c7eab255bd69147d5909fc6907655d3"><div class="ttname"><a href="structRGPotEngineOptions.html#a9c7eab255bd69147d5909fc6907655d3">RGPotEngineOptions::charge</a></div><div class="ttdeci">int charge</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00013">RGPotEngine.h:13</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_a9fa540f49d27738ce93c1e35fc223b79"><div class="ttname"><a href="structRGPotEngineOptions.html#a9fa540f49d27738ce93c1e35fc223b79">RGPotEngineOptions::functional</a></div><div class="ttdeci">std::string functional</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00011">RGPotEngine.h:11</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_aab407eb3f992b78720bcd735acd9b0bb"><div class="ttname"><a href="structRGPotEngineOptions.html#aab407eb3f992b78720bcd735acd9b0bb">RGPotEngineOptions::length_unit</a></div><div class="ttdeci">std::string length_unit</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00025">RGPotEngine.h:25</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_aadaadd6c54afcc8c57a879938761ac4f"><div class="ttname"><a href="structRGPotEngineOptions.html#aadaadd6c54afcc8c57a879938761ac4f">RGPotEngineOptions::torch_determinism_strict</a></div><div class="ttdeci">bool torch_determinism_strict</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00029">RGPotEngine.h:29</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_abfb38b12db96f664dd9c0ca9b8b9bb8a"><div class="ttname"><a href="structRGPotEngineOptions.html#abfb38b12db96f664dd9c0ca9b8b9bb8a">RGPotEngineOptions::device</a></div><div class="ttdeci">std::string device</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00024">RGPotEngine.h:24</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_abfb903d95fa45ace3ab69edcaa5cdd64"><div class="ttname"><a href="structRGPotEngineOptions.html#abfb903d95fa45ace3ab69edcaa5cdd64">RGPotEngineOptions::model_path</a></div><div class="ttdeci">std::string model_path</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00023">RGPotEngine.h:23</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_ac3f15f0a8041fdf192e328e2a35a7e37"><div class="ttname"><a href="structRGPotEngineOptions.html#ac3f15f0a8041fdf192e328e2a35a7e37">RGPotEngineOptions::xtb_accuracy</a></div><div class="ttdeci">double xtb_accuracy</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00032">RGPotEngine.h:32</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_ac640a410bf18066058185cdc8a7d1d6d"><div class="ttname"><a href="structRGPotEngineOptions.html#ac640a410bf18066058185cdc8a7d1d6d">RGPotEngineOptions::engine_root</a></div><div class="ttdeci">std::string engine_root</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00017">RGPotEngine.h:17</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_ad6c2d8b5cd78684e5bac6ae19dcdbe42"><div class="ttname"><a href="structRGPotEngineOptions.html#ad6c2d8b5cd78684e5bac6ae19dcdbe42">RGPotEngineOptions::uncertainty_threshold</a></div><div class="ttdeci">double uncertainty_threshold</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00028">RGPotEngine.h:28</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_ad922d97dfdfdabc9cb828a45247eb81a"><div class="ttname"><a href="structRGPotEngineOptions.html#ad922d97dfdfdabc9cb828a45247eb81a">RGPotEngineOptions::theory</a></div><div class="ttdeci">std::string theory</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00009">RGPotEngine.h:9</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_ada72be4995d9ae99c0ff2de2109ad237"><div class="ttname"><a href="structRGPotEngineOptions.html#ada72be4995d9ae99c0ff2de2109ad237">RGPotEngineOptions::input_block</a></div><div class="ttdeci">std::string input_block</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00021">RGPotEngine.h:21</a></div></div>
-<div class="ttc" id="astructRGPotEngineOptions_html_aece5083dcb8102323094779244c07f19"><div class="ttname"><a href="structRGPotEngineOptions.html#aece5083dcb8102323094779244c07f19">RGPotEngineOptions::xtb_charge</a></div><div class="ttdeci">double xtb_charge</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00035">RGPotEngine.h:35</a></div></div>
-<div class="ttc" id="astructeonc_1_1metatomic__options__t_html_a0d3458d1458652392970a0a5a42d5ec4"><div class="ttname"><a href="structeonc_1_1metatomic__options__t.html#a0d3458d1458652392970a0a5a42d5ec4">eonc::metatomic_options_t::device</a></div><div class="ttdeci">std::string device</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00408">ParametersOptions.h:408</a></div></div>
-<div class="ttc" id="astructeonc_1_1metatomic__options__t_html_a16029a798ddf5bea97fdfa3854253a64"><div class="ttname"><a href="structeonc_1_1metatomic__options__t.html#a16029a798ddf5bea97fdfa3854253a64">eonc::metatomic_options_t::model_path</a></div><div class="ttdeci">std::string model_path</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00407">ParametersOptions.h:407</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_a05cbeb421682b503889b914da920aa08"><div class="ttname"><a href="structRGPotEngineOptions.html#a05cbeb421682b503889b914da920aa08">RGPotEngineOptions::xtb_uhf</a></div><div class="ttdeci">int xtb_uhf</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00042">RGPotEngine.h:42</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_a06e36eb8ac4cb37ce9691971cfb9d08e"><div class="ttname"><a href="structRGPotEngineOptions.html#a06e36eb8ac4cb37ce9691971cfb9d08e">RGPotEngineOptions::scf_type</a></div><div class="ttdeci">std::string scf_type</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00011">RGPotEngine.h:11</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_a0ff1f7f3fee0daa8b0017e4c470d4d1d"><div class="ttname"><a href="structRGPotEngineOptions.html#a0ff1f7f3fee0daa8b0017e4c470d4d1d">RGPotEngineOptions::check_consistency</a></div><div class="ttdeci">bool check_consistency</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00033">RGPotEngine.h:33</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_a1bc5ed5c8b23207f381d0bf2fe34f3bd"><div class="ttname"><a href="structRGPotEngineOptions.html#a1bc5ed5c8b23207f381d0bf2fe34f3bd">RGPotEngineOptions::title</a></div><div class="ttdeci">std::string title</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00019">RGPotEngine.h:19</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_a34d4c067f03853de114c4d33a8c45224"><div class="ttname"><a href="structRGPotEngineOptions.html#a34d4c067f03853de114c4d33a8c45224">RGPotEngineOptions::multiplicity</a></div><div class="ttdeci">int multiplicity</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00015">RGPotEngine.h:15</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_a3a761a3378f874ca2e41764d5797cace"><div class="ttname"><a href="structRGPotEngineOptions.html#a3a761a3378f874ca2e41764d5797cace">RGPotEngineOptions::xtb_paramset</a></div><div class="ttdeci">std::string xtb_paramset</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00037">RGPotEngine.h:37</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_a3cce8b08621932e92a7a234f47bfc314"><div class="ttname"><a href="structRGPotEngineOptions.html#a3cce8b08621932e92a7a234f47bfc314">RGPotEngineOptions::basis</a></div><div class="ttdeci">std::string basis</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00009">RGPotEngine.h:9</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_a464193c68f85bdf6ccecf730f959c505"><div class="ttname"><a href="structRGPotEngineOptions.html#a464193c68f85bdf6ccecf730f959c505">RGPotEngineOptions::scratch_dir</a></div><div class="ttdeci">std::string scratch_dir</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00021">RGPotEngine.h:21</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_a4a902a596a803b78a6e51dd6225c822b"><div class="ttname"><a href="structRGPotEngineOptions.html#a4a902a596a803b78a6e51dd6225c822b">RGPotEngineOptions::ranks_per_image</a></div><div class="ttdeci">int ranks_per_image</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00027">RGPotEngine.h:27</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_a591d88061482f5def5fbc0e8ab7e2038"><div class="ttname"><a href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">RGPotEngineOptions::engine_path</a></div><div class="ttdeci">std::string engine_path</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00016">RGPotEngine.h:16</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_a684ca46659b5c02341399ba05cdd9a54"><div class="ttname"><a href="structRGPotEngineOptions.html#a684ca46659b5c02341399ba05cdd9a54">RGPotEngineOptions::cutoff_ry</a></div><div class="ttdeci">double cutoff_ry</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00013">RGPotEngine.h:13</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_a7ae5836006e7a47ea0b75091b293e354"><div class="ttname"><a href="structRGPotEngineOptions.html#a7ae5836006e7a47ea0b75091b293e354">RGPotEngineOptions::params_path</a></div><div class="ttdeci">std::string params_path</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00026">RGPotEngine.h:26</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_a7b78f1852bb38cf382a601c4f4ebfb93"><div class="ttname"><a href="structRGPotEngineOptions.html#a7b78f1852bb38cf382a601c4f4ebfb93">RGPotEngineOptions::xtb_max_iterations</a></div><div class="ttdeci">int xtb_max_iterations</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00040">RGPotEngine.h:40</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_a7d02521ee1febe74307e5e611f710118"><div class="ttname"><a href="structRGPotEngineOptions.html#a7d02521ee1febe74307e5e611f710118">RGPotEngineOptions::memory_mb</a></div><div class="ttdeci">int memory_mb</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00020">RGPotEngine.h:20</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_a8dec74e532101f1ce4380e05489f6ad4"><div class="ttname"><a href="structRGPotEngineOptions.html#a8dec74e532101f1ce4380e05489f6ad4">RGPotEngineOptions::backend</a></div><div class="ttdeci">std::string backend</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00008">RGPotEngine.h:8</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_a91dc280179d43f152dd50fcbb8762795"><div class="ttname"><a href="structRGPotEngineOptions.html#a91dc280179d43f152dd50fcbb8762795">RGPotEngineOptions::extensions_directory</a></div><div class="ttdeci">std::string extensions_directory</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00032">RGPotEngine.h:32</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_a948f90c314c2e469761f2b706cf34dc0"><div class="ttname"><a href="structRGPotEngineOptions.html#a948f90c314c2e469761f2b706cf34dc0">RGPotEngineOptions::engine_library</a></div><div class="ttdeci">std::string engine_library</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00017">RGPotEngine.h:17</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_a9b5a6f95eb4a8016c265fc197664b7a0"><div class="ttname"><a href="structRGPotEngineOptions.html#a9b5a6f95eb4a8016c265fc197664b7a0">RGPotEngineOptions::xtb_electronic_temperature</a></div><div class="ttdeci">double xtb_electronic_temperature</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00039">RGPotEngine.h:39</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_a9b869368677a0173ca2b5f52e7f6e2b9"><div class="ttname"><a href="structRGPotEngineOptions.html#a9b869368677a0173ca2b5f52e7f6e2b9">RGPotEngineOptions::permanent_dir</a></div><div class="ttdeci">std::string permanent_dir</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00024">RGPotEngine.h:24</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_a9c7eab255bd69147d5909fc6907655d3"><div class="ttname"><a href="structRGPotEngineOptions.html#a9c7eab255bd69147d5909fc6907655d3">RGPotEngineOptions::charge</a></div><div class="ttdeci">int charge</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00014">RGPotEngine.h:14</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_a9fa540f49d27738ce93c1e35fc223b79"><div class="ttname"><a href="structRGPotEngineOptions.html#a9fa540f49d27738ce93c1e35fc223b79">RGPotEngineOptions::functional</a></div><div class="ttdeci">std::string functional</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00012">RGPotEngine.h:12</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_aab407eb3f992b78720bcd735acd9b0bb"><div class="ttname"><a href="structRGPotEngineOptions.html#aab407eb3f992b78720bcd735acd9b0bb">RGPotEngineOptions::length_unit</a></div><div class="ttdeci">std::string length_unit</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00031">RGPotEngine.h:31</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_aadaadd6c54afcc8c57a879938761ac4f"><div class="ttname"><a href="structRGPotEngineOptions.html#aadaadd6c54afcc8c57a879938761ac4f">RGPotEngineOptions::torch_determinism_strict</a></div><div class="ttdeci">bool torch_determinism_strict</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00035">RGPotEngine.h:35</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_abfb38b12db96f664dd9c0ca9b8b9bb8a"><div class="ttname"><a href="structRGPotEngineOptions.html#abfb38b12db96f664dd9c0ca9b8b9bb8a">RGPotEngineOptions::device</a></div><div class="ttdeci">std::string device</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00030">RGPotEngine.h:30</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_abfb903d95fa45ace3ab69edcaa5cdd64"><div class="ttname"><a href="structRGPotEngineOptions.html#abfb903d95fa45ace3ab69edcaa5cdd64">RGPotEngineOptions::model_path</a></div><div class="ttdeci">std::string model_path</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00029">RGPotEngine.h:29</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_ac3f15f0a8041fdf192e328e2a35a7e37"><div class="ttname"><a href="structRGPotEngineOptions.html#ac3f15f0a8041fdf192e328e2a35a7e37">RGPotEngineOptions::xtb_accuracy</a></div><div class="ttdeci">double xtb_accuracy</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00038">RGPotEngine.h:38</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_ac640a410bf18066058185cdc8a7d1d6d"><div class="ttname"><a href="structRGPotEngineOptions.html#ac640a410bf18066058185cdc8a7d1d6d">RGPotEngineOptions::engine_root</a></div><div class="ttdeci">std::string engine_root</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00018">RGPotEngine.h:18</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_ad6c2d8b5cd78684e5bac6ae19dcdbe42"><div class="ttname"><a href="structRGPotEngineOptions.html#ad6c2d8b5cd78684e5bac6ae19dcdbe42">RGPotEngineOptions::uncertainty_threshold</a></div><div class="ttdeci">double uncertainty_threshold</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00034">RGPotEngine.h:34</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_ad922d97dfdfdabc9cb828a45247eb81a"><div class="ttname"><a href="structRGPotEngineOptions.html#ad922d97dfdfdabc9cb828a45247eb81a">RGPotEngineOptions::theory</a></div><div class="ttdeci">std::string theory</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00010">RGPotEngine.h:10</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_ada72be4995d9ae99c0ff2de2109ad237"><div class="ttname"><a href="structRGPotEngineOptions.html#ada72be4995d9ae99c0ff2de2109ad237">RGPotEngineOptions::input_block</a></div><div class="ttdeci">std::string input_block</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00023">RGPotEngine.h:23</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_aece5083dcb8102323094779244c07f19"><div class="ttname"><a href="structRGPotEngineOptions.html#aece5083dcb8102323094779244c07f19">RGPotEngineOptions::xtb_charge</a></div><div class="ttdeci">double xtb_charge</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00041">RGPotEngine.h:41</a></div></div>
+<div class="ttc" id="astructeonc_1_1metatomic__options__t_html_a0d3458d1458652392970a0a5a42d5ec4"><div class="ttname"><a href="structeonc_1_1metatomic__options__t.html#a0d3458d1458652392970a0a5a42d5ec4">eonc::metatomic_options_t::device</a></div><div class="ttdeci">std::string device</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00421">ParametersOptions.h:421</a></div></div>
+<div class="ttc" id="astructeonc_1_1metatomic__options__t_html_a16029a798ddf5bea97fdfa3854253a64"><div class="ttname"><a href="structeonc_1_1metatomic__options__t.html#a16029a798ddf5bea97fdfa3854253a64">eonc::metatomic_options_t::model_path</a></div><div class="ttdeci">std::string model_path</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00420">ParametersOptions.h:420</a></div></div>
 <div class="ttc" id="astructeonc_1_1xtb__options__t_html_a206f24650cc1424d68e592468c7a7a86"><div class="ttname"><a href="structeonc_1_1xtb__options__t.html#a206f24650cc1424d68e592468c7a7a86">eonc::xtb_options_t::paramset</a></div><div class="ttdeci">std::string paramset</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00088">ParametersOptions.h:88</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -494,11 +531,23 @@ Additional Inherited Members</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel default">default</span></span>  </td>
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00125">125</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  125</span>                    {</div>
+<div class="line"><span class="lineno">  126</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> grouped = <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a> &amp;&amp; <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorWorld() &gt; 1;</div>
+<div class="line"><span class="lineno">  127</span>  <a class="code hl_function" href="#ac0c86f60fd32c3cc3dfa34d6b0973ac3">stopAndDrop</a>();</div>
+<div class="line"><span class="lineno">  128</span>  <span class="comment">// ~CPMDPot dlcloses libcpmdc. On several ranks that runs Fortran</span></div>
+<div class="line"><span class="lineno">  129</span>  <span class="comment">// destructors while another rank may already be in MPI_Finalize.</span></div>
+<div class="line"><span class="lineno">  130</span>  <span class="comment">// The process reclaims the engine at _Exit.</span></div>
+<div class="line"><span class="lineno">  131</span>  <span class="keywordflow">if</span> (grouped)</div>
+<div class="line"><span class="lineno">  132</span>    (void)<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>.release();</div>
+<div class="line"><span class="lineno">  133</span>}</div>
+<div class="ttc" id="aclassRgpotPot_html_ac0c86f60fd32c3cc3dfa34d6b0973ac3"><div class="ttname"><a href="#ac0c86f60fd32c3cc3dfa34d6b0973ac3">RgpotPot::stopAndDrop</a></div><div class="ttdeci">void stopAndDrop()</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00158">RgpotPot.cpp:158</a></div></div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a05f803143dd2bba1c0c8149061f88151" name="a05f803143dd2bba1c0c8149061f88151"></a>
@@ -550,8 +599,164 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RgpotPot_8h_source.html#l00041">41</a> of file <a class="el" href="RgpotPot_8h_source.html">RgpotPot.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   41</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a36cfb3ad59f4bc1bd797a9ef8c033976">backend_</a>; }</div>
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8h_source.html#l00058">58</a> of file <a class="el" href="RgpotPot_8h_source.html">RgpotPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   58</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a36cfb3ad59f4bc1bd797a9ef8c033976">backend_</a>; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a84ebb25dd5ae5427213100da6d17ec9b" name="a84ebb25dd5ae5427213100da6d17ec9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84ebb25dd5ae5427213100da6d17ec9b">&#9670;&#160;</a></span>computeBatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RgpotPot::computeBatch </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>nSystems</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>nAtoms</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *const *</td>          <td class="paramname"><span class="paramname"><em>positions</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *const *</td>          <td class="paramname"><span class="paramname"><em>atomicNrs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *const *</td>          <td class="paramname"><span class="paramname"><em>forces</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>energies</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *const *</td>          <td class="paramname"><span class="paramname"><em>boxes</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::int64_t *</td>          <td class="paramname"><span class="paramname"><em>owners</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00225">225</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  229</span>                                                      {</div>
+<div class="line"><span class="lineno">  230</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> groups = <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorGroups();</div>
+<div class="line"><span class="lineno">  231</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> mine = <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorIndex();</div>
+<div class="line"><span class="lineno">  232</span>  <span class="keyword">auto</span> ownerOf = [&amp;](<span class="keywordtype">long</span> j) {</div>
+<div class="line"><span class="lineno">  233</span>    <span class="keyword">const</span> std::int64_t <span class="keywordtype">id</span> = owners &amp;&amp; owners[j] &gt;= 0 ? owners[j] : j;</div>
+<div class="line"><span class="lineno">  234</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<span class="keywordtype">id</span> % groups);</div>
+<div class="line"><span class="lineno">  235</span>  };</div>
+<div class="line"><span class="lineno">  236</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorWorld() &lt;= 1) {</div>
+<div class="line"><span class="lineno">  237</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nSystems; j++)</div>
+<div class="line"><span class="lineno">  238</span>      <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;force(nAtoms, positions[j], atomicNrs[j], forces[j], &amp;energies[j],</div>
+<div class="line"><span class="lineno">  239</span>                   boxes[j]);</div>
+<div class="line"><span class="lineno">  240</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  241</span>  }</div>
+<div class="line"><span class="lineno">  242</span>  std::vector&lt;char&gt; ok(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nSystems), 1);</div>
+<div class="line"><span class="lineno">  243</span>  std::vector&lt;std::string&gt; errors(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nSystems));</div>
+<div class="line"><span class="lineno">  244</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nSystems; j++) {</div>
+<div class="line"><span class="lineno">  245</span>    <span class="keywordflow">if</span> (ownerOf(j) == mine)</div>
+<div class="line"><span class="lineno">  246</span>      ok[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] =</div>
+<div class="line"><span class="lineno">  247</span>          try_force(*<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>, nAtoms, positions[j], atomicNrs[j], forces[j],</div>
+<div class="line"><span class="lineno">  248</span>                    &amp;energies[j], boxes[j], errors[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)]);</div>
+<div class="line"><span class="lineno">  249</span>  }</div>
+<div class="line"><span class="lineno">  250</span>  <span class="comment">// Every share runs before any rank raises, so all ranks leave together.</span></div>
+<div class="line"><span class="lineno">  251</span>  <span class="keywordtype">long</span> failed = -1;</div>
+<div class="line"><span class="lineno">  252</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nSystems; j++) {</div>
+<div class="line"><span class="lineno">  253</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> owner = ownerOf(j);</div>
+<div class="line"><span class="lineno">  254</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;shareResult(owner, nAtoms, forces[j], &amp;energies[j],</div>
+<div class="line"><span class="lineno">  255</span>                            ok[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] != 0,</div>
+<div class="line"><span class="lineno">  256</span>                            errors[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)]) &amp;&amp;</div>
+<div class="line"><span class="lineno">  257</span>        failed &lt; 0)</div>
+<div class="line"><span class="lineno">  258</span>      failed = j;</div>
+<div class="line"><span class="lineno">  259</span>  }</div>
+<div class="line"><span class="lineno">  260</span>  <span class="keywordflow">if</span> (failed &gt;= 0)</div>
+<div class="line"><span class="lineno">  261</span>    raise_failure(failed, ownerOf(failed), errors[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(failed)]);</div>
+<div class="line"><span class="lineno">  262</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a3ce8766468e542b17c1703095c995dfe" name="a3ce8766468e542b17c1703095c995dfe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ce8766468e542b17c1703095c995dfe">&#9670;&#160;</a></span>computeSingle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RgpotPot::computeSingle </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>N</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>R</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *</td>          <td class="paramname"><span class="paramname"><em>atomicNrs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>F</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>U</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>box</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00214">214</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  215</span>                                                                      {</div>
+<div class="line"><span class="lineno">  216</span>  <span class="comment">// Group 0 computes; its first rank&#39;s result reaches every rank.</span></div>
+<div class="line"><span class="lineno">  217</span>  std::string <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a>;</div>
+<div class="line"><span class="lineno">  218</span>  <span class="keywordtype">bool</span> ok = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  219</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorIndex() == 0)</div>
+<div class="line"><span class="lineno">  220</span>    ok = try_force(*<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>, N, R, atomicNrs, F, U, box, error);</div>
+<div class="line"><span class="lineno">  221</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;shareResult(0, N, F, U, ok, error))</div>
+<div class="line"><span class="lineno">  222</span>    raise_failure(0, 0, error);</div>
+<div class="line"><span class="lineno">  223</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1dynlib_html_a793e2f7806f01afcc170a5b8054f4e6f"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">eonc::dynlib::error</a></div><div class="ttdeci">std::string error()</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00082">DynLib.h:82</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -578,8 +783,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00111">111</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  111</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a> &amp;&amp; <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;available(); }</div>
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00135">135</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  135</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a> &amp;&amp; <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;available(); }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -637,11 +842,201 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">eonc::Potential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00113">113</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  114</span>                                                                     {</div>
-<div class="line"><span class="lineno">  115</span>  (void)variance;</div>
-<div class="line"><span class="lineno">  116</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;force(N, R, atomicNrs, F, U, box);</div>
-<div class="line"><span class="lineno">  117</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00317">317</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  318</span>                                                                     {</div>
+<div class="line"><span class="lineno">  319</span>  <span class="keywordflow">if</span> (variance)</div>
+<div class="line"><span class="lineno">  320</span>    *variance = 0.0;</div>
+<div class="line"><span class="lineno">  321</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorWorld() &lt;= 1) {</div>
+<div class="line"><span class="lineno">  322</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;force(N, R, atomicNrs, F, U, box);</div>
+<div class="line"><span class="lineno">  323</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  324</span>  }</div>
+<div class="line"><span class="lineno">  325</span>  std::int64_t hdr[3] = {kSingle, N, 1};</div>
+<div class="line"><span class="lineno">  326</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(hdr, <span class="keyword">sizeof</span>(hdr));</div>
+<div class="line"><span class="lineno">  327</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(<span class="keyword">const_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(R), 3 * N * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
+<div class="line"><span class="lineno">  328</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(<span class="keyword">const_cast&lt;</span><span class="keywordtype">int</span> *<span class="keyword">&gt;</span>(atomicNrs), N * <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div>
+<div class="line"><span class="lineno">  329</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(<span class="keyword">const_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(box), 9 * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
+<div class="line"><span class="lineno">  330</span>  <span class="comment">// Before the evaluation, so a failure that ends the job still stops</span></div>
+<div class="line"><span class="lineno">  331</span>  <span class="comment">// the workers.</span></div>
+<div class="line"><span class="lineno">  332</span>  <a class="code hl_function" href="#ae87ceb0b49847c3ae9e3d0773dc49478">releaseWorkersAtExit</a>();</div>
+<div class="line"><span class="lineno">  333</span>  <a class="code hl_function" href="#a3ce8766468e542b17c1703095c995dfe">computeSingle</a>(N, R, atomicNrs, F, U, box);</div>
+<div class="line"><span class="lineno">  334</span>}</div>
+<div class="ttc" id="aclassRgpotPot_html_a3ce8766468e542b17c1703095c995dfe"><div class="ttname"><a href="#a3ce8766468e542b17c1703095c995dfe">RgpotPot::computeSingle</a></div><div class="ttdeci">void computeSingle(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box)</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00214">RgpotPot.cpp:214</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a6fee72a91f6354157274b33d3341d385" name="a6fee72a91f6354157274b33d3341d385"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fee72a91f6354157274b33d3341d385">&#9670;&#160;</a></span>forceBatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RgpotPot::forceBatch </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>nSystems</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>nAtoms</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *const *</td>          <td class="paramname"><span class="paramname"><em>positions</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *const *</td>          <td class="paramname"><span class="paramname"><em>atomicNrs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *const *</td>          <td class="paramname"><span class="paramname"><em>forces</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>energies</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>variances</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *const *</td>          <td class="paramname"><span class="paramname"><em>boxes</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#aa66e1416134ff55639a6d20a34e3c1c1">eonc::Potential</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00340">340</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  344</span>                                                      {</div>
+<div class="line"><span class="lineno">  345</span>  <a class="code hl_function" href="#a674bf337af44b7f429fb39cc8aa38995">forceBatchOwned</a>(nSystems, nAtoms, positions, atomicNrs, forces, energies,</div>
+<div class="line"><span class="lineno">  346</span>                  variances, boxes, <span class="keyword">nullptr</span>);</div>
+<div class="line"><span class="lineno">  347</span>}</div>
+<div class="ttc" id="aclassRgpotPot_html_a674bf337af44b7f429fb39cc8aa38995"><div class="ttname"><a href="#a674bf337af44b7f429fb39cc8aa38995">RgpotPot::forceBatchOwned</a></div><div class="ttdeci">void forceBatchOwned(long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes, const long *owners) override</div><div class="ttdoc">System j runs on group owners[j] mod G when owners is given (an owner below zero falls back to j),...</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00349">RgpotPot.cpp:349</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a674bf337af44b7f429fb39cc8aa38995" name="a674bf337af44b7f429fb39cc8aa38995"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a674bf337af44b7f429fb39cc8aa38995">&#9670;&#160;</a></span>forceBatchOwned()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RgpotPot::forceBatchOwned </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>nSystems</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>nAtoms</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *const *</td>          <td class="paramname"><span class="paramname"><em>positions</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *const *</td>          <td class="paramname"><span class="paramname"><em>atomicNrs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *const *</td>          <td class="paramname"><span class="paramname"><em>forces</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>energies</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>variances</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *const *</td>          <td class="paramname"><span class="paramname"><em>boxes</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const long *</td>          <td class="paramname"><span class="paramname"><em>owners</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>System j runs on group owners[j] mod G when owners is given (an owner below zero falls back to j), so a NEB image keeps its group across partial band updates. </p>
+
+<p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#a44b9979c8df31acc86cfbe87dec05d26">eonc::Potential</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00349">349</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  354</span>                                                   {</div>
+<div class="line"><span class="lineno">  355</span>  std::vector&lt;std::int64_t&gt; ids(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nSystems), -1);</div>
+<div class="line"><span class="lineno">  356</span>  <span class="keywordflow">if</span> (owners) {</div>
+<div class="line"><span class="lineno">  357</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nSystems; j++)</div>
+<div class="line"><span class="lineno">  358</span>      ids[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = owners[j];</div>
+<div class="line"><span class="lineno">  359</span>  }</div>
+<div class="line"><span class="lineno">  360</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorWorld() &gt; 1) {</div>
+<div class="line"><span class="lineno">  361</span>    std::int64_t hdr[3] = {kBatch, nAtoms, nSystems};</div>
+<div class="line"><span class="lineno">  362</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(hdr, <span class="keyword">sizeof</span>(hdr));</div>
+<div class="line"><span class="lineno">  363</span>    std::vector&lt;double&gt; R(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(3 * nAtoms * nSystems));</div>
+<div class="line"><span class="lineno">  364</span>    std::vector&lt;int&gt; Z(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nAtoms * nSystems));</div>
+<div class="line"><span class="lineno">  365</span>    std::vector&lt;double&gt; box(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(9 * nSystems));</div>
+<div class="line"><span class="lineno">  366</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nSystems; j++) {</div>
+<div class="line"><span class="lineno">  367</span>      std::copy(positions[j], positions[j] + 3 * nAtoms,</div>
+<div class="line"><span class="lineno">  368</span>                R.begin() + 3 * nAtoms * j);</div>
+<div class="line"><span class="lineno">  369</span>      std::copy(atomicNrs[j], atomicNrs[j] + nAtoms, Z.begin() + nAtoms * j);</div>
+<div class="line"><span class="lineno">  370</span>      std::copy(boxes[j], boxes[j] + 9, box.begin() + 9 * j);</div>
+<div class="line"><span class="lineno">  371</span>    }</div>
+<div class="line"><span class="lineno">  372</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(R.data(), R.size() * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
+<div class="line"><span class="lineno">  373</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(Z.data(), Z.size() * <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div>
+<div class="line"><span class="lineno">  374</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(box.data(), box.size() * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
+<div class="line"><span class="lineno">  375</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(ids.data(), ids.size() * <span class="keyword">sizeof</span>(std::int64_t));</div>
+<div class="line"><span class="lineno">  376</span>  }</div>
+<div class="line"><span class="lineno">  377</span>  <a class="code hl_function" href="#ae87ceb0b49847c3ae9e3d0773dc49478">releaseWorkersAtExit</a>();</div>
+<div class="line"><span class="lineno">  378</span>  <a class="code hl_function" href="#a84ebb25dd5ae5427213100da6d17ec9b">computeBatch</a>(nSystems, nAtoms, positions, atomicNrs, forces, energies, boxes,</div>
+<div class="line"><span class="lineno">  379</span>               ids.data());</div>
+<div class="line"><span class="lineno">  380</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nSystems; j++) {</div>
+<div class="line"><span class="lineno">  381</span>    <span class="keywordflow">if</span> (variances)</div>
+<div class="line"><span class="lineno">  382</span>      variances[j] = 0.0;</div>
+<div class="line"><span class="lineno">  383</span>    <a class="code hl_variable" href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">forceCallCounter</a>++;</div>
+<div class="line"><span class="lineno">  384</span>    <a class="code hl_function" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">eonc::PotRegistry::get</a>().<a class="code hl_function" href="classeonc_1_1PotRegistry.html#a46a3c876ed01abc8123cd88bc3aae8da">on_force_call</a>(<a class="code hl_variable" href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">ptype</a>);</div>
+<div class="line"><span class="lineno">  385</span>  }</div>
+<div class="line"><span class="lineno">  386</span>}</div>
+<div class="ttc" id="aclassRgpotPot_html_a84ebb25dd5ae5427213100da6d17ec9b"><div class="ttname"><a href="#a84ebb25dd5ae5427213100da6d17ec9b">RgpotPot::computeBatch</a></div><div class="ttdeci">void computeBatch(long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, const double *const *boxes, const std::int64_t *owners)</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00225">RgpotPot.cpp:225</a></div></div>
+<div class="ttc" id="aclasseonc_1_1PotRegistry_html_a46a3c876ed01abc8123cd88bc3aae8da"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a46a3c876ed01abc8123cd88bc3aae8da">eonc::PotRegistry::on_force_call</a></div><div class="ttdeci">void on_force_call(PotType t) noexcept override</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00088">PotRegistry.cpp:88</a></div></div>
+<div class="ttc" id="aclasseonc_1_1PotRegistry_html_a5d307a4845d9c0d6d16031a5a637e23b"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">eonc::PotRegistry::get</a></div><div class="ttdeci">static PotRegistry &amp; get() noexcept</div><div class="ttdoc">Process-lifetime singleton.</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00050">PotRegistry.cpp:50</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_a2ae7cca425e3d69d2825c58d1c7704eb"><div class="ttname"><a href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">eonc::Potential::forceCallCounter</a></div><div class="ttdeci">std::atomic&lt; size_t &gt; forceCallCounter</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00053">Potential.h:53</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_ac102f249b890f52d06d96feff8f2047a"><div class="ttname"><a href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">eonc::Potential::ptype</a></div><div class="ttdeci">PotType ptype</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00044">Potential.h:44</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -703,6 +1098,47 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a id="ae87ceb0b49847c3ae9e3d0773dc49478" name="ae87ceb0b49847c3ae9e3d0773dc49478"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae87ceb0b49847c3ae9e3d0773dc49478">&#9670;&#160;</a></span>releaseWorkersAtExit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RgpotPot::releaseWorkersAtExit </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00175">175</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  175</span>                                    {</div>
+<div class="line"><span class="lineno">  176</span>  <span class="keywordflow">if</span> (g_driver || !<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a> || <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorWorld() &lt;= 1)</div>
+<div class="line"><span class="lineno">  177</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  178</span>  <span class="comment">// Runs before the MPI_Finalize handler registered in the constructor.</span></div>
+<div class="line"><span class="lineno">  179</span>  <span class="comment">// After a failed engine call the workers can sit in a collective that</span></div>
+<div class="line"><span class="lineno">  180</span>  <span class="comment">// the stop broadcast never meets; the grouped exit handler aborts the</span></div>
+<div class="line"><span class="lineno">  181</span>  <span class="comment">// world instead.</span></div>
+<div class="line"><span class="lineno">  182</span>  g_driver = <span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">  183</span>  std::atexit([] {</div>
+<div class="line"><span class="lineno">  184</span>    <span class="keywordflow">if</span> (g_driver &amp;&amp; !<a class="code hl_function" href="classRGPotEngine.html#a2a1f696175dbc4d665d2e9a8d173504c">RGPotEngine::mpiAbortRequested</a>())</div>
+<div class="line"><span class="lineno">  185</span>      g_driver-&gt;stopAndDrop();</div>
+<div class="line"><span class="lineno">  186</span>  });</div>
+<div class="line"><span class="lineno">  187</span>}</div>
+<div class="ttc" id="aclassRGPotEngine_html_a2a1f696175dbc4d665d2e9a8d173504c"><div class="ttname"><a href="classRGPotEngine.html#a2a1f696175dbc4d665d2e9a8d173504c">RGPotEngine::mpiAbortRequested</a></div><div class="ttdeci">static bool mpiAbortRequested() noexcept</div><div class="ttdoc">True once rgpot asked for MPI_Abort at exit in this process.</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8cpp_source.html#l00436">RGPotEngine.cpp:436</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="a30439012a21f7aeae6a23c1cf66b1fc8" name="a30439012a21f7aeae6a23c1cf66b1fc8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a30439012a21f7aeae6a23c1cf66b1fc8">&#9670;&#160;</a></span>requiresIsolatedMoleculeLayout()</h2>
 
@@ -730,14 +1166,235 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#ac4c9e9deaa0e73fa27ff97b6d6acad98">eonc::Potential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="RgpotPot_8h_source.html#l00038">38</a> of file <a class="el" href="RgpotPot_8h_source.html">RgpotPot.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   38</span>                                                                              {</div>
-<div class="line"><span class="lineno">   39</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a36cfb3ad59f4bc1bd797a9ef8c033976">backend_</a> == <span class="stringliteral">&quot;nwchemc&quot;</span>;</div>
-<div class="line"><span class="lineno">   40</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8h_source.html#l00055">55</a> of file <a class="el" href="RgpotPot_8h_source.html">RgpotPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   55</span>                                                                              {</div>
+<div class="line"><span class="lineno">   56</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a36cfb3ad59f4bc1bd797a9ef8c033976">backend_</a> == <span class="stringliteral">&quot;nwchemc&quot;</span>;</div>
+<div class="line"><span class="lineno">   57</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ae6c65b972ba91b1c5b4512fc03474e04" name="ae6c65b972ba91b1c5b4512fc03474e04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6c65b972ba91b1c5b4512fc03474e04">&#9670;&#160;</a></span>sendStop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RgpotPot::sendStop </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00148">148</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  148</span>                        {</div>
+<div class="line"><span class="lineno">  149</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a> || !<a class="code hl_variable" href="#aa510f91f12397e12b96ccde20b0a3e9a">driver_</a> || <a class="code hl_variable" href="#a79abcbb0876456ed0944f6b6446ba07f">stopped_</a> || <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorWorld() &lt;= 1)</div>
+<div class="line"><span class="lineno">  150</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  151</span>  std::int64_t hdr[3] = {kStop, 0, 0};</div>
+<div class="line"><span class="lineno">  152</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(hdr, <span class="keyword">sizeof</span>(hdr));</div>
+<div class="line"><span class="lineno">  153</span>  <a class="code hl_variable" href="#a79abcbb0876456ed0944f6b6446ba07f">stopped_</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  154</span>  <span class="keywordflow">if</span> (g_driver == <span class="keyword">this</span>)</div>
+<div class="line"><span class="lineno">  155</span>    g_driver = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  156</span>}</div>
+<div class="ttc" id="aclassRgpotPot_html_a79abcbb0876456ed0944f6b6446ba07f"><div class="ttname"><a href="#a79abcbb0876456ed0944f6b6446ba07f">RgpotPot::stopped_</a></div><div class="ttdeci">bool stopped_</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8h_source.html#l00079">RgpotPot.h:79</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="acab2b31e6271c7e676fa1ce814df2c49" name="acab2b31e6271c7e676fa1ce814df2c49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acab2b31e6271c7e676fa1ce814df2c49">&#9670;&#160;</a></span>serveWorker()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RgpotPot::serveWorker </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00264">264</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  264</span>                           {</div>
+<div class="line"><span class="lineno">  265</span>  <span class="keywordflow">for</span> (;;) {</div>
+<div class="line"><span class="lineno">  266</span>    std::int64_t hdr[3] = {kStop, 0, 0};</div>
+<div class="line"><span class="lineno">  267</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(hdr, <span class="keyword">sizeof</span>(hdr));</div>
+<div class="line"><span class="lineno">  268</span>    <span class="keywordflow">if</span> (hdr[0] == kStop) {</div>
+<div class="line"><span class="lineno">  269</span>      <span class="comment">// Drop CPMD, wait until the driver has dropped it too, then exit 0.</span></div>
+<div class="line"><span class="lineno">  270</span>      <span class="comment">// MPI_Finalize is collective and runs from the exit handler.</span></div>
+<div class="line"><span class="lineno">  271</span>      <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a8bcb7ba8f038e0c27f7464f7790121de">dropped_</a>) {</div>
+<div class="line"><span class="lineno">  272</span>        <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;shutdownModule();</div>
+<div class="line"><span class="lineno">  273</span>        <a class="code hl_variable" href="#a8bcb7ba8f038e0c27f7464f7790121de">dropped_</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  274</span>      }</div>
+<div class="line"><span class="lineno">  275</span>      std::int64_t ack[3] = {kDown, 0, 0};</div>
+<div class="line"><span class="lineno">  276</span>      <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(ack, <span class="keyword">sizeof</span>(ack));</div>
+<div class="line"><span class="lineno">  277</span>      std::exit(0);</div>
+<div class="line"><span class="lineno">  278</span>    }</div>
+<div class="line"><span class="lineno">  279</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> n = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(hdr[1]);</div>
+<div class="line"><span class="lineno">  280</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> m = hdr[0] == kBatch ? <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(hdr[2]) : 1;</div>
+<div class="line"><span class="lineno">  281</span>    std::vector&lt;double&gt; R(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(3 * n * m));</div>
+<div class="line"><span class="lineno">  282</span>    std::vector&lt;int&gt; Z(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(n * m));</div>
+<div class="line"><span class="lineno">  283</span>    std::vector&lt;double&gt; box(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(9 * m));</div>
+<div class="line"><span class="lineno">  284</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(R.data(), R.size() * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
+<div class="line"><span class="lineno">  285</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(Z.data(), Z.size() * <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div>
+<div class="line"><span class="lineno">  286</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(box.data(), box.size() * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
+<div class="line"><span class="lineno">  287</span>    std::vector&lt;std::int64_t&gt; ids(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(m), -1);</div>
+<div class="line"><span class="lineno">  288</span>    <span class="keywordflow">if</span> (hdr[0] == kBatch)</div>
+<div class="line"><span class="lineno">  289</span>      <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(ids.data(), ids.size() * <span class="keyword">sizeof</span>(std::int64_t));</div>
+<div class="line"><span class="lineno">  290</span>    std::vector&lt;double&gt; F(R.size()), U(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(m));</div>
+<div class="line"><span class="lineno">  291</span>    <span class="comment">// A failed request raised on the driver too; the driver decides</span></div>
+<div class="line"><span class="lineno">  292</span>    <span class="comment">// whether the job goes on, so a worker keeps serving.</span></div>
+<div class="line"><span class="lineno">  293</span>    <span class="keywordflow">if</span> (hdr[0] == kSingle) {</div>
+<div class="line"><span class="lineno">  294</span>      <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  295</span>        <a class="code hl_function" href="#a3ce8766468e542b17c1703095c995dfe">computeSingle</a>(n, R.data(), Z.data(), F.data(), U.data(), box.data());</div>
+<div class="line"><span class="lineno">  296</span>      } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::runtime_error &amp;) {</div>
+<div class="line"><span class="lineno">  297</span>      }</div>
+<div class="line"><span class="lineno">  298</span>      <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  299</span>    }</div>
+<div class="line"><span class="lineno">  300</span>    std::vector&lt;const double *&gt; pos(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(m)), bx(pos.size());</div>
+<div class="line"><span class="lineno">  301</span>    std::vector&lt;const int *&gt; nrs(pos.size());</div>
+<div class="line"><span class="lineno">  302</span>    std::vector&lt;double *&gt; frc(pos.size());</div>
+<div class="line"><span class="lineno">  303</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; m; j++) {</div>
+<div class="line"><span class="lineno">  304</span>      pos[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = R.data() + 3 * n * j;</div>
+<div class="line"><span class="lineno">  305</span>      nrs[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = Z.data() + n * j;</div>
+<div class="line"><span class="lineno">  306</span>      frc[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = F.data() + 3 * n * j;</div>
+<div class="line"><span class="lineno">  307</span>      bx[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = box.data() + 9 * j;</div>
+<div class="line"><span class="lineno">  308</span>    }</div>
+<div class="line"><span class="lineno">  309</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  310</span>      <a class="code hl_function" href="#a84ebb25dd5ae5427213100da6d17ec9b">computeBatch</a>(m, n, pos.data(), nrs.data(), frc.data(), U.data(),</div>
+<div class="line"><span class="lineno">  311</span>                   bx.data(), ids.data());</div>
+<div class="line"><span class="lineno">  312</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::runtime_error &amp;) {</div>
+<div class="line"><span class="lineno">  313</span>    }</div>
+<div class="line"><span class="lineno">  314</span>  }</div>
+<div class="line"><span class="lineno">  315</span>}</div>
+<div class="ttc" id="aclassRgpotPot_html_a8bcb7ba8f038e0c27f7464f7790121de"><div class="ttname"><a href="#a8bcb7ba8f038e0c27f7464f7790121de">RgpotPot::dropped_</a></div><div class="ttdeci">bool dropped_</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8h_source.html#l00080">RgpotPot.h:80</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac0c86f60fd32c3cc3dfa34d6b0973ac3" name="ac0c86f60fd32c3cc3dfa34d6b0973ac3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0c86f60fd32c3cc3dfa34d6b0973ac3">&#9670;&#160;</a></span>stopAndDrop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RgpotPot::stopAndDrop </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00158">158</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  158</span>                           {</div>
+<div class="line"><span class="lineno">  159</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>)</div>
+<div class="line"><span class="lineno">  160</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  161</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> grouped = <a class="code hl_variable" href="#aa510f91f12397e12b96ccde20b0a3e9a">driver_</a> &amp;&amp; <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorWorld() &gt; 1;</div>
+<div class="line"><span class="lineno">  162</span>  <span class="keywordflow">if</span> (grouped &amp;&amp; !<a class="code hl_variable" href="#a79abcbb0876456ed0944f6b6446ba07f">stopped_</a>)</div>
+<div class="line"><span class="lineno">  163</span>    <a class="code hl_function" href="#ae6c65b972ba91b1c5b4512fc03474e04">sendStop</a>();</div>
+<div class="line"><span class="lineno">  164</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a8bcb7ba8f038e0c27f7464f7790121de">dropped_</a>) {</div>
+<div class="line"><span class="lineno">  165</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;shutdownModule();</div>
+<div class="line"><span class="lineno">  166</span>    <a class="code hl_variable" href="#a8bcb7ba8f038e0c27f7464f7790121de">dropped_</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  167</span>  }</div>
+<div class="line"><span class="lineno">  168</span>  <span class="keywordflow">if</span> (grouped &amp;&amp; !<a class="code hl_variable" href="#a98ce20269344bb0ad538f70c46b050b6">acked_</a>) {</div>
+<div class="line"><span class="lineno">  169</span>    std::int64_t hdr[3] = {kDown, 0, 0};</div>
+<div class="line"><span class="lineno">  170</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(hdr, <span class="keyword">sizeof</span>(hdr));</div>
+<div class="line"><span class="lineno">  171</span>    <a class="code hl_variable" href="#a98ce20269344bb0ad538f70c46b050b6">acked_</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  172</span>  }</div>
+<div class="line"><span class="lineno">  173</span>}</div>
+<div class="ttc" id="aclassRgpotPot_html_a98ce20269344bb0ad538f70c46b050b6"><div class="ttname"><a href="#a98ce20269344bb0ad538f70c46b050b6">RgpotPot::acked_</a></div><div class="ttdeci">bool acked_</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8h_source.html#l00081">RgpotPot.h:81</a></div></div>
+<div class="ttc" id="aclassRgpotPot_html_ae6c65b972ba91b1c5b4512fc03474e04"><div class="ttname"><a href="#ae6c65b972ba91b1c5b4512fc03474e04">RgpotPot::sendStop</a></div><div class="ttdeci">void sendStop()</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00148">RgpotPot.cpp:148</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="acde3cf6eb2174f747609504d1d717d80" name="acde3cf6eb2174f747609504d1d717d80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acde3cf6eb2174f747609504d1d717d80">&#9670;&#160;</a></span>supportsBatchEvaluation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool RgpotPot::supportsBatchEvaluation </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>With cpmdc calculator groups ([<a class="el" href="classRgpotPot.html" title="Potential backed by rgpot NWChemPot / CPMDPot (in-process dlopen of libnwchemc / libcpmdc).">RgpotPot</a>] ranks_per_image), a batch is spread over the groups: system j runs on group j mod G, then every rank receives every result, so all ranks keep the same band. </p>
+
+<p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#a2d8781e3cbea888f88b7523c5d00bc43">eonc::Potential</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00336">336</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  336</span>                                                      {</div>
+<div class="line"><span class="lineno">  337</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a> &amp;&amp; <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorGroups() &gt; 1;</div>
+<div class="line"><span class="lineno">  338</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a98ce20269344bb0ad538f70c46b050b6" name="a98ce20269344bb0ad538f70c46b050b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98ce20269344bb0ad538f70c46b050b6">&#9670;&#160;</a></span>acked_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool RgpotPot::acked_ {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8h_source.html#l00081">81</a> of file <a class="el" href="RgpotPot_8h_source.html">RgpotPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   81</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="a36cfb3ad59f4bc1bd797a9ef8c033976" name="a36cfb3ad59f4bc1bd797a9ef8c033976"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a36cfb3ad59f4bc1bd797a9ef8c033976">&#9670;&#160;</a></span>backend_</h2>
 
@@ -758,8 +1415,58 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RgpotPot_8h_source.html#l00046">46</a> of file <a class="el" href="RgpotPot_8h_source.html">RgpotPot.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8h_source.html#l00077">77</a> of file <a class="el" href="RgpotPot_8h_source.html">RgpotPot.h</a>.</p>
 
+</div>
+</div>
+<a id="aa510f91f12397e12b96ccde20b0a3e9a" name="aa510f91f12397e12b96ccde20b0a3e9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa510f91f12397e12b96ccde20b0a3e9a">&#9670;&#160;</a></span>driver_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool RgpotPot::driver_ {true}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8h_source.html#l00078">78</a> of file <a class="el" href="RgpotPot_8h_source.html">RgpotPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   78</span>{<span class="keyword">true</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8bcb7ba8f038e0c27f7464f7790121de" name="a8bcb7ba8f038e0c27f7464f7790121de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bcb7ba8f038e0c27f7464f7790121de">&#9670;&#160;</a></span>dropped_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool RgpotPot::dropped_ {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8h_source.html#l00080">80</a> of file <a class="el" href="RgpotPot_8h_source.html">RgpotPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   80</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a5dc28ce178c64749350e33931c191d34" name="a5dc28ce178c64749350e33931c191d34"></a>
@@ -782,8 +1489,33 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RgpotPot_8h_source.html#l00045">45</a> of file <a class="el" href="RgpotPot_8h_source.html">RgpotPot.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8h_source.html#l00076">76</a> of file <a class="el" href="RgpotPot_8h_source.html">RgpotPot.h</a>.</p>
 
+</div>
+</div>
+<a id="a79abcbb0876456ed0944f6b6446ba07f" name="a79abcbb0876456ed0944f6b6446ba07f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79abcbb0876456ed0944f6b6446ba07f">&#9670;&#160;</a></span>stopped_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool RgpotPot::stopped_ {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8h_source.html#l00079">79</a> of file <a class="el" href="RgpotPot_8h_source.html">RgpotPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   79</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>

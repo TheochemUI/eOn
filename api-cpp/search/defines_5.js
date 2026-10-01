@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['nparams_0',['NPARAMS',['../potentials_2EAM_2Parameters_8h.html#ae468832efa6adf5e9a96cabd8f878b47',1,'Parameters.h']]]
+  ['lammps_5fsmallbig_0',['LAMMPS_SMALLBIG',['../library_8h.html#ad03951957166c33afc872342e6271f94',1,'library.h']]]
 ];

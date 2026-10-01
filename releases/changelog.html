@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="teal" data-content_root="../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Changelog - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="[v3.4.0] - 2026-09-29" href="v3.4.0/index.html" /><link rel="prev" title="Releases" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Changelog - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="[v3.5.0] - 2026-10-01" href="v3.5.0/index.html" /><link rel="prev" title="Releases" href="index.html" />
       <link rel="canonical" href="https://eondocs.org/releases/changelog.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
@@ -130,6 +130,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/lanczos.html">Lanczos</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/akmc.html">Adaptive kinetic Monte Carlo</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/saddle_search.html">Saddle search</a></li>
@@ -198,7 +199,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
@@ -216,6 +216,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.process_catalog.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_catalog</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 </ul>
@@ -224,6 +225,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Releases</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="v3.5.0/index.html">[v3.5.0] - 2026-10-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="v3.5.0/release-notes.html">eOn 3.5.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="v3.4.0/release-notes.html">eOn 3.4.0</a></li>
 </ul>
@@ -2391,10 +2396,10 @@ module, covering theory, keywords, and practical examples.</p></li>
         <span>Previous</span><div class="title">Releases</div></div>
     </a>
   </div><div class="navigation-next">
-    <a href="v3.4.0/index.html">
+    <a href="v3.5.0/index.html">
       <div class="page-info">
         <span>Next</span>
-        <div class="title">[v3.4.0] - 2026-09-29</div>
+        <div class="title">[v3.5.0] - 2026-10-01</div>
       </div>
       <i class="i-lucide chevron-right"></i>
     </a>

@@ -130,5 +130,6 @@ var searchData=
   ['loadsym_127',['loadSym',['../namespaceeonc_1_1dynlib.html#aef33f6c06053a92bd50e4aca3a326b58',1,'eonc::dynlib']]],
   ['logfreqs_128',['logFreqs',['../namespaceeonc_1_1Prefactor.html#a1119f028d017c1522a8167d2180cf19e',1,'eonc::Prefactor']]],
   ['lorrotation_129',['LORRotation',['../classeonc_1_1LORRotation.html#a90cb2ca1fb245331fbfa3934b8b7debd',1,'eonc::LORRotation']]],
-  ['lowesteigenmode_130',['LowestEigenmode',['../classeonc_1_1LowestEigenmode.html#af5c7e532e7e02cb38d6f27c348c52473',1,'eonc::LowestEigenmode']]]
+  ['lowercopy_130',['lowerCopy',['../namespaceeonc_1_1config.html#a2ef1b7671c207da1d86c4843492e1e0f',1,'eonc::config']]],
+  ['lowesteigenmode_131',['LowestEigenmode',['../classeonc_1_1LowestEigenmode.html#af5c7e532e7e02cb38d6f27c348c52473',1,'eonc::LowestEigenmode']]]
 ];

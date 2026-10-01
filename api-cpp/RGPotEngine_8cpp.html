@@ -238,17 +238,27 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('RGPotEngine_8c
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="RGPotEngine_8h_source.html">eon/potentials/Rgpot/RGPotEngine.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="CpmdMessage_8h_source.html">eon/potentials/Rgpot/CpmdMessage.h</a>&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
 <code>#include &lt;array&gt;</code><br />
 <code>#include &lt;cctype&gt;</code><br />
 <code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;cstdio&gt;</code><br />
 <code>#include &lt;cstdlib&gt;</code><br />
+<code>#include &lt;cstring&gt;</code><br />
+<code>#include &lt;fstream&gt;</code><br />
+<code>#include &lt;mutex&gt;</code><br />
 <code>#include &lt;stdexcept&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
 <code>#include &lt;tuple&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
+<code>#include &lt;dlfcn.h&gt;</code><br />
 <code>#include &lt;capnp/message.h&gt;</code><br />
+<code>#include &lt;capnp/serialize.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="MetatomicEngineLoader_8h_source.html">eon/potentials/Rgpot/MetatomicEngineLoader.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="XTBEngineLoader_8h_source.html">eon/potentials/Rgpot/XTBEngineLoader.h</a>&quot;</code><br />
 <code>#include &quot;rgpot/CPMDPot/CPMDPot.hpp&quot;</code><br />
+<code>#include &quot;rgpot/CalculatorGroup.hpp&quot;</code><br />
 <code>#include &quot;rgpot/NWChemPot/NWChemPot.hpp&quot;</code><br />
 <code>#include &quot;rgpot/rpc/Potentials.capnp.h&quot;</code><br />
 </div>
@@ -257,7 +267,36 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('RGPotEngine_8c
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:RGPotEngine_3A_3AImpl" id="r_RGPotEngine_3A_3AImpl"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structRGPotEngine_1_1Impl.html">RGPotEngine::Impl</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-namespaces" class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:eon" id="r_eon"><td class="memItemLeft">namespace &#160;</td><td class="memItemRight"><a class="el" href="namespaceeon.html">eon</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-define-members" class="groupheader"><a id="define-members" name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:a369266c24eacffb87046522897a570d5" id="r_a369266c24eacffb87046522897a570d5"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a369266c24eacffb87046522897a570d5">_GNU_SOURCE</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a88599a5d2e9211bdc4d4614035f4e73a" id="r_a88599a5d2e9211bdc4d4614035f4e73a"><td class="memItemLeft">::CPMDParams::Builder&#160;</td><td class="memItemRight"><a class="el" href="namespaceeon.html#a88599a5d2e9211bdc4d4614035f4e73a">eon::fillCpmdParams</a> (::capnp::MallocMessageBuilder &amp;msg, const <a class="el" href="structRGPotEngineOptions.html">RGPotEngineOptions</a> &amp;opt)</td></tr>
 </table>
+<a name="doc-define-members" id="doc-define-members"></a><h2 id="header-doc-define-members" class="groupheader">Macro Definition Documentation</h2>
+<a id="a369266c24eacffb87046522897a570d5" name="a369266c24eacffb87046522897a570d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a369266c24eacffb87046522897a570d5">&#9670;&#160;</a></span>_GNU_SOURCE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define _GNU_SOURCE</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00006">6</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

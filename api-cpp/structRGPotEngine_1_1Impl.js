@@ -8,7 +8,11 @@ var structRGPotEngine_1_1Impl =
     ] ],
     [ "backend", "structRGPotEngine_1_1Impl.html#a1fc7f7f80c5a60c12c37eee2f1f36405", null ],
     [ "cpmd", "structRGPotEngine_1_1Impl.html#ab5fc03b001f334f35d55ebd1705d4001", null ],
+    [ "group", "structRGPotEngine_1_1Impl.html#ab8552331b87d90c27f3eae3e6a029147", null ],
+    [ "groups", "structRGPotEngine_1_1Impl.html#af32a65a10d9966d31903bded78e273ae", null ],
     [ "metatomic", "structRGPotEngine_1_1Impl.html#ac192a28548fe1882bae71024e607a142", null ],
+    [ "module_down", "structRGPotEngine_1_1Impl.html#a1594ef56a1a235eeeec6c52a9908ac7e", null ],
     [ "nwchem", "structRGPotEngine_1_1Impl.html#a2aff3cedd85db0cb57248ead9b05330b", null ],
+    [ "world", "structRGPotEngine_1_1Impl.html#ab2a10df4f31790f5ce0ca9cb675ab8d5", null ],
     [ "xtb", "structRGPotEngine_1_1Impl.html#ad06f3ce3dd61e180abaff7a8665953e3", null ]
 ];

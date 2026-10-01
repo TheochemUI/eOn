@@ -38,6 +38,8 @@ var structeonc_1_1ParametersLoadAccess =
     [ "hessian_options", "structeonc_1_1ParametersLoadAccess.html#a5c626b1fcdf60ad4f69ec26855683fdf", null ],
     [ "hyperdynamics_options", "structeonc_1_1ParametersLoadAccess.html#a18252b6ee22aa298fe83cc2dfdc6b902", null ],
     [ "hyperdynamics_options", "structeonc_1_1ParametersLoadAccess.html#a09880ff34c3b6b1664059c00fc3359f4", null ],
+    [ "instanton_options", "structeonc_1_1ParametersLoadAccess.html#ace514ee0b88100959f500098503d8545", null ],
+    [ "instanton_options", "structeonc_1_1ParametersLoadAccess.html#a657572b7120d85ea63d05b1daeed5d1c", null ],
     [ "ira_options", "structeonc_1_1ParametersLoadAccess.html#aa9c7f81c117c6064852618f8e0fbe086", null ],
     [ "ira_options", "structeonc_1_1ParametersLoadAccess.html#a41223e8d6e48d596fa4f0678d58f6f9b", null ],
     [ "lanczos_options", "structeonc_1_1ParametersLoadAccess.html#a314439aad5eb6e49909e0347b68c460d", null ],

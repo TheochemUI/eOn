@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="teal" data-content_root="../../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>eon.displace - eOn</title><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="eon.basinhopping" href="eon.basinhopping.html" /><link rel="prev" title="eon.eon_kdb" href="eon.eon_kdb.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>eon.displace - eOn</title><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="eon.basinhopping" href="eon.basinhopping.html" /><link rel="prev" title="eon.communicator_inprocess" href="eon.communicator_inprocess.html" />
       <link rel="canonical" href="https://eondocs.org/apidocs/eon/eon.displace.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
@@ -130,6 +130,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lanczos.html">Lanczos</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/akmc.html">Adaptive kinetic Monte Carlo</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/saddle_search.html">Saddle search</a></li>
@@ -198,7 +199,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
@@ -216,6 +216,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.process_catalog.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_catalog</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 </ul>
@@ -224,6 +225,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v3.5.0/index.html">[v3.5.0] - 2026-10-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v3.5.0/release-notes.html">eOn 3.5.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
 </ul>
@@ -699,10 +704,10 @@ stdev_rotation: rotational standard deviation (radian)molecules: list of indices
   </svg>
   <span>Back to top</span>
 </button><div class="navigation flex print:hidden"><div class="navigation-prev">
-    <a href="eon.eon_kdb.html">
+    <a href="eon.communicator_inprocess.html">
       <i class="i-lucide chevron-left"></i>
       <div class="page-info">
-        <span>Previous</span><div class="title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></div></div>
+        <span>Previous</span><div class="title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></div></div>
     </a>
   </div><div class="navigation-next">
     <a href="eon.basinhopping.html">

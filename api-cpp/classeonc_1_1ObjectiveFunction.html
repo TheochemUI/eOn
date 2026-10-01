@@ -268,6 +268,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:adb5aa05d56bdb3f5eca741688f4f4e2d" id="r_adb5aa05d56bdb3f5eca741688f4f4e2d"><td class="memItemLeft">virtual double&#160;</td><td class="memItemRight"><a class="el" href="#adb5aa05d56bdb3f5eca741688f4f4e2d">getConvergence</a> ()=0</td></tr>
 <tr class="memitem:a71d9f4b931fccd6ae74a054a92ab1fa9" id="r_a71d9f4b931fccd6ae74a054a92ab1fa9"><td class="memItemLeft">virtual VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a71d9f4b931fccd6ae74a054a92ab1fa9">difference</a> (const VectorXd &amp;a, const VectorXd &amp;b)=0</td></tr>
 <tr class="memitem:a1b411c5e39f354a9ec1058e84c172e54" id="r_a1b411c5e39f354a9ec1058e84c172e54"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a1b411c5e39f354a9ec1058e84c172e54">supportsFiniteDifferenceCurvature</a> () const</td></tr>
+<tr class="memitem:aa52b364b8d8eb6fcb6cddc409aaa6691" id="r_aa52b364b8d8eb6fcb6cddc409aaa6691"><td class="memItemLeft">virtual std::optional&lt; double &gt;&#160;</td><td class="memItemRight"><a class="el" href="#aa52b364b8d8eb6fcb6cddc409aaa6691">knownCurvature</a> () const</td></tr>
 <tr class="memitem:af3271abcddd3c2ec4808a5b3f25e4b77" id="r_af3271abcddd3c2ec4808a5b3f25e4b77"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#af3271abcddd3c2ec4808a5b3f25e4b77">minimumImage</a> (Eigen::Ref&lt; Eigen::Vector3d &gt;) const</td></tr>
 <tr class="memitem:a8f2672688adbd931070f00fa29b72be8" id="r_a8f2672688adbd931070f00fa29b72be8"><td class="memItemLeft">virtual VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a8f2672688adbd931070f00fa29b72be8">getMasses</a> () const</td></tr>
 <tr class="memitem:a9026e74111d5f55078d5c5f8a47501aa" id="r_a9026e74111d5f55078d5c5f8a47501aa"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a9026e74111d5f55078d5c5f8a47501aa">getPeriodic</a> () const</td></tr>
@@ -278,7 +279,7 @@ Protected Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00018">18</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00020">20</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a7539f6688c5b9e68654bf0a8762e8c34" name="a7539f6688c5b9e68654bf0a8762e8c34"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7539f6688c5b9e68654bf0a8762e8c34">&#9670;&#160;</a></span>ObjectiveFunction()</h2>
@@ -303,9 +304,9 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00023">23</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   23</span>: <a class="code hl_variable" href="#a9d74eea28a1c17f36202adff592ca871">params</a>{paramsPassed} {}</div>
-<div class="ttc" id="aclasseonc_1_1ObjectiveFunction_html_a9d74eea28a1c17f36202adff592ca871"><div class="ttname"><a href="#a9d74eea28a1c17f36202adff592ca871">eonc::ObjectiveFunction::params</a></div><div class="ttdeci">const Parameters &amp; params</div><div class="ttdef"><b>Definition</b> <a href="ObjectiveFunction_8h_source.html#l00020">ObjectiveFunction.h:20</a></div></div>
+<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00025">25</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   25</span>: <a class="code hl_variable" href="#a9d74eea28a1c17f36202adff592ca871">params</a>{paramsPassed} {}</div>
+<div class="ttc" id="aclasseonc_1_1ObjectiveFunction_html_a9d74eea28a1c17f36202adff592ca871"><div class="ttname"><a href="#a9d74eea28a1c17f36202adff592ca871">eonc::ObjectiveFunction::params</a></div><div class="ttdeci">const Parameters &amp; params</div><div class="ttdef"><b>Definition</b> <a href="ObjectiveFunction_8h_source.html#l00022">ObjectiveFunction.h:22</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -332,8 +333,8 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00024">24</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   24</span>{}</div>
+<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00026">26</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   26</span>{}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -500,8 +501,8 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00039">39</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   39</span>{ <span class="keywordflow">return</span> VectorXd(); }</div>
+<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00045">45</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   45</span>{ <span class="keywordflow">return</span> VectorXd(); }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -528,8 +529,8 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00041">41</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   41</span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
+<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00047">47</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   47</span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -587,6 +588,36 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="aa52b364b8d8eb6fcb6cddc409aaa6691" name="aa52b364b8d8eb6fcb6cddc409aaa6691"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa52b364b8d8eb6fcb6cddc409aaa6691">&#9670;&#160;</a></span>knownCurvature()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::optional&lt; double &gt; eonc::ObjectiveFunction::knownCurvature </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classeonc_1_1MinModeObjectiveFunction.html#aae1a7855290a56b2b53965b9c3d738b9">eonc::MinModeObjectiveFunction</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00040">40</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   40</span>{ <span class="keywordflow">return</span> std::nullopt; }</div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="af3271abcddd3c2ec4808a5b3f25e4b77" name="af3271abcddd3c2ec4808a5b3f25e4b77"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af3271abcddd3c2ec4808a5b3f25e4b77">&#9670;&#160;</a></span>minimumImage()</h2>
 
@@ -610,8 +641,8 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00037">37</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   37</span>{}</div>
+<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00043">43</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   43</span>{}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -667,8 +698,8 @@ Protected Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#a68ab21a59496d0ed70471e5b8a3ee30e">eonc::NEBObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00034">34</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   34</span>{ <span class="keywordflow">return</span> <span class="keyword">true</span>; }</div>
+<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00036">36</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   36</span>{ <span class="keywordflow">return</span> <span class="keyword">true</span>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -693,7 +724,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00020">20</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObjectiveFunction_8h_source.html#l00022">22</a> of file <a class="el" href="ObjectiveFunction_8h_source.html">ObjectiveFunction.h</a>.</p>
 
 </div>
 </div>

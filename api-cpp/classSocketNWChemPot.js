@@ -3,6 +3,8 @@ var classSocketNWChemPot =
     [ "SocketNWChemPot", "classSocketNWChemPot.html#ae8b1ca5d862bdd8b468d128e02d5e243", null ],
     [ "~SocketNWChemPot", "classSocketNWChemPot.html#a1363323fdfd2f4bd6f9d0399e048bc8d", null ],
     [ "accept_connection", "classSocketNWChemPot.html#adbdd7fd9ee94aa095ac8ebeab8d95a23", null ],
+    [ "cauchyStress", "classSocketNWChemPot.html#a8f5d875bdc7874566820f95b4d2ec761", null ],
+    [ "computesStress", "classSocketNWChemPot.html#a1706b2a804564c68e8ebec53075636f1", null ],
     [ "drop_connection", "classSocketNWChemPot.html#aceab721040534b74e7ba44b180715089", null ],
     [ "force", "classSocketNWChemPot.html#acb7244cf6eebf04c3281f29bec72ef3a", null ],
     [ "forceOnce", "classSocketNWChemPot.html#af427d30239468667d8373b61bea65477", null ],
@@ -18,6 +20,7 @@ var classSocketNWChemPot =
     [ "BOHR_IN_ANGSTROM", "classSocketNWChemPot.html#a6cb616db95ee89e4151324a390b05475", null ],
     [ "conn_fd", "classSocketNWChemPot.html#a996912da8b9c93ff9d7780b8e2fefd0a", null ],
     [ "HARTREE_IN_EV", "classSocketNWChemPot.html#a8114bf311fc165c49690f46be6c1204d", null ],
+    [ "haveStress_", "classSocketNWChemPot.html#a7fc6b689f1c7b6e9cb280131b36f64f2", null ],
     [ "is_connected", "classSocketNWChemPot.html#a3c4adc6cb487b8db1b8946f947516632", null ],
     [ "listen_fd", "classSocketNWChemPot.html#ac929c876cd575b94deadd57d03643bb2", null ],
     [ "make_template_input", "classSocketNWChemPot.html#a84411a28ac06ad1eb79aff65735e7c73", null ],
@@ -26,6 +29,7 @@ var classSocketNWChemPot =
     [ "nwchem_settings", "classSocketNWChemPot.html#ab64177e411e7c5903a7b36eac2da7d14", null ],
     [ "port", "classSocketNWChemPot.html#a34a3aac8f7efda2afbaeb53e2a065d5d", null ],
     [ "server_address", "classSocketNWChemPot.html#a618578cfee4b63a3aa54d5d341224c6f", null ],
+    [ "stress_", "classSocketNWChemPot.html#a971d1197e7f4468055f433e2f3517f19", null ],
     [ "unix_socket_basename", "classSocketNWChemPot.html#a0e5882a48a022834731b35b6e58242f3", null ],
     [ "unix_socket_mode", "classSocketNWChemPot.html#ac8cce3d488b95fd9e928f644f1291914", null ]
 ];

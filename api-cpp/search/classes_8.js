@@ -12,11 +12,15 @@ var searchData=
   ['improveddimer_9',['ImprovedDimer',['../classeonc_1_1ImprovedDimer.html',1,'eonc']]],
   ['improvedtangent_10',['ImprovedTangent',['../structeonc_1_1neb_1_1ImprovedTangent.html',1,'eonc::neb']]],
   ['instancerecord_11',['InstanceRecord',['../structeonc_1_1PotRegistry_1_1InstanceRecord.html',1,'eonc::PotRegistry']]],
-  ['ipluginloader_12',['IPluginLoader',['../classeonc_1_1IPluginLoader.html',1,'eonc']]],
-  ['ipotregistry_13',['IPotRegistry',['../classeonc_1_1IPotRegistry.html',1,'eonc']]],
-  ['ira_5foptions_5ft_14',['ira_options_t',['../structeonc_1_1ira__options__t.html',1,'eonc']]],
-  ['iracompare_15',['IRACompare',['../classeonc_1_1IRACompare.html',1,'eonc']]],
-  ['iraresource_16',['IRAResource',['../classeonc_1_1IRAResource.html',1,'eonc']]],
-  ['istream_17',['istream',['../classistream.html',1,'']]],
-  ['iterator_18',['iterator',['../classset_1_1iterator.html',1,'set&lt; K &gt;::iterator'],['../classstring_1_1iterator.html',1,'string::iterator'],['../classvector_1_1iterator.html',1,'vector&lt; T &gt;::iterator']]]
+  ['instanton_12',['Instanton',['../structeonc_1_1tunneling_1_1Instanton.html',1,'eonc::tunneling']]],
+  ['instanton_5foptions_5ft_13',['instanton_options_t',['../structeonc_1_1instanton__options__t.html',1,'eonc']]],
+  ['instantonjob_14',['InstantonJob',['../classeonc_1_1InstantonJob.html',1,'eonc']]],
+  ['instantonoptions_15',['InstantonOptions',['../structeonc_1_1tunneling_1_1InstantonOptions.html',1,'eonc::tunneling']]],
+  ['ipluginloader_16',['IPluginLoader',['../classeonc_1_1IPluginLoader.html',1,'eonc']]],
+  ['ipotregistry_17',['IPotRegistry',['../classeonc_1_1IPotRegistry.html',1,'eonc']]],
+  ['ira_5foptions_5ft_18',['ira_options_t',['../structeonc_1_1ira__options__t.html',1,'eonc']]],
+  ['iracompare_19',['IRACompare',['../classeonc_1_1IRACompare.html',1,'eonc']]],
+  ['iraresource_20',['IRAResource',['../classeonc_1_1IRAResource.html',1,'eonc']]],
+  ['istream_21',['istream',['../classistream.html',1,'']]],
+  ['iterator_22',['iterator',['../classset_1_1iterator.html',1,'set&lt; K &gt;::iterator'],['../classstring_1_1iterator.html',1,'string::iterator'],['../classvector_1_1iterator.html',1,'vector&lt; T &gt;::iterator']]]
 ];

@@ -1,0 +1,855 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: /home/runner/work/eOn/eOn/client/PIQTSTJob.cpp Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn 3.2.0</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('PIQTSTJob_8cpp_source.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">PIQTSTJob.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PIQTSTJob_8cpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">/*</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">** This file is part of eOn.</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">**</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">** SPDX-License-Identifier: BSD-3-Clause</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">**</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">** Copyright (c) 2010--present, eOn Development Team</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">** All rights reserved.</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">**</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">** Repo:</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">** https://github.com/TheochemUI/eOn</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">*/</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="ConFileIO_8h.html">eon/ConFileIO.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="EonLogger_8h.html">eon/EonLogger.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="Matter_8h.html">eon/Matter.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="PIQTST_8h.html">eon/PIQTST.h</a>&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="code" href="Parameters_8h.html">eon/Parameters.h</a>&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;<a class="code" href="Tunneling_8h.html">eon/Tunneling.h</a>&quot;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;Eigen/Eigenvalues&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &lt;fstream&gt;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &lt;iomanip&gt;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &lt;sstream&gt;</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#include &lt;stdexcept&gt;</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc_1_1piqtst.html">eonc::piqtst</a> {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="}">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="namespaceeonc_1_1piqtst.html#af62d0dd293ea266ba7f2e194e28157f8">   31</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeonc_1_1piqtst.html#af62d0dd293ea266ba7f2e194e28157f8">validateOptions</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeonc_1_1instanton__options__t.html">instanton_options_t</a> &amp;o) {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>  <span class="keywordflow">if</span> (o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#a6d7d235d5f376e6d681909a8bc6ca4a4">pi_planes</a> &lt; 0) {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;[Instanton] pi_planes must not be negative&quot;</span>);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>  }</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>  <span class="keywordflow">if</span> (o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#a6d7d235d5f376e6d681909a8bc6ca4a4">pi_planes</a> == 0) {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>  }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>  <span class="keywordflow">if</span> (o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#a61a8da13917f23ebd5177b2598907851">mode</a> != <span class="stringliteral">&quot;rate&quot;</span>) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;[Instanton] pi_planes needs mode = rate&quot;</span>);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>  }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>  <span class="keywordflow">if</span> (o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#a6d7d235d5f376e6d681909a8bc6ca4a4">pi_planes</a> &lt; 2) {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="stringliteral">&quot;[Instanton] pi_planes must be 0 or at least 2&quot;</span>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>  }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>  <span class="keywordflow">if</span> (o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#ac3a44d4dea3d10267afbe44787d59aa5">pi_beads</a> &lt; 1) {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;[Instanton] pi_beads must be positive&quot;</span>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  }</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  <span class="keywordflow">if</span> (o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#a0bf7e376ee91702aa7d56aa101c4b90b">pi_equilibration_steps</a> &lt; 0 || o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#ac8a3dceb616c1f3ad9abf1103d826f2d">pi_sampling_steps</a> &lt; 20) {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="stringliteral">&quot;[Instanton] pi_equilibration_steps must not be negative and &quot;</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="stringliteral">&quot;pi_sampling_steps must be at least 20 (ten blocks of two)&quot;</span>);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>  }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  <span class="keywordflow">if</span> (!(o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#aed3d650baba80662531c9d596e73c635">pi_time_step</a> &gt; 0.0) || !(o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#acfcb3930c6c60f6b9ef24dbd1ee7b33d">pi_pile_tau</a> &gt; 0.0) ||</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>      !(o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#ab082a6ace0c4a0a5224130fe0f1a4b17">pi_pile_scale</a> &gt; 0.0)) {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;[Instanton] pi_time_step, pi_pile_tau and &quot;</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                                <span class="stringliteral">&quot;pi_pile_scale must be positive&quot;</span>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>  }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>  <span class="keywordflow">if</span> (o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#a0bfe825b48ab3687d00207c3a252b411">pi_seed</a> &lt; 0) {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;[Instanton] pi_seed must not be negative&quot;</span>);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>  }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>  <span class="keywordflow">if</span> (o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#a0418c85fd4c65d577777b0cf845543e2">pi_thermostat</a> != <span class="stringliteral">&quot;pile&quot;</span> &amp;&amp; o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#a0418c85fd4c65d577777b0cf845543e2">pi_thermostat</a> != <span class="stringliteral">&quot;piglet&quot;</span>) {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="stringliteral">&quot;[Instanton] pi_thermostat must be pile or piglet, not &quot;</span> +</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#a0418c85fd4c65d577777b0cf845543e2">pi_thermostat</a>);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>  }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>  <span class="keywordflow">if</span> (o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#a0418c85fd4c65d577777b0cf845543e2">pi_thermostat</a> == <span class="stringliteral">&quot;piglet&quot;</span> &amp;&amp; o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#ac3a44d4dea3d10267afbe44787d59aa5">pi_beads</a> &gt; 1 &amp;&amp; o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#aeb75919dd555e29b4550a9cf3caee6e2">pi_gle_file</a>.empty()) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="stringliteral">&quot;[Instanton] pi_thermostat = piglet needs pi_gle_file&quot;</span>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>  }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>  <span class="keywordflow">if</span> (o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#a0780a3a5150e1503223d9ed813ef592f">pi_direction</a> != <span class="stringliteral">&quot;mode&quot;</span> &amp;&amp; o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#a0780a3a5150e1503223d9ed813ef592f">pi_direction</a> != <span class="stringliteral">&quot;line&quot;</span>) {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="stringliteral">&quot;[Instanton] pi_direction must be mode or line, not &quot;</span> + o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#a0780a3a5150e1503223d9ed813ef592f">pi_direction</a>);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>  }</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>  <span class="keywordflow">if</span> (!(o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#a47a03ebd2863e5baefe4aeac61efb4e2">pi_reactant_extent</a> &gt;= 0.0)) {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="stringliteral">&quot;[Instanton] pi_reactant_extent must not be negative&quot;</span>);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>  }</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>  <span class="keywordflow">if</span> (o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#acc9d657eaa2571d30bb3d5e22fde0d74">pi_recrossing_parents</a> &lt; 0 || o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#acc9d657eaa2571d30bb3d5e22fde0d74">pi_recrossing_parents</a> == 1) {</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="stringliteral">&quot;[Instanton] pi_recrossing_parents must be 0 or at least 2&quot;</span>);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>  }</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>  <span class="keywordflow">if</span> (o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#acc9d657eaa2571d30bb3d5e22fde0d74">pi_recrossing_parents</a> == 0) {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>  }</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>  <span class="keywordflow">if</span> (o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#a202591a87ba321cdc4b3f4b1cdef2c16">pi_recrossing_children</a> &lt; 1 || o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#a77f34d0586383ddba203b83085f35ce3">pi_recrossing_spacing</a> &lt; 1) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;[Instanton] pi_recrossing_children and &quot;</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>                                <span class="stringliteral">&quot;pi_recrossing_spacing must be positive&quot;</span>);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>  }</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>  <span class="keywordflow">if</span> (!(o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#a9d7f850fb5a68c059013565e7d6d6af8">pi_recrossing_time</a> &gt;= 4.0 * o.<a class="code hl_variable" href="structeonc_1_1instanton__options__t.html#aed3d650baba80662531c9d596e73c635">pi_time_step</a>)) {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="stringliteral">&quot;[Instanton] pi_recrossing_time must be at least four pi_time_step&quot;</span>);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>  }</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>}</div>
+</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="keyword">struct </span>Embedding {</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>  std::vector&lt;long&gt; freeAtoms;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>  std::vector&lt;double&gt; sqrtMass;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>  <span class="keywordtype">long</span> atoms{0};</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>  <span class="keyword">explicit</span> Embedding(<span class="keyword">const</span> Matter &amp;reactant)</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>      : atoms(reactant.numberOfAtoms()) {</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; atoms; ++i) {</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>      <span class="keywordflow">if</span> (!reactant.getFixed(i)) {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        freeAtoms.push_back(i);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        sqrtMass.push_back(std::sqrt(reactant.getMass(i)));</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>      }</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    }</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>  }</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>  <span class="keywordtype">long</span> dimension()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> 3 * <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(freeAtoms.size()); }</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>  VectorXd full(<span class="keyword">const</span> VectorXd &amp;q)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    VectorXd out = VectorXd::Zero(3 * atoms);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> k = 0; k &lt; freeAtoms.size(); ++k) {</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> c = 0; c &lt; 3; ++c) {</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        out(3 * freeAtoms[k] + c) = q(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(3 * k) + c);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>      }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    }</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>  }</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>  VectorXd cartesian(<span class="keyword">const</span> VectorXd &amp;reference, <span class="keyword">const</span> VectorXd &amp;q)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    VectorXd x = reference;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> k = 0; k &lt; freeAtoms.size(); ++k) {</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> c = 0; c &lt; 3; ++c) {</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        x(3 * freeAtoms[k] + c) +=</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>            q(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(3 * k) + c) / sqrtMass[k];</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>      }</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    }</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keywordflow">return</span> x;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>  }</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>  VectorXd toQ(<span class="keyword">const</span> Matter &amp;reactant, <span class="keyword">const</span> Matter &amp;m)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> d =</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        reactant.pbc(m.getPositions() - reactant.getPositions());</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    VectorXd q(dimension());</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> k = 0; k &lt; freeAtoms.size(); ++k) {</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> c = 0; c &lt; 3; ++c) {</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        q(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(3 * k) + c) = sqrtMass[k] * d(freeAtoms[k], c);</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>      }</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    }</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordflow">return</span> q;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>  }</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>};</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>VectorXd flatten(<span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;m) {</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>  VectorXd x(3 * m.rows());</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; m.rows(); ++i) {</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> c = 0; c &lt; 3; ++c) {</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>      x(3 * i + c) = m(i, c);</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    }</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>  }</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>  <span class="keywordflow">return</span> x;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>}</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>std::string kelvinTag(<span class="keywordtype">double</span> t) {</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>  std::ostringstream name;</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>  name &lt;&lt; std::defaultfloat &lt;&lt; std::setprecision(6) &lt;&lt; t &lt;&lt; <span class="stringliteral">&quot;K&quot;</span>;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>  <span class="keywordflow">return</span> name.str();</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>}</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span> </div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>} <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>std::vector&lt;std::string&gt;</div>
+<div class="foldopen" id="foldopen00167" data-start="{" data-end="}">
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="namespaceeonc_1_1piqtst.html#a4a84270ccde05275c2b58b37df8f249f">  167</a></span><a class="code hl_function" href="namespaceeonc_1_1piqtst.html#a4a84270ccde05275c2b58b37df8f249f">runAfterInstanton</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Parameters.html">Parameters</a> &amp;params, <a class="code hl_class" href="classeonc_1_1Potential.html">Potential</a> &amp;<a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a>,</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>                  <span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> &amp;reactant, <span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> &amp;saddle,</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>                  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> &amp;hSaddle, <span class="keyword">const</span> std::vector&lt;VectorXd&gt; &amp;pathQ,</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>                  <span class="keyword">const</span> std::vector&lt;double&gt; &amp;temperatures,</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>                  std::vector&lt;std::pair&lt;std::string, double&gt;&gt; &amp;extras) {</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;o = params.<a class="code hl_function" href="classeonc_1_1Parameters.html#a44739c5e27b0438b49ae96fe77537099">instanton_options</a>();</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>  <a class="code hl_function" href="namespaceeonc_1_1piqtst.html#af62d0dd293ea266ba7f2e194e28157f8">validateOptions</a>(o);</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> timeUnit = params.<a class="code hl_function" href="classeonc_1_1Parameters.html#a4a8bc419a5c9d7dd7383ec8dd90bac10">constants</a>().<a class="code hl_variable" href="structeonc_1_1constants__t.html#a4372e7836ad7935763ac02b37c36bb56">timeUnit</a>;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>  <span class="keyword">const</span> Embedding emb(reactant);</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>  <span class="keyword">const</span> VectorXd qSaddle = emb.toQ(reactant, saddle);</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> qNorm = qSaddle.norm();</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>  <span class="keywordflow">if</span> (!(qNorm &gt; 0.0)) {</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;piqtst: the saddle sits on the reactant&quot;</span>);</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>  }</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>  <span class="keyword">const</span> VectorXd lineDir = qSaddle / qNorm;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>  <span class="comment">// The plane normal. The saddle&#39;s unstable mode is the dividing surface</span></div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>  <span class="comment">// the rate is evaluated on; one normal for every plane keeps s a linear</span></div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>  <span class="comment">// coordinate, so the mean force integrates to its free energy.</span></div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>  VectorXd dir = lineDir;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>  std::string chosen = <span class="stringliteral">&quot;line&quot;</span>;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>  <span class="keywordflow">if</span> (o.pi_direction == <span class="stringliteral">&quot;mode&quot;</span>) {</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <span class="keyword">const</span> Eigen::SelfAdjointEigenSolver&lt;MatrixXd&gt; es(</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        0.5 * (hSaddle + hSaddle.transpose()));</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keywordflow">if</span> (es.info() == Eigen::Success &amp;&amp; es.eigenvalues()(0) &lt; 0.0) {</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>      VectorXd v = es.eigenvectors().col(0);</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>      <span class="keywordflow">if</span> (v.dot(lineDir) &lt; 0.0) {</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        v = -v;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>      }</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>      <span class="keywordflow">if</span> (v.dot(lineDir) &gt;= 0.5) {</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        dir = v;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        chosen = <span class="stringliteral">&quot;mode&quot;</span>;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;[Instanton] piqtst: the unstable mode makes {:.3f} &quot;</span></div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>                         <span class="stringliteral">&quot;rad with the reactant-saddle line; planes follow &quot;</span></div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>                         <span class="stringliteral">&quot;the line&quot;</span>,</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>                         std::acos(v.dot(lineDir)));</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>      }</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>      <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;[Instanton] piqtst: the saddle Hessian has no &quot;</span></div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>                       <span class="stringliteral">&quot;negative eigenvalue; planes follow the line&quot;</span>);</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    }</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>  }</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>  <span class="keywordflow">if</span> (emb.freeAtoms.size() == <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(reactant.<a class="code hl_function" href="classeonc_1_1Matter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>()) &amp;&amp;</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>      !reactant.<a class="code hl_function" href="classeonc_1_1Matter.html#a42dc44f980e80210ff324a97ae554717">getPeriodic</a>()) {</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;[Instanton] piqtst: no atom is fixed; the planes are &quot;</span></div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>                     <span class="stringliteral">&quot;fixed in the reactant&#39;s frame and a rotation of the &quot;</span></div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>                     <span class="stringliteral">&quot;cluster moves the centroid between them&quot;</span>);</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>  }</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> sStar = dir.dot(qSaddle);</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> nPlanes = o.pi_planes;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> s0 = -o.pi_reactant_extent * sStar;</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>  std::vector&lt;double&gt; sPlanes;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nPlanes; ++j) {</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    sPlanes.push_back(s0 + (sStar - s0) * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(j) /</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>                               <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nPlanes - 1));</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>  }</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span> </div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>  <a class="code hl_struct" href="structeonc_1_1piqtst_1_1Coordinate.html">Coordinate</a> c;</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>  c.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Coordinate.html#a86ddb7d7bd8d73b4225c8bcbf1b84fa1">atoms</a> = reactant.<a class="code hl_function" href="classeonc_1_1Matter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>();</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>  c.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Coordinate.html#a77517b982597b0b3ea0ad53ed7de8ca2">masses</a>.resize(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(c.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Coordinate.html#a86ddb7d7bd8d73b4225c8bcbf1b84fa1">atoms</a>));</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>  c.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Coordinate.html#a4f7ee6a4408e0b8dfc0e67a92eac3f61">numbers</a>.resize(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(c.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Coordinate.html#a86ddb7d7bd8d73b4225c8bcbf1b84fa1">atoms</a>));</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>  c.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Coordinate.html#a4816ff5331a078f17197cf58dd0d5346">free</a>.assign(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(3 * c.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Coordinate.html#a86ddb7d7bd8d73b4225c8bcbf1b84fa1">atoms</a>), 0);</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>  <span class="keyword">const</span> VectorXi z = reactant.<a class="code hl_function" href="classeonc_1_1Matter.html#a17638d47340348dc80d02df7d6f078b1">getAtomicNrs</a>();</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; c.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Coordinate.html#a86ddb7d7bd8d73b4225c8bcbf1b84fa1">atoms</a>; ++i) {</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    c.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Coordinate.html#a77517b982597b0b3ea0ad53ed7de8ca2">masses</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] = reactant.<a class="code hl_function" href="classeonc_1_1Matter.html#a93d383455b1ebb40c68e520ddd832c3a">getMass</a>(i);</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    c.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Coordinate.html#a4f7ee6a4408e0b8dfc0e67a92eac3f61">numbers</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] = z(i);</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>  }</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keywordtype">long</span> i : emb.freeAtoms) {</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> a = 0; a &lt; 3; ++a) {</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>      c.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Coordinate.html#a4816ff5331a078f17197cf58dd0d5346">free</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(3 * i + a)] = 1;</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    }</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>  }</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>  c.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Coordinate.html#a7674370e7c1c1f8f58a8efb22d14c5a7">reference</a> = flatten(reactant.<a class="code hl_function" href="classeonc_1_1Matter.html#a2472b3c954d101c0810da69ed442b244">getPositions</a>());</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>  c.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Coordinate.html#aa64558a7a16741e62f63a40cf2cb4e6d">direction</a> = emb.full(dir);</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> cell =</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>      reactant.<a class="code hl_function" href="classeonc_1_1Matter.html#a42dc44f980e80210ff324a97ae554717">getPeriodic</a>() ? reactant.<a class="code hl_function" href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>() : Matrix3d::Zero().eval();</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>  c.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Coordinate.html#ab2b6c61adf338a074dcc7f8dd4699f6c">box</a> = cell.data();</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span> </div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>  <span class="comment">// Seeds: the band where it crosses the plane, else the straight line</span></div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>  <span class="comment">// through the reactant and the saddle.</span></div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>  std::vector&lt;double&gt; bandS;</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;q : pathQ) {</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    bandS.push_back(dir.dot(q));</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>  }</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>  <span class="keyword">auto</span> seed = [&amp;](<span class="keywordtype">double</span> s) -&gt; VectorXd {</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> k = 0; k + 1 &lt; pathQ.size(); ++k) {</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> lo = bandS[k];</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> hi = bandS[k + 1];</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>      <span class="keywordflow">if</span> ((lo &lt;= s &amp;&amp; s &lt;= hi) || (hi &lt;= s &amp;&amp; s &lt;= lo)) {</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> t = hi != lo ? (s - lo) / (hi - lo) : 0.0;</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        <span class="keywordflow">return</span> emb.cartesian(c.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Coordinate.html#a7674370e7c1c1f8f58a8efb22d14c5a7">reference</a>,</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>                             (1.0 - t) * pathQ[k] + t * pathQ[k + 1]);</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>      }</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    }</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>    <span class="keywordflow">return</span> emb.cartesian(c.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Coordinate.html#a7674370e7c1c1f8f58a8efb22d14c5a7">reference</a>, (s / sStar) * qSaddle);</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>  };</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span> </div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> vReactant = <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a>(reactant).<a class="code hl_function" href="classeonc_1_1Matter.html#a991745c4fb760027221d419b8cf6fd8e">getPotentialEnergy</a>();</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> vSaddle = <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a>(saddle).<a class="code hl_function" href="classeonc_1_1Matter.html#a991745c4fb760027221d419b8cf6fd8e">getPotentialEnergy</a>();</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>  <span class="keywordtype">double</span> effective = std::numeric_limits&lt;double&gt;::quiet_NaN();</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;kv : extras) {</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>    <span class="keywordflow">if</span> (kv.first == <span class="stringliteral">&quot;barrier_effective_instanton&quot;</span>) {</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>      effective = kv.second;</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>    }</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>  }</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;[Instanton] piqtst: {} planes from s = {:.4f} to s* = {:.4f} &quot;</span></div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>                <span class="stringliteral">&quot;amu^0.5 A along the {}, {} beads, {} + {} steps of {:.4g} fs&quot;</span>,</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>                nPlanes, s0, sStar, chosen == <span class="stringliteral">&quot;mode&quot;</span> ? <span class="stringliteral">&quot;unstable mode&quot;</span> : <span class="stringliteral">&quot;line&quot;</span>,</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>                o.pi_beads, o.pi_equilibration_steps, o.pi_sampling_steps,</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>                o.pi_time_step);</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span> </div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>  <span class="keyword">const</span> std::string tableFile = <span class="stringliteral">&quot;rate_piqtst.dat&quot;</span>;</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>  std::ofstream table(tableFile);</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>  <span class="keywordflow">if</span> (!table) {</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;piqtst: cannot write &quot;</span> + tableFile);</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>  }</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> kappaOn = o.pi_recrossing_parents &gt; 0;</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>  table &lt;&lt; <span class="stringliteral">&quot;# T_K s_amu05A dF_ds_eV_per_amu05A dF_ds_error F_eV F_error_eV &quot;</span></div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>           <span class="stringliteral">&quot;spread_max_A&quot;</span>;</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>  <span class="keywordflow">if</span> (kappaOn) {</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>    table &lt;&lt; <span class="stringliteral">&quot; kappa kappa_error ln_k_rpmd_s ln_k_rpmd_s_error&quot;</span>;</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>  }</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>  table &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>  table &lt;&lt; std::setprecision(10);</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>  std::vector&lt;std::string&gt; files{tableFile};</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span> </div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>  std::vector&lt;double&gt; sorted = temperatures;</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>  std::sort(sorted.begin(), sorted.end(), std::greater&lt;&gt;());</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> logSecond = std::log(<a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#a520ac3171661d0e32fa444d7cdd546c4">tunneling::kTimeUnitSeconds</a>);</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> ti = 0; ti &lt; sorted.size(); ++ti) {</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> t = sorted[ti];</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> last = ti + 1 == sorted.size();</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> beta = 1.0 / (<a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#af7d7cff7a86f5d8ade50e485b3b184e9">tunneling::kBoltzmann</a> * t);</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>    <a class="code hl_struct" href="structeonc_1_1piqtst_1_1ScanOptions.html">ScanOptions</a> so;</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>    so.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1ScanOptions.html#a699fbefa2cc5e472d67af4ad22d39ab6">planes</a> = sPlanes;</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>    so.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1ScanOptions.html#a22795b41f020388d850b2dce5213c762">equilibration</a> = o.pi_equilibration_steps;</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>    so.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1ScanOptions.html#a8077e8b1a7b583c343bd4a5798b39c1a">production</a> = o.pi_sampling_steps;</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>    so.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1ScanOptions.html#a70aa75a667be7a8d6ba1afdd8ed2f9e6">blocks</a> = 10;</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>    so.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1ScanOptions.html#ad54f6cbfa11d13ae730a4b8752ef2c17">ring</a>.<a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Options.html#aa5e127abb4c261a67c9edd4f7bc1d40b">beads</a> = o.pi_beads;</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    so.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1ScanOptions.html#ad54f6cbfa11d13ae730a4b8752ef2c17">ring</a>.<a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Options.html#ace7cb6ca4dcd5e5133aae0fd79e39398">temperature</a> = t;</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>    so.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1ScanOptions.html#ad54f6cbfa11d13ae730a4b8752ef2c17">ring</a>.<a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Options.html#ae035e2066df9e4f9c4f93b5f30f8515e">kB</a> = <a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#af7d7cff7a86f5d8ade50e485b3b184e9">tunneling::kBoltzmann</a>;</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>    so.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1ScanOptions.html#ad54f6cbfa11d13ae730a4b8752ef2c17">ring</a>.<a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Options.html#abfc70ee4f6ee8a424c931392f10c7de3">hbar</a> = <a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#a9226451a02d96e8651470ee1fb21eaa9">tunneling::kHbar</a>;</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    so.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1ScanOptions.html#ad54f6cbfa11d13ae730a4b8752ef2c17">ring</a>.<a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Options.html#a32cfa3c4fafcb0e4467d2d1c1a1b307d">dt</a> = o.pi_time_step / timeUnit;</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    so.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1ScanOptions.html#ad54f6cbfa11d13ae730a4b8752ef2c17">ring</a>.<a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Options.html#a1c166accd9ac8ae595dcba9587fd631e">thermostat</a> = o.pi_thermostat == <span class="stringliteral">&quot;piglet&quot;</span></div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>                             ? <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8a8c09ee8e1496710919dcbd718ff285dd">pathintegral::Thermostat::Piglet</a></div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>                             : <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8adac4e478206552d57f74e6a5f9fc80bc">pathintegral::Thermostat::Pile</a>;</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>    so.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1ScanOptions.html#ad54f6cbfa11d13ae730a4b8752ef2c17">ring</a>.<a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Options.html#ab1c5c800fe075a1e6ad0bf9431cddea1">pileTau</a> = o.pi_pile_tau / timeUnit;</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>    so.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1ScanOptions.html#ad54f6cbfa11d13ae730a4b8752ef2c17">ring</a>.<a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Options.html#a7232df2aa06c310842292fd1a7ba8d9f">pileScale</a> = o.pi_pile_scale;</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>    so.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1ScanOptions.html#ad54f6cbfa11d13ae730a4b8752ef2c17">ring</a>.<a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Options.html#a462451eb9b3d400d3803107ea8ec1ed1">gleFile</a> = o.pi_gle_file;</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>    so.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1ScanOptions.html#ad54f6cbfa11d13ae730a4b8752ef2c17">ring</a>.<a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Options.html#a700dab2116cd740f25511468409d688a">seed</a> = <span class="keyword">static_cast&lt;</span>std::uint64_t<span class="keyword">&gt;</span>(o.pi_seed);</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>    so.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1ScanOptions.html#a39ecc487e77318f931027c6cb5a55440">seed</a> = seed;</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>    <span class="keyword">const</span> std::vector&lt;Plane&gt; planes = <a class="code hl_function" href="namespaceeonc_1_1piqtst.html#a3d8fae3ef87a04fa7d9d0779aa5967e3">scan</a>(<a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a>, c, so);</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeonc_1_1piqtst_1_1Rate.html">Rate</a> r = <a class="code hl_function" href="namespaceeonc_1_1piqtst.html#abc92f8cab64b9349ebf237b182c70dc9">rate</a>(planes, beta);</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> lnPerSecond = r.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Rate.html#aab1b66cd24e7b5d0a2cf66098d14b34b">logRate</a> - logSecond;</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span> </div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    <a class="code hl_struct" href="structeonc_1_1piqtst_1_1Recrossing.html">Recrossing</a> kappa;</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>    <span class="keywordtype">double</span> lnRpmd = std::numeric_limits&lt;double&gt;::quiet_NaN();</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    <span class="keywordtype">double</span> lnRpmdError = std::numeric_limits&lt;double&gt;::quiet_NaN();</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    <span class="keywordflow">if</span> (kappaOn) {</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>      <a class="code hl_struct" href="structeonc_1_1piqtst_1_1RecrossingOptions.html">RecrossingOptions</a> ro;</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>      ro.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1RecrossingOptions.html#ad6aac6c76ec3a65ba1fd1e31c0f2404d">s</a> = planes.back().s;</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>      ro.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1RecrossingOptions.html#a5029325d24880bc1f726a581805a9320">equilibration</a> = o.pi_equilibration_steps;</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>      ro.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1RecrossingOptions.html#a23b4ab8883937f4215a75a332ab29942">parents</a> = o.pi_recrossing_parents;</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>      ro.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1RecrossingOptions.html#a6246fc4267d6a898fc694e4ba253762d">spacing</a> = o.pi_recrossing_spacing;</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>      ro.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1RecrossingOptions.html#ab2c63bc6cccc349f1296b85c27ec1e97">children</a> = o.pi_recrossing_children;</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>      ro.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1RecrossingOptions.html#a7106fc067a77e71d36746118ed03b13f">steps</a> = std::lround(o.pi_recrossing_time / o.pi_time_step);</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>      ro.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1RecrossingOptions.html#ae0013b1de16bc26cfd5ac983f607d9c4">ring</a> = so.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1ScanOptions.html#ad54f6cbfa11d13ae730a4b8752ef2c17">ring</a>;</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>      ro.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1RecrossingOptions.html#a63ac70c2748d6f90c9a71b45ed2612c3">seed</a> = seed;</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>      kappa = <a class="code hl_function" href="namespaceeonc_1_1piqtst.html#a19b9f13eb26035b7e6247009602d7120">recrossing</a>(<a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a>, c, ro);</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>      <span class="keywordflow">if</span> (kappa.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Recrossing.html#abc209412cc16dd030d3630d128190ad8">plateau</a> &gt; 0.0) {</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>        lnRpmd = lnPerSecond + std::log(kappa.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Recrossing.html#abc209412cc16dd030d3630d128190ad8">plateau</a>);</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>        lnRpmdError =</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>            std::hypot(r.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Rate.html#af59fbe20d3b7c2be239f99e0a7c5eb3a">logRateError</a>, kappa.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Recrossing.html#ab509b691898c5ab4fab18ef1408aec98">plateauError</a> / kappa.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Recrossing.html#abc209412cc16dd030d3630d128190ad8">plateau</a>);</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>        <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;[Instanton] piqtst {:.4g} K: the transmission &quot;</span></div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>                         <span class="stringliteral">&quot;factor {:.4g} +- {:.2g} is not positive; ln k_RPMD &quot;</span></div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>                         <span class="stringliteral">&quot;is undefined (raise pi_recrossing_parents)&quot;</span>,</div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>                         t, kappa.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Recrossing.html#abc209412cc16dd030d3630d128190ad8">plateau</a>, kappa.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Recrossing.html#ab509b691898c5ab4fab18ef1408aec98">plateauError</a>);</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>      }</div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>      <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;[Instanton] piqtst {:.4g} K: transmission factor &quot;</span></div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>                    <span class="stringliteral">&quot;kappa = {:.4f} +- {:.4f} from {} trajectories, &quot;</span></div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>                    <span class="stringliteral">&quot;ln(k_RPMD s) = {:.4f} +- {:.4f}&quot;</span>,</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>                    t, kappa.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Recrossing.html#abc209412cc16dd030d3630d128190ad8">plateau</a>, kappa.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Recrossing.html#ab509b691898c5ab4fab18ef1408aec98">plateauError</a>, kappa.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Recrossing.html#a28a5a5d22e1c585240dff00d985957bb">trajectories</a>,</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>                    lnRpmd, lnRpmdError);</div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>      std::vector&lt;std::string&gt; curveFiles;</div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>      <span class="keywordflow">if</span> (last) {</div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>        curveFiles.push_back(<span class="stringliteral">&quot;kappa_piqtst.dat&quot;</span>);</div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>      }</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>      <span class="keywordflow">if</span> (sorted.size() &gt; 1) {</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>        curveFiles.push_back(<span class="stringliteral">&quot;kappa_piqtst_&quot;</span> + kelvinTag(t) + <span class="stringliteral">&quot;.dat&quot;</span>);</div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>      }</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>      <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;file : curveFiles) {</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>        std::ofstream curve(file);</div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>        <span class="keywordflow">if</span> (!curve) {</div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>          <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;piqtst: cannot write &quot;</span> + file);</div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>        }</div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>        curve &lt;&lt; <span class="stringliteral">&quot;# t_fs kappa\n&quot;</span> &lt;&lt; std::setprecision(10);</div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; kappa.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Recrossing.html#a1830f486cef6a38eb75b1929162d13e0">time</a>.size(); ++i) {</div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>          curve &lt;&lt; kappa.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Recrossing.html#a1830f486cef6a38eb75b1929162d13e0">time</a>[i] * timeUnit &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; kappa.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Recrossing.html#acc18f881a33ca5c64e67d0f40eeea77e">kappa</a>[i] &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>        }</div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>        files.push_back(file);</div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>      }</div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>    }</div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span> </div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>    std::vector&lt;std::string&gt; conFiles;</div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>    <span class="keywordflow">if</span> (last) {</div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>      conFiles.push_back(<span class="stringliteral">&quot;piqtst_planes.con&quot;</span>);</div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>    }</div>
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>    <span class="keywordflow">if</span> (sorted.size() &gt; 1) {</div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>      conFiles.push_back(<span class="stringliteral">&quot;piqtst_planes_&quot;</span> + kelvinTag(t) + <span class="stringliteral">&quot;.con&quot;</span>);</div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>    }</div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; planes.size(); ++j) {</div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>      <span class="keyword">const</span> <a class="code hl_struct" href="structeonc_1_1piqtst_1_1Plane.html">Plane</a> &amp;p = planes[j];</div>
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>      <span class="keywordtype">double</span> largest = 0.0;</div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>      <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keywordtype">double</span> sp : p.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Plane.html#a443141f347d82ead1763508f2927604f">spread</a>) {</div>
+<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>        largest = std::max(largest, sp);</div>
+<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>      }</div>
+<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>      table &lt;&lt; t &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; p.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Plane.html#a9f44f0990cb6d0ce7713ce5a3b47cf0c">s</a> &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; p.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Plane.html#ae256a7dbdab000389899f6b2c8984537">meanForce</a> &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; p.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Plane.html#a2a5f8189e61416168e03ea171e76c730">meanForceError</a></div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>            &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; p.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Plane.html#a3e17f72475d4276013c75c2999591d6d">freeEnergy</a> &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; p.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Plane.html#ad637ae6ce6964f73fff787429717bff7">freeEnergyError</a> &lt;&lt; <span class="charliteral">&#39; &#39;</span></div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>            &lt;&lt; largest;</div>
+<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>      <span class="keywordflow">if</span> (kappaOn) {</div>
+<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>        table &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; kappa.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Recrossing.html#abc209412cc16dd030d3630d128190ad8">plateau</a> &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; kappa.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Recrossing.html#ab509b691898c5ab4fab18ef1408aec98">plateauError</a> &lt;&lt; <span class="charliteral">&#39; &#39;</span></div>
+<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>              &lt;&lt; lnRpmd &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; lnRpmdError;</div>
+<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>      }</div>
+<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>      table &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span>      <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> frame(reactant);</div>
+<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = frame.<a class="code hl_function" href="classeonc_1_1Matter.html#a2472b3c954d101c0810da69ed442b244">getPositions</a>();</div>
+<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; c.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Coordinate.html#a86ddb7d7bd8d73b4225c8bcbf1b84fa1">atoms</a>; ++i) {</div>
+<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> a = 0; a &lt; 3; ++a) {</div>
+<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>          pos(i, a) = p.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Plane.html#ac6f3a7dc99c3da19137cdc6ff67156a7">centroid</a>(3 * i + a);</div>
+<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>        }</div>
+<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>      }</div>
+<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>      frame.<a class="code hl_function" href="classeonc_1_1Matter.html#a271f1a697333162ba3705bff86dfef06">setPositions</a>(pos);</div>
+<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>      <a class="code hl_struct" href="structeonc_1_1io_1_1ConFrameMetadata.html">io::ConFrameMetadata</a> meta;</div>
+<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>      meta.<a class="code hl_variable" href="structeonc_1_1io_1_1ConFrameMetadata.html#a1c066326eb4ccd15a01e3606e4abf5bd">frame_index</a> = <span class="keyword">static_cast&lt;</span>uint64_t<span class="keyword">&gt;</span>(j);</div>
+<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span>      meta.<a class="code hl_variable" href="structeonc_1_1io_1_1ConFrameMetadata.html#af58aac5c164318bf2e21b322d37f0bc5">write_con_forces</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>      meta.<a class="code hl_variable" href="structeonc_1_1io_1_1ConFrameMetadata.html#a1e1609724a95a29690f72798b5b51215">spreads</a> = p.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Plane.html#a443141f347d82ead1763508f2927604f">spread</a>;</div>
+<div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>      meta.<a class="code hl_variable" href="structeonc_1_1io_1_1ConFrameMetadata.html#a2a031c3e8c331a9fcd4b0b06ca9cde83">scalars</a> = {{<span class="stringliteral">&quot;piqtst_temperature_K&quot;</span>, t},</div>
+<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>                      {<span class="stringliteral">&quot;piqtst_s&quot;</span>, p.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Plane.html#a9f44f0990cb6d0ce7713ce5a3b47cf0c">s</a>},</div>
+<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>                      {<span class="stringliteral">&quot;piqtst_dF_ds&quot;</span>, p.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Plane.html#ae256a7dbdab000389899f6b2c8984537">meanForce</a>},</div>
+<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>                      {<span class="stringliteral">&quot;piqtst_dF_ds_error&quot;</span>, p.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Plane.html#a2a5f8189e61416168e03ea171e76c730">meanForceError</a>},</div>
+<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>                      {<span class="stringliteral">&quot;piqtst_F&quot;</span>, p.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Plane.html#a3e17f72475d4276013c75c2999591d6d">freeEnergy</a>},</div>
+<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>                      {<span class="stringliteral">&quot;piqtst_F_error&quot;</span>, p.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Plane.html#ad637ae6ce6964f73fff787429717bff7">freeEnergyError</a>},</div>
+<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span>                      {<span class="stringliteral">&quot;beads&quot;</span>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(o.pi_beads)},</div>
+<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>                      {<span class="stringliteral">&quot;spread_max&quot;</span>, largest}};</div>
+<div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span>      <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;file : conFiles) {</div>
+<div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span>        <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">io::io_ok</a>(frame.<a class="code hl_function" href="classeonc_1_1Matter.html#ae8ecf570ce353f150952bc8038371222">matter2con</a>(file, j &gt; 0, &amp;meta))) {</div>
+<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span>          <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;piqtst: cannot write &quot;</span> + file);</div>
+<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span>        }</div>
+<div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span>      }</div>
+<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span>    }</div>
+<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;file : conFiles) {</div>
+<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>      files.push_back(file);</div>
+<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span>    }</div>
+<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span> </div>
+<div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeonc_1_1piqtst_1_1Plane.html">Plane</a> &amp;top = planes.back();</div>
+<div class="line"><a id="l00424" name="l00424"></a><span class="lineno">  424</span>    <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;[Instanton] piqtst {:.4g} K: free-energy barrier {:.5f} &quot;</span></div>
+<div class="line"><a id="l00425" name="l00425"></a><span class="lineno">  425</span>                  <span class="stringliteral">&quot;+- {:.5f} eV (classical {:.5f} eV, instanton effective &quot;</span></div>
+<div class="line"><a id="l00426" name="l00426"></a><span class="lineno">  426</span>                  <span class="stringliteral">&quot;{:.5f} eV), ln(k s) = {:.4f} +- {:.4f}&quot;</span>,</div>
+<div class="line"><a id="l00427" name="l00427"></a><span class="lineno">  427</span>                  t, r.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Rate.html#ad2ad7f1345a7d0303a494e6442daa4cd">barrier</a>, r.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Rate.html#a268ee5ff83906b51e19402f61bd80343">barrierError</a>, vSaddle - vReactant, effective,</div>
+<div class="line"><a id="l00428" name="l00428"></a><span class="lineno">  428</span>                  lnPerSecond, r.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Rate.html#af59fbe20d3b7c2be239f99e0a7c5eb3a">logRateError</a>);</div>
+<div class="line"><a id="l00429" name="l00429"></a><span class="lineno">  429</span>    <span class="keywordflow">if</span> (r.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Rate.html#a9055070b3a3588dca1b9a4b053ea6cc2">firstPlaneHeight</a> &lt; 5.0) {</div>
+<div class="line"><a id="l00430" name="l00430"></a><span class="lineno">  430</span>      <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;[Instanton] piqtst {:.4g} K: the first plane is &quot;</span></div>
+<div class="line"><a id="l00431" name="l00431"></a><span class="lineno">  431</span>                       <span class="stringliteral">&quot;{:.3g} kT above the reactant minimum of F; the &quot;</span></div>
+<div class="line"><a id="l00432" name="l00432"></a><span class="lineno">  432</span>                       <span class="stringliteral">&quot;reactant integral is cut there (raise &quot;</span></div>
+<div class="line"><a id="l00433" name="l00433"></a><span class="lineno">  433</span>                       <span class="stringliteral">&quot;pi_reactant_extent)&quot;</span>,</div>
+<div class="line"><a id="l00434" name="l00434"></a><span class="lineno">  434</span>                       t, r.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Rate.html#a9055070b3a3588dca1b9a4b053ea6cc2">firstPlaneHeight</a>);</div>
+<div class="line"><a id="l00435" name="l00435"></a><span class="lineno">  435</span>    }</div>
+<div class="line"><a id="l00436" name="l00436"></a><span class="lineno">  436</span>    <span class="keywordflow">if</span> (std::abs(top.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Plane.html#ae256a7dbdab000389899f6b2c8984537">meanForce</a>) &gt; 3.0 * top.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Plane.html#a2a5f8189e61416168e03ea171e76c730">meanForceError</a>) {</div>
+<div class="line"><a id="l00437" name="l00437"></a><span class="lineno">  437</span>      <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;[Instanton] piqtst {:.4g} K: dF/ds at the saddle &quot;</span></div>
+<div class="line"><a id="l00438" name="l00438"></a><span class="lineno">  438</span>                       <span class="stringliteral">&quot;plane is {:.4g} +- {:.2g} eV / (amu^0.5 A); the &quot;</span></div>
+<div class="line"><a id="l00439" name="l00439"></a><span class="lineno">  439</span>                       <span class="stringliteral">&quot;maximum of F is not at s*&quot;</span>,</div>
+<div class="line"><a id="l00440" name="l00440"></a><span class="lineno">  440</span>                       t, top.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Plane.html#ae256a7dbdab000389899f6b2c8984537">meanForce</a>, top.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Plane.html#a2a5f8189e61416168e03ea171e76c730">meanForceError</a>);</div>
+<div class="line"><a id="l00441" name="l00441"></a><span class="lineno">  441</span>    }</div>
+<div class="line"><a id="l00442" name="l00442"></a><span class="lineno">  442</span>    <span class="keywordflow">if</span> (!last) {</div>
+<div class="line"><a id="l00443" name="l00443"></a><span class="lineno">  443</span>      <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00444" name="l00444"></a><span class="lineno">  444</span>    }</div>
+<div class="line"><a id="l00445" name="l00445"></a><span class="lineno">  445</span>    extras.emplace_back(<span class="stringliteral">&quot;piqtst_temperature_K&quot;</span>, t);</div>
+<div class="line"><a id="l00446" name="l00446"></a><span class="lineno">  446</span>    extras.emplace_back(<span class="stringliteral">&quot;piqtst_planes&quot;</span>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nPlanes));</div>
+<div class="line"><a id="l00447" name="l00447"></a><span class="lineno">  447</span>    extras.emplace_back(<span class="stringliteral">&quot;piqtst_beads&quot;</span>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(o.pi_beads));</div>
+<div class="line"><a id="l00448" name="l00448"></a><span class="lineno">  448</span>    extras.emplace_back(<span class="stringliteral">&quot;piqtst_s_star&quot;</span>, sStar);</div>
+<div class="line"><a id="l00449" name="l00449"></a><span class="lineno">  449</span>    extras.emplace_back(<span class="stringliteral">&quot;piqtst_dF_ds_star&quot;</span>, top.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Plane.html#ae256a7dbdab000389899f6b2c8984537">meanForce</a>);</div>
+<div class="line"><a id="l00450" name="l00450"></a><span class="lineno">  450</span>    extras.emplace_back(<span class="stringliteral">&quot;piqtst_dF_ds_star_error&quot;</span>, top.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Plane.html#a2a5f8189e61416168e03ea171e76c730">meanForceError</a>);</div>
+<div class="line"><a id="l00451" name="l00451"></a><span class="lineno">  451</span>    extras.emplace_back(<span class="stringliteral">&quot;piqtst_first_plane_kT&quot;</span>, r.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Rate.html#a9055070b3a3588dca1b9a4b053ea6cc2">firstPlaneHeight</a>);</div>
+<div class="line"><a id="l00452" name="l00452"></a><span class="lineno">  452</span>    extras.emplace_back(<span class="stringliteral">&quot;barrier_piqtst&quot;</span>, r.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Rate.html#ad2ad7f1345a7d0303a494e6442daa4cd">barrier</a>);</div>
+<div class="line"><a id="l00453" name="l00453"></a><span class="lineno">  453</span>    extras.emplace_back(<span class="stringliteral">&quot;barrier_piqtst_error&quot;</span>, r.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Rate.html#a268ee5ff83906b51e19402f61bd80343">barrierError</a>);</div>
+<div class="line"><a id="l00454" name="l00454"></a><span class="lineno">  454</span>    extras.emplace_back(<span class="stringliteral">&quot;rate_piqtst&quot;</span>, std::exp(lnPerSecond));</div>
+<div class="line"><a id="l00455" name="l00455"></a><span class="lineno">  455</span>    extras.emplace_back(<span class="stringliteral">&quot;rate_piqtst_log&quot;</span>, lnPerSecond);</div>
+<div class="line"><a id="l00456" name="l00456"></a><span class="lineno">  456</span>    extras.emplace_back(<span class="stringliteral">&quot;rate_piqtst_log_error&quot;</span>, r.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Rate.html#af59fbe20d3b7c2be239f99e0a7c5eb3a">logRateError</a>);</div>
+<div class="line"><a id="l00457" name="l00457"></a><span class="lineno">  457</span>    <span class="keywordflow">if</span> (kappaOn) {</div>
+<div class="line"><a id="l00458" name="l00458"></a><span class="lineno">  458</span>      extras.emplace_back(<span class="stringliteral">&quot;piqtst_kappa&quot;</span>, kappa.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Recrossing.html#abc209412cc16dd030d3630d128190ad8">plateau</a>);</div>
+<div class="line"><a id="l00459" name="l00459"></a><span class="lineno">  459</span>      extras.emplace_back(<span class="stringliteral">&quot;piqtst_kappa_error&quot;</span>, kappa.<a class="code hl_variable" href="structeonc_1_1piqtst_1_1Recrossing.html#ab509b691898c5ab4fab18ef1408aec98">plateauError</a>);</div>
+<div class="line"><a id="l00460" name="l00460"></a><span class="lineno">  460</span>      extras.emplace_back(<span class="stringliteral">&quot;rate_rpmd&quot;</span>, std::exp(lnRpmd));</div>
+<div class="line"><a id="l00461" name="l00461"></a><span class="lineno">  461</span>      extras.emplace_back(<span class="stringliteral">&quot;rate_rpmd_log&quot;</span>, lnRpmd);</div>
+<div class="line"><a id="l00462" name="l00462"></a><span class="lineno">  462</span>      extras.emplace_back(<span class="stringliteral">&quot;rate_rpmd_log_error&quot;</span>, lnRpmdError);</div>
+<div class="line"><a id="l00463" name="l00463"></a><span class="lineno">  463</span>    }</div>
+<div class="line"><a id="l00464" name="l00464"></a><span class="lineno">  464</span>  }</div>
+<div class="line"><a id="l00465" name="l00465"></a><span class="lineno">  465</span>  <span class="keywordflow">return</span> files;</div>
+<div class="line"><a id="l00466" name="l00466"></a><span class="lineno">  466</span>}</div>
+</div>
+<div class="line"><a id="l00467" name="l00467"></a><span class="lineno">  467</span> </div>
+<div class="line"><a id="l00468" name="l00468"></a><span class="lineno">  468</span>} <span class="comment">// namespace eonc::piqtst</span></div>
+<div class="ttc" id="aConFileIO_8h_html"><div class="ttname"><a href="ConFileIO_8h.html">ConFileIO.h</a></div></div>
+<div class="ttc" id="aEigen_8h_html_a45bb4cbce093fca4dfb193d3f649da30"><div class="ttname"><a href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, eOnStorageOrder &gt; MatrixXd</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00033">Eigen.h:33</a></div></div>
+<div class="ttc" id="aEigen_8h_html_a5a21583e98df78e5b867b370291714d0"><div class="ttname"><a href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 3, 3, eOnStorageOrder &gt; Matrix3d</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00035">Eigen.h:35</a></div></div>
+<div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
+<div class="ttc" id="aEonLogger_8h_html"><div class="ttname"><a href="EonLogger_8h.html">EonLogger.h</a></div></div>
+<div class="ttc" id="aEonLogger_8h_html_a85fddaf0620c36ee3fcf865df53a9327"><div class="ttname"><a href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a></div><div class="ttdeci">#define EONC_LOG_WARNING(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00255">EonLogger.h:255</a></div></div>
+<div class="ttc" id="aEonLogger_8h_html_afba240899b90f3996875577cc095dc00"><div class="ttname"><a href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a></div><div class="ttdeci">#define EONC_LOG_INFO(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00249">EonLogger.h:249</a></div></div>
+<div class="ttc" id="aMatter_8h_html"><div class="ttname"><a href="Matter_8h.html">Matter.h</a></div></div>
+<div class="ttc" id="aPIQTST_8h_html"><div class="ttname"><a href="PIQTST_8h.html">PIQTST.h</a></div></div>
+<div class="ttc" id="aParameters_8h_html"><div class="ttname"><a href="Parameters_8h.html">Parameters.h</a></div></div>
+<div class="ttc" id="aTunneling_8h_html"><div class="ttname"><a href="Tunneling_8h.html">Tunneling.h</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html"><div class="ttname"><a href="classeonc_1_1Matter.html">eonc::Matter</a></div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00090">Matter.h:90</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a17638d47340348dc80d02df7d6f078b1"><div class="ttname"><a href="classeonc_1_1Matter.html#a17638d47340348dc80d02df7d6f078b1">eonc::Matter::getAtomicNrs</a></div><div class="ttdeci">VectorXi getAtomicNrs() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00691">Matter.cpp:691</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a2472b3c954d101c0810da69ed442b244"><div class="ttname"><a href="classeonc_1_1Matter.html#a2472b3c954d101c0810da69ed442b244">eonc::Matter::getPositions</a></div><div class="ttdeci">const AtomMatrix &amp; getPositions() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00308">Matter.cpp:308</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a271f1a697333162ba3705bff86dfef06"><div class="ttname"><a href="classeonc_1_1Matter.html#a271f1a697333162ba3705bff86dfef06">eonc::Matter::setPositions</a></div><div class="ttdeci">void setPositions(const AtomMatrix &amp;pos)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00350">Matter.cpp:350</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a42dc44f980e80210ff324a97ae554717"><div class="ttname"><a href="classeonc_1_1Matter.html#a42dc44f980e80210ff324a97ae554717">eonc::Matter::getPeriodic</a></div><div class="ttdeci">bool getPeriodic() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00313">Matter.h:313</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a527727dfd88d55bc617c3633a1ca5776"><div class="ttname"><a href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">eonc::Matter::getCell</a></div><div class="ttdeci">Matrix3d getCell() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00275">Matter.cpp:275</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a5b678e80aa584c41d54e221d04bb729e"><div class="ttname"><a href="classeonc_1_1Matter.html#a5b678e80aa584c41d54e221d04bb729e">eonc::Matter::numberOfAtoms</a></div><div class="ttdeci">long int numberOfAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00273">Matter.cpp:273</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a93d383455b1ebb40c68e520ddd832c3a"><div class="ttname"><a href="classeonc_1_1Matter.html#a93d383455b1ebb40c68e520ddd832c3a">eonc::Matter::getMass</a></div><div class="ttdeci">double getMass(long int atom) const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00478">Matter.cpp:478</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a991745c4fb760027221d419b8cf6fd8e"><div class="ttname"><a href="classeonc_1_1Matter.html#a991745c4fb760027221d419b8cf6fd8e">eonc::Matter::getPotentialEnergy</a></div><div class="ttdeci">double getPotentialEnergy() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00554">Matter.cpp:554</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_ae8ecf570ce353f150952bc8038371222"><div class="ttname"><a href="classeonc_1_1Matter.html#ae8ecf570ce353f150952bc8038371222">eonc::Matter::matter2con</a></div><div class="ttdeci">io::IoStatus matter2con(std::string filename, bool append=false, const io::ConFrameMetadata *metadata=nullptr)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00268">Matter.h:268</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html"><div class="ttname"><a href="classeonc_1_1Parameters.html">eonc::Parameters</a></div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00035">Parameters.h:35</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_a44739c5e27b0438b49ae96fe77537099"><div class="ttname"><a href="classeonc_1_1Parameters.html#a44739c5e27b0438b49ae96fe77537099">eonc::Parameters::instanton_options</a></div><div class="ttdeci">const instanton_options_t &amp; instanton_options() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00250">ParametersAccess.cpp:250</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_a4a8bc419a5c9d7dd7383ec8dd90bac10"><div class="ttname"><a href="classeonc_1_1Parameters.html#a4a8bc419a5c9d7dd7383ec8dd90bac10">eonc::Parameters::constants</a></div><div class="ttdeci">const constants_t &amp; constants() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00071">ParametersAccess.cpp:71</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Potential_html"><div class="ttname"><a href="classeonc_1_1Potential.html">eonc::Potential</a></div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00042">Potential.h:42</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_af66b2723d892a4095754f9b0354b4f78"><div class="ttname"><a href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a></div><div class="ttdeci">constexpr bool io_ok(IoStatus s) noexcept</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00038">ConFileIO.h:38</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pathintegral_html_ae25079e6f1ebbf96835a7214c8d42ce8a8c09ee8e1496710919dcbd718ff285dd"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8a8c09ee8e1496710919dcbd718ff285dd">eonc::pathintegral::Thermostat::Piglet</a></div><div class="ttdeci">@ Piglet</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00046">PathIntegral.h:46</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pathintegral_html_ae25079e6f1ebbf96835a7214c8d42ce8adac4e478206552d57f74e6a5f9fc80bc"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8adac4e478206552d57f74e6a5f9fc80bc">eonc::pathintegral::Thermostat::Pile</a></div><div class="ttdeci">@ Pile</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00046">PathIntegral.h:46</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1piqtst_html"><div class="ttname"><a href="namespaceeonc_1_1piqtst.html">eonc::piqtst</a></div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8cpp_source.html#l00021">PIQTST.cpp:21</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1piqtst_html_a19b9f13eb26035b7e6247009602d7120"><div class="ttname"><a href="namespaceeonc_1_1piqtst.html#a19b9f13eb26035b7e6247009602d7120">eonc::piqtst::recrossing</a></div><div class="ttdeci">Recrossing recrossing(Potential &amp;pot, const Coordinate &amp;c, const RecrossingOptions &amp;o)</div><div class="ttdoc">Bennett-Chandler transmission at s*: parents sampled with the centroid held on the plane,...</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8cpp_source.html#l00263">PIQTST.cpp:263</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1piqtst_html_a3d8fae3ef87a04fa7d9d0779aa5967e3"><div class="ttname"><a href="namespaceeonc_1_1piqtst.html#a3d8fae3ef87a04fa7d9d0779aa5967e3">eonc::piqtst::scan</a></div><div class="ttdeci">std::vector&lt; Plane &gt; scan(Potential &amp;pot, const Coordinate &amp;c, const ScanOptions &amp;o)</div><div class="ttdoc">Samples one ring per plane and integrates the mean force.</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8cpp_source.html#l00104">PIQTST.cpp:104</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1piqtst_html_a4a84270ccde05275c2b58b37df8f249f"><div class="ttname"><a href="namespaceeonc_1_1piqtst.html#a4a84270ccde05275c2b58b37df8f249f">eonc::piqtst::runAfterInstanton</a></div><div class="ttdeci">std::vector&lt; std::string &gt; runAfterInstanton(const Parameters &amp;params, Potential &amp;pot, const Matter &amp;reactant, const Matter &amp;saddle, const MatrixXd &amp;hSaddle, const std::vector&lt; VectorXd &gt; &amp;pathQ, const std::vector&lt; double &gt; &amp;temperatures, std::vector&lt; std::pair&lt; std::string, double &gt; &gt; &amp;extras)</div><div class="ttdoc">[Instanton] mode rate with pi_planes &gt; 0: the planes and rate at each temperature,...</div><div class="ttdef"><b>Definition</b> <a href="#l00167">PIQTSTJob.cpp:167</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1piqtst_html_abc92f8cab64b9349ebf237b182c70dc9"><div class="ttname"><a href="namespaceeonc_1_1piqtst.html#abc92f8cab64b9349ebf237b182c70dc9">eonc::piqtst::rate</a></div><div class="ttdeci">Rate rate(const std::vector&lt; Plane &gt; &amp;planes, double beta)</div><div class="ttdoc">k = (1/2) sqrt(2 / (pi beta)) exp(-beta F(s*)) / int_{s_0}^{s*} exp(-beta F(s)) ds,...</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8cpp_source.html#l00213">PIQTST.cpp:213</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1piqtst_html_af62d0dd293ea266ba7f2e194e28157f8"><div class="ttname"><a href="namespaceeonc_1_1piqtst.html#af62d0dd293ea266ba7f2e194e28157f8">eonc::piqtst::validateOptions</a></div><div class="ttdeci">void validateOptions(const instanton_options_t &amp;o)</div><div class="ttdoc">Throws std::invalid_argument on an inconsistent [Instanton] pi_* key.</div><div class="ttdef"><b>Definition</b> <a href="#l00031">PIQTSTJob.cpp:31</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pot_html"><div class="ttname"><a href="namespaceeonc_1_1pot.html">eonc::pot</a></div><div class="ttdef"><b>Definition</b> <a href="ExternalCommand_8h_source.html#l00022">ExternalCommand.h:22</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1tunneling_html_a520ac3171661d0e32fa444d7cdd546c4"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#a520ac3171661d0e32fa444d7cdd546c4">eonc::tunneling::kTimeUnitSeconds</a></div><div class="ttdeci">constexpr double kTimeUnitSeconds</div><div class="ttdoc">One unit of time, sqrt(amu Angstrom^2 / eV), in seconds.</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8h_source.html#l00224">Tunneling.h:224</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1tunneling_html_a9226451a02d96e8651470ee1fb21eaa9"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#a9226451a02d96e8651470ee1fb21eaa9">eonc::tunneling::kHbar</a></div><div class="ttdeci">constexpr double kHbar</div><div class="ttdoc">hbar in eV^0.5 amu^0.5 Angstrom, correctly rounded from the exact SI values (h = 6....</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8h_source.html#l00037">Tunneling.h:37</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1tunneling_html_af7d7cff7a86f5d8ade50e485b3b184e9"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#af7d7cff7a86f5d8ade50e485b3b184e9">eonc::tunneling::kBoltzmann</a></div><div class="ttdeci">constexpr double kBoltzmann</div><div class="ttdoc">Boltzmann constant in eV / K, correctly rounded from the exact 1.380649e-23 J / K.</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8h_source.html#l00041">Tunneling.h:41</a></div></div>
+<div class="ttc" id="astructeonc_1_1constants__t_html_a4372e7836ad7935763ac02b37c36bb56"><div class="ttname"><a href="structeonc_1_1constants__t.html#a4372e7836ad7935763ac02b37c36bb56">eonc::constants_t::timeUnit</a></div><div class="ttdeci">double timeUnit</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00026">ParametersOptions.h:26</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html">eonc::instanton_options_t</a></div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00808">ParametersOptions.h:808</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a0418c85fd4c65d577777b0cf845543e2"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a0418c85fd4c65d577777b0cf845543e2">eonc::instanton_options_t::pi_thermostat</a></div><div class="ttdeci">std::string pi_thermostat</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00853">ParametersOptions.h:853</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a0780a3a5150e1503223d9ed813ef592f"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a0780a3a5150e1503223d9ed813ef592f">eonc::instanton_options_t::pi_direction</a></div><div class="ttdeci">std::string pi_direction</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00860">ParametersOptions.h:860</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a0bf7e376ee91702aa7d56aa101c4b90b"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a0bf7e376ee91702aa7d56aa101c4b90b">eonc::instanton_options_t::pi_equilibration_steps</a></div><div class="ttdeci">long pi_equilibration_steps</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00848">ParametersOptions.h:848</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a0bfe825b48ab3687d00207c3a252b411"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a0bfe825b48ab3687d00207c3a252b411">eonc::instanton_options_t::pi_seed</a></div><div class="ttdeci">long pi_seed</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00857">ParametersOptions.h:857</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a202591a87ba321cdc4b3f4b1cdef2c16"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a202591a87ba321cdc4b3f4b1cdef2c16">eonc::instanton_options_t::pi_recrossing_children</a></div><div class="ttdeci">long pi_recrossing_children</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00869">ParametersOptions.h:869</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a47a03ebd2863e5baefe4aeac61efb4e2"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a47a03ebd2863e5baefe4aeac61efb4e2">eonc::instanton_options_t::pi_reactant_extent</a></div><div class="ttdeci">double pi_reactant_extent</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00863">ParametersOptions.h:863</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a61a8da13917f23ebd5177b2598907851"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a61a8da13917f23ebd5177b2598907851">eonc::instanton_options_t::mode</a></div><div class="ttdeci">std::string mode</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00809">ParametersOptions.h:809</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a6d7d235d5f376e6d681909a8bc6ca4a4"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a6d7d235d5f376e6d681909a8bc6ca4a4">eonc::instanton_options_t::pi_planes</a></div><div class="ttdeci">long pi_planes</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00846">ParametersOptions.h:846</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a77f34d0586383ddba203b83085f35ce3"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a77f34d0586383ddba203b83085f35ce3">eonc::instanton_options_t::pi_recrossing_spacing</a></div><div class="ttdeci">long pi_recrossing_spacing</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00871">ParametersOptions.h:871</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_a9d7f850fb5a68c059013565e7d6d6af8"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#a9d7f850fb5a68c059013565e7d6d6af8">eonc::instanton_options_t::pi_recrossing_time</a></div><div class="ttdeci">double pi_recrossing_time</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00870">ParametersOptions.h:870</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_ab082a6ace0c4a0a5224130fe0f1a4b17"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#ab082a6ace0c4a0a5224130fe0f1a4b17">eonc::instanton_options_t::pi_pile_scale</a></div><div class="ttdeci">double pi_pile_scale</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00856">ParametersOptions.h:856</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_ac3a44d4dea3d10267afbe44787d59aa5"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#ac3a44d4dea3d10267afbe44787d59aa5">eonc::instanton_options_t::pi_beads</a></div><div class="ttdeci">long pi_beads</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00847">ParametersOptions.h:847</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_ac8a3dceb616c1f3ad9abf1103d826f2d"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#ac8a3dceb616c1f3ad9abf1103d826f2d">eonc::instanton_options_t::pi_sampling_steps</a></div><div class="ttdeci">long pi_sampling_steps</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00849">ParametersOptions.h:849</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_acc9d657eaa2571d30bb3d5e22fde0d74"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#acc9d657eaa2571d30bb3d5e22fde0d74">eonc::instanton_options_t::pi_recrossing_parents</a></div><div class="ttdeci">long pi_recrossing_parents</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00868">ParametersOptions.h:868</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_acfcb3930c6c60f6b9ef24dbd1ee7b33d"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#acfcb3930c6c60f6b9ef24dbd1ee7b33d">eonc::instanton_options_t::pi_pile_tau</a></div><div class="ttdeci">double pi_pile_tau</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00855">ParametersOptions.h:855</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_aeb75919dd555e29b4550a9cf3caee6e2"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#aeb75919dd555e29b4550a9cf3caee6e2">eonc::instanton_options_t::pi_gle_file</a></div><div class="ttdeci">std::string pi_gle_file</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00854">ParametersOptions.h:854</a></div></div>
+<div class="ttc" id="astructeonc_1_1instanton__options__t_html_aed3d650baba80662531c9d596e73c635"><div class="ttname"><a href="structeonc_1_1instanton__options__t.html#aed3d650baba80662531c9d596e73c635">eonc::instanton_options_t::pi_time_step</a></div><div class="ttdeci">double pi_time_step</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00850">ParametersOptions.h:850</a></div></div>
+<div class="ttc" id="astructeonc_1_1io_1_1ConFrameMetadata_html"><div class="ttname"><a href="structeonc_1_1io_1_1ConFrameMetadata.html">eonc::io::ConFrameMetadata</a></div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00071">ConFileIO.h:71</a></div></div>
+<div class="ttc" id="astructeonc_1_1io_1_1ConFrameMetadata_html_a1c066326eb4ccd15a01e3606e4abf5bd"><div class="ttname"><a href="structeonc_1_1io_1_1ConFrameMetadata.html#a1c066326eb4ccd15a01e3606e4abf5bd">eonc::io::ConFrameMetadata::frame_index</a></div><div class="ttdeci">std::optional&lt; uint64_t &gt; frame_index</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00072">ConFileIO.h:72</a></div></div>
+<div class="ttc" id="astructeonc_1_1io_1_1ConFrameMetadata_html_a1e1609724a95a29690f72798b5b51215"><div class="ttname"><a href="structeonc_1_1io_1_1ConFrameMetadata.html#a1e1609724a95a29690f72798b5b51215">eonc::io::ConFrameMetadata::spreads</a></div><div class="ttdeci">std::vector&lt; double &gt; spreads</div><div class="ttdoc">Per-atom root-mean-square spread of the position distribution about the written coordinates,...</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00090">ConFileIO.h:90</a></div></div>
+<div class="ttc" id="astructeonc_1_1io_1_1ConFrameMetadata_html_a2a031c3e8c331a9fcd4b0b06ca9cde83"><div class="ttname"><a href="structeonc_1_1io_1_1ConFrameMetadata.html#a2a031c3e8c331a9fcd4b0b06ca9cde83">eonc::io::ConFrameMetadata::scalars</a></div><div class="ttdeci">std::vector&lt; ConMetadataValue &gt; scalars</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00079">ConFileIO.h:79</a></div></div>
+<div class="ttc" id="astructeonc_1_1io_1_1ConFrameMetadata_html_af58aac5c164318bf2e21b322d37f0bc5"><div class="ttname"><a href="structeonc_1_1io_1_1ConFrameMetadata.html#af58aac5c164318bf2e21b322d37f0bc5">eonc::io::ConFrameMetadata::write_con_forces</a></div><div class="ttdeci">std::optional&lt; bool &gt; write_con_forces</div><div class="ttdoc">When set, this write includes or omits force sections regardless of Parameters.main_options()....</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00093">ConFileIO.h:93</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Options_html_a1c166accd9ac8ae595dcba9587fd631e"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Options.html#a1c166accd9ac8ae595dcba9587fd631e">eonc::pathintegral::Options::thermostat</a></div><div class="ttdeci">Thermostat thermostat</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00055">PathIntegral.h:55</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Options_html_a32cfa3c4fafcb0e4467d2d1c1a1b307d"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Options.html#a32cfa3c4fafcb0e4467d2d1c1a1b307d">eonc::pathintegral::Options::dt</a></div><div class="ttdeci">double dt</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00053">PathIntegral.h:53</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Options_html_a462451eb9b3d400d3803107ea8ec1ed1"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Options.html#a462451eb9b3d400d3803107ea8ec1ed1">eonc::pathintegral::Options::gleFile</a></div><div class="ttdeci">std::string gleFile</div><div class="ttdoc">Normal-mode GLE matrices.</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00064">PathIntegral.h:64</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Options_html_a700dab2116cd740f25511468409d688a"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Options.html#a700dab2116cd740f25511468409d688a">eonc::pathintegral::Options::seed</a></div><div class="ttdeci">std::uint64_t seed</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00065">PathIntegral.h:65</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Options_html_a7232df2aa06c310842292fd1a7ba8d9f"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Options.html#a7232df2aa06c310842292fd1a7ba8d9f">eonc::pathintegral::Options::pileScale</a></div><div class="ttdeci">double pileScale</div><div class="ttdoc">Scales the critical PILE damping of the internal modes.</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00059">PathIntegral.h:59</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Options_html_aa5e127abb4c261a67c9edd4f7bc1d40b"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Options.html#aa5e127abb4c261a67c9edd4f7bc1d40b">eonc::pathintegral::Options::beads</a></div><div class="ttdeci">long beads</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00049">PathIntegral.h:49</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Options_html_ab1c5c800fe075a1e6ad0bf9431cddea1"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Options.html#ab1c5c800fe075a1e6ad0bf9431cddea1">eonc::pathintegral::Options::pileTau</a></div><div class="ttdeci">double pileTau</div><div class="ttdoc">Centroid Langevin time, in the same time unit as dt.</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00057">PathIntegral.h:57</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Options_html_abfc70ee4f6ee8a424c931392f10c7de3"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Options.html#abfc70ee4f6ee8a424c931392f10c7de3">eonc::pathintegral::Options::hbar</a></div><div class="ttdeci">double hbar</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00052">PathIntegral.h:52</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Options_html_ace7cb6ca4dcd5e5133aae0fd79e39398"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Options.html#ace7cb6ca4dcd5e5133aae0fd79e39398">eonc::pathintegral::Options::temperature</a></div><div class="ttdeci">double temperature</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00050">PathIntegral.h:50</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Options_html_ae035e2066df9e4f9c4f93b5f30f8515e"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Options.html#ae035e2066df9e4f9c4f93b5f30f8515e">eonc::pathintegral::Options::kB</a></div><div class="ttdeci">double kB</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00051">PathIntegral.h:51</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Coordinate_html"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Coordinate.html">eonc::piqtst::Coordinate</a></div><div class="ttdoc">The coordinate s = n .</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00042">PIQTST.h:42</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Coordinate_html_a4816ff5331a078f17197cf58dd0d5346"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Coordinate.html#a4816ff5331a078f17197cf58dd0d5346">eonc::piqtst::Coordinate::free</a></div><div class="ttdeci">std::vector&lt; char &gt; free</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00046">PIQTST.h:46</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Coordinate_html_a4f7ee6a4408e0b8dfc0e67a92eac3f61"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Coordinate.html#a4f7ee6a4408e0b8dfc0e67a92eac3f61">eonc::piqtst::Coordinate::numbers</a></div><div class="ttdeci">std::vector&lt; int &gt; numbers</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00045">PIQTST.h:45</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Coordinate_html_a7674370e7c1c1f8f58a8efb22d14c5a7"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Coordinate.html#a7674370e7c1c1f8f58a8efb22d14c5a7">eonc::piqtst::Coordinate::reference</a></div><div class="ttdeci">VectorXd reference</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00047">PIQTST.h:47</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Coordinate_html_a77517b982597b0b3ea0ad53ed7de8ca2"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Coordinate.html#a77517b982597b0b3ea0ad53ed7de8ca2">eonc::piqtst::Coordinate::masses</a></div><div class="ttdeci">std::vector&lt; double &gt; masses</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00044">PIQTST.h:44</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Coordinate_html_a86ddb7d7bd8d73b4225c8bcbf1b84fa1"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Coordinate.html#a86ddb7d7bd8d73b4225c8bcbf1b84fa1">eonc::piqtst::Coordinate::atoms</a></div><div class="ttdeci">long atoms</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00043">PIQTST.h:43</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Coordinate_html_aa64558a7a16741e62f63a40cf2cb4e6d"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Coordinate.html#aa64558a7a16741e62f63a40cf2cb4e6d">eonc::piqtst::Coordinate::direction</a></div><div class="ttdeci">VectorXd direction</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00048">PIQTST.h:48</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Coordinate_html_ab2b6c61adf338a074dcc7f8dd4699f6c"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Coordinate.html#ab2b6c61adf338a074dcc7f8dd4699f6c">eonc::piqtst::Coordinate::box</a></div><div class="ttdeci">const double * box</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00049">PIQTST.h:49</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Plane_html"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Plane.html">eonc::piqtst::Plane</a></div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00068">PIQTST.h:68</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Plane_html_a2a5f8189e61416168e03ea171e76c730"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Plane.html#a2a5f8189e61416168e03ea171e76c730">eonc::piqtst::Plane::meanForceError</a></div><div class="ttdeci">double meanForceError</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00073">PIQTST.h:73</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Plane_html_a3e17f72475d4276013c75c2999591d6d"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Plane.html#a3e17f72475d4276013c75c2999591d6d">eonc::piqtst::Plane::freeEnergy</a></div><div class="ttdeci">double freeEnergy</div><div class="ttdoc">F(s) - F(s_0) by the trapezoid rule over the planes, eV, and its standard error from the mean-force e...</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00076">PIQTST.h:76</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Plane_html_a443141f347d82ead1763508f2927604f"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Plane.html#a443141f347d82ead1763508f2927604f">eonc::piqtst::Plane::spread</a></div><div class="ttdeci">std::vector&lt; double &gt; spread</div><div class="ttdoc">Root-mean-square bead displacement from the centroid per Cartesian coordinate, Angstrom,...</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00082">PIQTST.h:82</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Plane_html_a9f44f0990cb6d0ce7713ce5a3b47cf0c"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Plane.html#a9f44f0990cb6d0ce7713ce5a3b47cf0c">eonc::piqtst::Plane::s</a></div><div class="ttdeci">double s</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00069">PIQTST.h:69</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Plane_html_ac6f3a7dc99c3da19137cdc6ff67156a7"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Plane.html#ac6f3a7dc99c3da19137cdc6ff67156a7">eonc::piqtst::Plane::centroid</a></div><div class="ttdeci">VectorXd centroid</div><div class="ttdoc">Production average of the centroid, Cartesian.</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00079">PIQTST.h:79</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Plane_html_ad637ae6ce6964f73fff787429717bff7"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Plane.html#ad637ae6ce6964f73fff787429717bff7">eonc::piqtst::Plane::freeEnergyError</a></div><div class="ttdeci">double freeEnergyError</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00077">PIQTST.h:77</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Plane_html_ae256a7dbdab000389899f6b2c8984537"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Plane.html#ae256a7dbdab000389899f6b2c8984537">eonc::piqtst::Plane::meanForce</a></div><div class="ttdeci">double meanForce</div><div class="ttdoc">dF/ds = -&lt;n .</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00072">PIQTST.h:72</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Rate_html"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Rate.html">eonc::piqtst::Rate</a></div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00096">PIQTST.h:96</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Rate_html_a268ee5ff83906b51e19402f61bd80343"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Rate.html#a268ee5ff83906b51e19402f61bd80343">eonc::piqtst::Rate::barrierError</a></div><div class="ttdeci">double barrierError</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00101">PIQTST.h:101</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Rate_html_a9055070b3a3588dca1b9a4b053ea6cc2"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Rate.html#a9055070b3a3588dca1b9a4b053ea6cc2">eonc::piqtst::Rate::firstPlaneHeight</a></div><div class="ttdeci">double firstPlaneHeight</div><div class="ttdoc">beta (F(s_0) - F(reactant)): the reactant integral is cut at s_0, so a small value means the first pl...</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00108">PIQTST.h:108</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Rate_html_aab1b66cd24e7b5d0a2cf66098d14b34b"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Rate.html#aab1b66cd24e7b5d0a2cf66098d14b34b">eonc::piqtst::Rate::logRate</a></div><div class="ttdeci">double logRate</div><div class="ttdoc">ln k with k in inverse eOn time units (sqrt(amu Angstrom^2 / eV)), and its standard error.</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00104">PIQTST.h:104</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Rate_html_ad2ad7f1345a7d0303a494e6442daa4cd"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Rate.html#ad2ad7f1345a7d0303a494e6442daa4cd">eonc::piqtst::Rate::barrier</a></div><div class="ttdeci">double barrier</div><div class="ttdoc">F(s*) - F(reactant), eV, and its error.</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00100">PIQTST.h:100</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Rate_html_af59fbe20d3b7c2be239f99e0a7c5eb3a"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Rate.html#af59fbe20d3b7c2be239f99e0a7c5eb3a">eonc::piqtst::Rate::logRateError</a></div><div class="ttdeci">double logRateError</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00105">PIQTST.h:105</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1RecrossingOptions_html"><div class="ttname"><a href="structeonc_1_1piqtst_1_1RecrossingOptions.html">eonc::piqtst::RecrossingOptions</a></div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00117">PIQTST.h:117</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1RecrossingOptions_html_a23b4ab8883937f4215a75a332ab29942"><div class="ttname"><a href="structeonc_1_1piqtst_1_1RecrossingOptions.html#a23b4ab8883937f4215a75a332ab29942">eonc::piqtst::RecrossingOptions::parents</a></div><div class="ttdeci">long parents</div><div class="ttdoc">Parent configurations, each this many thermostatted steps after the last.</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00124">PIQTST.h:124</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1RecrossingOptions_html_a5029325d24880bc1f726a581805a9320"><div class="ttname"><a href="structeonc_1_1piqtst_1_1RecrossingOptions.html#a5029325d24880bc1f726a581805a9320">eonc::piqtst::RecrossingOptions::equilibration</a></div><div class="ttdeci">long equilibration</div><div class="ttdoc">Thermostatted steps on the plane before the first parent.</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00121">PIQTST.h:121</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1RecrossingOptions_html_a6246fc4267d6a898fc694e4ba253762d"><div class="ttname"><a href="structeonc_1_1piqtst_1_1RecrossingOptions.html#a6246fc4267d6a898fc694e4ba253762d">eonc::piqtst::RecrossingOptions::spacing</a></div><div class="ttdeci">long spacing</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00125">PIQTST.h:125</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1RecrossingOptions_html_a63ac70c2748d6f90c9a71b45ed2612c3"><div class="ttname"><a href="structeonc_1_1piqtst_1_1RecrossingOptions.html#a63ac70c2748d6f90c9a71b45ed2612c3">eonc::piqtst::RecrossingOptions::seed</a></div><div class="ttdeci">std::function&lt; VectorXd(double)&gt; seed</div><div class="ttdoc">Cartesian centroid to start the parent ring at.</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00135">PIQTST.h:135</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1RecrossingOptions_html_a7106fc067a77e71d36746118ed03b13f"><div class="ttname"><a href="structeonc_1_1piqtst_1_1RecrossingOptions.html#a7106fc067a77e71d36746118ed03b13f">eonc::piqtst::RecrossingOptions::steps</a></div><div class="ttdeci">long steps</div><div class="ttdoc">Unconstrained, thermostat-free steps per child of ring.dt.</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00129">PIQTST.h:129</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1RecrossingOptions_html_ab2c63bc6cccc349f1296b85c27ec1e97"><div class="ttname"><a href="structeonc_1_1piqtst_1_1RecrossingOptions.html#ab2c63bc6cccc349f1296b85c27ec1e97">eonc::piqtst::RecrossingOptions::children</a></div><div class="ttdeci">long children</div><div class="ttdoc">Momentum draws per parent; each runs forward and reversed.</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00127">PIQTST.h:127</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1RecrossingOptions_html_ad6aac6c76ec3a65ba1fd1e31c0f2404d"><div class="ttname"><a href="structeonc_1_1piqtst_1_1RecrossingOptions.html#ad6aac6c76ec3a65ba1fd1e31c0f2404d">eonc::piqtst::RecrossingOptions::s</a></div><div class="ttdeci">double s</div><div class="ttdoc">The dividing plane s*, amu^0.5 Angstrom.</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00119">PIQTST.h:119</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1RecrossingOptions_html_ae0013b1de16bc26cfd5ac983f607d9c4"><div class="ttname"><a href="structeonc_1_1piqtst_1_1RecrossingOptions.html#ae0013b1de16bc26cfd5ac983f607d9c4">eonc::piqtst::RecrossingOptions::ring</a></div><div class="ttdeci">pathintegral::Options ring</div><div class="ttdoc">The parents&#39; ring and thermostat.</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00132">PIQTST.h:132</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Recrossing_html"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Recrossing.html">eonc::piqtst::Recrossing</a></div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00138">PIQTST.h:138</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Recrossing_html_a1830f486cef6a38eb75b1929162d13e0"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Recrossing.html#a1830f486cef6a38eb75b1929162d13e0">eonc::piqtst::Recrossing::time</a></div><div class="ttdeci">std::vector&lt; double &gt; time</div><div class="ttdoc">t = step * ring.dt, from 0 to steps * ring.dt, and kappa(t) = &lt;sdot(0) h(s(t) - s*)&gt; / &lt;sdot(0) h(sdo...</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00143">PIQTST.h:143</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Recrossing_html_a28a5a5d22e1c585240dff00d985957bb"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Recrossing.html#a28a5a5d22e1c585240dff00d985957bb">eonc::piqtst::Recrossing::trajectories</a></div><div class="ttdeci">long trajectories</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00149">PIQTST.h:149</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Recrossing_html_ab509b691898c5ab4fab18ef1408aec98"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Recrossing.html#ab509b691898c5ab4fab18ef1408aec98">eonc::piqtst::Recrossing::plateauError</a></div><div class="ttdeci">double plateauError</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00148">PIQTST.h:148</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Recrossing_html_abc209412cc16dd030d3630d128190ad8"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Recrossing.html#abc209412cc16dd030d3630d128190ad8">eonc::piqtst::Recrossing::plateau</a></div><div class="ttdeci">double plateau</div><div class="ttdoc">Mean of kappa(t) over the last quarter of the times, and its jackknife standard error over parents.</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00147">PIQTST.h:147</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1Recrossing_html_acc18f881a33ca5c64e67d0f40eeea77e"><div class="ttname"><a href="structeonc_1_1piqtst_1_1Recrossing.html#acc18f881a33ca5c64e67d0f40eeea77e">eonc::piqtst::Recrossing::kappa</a></div><div class="ttdeci">std::vector&lt; double &gt; kappa</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00144">PIQTST.h:144</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1ScanOptions_html"><div class="ttname"><a href="structeonc_1_1piqtst_1_1ScanOptions.html">eonc::piqtst::ScanOptions</a></div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00052">PIQTST.h:52</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1ScanOptions_html_a22795b41f020388d850b2dce5213c762"><div class="ttname"><a href="structeonc_1_1piqtst_1_1ScanOptions.html#a22795b41f020388d850b2dce5213c762">eonc::piqtst::ScanOptions::equilibration</a></div><div class="ttdeci">long equilibration</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00056">PIQTST.h:56</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1ScanOptions_html_a39ecc487e77318f931027c6cb5a55440"><div class="ttname"><a href="structeonc_1_1piqtst_1_1ScanOptions.html#a39ecc487e77318f931027c6cb5a55440">eonc::piqtst::ScanOptions::seed</a></div><div class="ttdeci">std::function&lt; VectorXd(double)&gt; seed</div><div class="ttdoc">Cartesian centroid to start the ring at on the plane at s.</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00065">PIQTST.h:65</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1ScanOptions_html_a699fbefa2cc5e472d67af4ad22d39ab6"><div class="ttname"><a href="structeonc_1_1piqtst_1_1ScanOptions.html#a699fbefa2cc5e472d67af4ad22d39ab6">eonc::piqtst::ScanOptions::planes</a></div><div class="ttdeci">std::vector&lt; double &gt; planes</div><div class="ttdoc">Plane positions in amu^0.5 Angstrom, ascending.</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00055">PIQTST.h:55</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1ScanOptions_html_a70aa75a667be7a8d6ba1afdd8ed2f9e6"><div class="ttname"><a href="structeonc_1_1piqtst_1_1ScanOptions.html#a70aa75a667be7a8d6ba1afdd8ed2f9e6">eonc::piqtst::ScanOptions::blocks</a></div><div class="ttdeci">long blocks</div><div class="ttdoc">Equal blocks of the production run for the standard error.</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00059">PIQTST.h:59</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1ScanOptions_html_a8077e8b1a7b583c343bd4a5798b39c1a"><div class="ttname"><a href="structeonc_1_1piqtst_1_1ScanOptions.html#a8077e8b1a7b583c343bd4a5798b39c1a">eonc::piqtst::ScanOptions::production</a></div><div class="ttdeci">long production</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00057">PIQTST.h:57</a></div></div>
+<div class="ttc" id="astructeonc_1_1piqtst_1_1ScanOptions_html_ad54f6cbfa11d13ae730a4b8752ef2c17"><div class="ttname"><a href="structeonc_1_1piqtst_1_1ScanOptions.html#ad54f6cbfa11d13ae730a4b8752ef2c17">eonc::piqtst::ScanOptions::ring</a></div><div class="ttdeci">pathintegral::Options ring</div><div class="ttdoc">Beads, temperature, units (kB in eV / K, hbar in eV time units), time step and thermostat of the ring...</div><div class="ttdef"><b>Definition</b> <a href="PIQTST_8h_source.html#l00062">PIQTST.h:62</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="dir_db3a54907829b36871118d03417739cd.html">client</a></li><li class="navelem"><a href="PIQTSTJob_8cpp.html">PIQTSTJob.cpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

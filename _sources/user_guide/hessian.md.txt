@@ -106,6 +106,22 @@ mass-weighted matrix. `[Main] quiet = true` suppresses the write log line only.
 Eigenvalues (squared frequencies) are obtained by diagonalizing the symmetrized
 matrix (ColMajor eigen solve in the client).
 
+With `[Hessian] write_modes = true` (the default), `modes.con` holds one frame
+per eigenvalue, lowest first. Each frame is the input structure with the mode
+in its `displacements` section: the Cartesian displacement \(x = q/\sqrt{m}\)
+of the mass-weighted eigenvector \(q\), scaled to unit norm, and zero on atoms
+outside the mobile set. The frame metadata carries `mode_eigenvalue` in
+eV/(Å² amu), `hbar_omega` in eV and `wavenumber` in cm⁻¹. The last two are
+negative for an imaginary mode. Any readcon reader gets the mode as an
+N x 3 array beside the positions:
+
+```{code-block} python
+import readcon
+
+for frame in readcon.read_con("modes.con"):
+    print(frame.metadata["wavenumber"], frame.disp.shape)
+```
+
 ## Free/fixed versus active (PHVA)
 
 **free/fixed** on `pos.con` / `Matter` is the optimizer mask: which atoms may

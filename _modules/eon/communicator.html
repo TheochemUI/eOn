@@ -130,6 +130,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lanczos.html">Lanczos</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/akmc.html">Adaptive kinetic Monte Carlo</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/saddle_search.html">Saddle search</a></li>
@@ -198,7 +199,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
@@ -216,6 +216,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.process_catalog.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_catalog</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 </ul>
@@ -224,6 +225,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v3.5.0/index.html">[v3.5.0] - 2026-10-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v3.5.0/release-notes.html">eOn 3.5.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
 </ul>
@@ -878,395 +883,399 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="423">            <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Recv</span><span class="p">([</span><span class="n">buf</span><span class="p">,</span> <span class="n">MPI</span><span class="o">.</span><span class="n">CHARACTER</span><span class="p">],</span> <span class="n">source</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </span><span data-line="424">            <span class="n">strterm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">buf</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\0</span><span class="s1">&#39;</span><span class="p">)</span>
 </span><span data-line="425">            <span class="n">strindex</span> <span class="o">=</span> <span class="n">strterm</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-</span><span data-line="426">            <span class="n">jobdir</span> <span class="o">=</span> <span class="n">buf</span><span class="p">[:</span><span class="n">strindex</span><span class="p">]</span><span class="o">.</span><span class="n">tostring</span><span class="p">()</span>
+</span><span data-line="426">            <span class="n">jobdir</span> <span class="o">=</span> <span class="n">buf</span><span class="p">[:</span><span class="n">strindex</span><span class="p">]</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span>
 </span><span data-line="427">            <span class="n">jobdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">jobdir</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span><span class="o">.</span><span class="n">name</span>
-</span><span data-line="428">
-</span><span data-line="429">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug_keep_all_results</span><span class="p">:</span>
-</span><span data-line="430">                <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span>
-</span><span data-line="431">                    <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">)</span> <span class="o">/</span> <span class="n">jobdir</span><span class="p">,</span>
-</span><span data-line="432">                    <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug_results_path</span> <span class="o">/</span> <span class="n">jobdir</span><span class="p">,</span>
-</span><span data-line="433">                <span class="p">)</span>
-</span><span data-line="434">            <span class="n">dest_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">resultspath</span><span class="p">)</span> <span class="o">/</span> <span class="n">jobdir</span>
-</span><span data-line="435">            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">)</span> <span class="o">/</span> <span class="n">jobdir</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dest_dir</span><span class="p">))</span>
-</span><span data-line="436">        <span class="k">for</span> <span class="n">bundle</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unbundle</span><span class="p">(</span><span class="n">resultspath</span><span class="p">,</span> <span class="n">keep_result</span><span class="p">):</span>
-</span><span data-line="437">            <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">bundle</span><span class="p">:</span>
-</span><span data-line="438">                <span class="k">yield</span> <span class="n">result</span></div>
-
-</span><span data-line="439">
-</span><span data-line="440">
-<div class="viewcode-block" id="MPI.get_number_in_progress">
-<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.MPI.get_number_in_progress">[docs]</a>
-</span><span data-line="441">    <span class="k">def</span><span class="w"> </span><span class="nf">get_number_in_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="442">        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;EON_NUMBER_OF_CLIENTS&#39;</span><span class="p">])</span></div>
+</span><span data-line="428">            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">)</span> <span class="o">/</span> <span class="n">jobdir</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+</span><span data-line="429">                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Client returned </span><span class="si">%s</span><span class="s2">, which is not in </span><span class="si">%s</span><span class="s2">; skipping&quot;</span><span class="p">,</span>
+</span><span data-line="430">                             <span class="n">jobdir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">)</span>
+</span><span data-line="431">                <span class="k">continue</span>
+</span><span data-line="432">
+</span><span data-line="433">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug_keep_all_results</span><span class="p">:</span>
+</span><span data-line="434">                <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span>
+</span><span data-line="435">                    <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">)</span> <span class="o">/</span> <span class="n">jobdir</span><span class="p">,</span>
+</span><span data-line="436">                    <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug_results_path</span> <span class="o">/</span> <span class="n">jobdir</span><span class="p">,</span>
+</span><span data-line="437">                <span class="p">)</span>
+</span><span data-line="438">            <span class="n">dest_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">resultspath</span><span class="p">)</span> <span class="o">/</span> <span class="n">jobdir</span>
+</span><span data-line="439">            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">)</span> <span class="o">/</span> <span class="n">jobdir</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dest_dir</span><span class="p">))</span>
+</span><span data-line="440">        <span class="k">for</span> <span class="n">bundle</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unbundle</span><span class="p">(</span><span class="n">resultspath</span><span class="p">,</span> <span class="n">keep_result</span><span class="p">):</span>
+</span><span data-line="441">            <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">bundle</span><span class="p">:</span>
+</span><span data-line="442">                <span class="k">yield</span> <span class="n">result</span></div>
 
 </span><span data-line="443">
+</span><span data-line="444">
+<div class="viewcode-block" id="MPI.get_number_in_progress">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.MPI.get_number_in_progress">[docs]</a>
+</span><span data-line="445">    <span class="k">def</span><span class="w"> </span><span class="nf">get_number_in_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="446">        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;EON_NUMBER_OF_CLIENTS&#39;</span><span class="p">])</span></div>
+
+</span><span data-line="447">
 <div class="viewcode-block" id="MPI.stop_clients">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.MPI.stop_clients">[docs]</a>
-</span><span data-line="444">    <span class="k">def</span><span class="w"> </span><span class="nf">stop_clients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="445"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Send STOPCAR to every ready client rank (ClientEON exits on that path).&quot;&quot;&quot;</span>
-</span><span data-line="446">        <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span data-line="447">        <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_ranks</span><span class="p">:</span>
-</span><span data-line="448">            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Iprobe</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-</span><span data-line="449">                <span class="k">continue</span>
-</span><span data-line="450">            <span class="n">tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">)</span>
-</span><span data-line="451">            <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Recv</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">rank</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</span><span data-line="452">            <span class="n">buf</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
-</span><span data-line="453">            <span class="n">buf</span><span class="o">.</span><span class="n">frombytes</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;STOPCAR</span><span class="se">\0</span><span class="s1">&#39;</span><span class="p">)</span>
-</span><span data-line="454">            <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Send</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">rank</span><span class="p">)</span>
-</span><span data-line="455">            <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span data-line="456">        <span class="k">return</span> <span class="n">n</span></div>
+</span><span data-line="448">    <span class="k">def</span><span class="w"> </span><span class="nf">stop_clients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="449"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Send STOPCAR to every ready client rank (ClientEON exits on that path).&quot;&quot;&quot;</span>
+</span><span data-line="450">        <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="451">        <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_ranks</span><span class="p">:</span>
+</span><span data-line="452">            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Iprobe</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+</span><span data-line="453">                <span class="k">continue</span>
+</span><span data-line="454">            <span class="n">tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">)</span>
+</span><span data-line="455">            <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Recv</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">rank</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="456">            <span class="n">buf</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+</span><span data-line="457">            <span class="n">buf</span><span class="o">.</span><span class="n">frombytes</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;STOPCAR</span><span class="se">\0</span><span class="s1">&#39;</span><span class="p">)</span>
+</span><span data-line="458">            <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Send</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">rank</span><span class="p">)</span>
+</span><span data-line="459">            <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span data-line="460">        <span class="k">return</span> <span class="n">n</span></div>
 
-</span><span data-line="457">
+</span><span data-line="461">
 <div class="viewcode-block" id="MPI.cancel_state">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.MPI.cancel_state">[docs]</a>
-</span><span data-line="458">    <span class="k">def</span><span class="w"> </span><span class="nf">cancel_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
-</span><span data-line="459">        <span class="c1"># Work already handed to a client cannot be recalled over this</span>
-</span><span data-line="460">        <span class="c1"># protocol; its result carries the old state number and the explorer&#39;s</span>
-</span><span data-line="461">        <span class="c1"># keep_result filter discards it. Stopping the clients here would</span>
-</span><span data-line="462">        <span class="c1"># leave the run without workers for the next state.</span>
-</span><span data-line="463">        <span class="k">return</span> <span class="mi">0</span></div>
+</span><span data-line="462">    <span class="k">def</span><span class="w"> </span><span class="nf">cancel_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+</span><span data-line="463">        <span class="c1"># Work already handed to a client cannot be recalled over this</span>
+</span><span data-line="464">        <span class="c1"># protocol; its result carries the old state number and the explorer&#39;s</span>
+</span><span data-line="465">        <span class="c1"># keep_result filter discards it. Stopping the clients here would</span>
+</span><span data-line="466">        <span class="c1"># leave the run without workers for the next state.</span>
+</span><span data-line="467">        <span class="k">return</span> <span class="mi">0</span></div>
 </div>
 
-</span><span data-line="464">
-</span><span data-line="465">
+</span><span data-line="468">
+</span><span data-line="469">
 <div class="viewcode-block" id="Local">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Local">[docs]</a>
-</span><span data-line="466"><span class="k">class</span><span class="w"> </span><span class="nc">Local</span><span class="p">(</span><span class="n">Communicator</span><span class="p">):</span>
-</span><span data-line="467">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scratchpath</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">ncpus</span><span class="p">,</span> <span class="n">bundle_size</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ConfigClass</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-</span><span data-line="468">        <span class="n">Communicator</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scratchpath</span><span class="p">,</span> <span class="n">bundle_size</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">config</span><span class="p">)</span>
-</span><span data-line="469">
-</span><span data-line="470">        <span class="c1"># number of cpus to use</span>
-</span><span data-line="471">        <span class="bp">self</span><span class="o">.</span><span class="n">ncpus</span> <span class="o">=</span> <span class="n">ncpus</span>
-</span><span data-line="472">
-</span><span data-line="473">        <span class="c1"># path to the client</span>
-</span><span data-line="474">        <span class="n">client_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
-</span><span data-line="475">        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span> <span class="ow">in</span> <span class="n">client</span> <span class="ow">or</span> <span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">client</span><span class="p">:</span>
-</span><span data-line="476">            <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">client_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
-</span><span data-line="477">            <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-</span><span data-line="478">                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Can&#39;t find client: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
-</span><span data-line="479">                <span class="k">raise</span> <span class="n">CommunicatorError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t find client binary: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">client</span><span class="p">)</span>
-</span><span data-line="480">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="481">            <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
-</span><span data-line="482">            <span class="k">if</span> <span class="n">client_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-</span><span data-line="483">                <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">client_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
-</span><span data-line="484">            <span class="k">elif</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="n">client</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="485">                <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
-</span><span data-line="486">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="487">                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Can&#39;t find client: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
-</span><span data-line="488">                <span class="k">raise</span> <span class="n">CommunicatorError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t find client binary: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">client</span><span class="p">)</span>
-</span><span data-line="489">
-</span><span data-line="490">        <span class="bp">self</span><span class="o">.</span><span class="n">joblist</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="491">
-</span><span data-line="492">        <span class="kn">import</span><span class="w"> </span><span class="nn">atexit</span>
-</span><span data-line="493">        <span class="c1"># don&#39;t let clients hang around if the script dies</span>
-</span><span data-line="494">        <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cleanup</span><span class="p">)</span>
+</span><span data-line="470"><span class="k">class</span><span class="w"> </span><span class="nc">Local</span><span class="p">(</span><span class="n">Communicator</span><span class="p">):</span>
+</span><span data-line="471">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scratchpath</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">ncpus</span><span class="p">,</span> <span class="n">bundle_size</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ConfigClass</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+</span><span data-line="472">        <span class="n">Communicator</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scratchpath</span><span class="p">,</span> <span class="n">bundle_size</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">config</span><span class="p">)</span>
+</span><span data-line="473">
+</span><span data-line="474">        <span class="c1"># number of cpus to use</span>
+</span><span data-line="475">        <span class="bp">self</span><span class="o">.</span><span class="n">ncpus</span> <span class="o">=</span> <span class="n">ncpus</span>
+</span><span data-line="476">
+</span><span data-line="477">        <span class="c1"># path to the client</span>
+</span><span data-line="478">        <span class="n">client_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+</span><span data-line="479">        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span> <span class="ow">in</span> <span class="n">client</span> <span class="ow">or</span> <span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">client</span><span class="p">:</span>
+</span><span data-line="480">            <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">client_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
+</span><span data-line="481">            <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+</span><span data-line="482">                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Can&#39;t find client: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
+</span><span data-line="483">                <span class="k">raise</span> <span class="n">CommunicatorError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t find client binary: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">client</span><span class="p">)</span>
+</span><span data-line="484">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="485">            <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+</span><span data-line="486">            <span class="k">if</span> <span class="n">client_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+</span><span data-line="487">                <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">client_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
+</span><span data-line="488">            <span class="k">elif</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="n">client</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="489">                <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+</span><span data-line="490">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="491">                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Can&#39;t find client: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
+</span><span data-line="492">                <span class="k">raise</span> <span class="n">CommunicatorError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t find client binary: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">client</span><span class="p">)</span>
+</span><span data-line="493">
+</span><span data-line="494">        <span class="bp">self</span><span class="o">.</span><span class="n">joblist</span> <span class="o">=</span> <span class="p">[]</span>
 </span><span data-line="495">
+</span><span data-line="496">        <span class="kn">import</span><span class="w"> </span><span class="nn">atexit</span>
+</span><span data-line="497">        <span class="c1"># don&#39;t let clients hang around if the script dies</span>
+</span><span data-line="498">        <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cleanup</span><span class="p">)</span>
+</span><span data-line="499">
 <div class="viewcode-block" id="Local.cleanup">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Local.cleanup">[docs]</a>
-</span><span data-line="496">    <span class="k">def</span><span class="w"> </span><span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="497"><span class="w">        </span><span class="sd">&#39;&#39;&#39;Kills the running eonclients and everything they started.&#39;&#39;&#39;</span>
-</span><span data-line="498">        <span class="kn">import</span><span class="w"> </span><span class="nn">signal</span>
-</span><span data-line="499">        <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="p">:</span>
-</span><span data-line="500">            <span class="n">p</span> <span class="o">=</span> <span class="n">job</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</span><span data-line="501">            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="502">                <span class="k">continue</span>
-</span><span data-line="503">            <span class="k">try</span><span class="p">:</span>
-</span><span data-line="504">                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;posix&#39;</span><span class="p">:</span>
-</span><span data-line="505">                    <span class="n">os</span><span class="o">.</span><span class="n">killpg</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">pid</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIGKILL</span><span class="p">)</span>
-</span><span data-line="506">                <span class="k">else</span><span class="p">:</span>
-</span><span data-line="507">                    <span class="n">p</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
-</span><span data-line="508">            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-</span><span data-line="509">                <span class="k">pass</span></div>
+</span><span data-line="500">    <span class="k">def</span><span class="w"> </span><span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="501"><span class="w">        </span><span class="sd">&#39;&#39;&#39;Kills the running eonclients and everything they started.&#39;&#39;&#39;</span>
+</span><span data-line="502">        <span class="kn">import</span><span class="w"> </span><span class="nn">signal</span>
+</span><span data-line="503">        <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="p">:</span>
+</span><span data-line="504">            <span class="n">p</span> <span class="o">=</span> <span class="n">job</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span data-line="505">            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="506">                <span class="k">continue</span>
+</span><span data-line="507">            <span class="k">try</span><span class="p">:</span>
+</span><span data-line="508">                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;posix&#39;</span><span class="p">:</span>
+</span><span data-line="509">                    <span class="n">os</span><span class="o">.</span><span class="n">killpg</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">pid</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIGKILL</span><span class="p">)</span>
+</span><span data-line="510">                <span class="k">else</span><span class="p">:</span>
+</span><span data-line="511">                    <span class="n">p</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+</span><span data-line="512">            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+</span><span data-line="513">                <span class="k">pass</span></div>
 
-</span><span data-line="510">
+</span><span data-line="514">
 <div class="viewcode-block" id="Local.get_results">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Local.get_results">[docs]</a>
-</span><span data-line="511">    <span class="k">def</span><span class="w"> </span><span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resultspath</span><span class="p">,</span> <span class="n">keep_result</span><span class="p">):</span>
-</span><span data-line="512"><span class="w">        </span><span class="sd">&#39;&#39;&#39;Moves work from scratchpath to results path.&#39;&#39;&#39;</span>
-</span><span data-line="513">        <span class="n">scratch</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">)</span>
-</span><span data-line="514">        <span class="n">jobdirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">scratch</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()]</span>
-</span><span data-line="515">
-</span><span data-line="516">        <span class="k">for</span> <span class="n">jobdir</span> <span class="ow">in</span> <span class="n">jobdirs</span><span class="p">:</span>
-</span><span data-line="517">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug_keep_all_results</span><span class="p">:</span>
-</span><span data-line="518">                <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span>
-</span><span data-line="519">                    <span class="n">scratch</span> <span class="o">/</span> <span class="n">jobdir</span><span class="p">,</span>
-</span><span data-line="520">                    <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug_results_path</span> <span class="o">/</span> <span class="n">jobdir</span><span class="p">,</span>
-</span><span data-line="521">                <span class="p">)</span>
-</span><span data-line="522">            <span class="n">dest_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">resultspath</span><span class="p">)</span> <span class="o">/</span> <span class="n">jobdir</span>
-</span><span data-line="523">            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">scratch</span> <span class="o">/</span> <span class="n">jobdir</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dest_dir</span><span class="p">))</span>
-</span><span data-line="524">        <span class="k">for</span> <span class="n">bundle</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unbundle</span><span class="p">(</span><span class="n">resultspath</span><span class="p">,</span> <span class="n">keep_result</span><span class="p">):</span>
-</span><span data-line="525">            <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">bundle</span><span class="p">:</span>
-</span><span data-line="526">                <span class="k">yield</span> <span class="n">result</span>
-</span><span data-line="527">
-</span><span data-line="528">        <span class="c1"># Clean out scratch directory</span>
-</span><span data-line="529">        <span class="k">for</span> <span class="n">path_name</span> <span class="ow">in</span> <span class="n">scratch</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
-</span><span data-line="530">            <span class="k">if</span> <span class="n">path_name</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
-</span><span data-line="531">                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">path_name</span><span class="p">)</span></div>
+</span><span data-line="515">    <span class="k">def</span><span class="w"> </span><span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resultspath</span><span class="p">,</span> <span class="n">keep_result</span><span class="p">):</span>
+</span><span data-line="516"><span class="w">        </span><span class="sd">&#39;&#39;&#39;Moves work from scratchpath to results path.&#39;&#39;&#39;</span>
+</span><span data-line="517">        <span class="n">scratch</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">)</span>
+</span><span data-line="518">        <span class="n">jobdirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">scratch</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()]</span>
+</span><span data-line="519">
+</span><span data-line="520">        <span class="k">for</span> <span class="n">jobdir</span> <span class="ow">in</span> <span class="n">jobdirs</span><span class="p">:</span>
+</span><span data-line="521">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug_keep_all_results</span><span class="p">:</span>
+</span><span data-line="522">                <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span>
+</span><span data-line="523">                    <span class="n">scratch</span> <span class="o">/</span> <span class="n">jobdir</span><span class="p">,</span>
+</span><span data-line="524">                    <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug_results_path</span> <span class="o">/</span> <span class="n">jobdir</span><span class="p">,</span>
+</span><span data-line="525">                <span class="p">)</span>
+</span><span data-line="526">            <span class="n">dest_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">resultspath</span><span class="p">)</span> <span class="o">/</span> <span class="n">jobdir</span>
+</span><span data-line="527">            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">scratch</span> <span class="o">/</span> <span class="n">jobdir</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dest_dir</span><span class="p">))</span>
+</span><span data-line="528">        <span class="k">for</span> <span class="n">bundle</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unbundle</span><span class="p">(</span><span class="n">resultspath</span><span class="p">,</span> <span class="n">keep_result</span><span class="p">):</span>
+</span><span data-line="529">            <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">bundle</span><span class="p">:</span>
+</span><span data-line="530">                <span class="k">yield</span> <span class="n">result</span>
+</span><span data-line="531">
+</span><span data-line="532">        <span class="c1"># Clean out scratch directory</span>
+</span><span data-line="533">        <span class="k">for</span> <span class="n">path_name</span> <span class="ow">in</span> <span class="n">scratch</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
+</span><span data-line="534">            <span class="k">if</span> <span class="n">path_name</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+</span><span data-line="535">                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">path_name</span><span class="p">)</span></div>
 
-</span><span data-line="532">
+</span><span data-line="536">
 <div class="viewcode-block" id="Local.check_job">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Local.check_job">[docs]</a>
-</span><span data-line="533">    <span class="k">def</span><span class="w"> </span><span class="nf">check_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
-</span><span data-line="534">        <span class="n">p</span><span class="p">,</span> <span class="n">jobpath</span> <span class="o">=</span> <span class="n">job</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">job</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-</span><span data-line="535">        <span class="c1"># Close stdout/stderr file handles so the files can be read for diagnostics.</span>
-</span><span data-line="536">        <span class="k">for</span> <span class="n">handle</span> <span class="ow">in</span> <span class="n">job</span><span class="p">[</span><span class="mi">2</span><span class="p">:]:</span>
-</span><span data-line="537">            <span class="k">if</span> <span class="n">handle</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">handle</span><span class="o">.</span><span class="n">closed</span><span class="p">:</span>
-</span><span data-line="538">                <span class="n">handle</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span data-line="539">        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-</span><span data-line="540">            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Job finished: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">jobpath</span><span class="p">)</span>
-</span><span data-line="541">            <span class="k">return</span> <span class="kc">True</span>
-</span><span data-line="542">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="543">            <span class="n">rc</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span>
-</span><span data-line="544">            <span class="c1"># stderr is a file (stderr.dat), not a pipe: never call</span>
-</span><span data-line="545">            <span class="c1"># communicate() for it. Read both logs from disk for the failure</span>
-</span><span data-line="546">            <span class="c1"># path so a dead/hung client cannot leave the parent blocked on a</span>
-</span><span data-line="547">            <span class="c1"># full undrained pipe either.</span>
-</span><span data-line="548">            <span class="n">errmsg</span> <span class="o">=</span> <span class="s2">&quot;job failed: </span><span class="si">%s</span><span class="s2"> (return code </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">jobpath</span><span class="p">,</span> <span class="n">rc</span><span class="p">)</span>
-</span><span data-line="549">            <span class="n">saw_output</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span data-line="550">            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;stderr.dat&quot;</span><span class="p">,</span> <span class="s2">&quot;stdout.dat&quot;</span><span class="p">):</span>
-</span><span data-line="551">                <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">jobpath</span><span class="p">)</span> <span class="o">/</span> <span class="n">name</span>
-</span><span data-line="552">                <span class="k">try</span><span class="p">:</span>
-</span><span data-line="553">                    <span class="n">text</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-</span><span data-line="554">                <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-</span><span data-line="555">                    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-</span><span data-line="556">                <span class="k">if</span> <span class="n">text</span><span class="p">:</span>
-</span><span data-line="557">                    <span class="n">saw_output</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span data-line="558">                    <span class="n">lines</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
-</span><span data-line="559">                    <span class="n">tail</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">:])</span>
-</span><span data-line="560">                    <span class="n">errmsg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  </span><span class="si">%s</span><span class="s2"> (last lines): </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tail</span><span class="p">)</span>
-</span><span data-line="561">            <span class="k">if</span> <span class="ow">not</span> <span class="n">saw_output</span><span class="p">:</span>
-</span><span data-line="562">                <span class="n">errmsg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  no output captured; client may have failed to start&quot;</span>
-</span><span data-line="563">                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;nt&#39;</span> <span class="ow">and</span> <span class="p">(</span><span class="n">rc</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">rc</span> <span class="o">&gt;</span> <span class="mh">0x80000000</span><span class="p">):</span>
-</span><span data-line="564">                    <span class="n">errmsg</span> <span class="o">+=</span> <span class="s2">&quot; (Windows error code 0x</span><span class="si">%X</span><span class="s2"> may indicate a missing DLL)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">rc</span> <span class="o">&amp;</span> <span class="mh">0xFFFFFFFF</span><span class="p">)</span>
-</span><span data-line="565">            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span></div>
+</span><span data-line="537">    <span class="k">def</span><span class="w"> </span><span class="nf">check_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
+</span><span data-line="538">        <span class="n">p</span><span class="p">,</span> <span class="n">jobpath</span> <span class="o">=</span> <span class="n">job</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">job</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span><span data-line="539">        <span class="c1"># Close stdout/stderr file handles so the files can be read for diagnostics.</span>
+</span><span data-line="540">        <span class="k">for</span> <span class="n">handle</span> <span class="ow">in</span> <span class="n">job</span><span class="p">[</span><span class="mi">2</span><span class="p">:]:</span>
+</span><span data-line="541">            <span class="k">if</span> <span class="n">handle</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">handle</span><span class="o">.</span><span class="n">closed</span><span class="p">:</span>
+</span><span data-line="542">                <span class="n">handle</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span data-line="543">        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="544">            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Job finished: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">jobpath</span><span class="p">)</span>
+</span><span data-line="545">            <span class="k">return</span> <span class="kc">True</span>
+</span><span data-line="546">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="547">            <span class="n">rc</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span>
+</span><span data-line="548">            <span class="c1"># stderr is a file (stderr.dat), not a pipe: never call</span>
+</span><span data-line="549">            <span class="c1"># communicate() for it. Read both logs from disk for the failure</span>
+</span><span data-line="550">            <span class="c1"># path so a dead/hung client cannot leave the parent blocked on a</span>
+</span><span data-line="551">            <span class="c1"># full undrained pipe either.</span>
+</span><span data-line="552">            <span class="n">errmsg</span> <span class="o">=</span> <span class="s2">&quot;job failed: </span><span class="si">%s</span><span class="s2"> (return code </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">jobpath</span><span class="p">,</span> <span class="n">rc</span><span class="p">)</span>
+</span><span data-line="553">            <span class="n">saw_output</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="554">            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;stderr.dat&quot;</span><span class="p">,</span> <span class="s2">&quot;stdout.dat&quot;</span><span class="p">):</span>
+</span><span data-line="555">                <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">jobpath</span><span class="p">)</span> <span class="o">/</span> <span class="n">name</span>
+</span><span data-line="556">                <span class="k">try</span><span class="p">:</span>
+</span><span data-line="557">                    <span class="n">text</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</span><span data-line="558">                <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+</span><span data-line="559">                    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+</span><span data-line="560">                <span class="k">if</span> <span class="n">text</span><span class="p">:</span>
+</span><span data-line="561">                    <span class="n">saw_output</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="562">                    <span class="n">lines</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+</span><span data-line="563">                    <span class="n">tail</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">:])</span>
+</span><span data-line="564">                    <span class="n">errmsg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  </span><span class="si">%s</span><span class="s2"> (last lines): </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tail</span><span class="p">)</span>
+</span><span data-line="565">            <span class="k">if</span> <span class="ow">not</span> <span class="n">saw_output</span><span class="p">:</span>
+</span><span data-line="566">                <span class="n">errmsg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  no output captured; client may have failed to start&quot;</span>
+</span><span data-line="567">                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;nt&#39;</span> <span class="ow">and</span> <span class="p">(</span><span class="n">rc</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">rc</span> <span class="o">&gt;</span> <span class="mh">0x80000000</span><span class="p">):</span>
+</span><span data-line="568">                    <span class="n">errmsg</span> <span class="o">+=</span> <span class="s2">&quot; (Windows error code 0x</span><span class="si">%X</span><span class="s2"> may indicate a missing DLL)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">rc</span> <span class="o">&amp;</span> <span class="mh">0xFFFFFFFF</span><span class="p">)</span>
+</span><span data-line="569">            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span></div>
 
-</span><span data-line="566">
+</span><span data-line="570">
 <div class="viewcode-block" id="Local.submit_jobs">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Local.submit_jobs">[docs]</a>
-</span><span data-line="567">    <span class="k">def</span><span class="w"> </span><span class="nf">submit_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">invariants</span><span class="p">):</span>
-</span><span data-line="568"><span class="w">        </span><span class="sd">&#39;&#39;&#39;Run up to ncpu number of clients to process the work in jobpaths.</span>
-</span><span data-line="569"><span class="sd">           The job directories are moved to the scratch path before the calculation</span>
-</span><span data-line="570"><span class="sd">           is run. This method doesn&#39;t return anything.&#39;&#39;&#39;</span>
-</span><span data-line="571">
-</span><span data-line="572">        <span class="k">for</span> <span class="n">jobpath</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_bundles</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">invariants</span><span class="p">):</span>
-</span><span data-line="573">            <span class="c1"># move the job directory to the scratch directory</span>
-</span><span data-line="574">            <span class="c1"># update jobpath to be in the scratch directory</span>
-</span><span data-line="575">            <span class="c1"># Redirect both streams to files. stderr=PIPE with an undrained</span>
-</span><span data-line="576">            <span class="c1"># pipe deadlocks once the client writes past one OS pipe buffer</span>
-</span><span data-line="577">            <span class="c1"># (~64 KiB on Linux): the child blocks in anon_pipe_write while</span>
-</span><span data-line="578">            <span class="c1"># the parent only polls p.poll() and never reads the pipe until</span>
-</span><span data-line="579">            <span class="c1"># after exit. FPE floods and long client diagnostics both hit this.</span>
-</span><span data-line="580">            <span class="n">fstdout</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">jobpath</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;stdout.dat&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
-</span><span data-line="581">            <span class="n">fstderr</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">jobpath</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;stderr.dat&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
-</span><span data-line="582">            <span class="c1"># A session of its own lets cleanup() reach every process the</span>
-</span><span data-line="583">            <span class="c1"># client starts (ExtPot wrappers, srun, mpirun), not just the client.</span>
-</span><span data-line="584">            <span class="n">p</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">jobpath</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">fstdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">fstderr</span><span class="p">,</span>
-</span><span data-line="585">                      <span class="n">start_new_session</span><span class="o">=</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;posix&#39;</span><span class="p">))</span>
-</span><span data-line="586">            <span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">p</span><span class="p">,</span> <span class="n">jobpath</span><span class="p">,</span> <span class="n">fstdout</span><span class="p">,</span> <span class="n">fstderr</span><span class="p">))</span>
-</span><span data-line="587">
-</span><span data-line="588">            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncpus</span><span class="p">:</span>
-</span><span data-line="589">                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="p">)):</span>
-</span><span data-line="590">                    <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-</span><span data-line="591">                    <span class="n">retval</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span>
-</span><span data-line="592">                    <span class="k">if</span> <span class="n">retval</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="593">                        <span class="k">continue</span>
-</span><span data-line="594">                    <span class="k">else</span><span class="p">:</span>
-</span><span data-line="595">                        <span class="bp">self</span><span class="o">.</span><span class="n">check_job</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-</span><span data-line="596">                        <span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-</span><span data-line="597">                        <span class="k">break</span>
-</span><span data-line="598">                <span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
-</span><span data-line="599">
-</span><span data-line="600">        <span class="c1"># wait for everything to finish</span>
-</span><span data-line="601">        <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="p">:</span>
-</span><span data-line="602">            <span class="n">p</span> <span class="o">=</span> <span class="n">job</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</span><span data-line="603">            <span class="n">p</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
-</span><span data-line="604">            <span class="bp">self</span><span class="o">.</span><span class="n">check_job</span><span class="p">(</span><span class="n">job</span><span class="p">)</span></div>
+</span><span data-line="571">    <span class="k">def</span><span class="w"> </span><span class="nf">submit_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">invariants</span><span class="p">):</span>
+</span><span data-line="572"><span class="w">        </span><span class="sd">&#39;&#39;&#39;Run up to ncpu number of clients to process the work in jobpaths.</span>
+</span><span data-line="573"><span class="sd">           The job directories are moved to the scratch path before the calculation</span>
+</span><span data-line="574"><span class="sd">           is run. This method doesn&#39;t return anything.&#39;&#39;&#39;</span>
+</span><span data-line="575">
+</span><span data-line="576">        <span class="k">for</span> <span class="n">jobpath</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_bundles</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">invariants</span><span class="p">):</span>
+</span><span data-line="577">            <span class="c1"># move the job directory to the scratch directory</span>
+</span><span data-line="578">            <span class="c1"># update jobpath to be in the scratch directory</span>
+</span><span data-line="579">            <span class="c1"># Redirect both streams to files. stderr=PIPE with an undrained</span>
+</span><span data-line="580">            <span class="c1"># pipe deadlocks once the client writes past one OS pipe buffer</span>
+</span><span data-line="581">            <span class="c1"># (~64 KiB on Linux): the child blocks in anon_pipe_write while</span>
+</span><span data-line="582">            <span class="c1"># the parent only polls p.poll() and never reads the pipe until</span>
+</span><span data-line="583">            <span class="c1"># after exit. FPE floods and long client diagnostics both hit this.</span>
+</span><span data-line="584">            <span class="n">fstdout</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">jobpath</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;stdout.dat&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+</span><span data-line="585">            <span class="n">fstderr</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">jobpath</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;stderr.dat&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+</span><span data-line="586">            <span class="c1"># A session of its own lets cleanup() reach every process the</span>
+</span><span data-line="587">            <span class="c1"># client starts (ExtPot wrappers, srun, mpirun), not just the client.</span>
+</span><span data-line="588">            <span class="n">p</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">jobpath</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">fstdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">fstderr</span><span class="p">,</span>
+</span><span data-line="589">                      <span class="n">start_new_session</span><span class="o">=</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;posix&#39;</span><span class="p">))</span>
+</span><span data-line="590">            <span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">p</span><span class="p">,</span> <span class="n">jobpath</span><span class="p">,</span> <span class="n">fstdout</span><span class="p">,</span> <span class="n">fstderr</span><span class="p">))</span>
+</span><span data-line="591">
+</span><span data-line="592">            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncpus</span><span class="p">:</span>
+</span><span data-line="593">                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="p">)):</span>
+</span><span data-line="594">                    <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+</span><span data-line="595">                    <span class="n">retval</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span>
+</span><span data-line="596">                    <span class="k">if</span> <span class="n">retval</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="597">                        <span class="k">continue</span>
+</span><span data-line="598">                    <span class="k">else</span><span class="p">:</span>
+</span><span data-line="599">                        <span class="bp">self</span><span class="o">.</span><span class="n">check_job</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+</span><span data-line="600">                        <span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</span><span data-line="601">                        <span class="k">break</span>
+</span><span data-line="602">                <span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+</span><span data-line="603">
+</span><span data-line="604">        <span class="c1"># wait for everything to finish</span>
+</span><span data-line="605">        <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="p">:</span>
+</span><span data-line="606">            <span class="n">p</span> <span class="o">=</span> <span class="n">job</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span data-line="607">            <span class="n">p</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+</span><span data-line="608">            <span class="bp">self</span><span class="o">.</span><span class="n">check_job</span><span class="p">(</span><span class="n">job</span><span class="p">)</span></div>
 
-</span><span data-line="605">
+</span><span data-line="609">
 <div class="viewcode-block" id="Local.cancel_state">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Local.cancel_state">[docs]</a>
-</span><span data-line="606">    <span class="k">def</span><span class="w"> </span><span class="nf">cancel_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
-</span><span data-line="607">        <span class="k">return</span> <span class="mi">0</span></div>
+</span><span data-line="610">    <span class="k">def</span><span class="w"> </span><span class="nf">cancel_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+</span><span data-line="611">        <span class="k">return</span> <span class="mi">0</span></div>
 
-</span><span data-line="608">
+</span><span data-line="612">
 <div class="viewcode-block" id="Local.get_queue_size">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Local.get_queue_size">[docs]</a>
-</span><span data-line="609">    <span class="k">def</span><span class="w"> </span><span class="nf">get_queue_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="610">        <span class="k">return</span> <span class="mi">0</span></div>
+</span><span data-line="613">    <span class="k">def</span><span class="w"> </span><span class="nf">get_queue_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="614">        <span class="k">return</span> <span class="mi">0</span></div>
 
-</span><span data-line="611">
+</span><span data-line="615">
 <div class="viewcode-block" id="Local.get_number_in_progress">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Local.get_number_in_progress">[docs]</a>
-</span><span data-line="612">    <span class="k">def</span><span class="w"> </span><span class="nf">get_number_in_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="613">        <span class="k">return</span> <span class="mi">0</span></div>
+</span><span data-line="616">    <span class="k">def</span><span class="w"> </span><span class="nf">get_number_in_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="617">        <span class="k">return</span> <span class="mi">0</span></div>
 </div>
 
-</span><span data-line="614">
-</span><span data-line="615">
+</span><span data-line="618">
+</span><span data-line="619">
 <div class="viewcode-block" id="Script">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Script">[docs]</a>
-</span><span data-line="616"><span class="k">class</span><span class="w"> </span><span class="nc">Script</span><span class="p">(</span><span class="n">Communicator</span><span class="p">):</span>
-</span><span data-line="617">
-</span><span data-line="618">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scratch_path</span><span class="p">,</span> <span class="n">bundle_size</span><span class="p">,</span> <span class="n">name_prefix</span><span class="p">,</span> <span class="n">scripts_path</span><span class="p">,</span>
-</span><span data-line="619">                 <span class="n">queued_jobs_cmd</span><span class="p">,</span> <span class="n">cancel_job_cmd</span><span class="p">,</span> <span class="n">submit_job_cmd</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ConfigClass</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-</span><span data-line="620">        <span class="n">Communicator</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scratch_path</span><span class="p">,</span> <span class="n">bundle_size</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+</span><span data-line="620"><span class="k">class</span><span class="w"> </span><span class="nc">Script</span><span class="p">(</span><span class="n">Communicator</span><span class="p">):</span>
 </span><span data-line="621">
-</span><span data-line="622">        <span class="n">scripts</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">scripts_path</span><span class="p">)</span>
-</span><span data-line="623">        <span class="bp">self</span><span class="o">.</span><span class="n">queued_jobs_cmd</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">scripts</span> <span class="o">/</span> <span class="n">queued_jobs_cmd</span><span class="p">)</span>
-</span><span data-line="624">        <span class="bp">self</span><span class="o">.</span><span class="n">cancel_job_cmd</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">scripts</span> <span class="o">/</span> <span class="n">cancel_job_cmd</span><span class="p">)</span>
-</span><span data-line="625">        <span class="bp">self</span><span class="o">.</span><span class="n">submit_job_cmd</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">scripts</span> <span class="o">/</span> <span class="n">submit_job_cmd</span><span class="p">)</span>
-</span><span data-line="626">        <span class="bp">self</span><span class="o">.</span><span class="n">job_id_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">scratch_path</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;script_job_ids&quot;</span><span class="p">)</span>
-</span><span data-line="627">
-</span><span data-line="628">        <span class="bp">self</span><span class="o">.</span><span class="n">name_prefix</span> <span class="o">=</span> <span class="n">name_prefix</span>
-</span><span data-line="629">
-</span><span data-line="630">        <span class="c1"># read in job ids</span>
-</span><span data-line="631">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="632">            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">job_id_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
-</span><span data-line="633">            <span class="bp">self</span><span class="o">.</span><span class="n">jobids</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-</span><span data-line="634">            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span data-line="635">        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
-</span><span data-line="636">            <span class="bp">self</span><span class="o">.</span><span class="n">jobids</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="637">            <span class="k">pass</span>
-</span><span data-line="638">
+</span><span data-line="622">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scratch_path</span><span class="p">,</span> <span class="n">bundle_size</span><span class="p">,</span> <span class="n">name_prefix</span><span class="p">,</span> <span class="n">scripts_path</span><span class="p">,</span>
+</span><span data-line="623">                 <span class="n">queued_jobs_cmd</span><span class="p">,</span> <span class="n">cancel_job_cmd</span><span class="p">,</span> <span class="n">submit_job_cmd</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ConfigClass</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+</span><span data-line="624">        <span class="n">Communicator</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scratch_path</span><span class="p">,</span> <span class="n">bundle_size</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+</span><span data-line="625">
+</span><span data-line="626">        <span class="n">scripts</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">scripts_path</span><span class="p">)</span>
+</span><span data-line="627">        <span class="bp">self</span><span class="o">.</span><span class="n">queued_jobs_cmd</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">scripts</span> <span class="o">/</span> <span class="n">queued_jobs_cmd</span><span class="p">)</span>
+</span><span data-line="628">        <span class="bp">self</span><span class="o">.</span><span class="n">cancel_job_cmd</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">scripts</span> <span class="o">/</span> <span class="n">cancel_job_cmd</span><span class="p">)</span>
+</span><span data-line="629">        <span class="bp">self</span><span class="o">.</span><span class="n">submit_job_cmd</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">scripts</span> <span class="o">/</span> <span class="n">submit_job_cmd</span><span class="p">)</span>
+</span><span data-line="630">        <span class="bp">self</span><span class="o">.</span><span class="n">job_id_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">scratch_path</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;script_job_ids&quot;</span><span class="p">)</span>
+</span><span data-line="631">
+</span><span data-line="632">        <span class="bp">self</span><span class="o">.</span><span class="n">name_prefix</span> <span class="o">=</span> <span class="n">name_prefix</span>
+</span><span data-line="633">
+</span><span data-line="634">        <span class="c1"># read in job ids</span>
+</span><span data-line="635">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="636">            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">job_id_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
+</span><span data-line="637">            <span class="bp">self</span><span class="o">.</span><span class="n">jobids</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</span><span data-line="638">            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span data-line="639">        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+</span><span data-line="640">            <span class="bp">self</span><span class="o">.</span><span class="n">jobids</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="641">            <span class="k">pass</span>
+</span><span data-line="642">
 <div class="viewcode-block" id="Script.save_jobids">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Script.save_jobids">[docs]</a>
-</span><span data-line="639">    <span class="k">def</span><span class="w"> </span><span class="nf">save_jobids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="640">        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">job_id_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span>
-</span><span data-line="641">        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jobids</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
-</span><span data-line="642">        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+</span><span data-line="643">    <span class="k">def</span><span class="w"> </span><span class="nf">save_jobids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="644">        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">job_id_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span>
+</span><span data-line="645">        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jobids</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+</span><span data-line="646">        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-</span><span data-line="643">
+</span><span data-line="647">
 <div class="viewcode-block" id="Script.get_results">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Script.get_results">[docs]</a>
-</span><span data-line="644">    <span class="k">def</span><span class="w"> </span><span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resultspath</span><span class="p">,</span> <span class="n">keep_result</span><span class="p">):</span>
-</span><span data-line="645"><span class="w">        </span><span class="sd">&#39;&#39;&#39;Moves work from scratchpath to results path.&#39;&#39;&#39;</span>
-</span><span data-line="646">        <span class="c1"># queued_jobs.sh jobid1 jobid2 jobid 3</span>
-</span><span data-line="647">        <span class="c1"># the inverse of the jobids returned is</span>
-</span><span data-line="648">        <span class="c1"># job dirs needs to map</span>
-</span><span data-line="649">        <span class="n">queued_jobs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_queued_jobs</span><span class="p">()</span>
-</span><span data-line="650">
-</span><span data-line="651">        <span class="n">finished_jobids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jobids</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">queued_jobs</span><span class="p">)</span>
-</span><span data-line="652">
-</span><span data-line="653">        <span class="n">finished_eonids</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="654">        <span class="k">for</span> <span class="n">jobid</span> <span class="ow">in</span> <span class="n">finished_jobids</span><span class="p">:</span>
-</span><span data-line="655">            <span class="n">finished_eonids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jobids</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">jobid</span><span class="p">)))</span>
+</span><span data-line="648">    <span class="k">def</span><span class="w"> </span><span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resultspath</span><span class="p">,</span> <span class="n">keep_result</span><span class="p">):</span>
+</span><span data-line="649"><span class="w">        </span><span class="sd">&#39;&#39;&#39;Moves work from scratchpath to results path.&#39;&#39;&#39;</span>
+</span><span data-line="650">        <span class="c1"># queued_jobs.sh jobid1 jobid2 jobid 3</span>
+</span><span data-line="651">        <span class="c1"># the inverse of the jobids returned is</span>
+</span><span data-line="652">        <span class="c1"># job dirs needs to map</span>
+</span><span data-line="653">        <span class="n">queued_jobs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_queued_jobs</span><span class="p">()</span>
+</span><span data-line="654">
+</span><span data-line="655">        <span class="n">finished_jobids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jobids</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">queued_jobs</span><span class="p">)</span>
 </span><span data-line="656">
-</span><span data-line="657">        <span class="n">scratch</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">)</span>
-</span><span data-line="658">        <span class="n">jobdirs</span> <span class="o">=</span> <span class="p">[</span>
-</span><span data-line="659">            <span class="n">p</span><span class="o">.</span><span class="n">name</span>
-</span><span data-line="660">            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">scratch</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()</span>
-</span><span data-line="661">            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="ow">in</span> <span class="n">finished_eonids</span>
-</span><span data-line="662">        <span class="p">]</span>
-</span><span data-line="663">
-</span><span data-line="664">        <span class="c1">#try to return jobs in order</span>
-</span><span data-line="665">        <span class="n">sort_nicely</span><span class="p">(</span><span class="n">jobdirs</span><span class="p">)</span>
-</span><span data-line="666">
-</span><span data-line="667">        <span class="k">for</span> <span class="n">jobdir</span> <span class="ow">in</span> <span class="n">jobdirs</span><span class="p">:</span>
-</span><span data-line="668">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug_keep_all_results</span><span class="p">:</span>
-</span><span data-line="669">                <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span>
-</span><span data-line="670">                    <span class="n">scratch</span> <span class="o">/</span> <span class="n">jobdir</span><span class="p">,</span>
-</span><span data-line="671">                    <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug_results_path</span> <span class="o">/</span> <span class="n">jobdir</span><span class="p">,</span>
-</span><span data-line="672">                <span class="p">)</span>
-</span><span data-line="673">            <span class="n">dest_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">resultspath</span><span class="p">)</span> <span class="o">/</span> <span class="n">jobdir</span>
-</span><span data-line="674">            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">scratch</span> <span class="o">/</span> <span class="n">jobdir</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dest_dir</span><span class="p">))</span>
-</span><span data-line="675">
-</span><span data-line="676">        <span class="k">for</span> <span class="n">bundle</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unbundle</span><span class="p">(</span><span class="n">resultspath</span><span class="p">,</span> <span class="n">keep_result</span><span class="p">):</span>
-</span><span data-line="677">            <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">bundle</span><span class="p">:</span>
-</span><span data-line="678">                <span class="k">yield</span> <span class="n">result</span></div>
-
+</span><span data-line="657">        <span class="n">finished_eonids</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="658">        <span class="k">for</span> <span class="n">jobid</span> <span class="ow">in</span> <span class="n">finished_jobids</span><span class="p">:</span>
+</span><span data-line="659">            <span class="n">finished_eonids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jobids</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">jobid</span><span class="p">)))</span>
+</span><span data-line="660">
+</span><span data-line="661">        <span class="n">scratch</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">)</span>
+</span><span data-line="662">        <span class="n">jobdirs</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="663">            <span class="n">p</span><span class="o">.</span><span class="n">name</span>
+</span><span data-line="664">            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">scratch</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()</span>
+</span><span data-line="665">            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="ow">in</span> <span class="n">finished_eonids</span>
+</span><span data-line="666">        <span class="p">]</span>
+</span><span data-line="667">
+</span><span data-line="668">        <span class="c1">#try to return jobs in order</span>
+</span><span data-line="669">        <span class="n">sort_nicely</span><span class="p">(</span><span class="n">jobdirs</span><span class="p">)</span>
+</span><span data-line="670">
+</span><span data-line="671">        <span class="k">for</span> <span class="n">jobdir</span> <span class="ow">in</span> <span class="n">jobdirs</span><span class="p">:</span>
+</span><span data-line="672">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug_keep_all_results</span><span class="p">:</span>
+</span><span data-line="673">                <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span>
+</span><span data-line="674">                    <span class="n">scratch</span> <span class="o">/</span> <span class="n">jobdir</span><span class="p">,</span>
+</span><span data-line="675">                    <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug_results_path</span> <span class="o">/</span> <span class="n">jobdir</span><span class="p">,</span>
+</span><span data-line="676">                <span class="p">)</span>
+</span><span data-line="677">            <span class="n">dest_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">resultspath</span><span class="p">)</span> <span class="o">/</span> <span class="n">jobdir</span>
+</span><span data-line="678">            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">scratch</span> <span class="o">/</span> <span class="n">jobdir</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dest_dir</span><span class="p">))</span>
 </span><span data-line="679">
+</span><span data-line="680">        <span class="k">for</span> <span class="n">bundle</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unbundle</span><span class="p">(</span><span class="n">resultspath</span><span class="p">,</span> <span class="n">keep_result</span><span class="p">):</span>
+</span><span data-line="681">            <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">bundle</span><span class="p">:</span>
+</span><span data-line="682">                <span class="k">yield</span> <span class="n">result</span></div>
+
+</span><span data-line="683">
 <div class="viewcode-block" id="Script.check_command">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Script.check_command">[docs]</a>
-</span><span data-line="680">    <span class="k">def</span><span class="w"> </span><span class="nf">check_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">):</span>
-</span><span data-line="681">        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-</span><span data-line="682">            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
-</span><span data-line="683">            <span class="k">raise</span> <span class="n">CommunicatorError</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39; returned a non-zero exit status&quot;</span><span class="o">%</span><span class="n">cmdname</span><span class="p">)</span></div>
+</span><span data-line="684">    <span class="k">def</span><span class="w"> </span><span class="nf">check_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">):</span>
+</span><span data-line="685">        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="686">            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+</span><span data-line="687">            <span class="k">raise</span> <span class="n">CommunicatorError</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39; returned a non-zero exit status&quot;</span><span class="o">%</span><span class="n">cmdname</span><span class="p">)</span></div>
 
-</span><span data-line="684">
+</span><span data-line="688">
 <div class="viewcode-block" id="Script.submit_jobs">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Script.submit_jobs">[docs]</a>
-</span><span data-line="685">    <span class="k">def</span><span class="w"> </span><span class="nf">submit_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">invariants</span><span class="p">):</span>
-</span><span data-line="686">        <span class="k">for</span> <span class="n">jobpath</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_bundles</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">invariants</span><span class="p">):</span>
-</span><span data-line="687">            <span class="c1"># submit_job.sh jobname jobpath</span>
-</span><span data-line="688">            <span class="c1"># should return a jobid</span>
-</span><span data-line="689">            <span class="c1"># need to associate this jobid with our jobid</span>
-</span><span data-line="690">            <span class="n">jobpath</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">jobpath</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
-</span><span data-line="691">            <span class="n">jobname</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_prefix</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="n">jobpath</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-</span><span data-line="692">            <span class="n">eon_jobid</span> <span class="o">=</span> <span class="n">jobname</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-</span><span data-line="693">
-</span><span data-line="694">            <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">submit_job_cmd</span><span class="p">,</span> <span class="n">jobname</span><span class="p">,</span> <span class="n">jobpath</span><span class="p">)</span>
-</span><span data-line="695">            <span class="n">p</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">submit_job_cmd</span><span class="p">,</span><span class="n">jobname</span><span class="p">,</span><span class="n">jobpath</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
-</span><span data-line="696">            <span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
-</span><span data-line="697">            <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
-</span><span data-line="698">            <span class="n">error</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
-</span><span data-line="699">            <span class="n">status</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span>
-</span><span data-line="700">            <span class="bp">self</span><span class="o">.</span><span class="n">check_command</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
-</span><span data-line="701">
-</span><span data-line="702">            <span class="n">jobid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-</span><span data-line="703">            <span class="bp">self</span><span class="o">.</span><span class="n">jobids</span><span class="p">[</span><span class="n">jobid</span><span class="p">]</span> <span class="o">=</span> <span class="n">eon_jobid</span>
-</span><span data-line="704">
-</span><span data-line="705">            <span class="c1"># Persist after each submit so a crash does not lose job ids.</span>
-</span><span data-line="706">            <span class="bp">self</span><span class="o">.</span><span class="n">save_jobids</span><span class="p">()</span></div>
+</span><span data-line="689">    <span class="k">def</span><span class="w"> </span><span class="nf">submit_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">invariants</span><span class="p">):</span>
+</span><span data-line="690">        <span class="k">for</span> <span class="n">jobpath</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_bundles</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">invariants</span><span class="p">):</span>
+</span><span data-line="691">            <span class="c1"># submit_job.sh jobname jobpath</span>
+</span><span data-line="692">            <span class="c1"># should return a jobid</span>
+</span><span data-line="693">            <span class="c1"># need to associate this jobid with our jobid</span>
+</span><span data-line="694">            <span class="n">jobpath</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">jobpath</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
+</span><span data-line="695">            <span class="n">jobname</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_prefix</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="n">jobpath</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</span><span data-line="696">            <span class="n">eon_jobid</span> <span class="o">=</span> <span class="n">jobname</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span><span data-line="697">
+</span><span data-line="698">            <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">submit_job_cmd</span><span class="p">,</span> <span class="n">jobname</span><span class="p">,</span> <span class="n">jobpath</span><span class="p">)</span>
+</span><span data-line="699">            <span class="n">p</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">submit_job_cmd</span><span class="p">,</span><span class="n">jobname</span><span class="p">,</span><span class="n">jobpath</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
+</span><span data-line="700">            <span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+</span><span data-line="701">            <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+</span><span data-line="702">            <span class="n">error</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+</span><span data-line="703">            <span class="n">status</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span>
+</span><span data-line="704">            <span class="bp">self</span><span class="o">.</span><span class="n">check_command</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
+</span><span data-line="705">
+</span><span data-line="706">            <span class="n">jobid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+</span><span data-line="707">            <span class="bp">self</span><span class="o">.</span><span class="n">jobids</span><span class="p">[</span><span class="n">jobid</span><span class="p">]</span> <span class="o">=</span> <span class="n">eon_jobid</span>
+</span><span data-line="708">
+</span><span data-line="709">            <span class="c1"># Persist after each submit so a crash does not lose job ids.</span>
+</span><span data-line="710">            <span class="bp">self</span><span class="o">.</span><span class="n">save_jobids</span><span class="p">()</span></div>
 
-</span><span data-line="707">
+</span><span data-line="711">
 <div class="viewcode-block" id="Script.cancel_state">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Script.cancel_state">[docs]</a>
-</span><span data-line="708">    <span class="k">def</span><span class="w"> </span><span class="nf">cancel_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
-</span><span data-line="709"><span class="w">        </span><span class="sd">&#39;&#39;&#39;Cancel the jobs still in the queue and drop their directories.</span>
-</span><span data-line="710">
-</span><span data-line="711"><span class="sd">        Jobs that already left the queue keep their ids and directories, so</span>
-</span><span data-line="712"><span class="sd">        the next get_results() harvests them; the explorer&#39;s keep_result</span>
-</span><span data-line="713"><span class="sd">        filter then decides whether they still count. A cancel that fails</span>
-</span><span data-line="714"><span class="sd">        (the job finished in between) is logged, not fatal. Returns the</span>
-</span><span data-line="715"><span class="sd">        number of jobs cancelled.</span>
-</span><span data-line="716"><span class="sd">        &#39;&#39;&#39;</span>
-</span><span data-line="717">        <span class="n">queued</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_queued_jobs</span><span class="p">()</span>
-</span><span data-line="718">        <span class="n">cancelled</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span data-line="719">        <span class="n">scratch</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">)</span>
-</span><span data-line="720">        <span class="k">for</span> <span class="n">job_id</span> <span class="ow">in</span> <span class="n">queued</span><span class="p">:</span>
-</span><span data-line="721">            <span class="n">p</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">cancel_job_cmd</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">job_id</span><span class="p">)],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
-</span><span data-line="722">            <span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
-</span><span data-line="723">            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-</span><span data-line="724">                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;cancel_job for </span><span class="si">%s</span><span class="s2"> failed (exit </span><span class="si">%i</span><span class="s2">): </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span>
-</span><span data-line="725">                               <span class="n">p</span><span class="o">.</span><span class="n">returncode</span><span class="p">,</span> <span class="p">(</span><span class="n">output</span> <span class="o">+</span> <span class="n">error</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-</span><span data-line="726">                <span class="k">continue</span>
-</span><span data-line="727">            <span class="n">eon_jobid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">jobids</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
-</span><span data-line="728">            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">scratch</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
-</span><span data-line="729">                <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span> <span class="ow">and</span> <span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">eon_jobid</span><span class="p">):</span>
-</span><span data-line="730">                    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-</span><span data-line="731">            <span class="n">cancelled</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span data-line="732">        <span class="bp">self</span><span class="o">.</span><span class="n">save_jobids</span><span class="p">()</span>
-</span><span data-line="733">        <span class="k">return</span> <span class="n">cancelled</span></div>
+</span><span data-line="712">    <span class="k">def</span><span class="w"> </span><span class="nf">cancel_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+</span><span data-line="713"><span class="w">        </span><span class="sd">&#39;&#39;&#39;Cancel the jobs still in the queue and drop their directories.</span>
+</span><span data-line="714">
+</span><span data-line="715"><span class="sd">        Jobs that already left the queue keep their ids and directories, so</span>
+</span><span data-line="716"><span class="sd">        the next get_results() harvests them; the explorer&#39;s keep_result</span>
+</span><span data-line="717"><span class="sd">        filter then decides whether they still count. A cancel that fails</span>
+</span><span data-line="718"><span class="sd">        (the job finished in between) is logged, not fatal. Returns the</span>
+</span><span data-line="719"><span class="sd">        number of jobs cancelled.</span>
+</span><span data-line="720"><span class="sd">        &#39;&#39;&#39;</span>
+</span><span data-line="721">        <span class="n">queued</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_queued_jobs</span><span class="p">()</span>
+</span><span data-line="722">        <span class="n">cancelled</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="723">        <span class="n">scratch</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">)</span>
+</span><span data-line="724">        <span class="k">for</span> <span class="n">job_id</span> <span class="ow">in</span> <span class="n">queued</span><span class="p">:</span>
+</span><span data-line="725">            <span class="n">p</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">cancel_job_cmd</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">job_id</span><span class="p">)],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
+</span><span data-line="726">            <span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+</span><span data-line="727">            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="728">                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;cancel_job for </span><span class="si">%s</span><span class="s2"> failed (exit </span><span class="si">%i</span><span class="s2">): </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span>
+</span><span data-line="729">                               <span class="n">p</span><span class="o">.</span><span class="n">returncode</span><span class="p">,</span> <span class="p">(</span><span class="n">output</span> <span class="o">+</span> <span class="n">error</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+</span><span data-line="730">                <span class="k">continue</span>
+</span><span data-line="731">            <span class="n">eon_jobid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">jobids</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
+</span><span data-line="732">            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">scratch</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
+</span><span data-line="733">                <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span> <span class="ow">and</span> <span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">eon_jobid</span><span class="p">):</span>
+</span><span data-line="734">                    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="735">            <span class="n">cancelled</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span data-line="736">        <span class="bp">self</span><span class="o">.</span><span class="n">save_jobids</span><span class="p">()</span>
+</span><span data-line="737">        <span class="k">return</span> <span class="n">cancelled</span></div>
 
-</span><span data-line="734">
+</span><span data-line="738">
 <div class="viewcode-block" id="Script.get_queued_jobs">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Script.get_queued_jobs">[docs]</a>
-</span><span data-line="735">    <span class="k">def</span><span class="w"> </span><span class="nf">get_queued_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="736">        <span class="n">p</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">queued_jobs_cmd</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
-</span><span data-line="737">        <span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
-</span><span data-line="738">        <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
-</span><span data-line="739">        <span class="n">error</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
-</span><span data-line="740">        <span class="n">status</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span>
-</span><span data-line="741">        <span class="bp">self</span><span class="o">.</span><span class="n">check_command</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">queued_jobs_cmd</span><span class="p">)</span>
-</span><span data-line="742">        <span class="n">queued_job_ids</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="743">        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
-</span><span data-line="744">            <span class="k">try</span><span class="p">:</span>
-</span><span data-line="745">                <span class="n">queued_job_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
-</span><span data-line="746">            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-</span><span data-line="747">                <span class="k">continue</span>
-</span><span data-line="748">        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jobids</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">queued_job_ids</span><span class="p">))</span></div>
+</span><span data-line="739">    <span class="k">def</span><span class="w"> </span><span class="nf">get_queued_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="740">        <span class="n">p</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">queued_jobs_cmd</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
+</span><span data-line="741">        <span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+</span><span data-line="742">        <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+</span><span data-line="743">        <span class="n">error</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+</span><span data-line="744">        <span class="n">status</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span>
+</span><span data-line="745">        <span class="bp">self</span><span class="o">.</span><span class="n">check_command</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">queued_jobs_cmd</span><span class="p">)</span>
+</span><span data-line="746">        <span class="n">queued_job_ids</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="747">        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+</span><span data-line="748">            <span class="k">try</span><span class="p">:</span>
+</span><span data-line="749">                <span class="n">queued_job_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+</span><span data-line="750">            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+</span><span data-line="751">                <span class="k">continue</span>
+</span><span data-line="752">        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jobids</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">queued_job_ids</span><span class="p">))</span></div>
 
-</span><span data-line="749">
+</span><span data-line="753">
 <div class="viewcode-block" id="Script.get_number_in_progress">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Script.get_number_in_progress">[docs]</a>
-</span><span data-line="750">    <span class="k">def</span><span class="w"> </span><span class="nf">get_number_in_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="751">        <span class="k">return</span> <span class="mi">0</span></div>
+</span><span data-line="754">    <span class="k">def</span><span class="w"> </span><span class="nf">get_number_in_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="755">        <span class="k">return</span> <span class="mi">0</span></div>
 
-</span><span data-line="752">
+</span><span data-line="756">
 <div class="viewcode-block" id="Script.get_queue_size">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Script.get_queue_size">[docs]</a>
-</span><span data-line="753">    <span class="k">def</span><span class="w"> </span><span class="nf">get_queue_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="754">        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_queued_jobs</span><span class="p">())</span></div>
+</span><span data-line="757">    <span class="k">def</span><span class="w"> </span><span class="nf">get_queue_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="758">        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_queued_jobs</span><span class="p">())</span></div>
 </div>
 
 </span></pre></div>

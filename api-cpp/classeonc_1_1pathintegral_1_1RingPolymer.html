@@ -1,0 +1,2272 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: eonc::pathintegral::RingPolymer Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn 3.2.0</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classeonc_1_1pathintegral_1_1RingPolymer.html','','classeonc_1_1pathintegral_1_1RingPolymer-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">eonc::pathintegral::RingPolymer Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Ring-polymer NVT step.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:ModeGle" id="r_ModeGle"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html">ModeGle</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a5f39bedd78d0b03c544e86c5caf030c3" id="r_a5f39bedd78d0b03c544e86c5caf030c3"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a5f39bedd78d0b03c544e86c5caf030c3">RingPolymer</a> (long nAtoms, std::vector&lt; double &gt; masses, std::vector&lt; int &gt; atomicNumbers, std::vector&lt; char &gt; free, <a class="el" href="structeonc_1_1pathintegral_1_1Options.html">Options</a> opt)</td></tr>
+<tr class="memitem:a257c03784d54a48ebdde592bf499e7fe" id="r_a257c03784d54a48ebdde592bf499e7fe"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a257c03784d54a48ebdde592bf499e7fe">setAllBeads</a> (const double *q)</td></tr>
+<tr class="memitem:a6d788e1e1f6342e281e24b576da84335" id="r_a6d788e1e1f6342e281e24b576da84335"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a6d788e1e1f6342e281e24b576da84335">setBeads</a> (const std::vector&lt; VectorXd &gt; &amp;beads)</td></tr>
+<tr class="memdesc:a6d788e1e1f6342e281e24b576da84335"><td class="mdescLeft">&#160;</td><td class="mdescRight">One position vector of length 3 * nAtoms per bead.  <br /></td></tr>
+<tr class="memitem:ad19c1cbe81c8e40da670c896fea921a3" id="r_ad19c1cbe81c8e40da670c896fea921a3"><td class="memItemLeft">const std::vector&lt; VectorXd &gt; &amp;&#160;</td><td class="memItemRight"><a class="el" href="#ad19c1cbe81c8e40da670c896fea921a3">beads</a> () const</td></tr>
+<tr class="memitem:ab22cf783d4320a7d59a6bb706f097c37" id="r_ab22cf783d4320a7d59a6bb706f097c37"><td class="memItemLeft">const std::vector&lt; VectorXd &gt; &amp;&#160;</td><td class="memItemRight"><a class="el" href="#ab22cf783d4320a7d59a6bb706f097c37">momenta</a> () const</td></tr>
+<tr class="memitem:a570afcf856dfd6ca1ec3e743188c3525" id="r_a570afcf856dfd6ca1ec3e743188c3525"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a570afcf856dfd6ca1ec3e743188c3525">setMomenta</a> (const std::vector&lt; VectorXd &gt; &amp;momenta)</td></tr>
+<tr class="memdesc:a570afcf856dfd6ca1ec3e743188c3525"><td class="mdescLeft">&#160;</td><td class="mdescRight">One momentum vector of length 3 * nAtoms per bead; fixed coordinates are zeroed.  <br /></td></tr>
+<tr class="memitem:aa89b5252e25555c96689c0e748d098ae" id="r_aa89b5252e25555c96689c0e748d098ae"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aa89b5252e25555c96689c0e748d098ae">thermalMomenta</a> ()</td></tr>
+<tr class="memitem:a8474affd7229bce54ff2cfd3b4e19942" id="r_a8474affd7229bce54ff2cfd3b4e19942"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a8474affd7229bce54ff2cfd3b4e19942">setHyperplane</a> (const VectorXd &amp;normal, const VectorXd &amp;origin)</td></tr>
+<tr class="memdesc:a8474affd7229bce54ff2cfd3b4e19942"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hold n · (q_centroid - origin) = 0.  <br /></td></tr>
+<tr class="memitem:aa4295a7cdcb5b7d25060fcc9e7b02abf" id="r_aa4295a7cdcb5b7d25060fcc9e7b02abf"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aa4295a7cdcb5b7d25060fcc9e7b02abf">step</a> (<a class="el" href="classeonc_1_1Potential.html">Potential</a> &amp;pot, const double *box, bool record)</td></tr>
+<tr class="memitem:a5985197c3201b5a6b6057740254cfa3c" id="r_a5985197c3201b5a6b6057740254cfa3c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a5985197c3201b5a6b6057740254cfa3c">nveStep</a> (<a class="el" href="classeonc_1_1Potential.html">Potential</a> &amp;pot, const double *box)</td></tr>
+<tr class="memdesc:a5985197c3201b5a6b6057740254cfa3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Thermostat-free RPMD step: velocity Verlet with the free ring propagated exactly in normal modes.  <br /></td></tr>
+<tr class="memitem:ac0b3343a4e7217eb65ce5f3c7ed0145d" id="r_ac0b3343a4e7217eb65ce5f3c7ed0145d"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#ac0b3343a4e7217eb65ce5f3c7ed0145d">kineticCv</a> () const</td></tr>
+<tr class="memitem:a5f42f8550d18e315d852666067aea433" id="r_a5f42f8550d18e315d852666067aea433"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a5f42f8550d18e315d852666067aea433">meanForce</a> () const</td></tr>
+<tr class="memitem:a7ef3b0018176677a304e7d03f52491c4" id="r_a7ef3b0018176677a304e7d03f52491c4"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a7ef3b0018176677a304e7d03f52491c4">batches</a> () const</td></tr>
+<tr class="memitem:a6dda56bc33bb780f9a4c3d495c5b1719" id="r_a6dda56bc33bb780f9a4c3d495c5b1719"><td class="memItemLeft">VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a6dda56bc33bb780f9a4c3d495c5b1719">centroid</a> () const</td></tr>
+<tr class="memitem:a07e32a3f53179f0163291834556a5229" id="r_a07e32a3f53179f0163291834556a5229"><td class="memItemLeft">VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a07e32a3f53179f0163291834556a5229">centroidVelocity</a> () const</td></tr>
+<tr class="memitem:ae2b2f31afa60e99fd0122e0c95eaa3b5" id="r_ae2b2f31afa60e99fd0122e0c95eaa3b5"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ae2b2f31afa60e99fd0122e0c95eaa3b5">resetAverages</a> ()</td></tr>
+<tr class="memitem:a619add2791458803ea4cb231dd2bdfd0" id="r_a619add2791458803ea4cb231dd2bdfd0"><td class="memItemLeft"><a class="el" href="structeonc_1_1pathintegral_1_1Sample.html">Sample</a>&#160;</td><td class="memItemRight"><a class="el" href="#a619add2791458803ea4cb231dd2bdfd0">sample</a> (<a class="el" href="classeonc_1_1Potential.html">Potential</a> &amp;pot, const double *box, long equilibration, long production)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a823245abfa7bf2b6663e5c885a3dd5f3" id="r_a823245abfa7bf2b6663e5c885a3dd5f3"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a823245abfa7bf2b6663e5c885a3dd5f3">forces</a> (<a class="el" href="classeonc_1_1Potential.html">Potential</a> &amp;pot, const double *box)</td></tr>
+<tr class="memitem:a2bd8ddc3c753deb5849285f4b63cbe69" id="r_a2bd8ddc3c753deb5849285f4b63cbe69"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a2bd8ddc3c753deb5849285f4b63cbe69">thermostat</a> (double h)</td></tr>
+<tr class="memitem:a8e42ee83d6d89aeabb5ea7b137620f43" id="r_a8e42ee83d6d89aeabb5ea7b137620f43"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a8e42ee83d6d89aeabb5ea7b137620f43">kick</a> (double h, bool dropParallel)</td></tr>
+<tr class="memitem:ac9f124d4dfc61ad76a2cbd50901501c1" id="r_ac9f124d4dfc61ad76a2cbd50901501c1"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ac9f124d4dfc61ad76a2cbd50901501c1">propagate</a> (double h)</td></tr>
+<tr class="memitem:a851525481e8495caae1353928a7a96ae" id="r_a851525481e8495caae1353928a7a96ae"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a851525481e8495caae1353928a7a96ae">projectPosition</a> ()</td></tr>
+<tr class="memitem:a39b4ebf1418938bde242b275c92b27a7" id="r_a39b4ebf1418938bde242b275c92b27a7"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a39b4ebf1418938bde242b275c92b27a7">projectMomentum</a> ()</td></tr>
+<tr class="memitem:a64f6ba13db5dd7e837e2419078100724" id="r_a64f6ba13db5dd7e837e2419078100724"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a64f6ba13db5dd7e837e2419078100724">toNormal</a> (const std::vector&lt; VectorXd &gt; &amp;src, std::vector&lt; VectorXd &gt; &amp;dst) const</td></tr>
+<tr class="memitem:ac1bd407a02ac0616338581a948a7313a" id="r_ac1bd407a02ac0616338581a948a7313a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ac1bd407a02ac0616338581a948a7313a">fromNormal</a> (const std::vector&lt; VectorXd &gt; &amp;src, std::vector&lt; VectorXd &gt; &amp;dst) const</td></tr>
+<tr class="memitem:aa6f301f2f488231906c324b1a0588f23" id="r_aa6f301f2f488231906c324b1a0588f23"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#aa6f301f2f488231906c324b1a0588f23">gauss</a> ()</td></tr>
+<tr class="memitem:a2765c1fd31dd85f7f9a0cf7a6179306d" id="r_a2765c1fd31dd85f7f9a0cf7a6179306d"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a2765c1fd31dd85f7f9a0cf7a6179306d">initGle</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:aa651609fb79365a0a9045c30c5be1403" id="r_aa651609fb79365a0a9045c30c5be1403"><td class="memItemLeft"><a class="el" href="structeonc_1_1pathintegral_1_1Options.html">Options</a>&#160;</td><td class="memItemRight"><a class="el" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a></td></tr>
+<tr class="memitem:afaa2ba0ef1f6ffd55dce06f8b3bcc2cb" id="r_afaa2ba0ef1f6ffd55dce06f8b3bcc2cb"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#afaa2ba0ef1f6ffd55dce06f8b3bcc2cb">nAtoms_</a> {0}</td></tr>
+<tr class="memitem:aa614089c7eee8d50a26ec2ebafb39365" id="r_aa614089c7eee8d50a26ec2ebafb39365"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a> {0}</td></tr>
+<tr class="memitem:ae76dd5a639d68e579905bc2906548428" id="r_ae76dd5a639d68e579905bc2906548428"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a> {0}</td></tr>
+<tr class="memitem:a725407172321f089637ecdfbe7c11e74" id="r_a725407172321f089637ecdfbe7c11e74"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a725407172321f089637ecdfbe7c11e74">nFree_</a> {0}</td></tr>
+<tr class="memitem:a432fcfe2be2bf7d01117b7c2b0a8fd6c" id="r_a432fcfe2be2bf7d01117b7c2b0a8fd6c"><td class="memItemLeft">std::vector&lt; double &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a432fcfe2be2bf7d01117b7c2b0a8fd6c">mass_</a></td></tr>
+<tr class="memitem:a253a88d9f3957bc4205b2e0dd4b92e15" id="r_a253a88d9f3957bc4205b2e0dd4b92e15"><td class="memItemLeft">std::vector&lt; int &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a253a88d9f3957bc4205b2e0dd4b92e15">atomicNumbers_</a></td></tr>
+<tr class="memitem:a8398c4a0003611ecbbc26c146caadd87" id="r_a8398c4a0003611ecbbc26c146caadd87"><td class="memItemLeft">std::vector&lt; char &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a8398c4a0003611ecbbc26c146caadd87">free_</a></td></tr>
+<tr class="memitem:a29ad6aa078ee7c0bbf4d7dec249191d1" id="r_a29ad6aa078ee7c0bbf4d7dec249191d1"><td class="memItemLeft">std::vector&lt; long &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a29ad6aa078ee7c0bbf4d7dec249191d1">freeIndex_</a></td></tr>
+<tr class="memitem:a66b1b0a6fc4c1b5d830d20d5a290e074" id="r_a66b1b0a6fc4c1b5d830d20d5a290e074"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a>&#160;</td><td class="memItemRight"><a class="el" href="#a66b1b0a6fc4c1b5d830d20d5a290e074">modes_</a></td></tr>
+<tr class="memitem:a99b4920e29bfebb9ff2f9763afea17b5" id="r_a99b4920e29bfebb9ff2f9763afea17b5"><td class="memItemLeft">VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a99b4920e29bfebb9ff2f9763afea17b5">omegaK_</a></td></tr>
+<tr class="memitem:a86ae137609da6c7360545f5b233a2d4a" id="r_a86ae137609da6c7360545f5b233a2d4a"><td class="memItemLeft">std::vector&lt; VectorXd &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a86ae137609da6c7360545f5b233a2d4a">q_</a></td></tr>
+<tr class="memitem:a812baa781db7e930beb20fd40c5b3529" id="r_a812baa781db7e930beb20fd40c5b3529"><td class="memItemLeft">std::vector&lt; VectorXd &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a812baa781db7e930beb20fd40c5b3529">p_</a></td></tr>
+<tr class="memitem:a544fc3ef09d8b2765e292411fc8e10be" id="r_a544fc3ef09d8b2765e292411fc8e10be"><td class="memItemLeft">std::vector&lt; VectorXd &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a544fc3ef09d8b2765e292411fc8e10be">f_</a></td></tr>
+<tr class="memitem:adc71fcb35c3aa1c816a4378f549f1734" id="r_adc71fcb35c3aa1c816a4378f549f1734"><td class="memItemLeft">std::vector&lt; VectorXd &gt;&#160;</td><td class="memItemRight"><a class="el" href="#adc71fcb35c3aa1c816a4378f549f1734">qnm_</a></td></tr>
+<tr class="memitem:a2b49bf3a864bbb22c5dcd5dc2138aab5" id="r_a2b49bf3a864bbb22c5dcd5dc2138aab5"><td class="memItemLeft">std::vector&lt; VectorXd &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a2b49bf3a864bbb22c5dcd5dc2138aab5">pnm_</a></td></tr>
+<tr class="memitem:a3f2bb67b9763c0b85c5aee75415c2427" id="r_a3f2bb67b9763c0b85c5aee75415c2427"><td class="memItemLeft">VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a3f2bb67b9763c0b85c5aee75415c2427">planeNormal_</a></td></tr>
+<tr class="memitem:a3a3352a65b470de7df68451ed33a90df" id="r_a3a3352a65b470de7df68451ed33a90df"><td class="memItemLeft">VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a3a3352a65b470de7df68451ed33a90df">planeOrigin_</a></td></tr>
+<tr class="memitem:aa5030ded646e143204a717f327a536a4" id="r_aa5030ded646e143204a717f327a536a4"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#aa5030ded646e143204a717f327a536a4">constrain_</a> {false}</td></tr>
+<tr class="memitem:a1da753e22f7e9979ffc1d192f43c28d1" id="r_a1da753e22f7e9979ffc1d192f43c28d1"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a1da753e22f7e9979ffc1d192f43c28d1">haveForces_</a> {false}</td></tr>
+<tr class="memitem:a3713acb61dad24fe24f5cb82f8ce29bb" id="r_a3713acb61dad24fe24f5cb82f8ce29bb"><td class="memItemLeft">std::vector&lt; <a class="el" href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html">ModeGle</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a3713acb61dad24fe24f5cb82f8ce29bb">gle_</a></td></tr>
+<tr class="memitem:af4c43466849e9f1ad4f52f5a52f15f32" id="r_af4c43466849e9f1ad4f52f5a52f15f32"><td class="memItemLeft">std::uint64_t&#160;</td><td class="memItemRight"><a class="el" href="#af4c43466849e9f1ad4f52f5a52f15f32">rng_</a></td></tr>
+<tr class="memitem:a8f6b0d76604d0a69dc9843c5566448a6" id="r_a8f6b0d76604d0a69dc9843c5566448a6"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a8f6b0d76604d0a69dc9843c5566448a6">batches_</a> {0}</td></tr>
+<tr class="memitem:a2110c5d5a587e42710697ab1cf40903e" id="r_a2110c5d5a587e42710697ab1cf40903e"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a2110c5d5a587e42710697ab1cf40903e">recorded_</a> {0}</td></tr>
+<tr class="memitem:a62aa9ca01651cc3c9648a2537e597ca9" id="r_a62aa9ca01651cc3c9648a2537e597ca9"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a62aa9ca01651cc3c9648a2537e597ca9">kineticSum_</a> {0.0}</td></tr>
+<tr class="memitem:aa68da0564a92541fb75b68b10b416a82" id="r_aa68da0564a92541fb75b68b10b416a82"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#aa68da0564a92541fb75b68b10b416a82">forceSum_</a> {0.0}</td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Ring-polymer NVT step. </p>
+<p>Physical forces on every bead are one forceBatch call, so a calculator group carries the beads together. The classical velocity Verlet step is not used. </p>
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00092">92</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a5f39bedd78d0b03c544e86c5caf030c3" name="a5f39bedd78d0b03c544e86c5caf030c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f39bedd78d0b03c544e86c5caf030c3">&#9670;&#160;</a></span>RingPolymer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eonc::pathintegral::RingPolymer::RingPolymer </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>nAtoms</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; double &gt;</td>          <td class="paramname"><span class="paramname"><em>masses</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; int &gt;</td>          <td class="paramname"><span class="paramname"><em>atomicNumbers</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; char &gt;</td>          <td class="paramname"><span class="paramname"><em>free</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeonc_1_1pathintegral_1_1Options.html">Options</a></td>          <td class="paramname"><span class="paramname"><em>opt</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00320">320</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  323</span>    : <a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>(std::move(opt)),</div>
+<div class="line"><span class="lineno">  324</span>      <a class="code hl_variable" href="#afaa2ba0ef1f6ffd55dce06f8b3bcc2cb">nAtoms_</a>(nAtoms),</div>
+<div class="line"><span class="lineno">  325</span>      <a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>(3 * nAtoms),</div>
+<div class="line"><span class="lineno">  326</span>      <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>(<a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.beads),</div>
+<div class="line"><span class="lineno">  327</span>      <a class="code hl_variable" href="#a253a88d9f3957bc4205b2e0dd4b92e15">atomicNumbers_</a>(std::move(atomicNumbers)),</div>
+<div class="line"><span class="lineno">  328</span>      <a class="code hl_variable" href="#a8398c4a0003611ecbbc26c146caadd87">free_</a>(std::move(free)),</div>
+<div class="line"><span class="lineno">  329</span>      <a class="code hl_variable" href="#af4c43466849e9f1ad4f52f5a52f15f32">rng_</a>(<a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.seed == 0 ? 1 : <a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.seed) {</div>
+<div class="line"><span class="lineno">  330</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#afaa2ba0ef1f6ffd55dce06f8b3bcc2cb">nAtoms_</a> &lt; 1 || <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a> &lt; 1) {</div>
+<div class="line"><span class="lineno">  331</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;path integral needs atoms and beads&quot;</span>);</div>
+<div class="line"><span class="lineno">  332</span>  }</div>
+<div class="line"><span class="lineno">  333</span>  <span class="keywordflow">if</span> (<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(masses.size()) != <a class="code hl_variable" href="#afaa2ba0ef1f6ffd55dce06f8b3bcc2cb">nAtoms_</a> ||</div>
+<div class="line"><span class="lineno">  334</span>      <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a253a88d9f3957bc4205b2e0dd4b92e15">atomicNumbers_</a>.size()) != <a class="code hl_variable" href="#afaa2ba0ef1f6ffd55dce06f8b3bcc2cb">nAtoms_</a> ||</div>
+<div class="line"><span class="lineno">  335</span>      <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a8398c4a0003611ecbbc26c146caadd87">free_</a>.size()) != <a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>) {</div>
+<div class="line"><span class="lineno">  336</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;path integral mass, number or mask size&quot;</span>);</div>
+<div class="line"><span class="lineno">  337</span>  }</div>
+<div class="line"><span class="lineno">  338</span>  <span class="keywordflow">if</span> (!(<a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.temperature &gt; 0.0) || !(<a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.kB &gt; 0.0) || !(<a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.hbar &gt; 0.0) ||</div>
+<div class="line"><span class="lineno">  339</span>      !(<a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.dt &gt; 0.0) || !(<a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.pileTau &gt; 0.0) || !(<a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.pileScale &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  340</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">  341</span>        <span class="stringliteral">&quot;path integral temperature, timestep and damping must be positive&quot;</span>);</div>
+<div class="line"><span class="lineno">  342</span>  }</div>
+<div class="line"><span class="lineno">  343</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.springs == <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#abe31f237ac5f5aff8dce43642078966ea91efa9e46e4c6cbb78d9fd0a773cc6d5">Springs::Eco</a> &amp;&amp; <a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.thermostat == <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8a8c09ee8e1496710919dcbd718ff285dd">Thermostat::Piglet</a>) {</div>
+<div class="line"><span class="lineno">  344</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">  345</span>        <span class="stringliteral">&quot;economised springs cannot be combined with a normal-mode GLE&quot;</span>);</div>
+<div class="line"><span class="lineno">  346</span>  }</div>
+<div class="line"><span class="lineno">  347</span>  <a class="code hl_variable" href="#a432fcfe2be2bf7d01117b7c2b0a8fd6c">mass_</a>.assign(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>), 0.0);</div>
+<div class="line"><span class="lineno">  348</span>  <a class="code hl_variable" href="#a725407172321f089637ecdfbe7c11e74">nFree_</a> = 0;</div>
+<div class="line"><span class="lineno">  349</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#afaa2ba0ef1f6ffd55dce06f8b3bcc2cb">nAtoms_</a>; ++i) {</div>
+<div class="line"><span class="lineno">  350</span>    <span class="keywordflow">if</span> (!(masses[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  351</span>      <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;path integral atom has no mass&quot;</span>);</div>
+<div class="line"><span class="lineno">  352</span>    }</div>
+<div class="line"><span class="lineno">  353</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> axis = 0; axis &lt; 3; ++axis) {</div>
+<div class="line"><span class="lineno">  354</span>      <span class="keyword">const</span> <span class="keywordtype">long</span> a = 3 * i + axis;</div>
+<div class="line"><span class="lineno">  355</span>      <a class="code hl_variable" href="#a432fcfe2be2bf7d01117b7c2b0a8fd6c">mass_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(a)] = masses[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)];</div>
+<div class="line"><span class="lineno">  356</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a8398c4a0003611ecbbc26c146caadd87">free_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(a)]) {</div>
+<div class="line"><span class="lineno">  357</span>        <a class="code hl_variable" href="#a29ad6aa078ee7c0bbf4d7dec249191d1">freeIndex_</a>.push_back(a);</div>
+<div class="line"><span class="lineno">  358</span>        ++<a class="code hl_variable" href="#a725407172321f089637ecdfbe7c11e74">nFree_</a>;</div>
+<div class="line"><span class="lineno">  359</span>      }</div>
+<div class="line"><span class="lineno">  360</span>    }</div>
+<div class="line"><span class="lineno">  361</span>  }</div>
+<div class="line"><span class="lineno">  362</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a725407172321f089637ecdfbe7c11e74">nFree_</a> &lt; 1) {</div>
+<div class="line"><span class="lineno">  363</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;path integral has no free coordinate&quot;</span>);</div>
+<div class="line"><span class="lineno">  364</span>  }</div>
+<div class="line"><span class="lineno">  365</span>  <a class="code hl_variable" href="#a66b1b0a6fc4c1b5d830d20d5a290e074">modes_</a> = <a class="code hl_function" href="namespaceeonc_1_1pathintegral.html#a3b4d87da5fff9d69f06779f9aca9a5f7">normalModeMatrix</a>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>);</div>
+<div class="line"><span class="lineno">  366</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> omegan =</div>
+<div class="line"><span class="lineno">  367</span>      <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>) * <a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.kB * <a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.temperature / <a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.hbar;</div>
+<div class="line"><span class="lineno">  368</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.springs == <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#abe31f237ac5f5aff8dce43642078966ea91efa9e46e4c6cbb78d9fd0a773cc6d5">Springs::Eco</a>) {</div>
+<div class="line"><span class="lineno">  369</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> xmax =</div>
+<div class="line"><span class="lineno">  370</span>        <a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.ecoOmegaMax * <a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.hbar / (<a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.kB * <a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.temperature);</div>
+<div class="line"><span class="lineno">  371</span>    <a class="code hl_variable" href="#a99b4920e29bfebb9ff2f9763afea17b5">omegaK_</a> = omegan * <a class="code hl_function" href="namespaceeonc_1_1pathintegral.html#adc263a73db61ab235b834a5785881fd2">ecoEigenvalues</a>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>, xmax);</div>
+<div class="line"><span class="lineno">  372</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  373</span>    <a class="code hl_variable" href="#a99b4920e29bfebb9ff2f9763afea17b5">omegaK_</a> = omegan * <a class="code hl_function" href="namespaceeonc_1_1pathintegral.html#a7cd723e7974a04d9e90f5943274f54ed">trotterEigenvalues</a>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>);</div>
+<div class="line"><span class="lineno">  374</span>  }</div>
+<div class="line"><span class="lineno">  375</span>  <a class="code hl_variable" href="#a86ae137609da6c7360545f5b233a2d4a">q_</a>.assign(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>), VectorXd::Zero(<a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>));</div>
+<div class="line"><span class="lineno">  376</span>  <a class="code hl_variable" href="#a812baa781db7e930beb20fd40c5b3529">p_</a>.assign(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>), VectorXd::Zero(<a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>));</div>
+<div class="line"><span class="lineno">  377</span>  <a class="code hl_variable" href="#a544fc3ef09d8b2765e292411fc8e10be">f_</a>.assign(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>), VectorXd::Zero(<a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>));</div>
+<div class="line"><span class="lineno">  378</span>  <a class="code hl_variable" href="#adc71fcb35c3aa1c816a4378f549f1734">qnm_</a>.assign(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>), VectorXd::Zero(<a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>));</div>
+<div class="line"><span class="lineno">  379</span>  <a class="code hl_variable" href="#a2b49bf3a864bbb22c5dcd5dc2138aab5">pnm_</a>.assign(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>), VectorXd::Zero(<a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>));</div>
+<div class="line"><span class="lineno">  380</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.thermostat == <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8a8c09ee8e1496710919dcbd718ff285dd">Thermostat::Piglet</a>) {</div>
+<div class="line"><span class="lineno">  381</span>    <a class="code hl_function" href="#a2765c1fd31dd85f7f9a0cf7a6179306d">initGle</a>();</div>
+<div class="line"><span class="lineno">  382</span>  }</div>
+<div class="line"><span class="lineno">  383</span>  <a class="code hl_function" href="#aa89b5252e25555c96689c0e748d098ae">thermalMomenta</a>();</div>
+<div class="line"><span class="lineno">  384</span>}</div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a253a88d9f3957bc4205b2e0dd4b92e15"><div class="ttname"><a href="#a253a88d9f3957bc4205b2e0dd4b92e15">eonc::pathintegral::RingPolymer::atomicNumbers_</a></div><div class="ttdeci">std::vector&lt; int &gt; atomicNumbers_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00149">PathIntegral.h:149</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a2765c1fd31dd85f7f9a0cf7a6179306d"><div class="ttname"><a href="#a2765c1fd31dd85f7f9a0cf7a6179306d">eonc::pathintegral::RingPolymer::initGle</a></div><div class="ttdeci">void initGle()</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00386">PathIntegral.cpp:386</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a29ad6aa078ee7c0bbf4d7dec249191d1"><div class="ttname"><a href="#a29ad6aa078ee7c0bbf4d7dec249191d1">eonc::pathintegral::RingPolymer::freeIndex_</a></div><div class="ttdeci">std::vector&lt; long &gt; freeIndex_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00151">PathIntegral.h:151</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a2b49bf3a864bbb22c5dcd5dc2138aab5"><div class="ttname"><a href="#a2b49bf3a864bbb22c5dcd5dc2138aab5">eonc::pathintegral::RingPolymer::pnm_</a></div><div class="ttdeci">std::vector&lt; VectorXd &gt; pnm_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00158">PathIntegral.h:158</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a432fcfe2be2bf7d01117b7c2b0a8fd6c"><div class="ttname"><a href="#a432fcfe2be2bf7d01117b7c2b0a8fd6c">eonc::pathintegral::RingPolymer::mass_</a></div><div class="ttdeci">std::vector&lt; double &gt; mass_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00148">PathIntegral.h:148</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a544fc3ef09d8b2765e292411fc8e10be"><div class="ttname"><a href="#a544fc3ef09d8b2765e292411fc8e10be">eonc::pathintegral::RingPolymer::f_</a></div><div class="ttdeci">std::vector&lt; VectorXd &gt; f_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00156">PathIntegral.h:156</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a66b1b0a6fc4c1b5d830d20d5a290e074"><div class="ttname"><a href="#a66b1b0a6fc4c1b5d830d20d5a290e074">eonc::pathintegral::RingPolymer::modes_</a></div><div class="ttdeci">MatrixXd modes_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00152">PathIntegral.h:152</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a725407172321f089637ecdfbe7c11e74"><div class="ttname"><a href="#a725407172321f089637ecdfbe7c11e74">eonc::pathintegral::RingPolymer::nFree_</a></div><div class="ttdeci">long nFree_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00147">PathIntegral.h:147</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a812baa781db7e930beb20fd40c5b3529"><div class="ttname"><a href="#a812baa781db7e930beb20fd40c5b3529">eonc::pathintegral::RingPolymer::p_</a></div><div class="ttdeci">std::vector&lt; VectorXd &gt; p_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00155">PathIntegral.h:155</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a8398c4a0003611ecbbc26c146caadd87"><div class="ttname"><a href="#a8398c4a0003611ecbbc26c146caadd87">eonc::pathintegral::RingPolymer::free_</a></div><div class="ttdeci">std::vector&lt; char &gt; free_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00150">PathIntegral.h:150</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a86ae137609da6c7360545f5b233a2d4a"><div class="ttname"><a href="#a86ae137609da6c7360545f5b233a2d4a">eonc::pathintegral::RingPolymer::q_</a></div><div class="ttdeci">std::vector&lt; VectorXd &gt; q_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00154">PathIntegral.h:154</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a99b4920e29bfebb9ff2f9763afea17b5"><div class="ttname"><a href="#a99b4920e29bfebb9ff2f9763afea17b5">eonc::pathintegral::RingPolymer::omegaK_</a></div><div class="ttdeci">VectorXd omegaK_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00153">PathIntegral.h:153</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_aa614089c7eee8d50a26ec2ebafb39365"><div class="ttname"><a href="#aa614089c7eee8d50a26ec2ebafb39365">eonc::pathintegral::RingPolymer::nDof_</a></div><div class="ttdeci">long nDof_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00145">PathIntegral.h:145</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_aa651609fb79365a0a9045c30c5be1403"><div class="ttname"><a href="#aa651609fb79365a0a9045c30c5be1403">eonc::pathintegral::RingPolymer::opt_</a></div><div class="ttdeci">Options opt_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00143">PathIntegral.h:143</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_aa89b5252e25555c96689c0e748d098ae"><div class="ttname"><a href="#aa89b5252e25555c96689c0e748d098ae">eonc::pathintegral::RingPolymer::thermalMomenta</a></div><div class="ttdeci">void thermalMomenta()</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00496">PathIntegral.cpp:496</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_adc71fcb35c3aa1c816a4378f549f1734"><div class="ttname"><a href="#adc71fcb35c3aa1c816a4378f549f1734">eonc::pathintegral::RingPolymer::qnm_</a></div><div class="ttdeci">std::vector&lt; VectorXd &gt; qnm_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00157">PathIntegral.h:157</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_ae76dd5a639d68e579905bc2906548428"><div class="ttname"><a href="#ae76dd5a639d68e579905bc2906548428">eonc::pathintegral::RingPolymer::nBeads_</a></div><div class="ttdeci">long nBeads_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00146">PathIntegral.h:146</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_af4c43466849e9f1ad4f52f5a52f15f32"><div class="ttname"><a href="#af4c43466849e9f1ad4f52f5a52f15f32">eonc::pathintegral::RingPolymer::rng_</a></div><div class="ttdeci">std::uint64_t rng_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00173">PathIntegral.h:173</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_afaa2ba0ef1f6ffd55dce06f8b3bcc2cb"><div class="ttname"><a href="#afaa2ba0ef1f6ffd55dce06f8b3bcc2cb">eonc::pathintegral::RingPolymer::nAtoms_</a></div><div class="ttdeci">long nAtoms_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00144">PathIntegral.h:144</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pathintegral_html_a3b4d87da5fff9d69f06779f9aca9a5f7"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#a3b4d87da5fff9d69f06779f9aca9a5f7">eonc::pathintegral::normalModeMatrix</a></div><div class="ttdeci">MatrixXd normalModeMatrix(long nBeads)</div><div class="ttdoc">Orthogonal bead-to-normal-mode matrix. Row k is mode k.</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00293">PathIntegral.cpp:293</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pathintegral_html_a7cd723e7974a04d9e90f5943274f54ed"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#a7cd723e7974a04d9e90f5943274f54ed">eonc::pathintegral::trotterEigenvalues</a></div><div class="ttdeci">VectorXd trotterEigenvalues(long nBeads)</div><div class="ttdoc">Dimensionless free-ring eigenvalues, mode 0 equal to 0.</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00261">PathIntegral.cpp:261</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pathintegral_html_abe31f237ac5f5aff8dce43642078966ea91efa9e46e4c6cbb78d9fd0a773cc6d5"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#abe31f237ac5f5aff8dce43642078966ea91efa9e46e4c6cbb78d9fd0a773cc6d5">eonc::pathintegral::Springs::Eco</a></div><div class="ttdeci">@ Eco</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00042">PathIntegral.h:42</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pathintegral_html_adc263a73db61ab235b834a5785881fd2"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#adc263a73db61ab235b834a5785881fd2">eonc::pathintegral::ecoEigenvalues</a></div><div class="ttdeci">VectorXd ecoEigenvalues(long nBeads, double xmax)</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00273">PathIntegral.cpp:273</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pathintegral_html_ae25079e6f1ebbf96835a7214c8d42ce8a8c09ee8e1496710919dcbd718ff285dd"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8a8c09ee8e1496710919dcbd718ff285dd">eonc::pathintegral::Thermostat::Piglet</a></div><div class="ttdeci">@ Piglet</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00046">PathIntegral.h:46</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a7ef3b0018176677a304e7d03f52491c4" name="a7ef3b0018176677a304e7d03f52491c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ef3b0018176677a304e7d03f52491c4">&#9670;&#160;</a></span>batches()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::pathintegral::RingPolymer::batches </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00120">120</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  120</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a8f6b0d76604d0a69dc9843c5566448a6">batches_</a>; }</div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a8f6b0d76604d0a69dc9843c5566448a6"><div class="ttname"><a href="#a8f6b0d76604d0a69dc9843c5566448a6">eonc::pathintegral::RingPolymer::batches_</a></div><div class="ttdeci">long batches_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00174">PathIntegral.h:174</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad19c1cbe81c8e40da670c896fea921a3" name="ad19c1cbe81c8e40da670c896fea921a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad19c1cbe81c8e40da670c896fea921a3">&#9670;&#160;</a></span>beads()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; VectorXd &gt; &amp; eonc::pathintegral::RingPolymer::beads </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00102">102</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  102</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a86ae137609da6c7360545f5b233a2d4a">q_</a>; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a6dda56bc33bb780f9a4c3d495c5b1719" name="a6dda56bc33bb780f9a4c3d495c5b1719"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6dda56bc33bb780f9a4c3d495c5b1719">&#9670;&#160;</a></span>centroid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">VectorXd eonc::pathintegral::RingPolymer::centroid </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00585">585</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  585</span>                                     {</div>
+<div class="line"><span class="lineno">  586</span>  VectorXd c = VectorXd::Zero(<a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>);</div>
+<div class="line"><span class="lineno">  587</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> bead = 0; bead &lt; <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>; ++bead) {</div>
+<div class="line"><span class="lineno">  588</span>    c += <a class="code hl_variable" href="#a86ae137609da6c7360545f5b233a2d4a">q_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)];</div>
+<div class="line"><span class="lineno">  589</span>  }</div>
+<div class="line"><span class="lineno">  590</span>  c /= <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>);</div>
+<div class="line"><span class="lineno">  591</span>  <span class="keywordflow">return</span> c;</div>
+<div class="line"><span class="lineno">  592</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a07e32a3f53179f0163291834556a5229" name="a07e32a3f53179f0163291834556a5229"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07e32a3f53179f0163291834556a5229">&#9670;&#160;</a></span>centroidVelocity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">VectorXd eonc::pathintegral::RingPolymer::centroidVelocity </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00594">594</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  594</span>                                             {</div>
+<div class="line"><span class="lineno">  595</span>  std::vector&lt;VectorXd&gt; pnm(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>),</div>
+<div class="line"><span class="lineno">  596</span>                            VectorXd::Zero(<a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>));</div>
+<div class="line"><span class="lineno">  597</span>  <a class="code hl_function" href="#a64f6ba13db5dd7e837e2419078100724">toNormal</a>(<a class="code hl_variable" href="#a812baa781db7e930beb20fd40c5b3529">p_</a>, pnm);</div>
+<div class="line"><span class="lineno">  598</span>  VectorXd v = VectorXd::Zero(<a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>);</div>
+<div class="line"><span class="lineno">  599</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> scale = std::sqrt(<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>));</div>
+<div class="line"><span class="lineno">  600</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> a = 0; a &lt; <a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>; ++a) {</div>
+<div class="line"><span class="lineno">  601</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> m = <a class="code hl_variable" href="#a432fcfe2be2bf7d01117b7c2b0a8fd6c">mass_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(a)];</div>
+<div class="line"><span class="lineno">  602</span>    <span class="keywordflow">if</span> (m &gt; 0.0) {</div>
+<div class="line"><span class="lineno">  603</span>      v[a] = pnm[0][a] / (scale * m);</div>
+<div class="line"><span class="lineno">  604</span>    }</div>
+<div class="line"><span class="lineno">  605</span>  }</div>
+<div class="line"><span class="lineno">  606</span>  <span class="keywordflow">return</span> v;</div>
+<div class="line"><span class="lineno">  607</span>}</div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a64f6ba13db5dd7e837e2419078100724"><div class="ttname"><a href="#a64f6ba13db5dd7e837e2419078100724">eonc::pathintegral::RingPolymer::toNormal</a></div><div class="ttdeci">void toNormal(const std::vector&lt; VectorXd &gt; &amp;src, std::vector&lt; VectorXd &gt; &amp;dst) const</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00534">PathIntegral.cpp:534</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a823245abfa7bf2b6663e5c885a3dd5f3" name="a823245abfa7bf2b6663e5c885a3dd5f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a823245abfa7bf2b6663e5c885a3dd5f3">&#9670;&#160;</a></span>forces()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::pathintegral::RingPolymer::forces </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Potential.html">Potential</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>pot</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>box</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00558">558</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  558</span>                                                          {</div>
+<div class="line"><span class="lineno">  559</span>  <span class="keywordtype">double</span> zeroBox[9] = {};</div>
+<div class="line"><span class="lineno">  560</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> *cell = box != <span class="keyword">nullptr</span> ? box : zeroBox;</div>
+<div class="line"><span class="lineno">  561</span>  std::vector&lt;const double *&gt; pos(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>));</div>
+<div class="line"><span class="lineno">  562</span>  std::vector&lt;const int *&gt; nrs(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>));</div>
+<div class="line"><span class="lineno">  563</span>  std::vector&lt;double *&gt; frc(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>));</div>
+<div class="line"><span class="lineno">  564</span>  std::vector&lt;const double *&gt; boxes(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>), cell);</div>
+<div class="line"><span class="lineno">  565</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> bead = 0; bead &lt; <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>; ++bead) {</div>
+<div class="line"><span class="lineno">  566</span>    pos[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)] = <a class="code hl_variable" href="#a86ae137609da6c7360545f5b233a2d4a">q_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)].data();</div>
+<div class="line"><span class="lineno">  567</span>    nrs[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)] = <a class="code hl_variable" href="#a253a88d9f3957bc4205b2e0dd4b92e15">atomicNumbers_</a>.data();</div>
+<div class="line"><span class="lineno">  568</span>    frc[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)] = <a class="code hl_variable" href="#a544fc3ef09d8b2765e292411fc8e10be">f_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)].data();</div>
+<div class="line"><span class="lineno">  569</span>  }</div>
+<div class="line"><span class="lineno">  570</span>  std::vector&lt;double&gt; energies(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>), 0.0);</div>
+<div class="line"><span class="lineno">  571</span>  std::vector&lt;double&gt; variances(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>), 0.0);</div>
+<div class="line"><span class="lineno">  572</span>  pot.forceBatch(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>, <a class="code hl_variable" href="#afaa2ba0ef1f6ffd55dce06f8b3bcc2cb">nAtoms_</a>, pos.data(), nrs.data(), frc.data(),</div>
+<div class="line"><span class="lineno">  573</span>                 energies.data(), variances.data(), boxes.data());</div>
+<div class="line"><span class="lineno">  574</span>  ++<a class="code hl_variable" href="#a8f6b0d76604d0a69dc9843c5566448a6">batches_</a>;</div>
+<div class="line"><span class="lineno">  575</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> bead = 0; bead &lt; <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>; ++bead) {</div>
+<div class="line"><span class="lineno">  576</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> a = 0; a &lt; <a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>; ++a) {</div>
+<div class="line"><span class="lineno">  577</span>      <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a8398c4a0003611ecbbc26c146caadd87">free_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(a)]) {</div>
+<div class="line"><span class="lineno">  578</span>        <a class="code hl_variable" href="#a544fc3ef09d8b2765e292411fc8e10be">f_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)][a] = 0.0;</div>
+<div class="line"><span class="lineno">  579</span>      }</div>
+<div class="line"><span class="lineno">  580</span>    }</div>
+<div class="line"><span class="lineno">  581</span>  }</div>
+<div class="line"><span class="lineno">  582</span>  <a class="code hl_variable" href="#a1da753e22f7e9979ffc1d192f43c28d1">haveForces_</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  583</span>}</div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a1da753e22f7e9979ffc1d192f43c28d1"><div class="ttname"><a href="#a1da753e22f7e9979ffc1d192f43c28d1">eonc::pathintegral::RingPolymer::haveForces_</a></div><div class="ttdeci">bool haveForces_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00162">PathIntegral.h:162</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac1bd407a02ac0616338581a948a7313a" name="ac1bd407a02ac0616338581a948a7313a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1bd407a02ac0616338581a948a7313a">&#9670;&#160;</a></span>fromNormal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::pathintegral::RingPolymer::fromNormal </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; VectorXd &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>src</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; VectorXd &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>dst</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00546">546</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  547</span>                                                             {</div>
+<div class="line"><span class="lineno">  548</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> packed(<a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>, <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>);</div>
+<div class="line"><span class="lineno">  549</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt; <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>; ++k) {</div>
+<div class="line"><span class="lineno">  550</span>    packed.col(k) = src[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)];</div>
+<div class="line"><span class="lineno">  551</span>  }</div>
+<div class="line"><span class="lineno">  552</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> out = packed * <a class="code hl_variable" href="#a66b1b0a6fc4c1b5d830d20d5a290e074">modes_</a>;</div>
+<div class="line"><span class="lineno">  553</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>; ++j) {</div>
+<div class="line"><span class="lineno">  554</span>    dst[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = out.col(j);</div>
+<div class="line"><span class="lineno">  555</span>  }</div>
+<div class="line"><span class="lineno">  556</span>}</div>
+<div class="ttc" id="aEigen_8h_html_a45bb4cbce093fca4dfb193d3f649da30"><div class="ttname"><a href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, eOnStorageOrder &gt; MatrixXd</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00033">Eigen.h:33</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aa6f301f2f488231906c324b1a0588f23" name="aa6f301f2f488231906c324b1a0588f23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6f301f2f488231906c324b1a0588f23">&#9670;&#160;</a></span>gauss()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::pathintegral::RingPolymer::gauss </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00487">487</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  487</span>                          {</div>
+<div class="line"><span class="lineno">  488</span>  <a class="code hl_variable" href="#af4c43466849e9f1ad4f52f5a52f15f32">rng_</a> = <a class="code hl_variable" href="#af4c43466849e9f1ad4f52f5a52f15f32">rng_</a> * 6364136223846793005ULL + 1ULL;</div>
+<div class="line"><span class="lineno">  489</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> u1 =</div>
+<div class="line"><span class="lineno">  490</span>      std::max((<a class="code hl_variable" href="#af4c43466849e9f1ad4f52f5a52f15f32">rng_</a> &gt;&gt; 11) * (1.0 / 9007199254740992.0), 1.0e-16);</div>
+<div class="line"><span class="lineno">  491</span>  <a class="code hl_variable" href="#af4c43466849e9f1ad4f52f5a52f15f32">rng_</a> = <a class="code hl_variable" href="#af4c43466849e9f1ad4f52f5a52f15f32">rng_</a> * 6364136223846793005ULL + 1ULL;</div>
+<div class="line"><span class="lineno">  492</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> u2 = (<a class="code hl_variable" href="#af4c43466849e9f1ad4f52f5a52f15f32">rng_</a> &gt;&gt; 11) * (1.0 / 9007199254740992.0);</div>
+<div class="line"><span class="lineno">  493</span>  <span class="keywordflow">return</span> std::sqrt(-2.0 * std::log(u1)) * std::cos(2.0 * kPi * u2);</div>
+<div class="line"><span class="lineno">  494</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2765c1fd31dd85f7f9a0cf7a6179306d" name="a2765c1fd31dd85f7f9a0cf7a6179306d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2765c1fd31dd85f7f9a0cf7a6179306d">&#9670;&#160;</a></span>initGle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::pathintegral::RingPolymer::initGle </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00386">386</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  386</span>                          {</div>
+<div class="line"><span class="lineno">  387</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a> == 1) {</div>
+<div class="line"><span class="lineno">  388</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  389</span>  }</div>
+<div class="line"><span class="lineno">  390</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.gleFile.empty()) {</div>
+<div class="line"><span class="lineno">  391</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;normal-mode GLE needs a matrix file&quot;</span>);</div>
+<div class="line"><span class="lineno">  392</span>  }</div>
+<div class="line"><span class="lineno">  393</span>  <span class="keyword">const</span> GleFile file = readGle(<a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.gleFile);</div>
+<div class="line"><span class="lineno">  394</span>  <span class="keywordtype">long</span> first = 0;</div>
+<div class="line"><span class="lineno">  395</span>  <span class="keywordflow">if</span> (file.nModes == <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>) {</div>
+<div class="line"><span class="lineno">  396</span>    first = 1;</div>
+<div class="line"><span class="lineno">  397</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (file.nModes != <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a> - 1) {</div>
+<div class="line"><span class="lineno">  398</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">  399</span>        <span class="stringliteral">&quot;GLE matrix count must be the bead count or one less&quot;</span>);</div>
+<div class="line"><span class="lineno">  400</span>  }</div>
+<div class="line"><span class="lineno">  401</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> h = 0.5 * <a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.dt;</div>
+<div class="line"><span class="lineno">  402</span>  <a class="code hl_variable" href="#a3713acb61dad24fe24f5cb82f8ce29bb">gle_</a>.resize(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a> - 1));</div>
+<div class="line"><span class="lineno">  403</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 1; k &lt; <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>; ++k) {</div>
+<div class="line"><span class="lineno">  404</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> src = first + (k - 1);</div>
+<div class="line"><span class="lineno">  405</span>    <a class="code hl_struct" href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html">ModeGle</a> mode;</div>
+<div class="line"><span class="lineno">  406</span>    mode.<a class="code hl_variable" href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html#a673d3c09500cf58f2927fb3809e2fe05">drift</a> = file.drift[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(src)];</div>
+<div class="line"><span class="lineno">  407</span>    mode.covariance = file.covariance[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(src)];</div>
+<div class="line"><span class="lineno">  408</span>    mode.propagate = (-mode.drift * h).exp();</div>
+<div class="line"><span class="lineno">  409</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> cov =</div>
+<div class="line"><span class="lineno">  410</span>        <a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.kB * (mode.covariance - mode.propagate * mode.covariance *</div>
+<div class="line"><span class="lineno">  411</span>                                         mode.propagate.transpose());</div>
+<div class="line"><span class="lineno">  412</span>    mode.noise = factorCovariance(cov);</div>
+<div class="line"><span class="lineno">  413</span>    mode.extended = MatrixXd::Zero(file.dim, <a class="code hl_variable" href="#a725407172321f089637ecdfbe7c11e74">nFree_</a>);</div>
+<div class="line"><span class="lineno">  414</span>    <a class="code hl_variable" href="#a3713acb61dad24fe24f5cb82f8ce29bb">gle_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k - 1)] = std::move(mode);</div>
+<div class="line"><span class="lineno">  415</span>  }</div>
+<div class="line"><span class="lineno">  416</span>}</div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a3713acb61dad24fe24f5cb82f8ce29bb"><div class="ttname"><a href="#a3713acb61dad24fe24f5cb82f8ce29bb">eonc::pathintegral::RingPolymer::gle_</a></div><div class="ttdeci">std::vector&lt; ModeGle &gt; gle_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00171">PathIntegral.h:171</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle_html"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html">eonc::pathintegral::RingPolymer::ModeGle</a></div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00164">PathIntegral.h:164</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle_html_a673d3c09500cf58f2927fb3809e2fe05"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html#a673d3c09500cf58f2927fb3809e2fe05">eonc::pathintegral::RingPolymer::ModeGle::drift</a></div><div class="ttdeci">MatrixXd drift</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00165">PathIntegral.h:165</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8e42ee83d6d89aeabb5ea7b137620f43" name="a8e42ee83d6d89aeabb5ea7b137620f43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e42ee83d6d89aeabb5ea7b137620f43">&#9670;&#160;</a></span>kick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::pathintegral::RingPolymer::kick </td>
+          <td>(</td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>h</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>dropParallel</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00681">681</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  681</span>                                                  {</div>
+<div class="line"><span class="lineno">  682</span>  VectorXd removal = VectorXd::Zero(<a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>);</div>
+<div class="line"><span class="lineno">  683</span>  <span class="keywordflow">if</span> (dropParallel &amp;&amp; <a class="code hl_variable" href="#aa5030ded646e143204a717f327a536a4">constrain_</a>) {</div>
+<div class="line"><span class="lineno">  684</span>    VectorXd fc = VectorXd::Zero(<a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>);</div>
+<div class="line"><span class="lineno">  685</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> bead = 0; bead &lt; <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>; ++bead) {</div>
+<div class="line"><span class="lineno">  686</span>      fc += <a class="code hl_variable" href="#a544fc3ef09d8b2765e292411fc8e10be">f_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)];</div>
+<div class="line"><span class="lineno">  687</span>    }</div>
+<div class="line"><span class="lineno">  688</span>    fc /= <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>);</div>
+<div class="line"><span class="lineno">  689</span>    <span class="keywordtype">double</span> along = 0.0;</div>
+<div class="line"><span class="lineno">  690</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> a : <a class="code hl_variable" href="#a29ad6aa078ee7c0bbf4d7dec249191d1">freeIndex_</a>) {</div>
+<div class="line"><span class="lineno">  691</span>      along += <a class="code hl_variable" href="#a3f2bb67b9763c0b85c5aee75415c2427">planeNormal_</a>[a] * fc[a];</div>
+<div class="line"><span class="lineno">  692</span>    }</div>
+<div class="line"><span class="lineno">  693</span>    removal = along * <a class="code hl_variable" href="#a3f2bb67b9763c0b85c5aee75415c2427">planeNormal_</a>;</div>
+<div class="line"><span class="lineno">  694</span>  }</div>
+<div class="line"><span class="lineno">  695</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> bead = 0; bead &lt; <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>; ++bead) {</div>
+<div class="line"><span class="lineno">  696</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> a : <a class="code hl_variable" href="#a29ad6aa078ee7c0bbf4d7dec249191d1">freeIndex_</a>) {</div>
+<div class="line"><span class="lineno">  697</span>      <a class="code hl_variable" href="#a812baa781db7e930beb20fd40c5b3529">p_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)][a] +=</div>
+<div class="line"><span class="lineno">  698</span>          (<a class="code hl_variable" href="#a544fc3ef09d8b2765e292411fc8e10be">f_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)][a] - removal[a]) * h;</div>
+<div class="line"><span class="lineno">  699</span>    }</div>
+<div class="line"><span class="lineno">  700</span>  }</div>
+<div class="line"><span class="lineno">  701</span>}</div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a3f2bb67b9763c0b85c5aee75415c2427"><div class="ttname"><a href="#a3f2bb67b9763c0b85c5aee75415c2427">eonc::pathintegral::RingPolymer::planeNormal_</a></div><div class="ttdeci">VectorXd planeNormal_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00159">PathIntegral.h:159</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_aa5030ded646e143204a717f327a536a4"><div class="ttname"><a href="#aa5030ded646e143204a717f327a536a4">eonc::pathintegral::RingPolymer::constrain_</a></div><div class="ttdeci">bool constrain_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00161">PathIntegral.h:161</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac0b3343a4e7217eb65ce5f3c7ed0145d" name="ac0b3343a4e7217eb65ce5f3c7ed0145d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0b3343a4e7217eb65ce5f3c7ed0145d">&#9670;&#160;</a></span>kineticCv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::pathintegral::RingPolymer::kineticCv </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00609">609</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  609</span>                                    {</div>
+<div class="line"><span class="lineno">  610</span>  <span class="keywordtype">double</span> k = 0.5 * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a725407172321f089637ecdfbe7c11e74">nFree_</a>) * <a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.kB * <a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.temperature;</div>
+<div class="line"><span class="lineno">  611</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a1da753e22f7e9979ffc1d192f43c28d1">haveForces_</a>) {</div>
+<div class="line"><span class="lineno">  612</span>    <span class="keywordflow">return</span> k;</div>
+<div class="line"><span class="lineno">  613</span>  }</div>
+<div class="line"><span class="lineno">  614</span>  <span class="keyword">const</span> VectorXd c = <a class="code hl_function" href="#a6dda56bc33bb780f9a4c3d495c5b1719">centroid</a>();</div>
+<div class="line"><span class="lineno">  615</span>  <span class="keywordtype">double</span> virial = 0.0;</div>
+<div class="line"><span class="lineno">  616</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> bead = 0; bead &lt; <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>; ++bead) {</div>
+<div class="line"><span class="lineno">  617</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> a : <a class="code hl_variable" href="#a29ad6aa078ee7c0bbf4d7dec249191d1">freeIndex_</a>) {</div>
+<div class="line"><span class="lineno">  618</span>      virial += (<a class="code hl_variable" href="#a86ae137609da6c7360545f5b233a2d4a">q_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)][a] - c[a]) *</div>
+<div class="line"><span class="lineno">  619</span>                <a class="code hl_variable" href="#a544fc3ef09d8b2765e292411fc8e10be">f_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)][a];</div>
+<div class="line"><span class="lineno">  620</span>    }</div>
+<div class="line"><span class="lineno">  621</span>  }</div>
+<div class="line"><span class="lineno">  622</span>  k += -0.5 / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>) * virial;</div>
+<div class="line"><span class="lineno">  623</span>  <span class="keywordflow">return</span> k;</div>
+<div class="line"><span class="lineno">  624</span>}</div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a6dda56bc33bb780f9a4c3d495c5b1719"><div class="ttname"><a href="#a6dda56bc33bb780f9a4c3d495c5b1719">eonc::pathintegral::RingPolymer::centroid</a></div><div class="ttdeci">VectorXd centroid() const</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00585">PathIntegral.cpp:585</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a5f42f8550d18e315d852666067aea433" name="a5f42f8550d18e315d852666067aea433"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f42f8550d18e315d852666067aea433">&#9670;&#160;</a></span>meanForce()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::pathintegral::RingPolymer::meanForce </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00626">626</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  626</span>                                    {</div>
+<div class="line"><span class="lineno">  627</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aa5030ded646e143204a717f327a536a4">constrain_</a> || <a class="code hl_variable" href="#a2110c5d5a587e42710697ab1cf40903e">recorded_</a> &lt; 1) {</div>
+<div class="line"><span class="lineno">  628</span>    <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><span class="lineno">  629</span>  }</div>
+<div class="line"><span class="lineno">  630</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#aa68da0564a92541fb75b68b10b416a82">forceSum_</a> / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a2110c5d5a587e42710697ab1cf40903e">recorded_</a>);</div>
+<div class="line"><span class="lineno">  631</span>}</div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a2110c5d5a587e42710697ab1cf40903e"><div class="ttname"><a href="#a2110c5d5a587e42710697ab1cf40903e">eonc::pathintegral::RingPolymer::recorded_</a></div><div class="ttdeci">long recorded_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00175">PathIntegral.h:175</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_aa68da0564a92541fb75b68b10b416a82"><div class="ttname"><a href="#aa68da0564a92541fb75b68b10b416a82">eonc::pathintegral::RingPolymer::forceSum_</a></div><div class="ttdeci">double forceSum_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00177">PathIntegral.h:177</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ab22cf783d4320a7d59a6bb706f097c37" name="ab22cf783d4320a7d59a6bb706f097c37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab22cf783d4320a7d59a6bb706f097c37">&#9670;&#160;</a></span>momenta()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; VectorXd &gt; &amp; eonc::pathintegral::RingPolymer::momenta </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00103">103</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  103</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a812baa781db7e930beb20fd40c5b3529">p_</a>; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a5985197c3201b5a6b6057740254cfa3c" name="a5985197c3201b5a6b6057740254cfa3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5985197c3201b5a6b6057740254cfa3c">&#9670;&#160;</a></span>nveStep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::pathintegral::RingPolymer::nveStep </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Potential.html">Potential</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>pot</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>box</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Thermostat-free RPMD step: velocity Verlet with the free ring propagated exactly in normal modes. </p>
+<p>Refused while a hyperplane is set. </p>
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00801">801</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  801</span>                                                           {</div>
+<div class="line"><span class="lineno">  802</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aa5030ded646e143204a717f327a536a4">constrain_</a>) {</div>
+<div class="line"><span class="lineno">  803</span>    <span class="keywordflow">throw</span> std::logic_error(<span class="stringliteral">&quot;path integral NVE step with a hyperplane set&quot;</span>);</div>
+<div class="line"><span class="lineno">  804</span>  }</div>
+<div class="line"><span class="lineno">  805</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> half = 0.5 * <a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.dt;</div>
+<div class="line"><span class="lineno">  806</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a1da753e22f7e9979ffc1d192f43c28d1">haveForces_</a>) {</div>
+<div class="line"><span class="lineno">  807</span>    <a class="code hl_function" href="#a823245abfa7bf2b6663e5c885a3dd5f3">forces</a>(pot, box);</div>
+<div class="line"><span class="lineno">  808</span>  }</div>
+<div class="line"><span class="lineno">  809</span>  <a class="code hl_function" href="#a8e42ee83d6d89aeabb5ea7b137620f43">kick</a>(half, <span class="keyword">false</span>);</div>
+<div class="line"><span class="lineno">  810</span>  <a class="code hl_function" href="#ac9f124d4dfc61ad76a2cbd50901501c1">propagate</a>(<a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.dt);</div>
+<div class="line"><span class="lineno">  811</span>  <a class="code hl_function" href="#a823245abfa7bf2b6663e5c885a3dd5f3">forces</a>(pot, box);</div>
+<div class="line"><span class="lineno">  812</span>  <a class="code hl_function" href="#a8e42ee83d6d89aeabb5ea7b137620f43">kick</a>(half, <span class="keyword">false</span>);</div>
+<div class="line"><span class="lineno">  813</span>}</div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a823245abfa7bf2b6663e5c885a3dd5f3"><div class="ttname"><a href="#a823245abfa7bf2b6663e5c885a3dd5f3">eonc::pathintegral::RingPolymer::forces</a></div><div class="ttdeci">void forces(Potential &amp;pot, const double *box)</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00558">PathIntegral.cpp:558</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a8e42ee83d6d89aeabb5ea7b137620f43"><div class="ttname"><a href="#a8e42ee83d6d89aeabb5ea7b137620f43">eonc::pathintegral::RingPolymer::kick</a></div><div class="ttdeci">void kick(double h, bool dropParallel)</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00681">PathIntegral.cpp:681</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_ac9f124d4dfc61ad76a2cbd50901501c1"><div class="ttname"><a href="#ac9f124d4dfc61ad76a2cbd50901501c1">eonc::pathintegral::RingPolymer::propagate</a></div><div class="ttdeci">void propagate(double h)</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00703">PathIntegral.cpp:703</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a39b4ebf1418938bde242b275c92b27a7" name="a39b4ebf1418938bde242b275c92b27a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39b4ebf1418938bde242b275c92b27a7">&#9670;&#160;</a></span>projectMomentum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::pathintegral::RingPolymer::projectMomentum </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00741">741</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  741</span>                                  {</div>
+<div class="line"><span class="lineno">  742</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aa5030ded646e143204a717f327a536a4">constrain_</a>) {</div>
+<div class="line"><span class="lineno">  743</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  744</span>  }</div>
+<div class="line"><span class="lineno">  745</span>  VectorXd sum = VectorXd::Zero(<a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>);</div>
+<div class="line"><span class="lineno">  746</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> bead = 0; bead &lt; <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>; ++bead) {</div>
+<div class="line"><span class="lineno">  747</span>    sum += <a class="code hl_variable" href="#a812baa781db7e930beb20fd40c5b3529">p_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)];</div>
+<div class="line"><span class="lineno">  748</span>  }</div>
+<div class="line"><span class="lineno">  749</span>  <span class="comment">// p_0 = sum / sqrt(P); remove lambda n from p_0.</span></div>
+<div class="line"><span class="lineno">  750</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> scale = std::sqrt(<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>));</div>
+<div class="line"><span class="lineno">  751</span>  <span class="keywordtype">double</span> num = 0.0;</div>
+<div class="line"><span class="lineno">  752</span>  <span class="keywordtype">double</span> den = 0.0;</div>
+<div class="line"><span class="lineno">  753</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> a : <a class="code hl_variable" href="#a29ad6aa078ee7c0bbf4d7dec249191d1">freeIndex_</a>) {</div>
+<div class="line"><span class="lineno">  754</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> m = <a class="code hl_variable" href="#a432fcfe2be2bf7d01117b7c2b0a8fd6c">mass_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(a)];</div>
+<div class="line"><span class="lineno">  755</span>    num += <a class="code hl_variable" href="#a3f2bb67b9763c0b85c5aee75415c2427">planeNormal_</a>[a] * (sum[a] / scale) / m;</div>
+<div class="line"><span class="lineno">  756</span>    den += <a class="code hl_variable" href="#a3f2bb67b9763c0b85c5aee75415c2427">planeNormal_</a>[a] * <a class="code hl_variable" href="#a3f2bb67b9763c0b85c5aee75415c2427">planeNormal_</a>[a] / m;</div>
+<div class="line"><span class="lineno">  757</span>  }</div>
+<div class="line"><span class="lineno">  758</span>  <span class="keywordflow">if</span> (den &gt; 0.0) {</div>
+<div class="line"><span class="lineno">  759</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> shift = num / den / scale;</div>
+<div class="line"><span class="lineno">  760</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> bead = 0; bead &lt; <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>; ++bead) {</div>
+<div class="line"><span class="lineno">  761</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> a : <a class="code hl_variable" href="#a29ad6aa078ee7c0bbf4d7dec249191d1">freeIndex_</a>) {</div>
+<div class="line"><span class="lineno">  762</span>        <a class="code hl_variable" href="#a812baa781db7e930beb20fd40c5b3529">p_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)][a] -= shift * <a class="code hl_variable" href="#a3f2bb67b9763c0b85c5aee75415c2427">planeNormal_</a>[a];</div>
+<div class="line"><span class="lineno">  763</span>      }</div>
+<div class="line"><span class="lineno">  764</span>    }</div>
+<div class="line"><span class="lineno">  765</span>  }</div>
+<div class="line"><span class="lineno">  766</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a851525481e8495caae1353928a7a96ae" name="a851525481e8495caae1353928a7a96ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a851525481e8495caae1353928a7a96ae">&#9670;&#160;</a></span>projectPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::pathintegral::RingPolymer::projectPosition </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00725">725</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  725</span>                                  {</div>
+<div class="line"><span class="lineno">  726</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aa5030ded646e143204a717f327a536a4">constrain_</a>) {</div>
+<div class="line"><span class="lineno">  727</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  728</span>  }</div>
+<div class="line"><span class="lineno">  729</span>  <span class="keyword">const</span> VectorXd c = <a class="code hl_function" href="#a6dda56bc33bb780f9a4c3d495c5b1719">centroid</a>();</div>
+<div class="line"><span class="lineno">  730</span>  <span class="keywordtype">double</span> sigma = 0.0;</div>
+<div class="line"><span class="lineno">  731</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> a : <a class="code hl_variable" href="#a29ad6aa078ee7c0bbf4d7dec249191d1">freeIndex_</a>) {</div>
+<div class="line"><span class="lineno">  732</span>    sigma += <a class="code hl_variable" href="#a3f2bb67b9763c0b85c5aee75415c2427">planeNormal_</a>[a] * (c[a] - <a class="code hl_variable" href="#a3a3352a65b470de7df68451ed33a90df">planeOrigin_</a>[a]);</div>
+<div class="line"><span class="lineno">  733</span>  }</div>
+<div class="line"><span class="lineno">  734</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> bead = 0; bead &lt; <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>; ++bead) {</div>
+<div class="line"><span class="lineno">  735</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> a : <a class="code hl_variable" href="#a29ad6aa078ee7c0bbf4d7dec249191d1">freeIndex_</a>) {</div>
+<div class="line"><span class="lineno">  736</span>      <a class="code hl_variable" href="#a86ae137609da6c7360545f5b233a2d4a">q_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)][a] -= sigma * <a class="code hl_variable" href="#a3f2bb67b9763c0b85c5aee75415c2427">planeNormal_</a>[a];</div>
+<div class="line"><span class="lineno">  737</span>    }</div>
+<div class="line"><span class="lineno">  738</span>  }</div>
+<div class="line"><span class="lineno">  739</span>}</div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a3a3352a65b470de7df68451ed33a90df"><div class="ttname"><a href="#a3a3352a65b470de7df68451ed33a90df">eonc::pathintegral::RingPolymer::planeOrigin_</a></div><div class="ttdeci">VectorXd planeOrigin_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00160">PathIntegral.h:160</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac9f124d4dfc61ad76a2cbd50901501c1" name="ac9f124d4dfc61ad76a2cbd50901501c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9f124d4dfc61ad76a2cbd50901501c1">&#9670;&#160;</a></span>propagate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::pathintegral::RingPolymer::propagate </td>
+          <td>(</td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>h</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00703">703</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  703</span>                                    {</div>
+<div class="line"><span class="lineno">  704</span>  <a class="code hl_function" href="#a64f6ba13db5dd7e837e2419078100724">toNormal</a>(<a class="code hl_variable" href="#a86ae137609da6c7360545f5b233a2d4a">q_</a>, <a class="code hl_variable" href="#adc71fcb35c3aa1c816a4378f549f1734">qnm_</a>);</div>
+<div class="line"><span class="lineno">  705</span>  <a class="code hl_function" href="#a64f6ba13db5dd7e837e2419078100724">toNormal</a>(<a class="code hl_variable" href="#a812baa781db7e930beb20fd40c5b3529">p_</a>, <a class="code hl_variable" href="#a2b49bf3a864bbb22c5dcd5dc2138aab5">pnm_</a>);</div>
+<div class="line"><span class="lineno">  706</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> a : <a class="code hl_variable" href="#a29ad6aa078ee7c0bbf4d7dec249191d1">freeIndex_</a>) {</div>
+<div class="line"><span class="lineno">  707</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> m = <a class="code hl_variable" href="#a432fcfe2be2bf7d01117b7c2b0a8fd6c">mass_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(a)];</div>
+<div class="line"><span class="lineno">  708</span>    <a class="code hl_variable" href="#adc71fcb35c3aa1c816a4378f549f1734">qnm_</a>[0][a] += <a class="code hl_variable" href="#a2b49bf3a864bbb22c5dcd5dc2138aab5">pnm_</a>[0][a] / m * h;</div>
+<div class="line"><span class="lineno">  709</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 1; k &lt; <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>; ++k) {</div>
+<div class="line"><span class="lineno">  710</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> omega = <a class="code hl_variable" href="#a99b4920e29bfebb9ff2f9763afea17b5">omegaK_</a>[k];</div>
+<div class="line"><span class="lineno">  711</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> c = std::cos(omega * h);</div>
+<div class="line"><span class="lineno">  712</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> s = std::sin(omega * h);</div>
+<div class="line"><span class="lineno">  713</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> pk = <a class="code hl_variable" href="#a2b49bf3a864bbb22c5dcd5dc2138aab5">pnm_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)][a];</div>
+<div class="line"><span class="lineno">  714</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> qk = <a class="code hl_variable" href="#adc71fcb35c3aa1c816a4378f549f1734">qnm_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)][a];</div>
+<div class="line"><span class="lineno">  715</span>      <a class="code hl_variable" href="#a2b49bf3a864bbb22c5dcd5dc2138aab5">pnm_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)][a] = c * pk - m * omega * s * qk;</div>
+<div class="line"><span class="lineno">  716</span>      <a class="code hl_variable" href="#adc71fcb35c3aa1c816a4378f549f1734">qnm_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)][a] = c * qk + s * pk / (omega * m);</div>
+<div class="line"><span class="lineno">  717</span>    }</div>
+<div class="line"><span class="lineno">  718</span>  }</div>
+<div class="line"><span class="lineno">  719</span>  <a class="code hl_function" href="#ac1bd407a02ac0616338581a948a7313a">fromNormal</a>(<a class="code hl_variable" href="#adc71fcb35c3aa1c816a4378f549f1734">qnm_</a>, <a class="code hl_variable" href="#a86ae137609da6c7360545f5b233a2d4a">q_</a>);</div>
+<div class="line"><span class="lineno">  720</span>  <a class="code hl_function" href="#ac1bd407a02ac0616338581a948a7313a">fromNormal</a>(<a class="code hl_variable" href="#a2b49bf3a864bbb22c5dcd5dc2138aab5">pnm_</a>, <a class="code hl_variable" href="#a812baa781db7e930beb20fd40c5b3529">p_</a>);</div>
+<div class="line"><span class="lineno">  721</span>}</div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_ac1bd407a02ac0616338581a948a7313a"><div class="ttname"><a href="#ac1bd407a02ac0616338581a948a7313a">eonc::pathintegral::RingPolymer::fromNormal</a></div><div class="ttdeci">void fromNormal(const std::vector&lt; VectorXd &gt; &amp;src, std::vector&lt; VectorXd &gt; &amp;dst) const</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00546">PathIntegral.cpp:546</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ae2b2f31afa60e99fd0122e0c95eaa3b5" name="ae2b2f31afa60e99fd0122e0c95eaa3b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2b2f31afa60e99fd0122e0c95eaa3b5">&#9670;&#160;</a></span>resetAverages()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::pathintegral::RingPolymer::resetAverages </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00633">633</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  633</span>                                {</div>
+<div class="line"><span class="lineno">  634</span>  <a class="code hl_variable" href="#a2110c5d5a587e42710697ab1cf40903e">recorded_</a> = 0;</div>
+<div class="line"><span class="lineno">  635</span>  <a class="code hl_variable" href="#a62aa9ca01651cc3c9648a2537e597ca9">kineticSum_</a> = 0.0;</div>
+<div class="line"><span class="lineno">  636</span>  <a class="code hl_variable" href="#aa68da0564a92541fb75b68b10b416a82">forceSum_</a> = 0.0;</div>
+<div class="line"><span class="lineno">  637</span>}</div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a62aa9ca01651cc3c9648a2537e597ca9"><div class="ttname"><a href="#a62aa9ca01651cc3c9648a2537e597ca9">eonc::pathintegral::RingPolymer::kineticSum_</a></div><div class="ttdeci">double kineticSum_</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00176">PathIntegral.h:176</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a619add2791458803ea4cb231dd2bdfd0" name="a619add2791458803ea4cb231dd2bdfd0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a619add2791458803ea4cb231dd2bdfd0">&#9670;&#160;</a></span>sample()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1pathintegral_1_1Sample.html">Sample</a> eonc::pathintegral::RingPolymer::sample </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Potential.html">Potential</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>pot</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>box</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>equilibration</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>production</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00815">815</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  816</span>                                                                {</div>
+<div class="line"><span class="lineno">  817</span>  <span class="keywordflow">if</span> (equilibration &lt; 0 || production &lt; 1) {</div>
+<div class="line"><span class="lineno">  818</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;path integral sample length&quot;</span>);</div>
+<div class="line"><span class="lineno">  819</span>  }</div>
+<div class="line"><span class="lineno">  820</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> <a class="code hl_function" href="#aa4295a7cdcb5b7d25060fcc9e7b02abf">step</a> = 0; <a class="code hl_function" href="#aa4295a7cdcb5b7d25060fcc9e7b02abf">step</a> &lt; equilibration; ++<a class="code hl_function" href="#aa4295a7cdcb5b7d25060fcc9e7b02abf">step</a>) {</div>
+<div class="line"><span class="lineno">  821</span>    this-&gt;<a class="code hl_function" href="#aa4295a7cdcb5b7d25060fcc9e7b02abf">step</a>(pot, box, <span class="keyword">false</span>);</div>
+<div class="line"><span class="lineno">  822</span>  }</div>
+<div class="line"><span class="lineno">  823</span>  <a class="code hl_function" href="#ae2b2f31afa60e99fd0122e0c95eaa3b5">resetAverages</a>();</div>
+<div class="line"><span class="lineno">  824</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> batchesBefore = <a class="code hl_variable" href="#a8f6b0d76604d0a69dc9843c5566448a6">batches_</a>;</div>
+<div class="line"><span class="lineno">  825</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> <a class="code hl_function" href="#aa4295a7cdcb5b7d25060fcc9e7b02abf">step</a> = 0; <a class="code hl_function" href="#aa4295a7cdcb5b7d25060fcc9e7b02abf">step</a> &lt; production; ++<a class="code hl_function" href="#aa4295a7cdcb5b7d25060fcc9e7b02abf">step</a>) {</div>
+<div class="line"><span class="lineno">  826</span>    this-&gt;<a class="code hl_function" href="#aa4295a7cdcb5b7d25060fcc9e7b02abf">step</a>(pot, box, <span class="keyword">true</span>);</div>
+<div class="line"><span class="lineno">  827</span>  }</div>
+<div class="line"><span class="lineno">  828</span>  Sample out;</div>
+<div class="line"><span class="lineno">  829</span>  out.kineticCv = <a class="code hl_variable" href="#a62aa9ca01651cc3c9648a2537e597ca9">kineticSum_</a> / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a2110c5d5a587e42710697ab1cf40903e">recorded_</a>);</div>
+<div class="line"><span class="lineno">  830</span>  out.meanForce = <a class="code hl_function" href="#a5f42f8550d18e315d852666067aea433">meanForce</a>();</div>
+<div class="line"><span class="lineno">  831</span>  out.batches = <a class="code hl_variable" href="#a8f6b0d76604d0a69dc9843c5566448a6">batches_</a> - batchesBefore;</div>
+<div class="line"><span class="lineno">  832</span>  <span class="keywordflow">return</span> out;</div>
+<div class="line"><span class="lineno">  833</span>}</div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a5f42f8550d18e315d852666067aea433"><div class="ttname"><a href="#a5f42f8550d18e315d852666067aea433">eonc::pathintegral::RingPolymer::meanForce</a></div><div class="ttdeci">double meanForce() const</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00626">PathIntegral.cpp:626</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_aa4295a7cdcb5b7d25060fcc9e7b02abf"><div class="ttname"><a href="#aa4295a7cdcb5b7d25060fcc9e7b02abf">eonc::pathintegral::RingPolymer::step</a></div><div class="ttdeci">void step(Potential &amp;pot, const double *box, bool record)</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00768">PathIntegral.cpp:768</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_ae2b2f31afa60e99fd0122e0c95eaa3b5"><div class="ttname"><a href="#ae2b2f31afa60e99fd0122e0c95eaa3b5">eonc::pathintegral::RingPolymer::resetAverages</a></div><div class="ttdeci">void resetAverages()</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00633">PathIntegral.cpp:633</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a257c03784d54a48ebdde592bf499e7fe" name="a257c03784d54a48ebdde592bf499e7fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a257c03784d54a48ebdde592bf499e7fe">&#9670;&#160;</a></span>setAllBeads()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::pathintegral::RingPolymer::setAllBeads </td>
+          <td>(</td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>q</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00418">418</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  418</span>                                             {</div>
+<div class="line"><span class="lineno">  419</span>  <span class="keywordflow">if</span> (q == <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  420</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;path integral positions are missing&quot;</span>);</div>
+<div class="line"><span class="lineno">  421</span>  }</div>
+<div class="line"><span class="lineno">  422</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> bead = 0; bead &lt; <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>; ++bead) {</div>
+<div class="line"><span class="lineno">  423</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> a = 0; a &lt; <a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>; ++a) {</div>
+<div class="line"><span class="lineno">  424</span>      <a class="code hl_variable" href="#a86ae137609da6c7360545f5b233a2d4a">q_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)][a] = q[a];</div>
+<div class="line"><span class="lineno">  425</span>    }</div>
+<div class="line"><span class="lineno">  426</span>  }</div>
+<div class="line"><span class="lineno">  427</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aa5030ded646e143204a717f327a536a4">constrain_</a>) {</div>
+<div class="line"><span class="lineno">  428</span>    <a class="code hl_function" href="#a851525481e8495caae1353928a7a96ae">projectPosition</a>();</div>
+<div class="line"><span class="lineno">  429</span>  }</div>
+<div class="line"><span class="lineno">  430</span>  <a class="code hl_variable" href="#a1da753e22f7e9979ffc1d192f43c28d1">haveForces_</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  431</span>}</div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a851525481e8495caae1353928a7a96ae"><div class="ttname"><a href="#a851525481e8495caae1353928a7a96ae">eonc::pathintegral::RingPolymer::projectPosition</a></div><div class="ttdeci">void projectPosition()</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00725">PathIntegral.cpp:725</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a6d788e1e1f6342e281e24b576da84335" name="a6d788e1e1f6342e281e24b576da84335"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d788e1e1f6342e281e24b576da84335">&#9670;&#160;</a></span>setBeads()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::pathintegral::RingPolymer::setBeads </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; VectorXd &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>beads</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>One position vector of length 3 * nAtoms per bead. </p>
+<p>The centroid is projected onto the hyperplane when one is set. </p>
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00433">433</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  433</span>                                                           {</div>
+<div class="line"><span class="lineno">  434</span>  <span class="keywordflow">if</span> (<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(<a class="code hl_function" href="#ad19c1cbe81c8e40da670c896fea921a3">beads</a>.size()) != <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>) {</div>
+<div class="line"><span class="lineno">  435</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;path integral bead count mismatch&quot;</span>);</div>
+<div class="line"><span class="lineno">  436</span>  }</div>
+<div class="line"><span class="lineno">  437</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> bead = 0; bead &lt; <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>; ++bead) {</div>
+<div class="line"><span class="lineno">  438</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="#ad19c1cbe81c8e40da670c896fea921a3">beads</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)].size() != <a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>) {</div>
+<div class="line"><span class="lineno">  439</span>      <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;path integral bead has the wrong length&quot;</span>);</div>
+<div class="line"><span class="lineno">  440</span>    }</div>
+<div class="line"><span class="lineno">  441</span>    <a class="code hl_variable" href="#a86ae137609da6c7360545f5b233a2d4a">q_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)] = <a class="code hl_function" href="#ad19c1cbe81c8e40da670c896fea921a3">beads</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)];</div>
+<div class="line"><span class="lineno">  442</span>  }</div>
+<div class="line"><span class="lineno">  443</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aa5030ded646e143204a717f327a536a4">constrain_</a>) {</div>
+<div class="line"><span class="lineno">  444</span>    <a class="code hl_function" href="#a851525481e8495caae1353928a7a96ae">projectPosition</a>();</div>
+<div class="line"><span class="lineno">  445</span>  }</div>
+<div class="line"><span class="lineno">  446</span>  <a class="code hl_variable" href="#a1da753e22f7e9979ffc1d192f43c28d1">haveForces_</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  447</span>}</div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_ad19c1cbe81c8e40da670c896fea921a3"><div class="ttname"><a href="#ad19c1cbe81c8e40da670c896fea921a3">eonc::pathintegral::RingPolymer::beads</a></div><div class="ttdeci">const std::vector&lt; VectorXd &gt; &amp; beads() const</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00102">PathIntegral.h:102</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8474affd7229bce54ff2cfd3b4e19942" name="a8474affd7229bce54ff2cfd3b4e19942"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8474affd7229bce54ff2cfd3b4e19942">&#9670;&#160;</a></span>setHyperplane()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::pathintegral::RingPolymer::setHyperplane </td>
+          <td>(</td>
+          <td class="paramtype">const VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>normal</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>origin</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Hold n · (q_centroid - origin) = 0. </p>
+<p>n is normalised on the free coordinates. origin has length 3 * nAtoms. </p>
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00466">466</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  467</span>                                                        {</div>
+<div class="line"><span class="lineno">  468</span>  <span class="keywordflow">if</span> (normal.size() != <a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a> || origin.size() != <a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>) {</div>
+<div class="line"><span class="lineno">  469</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;hyperplane vectors have the wrong length&quot;</span>);</div>
+<div class="line"><span class="lineno">  470</span>  }</div>
+<div class="line"><span class="lineno">  471</span>  <a class="code hl_variable" href="#a3f2bb67b9763c0b85c5aee75415c2427">planeNormal_</a> = VectorXd::Zero(<a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>);</div>
+<div class="line"><span class="lineno">  472</span>  <a class="code hl_variable" href="#a3a3352a65b470de7df68451ed33a90df">planeOrigin_</a> = origin;</div>
+<div class="line"><span class="lineno">  473</span>  <span class="keywordtype">double</span> norm = 0.0;</div>
+<div class="line"><span class="lineno">  474</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> a : <a class="code hl_variable" href="#a29ad6aa078ee7c0bbf4d7dec249191d1">freeIndex_</a>) {</div>
+<div class="line"><span class="lineno">  475</span>    <a class="code hl_variable" href="#a3f2bb67b9763c0b85c5aee75415c2427">planeNormal_</a>[a] = normal[a];</div>
+<div class="line"><span class="lineno">  476</span>    norm += normal[a] * normal[a];</div>
+<div class="line"><span class="lineno">  477</span>  }</div>
+<div class="line"><span class="lineno">  478</span>  <span class="keywordflow">if</span> (!(norm &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  479</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;hyperplane normal has no free component&quot;</span>);</div>
+<div class="line"><span class="lineno">  480</span>  }</div>
+<div class="line"><span class="lineno">  481</span>  <a class="code hl_variable" href="#a3f2bb67b9763c0b85c5aee75415c2427">planeNormal_</a> /= std::sqrt(norm);</div>
+<div class="line"><span class="lineno">  482</span>  <a class="code hl_variable" href="#aa5030ded646e143204a717f327a536a4">constrain_</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  483</span>  <a class="code hl_function" href="#a851525481e8495caae1353928a7a96ae">projectPosition</a>();</div>
+<div class="line"><span class="lineno">  484</span>  <a class="code hl_function" href="#a39b4ebf1418938bde242b275c92b27a7">projectMomentum</a>();</div>
+<div class="line"><span class="lineno">  485</span>}</div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a39b4ebf1418938bde242b275c92b27a7"><div class="ttname"><a href="#a39b4ebf1418938bde242b275c92b27a7">eonc::pathintegral::RingPolymer::projectMomentum</a></div><div class="ttdeci">void projectMomentum()</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00741">PathIntegral.cpp:741</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a570afcf856dfd6ca1ec3e743188c3525" name="a570afcf856dfd6ca1ec3e743188c3525"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a570afcf856dfd6ca1ec3e743188c3525">&#9670;&#160;</a></span>setMomenta()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::pathintegral::RingPolymer::setMomenta </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; VectorXd &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>momenta</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>One momentum vector of length 3 * nAtoms per bead; fixed coordinates are zeroed. </p>
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00449">449</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  449</span>                                                               {</div>
+<div class="line"><span class="lineno">  450</span>  <span class="keywordflow">if</span> (<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(<a class="code hl_function" href="#ab22cf783d4320a7d59a6bb706f097c37">momenta</a>.size()) != <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>) {</div>
+<div class="line"><span class="lineno">  451</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;path integral bead count mismatch&quot;</span>);</div>
+<div class="line"><span class="lineno">  452</span>  }</div>
+<div class="line"><span class="lineno">  453</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> bead = 0; bead &lt; <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>; ++bead) {</div>
+<div class="line"><span class="lineno">  454</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="#ab22cf783d4320a7d59a6bb706f097c37">momenta</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)].size() != <a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>) {</div>
+<div class="line"><span class="lineno">  455</span>      <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">  456</span>          <span class="stringliteral">&quot;path integral momentum has the wrong length&quot;</span>);</div>
+<div class="line"><span class="lineno">  457</span>    }</div>
+<div class="line"><span class="lineno">  458</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> a = 0; a &lt; <a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>; ++a) {</div>
+<div class="line"><span class="lineno">  459</span>      <a class="code hl_variable" href="#a812baa781db7e930beb20fd40c5b3529">p_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)][a] =</div>
+<div class="line"><span class="lineno">  460</span>          <a class="code hl_variable" href="#a8398c4a0003611ecbbc26c146caadd87">free_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(a)] ? <a class="code hl_function" href="#ab22cf783d4320a7d59a6bb706f097c37">momenta</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)][a]</div>
+<div class="line"><span class="lineno">  461</span>                                        : 0.0;</div>
+<div class="line"><span class="lineno">  462</span>    }</div>
+<div class="line"><span class="lineno">  463</span>  }</div>
+<div class="line"><span class="lineno">  464</span>}</div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_ab22cf783d4320a7d59a6bb706f097c37"><div class="ttname"><a href="#ab22cf783d4320a7d59a6bb706f097c37">eonc::pathintegral::RingPolymer::momenta</a></div><div class="ttdeci">const std::vector&lt; VectorXd &gt; &amp; momenta() const</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00103">PathIntegral.h:103</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aa4295a7cdcb5b7d25060fcc9e7b02abf" name="aa4295a7cdcb5b7d25060fcc9e7b02abf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4295a7cdcb5b7d25060fcc9e7b02abf">&#9670;&#160;</a></span>step()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::pathintegral::RingPolymer::step </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Potential.html">Potential</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>pot</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>box</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>record</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00768">768</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  768</span>                                                                     {</div>
+<div class="line"><span class="lineno">  769</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> half = 0.5 * <a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.dt;</div>
+<div class="line"><span class="lineno">  770</span>  <a class="code hl_function" href="#a2bd8ddc3c753deb5849285f4b63cbe69">thermostat</a>(half);</div>
+<div class="line"><span class="lineno">  771</span>  <a class="code hl_function" href="#a39b4ebf1418938bde242b275c92b27a7">projectMomentum</a>();</div>
+<div class="line"><span class="lineno">  772</span>  <a class="code hl_function" href="#a823245abfa7bf2b6663e5c885a3dd5f3">forces</a>(pot, box);</div>
+<div class="line"><span class="lineno">  773</span>  <a class="code hl_function" href="#a8e42ee83d6d89aeabb5ea7b137620f43">kick</a>(half, <span class="keyword">true</span>);</div>
+<div class="line"><span class="lineno">  774</span>  <a class="code hl_function" href="#a39b4ebf1418938bde242b275c92b27a7">projectMomentum</a>();</div>
+<div class="line"><span class="lineno">  775</span>  <a class="code hl_function" href="#ac9f124d4dfc61ad76a2cbd50901501c1">propagate</a>(half);</div>
+<div class="line"><span class="lineno">  776</span>  <a class="code hl_function" href="#ac9f124d4dfc61ad76a2cbd50901501c1">propagate</a>(half);</div>
+<div class="line"><span class="lineno">  777</span>  <a class="code hl_function" href="#a851525481e8495caae1353928a7a96ae">projectPosition</a>();</div>
+<div class="line"><span class="lineno">  778</span>  <a class="code hl_function" href="#a823245abfa7bf2b6663e5c885a3dd5f3">forces</a>(pot, box);</div>
+<div class="line"><span class="lineno">  779</span>  <span class="keywordflow">if</span> (record) {</div>
+<div class="line"><span class="lineno">  780</span>    <a class="code hl_variable" href="#a62aa9ca01651cc3c9648a2537e597ca9">kineticSum_</a> += <a class="code hl_function" href="#ac0b3343a4e7217eb65ce5f3c7ed0145d">kineticCv</a>();</div>
+<div class="line"><span class="lineno">  781</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aa5030ded646e143204a717f327a536a4">constrain_</a>) {</div>
+<div class="line"><span class="lineno">  782</span>      VectorXd fc = VectorXd::Zero(<a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>);</div>
+<div class="line"><span class="lineno">  783</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> bead = 0; bead &lt; <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>; ++bead) {</div>
+<div class="line"><span class="lineno">  784</span>        fc += <a class="code hl_variable" href="#a544fc3ef09d8b2765e292411fc8e10be">f_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)];</div>
+<div class="line"><span class="lineno">  785</span>      }</div>
+<div class="line"><span class="lineno">  786</span>      fc /= <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>);</div>
+<div class="line"><span class="lineno">  787</span>      <span class="keywordtype">double</span> along = 0.0;</div>
+<div class="line"><span class="lineno">  788</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> a : <a class="code hl_variable" href="#a29ad6aa078ee7c0bbf4d7dec249191d1">freeIndex_</a>) {</div>
+<div class="line"><span class="lineno">  789</span>        along += <a class="code hl_variable" href="#a3f2bb67b9763c0b85c5aee75415c2427">planeNormal_</a>[a] * fc[a];</div>
+<div class="line"><span class="lineno">  790</span>      }</div>
+<div class="line"><span class="lineno">  791</span>      <a class="code hl_variable" href="#aa68da0564a92541fb75b68b10b416a82">forceSum_</a> += along;</div>
+<div class="line"><span class="lineno">  792</span>    }</div>
+<div class="line"><span class="lineno">  793</span>    ++<a class="code hl_variable" href="#a2110c5d5a587e42710697ab1cf40903e">recorded_</a>;</div>
+<div class="line"><span class="lineno">  794</span>  }</div>
+<div class="line"><span class="lineno">  795</span>  <a class="code hl_function" href="#a8e42ee83d6d89aeabb5ea7b137620f43">kick</a>(half, <span class="keyword">true</span>);</div>
+<div class="line"><span class="lineno">  796</span>  <a class="code hl_function" href="#a39b4ebf1418938bde242b275c92b27a7">projectMomentum</a>();</div>
+<div class="line"><span class="lineno">  797</span>  <a class="code hl_function" href="#a2bd8ddc3c753deb5849285f4b63cbe69">thermostat</a>(half);</div>
+<div class="line"><span class="lineno">  798</span>  <a class="code hl_function" href="#a39b4ebf1418938bde242b275c92b27a7">projectMomentum</a>();</div>
+<div class="line"><span class="lineno">  799</span>}</div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a2bd8ddc3c753deb5849285f4b63cbe69"><div class="ttname"><a href="#a2bd8ddc3c753deb5849285f4b63cbe69">eonc::pathintegral::RingPolymer::thermostat</a></div><div class="ttdeci">void thermostat(double h)</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00639">PathIntegral.cpp:639</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_ac0b3343a4e7217eb65ce5f3c7ed0145d"><div class="ttname"><a href="#ac0b3343a4e7217eb65ce5f3c7ed0145d">eonc::pathintegral::RingPolymer::kineticCv</a></div><div class="ttdeci">double kineticCv() const</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00609">PathIntegral.cpp:609</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aa89b5252e25555c96689c0e748d098ae" name="aa89b5252e25555c96689c0e748d098ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa89b5252e25555c96689c0e748d098ae">&#9670;&#160;</a></span>thermalMomenta()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::pathintegral::RingPolymer::thermalMomenta </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00496">496</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  496</span>                                 {</div>
+<div class="line"><span class="lineno">  497</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> bead = 0; bead &lt; <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>; ++bead) {</div>
+<div class="line"><span class="lineno">  498</span>    <a class="code hl_variable" href="#a812baa781db7e930beb20fd40c5b3529">p_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bead)].setZero();</div>
+<div class="line"><span class="lineno">  499</span>  }</div>
+<div class="line"><span class="lineno">  500</span>  <a class="code hl_function" href="#a64f6ba13db5dd7e837e2419078100724">toNormal</a>(<a class="code hl_variable" href="#a812baa781db7e930beb20fd40c5b3529">p_</a>, <a class="code hl_variable" href="#a2b49bf3a864bbb22c5dcd5dc2138aab5">pnm_</a>);</div>
+<div class="line"><span class="lineno">  501</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> tSim = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>) * <a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.kB * <a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.temperature;</div>
+<div class="line"><span class="lineno">  502</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt; <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>; ++k) {</div>
+<div class="line"><span class="lineno">  503</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> gleMode = <a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.thermostat == <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8a8c09ee8e1496710919dcbd718ff285dd">Thermostat::Piglet</a> &amp;&amp; k &gt; 0;</div>
+<div class="line"><span class="lineno">  504</span>    <span class="keywordflow">if</span> (gleMode) {</div>
+<div class="line"><span class="lineno">  505</span>      <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  506</span>    }</div>
+<div class="line"><span class="lineno">  507</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> a : <a class="code hl_variable" href="#a29ad6aa078ee7c0bbf4d7dec249191d1">freeIndex_</a>) {</div>
+<div class="line"><span class="lineno">  508</span>      <a class="code hl_variable" href="#a2b49bf3a864bbb22c5dcd5dc2138aab5">pnm_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)][a] =</div>
+<div class="line"><span class="lineno">  509</span>          <a class="code hl_function" href="#aa6f301f2f488231906c324b1a0588f23">gauss</a>() * std::sqrt(<a class="code hl_variable" href="#a432fcfe2be2bf7d01117b7c2b0a8fd6c">mass_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(a)] * tSim);</div>
+<div class="line"><span class="lineno">  510</span>    }</div>
+<div class="line"><span class="lineno">  511</span>  }</div>
+<div class="line"><span class="lineno">  512</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.thermostat == <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8a8c09ee8e1496710919dcbd718ff285dd">Thermostat::Piglet</a>) {</div>
+<div class="line"><span class="lineno">  513</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 1; k &lt; <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>; ++k) {</div>
+<div class="line"><span class="lineno">  514</span>      <a class="code hl_struct" href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html">ModeGle</a> &amp;mode = <a class="code hl_variable" href="#a3713acb61dad24fe24f5cb82f8ce29bb">gle_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k - 1)];</div>
+<div class="line"><span class="lineno">  515</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> factor = factorCovariance(<a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.kB * mode.covariance);</div>
+<div class="line"><span class="lineno">  516</span>      <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> noise(mode.extended.rows(), mode.extended.cols());</div>
+<div class="line"><span class="lineno">  517</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> r = 0; r &lt; noise.rows(); ++r) {</div>
+<div class="line"><span class="lineno">  518</span>        <span class="keywordflow">for</span> (<span class="keywordtype">long</span> c = 0; c &lt; noise.cols(); ++c) {</div>
+<div class="line"><span class="lineno">  519</span>          noise(r, c) = <a class="code hl_function" href="#aa6f301f2f488231906c324b1a0588f23">gauss</a>();</div>
+<div class="line"><span class="lineno">  520</span>        }</div>
+<div class="line"><span class="lineno">  521</span>      }</div>
+<div class="line"><span class="lineno">  522</span>      mode.extended = factor * noise;</div>
+<div class="line"><span class="lineno">  523</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> col = 0; col &lt; <a class="code hl_variable" href="#a725407172321f089637ecdfbe7c11e74">nFree_</a>; ++col) {</div>
+<div class="line"><span class="lineno">  524</span>        <span class="keyword">const</span> <span class="keywordtype">long</span> a = <a class="code hl_variable" href="#a29ad6aa078ee7c0bbf4d7dec249191d1">freeIndex_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(col)];</div>
+<div class="line"><span class="lineno">  525</span>        <a class="code hl_variable" href="#a2b49bf3a864bbb22c5dcd5dc2138aab5">pnm_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)][a] =</div>
+<div class="line"><span class="lineno">  526</span>            mode.extended(0, col) * std::sqrt(<a class="code hl_variable" href="#a432fcfe2be2bf7d01117b7c2b0a8fd6c">mass_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(a)]);</div>
+<div class="line"><span class="lineno">  527</span>      }</div>
+<div class="line"><span class="lineno">  528</span>    }</div>
+<div class="line"><span class="lineno">  529</span>  }</div>
+<div class="line"><span class="lineno">  530</span>  <a class="code hl_function" href="#ac1bd407a02ac0616338581a948a7313a">fromNormal</a>(<a class="code hl_variable" href="#a2b49bf3a864bbb22c5dcd5dc2138aab5">pnm_</a>, <a class="code hl_variable" href="#a812baa781db7e930beb20fd40c5b3529">p_</a>);</div>
+<div class="line"><span class="lineno">  531</span>  <a class="code hl_variable" href="#a1da753e22f7e9979ffc1d192f43c28d1">haveForces_</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  532</span>}</div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_aa6f301f2f488231906c324b1a0588f23"><div class="ttname"><a href="#aa6f301f2f488231906c324b1a0588f23">eonc::pathintegral::RingPolymer::gauss</a></div><div class="ttdeci">double gauss()</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00487">PathIntegral.cpp:487</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2bd8ddc3c753deb5849285f4b63cbe69" name="a2bd8ddc3c753deb5849285f4b63cbe69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bd8ddc3c753deb5849285f4b63cbe69">&#9670;&#160;</a></span>thermostat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::pathintegral::RingPolymer::thermostat </td>
+          <td>(</td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>h</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00639">639</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  639</span>                                     {</div>
+<div class="line"><span class="lineno">  640</span>  <a class="code hl_function" href="#a64f6ba13db5dd7e837e2419078100724">toNormal</a>(<a class="code hl_variable" href="#a812baa781db7e930beb20fd40c5b3529">p_</a>, <a class="code hl_variable" href="#a2b49bf3a864bbb22c5dcd5dc2138aab5">pnm_</a>);</div>
+<div class="line"><span class="lineno">  641</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> tSim = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>) * <a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.kB * <a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.temperature;</div>
+<div class="line"><span class="lineno">  642</span>  <span class="keyword">auto</span> langevin = [&amp;](<span class="keywordtype">long</span> k, <span class="keywordtype">double</span> tau) {</div>
+<div class="line"><span class="lineno">  643</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> damp = std::exp(-h / tau);</div>
+<div class="line"><span class="lineno">  644</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> noise = std::sqrt(tSim * (1.0 - damp * damp));</div>
+<div class="line"><span class="lineno">  645</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> a : <a class="code hl_variable" href="#a29ad6aa078ee7c0bbf4d7dec249191d1">freeIndex_</a>) {</div>
+<div class="line"><span class="lineno">  646</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> sm = std::sqrt(<a class="code hl_variable" href="#a432fcfe2be2bf7d01117b7c2b0a8fd6c">mass_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(a)]);</div>
+<div class="line"><span class="lineno">  647</span>      <span class="keywordtype">double</span> pms = <a class="code hl_variable" href="#a2b49bf3a864bbb22c5dcd5dc2138aab5">pnm_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)][a] / sm;</div>
+<div class="line"><span class="lineno">  648</span>      pms = damp * pms + noise * <a class="code hl_function" href="#aa6f301f2f488231906c324b1a0588f23">gauss</a>();</div>
+<div class="line"><span class="lineno">  649</span>      <a class="code hl_variable" href="#a2b49bf3a864bbb22c5dcd5dc2138aab5">pnm_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)][a] = pms * sm;</div>
+<div class="line"><span class="lineno">  650</span>    }</div>
+<div class="line"><span class="lineno">  651</span>  };</div>
+<div class="line"><span class="lineno">  652</span>  langevin(0, <a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.pileTau);</div>
+<div class="line"><span class="lineno">  653</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 1; k &lt; <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>; ++k) {</div>
+<div class="line"><span class="lineno">  654</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.thermostat == <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8a8c09ee8e1496710919dcbd718ff285dd">Thermostat::Piglet</a>) {</div>
+<div class="line"><span class="lineno">  655</span>      <a class="code hl_struct" href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html">ModeGle</a> &amp;mode = <a class="code hl_variable" href="#a3713acb61dad24fe24f5cb82f8ce29bb">gle_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k - 1)];</div>
+<div class="line"><span class="lineno">  656</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> col = 0; col &lt; <a class="code hl_variable" href="#a725407172321f089637ecdfbe7c11e74">nFree_</a>; ++col) {</div>
+<div class="line"><span class="lineno">  657</span>        <span class="keyword">const</span> <span class="keywordtype">long</span> a = <a class="code hl_variable" href="#a29ad6aa078ee7c0bbf4d7dec249191d1">freeIndex_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(col)];</div>
+<div class="line"><span class="lineno">  658</span>        mode.extended(0, col) = <a class="code hl_variable" href="#a2b49bf3a864bbb22c5dcd5dc2138aab5">pnm_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)][a] /</div>
+<div class="line"><span class="lineno">  659</span>                                std::sqrt(<a class="code hl_variable" href="#a432fcfe2be2bf7d01117b7c2b0a8fd6c">mass_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(a)]);</div>
+<div class="line"><span class="lineno">  660</span>      }</div>
+<div class="line"><span class="lineno">  661</span>      <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> noise(mode.extended.rows(), mode.extended.cols());</div>
+<div class="line"><span class="lineno">  662</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> r = 0; r &lt; noise.rows(); ++r) {</div>
+<div class="line"><span class="lineno">  663</span>        <span class="keywordflow">for</span> (<span class="keywordtype">long</span> c = 0; c &lt; noise.cols(); ++c) {</div>
+<div class="line"><span class="lineno">  664</span>          noise(r, c) = <a class="code hl_function" href="#aa6f301f2f488231906c324b1a0588f23">gauss</a>();</div>
+<div class="line"><span class="lineno">  665</span>        }</div>
+<div class="line"><span class="lineno">  666</span>      }</div>
+<div class="line"><span class="lineno">  667</span>      mode.extended = mode.propagate * mode.extended + mode.noise * noise;</div>
+<div class="line"><span class="lineno">  668</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> col = 0; col &lt; <a class="code hl_variable" href="#a725407172321f089637ecdfbe7c11e74">nFree_</a>; ++col) {</div>
+<div class="line"><span class="lineno">  669</span>        <span class="keyword">const</span> <span class="keywordtype">long</span> a = <a class="code hl_variable" href="#a29ad6aa078ee7c0bbf4d7dec249191d1">freeIndex_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(col)];</div>
+<div class="line"><span class="lineno">  670</span>        <a class="code hl_variable" href="#a2b49bf3a864bbb22c5dcd5dc2138aab5">pnm_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)][a] =</div>
+<div class="line"><span class="lineno">  671</span>            mode.extended(0, col) * std::sqrt(<a class="code hl_variable" href="#a432fcfe2be2bf7d01117b7c2b0a8fd6c">mass_</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(a)]);</div>
+<div class="line"><span class="lineno">  672</span>      }</div>
+<div class="line"><span class="lineno">  673</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  674</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> tau = 1.0 / (2.0 * <a class="code hl_variable" href="#aa651609fb79365a0a9045c30c5be1403">opt_</a>.pileScale * <a class="code hl_variable" href="#a99b4920e29bfebb9ff2f9763afea17b5">omegaK_</a>[k]);</div>
+<div class="line"><span class="lineno">  675</span>      langevin(k, tau);</div>
+<div class="line"><span class="lineno">  676</span>    }</div>
+<div class="line"><span class="lineno">  677</span>  }</div>
+<div class="line"><span class="lineno">  678</span>  <a class="code hl_function" href="#ac1bd407a02ac0616338581a948a7313a">fromNormal</a>(<a class="code hl_variable" href="#a2b49bf3a864bbb22c5dcd5dc2138aab5">pnm_</a>, <a class="code hl_variable" href="#a812baa781db7e930beb20fd40c5b3529">p_</a>);</div>
+<div class="line"><span class="lineno">  679</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a64f6ba13db5dd7e837e2419078100724" name="a64f6ba13db5dd7e837e2419078100724"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64f6ba13db5dd7e837e2419078100724">&#9670;&#160;</a></span>toNormal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::pathintegral::RingPolymer::toNormal </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; VectorXd &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>src</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; VectorXd &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>dst</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00534">534</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  535</span>                                                           {</div>
+<div class="line"><span class="lineno">  536</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> packed(<a class="code hl_variable" href="#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>, <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>);</div>
+<div class="line"><span class="lineno">  537</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>; ++j) {</div>
+<div class="line"><span class="lineno">  538</span>    packed.col(j) = src[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)];</div>
+<div class="line"><span class="lineno">  539</span>  }</div>
+<div class="line"><span class="lineno">  540</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> out = packed * <a class="code hl_variable" href="#a66b1b0a6fc4c1b5d830d20d5a290e074">modes_</a>.transpose();</div>
+<div class="line"><span class="lineno">  541</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt; <a class="code hl_variable" href="#ae76dd5a639d68e579905bc2906548428">nBeads_</a>; ++k) {</div>
+<div class="line"><span class="lineno">  542</span>    dst[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(k)] = out.col(k);</div>
+<div class="line"><span class="lineno">  543</span>  }</div>
+<div class="line"><span class="lineno">  544</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a253a88d9f3957bc4205b2e0dd4b92e15" name="a253a88d9f3957bc4205b2e0dd4b92e15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a253a88d9f3957bc4205b2e0dd4b92e15">&#9670;&#160;</a></span>atomicNumbers_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int&gt; eonc::pathintegral::RingPolymer::atomicNumbers_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00149">149</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+
+</div>
+</div>
+<a id="a8f6b0d76604d0a69dc9843c5566448a6" name="a8f6b0d76604d0a69dc9843c5566448a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f6b0d76604d0a69dc9843c5566448a6">&#9670;&#160;</a></span>batches_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::pathintegral::RingPolymer::batches_ {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00174">174</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  174</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aa5030ded646e143204a717f327a536a4" name="aa5030ded646e143204a717f327a536a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5030ded646e143204a717f327a536a4">&#9670;&#160;</a></span>constrain_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::pathintegral::RingPolymer::constrain_ {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00161">161</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  161</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a544fc3ef09d8b2765e292411fc8e10be" name="a544fc3ef09d8b2765e292411fc8e10be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a544fc3ef09d8b2765e292411fc8e10be">&#9670;&#160;</a></span>f_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;VectorXd&gt; eonc::pathintegral::RingPolymer::f_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00156">156</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+
+</div>
+</div>
+<a id="aa68da0564a92541fb75b68b10b416a82" name="aa68da0564a92541fb75b68b10b416a82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa68da0564a92541fb75b68b10b416a82">&#9670;&#160;</a></span>forceSum_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::pathintegral::RingPolymer::forceSum_ {0.0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00177">177</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  177</span>{0.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8398c4a0003611ecbbc26c146caadd87" name="a8398c4a0003611ecbbc26c146caadd87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8398c4a0003611ecbbc26c146caadd87">&#9670;&#160;</a></span>free_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;char&gt; eonc::pathintegral::RingPolymer::free_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00150">150</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+
+</div>
+</div>
+<a id="a29ad6aa078ee7c0bbf4d7dec249191d1" name="a29ad6aa078ee7c0bbf4d7dec249191d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29ad6aa078ee7c0bbf4d7dec249191d1">&#9670;&#160;</a></span>freeIndex_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;long&gt; eonc::pathintegral::RingPolymer::freeIndex_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00151">151</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+
+</div>
+</div>
+<a id="a3713acb61dad24fe24f5cb82f8ce29bb" name="a3713acb61dad24fe24f5cb82f8ce29bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3713acb61dad24fe24f5cb82f8ce29bb">&#9670;&#160;</a></span>gle_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html">ModeGle</a>&gt; eonc::pathintegral::RingPolymer::gle_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00171">171</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+
+</div>
+</div>
+<a id="a1da753e22f7e9979ffc1d192f43c28d1" name="a1da753e22f7e9979ffc1d192f43c28d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1da753e22f7e9979ffc1d192f43c28d1">&#9670;&#160;</a></span>haveForces_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::pathintegral::RingPolymer::haveForces_ {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00162">162</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  162</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a62aa9ca01651cc3c9648a2537e597ca9" name="a62aa9ca01651cc3c9648a2537e597ca9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62aa9ca01651cc3c9648a2537e597ca9">&#9670;&#160;</a></span>kineticSum_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::pathintegral::RingPolymer::kineticSum_ {0.0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00176">176</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  176</span>{0.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a432fcfe2be2bf7d01117b7c2b0a8fd6c" name="a432fcfe2be2bf7d01117b7c2b0a8fd6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a432fcfe2be2bf7d01117b7c2b0a8fd6c">&#9670;&#160;</a></span>mass_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; eonc::pathintegral::RingPolymer::mass_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00148">148</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+
+</div>
+</div>
+<a id="a66b1b0a6fc4c1b5d830d20d5a290e074" name="a66b1b0a6fc4c1b5d830d20d5a290e074"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66b1b0a6fc4c1b5d830d20d5a290e074">&#9670;&#160;</a></span>modes_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> eonc::pathintegral::RingPolymer::modes_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00152">152</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+
+</div>
+</div>
+<a id="afaa2ba0ef1f6ffd55dce06f8b3bcc2cb" name="afaa2ba0ef1f6ffd55dce06f8b3bcc2cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afaa2ba0ef1f6ffd55dce06f8b3bcc2cb">&#9670;&#160;</a></span>nAtoms_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::pathintegral::RingPolymer::nAtoms_ {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00144">144</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  144</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ae76dd5a639d68e579905bc2906548428" name="ae76dd5a639d68e579905bc2906548428"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae76dd5a639d68e579905bc2906548428">&#9670;&#160;</a></span>nBeads_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::pathintegral::RingPolymer::nBeads_ {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00146">146</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  146</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aa614089c7eee8d50a26ec2ebafb39365" name="aa614089c7eee8d50a26ec2ebafb39365"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa614089c7eee8d50a26ec2ebafb39365">&#9670;&#160;</a></span>nDof_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::pathintegral::RingPolymer::nDof_ {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00145">145</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  145</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a725407172321f089637ecdfbe7c11e74" name="a725407172321f089637ecdfbe7c11e74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a725407172321f089637ecdfbe7c11e74">&#9670;&#160;</a></span>nFree_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::pathintegral::RingPolymer::nFree_ {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00147">147</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  147</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a99b4920e29bfebb9ff2f9763afea17b5" name="a99b4920e29bfebb9ff2f9763afea17b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99b4920e29bfebb9ff2f9763afea17b5">&#9670;&#160;</a></span>omegaK_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">VectorXd eonc::pathintegral::RingPolymer::omegaK_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00153">153</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+
+</div>
+</div>
+<a id="aa651609fb79365a0a9045c30c5be1403" name="aa651609fb79365a0a9045c30c5be1403"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa651609fb79365a0a9045c30c5be1403">&#9670;&#160;</a></span>opt_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1pathintegral_1_1Options.html">Options</a> eonc::pathintegral::RingPolymer::opt_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00143">143</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+
+</div>
+</div>
+<a id="a812baa781db7e930beb20fd40c5b3529" name="a812baa781db7e930beb20fd40c5b3529"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a812baa781db7e930beb20fd40c5b3529">&#9670;&#160;</a></span>p_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;VectorXd&gt; eonc::pathintegral::RingPolymer::p_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00155">155</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+
+</div>
+</div>
+<a id="a3f2bb67b9763c0b85c5aee75415c2427" name="a3f2bb67b9763c0b85c5aee75415c2427"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f2bb67b9763c0b85c5aee75415c2427">&#9670;&#160;</a></span>planeNormal_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">VectorXd eonc::pathintegral::RingPolymer::planeNormal_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00159">159</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+
+</div>
+</div>
+<a id="a3a3352a65b470de7df68451ed33a90df" name="a3a3352a65b470de7df68451ed33a90df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a3352a65b470de7df68451ed33a90df">&#9670;&#160;</a></span>planeOrigin_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">VectorXd eonc::pathintegral::RingPolymer::planeOrigin_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00160">160</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+
+</div>
+</div>
+<a id="a2b49bf3a864bbb22c5dcd5dc2138aab5" name="a2b49bf3a864bbb22c5dcd5dc2138aab5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b49bf3a864bbb22c5dcd5dc2138aab5">&#9670;&#160;</a></span>pnm_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;VectorXd&gt; eonc::pathintegral::RingPolymer::pnm_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00158">158</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+
+</div>
+</div>
+<a id="a86ae137609da6c7360545f5b233a2d4a" name="a86ae137609da6c7360545f5b233a2d4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86ae137609da6c7360545f5b233a2d4a">&#9670;&#160;</a></span>q_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;VectorXd&gt; eonc::pathintegral::RingPolymer::q_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00154">154</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+
+</div>
+</div>
+<a id="adc71fcb35c3aa1c816a4378f549f1734" name="adc71fcb35c3aa1c816a4378f549f1734"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc71fcb35c3aa1c816a4378f549f1734">&#9670;&#160;</a></span>qnm_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;VectorXd&gt; eonc::pathintegral::RingPolymer::qnm_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00157">157</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+
+</div>
+</div>
+<a id="a2110c5d5a587e42710697ab1cf40903e" name="a2110c5d5a587e42710697ab1cf40903e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2110c5d5a587e42710697ab1cf40903e">&#9670;&#160;</a></span>recorded_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::pathintegral::RingPolymer::recorded_ {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00175">175</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  175</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af4c43466849e9f1ad4f52f5a52f15f32" name="af4c43466849e9f1ad4f52f5a52f15f32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4c43466849e9f1ad4f52f5a52f15f32">&#9670;&#160;</a></span>rng_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eonc::pathintegral::RingPolymer::rng_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8h_source.html#l00173">173</a> of file <a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/<a class="el" href="PathIntegral_8h_source.html">PathIntegral.h</a></li>
+<li>/home/runner/work/eOn/eOn/client/<a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="namespaceeonc.html">eonc</a></li><li class="navelem"><a href="namespaceeonc_1_1pathintegral.html">pathintegral</a></li><li class="navelem"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html">RingPolymer</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

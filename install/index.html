@@ -130,6 +130,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/lanczos.html">Lanczos</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/akmc.html">Adaptive kinetic Monte Carlo</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/saddle_search.html">Saddle search</a></li>
@@ -198,7 +199,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
@@ -216,6 +216,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.process_catalog.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_catalog</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 </ul>
@@ -224,6 +225,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.5.0/index.html">[v3.5.0] - 2026-10-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.5.0/release-notes.html">eOn 3.5.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
 </ul>
@@ -491,6 +496,24 @@ binary is automatically made available in the activated environment.</p>
 </span><span data-line="8">meson<span class="w"> </span>install<span class="w"> </span>-C<span class="w"> </span>bbdir
 </span></pre></div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">min_mode_method</span> <span class="pre">=</span> <span class="pre">gprdimer</span></code> is the GP dimer. It builds on
+<a class="reference external" href="https://github.com/TheochemUI/gpr_optim">gpr_optim</a>, which is a private
+repository for now, so eOn does not ship it. With access, check it out in
+<code class="docutils literal notranslate"><span class="pre">subprojects/gpr_optim</span></code>. <code class="docutils literal notranslate"><span class="pre">-Dwith_gprd=auto</span></code> is the default, and on Linux it
+links that checkout when one is there. Without a checkout the dimer stays
+off. <code class="docutils literal notranslate"><span class="pre">-Dwith_gprd=enabled</span></code> stops configuration instead.
+A build directory that stored <code class="docutils literal notranslate"><span class="pre">with_gprd</span></code> as <code class="docutils literal notranslate"><span class="pre">true</span></code> or <code class="docutils literal notranslate"><span class="pre">false</span></code> rejects
+<code class="docutils literal notranslate"><span class="pre">meson</span> <span class="pre">setup</span> <span class="pre">--reconfigure</span></code> (<code class="docutils literal notranslate"><span class="pre">Option</span> <span class="pre">&quot;with_gprd&quot;</span> <span class="pre">value</span> <span class="pre">auto</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">boolean</span></code>).
+Run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">scripts/migrate_with_gprd_option.py</span> <span class="pre">&lt;builddir&gt;</span></code> once: <code class="docutils literal notranslate"><span class="pre">true</span></code>
+becomes <code class="docutils literal notranslate"><span class="pre">enabled</span></code> and <code class="docutils literal notranslate"><span class="pre">false</span></code> becomes <code class="docutils literal notranslate"><span class="pre">disabled</span></code>. The <code class="docutils literal notranslate"><span class="pre">revision</span></code> line in
+<code class="docutils literal notranslate"><span class="pre">subprojects/gpr_optim.wrap</span></code> is the pin (<code class="docutils literal notranslate"><span class="pre">b55c89e2115388f901839aba2a5808bfcef06f68</span></code>).
+Copy a sibling checkout into place with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">rsync<span class="w"> </span>-a<span class="w"> </span>../gpr_optim/<span class="w"> </span>subprojects/gpr_optim/
+</span></pre></div>
+</div>
+<p>A build configured with <code class="docutils literal notranslate"><span class="pre">-Dwith_gprd=disabled</span></code> has no GP dimer. Asking
+for <code class="docutils literal notranslate"><span class="pre">gprdimer</span></code> then stops, and the message names <code class="docutils literal notranslate"><span class="pre">-Dwith_gprd=enabled</span></code>
+and that <code class="docutils literal notranslate"><span class="pre">rsync</span></code>.</p>
 <p>The setup line already passes <code class="docutils literal notranslate"><span class="pre">--force-fallback-for=nlohmann_json</span></code>. The rolling distro section below says why a host <code class="docutils literal notranslate"><span class="pre">nlohmann_json</span></code> breaks the conda compiler. The test line should finish with a fail count of 0.</p>
 <p>Some additional performance can be gained with <code class="docutils literal notranslate"><span class="pre">ccache</span></code> and <code class="docutils literal notranslate"><span class="pre">mold</span></code>, which can be
 passed with <code class="docutils literal notranslate"><span class="pre">--native-file</span></code>:</p>

@@ -550,204 +550,241 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">  375</span>  snprintf(logfilename, 1024, <span class="stringliteral">&quot;eonclient_%i.log&quot;</span>, my_client_number);</div>
 <div class="line"><span class="lineno">  376</span> </div>
 <div class="line"><span class="lineno">  377</span>  <span class="keyword">auto</span> orig_path = std::filesystem::current_path();</div>
-<div class="line"><span class="lineno">  378</span>  <span class="keywordflow">while</span> (<span class="keyword">true</span>) {</div>
-<div class="line"><span class="lineno">  379</span>    std::filesystem::current_path(orig_path);</div>
-<div class="line"><span class="lineno">  380</span>    std::string path(1024, <span class="charliteral">&#39;\0&#39;</span>);</div>
-<div class="line"><span class="lineno">  381</span>    <span class="keywordtype">int</span> ready = 1;</div>
-<div class="line"><span class="lineno">  382</span>    <span class="keywordflow">if</span> (!client_standalone) {</div>
-<div class="line"><span class="lineno">  383</span>      QUILL_LOG_INFO(</div>
-<div class="line"><span class="lineno">  384</span>          logger, <span class="stringliteral">&quot;client: rank {} is ready, posting send to server rank: {}!&quot;</span>,</div>
-<div class="line"><span class="lineno">  385</span>          irank, server_rank);</div>
-<div class="line"><span class="lineno">  386</span>      <span class="comment">// Tag &quot;1&quot; is to interrupt the main loop and tell the communicator that a</span></div>
-<div class="line"><span class="lineno">  387</span>      <span class="comment">// client is ready</span></div>
-<div class="line"><span class="lineno">  388</span>      {</div>
-<div class="line"><span class="lineno">  389</span>        MPI_Request eon_rq;</div>
-<div class="line"><span class="lineno">  390</span>        MPI_Isend(&amp;ready, 1, MPI_INT, server_rank, 1, MPI_COMM_WORLD, &amp;eon_rq);</div>
-<div class="line"><span class="lineno">  391</span>        MPI_Request_free(&amp;eon_rq);</div>
-<div class="line"><span class="lineno">  392</span>      }</div>
-<div class="line"><span class="lineno">  393</span> </div>
-<div class="line"><span class="lineno">  394</span>      <span class="comment">// Get the path we should run in from the server</span></div>
-<div class="line"><span class="lineno">  395</span>      MPI_Recv(&amp;path[0], 1024, MPI_CHAR, server_rank, 0, MPI_COMM_WORLD,</div>
-<div class="line"><span class="lineno">  396</span>               MPI_STATUS_IGNORE);</div>
-<div class="line"><span class="lineno">  397</span>      <span class="keywordflow">if</span> (path.starts_with(<span class="stringliteral">&quot;STOPCAR&quot;</span>)) {</div>
-<div class="line"><span class="lineno">  398</span>        QUILL_LOG_INFO(logger, <span class="stringliteral">&quot;rank {} got STOPCAR&quot;</span>, irank);</div>
-<div class="line"><span class="lineno">  399</span>        MPI_Finalize();</div>
-<div class="line"><span class="lineno">  400</span>        <span class="keywordflow">return</span> 0;</div>
-<div class="line"><span class="lineno">  401</span>      }</div>
-<div class="line"><span class="lineno">  402</span>      QUILL_LOG_INFO(logger, <span class="stringliteral">&quot;client: rank: {} chdir to {}&quot;</span>, irank, path);</div>
-<div class="line"><span class="lineno">  403</span> </div>
-<div class="line"><span class="lineno">  404</span>      <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keyword">auto</span> chdirError =</div>
-<div class="line"><span class="lineno">  405</span>              <a class="code hl_function" href="namespaceeonc_1_1helpers.html#acc29f403877f68b0a0aa26d7204865b2">eonc::helpers::enterJobDirectory</a>(path.c_str())) {</div>
-<div class="line"><span class="lineno">  406</span>        QUILL_LOG_ERROR(logger, <span class="stringliteral">&quot;error: chdir: {}&quot;</span>, *chdirError);</div>
-<div class="line"><span class="lineno">  407</span>        logger-&gt;flush_log();</div>
-<div class="line"><span class="lineno">  408</span>        <span class="keywordflow">return</span> EXIT_FAILURE;</div>
-<div class="line"><span class="lineno">  409</span>      }</div>
-<div class="line"><span class="lineno">  410</span>    }</div>
-<div class="line"><span class="lineno">  411</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  412</span> </div>
-<div class="line"><span class="lineno">  413</span>    <a class="code hl_function" href="#acab1ba3e66fdc93a33e591f8b7a666b2">printSystemInfo</a>();</div>
-<div class="line"><span class="lineno">  414</span> </div>
-<div class="line"><span class="lineno">  415</span>    <span class="keywordtype">bool</span> bundlingEnabled = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  416</span>    <span class="keywordtype">int</span> bundleSize = <a class="code hl_function" href="namespaceeonc.html#a29c549360eda188b0aa269d3b402bddf">eonc::getBundleSize</a>();</div>
-<div class="line"><span class="lineno">  417</span>    <span class="keywordflow">if</span> (bundleSize &lt;= 0) {</div>
-<div class="line"><span class="lineno">  418</span>      bundleSize = 1;</div>
-<div class="line"><span class="lineno">  419</span>      bundlingEnabled = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  420</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  421</span>      bundlingEnabled = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  422</span>    }</div>
-<div class="line"><span class="lineno">  423</span> </div>
-<div class="line"><span class="lineno">  424</span>    std::vector&lt;std::string&gt; bundledFilenames;</div>
-<div class="line"><span class="lineno">  425</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; bundleSize; i++) {</div>
-<div class="line"><span class="lineno">  426</span>      <span class="comment">// This job only. A clock above the bundle or MPI loop also counts</span></div>
-<div class="line"><span class="lineno">  427</span>      <span class="comment">// earlier jobs and the idle wait between them.</span></div>
-<div class="line"><span class="lineno">  428</span>      <span class="keyword">const</span> <span class="keyword">auto</span> start_time = std::chrono::steady_clock::now();</div>
-<div class="line"><span class="lineno">  429</span>      <span class="keywordflow">if</span> (bundleSize &gt; 1)</div>
-<div class="line"><span class="lineno">  430</span>        QUILL_LOG_INFO(logger, <span class="stringliteral">&quot;Beginning Job {} of {}&quot;</span>, i + 1, bundleSize);</div>
-<div class="line"><span class="lineno">  431</span>      std::vector&lt;std::string&gt; unbundledFilenames;</div>
-<div class="line"><span class="lineno">  432</span>      <span class="keywordflow">if</span> (bundlingEnabled) {</div>
-<div class="line"><span class="lineno">  433</span>        unbundledFilenames = <a class="code hl_function" href="namespaceeonc.html#a2703aadec043ff820ae31c94ed7f8c4b">eonc::unbundle</a>(i);</div>
-<div class="line"><span class="lineno">  434</span>      }</div>
+<div class="line"><span class="lineno">  378</span>  <span class="comment">// In client/server mode a failed job is logged and its directory handed</span></div>
+<div class="line"><span class="lineno">  379</span>  <span class="comment">// back without results.dat; the server skips it and this rank stays in</span></div>
+<div class="line"><span class="lineno">  380</span>  <span class="comment">// the pool. A standalone rank still exits with the error.</span></div>
+<div class="line"><span class="lineno">  381</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> keepServing = !client_standalone;</div>
+<div class="line"><span class="lineno">  382</span>  <span class="keywordflow">while</span> (<span class="keyword">true</span>) {</div>
+<div class="line"><span class="lineno">  383</span>    std::filesystem::current_path(orig_path);</div>
+<div class="line"><span class="lineno">  384</span>    std::string path(1024, <span class="charliteral">&#39;\0&#39;</span>);</div>
+<div class="line"><span class="lineno">  385</span>    <span class="keywordtype">int</span> ready = 1;</div>
+<div class="line"><span class="lineno">  386</span>    <span class="keywordflow">if</span> (!client_standalone) {</div>
+<div class="line"><span class="lineno">  387</span>      QUILL_LOG_INFO(</div>
+<div class="line"><span class="lineno">  388</span>          logger, <span class="stringliteral">&quot;client: rank {} is ready, posting send to server rank: {}!&quot;</span>,</div>
+<div class="line"><span class="lineno">  389</span>          irank, server_rank);</div>
+<div class="line"><span class="lineno">  390</span>      <span class="comment">// Tag &quot;1&quot; is to interrupt the main loop and tell the communicator that a</span></div>
+<div class="line"><span class="lineno">  391</span>      <span class="comment">// client is ready</span></div>
+<div class="line"><span class="lineno">  392</span>      {</div>
+<div class="line"><span class="lineno">  393</span>        MPI_Request eon_rq;</div>
+<div class="line"><span class="lineno">  394</span>        MPI_Isend(&amp;ready, 1, MPI_INT, server_rank, 1, MPI_COMM_WORLD, &amp;eon_rq);</div>
+<div class="line"><span class="lineno">  395</span>        MPI_Request_free(&amp;eon_rq);</div>
+<div class="line"><span class="lineno">  396</span>      }</div>
+<div class="line"><span class="lineno">  397</span> </div>
+<div class="line"><span class="lineno">  398</span>      <span class="comment">// Get the path we should run in from the server</span></div>
+<div class="line"><span class="lineno">  399</span>      MPI_Recv(&amp;path[0], 1024, MPI_CHAR, server_rank, 0, MPI_COMM_WORLD,</div>
+<div class="line"><span class="lineno">  400</span>               MPI_STATUS_IGNORE);</div>
+<div class="line"><span class="lineno">  401</span>      <span class="keywordflow">if</span> (path.starts_with(<span class="stringliteral">&quot;STOPCAR&quot;</span>)) {</div>
+<div class="line"><span class="lineno">  402</span>        QUILL_LOG_INFO(logger, <span class="stringliteral">&quot;rank {} got STOPCAR&quot;</span>, irank);</div>
+<div class="line"><span class="lineno">  403</span>        MPI_Finalize();</div>
+<div class="line"><span class="lineno">  404</span>        <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">  405</span>      }</div>
+<div class="line"><span class="lineno">  406</span>      QUILL_LOG_INFO(logger, <span class="stringliteral">&quot;client: rank: {} chdir to {}&quot;</span>, irank, path);</div>
+<div class="line"><span class="lineno">  407</span> </div>
+<div class="line"><span class="lineno">  408</span>      <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keyword">auto</span> chdirError =</div>
+<div class="line"><span class="lineno">  409</span>              <a class="code hl_function" href="namespaceeonc_1_1helpers.html#acc29f403877f68b0a0aa26d7204865b2">eonc::helpers::enterJobDirectory</a>(path.c_str())) {</div>
+<div class="line"><span class="lineno">  410</span>        QUILL_LOG_ERROR(logger, <span class="stringliteral">&quot;error: chdir: {}&quot;</span>, *chdirError);</div>
+<div class="line"><span class="lineno">  411</span>        logger-&gt;flush_log();</div>
+<div class="line"><span class="lineno">  412</span>        MPI_Send(&amp;path[0], 1024, MPI_CHAR, server_rank, 0, MPI_COMM_WORLD);</div>
+<div class="line"><span class="lineno">  413</span>        <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  414</span>      }</div>
+<div class="line"><span class="lineno">  415</span>    }</div>
+<div class="line"><span class="lineno">  416</span><span class="preprocessor">#else</span></div>
+<div class="line"><span class="lineno">  417</span>  <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> keepServing = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  418</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  419</span>    <span class="comment">// Flushes the logs into the job directory so a failed job still shows</span></div>
+<div class="line"><span class="lineno">  420</span>    <span class="comment">// its error to whoever reads the returned directory.</span></div>
+<div class="line"><span class="lineno">  421</span>    <span class="keyword">auto</span> stageFailedJobLogs = [&amp;] {</div>
+<div class="line"><span class="lineno">  422</span>      logger-&gt;flush_log();</div>
+<div class="line"><span class="lineno">  423</span>      <span class="keywordflow">if</span> (<span class="keyword">auto</span> *trace =</div>
+<div class="line"><span class="lineno">  424</span>              quill::Frontend::get_logger(std::string{<span class="stringliteral">&quot;_traceback&quot;</span>})) {</div>
+<div class="line"><span class="lineno">  425</span>        trace-&gt;flush_log();</div>
+<div class="line"><span class="lineno">  426</span>      }</div>
+<div class="line"><span class="lineno">  427</span>      <span class="keywordflow">for</span> (<span class="keyword">const</span> std::string_view logName :</div>
+<div class="line"><span class="lineno">  428</span>           {std::string_view{<span class="stringliteral">&quot;client_quill.log&quot;</span>},</div>
+<div class="line"><span class="lineno">  429</span>            std::string_view{<span class="stringliteral">&quot;client_traceback.log&quot;</span>}}) {</div>
+<div class="line"><span class="lineno">  430</span>        <a class="code hl_function" href="namespaceeonc_1_1helpers.html#aad9576d0f1ab3864a962632fffbfc712">eonc::helpers::stageReturnLog</a>(logHome.string(), logName);</div>
+<div class="line"><span class="lineno">  431</span>      }</div>
+<div class="line"><span class="lineno">  432</span>    };</div>
+<div class="line"><span class="lineno">  433</span> </div>
+<div class="line"><span class="lineno">  434</span>    <a class="code hl_function" href="#acab1ba3e66fdc93a33e591f8b7a666b2">printSystemInfo</a>();</div>
 <div class="line"><span class="lineno">  435</span> </div>
-<div class="line"><span class="lineno">  436</span>      <span class="comment">// check to see if parameters file exists before loading</span></div>
-<div class="line"><span class="lineno">  437</span>      <span class="keywordtype">int</span> <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a> = 0;</div>
-<div class="line"><span class="lineno">  438</span>      std::string config_file =</div>
-<div class="line"><span class="lineno">  439</span>          <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a561b68f975ecb734266063b428d6f2f2">eonc::helpers::getRelevantFile</a>(parameters.<a class="code hl_function" href="classeonc_1_1Parameters.html#a59bac76bd6b84cbdc50887d30346e129">main_options</a>().<a class="code hl_variable" href="structeonc_1_1main__options__t.html#a6835c6abf703d638cb5d6b42cd686429">iniFilename</a>);</div>
-<div class="line"><span class="lineno">  440</span>      QUILL_LOG_INFO(logger, <span class="stringliteral">&quot;Loading parameter file {}&quot;</span>, config_file);</div>
-<div class="line"><span class="lineno">  441</span>      <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a> = parameters.<a class="code hl_function" href="classeonc_1_1Parameters.html#add5819bb5f8d6da5fd26c2ae868d98d7">load</a>(config_file);</div>
-<div class="line"><span class="lineno">  442</span> </div>
-<div class="line"><span class="lineno">  443</span>      <span class="keywordflow">if</span> (error) {</div>
-<div class="line"><span class="lineno">  444</span>        QUILL_LOG_ERROR(logger, <span class="stringliteral">&quot;problem loading parameter file, stopping&quot;</span>);</div>
-<div class="line"><span class="lineno">  445</span>        logger-&gt;flush_log();</div>
-<div class="line"><span class="lineno">  446</span>        <span class="keywordflow">return</span> 1;</div>
-<div class="line"><span class="lineno">  447</span>      }</div>
-<div class="line"><span class="lineno">  448</span> </div>
-<div class="line"><span class="lineno">  449</span>      <span class="comment">// Determine what type of job we are running according to the parameters</span></div>
-<div class="line"><span class="lineno">  450</span>      <span class="comment">// file.</span></div>
-<div class="line"><span class="lineno">  451</span>      <a class="code hl_class" href="classeonc_1_1Runtime.html">eonc::Runtime</a> rt;</div>
-<div class="line"><span class="lineno">  452</span>      <span class="keyword">auto</span> job = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#acca5ce570486141f2b6485a454f3ee00">eonc::helpers::makeJob</a>(</div>
-<div class="line"><span class="lineno">  453</span>          std::make_unique&lt;eonc::Parameters&gt;(parameters), rt);</div>
-<div class="line"><span class="lineno">  454</span>      <span class="keywordflow">if</span> (job == <span class="keyword">nullptr</span>) {</div>
-<div class="line"><span class="lineno">  455</span>        QUILL_LOG_ERROR(logger, <span class="stringliteral">&quot;error: Unknown job: {}&quot;</span>,</div>
-<div class="line"><span class="lineno">  456</span>                        std::string{magic_enum::enum_name&lt;eonc::JobType&gt;(</div>
-<div class="line"><span class="lineno">  457</span>                            parameters.<a class="code hl_function" href="classeonc_1_1Parameters.html#a59bac76bd6b84cbdc50887d30346e129">main_options</a>().<a class="code hl_variable" href="structeonc_1_1main__options__t.html#a770019a44dcbbd245a817f5a1d9739a1">job</a>)});</div>
-<div class="line"><span class="lineno">  458</span>        logger-&gt;flush_log();</div>
-<div class="line"><span class="lineno">  459</span>        <span class="keywordflow">return</span> 1;</div>
-<div class="line"><span class="lineno">  460</span>      }</div>
-<div class="line"><span class="lineno">  461</span> </div>
-<div class="line"><span class="lineno">  462</span>      std::vector&lt;std::string&gt; filenames;</div>
-<div class="line"><span class="lineno">  463</span>      <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  464</span>        filenames = job-&gt;run();</div>
-<div class="line"><span class="lineno">  465</span>      } <span class="keywordflow">catch</span> (<span class="keywordtype">int</span> e) {</div>
-<div class="line"><span class="lineno">  466</span>        QUILL_LOG_CRITICAL(logger, <span class="stringliteral">&quot;[ERROR] job exited on error {}&quot;</span>, e);</div>
-<div class="line"><span class="lineno">  467</span>        logger-&gt;flush_log();</div>
-<div class="line"><span class="lineno">  468</span>        <span class="keywordflow">return</span> EXIT_FAILURE;</div>
-<div class="line"><span class="lineno">  469</span>      } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
-<div class="line"><span class="lineno">  470</span>        QUILL_LOG_CRITICAL(logger, <span class="stringliteral">&quot;[ERROR] unhandled exception: {}&quot;</span>, e.what());</div>
-<div class="line"><span class="lineno">  471</span>        logger-&gt;flush_log();</div>
-<div class="line"><span class="lineno">  472</span>        std::cerr &lt;&lt; <span class="stringliteral">&quot;[ERROR] unhandled exception: &quot;</span> &lt;&lt; e.what() &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><span class="lineno">  473</span>        <span class="keywordflow">return</span> EXIT_FAILURE;</div>
-<div class="line"><span class="lineno">  474</span>      }</div>
-<div class="line"><span class="lineno">  475</span> </div>
-<div class="line"><span class="lineno">  476</span>      job-&gt;releasePotential();</div>
-<div class="line"><span class="lineno">  477</span>      rt.<a class="code hl_function" href="classeonc_1_1Runtime.html#a326b4c8d3ca3e6d6d76572d63bd85218">pots</a>().<a class="code hl_function" href="classeonc_1_1PotRegistry.html#ac5fd01be77f33ee6b4442f4b47a9e5c9">write_summary</a>();</div>
-<div class="line"><span class="lineno">  478</span>      job.reset();</div>
-<div class="line"><span class="lineno">  479</span>      filenames.push_back(std::string(<span class="stringliteral">&quot;_potcalls.json&quot;</span>));</div>
-<div class="line"><span class="lineno">  480</span> </div>
-<div class="line"><span class="lineno">  481</span>      <span class="comment">// Finalize Timing Information</span></div>
-<div class="line"><span class="lineno">  482</span>      <span class="keyword">auto</span> end_time = std::chrono::steady_clock::now();</div>
-<div class="line"><span class="lineno">  483</span>      std::chrono::duration&lt;double&gt; elapsed = end_time - start_time;</div>
-<div class="line"><span class="lineno">  484</span> </div>
-<div class="line"><span class="lineno">  485</span>      <span class="keywordtype">double</span> utime = 0, stime = 0, rtime = 0;</div>
-<div class="line"><span class="lineno">  486</span>      <a class="code hl_function" href="namespaceeonc_1_1helpers.html#ae68aebaf58acc7cbd7db4f1f6ee17cc9">eonc::helpers::getTime</a>(&amp;rtime, &amp;utime, &amp;stime);</div>
-<div class="line"><span class="lineno">  487</span> </div>
-<div class="line"><span class="lineno">  488</span>      QUILL_LOG_INFO(logger, <span class="stringliteral">&quot;Timing Information:&quot;</span>);</div>
-<div class="line"><span class="lineno">  489</span>      QUILL_LOG_INFO(logger, <span class="stringliteral">&quot;  Real time: {:.3f} seconds&quot;</span>, elapsed.count());</div>
-<div class="line"><span class="lineno">  490</span>      QUILL_LOG_INFO(logger, <span class="stringliteral">&quot;  User time: {:.3f} seconds&quot;</span>, utime);</div>
-<div class="line"><span class="lineno">  491</span>      QUILL_LOG_INFO(logger, <span class="stringliteral">&quot;  System time: {:.3f} seconds&quot;</span>, stime);</div>
-<div class="line"><span class="lineno">  492</span> </div>
-<div class="line"><span class="lineno">  493</span>      <span class="comment">// results.dat contract is &quot;&lt;value&gt; &lt;key&gt;&quot; (same as all job writers and</span></div>
-<div class="line"><span class="lineno">  494</span>      <span class="comment">// eon.fileio.parse_results / eon_schema.jobs adapters).</span></div>
-<div class="line"><span class="lineno">  495</span>      std::ofstream result_file(<span class="stringliteral">&quot;results.dat&quot;</span>, std::ios::app);</div>
-<div class="line"><span class="lineno">  496</span>      <span class="keywordflow">if</span> (result_file.is_open()) {</div>
-<div class="line"><span class="lineno">  497</span>        result_file &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} time_seconds\n&quot;</span>, elapsed.count());</div>
-<div class="line"><span class="lineno">  498</span><span class="preprocessor">#ifndef _WIN32</span></div>
-<div class="line"><span class="lineno">  499</span>        result_file &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} user_time\n&quot;</span>, utime);</div>
-<div class="line"><span class="lineno">  500</span>        result_file &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} system_time\n&quot;</span>, stime);</div>
-<div class="line"><span class="lineno">  501</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  502</span>      } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  503</span>        QUILL_LOG_ERROR(logger, <span class="stringliteral">&quot;Failed to write timing to results.dat&quot;</span>);</div>
-<div class="line"><span class="lineno">  504</span>      }</div>
-<div class="line"><span class="lineno">  505</span>      result_file.close();</div>
-<div class="line"><span class="lineno">  506</span> </div>
-<div class="line"><span class="lineno">  507</span>      logger-&gt;flush_log();</div>
-<div class="line"><span class="lineno">  508</span>      <span class="keywordflow">if</span> (<span class="keyword">auto</span> *trace =</div>
-<div class="line"><span class="lineno">  509</span>              quill::Frontend::get_logger(std::string{<span class="stringliteral">&quot;_traceback&quot;</span>})) {</div>
-<div class="line"><span class="lineno">  510</span>        trace-&gt;flush_log();</div>
+<div class="line"><span class="lineno">  436</span>    <span class="keywordtype">bool</span> bundlingEnabled = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  437</span>    <span class="keywordtype">int</span> bundleSize = <a class="code hl_function" href="namespaceeonc.html#a29c549360eda188b0aa269d3b402bddf">eonc::getBundleSize</a>();</div>
+<div class="line"><span class="lineno">  438</span>    <span class="keywordflow">if</span> (bundleSize &lt;= 0) {</div>
+<div class="line"><span class="lineno">  439</span>      bundleSize = 1;</div>
+<div class="line"><span class="lineno">  440</span>      bundlingEnabled = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  441</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  442</span>      bundlingEnabled = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  443</span>    }</div>
+<div class="line"><span class="lineno">  444</span> </div>
+<div class="line"><span class="lineno">  445</span>    std::vector&lt;std::string&gt; bundledFilenames;</div>
+<div class="line"><span class="lineno">  446</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; bundleSize; i++) {</div>
+<div class="line"><span class="lineno">  447</span>      <span class="comment">// This job only. A clock above the bundle or MPI loop also counts</span></div>
+<div class="line"><span class="lineno">  448</span>      <span class="comment">// earlier jobs and the idle wait between them.</span></div>
+<div class="line"><span class="lineno">  449</span>      <span class="keyword">const</span> <span class="keyword">auto</span> start_time = std::chrono::steady_clock::now();</div>
+<div class="line"><span class="lineno">  450</span>      <span class="keywordflow">if</span> (bundleSize &gt; 1)</div>
+<div class="line"><span class="lineno">  451</span>        QUILL_LOG_INFO(logger, <span class="stringliteral">&quot;Beginning Job {} of {}&quot;</span>, i + 1, bundleSize);</div>
+<div class="line"><span class="lineno">  452</span>      std::vector&lt;std::string&gt; unbundledFilenames;</div>
+<div class="line"><span class="lineno">  453</span>      <span class="keywordflow">if</span> (bundlingEnabled) {</div>
+<div class="line"><span class="lineno">  454</span>        unbundledFilenames = <a class="code hl_function" href="namespaceeonc.html#a2703aadec043ff820ae31c94ed7f8c4b">eonc::unbundle</a>(i);</div>
+<div class="line"><span class="lineno">  455</span>      }</div>
+<div class="line"><span class="lineno">  456</span> </div>
+<div class="line"><span class="lineno">  457</span>      <span class="comment">// check to see if parameters file exists before loading</span></div>
+<div class="line"><span class="lineno">  458</span>      <span class="keywordtype">int</span> <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a> = 0;</div>
+<div class="line"><span class="lineno">  459</span>      std::string config_file =</div>
+<div class="line"><span class="lineno">  460</span>          <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a561b68f975ecb734266063b428d6f2f2">eonc::helpers::getRelevantFile</a>(parameters.<a class="code hl_function" href="classeonc_1_1Parameters.html#a59bac76bd6b84cbdc50887d30346e129">main_options</a>().<a class="code hl_variable" href="structeonc_1_1main__options__t.html#a6835c6abf703d638cb5d6b42cd686429">iniFilename</a>);</div>
+<div class="line"><span class="lineno">  461</span>      QUILL_LOG_INFO(logger, <span class="stringliteral">&quot;Loading parameter file {}&quot;</span>, config_file);</div>
+<div class="line"><span class="lineno">  462</span>      <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a> = parameters.<a class="code hl_function" href="classeonc_1_1Parameters.html#add5819bb5f8d6da5fd26c2ae868d98d7">load</a>(config_file);</div>
+<div class="line"><span class="lineno">  463</span> </div>
+<div class="line"><span class="lineno">  464</span>      <span class="keywordflow">if</span> (error) {</div>
+<div class="line"><span class="lineno">  465</span>        QUILL_LOG_ERROR(logger, <span class="stringliteral">&quot;problem loading parameter file, stopping&quot;</span>);</div>
+<div class="line"><span class="lineno">  466</span>        logger-&gt;flush_log();</div>
+<div class="line"><span class="lineno">  467</span>        <span class="keywordflow">if</span> (keepServing) {</div>
+<div class="line"><span class="lineno">  468</span>          stageFailedJobLogs();</div>
+<div class="line"><span class="lineno">  469</span>          <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  470</span>        }</div>
+<div class="line"><span class="lineno">  471</span>        <span class="keywordflow">return</span> 1;</div>
+<div class="line"><span class="lineno">  472</span>      }</div>
+<div class="line"><span class="lineno">  473</span> </div>
+<div class="line"><span class="lineno">  474</span>      <span class="comment">// Determine what type of job we are running according to the parameters</span></div>
+<div class="line"><span class="lineno">  475</span>      <span class="comment">// file.</span></div>
+<div class="line"><span class="lineno">  476</span>      <a class="code hl_class" href="classeonc_1_1Runtime.html">eonc::Runtime</a> rt;</div>
+<div class="line"><span class="lineno">  477</span>      <span class="keyword">auto</span> job = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#acca5ce570486141f2b6485a454f3ee00">eonc::helpers::makeJob</a>(</div>
+<div class="line"><span class="lineno">  478</span>          std::make_unique&lt;eonc::Parameters&gt;(parameters), rt);</div>
+<div class="line"><span class="lineno">  479</span>      <span class="keywordflow">if</span> (job == <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  480</span>        QUILL_LOG_ERROR(logger, <span class="stringliteral">&quot;error: Unknown job: {}&quot;</span>,</div>
+<div class="line"><span class="lineno">  481</span>                        std::string{magic_enum::enum_name&lt;eonc::JobType&gt;(</div>
+<div class="line"><span class="lineno">  482</span>                            parameters.<a class="code hl_function" href="classeonc_1_1Parameters.html#a59bac76bd6b84cbdc50887d30346e129">main_options</a>().<a class="code hl_variable" href="structeonc_1_1main__options__t.html#a770019a44dcbbd245a817f5a1d9739a1">job</a>)});</div>
+<div class="line"><span class="lineno">  483</span>        logger-&gt;flush_log();</div>
+<div class="line"><span class="lineno">  484</span>        <span class="keywordflow">if</span> (keepServing) {</div>
+<div class="line"><span class="lineno">  485</span>          stageFailedJobLogs();</div>
+<div class="line"><span class="lineno">  486</span>          <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  487</span>        }</div>
+<div class="line"><span class="lineno">  488</span>        <span class="keywordflow">return</span> 1;</div>
+<div class="line"><span class="lineno">  489</span>      }</div>
+<div class="line"><span class="lineno">  490</span> </div>
+<div class="line"><span class="lineno">  491</span>      std::vector&lt;std::string&gt; filenames;</div>
+<div class="line"><span class="lineno">  492</span>      <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  493</span>        filenames = job-&gt;run();</div>
+<div class="line"><span class="lineno">  494</span>      } <span class="keywordflow">catch</span> (<span class="keywordtype">int</span> e) {</div>
+<div class="line"><span class="lineno">  495</span>        QUILL_LOG_CRITICAL(logger, <span class="stringliteral">&quot;[ERROR] job exited on error {}&quot;</span>, e);</div>
+<div class="line"><span class="lineno">  496</span>        logger-&gt;flush_log();</div>
+<div class="line"><span class="lineno">  497</span>        <span class="keywordflow">if</span> (keepServing) {</div>
+<div class="line"><span class="lineno">  498</span>          stageFailedJobLogs();</div>
+<div class="line"><span class="lineno">  499</span>          <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  500</span>        }</div>
+<div class="line"><span class="lineno">  501</span>        <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line"><span class="lineno">  502</span>      } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
+<div class="line"><span class="lineno">  503</span>        QUILL_LOG_CRITICAL(logger, <span class="stringliteral">&quot;[ERROR] unhandled exception: {}&quot;</span>, e.what());</div>
+<div class="line"><span class="lineno">  504</span>        logger-&gt;flush_log();</div>
+<div class="line"><span class="lineno">  505</span>        std::cerr &lt;&lt; <span class="stringliteral">&quot;[ERROR] unhandled exception: &quot;</span> &lt;&lt; e.what() &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  506</span>        <span class="keywordflow">if</span> (keepServing) {</div>
+<div class="line"><span class="lineno">  507</span>          stageFailedJobLogs();</div>
+<div class="line"><span class="lineno">  508</span>          <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  509</span>        }</div>
+<div class="line"><span class="lineno">  510</span>        <span class="keywordflow">return</span> EXIT_FAILURE;</div>
 <div class="line"><span class="lineno">  511</span>      }</div>
-<div class="line"><span class="lineno">  512</span>      <span class="comment">// Quill opens these before an MPI job chdir. Copy them into the job</span></div>
-<div class="line"><span class="lineno">  513</span>      <span class="comment">// directory so return_files.dat does not name a missing log.</span></div>
-<div class="line"><span class="lineno">  514</span>      <span class="keyword">constexpr</span> std::string_view jobLogs[] = {<span class="stringliteral">&quot;client_quill.log&quot;</span>,</div>
-<div class="line"><span class="lineno">  515</span>                                              <span class="stringliteral">&quot;client_traceback.log&quot;</span>};</div>
-<div class="line"><span class="lineno">  516</span>      <span class="keywordflow">for</span> (<span class="keyword">const</span> std::string_view logName : jobLogs) {</div>
-<div class="line"><span class="lineno">  517</span>        <span class="keywordflow">if</span> (<a class="code hl_function" href="namespaceeonc_1_1helpers.html#aad9576d0f1ab3864a962632fffbfc712">eonc::helpers::stageReturnLog</a>(logHome.string(), logName)) {</div>
-<div class="line"><span class="lineno">  518</span>          filenames.push_back(std::string{logName});</div>
-<div class="line"><span class="lineno">  519</span>        }</div>
-<div class="line"><span class="lineno">  520</span>      }</div>
+<div class="line"><span class="lineno">  512</span> </div>
+<div class="line"><span class="lineno">  513</span>      job-&gt;releasePotential();</div>
+<div class="line"><span class="lineno">  514</span>      rt.<a class="code hl_function" href="classeonc_1_1Runtime.html#a326b4c8d3ca3e6d6d76572d63bd85218">pots</a>().<a class="code hl_function" href="classeonc_1_1PotRegistry.html#ac5fd01be77f33ee6b4442f4b47a9e5c9">write_summary</a>();</div>
+<div class="line"><span class="lineno">  515</span>      job.reset();</div>
+<div class="line"><span class="lineno">  516</span>      filenames.push_back(std::string(<span class="stringliteral">&quot;_potcalls.json&quot;</span>));</div>
+<div class="line"><span class="lineno">  517</span> </div>
+<div class="line"><span class="lineno">  518</span>      <span class="comment">// Finalize Timing Information</span></div>
+<div class="line"><span class="lineno">  519</span>      <span class="keyword">auto</span> end_time = std::chrono::steady_clock::now();</div>
+<div class="line"><span class="lineno">  520</span>      std::chrono::duration&lt;double&gt; elapsed = end_time - start_time;</div>
 <div class="line"><span class="lineno">  521</span> </div>
-<div class="line"><span class="lineno">  522</span>      {</div>
-<div class="line"><span class="lineno">  523</span>        std::ofstream manifest(<span class="stringliteral">&quot;return_files.dat&quot;</span>);</div>
-<div class="line"><span class="lineno">  524</span>        <span class="keywordflow">if</span> (manifest) {</div>
-<div class="line"><span class="lineno">  525</span>          <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;fn : filenames) {</div>
-<div class="line"><span class="lineno">  526</span>            manifest &lt;&lt; fn &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><span class="lineno">  527</span>          }</div>
-<div class="line"><span class="lineno">  528</span>        }</div>
-<div class="line"><span class="lineno">  529</span>        filenames.push_back(std::string(<span class="stringliteral">&quot;return_files.dat&quot;</span>));</div>
-<div class="line"><span class="lineno">  530</span>      }</div>
-<div class="line"><span class="lineno">  531</span> </div>
-<div class="line"><span class="lineno">  532</span>      <span class="keywordflow">if</span> (bundlingEnabled) {</div>
-<div class="line"><span class="lineno">  533</span>        <a class="code hl_function" href="namespaceeonc.html#a0d50d17b3b014d6aecf3292f553142c1">eonc::bundle</a>(i, filenames, &amp;bundledFilenames);</div>
-<div class="line"><span class="lineno">  534</span>        <a class="code hl_function" href="namespaceeonc.html#a2216ed20ff2e22ecca18afddd1713033">eonc::deleteUnbundledFiles</a>(unbundledFilenames);</div>
-<div class="line"><span class="lineno">  535</span>      } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  536</span>        bundledFilenames = filenames;</div>
-<div class="line"><span class="lineno">  537</span>      }</div>
-<div class="line"><span class="lineno">  538</span>    }</div>
-<div class="line"><span class="lineno">  539</span> </div>
-<div class="line"><span class="lineno">  540</span><span class="preprocessor">#ifdef EONMPI</span></div>
-<div class="line"><span class="lineno">  541</span>    <span class="keywordflow">if</span> (client_standalone) {</div>
-<div class="line"><span class="lineno">  542</span>      <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  543</span>    }</div>
-<div class="line"><span class="lineno">  544</span>    {</div>
-<div class="line"><span class="lineno">  545</span>      MPI_Request eon_rq;</div>
-<div class="line"><span class="lineno">  546</span>      MPI_Isend(&amp;path[0], 1024, MPI_CHAR, server_rank, 0, MPI_COMM_WORLD,</div>
-<div class="line"><span class="lineno">  547</span>                &amp;eon_rq);</div>
-<div class="line"><span class="lineno">  548</span>      <span class="comment">// path is destroyed at the end of this iteration. Request_free does</span></div>
-<div class="line"><span class="lineno">  549</span>      <span class="comment">// not complete the send, so the buffer stays live until Wait returns.</span></div>
-<div class="line"><span class="lineno">  550</span>      MPI_Wait(&amp;eon_rq, MPI_STATUS_IGNORE);</div>
-<div class="line"><span class="lineno">  551</span>    }</div>
-<div class="line"><span class="lineno">  552</span> </div>
-<div class="line"><span class="lineno">  553</span>    <span class="comment">// End of MPI while loop</span></div>
-<div class="line"><span class="lineno">  554</span>  }</div>
-<div class="line"><span class="lineno">  555</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  556</span> </div>
-<div class="line"><span class="lineno">  557</span><span class="preprocessor">#ifdef OSX</span></div>
-<div class="line"><span class="lineno">  558</span><span class="preprocessor">#ifndef __aarch64__</span></div>
-<div class="line"><span class="lineno">  559</span>  print_memory_usage();</div>
-<div class="line"><span class="lineno">  560</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  561</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  562</span> </div>
-<div class="line"><span class="lineno">  563</span><span class="preprocessor">#ifdef EONMPI</span></div>
-<div class="line"><span class="lineno">  564</span>  <span class="comment">// Clean shutdown for both the standalone single-rank case and the</span></div>
-<div class="line"><span class="lineno">  565</span>  <span class="comment">// client/server case; the standalone path previously aborted MPI_COMM_WORLD.</span></div>
-<div class="line"><span class="lineno">  566</span>  MPI_Finalize();</div>
-<div class="line"><span class="lineno">  567</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  522</span>      <span class="keywordtype">double</span> utime = 0, stime = 0, rtime = 0;</div>
+<div class="line"><span class="lineno">  523</span>      <a class="code hl_function" href="namespaceeonc_1_1helpers.html#ae68aebaf58acc7cbd7db4f1f6ee17cc9">eonc::helpers::getTime</a>(&amp;rtime, &amp;utime, &amp;stime);</div>
+<div class="line"><span class="lineno">  524</span> </div>
+<div class="line"><span class="lineno">  525</span>      QUILL_LOG_INFO(logger, <span class="stringliteral">&quot;Timing Information:&quot;</span>);</div>
+<div class="line"><span class="lineno">  526</span>      QUILL_LOG_INFO(logger, <span class="stringliteral">&quot;  Real time: {:.3f} seconds&quot;</span>, elapsed.count());</div>
+<div class="line"><span class="lineno">  527</span>      QUILL_LOG_INFO(logger, <span class="stringliteral">&quot;  User time: {:.3f} seconds&quot;</span>, utime);</div>
+<div class="line"><span class="lineno">  528</span>      QUILL_LOG_INFO(logger, <span class="stringliteral">&quot;  System time: {:.3f} seconds&quot;</span>, stime);</div>
+<div class="line"><span class="lineno">  529</span> </div>
+<div class="line"><span class="lineno">  530</span>      <span class="comment">// results.dat contract is &quot;&lt;value&gt; &lt;key&gt;&quot; (same as all job writers and</span></div>
+<div class="line"><span class="lineno">  531</span>      <span class="comment">// eon.fileio.parse_results / eon_schema.jobs adapters).</span></div>
+<div class="line"><span class="lineno">  532</span>      std::ofstream result_file(<span class="stringliteral">&quot;results.dat&quot;</span>, std::ios::app);</div>
+<div class="line"><span class="lineno">  533</span>      <span class="keywordflow">if</span> (result_file.is_open()) {</div>
+<div class="line"><span class="lineno">  534</span>        result_file &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} time_seconds\n&quot;</span>, elapsed.count());</div>
+<div class="line"><span class="lineno">  535</span><span class="preprocessor">#ifndef _WIN32</span></div>
+<div class="line"><span class="lineno">  536</span>        result_file &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} user_time\n&quot;</span>, utime);</div>
+<div class="line"><span class="lineno">  537</span>        result_file &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} system_time\n&quot;</span>, stime);</div>
+<div class="line"><span class="lineno">  538</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  539</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  540</span>        QUILL_LOG_ERROR(logger, <span class="stringliteral">&quot;Failed to write timing to results.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  541</span>      }</div>
+<div class="line"><span class="lineno">  542</span>      result_file.close();</div>
+<div class="line"><span class="lineno">  543</span> </div>
+<div class="line"><span class="lineno">  544</span>      logger-&gt;flush_log();</div>
+<div class="line"><span class="lineno">  545</span>      <span class="keywordflow">if</span> (<span class="keyword">auto</span> *trace =</div>
+<div class="line"><span class="lineno">  546</span>              quill::Frontend::get_logger(std::string{<span class="stringliteral">&quot;_traceback&quot;</span>})) {</div>
+<div class="line"><span class="lineno">  547</span>        trace-&gt;flush_log();</div>
+<div class="line"><span class="lineno">  548</span>      }</div>
+<div class="line"><span class="lineno">  549</span>      <span class="comment">// Quill opens these before an MPI job chdir. Copy them into the job</span></div>
+<div class="line"><span class="lineno">  550</span>      <span class="comment">// directory so return_files.dat does not name a missing log.</span></div>
+<div class="line"><span class="lineno">  551</span>      <span class="keyword">constexpr</span> std::string_view jobLogs[] = {<span class="stringliteral">&quot;client_quill.log&quot;</span>,</div>
+<div class="line"><span class="lineno">  552</span>                                              <span class="stringliteral">&quot;client_traceback.log&quot;</span>};</div>
+<div class="line"><span class="lineno">  553</span>      <span class="keywordflow">for</span> (<span class="keyword">const</span> std::string_view logName : jobLogs) {</div>
+<div class="line"><span class="lineno">  554</span>        <span class="keywordflow">if</span> (<a class="code hl_function" href="namespaceeonc_1_1helpers.html#aad9576d0f1ab3864a962632fffbfc712">eonc::helpers::stageReturnLog</a>(logHome.string(), logName)) {</div>
+<div class="line"><span class="lineno">  555</span>          filenames.push_back(std::string{logName});</div>
+<div class="line"><span class="lineno">  556</span>        }</div>
+<div class="line"><span class="lineno">  557</span>      }</div>
+<div class="line"><span class="lineno">  558</span> </div>
+<div class="line"><span class="lineno">  559</span>      {</div>
+<div class="line"><span class="lineno">  560</span>        std::ofstream manifest(<span class="stringliteral">&quot;return_files.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  561</span>        <span class="keywordflow">if</span> (manifest) {</div>
+<div class="line"><span class="lineno">  562</span>          <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;fn : filenames) {</div>
+<div class="line"><span class="lineno">  563</span>            manifest &lt;&lt; fn &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  564</span>          }</div>
+<div class="line"><span class="lineno">  565</span>        }</div>
+<div class="line"><span class="lineno">  566</span>        filenames.push_back(std::string(<span class="stringliteral">&quot;return_files.dat&quot;</span>));</div>
+<div class="line"><span class="lineno">  567</span>      }</div>
 <div class="line"><span class="lineno">  568</span> </div>
-<div class="line"><span class="lineno">  569</span>  <span class="comment">// Ensure all queued log messages are flushed before exiting</span></div>
-<div class="line"><span class="lineno">  570</span>  quill::Backend::stop();</div>
-<div class="line"><span class="lineno">  571</span>  <span class="keywordflow">return</span> EXIT_SUCCESS;</div>
-<div class="line"><span class="lineno">  572</span>}</div>
+<div class="line"><span class="lineno">  569</span>      <span class="keywordflow">if</span> (bundlingEnabled) {</div>
+<div class="line"><span class="lineno">  570</span>        <a class="code hl_function" href="namespaceeonc.html#a0d50d17b3b014d6aecf3292f553142c1">eonc::bundle</a>(i, filenames, &amp;bundledFilenames);</div>
+<div class="line"><span class="lineno">  571</span>        <a class="code hl_function" href="namespaceeonc.html#a2216ed20ff2e22ecca18afddd1713033">eonc::deleteUnbundledFiles</a>(unbundledFilenames);</div>
+<div class="line"><span class="lineno">  572</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  573</span>        bundledFilenames = filenames;</div>
+<div class="line"><span class="lineno">  574</span>      }</div>
+<div class="line"><span class="lineno">  575</span>    }</div>
+<div class="line"><span class="lineno">  576</span> </div>
+<div class="line"><span class="lineno">  577</span><span class="preprocessor">#ifdef EONMPI</span></div>
+<div class="line"><span class="lineno">  578</span>    <span class="keywordflow">if</span> (client_standalone) {</div>
+<div class="line"><span class="lineno">  579</span>      <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  580</span>    }</div>
+<div class="line"><span class="lineno">  581</span>    {</div>
+<div class="line"><span class="lineno">  582</span>      MPI_Request eon_rq;</div>
+<div class="line"><span class="lineno">  583</span>      MPI_Isend(&amp;path[0], 1024, MPI_CHAR, server_rank, 0, MPI_COMM_WORLD,</div>
+<div class="line"><span class="lineno">  584</span>                &amp;eon_rq);</div>
+<div class="line"><span class="lineno">  585</span>      <span class="comment">// path is destroyed at the end of this iteration. Request_free does</span></div>
+<div class="line"><span class="lineno">  586</span>      <span class="comment">// not complete the send, so the buffer stays live until Wait returns.</span></div>
+<div class="line"><span class="lineno">  587</span>      MPI_Wait(&amp;eon_rq, MPI_STATUS_IGNORE);</div>
+<div class="line"><span class="lineno">  588</span>    }</div>
+<div class="line"><span class="lineno">  589</span> </div>
+<div class="line"><span class="lineno">  590</span>    <span class="comment">// End of MPI while loop</span></div>
+<div class="line"><span class="lineno">  591</span>  }</div>
+<div class="line"><span class="lineno">  592</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  593</span> </div>
+<div class="line"><span class="lineno">  594</span><span class="preprocessor">#ifdef OSX</span></div>
+<div class="line"><span class="lineno">  595</span><span class="preprocessor">#ifndef __aarch64__</span></div>
+<div class="line"><span class="lineno">  596</span>  print_memory_usage();</div>
+<div class="line"><span class="lineno">  597</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  598</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  599</span> </div>
+<div class="line"><span class="lineno">  600</span><span class="preprocessor">#ifdef EONMPI</span></div>
+<div class="line"><span class="lineno">  601</span>  <span class="comment">// Clean shutdown for both the standalone single-rank case and the</span></div>
+<div class="line"><span class="lineno">  602</span>  <span class="comment">// client/server case; the standalone path previously aborted MPI_COMM_WORLD.</span></div>
+<div class="line"><span class="lineno">  603</span>  MPI_Finalize();</div>
+<div class="line"><span class="lineno">  604</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  605</span> </div>
+<div class="line"><span class="lineno">  606</span>  <span class="comment">// Ensure all queued log messages are flushed before exiting</span></div>
+<div class="line"><span class="lineno">  607</span>  quill::Backend::stop();</div>
+<div class="line"><span class="lineno">  608</span>  <span class="keywordflow">return</span> EXIT_SUCCESS;</div>
+<div class="line"><span class="lineno">  609</span>}</div>
 <div class="ttc" id="aClientEON_8cpp_html_acab1ba3e66fdc93a33e591f8b7a666b2"><div class="ttname"><a href="#acab1ba3e66fdc93a33e591f8b7a666b2">printSystemInfo</a></div><div class="ttdeci">void printSystemInfo()</div><div class="ttdef"><b>Definition</b> <a href="ClientEON_8cpp_source.html#l00096">ClientEON.cpp:96</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Parameters_html"><div class="ttname"><a href="classeonc_1_1Parameters.html">eonc::Parameters</a></div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00035">Parameters.h:35</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Parameters_html_a50203756be6cc0b3a77779b6d729eef6"><div class="ttname"><a href="classeonc_1_1Parameters.html#a50203756be6cc0b3a77779b6d729eef6">eonc::Parameters::set_mpi_potential_rank</a></div><div class="ttdeci">void set_mpi_potential_rank(int rank)</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00258">ParametersAccess.cpp:258</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_a50203756be6cc0b3a77779b6d729eef6"><div class="ttname"><a href="classeonc_1_1Parameters.html#a50203756be6cc0b3a77779b6d729eef6">eonc::Parameters::set_mpi_potential_rank</a></div><div class="ttdeci">void set_mpi_potential_rank(int rank)</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00262">ParametersAccess.cpp:262</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Parameters_html_a55e84b61b311cb38897a55eb0d2b39ae"><div class="ttname"><a href="classeonc_1_1Parameters.html#a55e84b61b311cb38897a55eb0d2b39ae">eonc::Parameters::potential_options</a></div><div class="ttdeci">const potential_options_t &amp; potential_options() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00079">ParametersAccess.cpp:79</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Parameters_html_a59bac76bd6b84cbdc50887d30346e129"><div class="ttname"><a href="classeonc_1_1Parameters.html#a59bac76bd6b84cbdc50887d30346e129">eonc::Parameters::main_options</a></div><div class="ttdeci">const main_options_t &amp; main_options() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00075">ParametersAccess.cpp:75</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Parameters_html_add5819bb5f8d6da5fd26c2ae868d98d7"><div class="ttname"><a href="classeonc_1_1Parameters.html#add5819bb5f8d6da5fd26c2ae868d98d7">eonc::Parameters::load</a></div><div class="ttdeci">int load(std::string_view filename)</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8cpp_source.html#l00058">Parameters.cpp:58</a></div></div>
@@ -795,16 +832,16 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ClientEON_8cpp_source.html#l00593">593</a> of file <a class="el" href="ClientEON_8cpp_source.html">ClientEON.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  593</span>                                {</div>
-<div class="line"><span class="lineno">  594</span>  <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  595</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#a1ac5a1da054827100537797f62353b1b">eonClientMain</a>(argc, argv);</div>
-<div class="line"><span class="lineno">  596</span>  } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
-<div class="line"><span class="lineno">  597</span>    <span class="keywordflow">return</span> reportFatal(e.what());</div>
-<div class="line"><span class="lineno">  598</span>  } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><span class="lineno">  599</span>    <span class="keywordflow">return</span> reportFatal(<span class="stringliteral">&quot;exception of unknown type&quot;</span>);</div>
-<div class="line"><span class="lineno">  600</span>  }</div>
-<div class="line"><span class="lineno">  601</span>}</div>
+<p class="definition">Definition at line <a class="el" href="ClientEON_8cpp_source.html#l00630">630</a> of file <a class="el" href="ClientEON_8cpp_source.html">ClientEON.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  630</span>                                {</div>
+<div class="line"><span class="lineno">  631</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  632</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#a1ac5a1da054827100537797f62353b1b">eonClientMain</a>(argc, argv);</div>
+<div class="line"><span class="lineno">  633</span>  } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
+<div class="line"><span class="lineno">  634</span>    <span class="keywordflow">return</span> reportFatal(e.what());</div>
+<div class="line"><span class="lineno">  635</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  636</span>    <span class="keywordflow">return</span> reportFatal(<span class="stringliteral">&quot;exception of unknown type&quot;</span>);</div>
+<div class="line"><span class="lineno">  637</span>  }</div>
+<div class="line"><span class="lineno">  638</span>}</div>
 <div class="ttc" id="aClientEON_8cpp_html_a1ac5a1da054827100537797f62353b1b"><div class="ttname"><a href="#a1ac5a1da054827100537797f62353b1b">eonClientMain</a></div><div class="ttdeci">static int eonClientMain(int argc, char **argv)</div><div class="ttdef"><b>Definition</b> <a href="ClientEON_8cpp_source.html#l00129">ClientEON.cpp:129</a></div></div>
 </div><!-- fragment -->
 </div>

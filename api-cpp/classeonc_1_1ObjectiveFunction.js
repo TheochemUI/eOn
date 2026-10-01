@@ -11,6 +11,7 @@ var classeonc_1_1ObjectiveFunction =
     [ "getPeriodic", "classeonc_1_1ObjectiveFunction.html#a9026e74111d5f55078d5c5f8a47501aa", null ],
     [ "getPositions", "classeonc_1_1ObjectiveFunction.html#aa06776d23dd7b6ffa23db1555d657261", null ],
     [ "isConverged", "classeonc_1_1ObjectiveFunction.html#a90d7874f2d2686d628c9d6057f841925", null ],
+    [ "knownCurvature", "classeonc_1_1ObjectiveFunction.html#aa52b364b8d8eb6fcb6cddc409aaa6691", null ],
     [ "minimumImage", "classeonc_1_1ObjectiveFunction.html#af3271abcddd3c2ec4808a5b3f25e4b77", null ],
     [ "setPositions", "classeonc_1_1ObjectiveFunction.html#ab285e512e05c11a1438a93d72a0ec527", null ],
     [ "supportsFiniteDifferenceCurvature", "classeonc_1_1ObjectiveFunction.html#a1b411c5e39f354a9ec1058e84c172e54", null ],

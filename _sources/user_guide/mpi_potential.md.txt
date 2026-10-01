@@ -9,7 +9,7 @@ myst:
 
 ```{admonition} conda-forge availability
 :class: warning
-The `conda-forge` package omits MPI. Build from source with `-Dwith_mpi=True`.
+The `conda-forge` package omits MPI. Build from source with `-Dwith_mpi=enabled`.
 ```
 
 ```{note}

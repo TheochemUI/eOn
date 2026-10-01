@@ -81,30 +81,38 @@ Potentials which can be run in parallel, like those accessed through ASE (e.g. O
 
 ### MPI
 
-```{warning}
-Not tested on 2.0, only ever supported AKMC.
+```{note}
+Only AKMC runs on the MPI communicator. It was checked on 3.4 with Open MPI
+5 and an AKMC run of one server and two client ranks.
 ```
 
-The MPI communicator allows for the server and client to be run as a MPI job.
-The number of clients that are run and thus the number of jobs is set at runtime
-by the MPI environment.
+The MPI communicator runs the server and the clients as one MPI job. The
+number of clients, and so the number of jobs in flight, comes from the MPI
+launch.
 
-A MPI aware client must be compiled, which will be named ``eonclientmpi``
-instead of ``eonclient``. It can only be used to run MPI jobs.
+Build the client with `-Dwith_mpi=enabled`; the resulting `eonclient` only runs
+under MPI. Two environment variables set the layout. `EON_NUMBER_OF_CLIENTS`
+is how many ranks become clients, and `EON_SERVER_PATH` is a Python script
+that starts the server. Launch the clients, not the server: one extra rank
+turns into the server and runs that script. Only AKMC is supported.
 
-To run eOn with MPI, two environment variables must be set. The
-variable `eOn_NUMBER_OF_CLIENTS` determines how many of the ranks
-should become clients and `eOn_SERVER_PATH` is the path to the
-server Python script. In MPI mode the clients need to be started
-instead of the server and one of them will become the server process.
-Currently only AKMC is supported. Example MPI communicator run:
+```{code-block} python
+# server.py
+import eon.server
+eon.server.main()
+```
 
 ```{code-block} bash
 #!/bin/bash
-export eOn_NUMBER_OF_CLIENTS=7
-export eOn_SERVER_PATH=~/eon/akmc.py
-mpirun -n 8 ~/eon/client/eonclientmpi
+export EON_NUMBER_OF_CLIENTS=7
+export EON_SERVER_PATH=$PWD/server.py
+mpirun -n 8 /path/to/eonclient
 ```
+
+A client whose job fails, through a potential error, a `config.ini` it cannot
+load or a job type it does not know, logs the error into that job's directory
+and hands the directory back without `results.dat`. The server logs
+`returned no results` for it and the rank takes the next job.
 
 ### Cluster
 

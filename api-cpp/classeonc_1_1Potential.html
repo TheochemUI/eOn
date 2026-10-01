@@ -277,7 +277,7 @@ Public Types</h2></td></tr>
 , <a class="el" href="#a6a35357f6786a54c47eceedf6eab2056a7c188dee6d54a1cb92a7c95534b34e93">NeedsWorkingDirectory</a> = 1u &lt;&lt; 1
 , <a class="el" href="#a6a35357f6786a54c47eceedf6eab2056aacfc9fac11fea7710fbe22b6ba4b3a9e">Subprocess</a> = 1u &lt;&lt; 2
  }</td></tr>
-<tr class="memdesc:a6a35357f6786a54c47eceedf6eab2056"><td class="mdescLeft">&#160;</td><td class="mdescRight">How the pot is executed (eOn-12x7). Combine with bitwise or.  <a href="#a6a35357f6786a54c47eceedf6eab2056">More...</a><br /></td></tr>
+<tr class="memdesc:a6a35357f6786a54c47eceedf6eab2056"><td class="mdescLeft">&#160;</td><td class="mdescRight">How the pot is executed. Combine with bitwise or.  <a href="#a6a35357f6786a54c47eceedf6eab2056">More...</a><br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -312,8 +312,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a59bc4af33d113751d3804054b79a4872"><td class="mdescLeft">&#160;</td><td class="mdescRight">Independent instance that does not reload from disk.  <br /></td></tr>
 <tr class="memitem:a2d8781e3cbea888f88b7523c5d00bc43" id="r_a2d8781e3cbea888f88b7523c5d00bc43"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a2d8781e3cbea888f88b7523c5d00bc43">supportsBatchEvaluation</a> () const noexcept</td></tr>
 <tr class="memdesc:a2d8781e3cbea888f88b7523c5d00bc43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this potential supports batched evaluation of N systems in a single call.  <br /></td></tr>
+<tr class="memitem:a12bba5921cf3936f25d13563ac49f90f" id="r_a12bba5921cf3936f25d13563ac49f90f"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a12bba5921cf3936f25d13563ac49f90f">computesStress</a> () const noexcept</td></tr>
+<tr class="memdesc:a12bba5921cf3936f25d13563ac49f90f"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when <a class="el" href="#a51a8f3110935f320fe1bfca4efa3bbb3">force()</a> leaves a Cauchy stress that <a class="el" href="#a98c3cc78cc840b21cb178a4d625437f2" title="Cauchy stress in eV/Angstrom^3.">cauchyStress()</a> can read until the next <a class="el" href="#a51a8f3110935f320fe1bfca4efa3bbb3">force()</a> on this instance.  <br /></td></tr>
+<tr class="memitem:a98c3cc78cc840b21cb178a4d625437f2" id="r_a98c3cc78cc840b21cb178a4d625437f2"><td class="memItemLeft">virtual <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a>&#160;</td><td class="memItemRight"><a class="el" href="#a98c3cc78cc840b21cb178a4d625437f2">cauchyStress</a> () const</td></tr>
+<tr class="memdesc:a98c3cc78cc840b21cb178a4d625437f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cauchy stress in eV/Angstrom^3.  <br /></td></tr>
+<tr class="memitem:a44b9979c8df31acc86cfbe87dec05d26" id="r_a44b9979c8df31acc86cfbe87dec05d26"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a44b9979c8df31acc86cfbe87dec05d26">forceBatchOwned</a> (long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes, const long *owners)</td></tr>
+<tr class="memdesc:a44b9979c8df31acc86cfbe87dec05d26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate forces for N systems in a single call.  <br /></td></tr>
 <tr class="memitem:aa66e1416134ff55639a6d20a34e3c1c1" id="r_aa66e1416134ff55639a6d20a34e3c1c1"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#aa66e1416134ff55639a6d20a34e3c1c1">forceBatch</a> (long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes)</td></tr>
-<tr class="memdesc:aa66e1416134ff55639a6d20a34e3c1c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate forces for N systems in a single call.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -354,7 +359,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>How the pot is executed (eOn-12x7). Combine with bitwise or. </p>
+<p>How the pot is executed. Combine with bitwise or. </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a6a35357f6786a54c47eceedf6eab2056a651a693296d758550ddc034a389ef058" name="a6a35357f6786a54c47eceedf6eab2056a651a693296d758550ddc034a389ef058"></a>InProcess&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a6a35357f6786a54c47eceedf6eab2056a7c188dee6d54a1cb92a7c95534b34e93" name="a6a35357f6786a54c47eceedf6eab2056a7c188dee6d54a1cb92a7c95534b34e93"></a>NeedsWorkingDirectory&#160;</td><td class="fielddoc"></td></tr>
@@ -532,6 +537,41 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a98c3cc78cc840b21cb178a4d625437f2" name="a98c3cc78cc840b21cb178a4d625437f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98c3cc78cc840b21cb178a4d625437f2">&#9670;&#160;</a></span>cauchyStress()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> eonc::Potential::cauchyStress </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cauchy stress in eV/Angstrom^3. </p>
+<p>sigma = (1/V) dE/dε for the right strain h &lt;- h (I+ε) at fixed fractional coordinates. </p>
+
+<p>Reimplemented in <a class="el" href="classLAMMPSPot.html#a2ecacbd6685d17b1f45f6e4542b85d68">LAMMPSPot</a>, <a class="el" href="classRgpotAdapter.html#aa3c136cf6b45701ae48bb91c879a4620">RgpotAdapter&lt; RPot &gt;</a>, <a class="el" href="classSocketNWChemPot.html#a8f5d875bdc7874566820f95b4d2ec761">SocketNWChemPot</a>, and <a class="el" href="classXTBPot.html#a0f8ce666a7f0a1493b36a5ecb029b2ab">XTBPot</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00176">176</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  176</span>                                                      {</div>
+<div class="line"><span class="lineno">  177</span>    <span class="keywordflow">throw</span> std::logic_error(<span class="stringliteral">&quot;Potential::cauchyStress is not implemented&quot;</span>);</div>
+<div class="line"><span class="lineno">  178</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="a59bc4af33d113751d3804054b79a4872" name="a59bc4af33d113751d3804054b79a4872"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a59bc4af33d113751d3804054b79a4872">&#9670;&#160;</a></span>clonePotential()</h2>
 
@@ -564,6 +604,38 @@ Private Attributes</h2></td></tr>
 <div class="fragment"><div class="line"><span class="lineno">  159</span>                                                                        {</div>
 <div class="line"><span class="lineno">  160</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
 <div class="line"><span class="lineno">  161</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a12bba5921cf3936f25d13563ac49f90f" name="a12bba5921cf3936f25d13563ac49f90f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12bba5921cf3936f25d13563ac49f90f">&#9670;&#160;</a></span>computesStress()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eonc::Potential::computesStress </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when <a class="el" href="#a51a8f3110935f320fe1bfca4efa3bbb3">force()</a> leaves a Cauchy stress that <a class="el" href="#a98c3cc78cc840b21cb178a4d625437f2" title="Cauchy stress in eV/Angstrom^3.">cauchyStress()</a> can read until the next <a class="el" href="#a51a8f3110935f320fe1bfca4efa3bbb3">force()</a> on this instance. </p>
+
+<p>Reimplemented in <a class="el" href="classLAMMPSPot.html#a23533d0a91f0f5d3b89105f4fcd5e0f7">LAMMPSPot</a>, <a class="el" href="classRgpotAdapter.html#a32b01ed4f75896e5c6705bbef20ad191">RgpotAdapter&lt; RPot &gt;</a>, <a class="el" href="classSocketNWChemPot.html#a1706b2a804564c68e8ebec53075636f1">SocketNWChemPot</a>, and <a class="el" href="classXTBPot.html#a431e338298692aa87cf7795a22d34fbe">XTBPot</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00172">172</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  172</span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -775,23 +847,97 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Reimplemented in <a class="el" href="classASE.html#a8f19bffa4b531c4e8b1033362da43311">ASE</a>, <a class="el" href="classMetatomicPotential.html#a4425775e22771c363739a4920b88aa9b">MetatomicPotential</a>, <a class="el" href="classRgpotAdapter.html#ae5c9470c08c2505cc3d9f557e014b9eb">RgpotAdapter&lt; RPot &gt;</a>, and <a class="el" href="classRgpotPot.html#a6fee72a91f6354157274b33d3341d385">RgpotPot</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00198">198</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  202</span>                                                      {</div>
+<div class="line"><span class="lineno">  203</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; nSystems; i++) {</div>
+<div class="line"><span class="lineno">  204</span>      <span class="keywordtype">double</span> var = 0;</div>
+<div class="line"><span class="lineno">  205</span>      <a class="code hl_function" href="#a51a8f3110935f320fe1bfca4efa3bbb3">force</a>(nAtoms, positions[i], atomicNrs[i], forces[i], &amp;energies[i], &amp;var,</div>
+<div class="line"><span class="lineno">  206</span>            boxes[i]);</div>
+<div class="line"><span class="lineno">  207</span>      <span class="keywordflow">if</span> (variances)</div>
+<div class="line"><span class="lineno">  208</span>        variances[i] = var;</div>
+<div class="line"><span class="lineno">  209</span>      <a class="code hl_variable" href="#a2ae7cca425e3d69d2825c58d1c7704eb">forceCallCounter</a>++;</div>
+<div class="line"><span class="lineno">  210</span>      <a class="code hl_variable" href="#aa9f8a1e4a8ed057ff50555c4df3eed17">registry_</a>.on_force_call(<a class="code hl_variable" href="#ac102f249b890f52d06d96feff8f2047a">ptype</a>);</div>
+<div class="line"><span class="lineno">  211</span>    }</div>
+<div class="line"><span class="lineno">  212</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a44b9979c8df31acc86cfbe87dec05d26" name="a44b9979c8df31acc86cfbe87dec05d26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44b9979c8df31acc86cfbe87dec05d26">&#9670;&#160;</a></span>forceBatchOwned()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eonc::Potential::forceBatchOwned </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>nSystems</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>nAtoms</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *const *</td>          <td class="paramname"><span class="paramname"><em>positions</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *const *</td>          <td class="paramname"><span class="paramname"><em>atomicNrs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *const *</td>          <td class="paramname"><span class="paramname"><em>forces</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>energies</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>variances</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *const *</td>          <td class="paramname"><span class="paramname"><em>boxes</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const long *</td>          <td class="paramname"><span class="paramname"><em>owners</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
 <p>Evaluate forces for N systems in a single call. </p>
-<p>Default: loops over <a class="el" href="#a51a8f3110935f320fe1bfca4efa3bbb3">force()</a>. Override in potentials that support native batching (e.g. <a class="el" href="classMetatomicPotential.html" title="A potential class that uses a metatomic model for energy and force calculations.">MetatomicPotential</a> uses a single model.forward() for all N systems). </p>
+<p>Default: loops over <a class="el" href="#a51a8f3110935f320fe1bfca4efa3bbb3">force()</a>. Override in potentials that support native batching (e.g. <a class="el" href="classMetatomicPotential.html" title="A potential class that uses a metatomic model for energy and force calculations.">MetatomicPotential</a> uses a single model.forward() for all N systems). forceBatch with an owner hint per system: a stable identity (a NEB image index) a potential that spreads a batch over calculators can route by, so the same calculator keeps seeing the same image and its stored state stays close to it. Default: the hint is ignored. </p>
 
-<p>Reimplemented in <a class="el" href="classASE.html#a8f19bffa4b531c4e8b1033362da43311">ASE</a>, <a class="el" href="classMetatomicPotential.html#a4425775e22771c363739a4920b88aa9b">MetatomicPotential</a>, and <a class="el" href="classRgpotAdapter.html#ae5c9470c08c2505cc3d9f557e014b9eb">RgpotAdapter&lt; RPot &gt;</a>.</p>
+<p>Reimplemented in <a class="el" href="classRgpotPot.html#a674bf337af44b7f429fb39cc8aa38995">RgpotPot</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00173">173</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  177</span>                                                      {</div>
-<div class="line"><span class="lineno">  178</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; nSystems; i++) {</div>
-<div class="line"><span class="lineno">  179</span>      <span class="keywordtype">double</span> var = 0;</div>
-<div class="line"><span class="lineno">  180</span>      <a class="code hl_function" href="#a51a8f3110935f320fe1bfca4efa3bbb3">force</a>(nAtoms, positions[i], atomicNrs[i], forces[i], &amp;energies[i], &amp;var,</div>
-<div class="line"><span class="lineno">  181</span>            boxes[i]);</div>
-<div class="line"><span class="lineno">  182</span>      <span class="keywordflow">if</span> (variances)</div>
-<div class="line"><span class="lineno">  183</span>        variances[i] = var;</div>
-<div class="line"><span class="lineno">  184</span>      <a class="code hl_variable" href="#a2ae7cca425e3d69d2825c58d1c7704eb">forceCallCounter</a>++;</div>
-<div class="line"><span class="lineno">  185</span>      <a class="code hl_variable" href="#aa9f8a1e4a8ed057ff50555c4df3eed17">registry_</a>.on_force_call(<a class="code hl_variable" href="#ac102f249b890f52d06d96feff8f2047a">ptype</a>);</div>
-<div class="line"><span class="lineno">  186</span>    }</div>
-<div class="line"><span class="lineno">  187</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00187">187</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  192</span>                                                   {</div>
+<div class="line"><span class="lineno">  193</span>    (void)owners;</div>
+<div class="line"><span class="lineno">  194</span>    <a class="code hl_function" href="#aa66e1416134ff55639a6d20a34e3c1c1">forceBatch</a>(nSystems, nAtoms, positions, atomicNrs, forces, energies,</div>
+<div class="line"><span class="lineno">  195</span>               variances, boxes);</div>
+<div class="line"><span class="lineno">  196</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_aa66e1416134ff55639a6d20a34e3c1c1"><div class="ttname"><a href="#aa66e1416134ff55639a6d20a34e3c1c1">eonc::Potential::forceBatch</a></div><div class="ttdeci">virtual void forceBatch(long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes)</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00198">Potential.h:198</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1068,7 +1214,7 @@ Private Attributes</h2></td></tr>
 <p>True for molecular QM / non-PBC backends (NWChem socket, <a class="el" href="classASE.html">ASE</a> ORCA/NWChem, …). </p>
 <p>Callers must not apply periodic wraps that can tear molecules (#188). </p>
 
-<p>Reimplemented in <a class="el" href="classASENwchemPot.html#a386d56a47a59e9c3269fa9bd6edee7a7">ASENwchemPot</a>, <a class="el" href="classASEOrcaPot.html#acf04a451ead66da0d62358edfd137bea">ASEOrcaPot</a>, <a class="el" href="classRgpotPot.html#a30439012a21f7aeae6a23c1cf66b1fc8">RgpotPot</a>, and <a class="el" href="classSocketNWChemPot.html#ae6ac82b26dee40dc875804cff80ef1df">SocketNWChemPot</a>.</p>
+<p>Reimplemented in <a class="el" href="classASENwchemPot.html#a386d56a47a59e9c3269fa9bd6edee7a7">ASENwchemPot</a>, <a class="el" href="classASEOrcaPot.html#acf04a451ead66da0d62358edfd137bea">ASEOrcaPot</a>, <a class="el" href="classRgpotAdapter.html#a18f57c04222975e8937d95623fb264d8">RgpotAdapter&lt; RPot &gt;</a>, <a class="el" href="classRgpotPot.html#a30439012a21f7aeae6a23c1cf66b1fc8">RgpotPot</a>, and <a class="el" href="classSocketNWChemPot.html#ae6ac82b26dee40dc875804cff80ef1df">SocketNWChemPot</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00117">117</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">  117</span>                                                                             {</div>
@@ -1141,9 +1287,9 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Whether this potential supports batched evaluation of N systems in a single call. </p>
-<p>When true, callers (NEB, <a class="el" href="classeonc_1_1Dimer.html" title="Classic dimer method to find the lowest curvature mode.">Dimer</a>) should use <a class="el" href="#aa66e1416134ff55639a6d20a34e3c1c1" title="Evaluate forces for N systems in a single call.">forceBatch()</a> instead of N individual <a class="el" href="#a51a8f3110935f320fe1bfca4efa3bbb3">force()</a> calls for better GPU utilization. </p>
+<p>When true, callers (NEB, <a class="el" href="classeonc_1_1Dimer.html" title="Classic dimer method to find the lowest curvature mode.">Dimer</a>) should use <a class="el" href="#aa66e1416134ff55639a6d20a34e3c1c1">forceBatch()</a> instead of N individual <a class="el" href="#a51a8f3110935f320fe1bfca4efa3bbb3">force()</a> calls for better GPU utilization. </p>
 
-<p>Reimplemented in <a class="el" href="classASE.html#a6cc801cfb55242aede7b55034117ccd5">ASE</a>, <a class="el" href="classMetatomicPotential.html#a1d1230f9247bc0e0c5be9062be0d6bde">MetatomicPotential</a>, and <a class="el" href="classRgpotAdapter.html#a1325b13dceca141f31feda2e1171fcdc">RgpotAdapter&lt; RPot &gt;</a>.</p>
+<p>Reimplemented in <a class="el" href="classASE.html#a6cc801cfb55242aede7b55034117ccd5">ASE</a>, <a class="el" href="classMetatomicPotential.html#a1d1230f9247bc0e0c5be9062be0d6bde">MetatomicPotential</a>, <a class="el" href="classRgpotAdapter.html#a1325b13dceca141f31feda2e1171fcdc">RgpotAdapter&lt; RPot &gt;</a>, and <a class="el" href="classRgpotPot.html#acde3cf6eb2174f747609504d1d717d80">RgpotPot</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00166">166</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">  166</span>                                                                      {</div>

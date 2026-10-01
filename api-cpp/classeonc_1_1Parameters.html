@@ -288,6 +288,7 @@ Public Types</h2></td></tr>
 <tr class="memitem:a111c80ebce8d5d6e8e9dec9263389364" id="r_a111c80ebce8d5d6e8e9dec9263389364"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a111c80ebce8d5d6e8e9dec9263389364">ira_options_t</a> = <a class="el" href="structeonc_1_1ira__options__t.html">eonc::ira_options_t</a></td></tr>
 <tr class="memitem:a50082a5036fd57dc80c72b809f50c3fe" id="r_a50082a5036fd57dc80c72b809f50c3fe"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a50082a5036fd57dc80c72b809f50c3fe">debug_options_t</a> = <a class="el" href="structeonc_1_1debug__options__t.html">eonc::debug_options_t</a></td></tr>
 <tr class="memitem:a254b4f2aa1efee05fd0826fcada920a3" id="r_a254b4f2aa1efee05fd0826fcada920a3"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a254b4f2aa1efee05fd0826fcada920a3">oh_tst_options_t</a> = <a class="el" href="structeonc_1_1oh__tst__options__t.html">eonc::oh_tst_options_t</a></td></tr>
+<tr class="memitem:ae7a540a533d4c1bc7335c344ffbd34de" id="r_ae7a540a533d4c1bc7335c344ffbd34de"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#ae7a540a533d4c1bc7335c344ffbd34de">instanton_options_t</a> = <a class="el" href="structeonc_1_1instanton__options__t.html">eonc::instanton_options_t</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -351,6 +352,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a28670f5ec45a4fe3a52a7692026ddc54" id="r_a28670f5ec45a4fe3a52a7692026ddc54"><td class="memItemLeft">const <a class="el" href="#a111c80ebce8d5d6e8e9dec9263389364">ira_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a28670f5ec45a4fe3a52a7692026ddc54">ira_options</a> () const</td></tr>
 <tr class="memitem:a77fcca902749ed607dd22819f41b7287" id="r_a77fcca902749ed607dd22819f41b7287"><td class="memItemLeft">const <a class="el" href="#a50082a5036fd57dc80c72b809f50c3fe">debug_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a77fcca902749ed607dd22819f41b7287">debug_options</a> () const</td></tr>
 <tr class="memitem:a5ccf625c335d9071d9f7a574f838c522" id="r_a5ccf625c335d9071d9f7a574f838c522"><td class="memItemLeft">const <a class="el" href="#a254b4f2aa1efee05fd0826fcada920a3">oh_tst_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a5ccf625c335d9071d9f7a574f838c522">oh_tst_options</a> () const</td></tr>
+<tr class="memitem:a44739c5e27b0438b49ae96fe77537099" id="r_a44739c5e27b0438b49ae96fe77537099"><td class="memItemLeft">const <a class="el" href="#ae7a540a533d4c1bc7335c344ffbd34de">instanton_options_t</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a44739c5e27b0438b49ae96fe77537099">instanton_options</a> () const</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -673,6 +675,22 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00088">88</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+
+</div>
+</div>
+<a id="ae7a540a533d4c1bc7335c344ffbd34de" name="ae7a540a533d4c1bc7335c344ffbd34de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7a540a533d4c1bc7335c344ffbd34de">&#9670;&#160;</a></span>instanton_options_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#ae7a540a533d4c1bc7335c344ffbd34de">eonc::Parameters::instanton_options_t</a> = <a class="el" href="structeonc_1_1instanton__options__t.html">eonc::instanton_options_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00098">98</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
 
 </div>
 </div>
@@ -1068,9 +1086,9 @@ Friends</h2></td></tr>
 <div class="line"><span class="lineno">   54</span>  <span class="comment">// Resolve computed fields via validate_and_link.</span></div>
 <div class="line"><span class="lineno">   55</span>  <a class="code hl_function" href="namespaceeonc_1_1config.html#a78d7cf925cc0890b91729530015d1018">eonc::config::validate_and_link</a>(*<span class="keyword">this</span>);</div>
 <div class="line"><span class="lineno">   56</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Parameters_html_a67d48172041dcdedf0253dce46095c02"><div class="ttname"><a href="#a67d48172041dcdedf0253dce46095c02">eonc::Parameters::impl_</a></div><div class="ttdeci">std::unique_ptr&lt; Impl &gt; impl_</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00155">Parameters.h:155</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1config_html_a26678e5e35275ab0aa6eb96a1f1b3012"><div class="ttname"><a href="namespaceeonc_1_1config.html#a26678e5e35275ab0aa6eb96a1f1b3012">eonc::config::apply_ssot_defaults</a></div><div class="ttdeci">void apply_ssot_defaults(Parameters &amp;p)</div><div class="ttdoc">Apply SSoT defaults for covered groups (Main, Potential, Optimizer, Structure Comparison,...</div><div class="ttdef"><b>Definition</b> <a href="ParametersSSOT_8cpp_source.html#l00104">ParametersSSOT.cpp:104</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1config_html_a78d7cf925cc0890b91729530015d1018"><div class="ttname"><a href="namespaceeonc_1_1config.html#a78d7cf925cc0890b91729530015d1018">eonc::config::validate_and_link</a></div><div class="ttdeci">void validate_and_link(Parameters &amp;params)</div><div class="ttdoc">Resolve cross-group defaults and time unit conversions.</div><div class="ttdef"><b>Definition</b> <a href="ParametersINI_8cpp_source.html#l01891">ParametersINI.cpp:1891</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_a67d48172041dcdedf0253dce46095c02"><div class="ttname"><a href="#a67d48172041dcdedf0253dce46095c02">eonc::Parameters::impl_</a></div><div class="ttdeci">std::unique_ptr&lt; Impl &gt; impl_</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00157">Parameters.h:157</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1config_html_a26678e5e35275ab0aa6eb96a1f1b3012"><div class="ttname"><a href="namespaceeonc_1_1config.html#a26678e5e35275ab0aa6eb96a1f1b3012">eonc::config::apply_ssot_defaults</a></div><div class="ttdeci">void apply_ssot_defaults(Parameters &amp;p)</div><div class="ttdoc">Apply SSoT defaults for covered groups (Main, Potential, Optimizer, Structure Comparison,...</div><div class="ttdef"><b>Definition</b> <a href="ParametersSSOT_8cpp_source.html#l00106">ParametersSSOT.cpp:106</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1config_html_a78d7cf925cc0890b91729530015d1018"><div class="ttname"><a href="namespaceeonc_1_1config.html#a78d7cf925cc0890b91729530015d1018">eonc::config::validate_and_link</a></div><div class="ttdeci">void validate_and_link(Parameters &amp;params)</div><div class="ttdoc">Resolve cross-group defaults and time unit conversions.</div><div class="ttdef"><b>Definition</b> <a href="ParametersINI_8cpp_source.html#l02059">ParametersINI.cpp:2059</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1597,6 +1615,28 @@ Friends</h2></td></tr>
 </div><!-- fragment -->
 </div>
 </div>
+<a id="a44739c5e27b0438b49ae96fe77537099" name="a44739c5e27b0438b49ae96fe77537099"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44739c5e27b0438b49ae96fe77537099">&#9670;&#160;</a></span>instanton_options()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="#ae7a540a533d4c1bc7335c344ffbd34de">Parameters::instanton_options_t</a> &amp; eonc::Parameters::instanton_options </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersAccess_8cpp_source.html#l00250">250</a> of file <a class="el" href="ParametersAccess_8cpp_source.html">ParametersAccess.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  250</span>                                                                         {</div>
+<div class="line"><span class="lineno">  251</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a67d48172041dcdedf0253dce46095c02">impl_</a>-&gt;instanton_options_;</div>
+<div class="line"><span class="lineno">  252</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="a28670f5ec45a4fe3a52a7692026ddc54" name="a28670f5ec45a4fe3a52a7692026ddc54"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a28670f5ec45a4fe3a52a7692026ddc54">&#9670;&#160;</a></span>ira_options()</h2>
 
@@ -1782,7 +1822,7 @@ Friends</h2></td></tr>
 <div class="line"><span class="lineno">  176</span>}</div>
 <div class="ttc" id="aEonLogger_8h_html_a4cf9b473cf6a1d850b3725fca6805f86"><div class="ttname"><a href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a></div><div class="ttdeci">#define EONC_LOG_ERROR(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00261">EonLogger.h:261</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Parameters_html_a800175a3ff2d8ffa60a2dad44ebecab7"><div class="ttname"><a href="#a800175a3ff2d8ffa60a2dad44ebecab7">eonc::Parameters::record_load</a></div><div class="ttdeci">void record_load(std::string_view source, int error)</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00058">ParametersAccess.cpp:58</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1config_html_a088cf940288ff28adeba5722978a208b"><div class="ttname"><a href="namespaceeonc_1_1config.html#a088cf940288ff28adeba5722978a208b">eonc::config::load_ini</a></div><div class="ttdeci">int load_ini(INIReader &amp;ini, Parameters &amp;params)</div><div class="ttdoc">Parse all INI sections into the Parameters struct.</div><div class="ttdef"><b>Definition</b> <a href="ParametersINI_8cpp_source.html#l00042">ParametersINI.cpp:42</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1config_html_a088cf940288ff28adeba5722978a208b"><div class="ttname"><a href="namespaceeonc_1_1config.html#a088cf940288ff28adeba5722978a208b">eonc::config::load_ini</a></div><div class="ttdeci">int load_ini(INIReader &amp;ini, Parameters &amp;params)</div><div class="ttdoc">Parse all INI sections into the Parameters struct.</div><div class="ttdef"><b>Definition</b> <a href="ParametersINI_8cpp_source.html#l00044">ParametersINI.cpp:44</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1dynlib_html_a793e2f7806f01afcc170a5b8054f4e6f"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">eonc::dynlib::error</a></div><div class="ttdeci">std::string error()</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00082">DynLib.h:82</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -1866,7 +1906,7 @@ Friends</h2></td></tr>
 <div class="ttc" id="aEonLogger_8h_html_a85fddaf0620c36ee3fcf865df53a9327"><div class="ttname"><a href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a></div><div class="ttdeci">#define EONC_LOG_WARNING(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00255">EonLogger.h:255</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a065d784b407aa4ed171c0461a8e7cca7"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a065d784b407aa4ed171c0461a8e7cca7">eonc::PotType::AMS</a></div><div class="ttdeci">@ AMS</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00059">BaseStructures.h:59</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2ad23bca783a57775346200e444f8a25ea"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ad23bca783a57775346200e444f8a25ea">eonc::PotType::AMS_IO</a></div><div class="ttdeci">@ AMS_IO</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00060">BaseStructures.h:60</a></div></div>
-<div class="ttc" id="anamespaceeonc_html_a323be6616e43feab55a65202288b9459aaac544aacc3615aada24897a215f5046"><div class="ttname"><a href="namespaceeonc.html#a323be6616e43feab55a65202288b9459aaac544aacc3615aada24897a215f5046">eonc::NEBInit::LINEAR</a></div><div class="ttdeci">@ LINEAR</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00114">BaseStructures.h:114</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a323be6616e43feab55a65202288b9459aaac544aacc3615aada24897a215f5046"><div class="ttname"><a href="namespaceeonc.html#a323be6616e43feab55a65202288b9459aaac544aacc3615aada24897a215f5046">eonc::NEBInit::LINEAR</a></div><div class="ttdeci">@ LINEAR</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00115">BaseStructures.h:115</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1923,7 +1963,7 @@ Friends</h2></td></tr>
 <div class="line"><span class="lineno">  194</span>  <a class="code hl_function" href="#a800175a3ff2d8ffa60a2dad44ebecab7">record_load</a>(kJsonSource, error);</div>
 <div class="line"><span class="lineno">  195</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a>;</div>
 <div class="line"><span class="lineno">  196</span>}</div>
-<div class="ttc" id="anamespaceeonc_1_1config_html_a5718e3ce02ab2c35e2c1dfa43f1d4e36"><div class="ttname"><a href="namespaceeonc_1_1config.html#a5718e3ce02ab2c35e2c1dfa43f1d4e36">eonc::config::load_json</a></div><div class="ttdeci">int load_json(std::string_view json_str, Parameters &amp;params)</div><div class="ttdoc">Load Parameters from a JSON string. Returns 0 on success.</div><div class="ttdef"><b>Definition</b> <a href="ParametersJSON_8cpp_source.html#l00602">ParametersJSON.cpp:602</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1config_html_a5718e3ce02ab2c35e2c1dfa43f1d4e36"><div class="ttname"><a href="namespaceeonc_1_1config.html#a5718e3ce02ab2c35e2c1dfa43f1d4e36">eonc::config::load_json</a></div><div class="ttdeci">int load_json(std::string_view json_str, Parameters &amp;params)</div><div class="ttdoc">Load Parameters from a JSON string. Returns 0 on success.</div><div class="ttdef"><b>Definition</b> <a href="ParametersJSON_8cpp_source.html#l00836">ParametersJSON.cpp:836</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -2038,10 +2078,10 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersAccess_8cpp_source.html#l00254">254</a> of file <a class="el" href="ParametersAccess_8cpp_source.html">ParametersAccess.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  254</span>                                               {</div>
-<div class="line"><span class="lineno">  255</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a67d48172041dcdedf0253dce46095c02">impl_</a>-&gt;potential_options_.MPIClientComm;</div>
-<div class="line"><span class="lineno">  256</span>}</div>
+<p class="definition">Definition at line <a class="el" href="ParametersAccess_8cpp_source.html#l00258">258</a> of file <a class="el" href="ParametersAccess_8cpp_source.html">ParametersAccess.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  258</span>                                               {</div>
+<div class="line"><span class="lineno">  259</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a67d48172041dcdedf0253dce46095c02">impl_</a>-&gt;potential_options_.MPIClientComm;</div>
+<div class="line"><span class="lineno">  260</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -2396,10 +2436,10 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersAccess_8cpp_source.html#l00250">250</a> of file <a class="el" href="ParametersAccess_8cpp_source.html">ParametersAccess.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  250</span>                                                     {</div>
-<div class="line"><span class="lineno">  251</span>  <a class="code hl_function" href="#af5d369bd27bfd330de12fd7e6397c21a">ensure_impl</a>().<a class="code hl_variable" href="structeonc_1_1Parameters_1_1Impl.html#a5108244da1abccd4af2a9a2bebd3721b">potential_options_</a>.<a class="code hl_variable" href="structeonc_1_1potential__options__t.html#a87cc638d8bdacb04e502fdc8d000d59c">MPIClientComm</a> = raw;</div>
-<div class="line"><span class="lineno">  252</span>}</div>
+<p class="definition">Definition at line <a class="el" href="ParametersAccess_8cpp_source.html#l00254">254</a> of file <a class="el" href="ParametersAccess_8cpp_source.html">ParametersAccess.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  254</span>                                                     {</div>
+<div class="line"><span class="lineno">  255</span>  <a class="code hl_function" href="#af5d369bd27bfd330de12fd7e6397c21a">ensure_impl</a>().<a class="code hl_variable" href="structeonc_1_1Parameters_1_1Impl.html#a5108244da1abccd4af2a9a2bebd3721b">potential_options_</a>.<a class="code hl_variable" href="structeonc_1_1potential__options__t.html#a87cc638d8bdacb04e502fdc8d000d59c">MPIClientComm</a> = raw;</div>
+<div class="line"><span class="lineno">  256</span>}</div>
 <div class="ttc" id="astructeonc_1_1Parameters_1_1Impl_html_a5108244da1abccd4af2a9a2bebd3721b"><div class="ttname"><a href="structeonc_1_1Parameters_1_1Impl.html#a5108244da1abccd4af2a9a2bebd3721b">eonc::Parameters::Impl::potential_options_</a></div><div class="ttdeci">potential_options_t potential_options_</div><div class="ttdef"><b>Definition</b> <a href="ParametersImpl_8h_source.html#l00027">ParametersImpl.h:27</a></div></div>
 <div class="ttc" id="astructeonc_1_1potential__options__t_html_a87cc638d8bdacb04e502fdc8d000d59c"><div class="ttname"><a href="structeonc_1_1potential__options__t.html#a87cc638d8bdacb04e502fdc8d000d59c">eonc::potential_options_t::MPIClientComm</a></div><div class="ttdeci">std::uintptr_t MPIClientComm</div><div class="ttdoc">Opaque MPI_Comm bits. Read/write with ParametersMpi.h in MPI TUs.</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00065">ParametersOptions.h:65</a></div></div>
 </div><!-- fragment -->
@@ -2420,10 +2460,10 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersAccess_8cpp_source.html#l00258">258</a> of file <a class="el" href="ParametersAccess_8cpp_source.html">ParametersAccess.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  258</span>                                                {</div>
-<div class="line"><span class="lineno">  259</span>  <a class="code hl_function" href="#af5d369bd27bfd330de12fd7e6397c21a">ensure_impl</a>().<a class="code hl_variable" href="structeonc_1_1Parameters_1_1Impl.html#a5108244da1abccd4af2a9a2bebd3721b">potential_options_</a>.<a class="code hl_variable" href="structeonc_1_1potential__options__t.html#aaaf5bbabc7588ad37229eb8ce4505927">MPIPotentialRank</a> = rank;</div>
-<div class="line"><span class="lineno">  260</span>}</div>
+<p class="definition">Definition at line <a class="el" href="ParametersAccess_8cpp_source.html#l00262">262</a> of file <a class="el" href="ParametersAccess_8cpp_source.html">ParametersAccess.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  262</span>                                                {</div>
+<div class="line"><span class="lineno">  263</span>  <a class="code hl_function" href="#af5d369bd27bfd330de12fd7e6397c21a">ensure_impl</a>().<a class="code hl_variable" href="structeonc_1_1Parameters_1_1Impl.html#a5108244da1abccd4af2a9a2bebd3721b">potential_options_</a>.<a class="code hl_variable" href="structeonc_1_1potential__options__t.html#aaaf5bbabc7588ad37229eb8ce4505927">MPIPotentialRank</a> = rank;</div>
+<div class="line"><span class="lineno">  264</span>}</div>
 <div class="ttc" id="astructeonc_1_1potential__options__t_html_aaaf5bbabc7588ad37229eb8ce4505927"><div class="ttname"><a href="structeonc_1_1potential__options__t.html#aaaf5bbabc7588ad37229eb8ce4505927">eonc::potential_options_t::MPIPotentialRank</a></div><div class="ttdeci">int MPIPotentialRank</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00063">ParametersOptions.h:63</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -2535,7 +2575,7 @@ Friends</h2></td></tr>
 <div class="fragment"><div class="line"><span class="lineno">  198</span>                                    {</div>
 <div class="line"><span class="lineno">  199</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1config.html#a77aada85affc5e6c5eec9ee1a63504c9">eonc::config::to_json</a>(*this).dump(2);</div>
 <div class="line"><span class="lineno">  200</span>}</div>
-<div class="ttc" id="anamespaceeonc_1_1config_html_a77aada85affc5e6c5eec9ee1a63504c9"><div class="ttname"><a href="namespaceeonc_1_1config.html#a77aada85affc5e6c5eec9ee1a63504c9">eonc::config::to_json</a></div><div class="ttdeci">json to_json(const Parameters &amp;p)</div><div class="ttdoc">Serialize all Parameters to JSON.</div><div class="ttdef"><b>Definition</b> <a href="ParametersJSON_8cpp_source.html#l00046">ParametersJSON.cpp:46</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1config_html_a77aada85affc5e6c5eec9ee1a63504c9"><div class="ttname"><a href="namespaceeonc_1_1config.html#a77aada85affc5e6c5eec9ee1a63504c9">eonc::config::to_json</a></div><div class="ttdeci">json to_json(const Parameters &amp;p)</div><div class="ttdoc">Serialize all Parameters to JSON.</div><div class="ttdef"><b>Definition</b> <a href="ParametersJSON_8cpp_source.html#l00050">ParametersJSON.cpp:50</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -2683,7 +2723,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00149">149</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00151">151</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
 
 </div>
 </div>
@@ -2708,7 +2748,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00155">155</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00157">157</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
 
 </div>
 </div>

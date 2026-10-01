@@ -130,6 +130,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lanczos.html">Lanczos</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/akmc.html">Adaptive kinetic Monte Carlo</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/saddle_search.html">Saddle search</a></li>
@@ -198,7 +199,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
@@ -216,6 +216,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.process_catalog.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_catalog</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 </ul>
@@ -224,6 +225,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v3.5.0/index.html">[v3.5.0] - 2026-10-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v3.5.0/release-notes.html">eOn 3.5.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
 </ul>
@@ -322,8 +327,10 @@ data-aria-dark="Switch to auto color mode">
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#classes">Classes</a></li>
+<li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#data">Data</a></li>
 <li><a class="reference internal" href="#api">API</a><ul>
+<li><a class="reference internal" href="#eon.config.canonical_listed_value"><code class="docutils literal notranslate"><span class="pre">canonical_listed_value()</span></code></a></li>
 <li><a class="reference internal" href="#eon.config.ConfigSection"><code class="docutils literal notranslate"><span class="pre">ConfigSection</span></code></a></li>
 <li><a class="reference internal" href="#eon.config.ConfigKey"><code class="docutils literal notranslate"><span class="pre">ConfigKey</span></code></a></li>
 <li><a class="reference internal" href="#eon.config.ConfigClass"><code class="docutils literal notranslate"><span class="pre">ConfigClass</span></code></a><ul>
@@ -417,6 +424,18 @@ data-aria-dark="Switch to auto color mode">
 </table>
 </div>
 </section>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-left">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.config.canonical_listed_value" title="eon.config.canonical_listed_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">canonical_listed_value</span></code></a></p></td>
+<td><p>Return the listed spelling.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section id="data">
 <h3>Data<a class="headerlink" href="#data" title="Link to this heading">¶</a></h3>
 <div class="table-wrapper autosummary longtable docutils container">
@@ -431,6 +450,14 @@ data-aria-dark="Switch to auto color mode">
 </section>
 <section id="api">
 <h3>API<a class="headerlink" href="#api" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.config.canonical_listed_value">
+<span class="sig-prename descclassname"><span class="pre">eon.config.</span></span><span class="sig-name descname"><span class="pre">canonical_listed_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/config.html#canonical_listed_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.config.canonical_listed_value" title="Link to this definition">¶</a></dt>
+<dd><p>Return the listed spelling.</p>
+<p>An exact entry wins. Otherwise the first entry with the same casefold
+matches. None when nothing matches.</p>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="eon.config.ConfigSection">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.config.</span></span><span class="sig-name descname"><span class="pre">ConfigSection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/config.html#ConfigSection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.config.ConfigSection" title="Link to this definition">¶</a></dt>

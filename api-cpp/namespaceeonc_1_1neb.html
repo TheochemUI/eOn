@@ -244,6 +244,8 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:CartesianStep" id="r_CartesianStep"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1neb_1_1CartesianStep.html">CartesianStep</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One steepest step in Cartesian coordinates and the cell matrix.  <a href="structeonc_1_1neb_1_1CartesianStep.html#details">More...</a><br /></td></tr>
 <tr class="memitem:DNEB_5FProjection" id="r_DNEB_5FProjection"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1neb_1_1DNEB__Projection.html">DNEB_Projection</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trygubenko &amp; Wales, JCP 120:2082, 2004.  <a href="structeonc_1_1neb_1_1DNEB__Projection.html#details">More...</a><br /></td></tr>
 <tr class="memitem:ExtremaResult" id="r_ExtremaResult"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1neb_1_1ExtremaResult.html">ExtremaResult</a></td></tr>
@@ -251,6 +253,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data for a single image needed by projection strategies.  <a href="structeonc_1_1neb_1_1ImageForceData.html#details">More...</a><br /></td></tr>
 <tr class="memitem:ImprovedTangent" id="r_ImprovedTangent"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1neb_1_1ImprovedTangent.html">ImprovedTangent</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Henkelman &amp; Jonsson, JCP 113:9978, 2000.  <a href="structeonc_1_1neb_1_1ImprovedTangent.html#details">More...</a><br /></td></tr>
+<tr class="memitem:JointBlock" id="r_JointBlock"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1neb_1_1JointBlock.html">JointBlock</a></td></tr>
 <tr class="memitem:NEB_5FProjection" id="r_NEB_5FProjection"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1neb_1_1NEB__Projection.html">NEB_Projection</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Jonsson, Mills, Jacobsen 1998 (World Scientific).  <a href="structeonc_1_1neb_1_1NEB__Projection.html#details">More...</a><br /></td></tr>
 <tr class="memitem:OCINEBController" id="r_OCINEBController"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1neb_1_1OCINEBController.html">OCINEBController</a></td></tr>
@@ -304,6 +307,23 @@ Functions</h2></td></tr>
 <tr class="memdesc:a377ee5e00739d25ad100873c536639fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the appropriate spring strategy from parameters and current path state.  <br /></td></tr>
 <tr class="memitem:a4ab91f7a0f596014d073cffbb2cb82b1" id="r_a4ab91f7a0f596014d073cffbb2cb82b1"><td class="memItemLeft"><a class="el" href="#af783a3d27fdfd2b4a612cad047051293">TangentStrategy</a>&#160;</td><td class="memItemRight"><a class="el" href="#a4ab91f7a0f596014d073cffbb2cb82b1">buildTangentStrategy</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;params)</td></tr>
 <tr class="memdesc:a4ab91f7a0f596014d073cffbb2cb82b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the tangent strategy from parameters.  <br /></td></tr>
+<tr class="memitem:aa3ea29e0e6174ad77125e59e76747c32" id="r_aa3ea29e0e6174ad77125e59e76747c32"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#aa3ea29e0e6174ad77125e59e76747c32">solidStateJacobian</a> (double meanVolume, int nAtoms, double weight)</td></tr>
+<tr class="memdesc:aa3ea29e0e6174ad77125e59e76747c32"><td class="mdescLeft">&#160;</td><td class="mdescRight">J = (V/N)^{1/3} * N^{1/2} * weight, with V the mean endpoint volume.  <br /></td></tr>
+<tr class="memitem:a079cbe0a04943b877c53b7566f6701cc" id="r_a079cbe0a04943b877c53b7566f6701cc"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a079cbe0a04943b877c53b7566f6701cc">orientCellLowerTriangular</a> (<a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;cell, <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;positions)</td></tr>
+<tr class="memdesc:a079cbe0a04943b877c53b7566f6701cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rotate the lab frame so the cell is lower triangular: the first lattice vector lies on x and the second lies in the xy plane.  <br /></td></tr>
+<tr class="memitem:adb3b7f2dddfe3c22643699b0bf849279" id="r_adb3b7f2dddfe3c22643699b0bf849279"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#adb3b7f2dddfe3c22643699b0bf849279">orientSolidStateMatter</a> (<a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;image)</td></tr>
+<tr class="memitem:a1cd6aa7232d2706d28750e8487bb1873" id="r_a1cd6aa7232d2706d28750e8487bb1873"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a1cd6aa7232d2706d28750e8487bb1873">interpolateSolidStateLinear</a> (std::vector&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &amp;images)</td></tr>
+<tr class="memdesc:a1cd6aa7232d2706d28750e8487bb1873"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace interior images by a fractional linear interpolation of the oriented endpoints.  <br /></td></tr>
+<tr class="memitem:a878bd9e04ba095d1b6a33b57d81ac6a9" id="r_a878bd9e04ba095d1b6a33b57d81ac6a9"><td class="memItemLeft"><a class="el" href="structeonc_1_1neb_1_1JointBlock.html">JointBlock</a>&#160;</td><td class="memItemRight"><a class="el" href="#a878bd9e04ba095d1b6a33b57d81ac6a9">jointDisplacement</a> (const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;from, const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;to, double jacobian)</td></tr>
+<tr class="memdesc:a878bd9e04ba095d1b6a33b57d81ac6a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Displacement of <span class="tt">to</span> relative to <span class="tt">from</span> in the joint metric.  <br /></td></tr>
+<tr class="memitem:a56f330ea1a8ea5dacb011eb0746f1990" id="r_a56f330ea1a8ea5dacb011eb0746f1990"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a56f330ea1a8ea5dacb011eb0746f1990">jointNorm</a> (const <a class="el" href="structeonc_1_1neb_1_1JointBlock.html">JointBlock</a> &amp;block)</td></tr>
+<tr class="memitem:aeb0fa4776bcb090f7256a095b0e1183f" id="r_aeb0fa4776bcb090f7256a095b0e1183f"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a>&#160;</td><td class="memItemRight"><a class="el" href="#aeb0fa4776bcb090f7256a095b0e1183f">cellNebForce</a> (const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;cauchy, double volume, double jacobian, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;externalStress)</td></tr>
+<tr class="memdesc:aeb0fa4776bcb090f7256a095b0e1183f"><td class="mdescLeft">&#160;</td><td class="mdescRight">NEB force on the Jacobian-scaled strain.  <br /></td></tr>
+<tr class="memitem:ae5b588a41a2cca2ae99609d6fe8e6e11" id="r_ae5b588a41a2cca2ae99609d6fe8e6e11"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a>&#160;</td><td class="memItemRight"><a class="el" href="#ae5b588a41a2cca2ae99609d6fe8e6e11">finiteDifferenceCauchyStress</a> (const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;image, double strainStep)</td></tr>
+<tr class="memdesc:ae5b588a41a2cca2ae99609d6fe8e6e11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Central difference of the potential energy on the six lower strain components.  <br /></td></tr>
+<tr class="memitem:a960b1702e269ca42e88a9240b352f749" id="r_a960b1702e269ca42e88a9240b352f749"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a960b1702e269ca42e88a9240b352f749">solidStateEnthalpy</a> (const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;image, const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;reference, double pressure)</td></tr>
+<tr class="memdesc:a960b1702e269ca42e88a9240b352f749"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeonc_1_1Potential.html">Potential</a> energy plus P : (h0^{-1} (h-h0)) * V0.  <br /></td></tr>
+<tr class="memitem:a3c6d7be8fb5777d625b17120e3e1c736" id="r_a3c6d7be8fb5777d625b17120e3e1c736"><td class="memItemLeft"><a class="el" href="structeonc_1_1neb_1_1CartesianStep.html">CartesianStep</a>&#160;</td><td class="memItemRight"><a class="el" href="#a3c6d7be8fb5777d625b17120e3e1c736">solidStateCartesianStep</a> (const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;image, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;atomicForce, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;cellForce, double jacobian)</td></tr>
 </table>
 <a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Typedef Documentation</h2>
 <a id="a83e6ba13071b353a3873b151fb11119a" name="a83e6ba13071b353a3873b151fb11119a"></a>
@@ -395,13 +415,13 @@ Functions</h2></td></tr>
 <div class="ttc" id="aclasseonc_1_1Parameters_html_a2bbe0a1457405761938b27193a002c47"><div class="ttname"><a href="classeonc_1_1Parameters.html#a2bbe0a1457405761938b27193a002c47">eonc::Parameters::neb_options</a></div><div class="ttdeci">const neb_options_t &amp; neb_options() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00180">ParametersAccess.cpp:180</a></div></div>
 <div class="ttc" id="astructeonc_1_1neb_1_1NEB__Projection_html"><div class="ttname"><a href="structeonc_1_1neb_1_1NEB__Projection.html">eonc::neb::NEB_Projection</a></div><div class="ttdoc">Jonsson, Mills, Jacobsen 1998 (World Scientific).</div><div class="ttdef"><b>Definition</b> <a href="NEBProjection_8h_source.html#l00038">NEBProjection.h:38</a></div></div>
 <div class="ttc" id="astructeonc_1_1neb_1_1PlainEB_html"><div class="ttname"><a href="structeonc_1_1neb_1_1PlainEB.html">eonc::neb::PlainEB</a></div><div class="ttdoc">Mills, Jonsson, Schenter, Surf.</div><div class="ttdef"><b>Definition</b> <a href="NEBProjection_8h_source.html#l00032">NEBProjection.h:32</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t_html_a6e129b61f96db4ea97e2df22ed8ca8d4"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t.html#a6e129b61f96db4ea97e2df22ed8ca8d4">eonc::neb_options_t::spring_options_t::energy_weighting_t::enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00521">ParametersOptions.h:521</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t_html_ad792d2245bc517aced027a9283e9b21e"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html#ad792d2245bc517aced027a9283e9b21e">eonc::neb_options_t::spring_options_t::onsager_machlup_t::enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00527">ParametersOptions.h:527</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t_html_a6e129b61f96db4ea97e2df22ed8ca8d4"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t.html#a6e129b61f96db4ea97e2df22ed8ca8d4">eonc::neb_options_t::spring_options_t::energy_weighting_t::enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00538">ParametersOptions.h:538</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t_html_ad792d2245bc517aced027a9283e9b21e"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html#ad792d2245bc517aced027a9283e9b21e">eonc::neb_options_t::spring_options_t::onsager_machlup_t::enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00544">ParametersOptions.h:544</a></div></div>
 <div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_html_a3a84535f8056cb43b2023d970f6bb1a9"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t.html#a3a84535f8056cb43b2023d970f6bb1a9">eonc::neb_options_t::spring_options_t::weighting</a></div><div class="ttdeci">struct eonc::neb_options_t::spring_options_t::energy_weighting_t weighting</div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_html_ab305b24a7c65ef6483633bb218333b70"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t.html#ab305b24a7c65ef6483633bb218333b70">eonc::neb_options_t::spring_options_t::use_switching</a></div><div class="ttdeci">bool use_switching</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00518">ParametersOptions.h:518</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_html_ae70633a42496b3460dc29832951b3e6c"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t.html#ae70633a42496b3460dc29832951b3e6c">eonc::neb_options_t::spring_options_t::doubly_nudged</a></div><div class="ttdeci">bool doubly_nudged</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00517">ParametersOptions.h:517</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_html_ab305b24a7c65ef6483633bb218333b70"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t.html#ab305b24a7c65ef6483633bb218333b70">eonc::neb_options_t::spring_options_t::use_switching</a></div><div class="ttdeci">bool use_switching</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00535">ParametersOptions.h:535</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_html_ae70633a42496b3460dc29832951b3e6c"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t.html#ae70633a42496b3460dc29832951b3e6c">eonc::neb_options_t::spring_options_t::doubly_nudged</a></div><div class="ttdeci">bool doubly_nudged</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00534">ParametersOptions.h:534</a></div></div>
 <div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_html_aeeab2a722bc5d04279dc47f2b4d41f4a"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t.html#aeeab2a722bc5d04279dc47f2b4d41f4a">eonc::neb_options_t::spring_options_t::om</a></div><div class="ttdeci">struct eonc::neb_options_t::spring_options_t::onsager_machlup_t om</div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_html_afa6f029c670a20c2a6a5b2861710f48f"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t.html#afa6f029c670a20c2a6a5b2861710f48f">eonc::neb_options_t::spring_options_t::use_elastic_band</a></div><div class="ttdeci">bool use_elastic_band</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00516">ParametersOptions.h:516</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_html_afa6f029c670a20c2a6a5b2861710f48f"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t.html#afa6f029c670a20c2a6a5b2861710f48f">eonc::neb_options_t::spring_options_t::use_elastic_band</a></div><div class="ttdeci">bool use_elastic_band</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00533">ParametersOptions.h:533</a></div></div>
 <div class="ttc" id="astructeonc_1_1neb__options__t_html_a7ddcef2df030ddca7e0ee7b7aedfe2da"><div class="ttname"><a href="structeonc_1_1neb__options__t.html#a7ddcef2df030ddca7e0ee7b7aedfe2da">eonc::neb_options_t::spring</a></div><div class="ttdeci">struct eonc::neb_options_t::spring_options_t spring</div></div>
 </div><!-- fragment -->
 </div>
@@ -524,13 +544,13 @@ Functions</h2></td></tr>
 <div class="ttc" id="astructeonc_1_1neb_1_1OnsagerMachlupSpring_html"><div class="ttname"><a href="structeonc_1_1neb_1_1OnsagerMachlupSpring.html">eonc::neb::OnsagerMachlupSpring</a></div><div class="ttdoc">Onsager-Machlup action-based springs (Mandelli &amp; Parrinello 2021).</div><div class="ttdef"><b>Definition</b> <a href="NEBSpringForce_8h_source.html#l00048">NEBSpringForce.h:48</a></div></div>
 <div class="ttc" id="astructeonc_1_1neb_1_1UniformSpring_html"><div class="ttname"><a href="structeonc_1_1neb_1_1UniformSpring.html">eonc::neb::UniformSpring</a></div><div class="ttdoc">Uniform spring constant for all images.</div><div class="ttdef"><b>Definition</b> <a href="NEBSpringForce_8h_source.html#l00030">NEBSpringForce.h:30</a></div></div>
 <div class="ttc" id="astructeonc_1_1neb_1_1WeightedSpring_html"><div class="ttname"><a href="structeonc_1_1neb_1_1WeightedSpring.html">eonc::neb::WeightedSpring</a></div><div class="ttdoc">Energy-weighted spring constants (variable per segment).</div><div class="ttdef"><b>Definition</b> <a href="NEBSpringForce_8h_source.html#l00040">NEBSpringForce.h:40</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t_html_a05a6d86fcf9e14184c9910dece0d7529"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t.html#a05a6d86fcf9e14184c9910dece0d7529">eonc::neb_options_t::spring_options_t::energy_weighting_t::k_min</a></div><div class="ttdeci">double k_min</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00523">ParametersOptions.h:523</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t_html_a98fbee2cdffc1b44e91ffc7b5f3971a5"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t.html#a98fbee2cdffc1b44e91ffc7b5f3971a5">eonc::neb_options_t::spring_options_t::energy_weighting_t::k_max</a></div><div class="ttdeci">double k_max</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00524">ParametersOptions.h:524</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t_html_a9c76a0bf6a3e9c749962bc545e9538b7"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html#a9c76a0bf6a3e9c749962bc545e9538b7">eonc::neb_options_t::spring_options_t::onsager_machlup_t::k_max</a></div><div class="ttdeci">double k_max</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00531">ParametersOptions.h:531</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t_html_aae5fcf0b0b1de662ed5a8053a3befba6"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html#aae5fcf0b0b1de662ed5a8053a3befba6">eonc::neb_options_t::spring_options_t::onsager_machlup_t::k_min</a></div><div class="ttdeci">double k_min</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00530">ParametersOptions.h:530</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t_html_abec902ef8bc5e123711b91a9e3a4cb11"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html#abec902ef8bc5e123711b91a9e3a4cb11">eonc::neb_options_t::spring_options_t::onsager_machlup_t::optimize_k</a></div><div class="ttdeci">bool optimize_k</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00528">ParametersOptions.h:528</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t_html_add9ff30ea6a38f7f935f45c1fd83c6c9"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html#add9ff30ea6a38f7f935f45c1fd83c6c9">eonc::neb_options_t::spring_options_t::onsager_machlup_t::k_scale</a></div><div class="ttdeci">double k_scale</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00529">ParametersOptions.h:529</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_html_ad5800582f276d39b756d9b90609ce6f4"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t.html#ad5800582f276d39b756d9b90609ce6f4">eonc::neb_options_t::spring_options_t::constant</a></div><div class="ttdeci">double constant</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00515">ParametersOptions.h:515</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t_html_a05a6d86fcf9e14184c9910dece0d7529"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t.html#a05a6d86fcf9e14184c9910dece0d7529">eonc::neb_options_t::spring_options_t::energy_weighting_t::k_min</a></div><div class="ttdeci">double k_min</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00540">ParametersOptions.h:540</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t_html_a98fbee2cdffc1b44e91ffc7b5f3971a5"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t.html#a98fbee2cdffc1b44e91ffc7b5f3971a5">eonc::neb_options_t::spring_options_t::energy_weighting_t::k_max</a></div><div class="ttdeci">double k_max</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00541">ParametersOptions.h:541</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t_html_a9c76a0bf6a3e9c749962bc545e9538b7"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html#a9c76a0bf6a3e9c749962bc545e9538b7">eonc::neb_options_t::spring_options_t::onsager_machlup_t::k_max</a></div><div class="ttdeci">double k_max</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00548">ParametersOptions.h:548</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t_html_aae5fcf0b0b1de662ed5a8053a3befba6"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html#aae5fcf0b0b1de662ed5a8053a3befba6">eonc::neb_options_t::spring_options_t::onsager_machlup_t::k_min</a></div><div class="ttdeci">double k_min</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00547">ParametersOptions.h:547</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t_html_abec902ef8bc5e123711b91a9e3a4cb11"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html#abec902ef8bc5e123711b91a9e3a4cb11">eonc::neb_options_t::spring_options_t::onsager_machlup_t::optimize_k</a></div><div class="ttdeci">bool optimize_k</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00545">ParametersOptions.h:545</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t_html_add9ff30ea6a38f7f935f45c1fd83c6c9"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html#add9ff30ea6a38f7f935f45c1fd83c6c9">eonc::neb_options_t::spring_options_t::onsager_machlup_t::k_scale</a></div><div class="ttdeci">double k_scale</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00546">ParametersOptions.h:546</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_html_ad5800582f276d39b756d9b90609ce6f4"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t.html#ad5800582f276d39b756d9b90609ce6f4">eonc::neb_options_t::spring_options_t::constant</a></div><div class="ttdeci">double constant</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00532">ParametersOptions.h:532</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -559,8 +579,54 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">   76</span>  <span class="keywordflow">return</span> ImprovedTangent{};</div>
 <div class="line"><span class="lineno">   77</span>}</div>
 <div class="ttc" id="astructeonc_1_1neb_1_1SimpleTangent_html"><div class="ttname"><a href="structeonc_1_1neb_1_1SimpleTangent.html">eonc::neb::SimpleTangent</a></div><div class="ttdoc">Mills, Jonsson, Schenter, Surf.</div><div class="ttdef"><b>Definition</b> <a href="NEBTangent_8h_source.html#l00023">NEBTangent.h:23</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1climbing__image__options__t_html_afa3aabadbb0e07512dbb67b4d58f71b3"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1climbing__image__options__t.html#afa3aabadbb0e07512dbb67b4d58f71b3">eonc::neb_options_t::climbing_image_options_t::use_old_tangent</a></div><div class="ttdeci">bool use_old_tangent</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00542">ParametersOptions.h:542</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1climbing__image__options__t_html_afa3aabadbb0e07512dbb67b4d58f71b3"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1climbing__image__options__t.html#afa3aabadbb0e07512dbb67b4d58f71b3">eonc::neb_options_t::climbing_image_options_t::use_old_tangent</a></div><div class="ttdeci">bool use_old_tangent</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00559">ParametersOptions.h:559</a></div></div>
 <div class="ttc" id="astructeonc_1_1neb__options__t_html_a20679cefe27a467bc74193b3f856886f"><div class="ttname"><a href="structeonc_1_1neb__options__t.html#a20679cefe27a467bc74193b3f856886f">eonc::neb_options_t::climbing_image</a></div><div class="ttdeci">struct eonc::neb_options_t::climbing_image_options_t climbing_image</div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aeb0fa4776bcb090f7256a095b0e1183f" name="aeb0fa4776bcb090f7256a095b0e1183f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb0fa4776bcb090f7256a095b0e1183f">&#9670;&#160;</a></span>cellNebForce()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> eonc::neb::cellNebForce </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>cauchy</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>volume</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>jacobian</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>externalStress</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>NEB force on the Jacobian-scaled strain. </p>
+<p>Cauchy stress uses sigma = (1/V) dE/dε for h &lt;- h (I+ε) at fixed fractional coordinates. External stress is added before the -V factor (positive hydrostatic pressure pushes the cell inward). </p>
+
+<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00146">146</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  147</span>                                                      {</div>
+<div class="line"><span class="lineno">  148</span>  <span class="keywordflow">if</span> (!(volume &gt; 0.0) || !(jacobian &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  149</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">  150</span>        <span class="stringliteral">&quot;solid-state cell force needs a positive volume and Jacobian&quot;</span>);</div>
+<div class="line"><span class="lineno">  151</span>  }</div>
+<div class="line"><span class="lineno">  152</span>  <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> force = -(volume / jacobian) * (cauchy + externalStress);</div>
+<div class="line"><span class="lineno">  153</span>  zeroUpper(force);</div>
+<div class="line"><span class="lineno">  154</span>  <span class="keywordflow">return</span> force;</div>
+<div class="line"><span class="lineno">  155</span>}</div>
+<div class="ttc" id="aEigen_8h_html_a5a21583e98df78e5b867b370291714d0"><div class="ttname"><a href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 3, 3, eOnStorageOrder &gt; Matrix3d</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00035">Eigen.h:35</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -815,104 +881,165 @@ Functions</h2></td></tr>
 
 <p>Find extrema along the MEP using cubic spline interpolation. </p>
 
-<p class="definition">Definition at line <a class="el" href="NEBSplineExtrema_8cpp_source.html#l00110">110</a> of file <a class="el" href="NEBSplineExtrema_8cpp_source.html">NEBSplineExtrema.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  112</span>                                  {</div>
-<div class="line"><span class="lineno">  113</span> </div>
-<div class="line"><span class="lineno">  114</span>  <span class="keyword">auto</span> *<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a> = <a class="code hl_function" href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a>();</div>
-<div class="line"><span class="lineno">  115</span> </div>
-<div class="line"><span class="lineno">  116</span>  <span class="comment">// Calculate cubic parameters for each interval</span></div>
-<div class="line"><span class="lineno">  117</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> tangentEndpoint;</div>
-<div class="line"><span class="lineno">  118</span>  std::vector&lt;double&gt; a(numImages + 1), b(numImages + 1), c(numImages + 1),</div>
-<div class="line"><span class="lineno">  119</span>      d(numImages + 1);</div>
-<div class="line"><span class="lineno">  120</span>  <span class="keywordtype">double</span> F1, F2, U1, U2, dist;</div>
-<div class="line"><span class="lineno">  121</span> </div>
-<div class="line"><span class="lineno">  122</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt;= numImages; i++) {</div>
-<div class="line"><span class="lineno">  123</span>    dist = path[i]-&gt;distanceTo(*path[i + 1]);</div>
-<div class="line"><span class="lineno">  124</span>    <span class="keywordflow">if</span> (i == 0) {</div>
-<div class="line"><span class="lineno">  125</span>      tangentEndpoint =</div>
-<div class="line"><span class="lineno">  126</span>          path[i]-&gt;pbc(path[1]-&gt;getPositions() - path[0]-&gt;getPositions());</div>
-<div class="line"><span class="lineno">  127</span>      normalizeOrZero(tangentEndpoint);</div>
-<div class="line"><span class="lineno">  128</span>      F1 = <a class="code hl_function" href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a>(path[i]-&gt;getForces(), tangentEndpoint) * dist;</div>
-<div class="line"><span class="lineno">  129</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  130</span>      F1 = <a class="code hl_function" href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a>(path[i]-&gt;getForces(), *tangent[i]) * dist;</div>
-<div class="line"><span class="lineno">  131</span>    }</div>
-<div class="line"><span class="lineno">  132</span>    <span class="keywordflow">if</span> (i == numImages) {</div>
-<div class="line"><span class="lineno">  133</span>      tangentEndpoint = path[i + 1]-&gt;pbc(path[numImages + 1]-&gt;getPositions() -</div>
-<div class="line"><span class="lineno">  134</span>                                         path[numImages]-&gt;getPositions());</div>
-<div class="line"><span class="lineno">  135</span>      normalizeOrZero(tangentEndpoint);</div>
-<div class="line"><span class="lineno">  136</span>      F2 = <a class="code hl_function" href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a>(path[i + 1]-&gt;getForces(), tangentEndpoint) * dist;</div>
-<div class="line"><span class="lineno">  137</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  138</span>      F2 = <a class="code hl_function" href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a>(path[i + 1]-&gt;getForces(), *tangent[i + 1]) * dist;</div>
-<div class="line"><span class="lineno">  139</span>    }</div>
-<div class="line"><span class="lineno">  140</span>    U1 = path[i]-&gt;getPotentialEnergy();</div>
-<div class="line"><span class="lineno">  141</span>    U2 = path[i + 1]-&gt;getPotentialEnergy();</div>
-<div class="line"><span class="lineno">  142</span>    a[i] = U1;</div>
-<div class="line"><span class="lineno">  143</span>    b[i] = -F1;</div>
-<div class="line"><span class="lineno">  144</span>    c[i] = 3. * (U2 - U1) + 2. * F1 + F2;</div>
-<div class="line"><span class="lineno">  145</span>    d[i] = -2. * (U2 - U1) - (F1 + F2);</div>
-<div class="line"><span class="lineno">  146</span>  }</div>
-<div class="line"><span class="lineno">  147</span> </div>
-<div class="line"><span class="lineno">  148</span>  <a class="code hl_struct" href="structeonc_1_1neb_1_1ExtremaResult.html">ExtremaResult</a> result;</div>
-<div class="line"><span class="lineno">  149</span>  result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#a8db5cd9d5ca14aa60c2021288e66d1c9">positions</a>.resize(2 * (numImages + 1));</div>
-<div class="line"><span class="lineno">  150</span>  result.energies.resize(2 * (numImages + 1));</div>
-<div class="line"><span class="lineno">  151</span>  result.curvatures.resize(2 * (numImages + 1));</div>
-<div class="line"><span class="lineno">  152</span> </div>
-<div class="line"><span class="lineno">  153</span>  <span class="keywordtype">double</span> discriminant, f;</div>
-<div class="line"><span class="lineno">  154</span> </div>
-<div class="line"><span class="lineno">  155</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt;= numImages; i++) {</div>
-<div class="line"><span class="lineno">  156</span>    discriminant = c[i] * c[i] - 3.0 * b[i] * d[i];</div>
-<div class="line"><span class="lineno">  157</span>    <span class="keywordflow">if</span> (discriminant &gt;= 0) {</div>
-<div class="line"><span class="lineno">  158</span>      f = -1;</div>
-<div class="line"><span class="lineno">  159</span> </div>
-<div class="line"><span class="lineno">  160</span>      <span class="comment">// Quadratic case</span></div>
-<div class="line"><span class="lineno">  161</span>      <span class="keywordflow">if</span> ((d[i] == 0) &amp;&amp; (c[i] != 0)) {</div>
-<div class="line"><span class="lineno">  162</span>        f = (-b[i] / (2. * c[i]));</div>
-<div class="line"><span class="lineno">  163</span>      }</div>
-<div class="line"><span class="lineno">  164</span>      <span class="comment">// Cubic case 1</span></div>
-<div class="line"><span class="lineno">  165</span>      <span class="keywordflow">else</span> <span class="keywordflow">if</span> (d[i] != 0) {</div>
-<div class="line"><span class="lineno">  166</span>        f = -(c[i] + std::sqrt(discriminant)) / (3. * d[i]);</div>
-<div class="line"><span class="lineno">  167</span>      }</div>
-<div class="line"><span class="lineno">  168</span>      <span class="keywordflow">if</span> ((f &gt;= 0) &amp;&amp; (f &lt;= 1)) {</div>
-<div class="line"><span class="lineno">  169</span>        result.positions[result.numExtrema] = i + f;</div>
-<div class="line"><span class="lineno">  170</span>        result.energies[result.numExtrema] =</div>
-<div class="line"><span class="lineno">  171</span>            ((d[i] * f + c[i]) * f + b[i]) * f + a[i]; <span class="comment">// Horner&#39;s method</span></div>
-<div class="line"><span class="lineno">  172</span>        result.curvatures[result.numExtrema] = 6.0 * d[i] * f + 2 * c[i];</div>
-<div class="line"><span class="lineno">  173</span>        result.numExtrema++;</div>
-<div class="line"><span class="lineno">  174</span>      }</div>
-<div class="line"><span class="lineno">  175</span>      <span class="comment">// Cubic case 2. A zero cubic coefficient leaves f at the quadratic</span></div>
-<div class="line"><span class="lineno">  176</span>      <span class="comment">// root, and a zero discriminant is that same cubic root. Storing</span></div>
-<div class="line"><span class="lineno">  177</span>      <span class="comment">// either again doubles one stationary point.</span></div>
-<div class="line"><span class="lineno">  178</span>      <span class="keywordflow">if</span> (d[i] != 0 &amp;&amp; discriminant != 0.0) {</div>
-<div class="line"><span class="lineno">  179</span>        f = -(c[i] - std::sqrt(discriminant)) / (3. * d[i]);</div>
-<div class="line"><span class="lineno">  180</span>      } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  181</span>        f = -1;</div>
-<div class="line"><span class="lineno">  182</span>      }</div>
-<div class="line"><span class="lineno">  183</span>      <span class="keywordflow">if</span> ((f &gt;= 0) &amp;&amp; (f &lt;= 1)) {</div>
-<div class="line"><span class="lineno">  184</span>        result.positions[result.numExtrema] = i + f;</div>
-<div class="line"><span class="lineno">  185</span>        result.energies[result.numExtrema] =</div>
-<div class="line"><span class="lineno">  186</span>            ((d[i] * f + c[i]) * f + b[i]) * f + a[i]; <span class="comment">// Horner&#39;s method</span></div>
-<div class="line"><span class="lineno">  187</span>        result.curvatures[result.numExtrema] = 6 * d[i] * f + 2 * c[i];</div>
-<div class="line"><span class="lineno">  188</span>        result.numExtrema++;</div>
-<div class="line"><span class="lineno">  189</span>      }</div>
-<div class="line"><span class="lineno">  190</span>    }</div>
-<div class="line"><span class="lineno">  191</span>  }</div>
-<div class="line"><span class="lineno">  192</span> </div>
-<div class="line"><span class="lineno">  193</span>  QUILL_LOG_DEBUG(log, <span class="stringliteral">&quot;Found {} extrema&quot;</span>, result.numExtrema);</div>
-<div class="line"><span class="lineno">  194</span>  QUILL_LOG_DEBUG(log, <span class="stringliteral">&quot;Energy reference: {}&quot;</span>, path[0]-&gt;getPotentialEnergy());</div>
-<div class="line"><span class="lineno">  195</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; result.numExtrema; i++) {</div>
-<div class="line"><span class="lineno">  196</span>    QUILL_LOG_DEBUG(</div>
-<div class="line"><span class="lineno">  197</span>        log, <span class="stringliteral">&quot;extrema #{} at image position {} with energy {} and curvature {}&quot;</span>,</div>
-<div class="line"><span class="lineno">  198</span>        i + 1, result.positions[i],</div>
-<div class="line"><span class="lineno">  199</span>        result.energies[i] - path[0]-&gt;getPotentialEnergy(),</div>
-<div class="line"><span class="lineno">  200</span>        result.curvatures[i]);</div>
-<div class="line"><span class="lineno">  201</span>  }</div>
-<div class="line"><span class="lineno">  202</span> </div>
-<div class="line"><span class="lineno">  203</span>  <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  204</span>}</div>
+<p class="definition">Definition at line <a class="el" href="NEBSplineExtrema_8cpp_source.html#l00111">111</a> of file <a class="el" href="NEBSplineExtrema_8cpp_source.html">NEBSplineExtrema.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  113</span>                                  {</div>
+<div class="line"><span class="lineno">  114</span> </div>
+<div class="line"><span class="lineno">  115</span>  <span class="keyword">auto</span> *<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a> = <a class="code hl_function" href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a>();</div>
+<div class="line"><span class="lineno">  116</span> </div>
+<div class="line"><span class="lineno">  117</span>  <span class="comment">// Calculate cubic parameters for each interval</span></div>
+<div class="line"><span class="lineno">  118</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> tangentEndpoint;</div>
+<div class="line"><span class="lineno">  119</span>  std::vector&lt;double&gt; a(numImages + 1), b(numImages + 1), c(numImages + 1),</div>
+<div class="line"><span class="lineno">  120</span>      d(numImages + 1);</div>
+<div class="line"><span class="lineno">  121</span>  <span class="keywordtype">double</span> F1, F2, U1, U2, dist;</div>
+<div class="line"><span class="lineno">  122</span> </div>
+<div class="line"><span class="lineno">  123</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt;= numImages; i++) {</div>
+<div class="line"><span class="lineno">  124</span>    dist = path[i]-&gt;distanceTo(*path[i + 1]);</div>
+<div class="line"><span class="lineno">  125</span>    <span class="keywordflow">if</span> (i == 0) {</div>
+<div class="line"><span class="lineno">  126</span>      tangentEndpoint =</div>
+<div class="line"><span class="lineno">  127</span>          path[i]-&gt;pbc(path[1]-&gt;getPositions() - path[0]-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  128</span>      normalizeOrZero(tangentEndpoint);</div>
+<div class="line"><span class="lineno">  129</span>      F1 = <a class="code hl_function" href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a>(path[i]-&gt;getForces(), tangentEndpoint) * dist;</div>
+<div class="line"><span class="lineno">  130</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  131</span>      F1 = <a class="code hl_function" href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a>(path[i]-&gt;getForces(), *tangent[i]) * dist;</div>
+<div class="line"><span class="lineno">  132</span>    }</div>
+<div class="line"><span class="lineno">  133</span>    <span class="keywordflow">if</span> (i == numImages) {</div>
+<div class="line"><span class="lineno">  134</span>      tangentEndpoint = path[i + 1]-&gt;pbc(path[numImages + 1]-&gt;getPositions() -</div>
+<div class="line"><span class="lineno">  135</span>                                         path[numImages]-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  136</span>      normalizeOrZero(tangentEndpoint);</div>
+<div class="line"><span class="lineno">  137</span>      F2 = <a class="code hl_function" href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a>(path[i + 1]-&gt;getForces(), tangentEndpoint) * dist;</div>
+<div class="line"><span class="lineno">  138</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  139</span>      F2 = <a class="code hl_function" href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a>(path[i + 1]-&gt;getForces(), *tangent[i + 1]) * dist;</div>
+<div class="line"><span class="lineno">  140</span>    }</div>
+<div class="line"><span class="lineno">  141</span>    U1 = path[i]-&gt;getPotentialEnergy();</div>
+<div class="line"><span class="lineno">  142</span>    U2 = path[i + 1]-&gt;getPotentialEnergy();</div>
+<div class="line"><span class="lineno">  143</span>    a[i] = U1;</div>
+<div class="line"><span class="lineno">  144</span>    b[i] = -F1;</div>
+<div class="line"><span class="lineno">  145</span>    c[i] = 3. * (U2 - U1) + 2. * F1 + F2;</div>
+<div class="line"><span class="lineno">  146</span>    d[i] = -2. * (U2 - U1) - (F1 + F2);</div>
+<div class="line"><span class="lineno">  147</span>  }</div>
+<div class="line"><span class="lineno">  148</span> </div>
+<div class="line"><span class="lineno">  149</span>  <a class="code hl_struct" href="structeonc_1_1neb_1_1ExtremaResult.html">ExtremaResult</a> result;</div>
+<div class="line"><span class="lineno">  150</span>  result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#a8db5cd9d5ca14aa60c2021288e66d1c9">positions</a>.resize(2 * (numImages + 1));</div>
+<div class="line"><span class="lineno">  151</span>  result.energies.resize(2 * (numImages + 1));</div>
+<div class="line"><span class="lineno">  152</span>  result.curvatures.resize(2 * (numImages + 1));</div>
+<div class="line"><span class="lineno">  153</span> </div>
+<div class="line"><span class="lineno">  154</span>  <span class="keywordtype">double</span> discriminant, f;</div>
+<div class="line"><span class="lineno">  155</span> </div>
+<div class="line"><span class="lineno">  156</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt;= numImages; i++) {</div>
+<div class="line"><span class="lineno">  157</span>    discriminant = c[i] * c[i] - 3.0 * b[i] * d[i];</div>
+<div class="line"><span class="lineno">  158</span>    <span class="keywordflow">if</span> (discriminant &gt;= 0) {</div>
+<div class="line"><span class="lineno">  159</span>      f = -1;</div>
+<div class="line"><span class="lineno">  160</span> </div>
+<div class="line"><span class="lineno">  161</span>      <span class="comment">// Quadratic case</span></div>
+<div class="line"><span class="lineno">  162</span>      <span class="keywordflow">if</span> ((d[i] == 0) &amp;&amp; (c[i] != 0)) {</div>
+<div class="line"><span class="lineno">  163</span>        f = (-b[i] / (2. * c[i]));</div>
+<div class="line"><span class="lineno">  164</span>      }</div>
+<div class="line"><span class="lineno">  165</span>      <span class="comment">// Cubic case 1</span></div>
+<div class="line"><span class="lineno">  166</span>      <span class="keywordflow">else</span> <span class="keywordflow">if</span> (d[i] != 0) {</div>
+<div class="line"><span class="lineno">  167</span>        f = -(c[i] + std::sqrt(discriminant)) / (3. * d[i]);</div>
+<div class="line"><span class="lineno">  168</span>      }</div>
+<div class="line"><span class="lineno">  169</span>      <span class="keywordflow">if</span> ((f &gt;= 0) &amp;&amp; (f &lt;= 1)) {</div>
+<div class="line"><span class="lineno">  170</span>        result.positions[result.numExtrema] = i + f;</div>
+<div class="line"><span class="lineno">  171</span>        result.energies[result.numExtrema] =</div>
+<div class="line"><span class="lineno">  172</span>            ((d[i] * f + c[i]) * f + b[i]) * f + a[i]; <span class="comment">// Horner&#39;s method</span></div>
+<div class="line"><span class="lineno">  173</span>        result.curvatures[result.numExtrema] = 6.0 * d[i] * f + 2 * c[i];</div>
+<div class="line"><span class="lineno">  174</span>        result.numExtrema++;</div>
+<div class="line"><span class="lineno">  175</span>      }</div>
+<div class="line"><span class="lineno">  176</span>      <span class="comment">// Cubic case 2. A zero cubic coefficient leaves f at the quadratic</span></div>
+<div class="line"><span class="lineno">  177</span>      <span class="comment">// root, and a zero discriminant is that same cubic root. Storing</span></div>
+<div class="line"><span class="lineno">  178</span>      <span class="comment">// either again doubles one stationary point.</span></div>
+<div class="line"><span class="lineno">  179</span>      <span class="keywordflow">if</span> (d[i] != 0 &amp;&amp; discriminant != 0.0) {</div>
+<div class="line"><span class="lineno">  180</span>        f = -(c[i] - std::sqrt(discriminant)) / (3. * d[i]);</div>
+<div class="line"><span class="lineno">  181</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  182</span>        f = -1;</div>
+<div class="line"><span class="lineno">  183</span>      }</div>
+<div class="line"><span class="lineno">  184</span>      <span class="keywordflow">if</span> ((f &gt;= 0) &amp;&amp; (f &lt;= 1)) {</div>
+<div class="line"><span class="lineno">  185</span>        result.positions[result.numExtrema] = i + f;</div>
+<div class="line"><span class="lineno">  186</span>        result.energies[result.numExtrema] =</div>
+<div class="line"><span class="lineno">  187</span>            ((d[i] * f + c[i]) * f + b[i]) * f + a[i]; <span class="comment">// Horner&#39;s method</span></div>
+<div class="line"><span class="lineno">  188</span>        result.curvatures[result.numExtrema] = 6 * d[i] * f + 2 * c[i];</div>
+<div class="line"><span class="lineno">  189</span>        result.numExtrema++;</div>
+<div class="line"><span class="lineno">  190</span>      }</div>
+<div class="line"><span class="lineno">  191</span>    }</div>
+<div class="line"><span class="lineno">  192</span>  }</div>
+<div class="line"><span class="lineno">  193</span> </div>
+<div class="line"><span class="lineno">  194</span>  QUILL_LOG_DEBUG(log, <span class="stringliteral">&quot;Found {} extrema&quot;</span>, result.numExtrema);</div>
+<div class="line"><span class="lineno">  195</span>  QUILL_LOG_DEBUG(log, <span class="stringliteral">&quot;Energy reference: {}&quot;</span>, path[0]-&gt;getPotentialEnergy());</div>
+<div class="line"><span class="lineno">  196</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; result.numExtrema; i++) {</div>
+<div class="line"><span class="lineno">  197</span>    QUILL_LOG_DEBUG(</div>
+<div class="line"><span class="lineno">  198</span>        log, <span class="stringliteral">&quot;extrema #{} at image position {} with energy {} and curvature {}&quot;</span>,</div>
+<div class="line"><span class="lineno">  199</span>        i + 1, result.positions[i],</div>
+<div class="line"><span class="lineno">  200</span>        result.energies[i] - path[0]-&gt;getPotentialEnergy(),</div>
+<div class="line"><span class="lineno">  201</span>        result.curvatures[i]);</div>
+<div class="line"><span class="lineno">  202</span>  }</div>
+<div class="line"><span class="lineno">  203</span> </div>
+<div class="line"><span class="lineno">  204</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  205</span>}</div>
 <div class="ttc" id="anamespaceeonc_1_1log_html"><div class="ttname"><a href="namespaceeonc_1_1log.html">eonc::log</a></div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00028">EonLogger.h:28</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1log_html_a4e7c8b5e4189cf657384f1c4bbf14dab"><div class="ttname"><a href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a></div><div class="ttdeci">quill::Logger * get() noexcept</div><div class="ttdoc">Get or create the default &quot;combi&quot; logger.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00044">EonLogger.h:44</a></div></div>
 <div class="ttc" id="astructeonc_1_1neb_1_1ExtremaResult_html"><div class="ttname"><a href="structeonc_1_1neb_1_1ExtremaResult.html">eonc::neb::ExtremaResult</a></div><div class="ttdef"><b>Definition</b> <a href="NEBSplineExtrema_8h_source.html#l00029">NEBSplineExtrema.h:29</a></div></div>
 <div class="ttc" id="astructeonc_1_1neb_1_1ExtremaResult_html_a8db5cd9d5ca14aa60c2021288e66d1c9"><div class="ttname"><a href="structeonc_1_1neb_1_1ExtremaResult.html#a8db5cd9d5ca14aa60c2021288e66d1c9">eonc::neb::ExtremaResult::positions</a></div><div class="ttdeci">std::vector&lt; double &gt; positions</div><div class="ttdef"><b>Definition</b> <a href="NEBSplineExtrema_8h_source.html#l00031">NEBSplineExtrema.h:31</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ae5b588a41a2cca2ae99609d6fe8e6e11" name="ae5b588a41a2cca2ae99609d6fe8e6e11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5b588a41a2cca2ae99609d6fe8e6e11">&#9670;&#160;</a></span>finiteDifferenceCauchyStress()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> eonc::neb::finiteDifferenceCauchyStress </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>image</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>strainStep</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Central difference of the potential energy on the six lower strain components. </p>
+<p>Upper-triangle components stay zero. </p>
+
+<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00157">157</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  157</span>                                                                              {</div>
+<div class="line"><span class="lineno">  158</span>  <span class="keywordflow">if</span> (!(strainStep &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  159</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">  160</span>        <span class="stringliteral">&quot;stress finite difference needs a positive step&quot;</span>);</div>
+<div class="line"><span class="lineno">  161</span>  }</div>
+<div class="line"><span class="lineno">  162</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> cell = image.<a class="code hl_function" href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>();</div>
+<div class="line"><span class="lineno">  163</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> positions = image.<a class="code hl_function" href="classeonc_1_1Matter.html#a2472b3c954d101c0810da69ed442b244">getPositions</a>();</div>
+<div class="line"><span class="lineno">  164</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> volume = std::abs(cell.determinant());</div>
+<div class="line"><span class="lineno">  165</span>  <span class="keywordflow">if</span> (!(volume &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  166</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">  167</span>        <span class="stringliteral">&quot;stress finite difference needs a nonzero cell&quot;</span>);</div>
+<div class="line"><span class="lineno">  168</span>  }</div>
+<div class="line"><span class="lineno">  169</span>  <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> sigma = Matrix3d::Zero();</div>
+<div class="line"><span class="lineno">  170</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> rows[6] = {0, 1, 1, 2, 2, 2};</div>
+<div class="line"><span class="lineno">  171</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> cols[6] = {0, 0, 1, 0, 1, 2};</div>
+<div class="line"><span class="lineno">  172</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> comp = 0; comp &lt; 6; ++comp) {</div>
+<div class="line"><span class="lineno">  173</span>    <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> strain = Matrix3d::Zero();</div>
+<div class="line"><span class="lineno">  174</span>    strain(rows[comp], cols[comp]) = strainStep;</div>
+<div class="line"><span class="lineno">  175</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> plus = Matrix3d::Identity() + strain;</div>
+<div class="line"><span class="lineno">  176</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> minus = Matrix3d::Identity() - strain;</div>
+<div class="line"><span class="lineno">  177</span>    Matter raised(image);</div>
+<div class="line"><span class="lineno">  178</span>    raised.setCell(cell * plus);</div>
+<div class="line"><span class="lineno">  179</span>    raised.setPositions(positions * plus);</div>
+<div class="line"><span class="lineno">  180</span>    Matter lowered(image);</div>
+<div class="line"><span class="lineno">  181</span>    lowered.setCell(cell * minus);</div>
+<div class="line"><span class="lineno">  182</span>    lowered.setPositions(positions * minus);</div>
+<div class="line"><span class="lineno">  183</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> derivative =</div>
+<div class="line"><span class="lineno">  184</span>        (raised.getPotentialEnergy() - lowered.getPotentialEnergy()) /</div>
+<div class="line"><span class="lineno">  185</span>        (2.0 * strainStep);</div>
+<div class="line"><span class="lineno">  186</span>    sigma(rows[comp], cols[comp]) = derivative / volume;</div>
+<div class="line"><span class="lineno">  187</span>  }</div>
+<div class="line"><span class="lineno">  188</span>  <span class="keywordflow">return</span> sigma;</div>
+<div class="line"><span class="lineno">  189</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a2472b3c954d101c0810da69ed442b244"><div class="ttname"><a href="classeonc_1_1Matter.html#a2472b3c954d101c0810da69ed442b244">eonc::Matter::getPositions</a></div><div class="ttdeci">const AtomMatrix &amp; getPositions() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00308">Matter.cpp:308</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a527727dfd88d55bc617c3633a1ca5776"><div class="ttname"><a href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">eonc::Matter::getCell</a></div><div class="ttdeci">Matrix3d getCell() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00275">Matter.cpp:275</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -984,21 +1111,235 @@ Functions</h2></td></tr>
 <p>Unit tangent at a fractional image index. </p>
 <p>End intervals use the geometric endpoint displacement because stored endpoint tangents stay zero. </p>
 
-<p class="definition">Definition at line <a class="el" href="NEBSplineExtrema_8cpp_source.html#l00207">207</a> of file <a class="el" href="NEBSplineExtrema_8cpp_source.html">NEBSplineExtrema.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  209</span>                                                         {</div>
-<div class="line"><span class="lineno">  210</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> nat = path.empty() ? 0 : path[0]-&gt;numberOfAtoms();</div>
-<div class="line"><span class="lineno">  211</span>  <span class="keyword">const</span> <span class="keyword">auto</span> leftIdx = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(std::floor(posFraction));</div>
-<div class="line"><span class="lineno">  212</span>  <span class="keywordflow">if</span> (path.size() &lt; 2 || leftIdx &lt; 0 || leftIdx &gt;= numImages + 1 ||</div>
-<div class="line"><span class="lineno">  213</span>      leftIdx + 1 &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(path.size())) {</div>
-<div class="line"><span class="lineno">  214</span>    <span class="keywordflow">return</span> AtomMatrix::Zero(nat, 3);</div>
-<div class="line"><span class="lineno">  215</span>  }</div>
-<div class="line"><span class="lineno">  216</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> f = posFraction - <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(leftIdx);</div>
-<div class="line"><span class="lineno">  217</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> mode =</div>
-<div class="line"><span class="lineno">  218</span>      (1.0 - f) * storedOrEndpointTangent(path, tangent, numImages, leftIdx) +</div>
-<div class="line"><span class="lineno">  219</span>      f * storedOrEndpointTangent(path, tangent, numImages, leftIdx + 1);</div>
-<div class="line"><span class="lineno">  220</span>  normalizeOrZero(mode);</div>
-<div class="line"><span class="lineno">  221</span>  <span class="keywordflow">return</span> mode;</div>
-<div class="line"><span class="lineno">  222</span>}</div>
+<p class="definition">Definition at line <a class="el" href="NEBSplineExtrema_8cpp_source.html#l00208">208</a> of file <a class="el" href="NEBSplineExtrema_8cpp_source.html">NEBSplineExtrema.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  210</span>                                                         {</div>
+<div class="line"><span class="lineno">  211</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> nat = path.empty() ? 0 : path[0]-&gt;numberOfAtoms();</div>
+<div class="line"><span class="lineno">  212</span>  <span class="keyword">const</span> <span class="keyword">auto</span> leftIdx = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(std::floor(posFraction));</div>
+<div class="line"><span class="lineno">  213</span>  <span class="keywordflow">if</span> (path.size() &lt; 2 || leftIdx &lt; 0 || leftIdx &gt;= numImages + 1 ||</div>
+<div class="line"><span class="lineno">  214</span>      leftIdx + 1 &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(path.size())) {</div>
+<div class="line"><span class="lineno">  215</span>    <span class="keywordflow">return</span> AtomMatrix::Zero(nat, 3);</div>
+<div class="line"><span class="lineno">  216</span>  }</div>
+<div class="line"><span class="lineno">  217</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> f = posFraction - <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(leftIdx);</div>
+<div class="line"><span class="lineno">  218</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> mode =</div>
+<div class="line"><span class="lineno">  219</span>      (1.0 - f) * storedOrEndpointTangent(path, tangent, numImages, leftIdx) +</div>
+<div class="line"><span class="lineno">  220</span>      f * storedOrEndpointTangent(path, tangent, numImages, leftIdx + 1);</div>
+<div class="line"><span class="lineno">  221</span>  normalizeOrZero(mode);</div>
+<div class="line"><span class="lineno">  222</span>  <span class="keywordflow">return</span> mode;</div>
+<div class="line"><span class="lineno">  223</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a1cd6aa7232d2706d28750e8487bb1873" name="a1cd6aa7232d2706d28750e8487bb1873"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1cd6aa7232d2706d28750e8487bb1873">&#9670;&#160;</a></span>interpolateSolidStateLinear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::neb::interpolateSolidStateLinear </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>images</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace interior images by a fractional linear interpolation of the oriented endpoints. </p>
+<p><span class="tt">images</span> includes the endpoints. </p>
+
+<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00093">93</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   93</span>                                                            {</div>
+<div class="line"><span class="lineno">   94</span>  <span class="keyword">const</span> <span class="keyword">auto</span> n = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(images.size());</div>
+<div class="line"><span class="lineno">   95</span>  <span class="keywordflow">if</span> (n &lt; 3) {</div>
+<div class="line"><span class="lineno">   96</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">   97</span>        <span class="stringliteral">&quot;solid_state interpolation needs two endpoints and one image&quot;</span>);</div>
+<div class="line"><span class="lineno">   98</span>  }</div>
+<div class="line"><span class="lineno">   99</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> h0 = images.front().getCell();</div>
+<div class="line"><span class="lineno">  100</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> h1 = images.back().getCell();</div>
+<div class="line"><span class="lineno">  101</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> s0 = fractionalCoordinates(images.front());</div>
+<div class="line"><span class="lineno">  102</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> ds = fractionalCoordinates(images.back()) - s0;</div>
+<div class="line"><span class="lineno">  103</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> atom = 0; atom &lt; ds.rows(); ++atom) {</div>
+<div class="line"><span class="lineno">  104</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> axis = 0; axis &lt; 3; ++axis) {</div>
+<div class="line"><span class="lineno">  105</span>      ds(atom, axis) = wrapFrac(ds(atom, axis));</div>
+<div class="line"><span class="lineno">  106</span>    }</div>
+<div class="line"><span class="lineno">  107</span>  }</div>
+<div class="line"><span class="lineno">  108</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> denom = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(n - 1);</div>
+<div class="line"><span class="lineno">  109</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 1; i &lt; n - 1; ++i) {</div>
+<div class="line"><span class="lineno">  110</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> t = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(i) / denom;</div>
+<div class="line"><span class="lineno">  111</span>    <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> h = (1.0 - t) * h0 + t * h1;</div>
+<div class="line"><span class="lineno">  112</span>    zeroUpper(h);</div>
+<div class="line"><span class="lineno">  113</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> fractional = s0 + t * ds;</div>
+<div class="line"><span class="lineno">  114</span>    images[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)].setCell(h);</div>
+<div class="line"><span class="lineno">  115</span>    images[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)].setPositions(fractional * h);</div>
+<div class="line"><span class="lineno">  116</span>  }</div>
+<div class="line"><span class="lineno">  117</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a878bd9e04ba095d1b6a33b57d81ac6a9" name="a878bd9e04ba095d1b6a33b57d81ac6a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a878bd9e04ba095d1b6a33b57d81ac6a9">&#9670;&#160;</a></span>jointDisplacement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1neb_1_1JointBlock.html">JointBlock</a> eonc::neb::jointDisplacement </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>from</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>to</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>jacobian</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Displacement of <span class="tt">to</span> relative to <span class="tt">from</span> in the joint metric. </p>
+<p>Atomic rows are fractional minimum-image displacements mapped through the average cell. The cell block is the averaged right strain of the Jacobian-scaled cell difference. </p>
+
+<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00119">119</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  120</span>                                              {</div>
+<div class="line"><span class="lineno">  121</span>  <span class="keywordflow">if</span> (!(jacobian &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  122</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">  123</span>        <span class="stringliteral">&quot;solid-state displacement needs a positive Jacobian&quot;</span>);</div>
+<div class="line"><span class="lineno">  124</span>  }</div>
+<div class="line"><span class="lineno">  125</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> hFrom = from.<a class="code hl_function" href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>();</div>
+<div class="line"><span class="lineno">  126</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> hTo = to.<a class="code hl_function" href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>();</div>
+<div class="line"><span class="lineno">  127</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> frac = fractionalCoordinates(to) - fractionalCoordinates(from);</div>
+<div class="line"><span class="lineno">  128</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> atom = 0; atom &lt; frac.rows(); ++atom) {</div>
+<div class="line"><span class="lineno">  129</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> axis = 0; axis &lt; 3; ++axis) {</div>
+<div class="line"><span class="lineno">  130</span>      frac(atom, axis) = wrapFrac(frac(atom, axis));</div>
+<div class="line"><span class="lineno">  131</span>    }</div>
+<div class="line"><span class="lineno">  132</span>  }</div>
+<div class="line"><span class="lineno">  133</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> average = 0.5 * (hFrom + hTo);</div>
+<div class="line"><span class="lineno">  134</span>  <a class="code hl_struct" href="structeonc_1_1neb_1_1JointBlock.html">JointBlock</a> out;</div>
+<div class="line"><span class="lineno">  135</span>  out.<a class="code hl_variable" href="structeonc_1_1neb_1_1JointBlock.html#aee1093c3cc7abdb4996368d756396e4a">atomic</a> = frac * average;</div>
+<div class="line"><span class="lineno">  136</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> dh = jacobian * (hTo - hFrom);</div>
+<div class="line"><span class="lineno">  137</span>  out.cell = 0.5 * (hFrom.inverse() * dh + hTo.inverse() * dh);</div>
+<div class="line"><span class="lineno">  138</span>  zeroUpper(out.cell);</div>
+<div class="line"><span class="lineno">  139</span>  <span class="keywordflow">return</span> out;</div>
+<div class="line"><span class="lineno">  140</span>}</div>
+<div class="ttc" id="astructeonc_1_1neb_1_1JointBlock_html"><div class="ttname"><a href="structeonc_1_1neb_1_1JointBlock.html">eonc::neb::JointBlock</a></div><div class="ttdef"><b>Definition</b> <a href="SolidStateNEB_8h_source.html#l00037">SolidStateNEB.h:37</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb_1_1JointBlock_html_aee1093c3cc7abdb4996368d756396e4a"><div class="ttname"><a href="structeonc_1_1neb_1_1JointBlock.html#aee1093c3cc7abdb4996368d756396e4a">eonc::neb::JointBlock::atomic</a></div><div class="ttdeci">AtomMatrix atomic</div><div class="ttdef"><b>Definition</b> <a href="SolidStateNEB_8h_source.html#l00038">SolidStateNEB.h:38</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a56f330ea1a8ea5dacb011eb0746f1990" name="a56f330ea1a8ea5dacb011eb0746f1990"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56f330ea1a8ea5dacb011eb0746f1990">&#9670;&#160;</a></span>jointNorm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::neb::jointNorm </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeonc_1_1neb_1_1JointBlock.html">JointBlock</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>block</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00142">142</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  142</span>                                          {</div>
+<div class="line"><span class="lineno">  143</span>  <span class="keywordflow">return</span> std::hypot(block.<a class="code hl_variable" href="structeonc_1_1neb_1_1JointBlock.html#aee1093c3cc7abdb4996368d756396e4a">atomic</a>.norm(), block.<a class="code hl_variable" href="structeonc_1_1neb_1_1JointBlock.html#acfa94964889e6bbd97c7a974d5aa14c8">cell</a>.norm());</div>
+<div class="line"><span class="lineno">  144</span>}</div>
+<div class="ttc" id="astructeonc_1_1neb_1_1JointBlock_html_acfa94964889e6bbd97c7a974d5aa14c8"><div class="ttname"><a href="structeonc_1_1neb_1_1JointBlock.html#acfa94964889e6bbd97c7a974d5aa14c8">eonc::neb::JointBlock::cell</a></div><div class="ttdeci">Matrix3d cell</div><div class="ttdef"><b>Definition</b> <a href="SolidStateNEB_8h_source.html#l00039">SolidStateNEB.h:39</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a079cbe0a04943b877c53b7566f6701cc" name="a079cbe0a04943b877c53b7566f6701cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a079cbe0a04943b877c53b7566f6701cc">&#9670;&#160;</a></span>orientCellLowerTriangular()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::neb::orientCellLowerTriangular </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>cell</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>positions</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rotate the lab frame so the cell is lower triangular: the first lattice vector lies on x and the second lies in the xy plane. </p>
+<p>Fractional coordinates and the sign of the volume are unchanged. Returns false when the cell is singular or two lattice vectors are parallel. </p>
+
+<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00049">49</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   49</span>                                                                      {</div>
+<div class="line"><span class="lineno">   50</span>  <span class="keyword">const</span> Vector3d a = cell.row(0);</div>
+<div class="line"><span class="lineno">   51</span>  <span class="keyword">const</span> Vector3d b = cell.row(1);</div>
+<div class="line"><span class="lineno">   52</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> na = a.norm();</div>
+<div class="line"><span class="lineno">   53</span>  <span class="keywordflow">if</span> (!(na &gt; 1e-12)) {</div>
+<div class="line"><span class="lineno">   54</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   55</span>  }</div>
+<div class="line"><span class="lineno">   56</span>  <span class="keyword">const</span> Vector3d e1 = a / na;</div>
+<div class="line"><span class="lineno">   57</span>  <span class="keyword">const</span> Vector3d bPerp = b - b.dot(e1) * e1;</div>
+<div class="line"><span class="lineno">   58</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> nb = bPerp.norm();</div>
+<div class="line"><span class="lineno">   59</span>  <span class="keywordflow">if</span> (!(nb &gt; 1e-12)) {</div>
+<div class="line"><span class="lineno">   60</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   61</span>  }</div>
+<div class="line"><span class="lineno">   62</span>  <span class="keyword">const</span> Vector3d e2 = bPerp / nb;</div>
+<div class="line"><span class="lineno">   63</span>  <span class="keyword">const</span> Vector3d e3 = e1.cross(e2);</div>
+<div class="line"><span class="lineno">   64</span>  <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> rotation;</div>
+<div class="line"><span class="lineno">   65</span>  rotation.col(0) = e1;</div>
+<div class="line"><span class="lineno">   66</span>  rotation.col(1) = e2;</div>
+<div class="line"><span class="lineno">   67</span>  rotation.col(2) = e3;</div>
+<div class="line"><span class="lineno">   68</span>  <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> oriented = cell * rotation;</div>
+<div class="line"><span class="lineno">   69</span>  zeroUpper(oriented);</div>
+<div class="line"><span class="lineno">   70</span>  <span class="keywordflow">if</span> (positions.rows() &gt; 0) {</div>
+<div class="line"><span class="lineno">   71</span>    positions = positions * rotation;</div>
+<div class="line"><span class="lineno">   72</span>  }</div>
+<div class="line"><span class="lineno">   73</span>  <span class="keywordflow">if</span> (!(std::abs(oriented.determinant()) &gt; 1e-18)) {</div>
+<div class="line"><span class="lineno">   74</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   75</span>  }</div>
+<div class="line"><span class="lineno">   76</span>  cell = oriented;</div>
+<div class="line"><span class="lineno">   77</span>  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   78</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="adb3b7f2dddfe3c22643699b0bf849279" name="adb3b7f2dddfe3c22643699b0bf849279"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb3b7f2dddfe3c22643699b0bf849279">&#9670;&#160;</a></span>orientSolidStateMatter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::neb::orientSolidStateMatter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>image</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00080">80</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   80</span>                                           {</div>
+<div class="line"><span class="lineno">   81</span>  <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> cell = image.<a class="code hl_function" href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>();</div>
+<div class="line"><span class="lineno">   82</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> positions = image.<a class="code hl_function" href="classeonc_1_1Matter.html#a2472b3c954d101c0810da69ed442b244">getPositions</a>();</div>
+<div class="line"><span class="lineno">   83</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="#a079cbe0a04943b877c53b7566f6701cc">orientCellLowerTriangular</a>(cell, positions)) {</div>
+<div class="line"><span class="lineno">   84</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">   85</span>        <span class="stringliteral">&quot;solid_state NEB could not put the cell in lower-triangular form&quot;</span>);</div>
+<div class="line"><span class="lineno">   86</span>  }</div>
+<div class="line"><span class="lineno">   87</span>  image.<a class="code hl_function" href="classeonc_1_1Matter.html#a3c4002006e09f4e4b7fa2ffbf191db26">setCell</a>(cell);</div>
+<div class="line"><span class="lineno">   88</span>  <span class="keywordflow">if</span> (positions.rows() &gt; 0) {</div>
+<div class="line"><span class="lineno">   89</span>    image.<a class="code hl_function" href="classeonc_1_1Matter.html#a271f1a697333162ba3705bff86dfef06">setPositions</a>(positions);</div>
+<div class="line"><span class="lineno">   90</span>  }</div>
+<div class="line"><span class="lineno">   91</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a271f1a697333162ba3705bff86dfef06"><div class="ttname"><a href="classeonc_1_1Matter.html#a271f1a697333162ba3705bff86dfef06">eonc::Matter::setPositions</a></div><div class="ttdeci">void setPositions(const AtomMatrix &amp;pos)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00350">Matter.cpp:350</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a3c4002006e09f4e4b7fa2ffbf191db26"><div class="ttname"><a href="classeonc_1_1Matter.html#a3c4002006e09f4e4b7fa2ffbf191db26">eonc::Matter::setCell</a></div><div class="ttdeci">void setCell(const Matrix3d &amp;newCell)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00277">Matter.cpp:277</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1neb_html_a079cbe0a04943b877c53b7566f6701cc"><div class="ttname"><a href="#a079cbe0a04943b877c53b7566f6701cc">eonc::neb::orientCellLowerTriangular</a></div><div class="ttdeci">bool orientCellLowerTriangular(Matrix3d &amp;cell, AtomMatrix &amp;positions)</div><div class="ttdoc">Rotate the lab frame so the cell is lower triangular: the first lattice vector lies on x and the seco...</div><div class="ttdef"><b>Definition</b> <a href="SolidStateNEB_8cpp_source.html#l00049">SolidStateNEB.cpp:49</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1057,31 +1398,68 @@ Functions</h2></td></tr>
 <p>Build stamped ConFrames for a NEB band (same metadata as writePathCon). </p>
 <p>Empty on invalid path size. Does not write to disk. <span class="tt">referenceEnergy</span> is the energy relative energies are measured from; NaN means path[0]. A zoomed band passes its original reactant energy, since zoom moves path[0] to the start of its window. </p>
 
-<p class="definition">Definition at line <a class="el" href="NEBSplineExtrema_8cpp_source.html#l00309">309</a> of file <a class="el" href="NEBSplineExtrema_8cpp_source.html">NEBSplineExtrema.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  314</span>                            {</div>
-<div class="line"><span class="lineno">  315</span>  <span class="keyword">const</span> <span class="keywordtype">size_t</span> nframes = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(numImages) + 2;</div>
-<div class="line"><span class="lineno">  316</span>  <span class="keywordflow">if</span> (path.size() &lt; nframes) {</div>
-<div class="line"><span class="lineno">  317</span>    <span class="keywordflow">return</span> {};</div>
-<div class="line"><span class="lineno">  318</span>  }</div>
-<div class="line"><span class="lineno">  319</span> </div>
-<div class="line"><span class="lineno">  320</span>  <span class="keywordtype">double</span> distTotal = 0.0;</div>
-<div class="line"><span class="lineno">  321</span>  std::vector&lt;eonc::io::ConFrameMetadata&gt; metas;</div>
-<div class="line"><span class="lineno">  322</span>  metas.reserve(nframes);</div>
-<div class="line"><span class="lineno">  323</span> </div>
-<div class="line"><span class="lineno">  324</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt;= numImages + 1; i++) {</div>
-<div class="line"><span class="lineno">  325</span>    <span class="keywordflow">if</span> (i &gt; 0) {</div>
-<div class="line"><span class="lineno">  326</span>      distTotal += path[i]-&gt;distanceTo(*path[i - 1]);</div>
-<div class="line"><span class="lineno">  327</span>    }</div>
-<div class="line"><span class="lineno">  328</span>    metas.push_back(neb_frame_metadata(path, tangent, eigenmode_solvers,</div>
-<div class="line"><span class="lineno">  329</span>                                       numImages, estimateEigenvalues, i,</div>
-<div class="line"><span class="lineno">  330</span>                                       distTotal, bandIndex, referenceEnergy));</div>
-<div class="line"><span class="lineno">  331</span>  }</div>
-<div class="line"><span class="lineno">  332</span> </div>
-<div class="line"><span class="lineno">  333</span>  std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; band(</div>
-<div class="line"><span class="lineno">  334</span>      path.begin(), path.begin() + <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(nframes));</div>
-<div class="line"><span class="lineno">  335</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1io.html#a82c7b62eba032ea919c9cc6abf2ba8af">eonc::io::buildNebPathFrames</a>(band, metas);</div>
-<div class="line"><span class="lineno">  336</span>}</div>
-<div class="ttc" id="anamespaceeonc_1_1io_html_a82c7b62eba032ea919c9cc6abf2ba8af"><div class="ttname"><a href="namespaceeonc_1_1io.html#a82c7b62eba032ea919c9cc6abf2ba8af">eonc::io::buildNebPathFrames</a></div><div class="ttdeci">std::vector&lt; readcon::ConFrame &gt; buildNebPathFrames(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;path, const std::vector&lt; ConFrameMetadata &gt; &amp;metadata_per_image)</div><div class="ttdoc">Build NEB band ConFrames without writing (clone builder path of writeNebPath).</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8cpp_source.html#l00894">ConFileIO.cpp:894</a></div></div>
+<p class="definition">Definition at line <a class="el" href="NEBSplineExtrema_8cpp_source.html#l00310">310</a> of file <a class="el" href="NEBSplineExtrema_8cpp_source.html">NEBSplineExtrema.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  315</span>                            {</div>
+<div class="line"><span class="lineno">  316</span>  <span class="keyword">const</span> <span class="keywordtype">size_t</span> nframes = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(numImages) + 2;</div>
+<div class="line"><span class="lineno">  317</span>  <span class="keywordflow">if</span> (path.size() &lt; nframes) {</div>
+<div class="line"><span class="lineno">  318</span>    <span class="keywordflow">return</span> {};</div>
+<div class="line"><span class="lineno">  319</span>  }</div>
+<div class="line"><span class="lineno">  320</span> </div>
+<div class="line"><span class="lineno">  321</span>  <span class="keywordtype">double</span> distTotal = 0.0;</div>
+<div class="line"><span class="lineno">  322</span>  std::vector&lt;eonc::io::ConFrameMetadata&gt; metas;</div>
+<div class="line"><span class="lineno">  323</span>  metas.reserve(nframes);</div>
+<div class="line"><span class="lineno">  324</span> </div>
+<div class="line"><span class="lineno">  325</span>  <span class="comment">// The mass-weighted arc length rides beside the Cartesian one: it is the</span></div>
+<div class="line"><span class="lineno">  326</span>  <span class="comment">// coordinate a tunnelling integral along the band runs over. A structure</span></div>
+<div class="line"><span class="lineno">  327</span>  <span class="comment">// without masses leaves it out rather than failing the write.</span></div>
+<div class="line"><span class="lineno">  328</span>  <span class="keywordtype">double</span> distMw = 0.0;</div>
+<div class="line"><span class="lineno">  329</span>  <span class="keywordtype">bool</span> haveMw = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  330</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt;= numImages + 1; i++) {</div>
+<div class="line"><span class="lineno">  331</span>    <span class="keywordflow">if</span> (i &gt; 0) {</div>
+<div class="line"><span class="lineno">  332</span>      distTotal += path[i]-&gt;distanceTo(*path[i - 1]);</div>
+<div class="line"><span class="lineno">  333</span>      <span class="keywordflow">if</span> (haveMw) {</div>
+<div class="line"><span class="lineno">  334</span>        <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  335</span>          distMw +=</div>
+<div class="line"><span class="lineno">  336</span>              <a class="code hl_function" href="namespaceeonc_1_1tunneling.html#aa278720cfec81feaf90b3a4db6759257">eonc::tunneling::massWeightedDistance</a>(*path[i - 1], *path[i]);</div>
+<div class="line"><span class="lineno">  337</span>        } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::invalid_argument &amp;) {</div>
+<div class="line"><span class="lineno">  338</span>          haveMw = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  339</span>        }</div>
+<div class="line"><span class="lineno">  340</span>      }</div>
+<div class="line"><span class="lineno">  341</span>    }</div>
+<div class="line"><span class="lineno">  342</span>    metas.push_back(neb_frame_metadata(path, tangent, eigenmode_solvers,</div>
+<div class="line"><span class="lineno">  343</span>                                       numImages, estimateEigenvalues, i,</div>
+<div class="line"><span class="lineno">  344</span>                                       distTotal, bandIndex, referenceEnergy));</div>
+<div class="line"><span class="lineno">  345</span>    <span class="keywordflow">if</span> (haveMw) {</div>
+<div class="line"><span class="lineno">  346</span>      metas.back().scalars.push_back({<span class="stringliteral">&quot;reaction_coordinate_mw&quot;</span>, distMw});</div>
+<div class="line"><span class="lineno">  347</span>    }</div>
+<div class="line"><span class="lineno">  348</span>  }</div>
+<div class="line"><span class="lineno">  349</span>  <span class="comment">// The band&#39;s one-dimensional tunnelling estimate goes on its first frame:</span></div>
+<div class="line"><span class="lineno">  350</span>  <span class="comment">// the well frequencies, the WKB action and the splitting a two-level-system</span></div>
+<div class="line"><span class="lineno">  351</span>  <span class="comment">// screen reads. Left out when an image has no mass or an end well is flat.</span></div>
+<div class="line"><span class="lineno">  352</span>  <span class="keywordflow">if</span> (haveMw &amp;&amp; !metas.empty()) {</div>
+<div class="line"><span class="lineno">  353</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  354</span>      std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; ends(</div>
+<div class="line"><span class="lineno">  355</span>          path.begin(), path.begin() + <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(nframes));</div>
+<div class="line"><span class="lineno">  356</span>      <span class="keyword">const</span> <span class="keyword">auto</span> split = <a class="code hl_function" href="namespaceeonc_1_1tunneling.html#a2495523c57566dbd072d73e8a0512d05">eonc::tunneling::bandSplitting</a>(</div>
+<div class="line"><span class="lineno">  357</span>          ends, referenceOrFirst(path, referenceEnergy));</div>
+<div class="line"><span class="lineno">  358</span>      <span class="keyword">auto</span> &amp;head = metas.front().scalars;</div>
+<div class="line"><span class="lineno">  359</span>      head.push_back({<span class="stringliteral">&quot;hbar_omega_reactant&quot;</span>, split.hwReactant});</div>
+<div class="line"><span class="lineno">  360</span>      head.push_back({<span class="stringliteral">&quot;hbar_omega_product&quot;</span>, split.hwProduct});</div>
+<div class="line"><span class="lineno">  361</span>      head.push_back({<span class="stringliteral">&quot;tunnel_action&quot;</span>, split.action});</div>
+<div class="line"><span class="lineno">  362</span>      head.push_back({<span class="stringliteral">&quot;tunnel_splitting&quot;</span>, split.delta0});</div>
+<div class="line"><span class="lineno">  363</span>      head.push_back({<span class="stringliteral">&quot;tls_energy&quot;</span>, split.tlsEnergy()});</div>
+<div class="line"><span class="lineno">  364</span>      head.push_back({<span class="stringliteral">&quot;tunnel_deep_wells&quot;</span>, split.deepWells ? 1.0 : 0.0});</div>
+<div class="line"><span class="lineno">  365</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::invalid_argument &amp;) {</div>
+<div class="line"><span class="lineno">  366</span>    }</div>
+<div class="line"><span class="lineno">  367</span>  }</div>
+<div class="line"><span class="lineno">  368</span> </div>
+<div class="line"><span class="lineno">  369</span>  std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; band(</div>
+<div class="line"><span class="lineno">  370</span>      path.begin(), path.begin() + <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(nframes));</div>
+<div class="line"><span class="lineno">  371</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1io.html#a82c7b62eba032ea919c9cc6abf2ba8af">eonc::io::buildNebPathFrames</a>(band, metas);</div>
+<div class="line"><span class="lineno">  372</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_a82c7b62eba032ea919c9cc6abf2ba8af"><div class="ttname"><a href="namespaceeonc_1_1io.html#a82c7b62eba032ea919c9cc6abf2ba8af">eonc::io::buildNebPathFrames</a></div><div class="ttdeci">std::vector&lt; readcon::ConFrame &gt; buildNebPathFrames(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;path, const std::vector&lt; ConFrameMetadata &gt; &amp;metadata_per_image)</div><div class="ttdoc">Build NEB band ConFrames without writing (clone builder path of writeNebPath).</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8cpp_source.html#l00907">ConFileIO.cpp:907</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1tunneling_html_a2495523c57566dbd072d73e8a0512d05"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#a2495523c57566dbd072d73e8a0512d05">eonc::tunneling::bandSplitting</a></div><div class="ttdeci">Splitting bandSplitting(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;band, double referenceEnergy)</div><div class="ttdoc">The splitting of a converged band, with the well frequencies from the band&#39;s curvature at each end.</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8cpp_source.html#l00458">Tunneling.cpp:458</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1tunneling_html_aa278720cfec81feaf90b3a4db6759257"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#aa278720cfec81feaf90b3a4db6759257">eonc::tunneling::massWeightedDistance</a></div><div class="ttdeci">double massWeightedDistance(const Matter &amp;a, const Matter &amp;b)</div><div class="ttdoc">sqrt(sum_i m_i |b_i - a_i|^2) under the minimum image of a&#39;s cell.</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8cpp_source.html#l00034">Tunneling.cpp:34</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1141,88 +1519,225 @@ Functions</h2></td></tr>
 
 <p>Print NEB image data to log and optionally to file. </p>
 
-<p class="definition">Definition at line <a class="el" href="NEBSplineExtrema_8cpp_source.html#l00224">224</a> of file <a class="el" href="NEBSplineExtrema_8cpp_source.html">NEBSplineExtrema.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  229</span>                                               {</div>
-<div class="line"><span class="lineno">  230</span> </div>
-<div class="line"><span class="lineno">  231</span>  <span class="keywordtype">double</span> dist, distTotal = 0;</div>
-<div class="line"><span class="lineno">  232</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> tangentStart =</div>
-<div class="line"><span class="lineno">  233</span>      path[0]-&gt;pbc(path[1]-&gt;getPositions() - path[0]-&gt;getPositions());</div>
-<div class="line"><span class="lineno">  234</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> tangentEnd = path[numImages]-&gt;pbc(</div>
-<div class="line"><span class="lineno">  235</span>      path[numImages + 1]-&gt;getPositions() - path[numImages]-&gt;getPositions());</div>
-<div class="line"><span class="lineno">  236</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> tang;</div>
-<div class="line"><span class="lineno">  237</span>  std::string header;</div>
-<div class="line"><span class="lineno">  238</span>  <span class="keywordflow">if</span> (estimateEigenvalues) {</div>
-<div class="line"><span class="lineno">  239</span>    header = std::format(<span class="stringliteral">&quot;{:&gt;3s} {:&gt;12s} {:&gt;12s} {:&gt;12s} {:&gt;12s}&quot;</span>, <span class="stringliteral">&quot;img&quot;</span>,</div>
-<div class="line"><span class="lineno">  240</span>                         <span class="stringliteral">&quot;rxn_coord&quot;</span>, <span class="stringliteral">&quot;energy&quot;</span>, <span class="stringliteral">&quot;f_para&quot;</span>, <span class="stringliteral">&quot;eigval&quot;</span>);</div>
-<div class="line"><span class="lineno">  241</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  242</span>    header = std::format(<span class="stringliteral">&quot;{:&gt;3s} {:&gt;12s} {:&gt;12s} {:&gt;12s}&quot;</span>, <span class="stringliteral">&quot;img&quot;</span>, <span class="stringliteral">&quot;rxn_coord&quot;</span>,</div>
-<div class="line"><span class="lineno">  243</span>                         <span class="stringliteral">&quot;energy&quot;</span>, <span class="stringliteral">&quot;f_para&quot;</span>);</div>
-<div class="line"><span class="lineno">  244</span>  }</div>
-<div class="line"><span class="lineno">  245</span> </div>
-<div class="line"><span class="lineno">  246</span>  normalizeOrZero(tangentStart);</div>
-<div class="line"><span class="lineno">  247</span>  normalizeOrZero(tangentEnd);</div>
-<div class="line"><span class="lineno">  248</span> </div>
-<div class="line"><span class="lineno">  249</span>  std::ofstream fileLogger;</div>
-<div class="line"><span class="lineno">  250</span>  <span class="keywordflow">if</span> (writeToFile) {</div>
-<div class="line"><span class="lineno">  251</span>    std::string neb_dat_fs;</div>
-<div class="line"><span class="lineno">  252</span>    <span class="keywordflow">if</span> (idx == std::numeric_limits&lt;size_t&gt;::max()) {</div>
-<div class="line"><span class="lineno">  253</span>      neb_dat_fs = <span class="stringliteral">&quot;neb.dat&quot;</span>;</div>
-<div class="line"><span class="lineno">  254</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  255</span>      neb_dat_fs = std::format(<span class="stringliteral">&quot;neb_{:03}.dat&quot;</span>, idx);</div>
-<div class="line"><span class="lineno">  256</span>    }</div>
-<div class="line"><span class="lineno">  257</span>    <span class="keywordflow">if</span> (fs::exists(neb_dat_fs)) {</div>
-<div class="line"><span class="lineno">  258</span>      fs::remove(neb_dat_fs);</div>
-<div class="line"><span class="lineno">  259</span>    }</div>
-<div class="line"><span class="lineno">  260</span>    fileLogger.open(neb_dat_fs);</div>
-<div class="line"><span class="lineno">  261</span>    <span class="keywordflow">if</span> (fileLogger.is_open()) {</div>
-<div class="line"><span class="lineno">  262</span>      fileLogger &lt;&lt; header &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><span class="lineno">  263</span>    }</div>
-<div class="line"><span class="lineno">  264</span>  }</div>
-<div class="line"><span class="lineno">  265</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> energy_reactant = referenceOrFirst(path, referenceEnergy);</div>
-<div class="line"><span class="lineno">  266</span> </div>
-<div class="line"><span class="lineno">  267</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt;= numImages + 1; i++) {</div>
-<div class="line"><span class="lineno">  268</span>    <span class="keywordflow">if</span> (i == 0) {</div>
-<div class="line"><span class="lineno">  269</span>      tang = tangentStart;</div>
-<div class="line"><span class="lineno">  270</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (i == numImages + 1) {</div>
-<div class="line"><span class="lineno">  271</span>      tang = tangentEnd;</div>
-<div class="line"><span class="lineno">  272</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  273</span>      tang = *tangent[i];</div>
-<div class="line"><span class="lineno">  274</span>    }</div>
-<div class="line"><span class="lineno">  275</span> </div>
-<div class="line"><span class="lineno">  276</span>    <span class="keywordflow">if</span> (i &gt; 0) {</div>
-<div class="line"><span class="lineno">  277</span>      dist = path[i]-&gt;distanceTo(*path[i - 1]);</div>
-<div class="line"><span class="lineno">  278</span>      distTotal += dist;</div>
-<div class="line"><span class="lineno">  279</span>    }</div>
-<div class="line"><span class="lineno">  280</span> </div>
-<div class="line"><span class="lineno">  281</span>    <span class="keywordtype">double</span> relative_energy = path[i]-&gt;getPotentialEnergy() - energy_reactant;</div>
-<div class="line"><span class="lineno">  282</span>    <span class="keywordtype">double</span> parallel_force = <a class="code hl_function" href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a>(path[i]-&gt;getForces(), tang);</div>
-<div class="line"><span class="lineno">  283</span> </div>
-<div class="line"><span class="lineno">  284</span>    <span class="keywordflow">if</span> (estimateEigenvalues) {</div>
-<div class="line"><span class="lineno">  285</span>      <a class="code hl_function" href="namespaceeonc.html#a1f0e36e8301c8aec77f544e954f8d301">eonc::eigenmodeCompute</a>(*eigenmode_solvers[i], path[i], tang);</div>
-<div class="line"><span class="lineno">  286</span>      <span class="keywordtype">double</span> lowest_eigenvalue =</div>
-<div class="line"><span class="lineno">  287</span>          <a class="code hl_function" href="namespaceeonc.html#a8a03dd97e2b389d73bdce26bd963e813">eonc::eigenmodeGetEigenvalue</a>(*eigenmode_solvers[i]);</div>
-<div class="line"><span class="lineno">  288</span>      <span class="keywordflow">if</span> (fileLogger.is_open()) {</div>
-<div class="line"><span class="lineno">  289</span>        fileLogger &lt;&lt; std::format(</div>
-<div class="line"><span class="lineno">  290</span>            <span class="stringliteral">&quot;{:&gt;3} {:&gt;12.6f} {:&gt;12.6f} {:&gt;12.6f} {:&gt;12.6f}\n&quot;</span>, i, distTotal,</div>
-<div class="line"><span class="lineno">  291</span>            relative_energy, parallel_force, lowest_eigenvalue);</div>
-<div class="line"><span class="lineno">  292</span>      } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  293</span>        QUILL_LOG_DEBUG(log, <span class="stringliteral">&quot;{:&gt;3} {:&gt;12.6f} {:&gt;12.6f} {:&gt;12.6f} {:&gt;12.6f}&quot;</span>, i,</div>
-<div class="line"><span class="lineno">  294</span>                        distTotal, relative_energy, parallel_force,</div>
-<div class="line"><span class="lineno">  295</span>                        lowest_eigenvalue);</div>
-<div class="line"><span class="lineno">  296</span>      }</div>
-<div class="line"><span class="lineno">  297</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  298</span>      <span class="keywordflow">if</span> (fileLogger.is_open()) {</div>
-<div class="line"><span class="lineno">  299</span>        fileLogger &lt;&lt; std::format(<span class="stringliteral">&quot;{:&gt;3} {:&gt;12.6f} {:&gt;12.6f} {:&gt;12.6f}\n&quot;</span>, i,</div>
-<div class="line"><span class="lineno">  300</span>                                  distTotal, relative_energy, parallel_force);</div>
-<div class="line"><span class="lineno">  301</span>      } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  302</span>        QUILL_LOG_DEBUG(log, <span class="stringliteral">&quot;{:&gt;3} {:&gt;12.6f} {:&gt;12.6f} {:&gt;12.6f}&quot;</span>, i,</div>
-<div class="line"><span class="lineno">  303</span>                        distTotal, relative_energy, parallel_force);</div>
-<div class="line"><span class="lineno">  304</span>      }</div>
-<div class="line"><span class="lineno">  305</span>    }</div>
-<div class="line"><span class="lineno">  306</span>  }</div>
-<div class="line"><span class="lineno">  307</span>}</div>
+<p class="definition">Definition at line <a class="el" href="NEBSplineExtrema_8cpp_source.html#l00225">225</a> of file <a class="el" href="NEBSplineExtrema_8cpp_source.html">NEBSplineExtrema.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  230</span>                                               {</div>
+<div class="line"><span class="lineno">  231</span> </div>
+<div class="line"><span class="lineno">  232</span>  <span class="keywordtype">double</span> dist, distTotal = 0;</div>
+<div class="line"><span class="lineno">  233</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> tangentStart =</div>
+<div class="line"><span class="lineno">  234</span>      path[0]-&gt;pbc(path[1]-&gt;getPositions() - path[0]-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  235</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> tangentEnd = path[numImages]-&gt;pbc(</div>
+<div class="line"><span class="lineno">  236</span>      path[numImages + 1]-&gt;getPositions() - path[numImages]-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  237</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> tang;</div>
+<div class="line"><span class="lineno">  238</span>  std::string header;</div>
+<div class="line"><span class="lineno">  239</span>  <span class="keywordflow">if</span> (estimateEigenvalues) {</div>
+<div class="line"><span class="lineno">  240</span>    header = std::format(<span class="stringliteral">&quot;{:&gt;3s} {:&gt;12s} {:&gt;12s} {:&gt;12s} {:&gt;12s}&quot;</span>, <span class="stringliteral">&quot;img&quot;</span>,</div>
+<div class="line"><span class="lineno">  241</span>                         <span class="stringliteral">&quot;rxn_coord&quot;</span>, <span class="stringliteral">&quot;energy&quot;</span>, <span class="stringliteral">&quot;f_para&quot;</span>, <span class="stringliteral">&quot;eigval&quot;</span>);</div>
+<div class="line"><span class="lineno">  242</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  243</span>    header = std::format(<span class="stringliteral">&quot;{:&gt;3s} {:&gt;12s} {:&gt;12s} {:&gt;12s}&quot;</span>, <span class="stringliteral">&quot;img&quot;</span>, <span class="stringliteral">&quot;rxn_coord&quot;</span>,</div>
+<div class="line"><span class="lineno">  244</span>                         <span class="stringliteral">&quot;energy&quot;</span>, <span class="stringliteral">&quot;f_para&quot;</span>);</div>
+<div class="line"><span class="lineno">  245</span>  }</div>
+<div class="line"><span class="lineno">  246</span> </div>
+<div class="line"><span class="lineno">  247</span>  normalizeOrZero(tangentStart);</div>
+<div class="line"><span class="lineno">  248</span>  normalizeOrZero(tangentEnd);</div>
+<div class="line"><span class="lineno">  249</span> </div>
+<div class="line"><span class="lineno">  250</span>  std::ofstream fileLogger;</div>
+<div class="line"><span class="lineno">  251</span>  <span class="keywordflow">if</span> (writeToFile) {</div>
+<div class="line"><span class="lineno">  252</span>    std::string neb_dat_fs;</div>
+<div class="line"><span class="lineno">  253</span>    <span class="keywordflow">if</span> (idx == std::numeric_limits&lt;size_t&gt;::max()) {</div>
+<div class="line"><span class="lineno">  254</span>      neb_dat_fs = <span class="stringliteral">&quot;neb.dat&quot;</span>;</div>
+<div class="line"><span class="lineno">  255</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  256</span>      neb_dat_fs = std::format(<span class="stringliteral">&quot;neb_{:03}.dat&quot;</span>, idx);</div>
+<div class="line"><span class="lineno">  257</span>    }</div>
+<div class="line"><span class="lineno">  258</span>    <span class="keywordflow">if</span> (fs::exists(neb_dat_fs)) {</div>
+<div class="line"><span class="lineno">  259</span>      fs::remove(neb_dat_fs);</div>
+<div class="line"><span class="lineno">  260</span>    }</div>
+<div class="line"><span class="lineno">  261</span>    fileLogger.open(neb_dat_fs);</div>
+<div class="line"><span class="lineno">  262</span>    <span class="keywordflow">if</span> (fileLogger.is_open()) {</div>
+<div class="line"><span class="lineno">  263</span>      fileLogger &lt;&lt; header &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  264</span>    }</div>
+<div class="line"><span class="lineno">  265</span>  }</div>
+<div class="line"><span class="lineno">  266</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> energy_reactant = referenceOrFirst(path, referenceEnergy);</div>
+<div class="line"><span class="lineno">  267</span> </div>
+<div class="line"><span class="lineno">  268</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt;= numImages + 1; i++) {</div>
+<div class="line"><span class="lineno">  269</span>    <span class="keywordflow">if</span> (i == 0) {</div>
+<div class="line"><span class="lineno">  270</span>      tang = tangentStart;</div>
+<div class="line"><span class="lineno">  271</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (i == numImages + 1) {</div>
+<div class="line"><span class="lineno">  272</span>      tang = tangentEnd;</div>
+<div class="line"><span class="lineno">  273</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  274</span>      tang = *tangent[i];</div>
+<div class="line"><span class="lineno">  275</span>    }</div>
+<div class="line"><span class="lineno">  276</span> </div>
+<div class="line"><span class="lineno">  277</span>    <span class="keywordflow">if</span> (i &gt; 0) {</div>
+<div class="line"><span class="lineno">  278</span>      dist = path[i]-&gt;distanceTo(*path[i - 1]);</div>
+<div class="line"><span class="lineno">  279</span>      distTotal += dist;</div>
+<div class="line"><span class="lineno">  280</span>    }</div>
+<div class="line"><span class="lineno">  281</span> </div>
+<div class="line"><span class="lineno">  282</span>    <span class="keywordtype">double</span> relative_energy = path[i]-&gt;getPotentialEnergy() - energy_reactant;</div>
+<div class="line"><span class="lineno">  283</span>    <span class="keywordtype">double</span> parallel_force = <a class="code hl_function" href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a>(path[i]-&gt;getForces(), tang);</div>
+<div class="line"><span class="lineno">  284</span> </div>
+<div class="line"><span class="lineno">  285</span>    <span class="keywordflow">if</span> (estimateEigenvalues) {</div>
+<div class="line"><span class="lineno">  286</span>      <a class="code hl_function" href="namespaceeonc.html#a1f0e36e8301c8aec77f544e954f8d301">eonc::eigenmodeCompute</a>(*eigenmode_solvers[i], path[i], tang);</div>
+<div class="line"><span class="lineno">  287</span>      <span class="keywordtype">double</span> lowest_eigenvalue =</div>
+<div class="line"><span class="lineno">  288</span>          <a class="code hl_function" href="namespaceeonc.html#a8a03dd97e2b389d73bdce26bd963e813">eonc::eigenmodeGetEigenvalue</a>(*eigenmode_solvers[i]);</div>
+<div class="line"><span class="lineno">  289</span>      <span class="keywordflow">if</span> (fileLogger.is_open()) {</div>
+<div class="line"><span class="lineno">  290</span>        fileLogger &lt;&lt; std::format(</div>
+<div class="line"><span class="lineno">  291</span>            <span class="stringliteral">&quot;{:&gt;3} {:&gt;12.6f} {:&gt;12.6f} {:&gt;12.6f} {:&gt;12.6f}\n&quot;</span>, i, distTotal,</div>
+<div class="line"><span class="lineno">  292</span>            relative_energy, parallel_force, lowest_eigenvalue);</div>
+<div class="line"><span class="lineno">  293</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  294</span>        QUILL_LOG_DEBUG(log, <span class="stringliteral">&quot;{:&gt;3} {:&gt;12.6f} {:&gt;12.6f} {:&gt;12.6f} {:&gt;12.6f}&quot;</span>, i,</div>
+<div class="line"><span class="lineno">  295</span>                        distTotal, relative_energy, parallel_force,</div>
+<div class="line"><span class="lineno">  296</span>                        lowest_eigenvalue);</div>
+<div class="line"><span class="lineno">  297</span>      }</div>
+<div class="line"><span class="lineno">  298</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  299</span>      <span class="keywordflow">if</span> (fileLogger.is_open()) {</div>
+<div class="line"><span class="lineno">  300</span>        fileLogger &lt;&lt; std::format(<span class="stringliteral">&quot;{:&gt;3} {:&gt;12.6f} {:&gt;12.6f} {:&gt;12.6f}\n&quot;</span>, i,</div>
+<div class="line"><span class="lineno">  301</span>                                  distTotal, relative_energy, parallel_force);</div>
+<div class="line"><span class="lineno">  302</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  303</span>        QUILL_LOG_DEBUG(log, <span class="stringliteral">&quot;{:&gt;3} {:&gt;12.6f} {:&gt;12.6f} {:&gt;12.6f}&quot;</span>, i,</div>
+<div class="line"><span class="lineno">  304</span>                        distTotal, relative_energy, parallel_force);</div>
+<div class="line"><span class="lineno">  305</span>      }</div>
+<div class="line"><span class="lineno">  306</span>    }</div>
+<div class="line"><span class="lineno">  307</span>  }</div>
+<div class="line"><span class="lineno">  308</span>}</div>
 <div class="ttc" id="anamespaceeonc_html_a1f0e36e8301c8aec77f544e954f8d301"><div class="ttname"><a href="namespaceeonc.html#a1f0e36e8301c8aec77f544e954f8d301">eonc::eigenmodeCompute</a></div><div class="ttdeci">void eigenmodeCompute(LowestEigenmode &amp;s, std::shared_ptr&lt; Matter &gt; matter, AtomMatrix direction)</div><div class="ttdef"><b>Definition</b> <a href="EigenmodeStrategy_8h_source.html#l00031">EigenmodeStrategy.h:31</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a8a03dd97e2b389d73bdce26bd963e813"><div class="ttname"><a href="namespaceeonc.html#a8a03dd97e2b389d73bdce26bd963e813">eonc::eigenmodeGetEigenvalue</a></div><div class="ttdeci">double eigenmodeGetEigenvalue(LowestEigenmode &amp;s)</div><div class="ttdef"><b>Definition</b> <a href="EigenmodeStrategy_8h_source.html#l00036">EigenmodeStrategy.h:36</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a3c6d7be8fb5777d625b17120e3e1c736" name="a3c6d7be8fb5777d625b17120e3e1c736"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c6d7be8fb5777d625b17120e3e1c736">&#9670;&#160;</a></span>solidStateCartesianStep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1neb_1_1CartesianStep.html">CartesianStep</a> eonc::neb::solidStateCartesianStep </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>image</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>atomicForce</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>cellForce</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>jacobian</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00203">203</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  206</span>                                                       {</div>
+<div class="line"><span class="lineno">  207</span>  <span class="keywordflow">if</span> (!(jacobian &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  208</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;solid-state step needs a positive Jacobian&quot;</span>);</div>
+<div class="line"><span class="lineno">  209</span>  }</div>
+<div class="line"><span class="lineno">  210</span>  <span class="keywordflow">if</span> (atomicForce.rows() != image.<a class="code hl_function" href="classeonc_1_1Matter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>()) {</div>
+<div class="line"><span class="lineno">  211</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;solid-state step force row count mismatch&quot;</span>);</div>
+<div class="line"><span class="lineno">  212</span>  }</div>
+<div class="line"><span class="lineno">  213</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> cell = image.<a class="code hl_function" href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>();</div>
+<div class="line"><span class="lineno">  214</span>  <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> strain = cellForce / jacobian;</div>
+<div class="line"><span class="lineno">  215</span>  zeroUpper(strain);</div>
+<div class="line"><span class="lineno">  216</span>  CartesianStep step;</div>
+<div class="line"><span class="lineno">  217</span>  step.cell = cell * strain;</div>
+<div class="line"><span class="lineno">  218</span>  zeroUpper(step.cell);</div>
+<div class="line"><span class="lineno">  219</span>  step.positions = atomicForce + image.<a class="code hl_function" href="classeonc_1_1Matter.html#a2472b3c954d101c0810da69ed442b244">getPositions</a>() * strain;</div>
+<div class="line"><span class="lineno">  220</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> atom = 0; atom &lt; image.<a class="code hl_function" href="classeonc_1_1Matter.html#a5b678e80aa584c41d54e221d04bb729e">numberOfAtoms</a>(); ++atom) {</div>
+<div class="line"><span class="lineno">  221</span>    <span class="keywordflow">if</span> (image.<a class="code hl_function" href="classeonc_1_1Matter.html#aeccfa311325cb6f4fb520cf071fef679">getFixed</a>(atom)) {</div>
+<div class="line"><span class="lineno">  222</span>      step.positions.row(atom).setZero();</div>
+<div class="line"><span class="lineno">  223</span>    }</div>
+<div class="line"><span class="lineno">  224</span>  }</div>
+<div class="line"><span class="lineno">  225</span>  <span class="keywordflow">return</span> step;</div>
+<div class="line"><span class="lineno">  226</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a5b678e80aa584c41d54e221d04bb729e"><div class="ttname"><a href="classeonc_1_1Matter.html#a5b678e80aa584c41d54e221d04bb729e">eonc::Matter::numberOfAtoms</a></div><div class="ttdeci">long int numberOfAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00273">Matter.cpp:273</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_aeccfa311325cb6f4fb520cf071fef679"><div class="ttname"><a href="classeonc_1_1Matter.html#aeccfa311325cb6f4fb520cf071fef679">eonc::Matter::getFixed</a></div><div class="ttdeci">int getFixed(long int atom) const</div><div class="ttdoc">1 if every Cartesian axis of the atom is fixed, else 0.</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00505">Matter.cpp:505</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a960b1702e269ca42e88a9240b352f749" name="a960b1702e269ca42e88a9240b352f749"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a960b1702e269ca42e88a9240b352f749">&#9670;&#160;</a></span>solidStateEnthalpy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::neb::solidStateEnthalpy </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>image</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>reference</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>pressure</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeonc_1_1Potential.html">Potential</a> energy plus P : (h0^{-1} (h-h0)) * V0. </p>
+<p>Pressure is hydrostatic, in eV/Angstrom^3. A zero pressure returns the potential energy. </p>
+
+<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00191">191</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  192</span>                                           {</div>
+<div class="line"><span class="lineno">  193</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> energy = image.<a class="code hl_function" href="classeonc_1_1Matter.html#a991745c4fb760027221d419b8cf6fd8e">getPotentialEnergy</a>();</div>
+<div class="line"><span class="lineno">  194</span>  <span class="keywordflow">if</span> (pressure == 0.0) {</div>
+<div class="line"><span class="lineno">  195</span>    <span class="keywordflow">return</span> energy;</div>
+<div class="line"><span class="lineno">  196</span>  }</div>
+<div class="line"><span class="lineno">  197</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> h0 = reference.<a class="code hl_function" href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>();</div>
+<div class="line"><span class="lineno">  198</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> strain = h0.inverse() * (image.<a class="code hl_function" href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">getCell</a>() - h0);</div>
+<div class="line"><span class="lineno">  199</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> volume = std::abs(h0.determinant());</div>
+<div class="line"><span class="lineno">  200</span>  <span class="keywordflow">return</span> energy + pressure * strain.trace() * volume;</div>
+<div class="line"><span class="lineno">  201</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a991745c4fb760027221d419b8cf6fd8e"><div class="ttname"><a href="classeonc_1_1Matter.html#a991745c4fb760027221d419b8cf6fd8e">eonc::Matter::getPotentialEnergy</a></div><div class="ttdeci">double getPotentialEnergy() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00554">Matter.cpp:554</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aa3ea29e0e6174ad77125e59e76747c32" name="aa3ea29e0e6174ad77125e59e76747c32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3ea29e0e6174ad77125e59e76747c32">&#9670;&#160;</a></span>solidStateJacobian()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::neb::solidStateJacobian </td>
+          <td>(</td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>meanVolume</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nAtoms</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>weight</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>J = (V/N)^{1/3} * N^{1/2} * weight, with V the mean endpoint volume. </p>
+<p>doi:10.1063/1.3684549 </p>
+
+<p class="definition">Definition at line <a class="el" href="SolidStateNEB_8cpp_source.html#l00040">40</a> of file <a class="el" href="SolidStateNEB_8cpp_source.html">SolidStateNEB.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   40</span>                                                                        {</div>
+<div class="line"><span class="lineno">   41</span>  <span class="keywordflow">if</span> (!(meanVolume &gt; 0.0) || nAtoms &lt; 1 || !(weight &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">   42</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">   43</span>        <span class="stringliteral">&quot;solid-state Jacobian needs a positive volume, atom count, and weight&quot;</span>);</div>
+<div class="line"><span class="lineno">   44</span>  }</div>
+<div class="line"><span class="lineno">   45</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> n = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nAtoms);</div>
+<div class="line"><span class="lineno">   46</span>  <span class="keywordflow">return</span> std::cbrt(meanVolume / n) * std::sqrt(n) * weight;</div>
+<div class="line"><span class="lineno">   47</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1285,19 +1800,19 @@ Functions</h2></td></tr>
 
 <p>Write a NEB band as a multi-frame .con via readcon ConFrameBuilder::clone(). </p>
 
-<p class="definition">Definition at line <a class="el" href="NEBSplineExtrema_8cpp_source.html#l00338">338</a> of file <a class="el" href="NEBSplineExtrema_8cpp_source.html">NEBSplineExtrema.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  343</span>                                                           {</div>
-<div class="line"><span class="lineno">  344</span>  <span class="keyword">auto</span> frames =</div>
-<div class="line"><span class="lineno">  345</span>      <a class="code hl_function" href="#a200b4ee42d165fca881ca1f3053c9634">pathToConFrames</a>(path, tangent, eigenmode_solvers, numImages,</div>
-<div class="line"><span class="lineno">  346</span>                      estimateEigenvalues, bandIndex, referenceEnergy);</div>
-<div class="line"><span class="lineno">  347</span>  <span class="keywordflow">if</span> (frames.empty()) {</div>
-<div class="line"><span class="lineno">  348</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">eonc::io::IoStatus::InvalidArgument</a>;</div>
-<div class="line"><span class="lineno">  349</span>  }</div>
-<div class="line"><span class="lineno">  350</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1io.html#a2a321dfc9b8cf6c615a518a3f79ccdd0">eonc::io::writeConFrames</a>(std::move(filename), frames);</div>
-<div class="line"><span class="lineno">  351</span>}</div>
-<div class="ttc" id="anamespaceeonc_1_1io_html_a2a321dfc9b8cf6c615a518a3f79ccdd0"><div class="ttname"><a href="namespaceeonc_1_1io.html#a2a321dfc9b8cf6c615a518a3f79ccdd0">eonc::io::writeConFrames</a></div><div class="ttdeci">IoStatus writeConFrames(std::string filename, const std::vector&lt; readcon::ConFrame &gt; &amp;frames)</div><div class="ttdoc">Write already-built ConFrames to a multi-frame .con (temp or durable).</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8cpp_source.html#l00943">ConFileIO.cpp:943</a></div></div>
+<p class="definition">Definition at line <a class="el" href="NEBSplineExtrema_8cpp_source.html#l00374">374</a> of file <a class="el" href="NEBSplineExtrema_8cpp_source.html">NEBSplineExtrema.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  379</span>                                                           {</div>
+<div class="line"><span class="lineno">  380</span>  <span class="keyword">auto</span> frames =</div>
+<div class="line"><span class="lineno">  381</span>      <a class="code hl_function" href="#a200b4ee42d165fca881ca1f3053c9634">pathToConFrames</a>(path, tangent, eigenmode_solvers, numImages,</div>
+<div class="line"><span class="lineno">  382</span>                      estimateEigenvalues, bandIndex, referenceEnergy);</div>
+<div class="line"><span class="lineno">  383</span>  <span class="keywordflow">if</span> (frames.empty()) {</div>
+<div class="line"><span class="lineno">  384</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">eonc::io::IoStatus::InvalidArgument</a>;</div>
+<div class="line"><span class="lineno">  385</span>  }</div>
+<div class="line"><span class="lineno">  386</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1io.html#a2a321dfc9b8cf6c615a518a3f79ccdd0">eonc::io::writeConFrames</a>(std::move(filename), frames);</div>
+<div class="line"><span class="lineno">  387</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_a2a321dfc9b8cf6c615a518a3f79ccdd0"><div class="ttname"><a href="namespaceeonc_1_1io.html#a2a321dfc9b8cf6c615a518a3f79ccdd0">eonc::io::writeConFrames</a></div><div class="ttdeci">IoStatus writeConFrames(std::string filename, const std::vector&lt; readcon::ConFrame &gt; &amp;frames)</div><div class="ttdoc">Write already-built ConFrames to a multi-frame .con (temp or durable).</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8cpp_source.html#l00956">ConFileIO.cpp:956</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">eonc::io::IoStatus::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00035">ConFileIO.h:35</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1neb_html_a200b4ee42d165fca881ca1f3053c9634"><div class="ttname"><a href="#a200b4ee42d165fca881ca1f3053c9634">eonc::neb::pathToConFrames</a></div><div class="ttdeci">std::vector&lt; readcon::ConFrame &gt; pathToConFrames(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; AtomMatrix &gt; &gt; &amp;tangent, const std::vector&lt; std::shared_ptr&lt; EigenmodeStrategy &gt; &gt; &amp;eigenmode_solvers, long numImages, bool estimateEigenvalues, std::optional&lt; size_t &gt; bandIndex, double referenceEnergy)</div><div class="ttdoc">Build stamped ConFrames for a NEB band (same metadata as writePathCon).</div><div class="ttdef"><b>Definition</b> <a href="NEBSplineExtrema_8cpp_source.html#l00309">NEBSplineExtrema.cpp:309</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1neb_html_a200b4ee42d165fca881ca1f3053c9634"><div class="ttname"><a href="#a200b4ee42d165fca881ca1f3053c9634">eonc::neb::pathToConFrames</a></div><div class="ttdeci">std::vector&lt; readcon::ConFrame &gt; pathToConFrames(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; AtomMatrix &gt; &gt; &amp;tangent, const std::vector&lt; std::shared_ptr&lt; EigenmodeStrategy &gt; &gt; &amp;eigenmode_solvers, long numImages, bool estimateEigenvalues, std::optional&lt; size_t &gt; bandIndex, double referenceEnergy)</div><div class="ttdoc">Build stamped ConFrames for a NEB band (same metadata as writePathCon).</div><div class="ttdef"><b>Definition</b> <a href="NEBSplineExtrema_8cpp_source.html#l00310">NEBSplineExtrema.cpp:310</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>

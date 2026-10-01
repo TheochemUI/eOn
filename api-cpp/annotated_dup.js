@@ -18,10 +18,12 @@ var annotated_dup =
         [ "zoom", "namespaceeonc_1_1neb_1_1zoom.html", [
           [ "Window", "structeonc_1_1neb_1_1zoom_1_1Window.html", "structeonc_1_1neb_1_1zoom_1_1Window" ]
         ] ],
+        [ "CartesianStep", "structeonc_1_1neb_1_1CartesianStep.html", "structeonc_1_1neb_1_1CartesianStep" ],
         [ "DNEB_Projection", "structeonc_1_1neb_1_1DNEB__Projection.html", "structeonc_1_1neb_1_1DNEB__Projection" ],
         [ "ExtremaResult", "structeonc_1_1neb_1_1ExtremaResult.html", "structeonc_1_1neb_1_1ExtremaResult" ],
         [ "ImageForceData", "structeonc_1_1neb_1_1ImageForceData.html", "structeonc_1_1neb_1_1ImageForceData" ],
         [ "ImprovedTangent", "structeonc_1_1neb_1_1ImprovedTangent.html", "structeonc_1_1neb_1_1ImprovedTangent" ],
+        [ "JointBlock", "structeonc_1_1neb_1_1JointBlock.html", "structeonc_1_1neb_1_1JointBlock" ],
         [ "NEB_Projection", "structeonc_1_1neb_1_1NEB__Projection.html", "structeonc_1_1neb_1_1NEB__Projection" ],
         [ "OCINEBController", "classeonc_1_1neb_1_1OCINEBController.html", "classeonc_1_1neb_1_1OCINEBController" ],
         [ "OnsagerMachlupSpring", "structeonc_1_1neb_1_1OnsagerMachlupSpring.html", "structeonc_1_1neb_1_1OnsagerMachlupSpring" ],
@@ -33,6 +35,28 @@ var annotated_dup =
       ] ],
       [ "params_ssot", "namespaceeonc_1_1params__ssot.html", [
         [ "GeneratedDefaults", "structeonc_1_1params__ssot_1_1GeneratedDefaults.html", "structeonc_1_1params__ssot_1_1GeneratedDefaults" ]
+      ] ],
+      [ "pathintegral", "namespaceeonc_1_1pathintegral.html", [
+        [ "Options", "structeonc_1_1pathintegral_1_1Options.html", "structeonc_1_1pathintegral_1_1Options" ],
+        [ "RingPolymer", "classeonc_1_1pathintegral_1_1RingPolymer.html", "classeonc_1_1pathintegral_1_1RingPolymer" ],
+        [ "Sample", "structeonc_1_1pathintegral_1_1Sample.html", "structeonc_1_1pathintegral_1_1Sample" ]
+      ] ],
+      [ "piqtst", "namespaceeonc_1_1piqtst.html", [
+        [ "Coordinate", "structeonc_1_1piqtst_1_1Coordinate.html", "structeonc_1_1piqtst_1_1Coordinate" ],
+        [ "Plane", "structeonc_1_1piqtst_1_1Plane.html", "structeonc_1_1piqtst_1_1Plane" ],
+        [ "Rate", "structeonc_1_1piqtst_1_1Rate.html", "structeonc_1_1piqtst_1_1Rate" ],
+        [ "Recrossing", "structeonc_1_1piqtst_1_1Recrossing.html", "structeonc_1_1piqtst_1_1Recrossing" ],
+        [ "RecrossingOptions", "structeonc_1_1piqtst_1_1RecrossingOptions.html", "structeonc_1_1piqtst_1_1RecrossingOptions" ],
+        [ "ScanOptions", "structeonc_1_1piqtst_1_1ScanOptions.html", "structeonc_1_1piqtst_1_1ScanOptions" ]
+      ] ],
+      [ "tunneling", "namespaceeonc_1_1tunneling.html", [
+        [ "Instanton", "structeonc_1_1tunneling_1_1Instanton.html", "structeonc_1_1tunneling_1_1Instanton" ],
+        [ "InstantonOptions", "structeonc_1_1tunneling_1_1InstantonOptions.html", "structeonc_1_1tunneling_1_1InstantonOptions" ],
+        [ "Profile", "classeonc_1_1tunneling_1_1Profile.html", "classeonc_1_1tunneling_1_1Profile" ],
+        [ "RateInstanton", "structeonc_1_1tunneling_1_1RateInstanton.html", "structeonc_1_1tunneling_1_1RateInstanton" ],
+        [ "RateInstantonOptions", "structeonc_1_1tunneling_1_1RateInstantonOptions.html", "structeonc_1_1tunneling_1_1RateInstantonOptions" ],
+        [ "RingSpectrum", "structeonc_1_1tunneling_1_1RingSpectrum.html", "structeonc_1_1tunneling_1_1RingSpectrum" ],
+        [ "Splitting", "structeonc_1_1tunneling_1_1Splitting.html", "structeonc_1_1tunneling_1_1Splitting" ]
       ] ],
       [ "xtsci_eindir", "namespaceeonc_1_1xtsci__eindir.html", [
         [ "View", "structeonc_1_1xtsci__eindir_1_1View.html", "structeonc_1_1xtsci__eindir_1_1View" ]
@@ -94,6 +118,8 @@ var annotated_dup =
       [ "ILammpsLoader", "classeonc_1_1ILammpsLoader.html", "classeonc_1_1ILammpsLoader" ],
       [ "IMetatomicLoader", "classeonc_1_1IMetatomicLoader.html", "classeonc_1_1IMetatomicLoader" ],
       [ "ImprovedDimer", "classeonc_1_1ImprovedDimer.html", "classeonc_1_1ImprovedDimer" ],
+      [ "instanton_options_t", "structeonc_1_1instanton__options__t.html", "structeonc_1_1instanton__options__t" ],
+      [ "InstantonJob", "classeonc_1_1InstantonJob.html", "classeonc_1_1InstantonJob" ],
       [ "IPluginLoader", "classeonc_1_1IPluginLoader.html", "classeonc_1_1IPluginLoader" ],
       [ "IPotRegistry", "classeonc_1_1IPotRegistry.html", "classeonc_1_1IPotRegistry" ],
       [ "ira_options_t", "structeonc_1_1ira__options__t.html", "structeonc_1_1ira__options__t" ],

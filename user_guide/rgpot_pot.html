@@ -130,6 +130,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="lanczos.html">Lanczos</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="akmc.html">Adaptive kinetic Monte Carlo</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="saddle_search.html">Saddle search</a></li>
@@ -198,7 +199,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
@@ -216,6 +216,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.process_catalog.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_catalog</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 </ul>
@@ -224,6 +225,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.5.0/index.html">[v3.5.0] - 2026-10-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.5.0/release-notes.html">eOn 3.5.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
 </ul>
@@ -321,8 +326,74 @@ data-aria-dark="Switch to auto color mode">
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#build">Build</a></li>
-<li><a class="reference internal" href="#config">Config</a></li>
-<li><a class="reference internal" href="#vs-socketnwchem">vs SocketNWChem</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li><a class="reference internal" href="#eon.schema.RgpotPot"><code class="docutils literal notranslate"><span class="pre">RgpotPot</span></code></a><ul>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.backend"><code class="docutils literal notranslate">backend</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.basis"><code class="docutils literal notranslate">basis</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.theory"><code class="docutils literal notranslate">theory</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.scf_type"><code class="docutils literal notranslate">scf_type</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.functional"><code class="docutils literal notranslate">functional</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.cpmd_functional"><code class="docutils literal notranslate">cpmd_functional</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.cutoff_ry"><code class="docutils literal notranslate">cutoff_ry</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.cutOffRy"><code class="docutils literal notranslate">cutOffRy</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.cpmd_cut_off_ry"><code class="docutils literal notranslate">cpmd_cut_off_ry</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.charge"><code class="docutils literal notranslate">charge</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.multiplicity"><code class="docutils literal notranslate">multiplicity</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.engine_path"><code class="docutils literal notranslate">engine_path</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.engine_library"><code class="docutils literal notranslate">engine_library</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.model_path"><code class="docutils literal notranslate">model_path</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.device"><code class="docutils literal notranslate">device</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.length_unit"><code class="docutils literal notranslate">length_unit</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.extensions_directory"><code class="docutils literal notranslate">extensions_directory</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.check_consistency"><code class="docutils literal notranslate">check_consistency</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.uncertainty_threshold"><code class="docutils literal notranslate">uncertainty_threshold</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.torch_determinism_strict"><code class="docutils literal notranslate">torch_determinism_strict</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.paramset"><code class="docutils literal notranslate">paramset</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.accuracy"><code class="docutils literal notranslate">accuracy</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.electronic_temperature"><code class="docutils literal notranslate">electronic_temperature</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.max_iterations"><code class="docutils literal notranslate">max_iterations</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.uhf"><code class="docutils literal notranslate">uhf</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.xtb_charge"><code class="docutils literal notranslate">xtb_charge</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.engine_root"><code class="docutils literal notranslate">engine_root</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.title"><code class="docutils literal notranslate">title</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.memory_mb"><code class="docutils literal notranslate">memory_mb</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.scratch_dir"><code class="docutils literal notranslate">scratch_dir</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.input_block"><code class="docutils literal notranslate">input_block</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.permanent_dir"><code class="docutils literal notranslate">permanent_dir</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.params_path"><code class="docutils literal notranslate">params_path</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.ranks_per_image"><code class="docutils literal notranslate">ranks_per_image</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nwchem">NWChem</a></li>
+<li><a class="reference internal" href="#metatomic">Metatomic</a></li>
+<li><a class="reference internal" href="#xtb">xTB</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cpmd">CPMD</a><ul>
+<li><a class="reference internal" href="#cpmdparams-file-and-the-cpmd-section">CPMDParams file and the cpmd section</a><ul>
+<li><a class="reference internal" href="#eon.schema.Cpmd"><code class="docutils literal notranslate"><span class="pre">Cpmd</span></code></a><ul>
+<li><a class="reference internal" href="#eon.schema.Cpmd.functional"><code class="docutils literal notranslate">functional</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Cpmd.cpmd_functional"><code class="docutils literal notranslate">cpmd_functional</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Cpmd.cutOffRy"><code class="docutils literal notranslate">cutOffRy</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Cpmd.cutoff_ry"><code class="docutils literal notranslate">cutoff_ry</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Cpmd.cpmd_cut_off_ry"><code class="docutils literal notranslate">cpmd_cut_off_ry</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Cpmd.charge"><code class="docutils literal notranslate">charge</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Cpmd.multiplicity"><code class="docutils literal notranslate">multiplicity</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Cpmd.title"><code class="docutils literal notranslate">title</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Cpmd.memory_mb"><code class="docutils literal notranslate">memory_mb</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Cpmd.input_block"><code class="docutils literal notranslate">input_block</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#environment">Environment</a></li>
+<li><a class="reference internal" href="#files-from-libcpmdc">Files from libcpmdc</a></li>
+<li><a class="reference internal" href="#a-point">A point</a></li>
+<li><a class="reference internal" href="#a-minimization">A minimization</a></li>
+<li><a class="reference internal" href="#a-7-image-nudged-elastic-band-neb">A 7-image nudged elastic band (NEB)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#socketnwchem">SocketNWChem</a></li>
 <li><a class="reference internal" href="#implementation-notes">Implementation notes</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
@@ -421,38 +492,291 @@ data-aria-dark="Switch to auto color mode">
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 2.16.0.</span></p>
 </div>
-<p>On non-Windows builds, potential type <code class="docutils literal notranslate"><span class="pre">RGPOT</span></code> links
-<a class="reference external" href="https://github.com/OmniPotentRPC/rgpot">rgpot</a> NWChemPot / CPMDPot and loads
-<code class="docutils literal notranslate"><span class="pre">libnwchemc.so</span></code> / <code class="docutils literal notranslate"><span class="pre">libcpmdc.so</span></code> with <code class="docutils literal notranslate"><span class="pre">dlopen</span></code> in the eOn process.
+<p>On non-Windows builds, potential <code class="docutils literal notranslate"><span class="pre">rgpot</span></code> links
+<a class="reference external" href="https://github.com/OmniPotentRPC/rgpot">rgpot</a> and loads <code class="docutils literal notranslate"><span class="pre">libnwchemc.so</span></code> or
+<code class="docutils literal notranslate"><span class="pre">libcpmdc.so</span></code> with <code class="docutils literal notranslate"><span class="pre">dlopen</span></code> in the eOn process.
+<code class="docutils literal notranslate"><span class="pre">RGPOT</span></code> and <code class="docutils literal notranslate"><span class="pre">rgpot</span></code> name the same potential.
 The cpmdc engine is documented at <a class="reference external" href="https://cpmdc.rgoswami.me">cpmdc.rgoswami.me</a>.</p>
-<p>Sibling roles live elsewhere: potserv Cap’n Proto clients, <code class="docutils literal notranslate"><span class="pre">eonclient</span> <span class="pre">--serve</span></code>
-(<a class="reference internal" href="serve_mode.html"><span class="std std-doc">Serve mode</span></a>), and SocketNWChem (i-PI to a standalone
-NWChem binary). Overview: <a class="reference internal" href="rgpot_integration.html"><span class="std std-doc">rgpot integration</span></a>.</p>
+<p>Potserv clients, <code class="docutils literal notranslate"><span class="pre">eonclient</span> <span class="pre">--serve</span></code>
+(<a class="reference internal" href="serve_mode.html"><span class="std std-doc">Serve mode</span></a>), and SocketNWChem are separate.
+Overview: <a class="reference internal" href="rgpot_integration.html"><span class="std std-doc">rgpot integration</span></a>.</p>
 <section id="build">
 <h2>Build<a class="headerlink" href="#build" title="Link to this heading">¶</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">meson<span class="w"> </span>setup<span class="w"> </span>bbdir-rgpot<span class="w"> </span>-Dwith_tests<span class="o">=</span><span class="nb">true</span>
-</span><span data-line="2">meson<span class="w"> </span>compile<span class="w"> </span>-C<span class="w"> </span>bbdir-rgpot
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">meson<span class="w"> </span>setup<span class="w"> </span>bbdir<span class="w"> </span>-Dwith_tests<span class="o">=</span><span class="nb">true</span>
+</span><span data-line="2">meson<span class="w"> </span>compile<span class="w"> </span>-C<span class="w"> </span>bbdir
 </span></pre></div>
 </div>
-<p>Requires Cap’n Proto headers and libs (method params are Cap’n Proto messages
-passed into the C ABI) and the <code class="docutils literal notranslate"><span class="pre">rgpot</span></code> Meson subproject
-(<code class="docutils literal notranslate"><span class="pre">subprojects/rgpot.wrap</span></code>). The build pulls <code class="docutils literal notranslate"><span class="pre">nwchempot_dep</span></code> / <code class="docutils literal notranslate"><span class="pre">cpmdpot_dep</span></code>.
-Serve mode uses <code class="docutils literal notranslate"><span class="pre">ptlrpc_dep</span></code> under <code class="docutils literal notranslate"><span class="pre">-Dwith_serve</span></code>.</p>
-<p>Engines are resolved at runtime:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">NWCHEMC_LIBRARY</span></code> or <code class="docutils literal notranslate"><span class="pre">RGPOT_NWCHEMC_ENGINE</span></code> (NWChem embed library), or</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">[RgpotPot]</span> <span class="pre">engine_path</span></code> / <code class="docutils literal notranslate"><span class="pre">engine_library</span></code> in the config.</p></li>
-</ul>
-<p><code class="docutils literal notranslate"><span class="pre">enginePath</span></code> in the Cap’n Proto blob is stripped before the ABI call (host-only
-locator); see rgpot NWChemPot.</p>
+<p>The build needs Cap’n Proto headers and libraries. Method parameters are
+Cap’n Proto messages passed into the C ABI. The <code class="docutils literal notranslate"><span class="pre">rgpot</span></code> Meson subproject is
+<code class="docutils literal notranslate"><span class="pre">subprojects/rgpot.wrap</span></code>, and the build pulls <code class="docutils literal notranslate"><span class="pre">nwchempot_dep</span></code> and
+<code class="docutils literal notranslate"><span class="pre">cpmdpot_dep</span></code>. Serve mode uses <code class="docutils literal notranslate"><span class="pre">ptlrpc_dep</span></code> under <code class="docutils literal notranslate"><span class="pre">-Dwith_serve</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">dependency('rgpot')</span></code> prefers an installed rgpot at 3.2.0 or newer. The Meson
+wrap is the fallback. A CPMD run that splits ranks uses the flag in the CPMD
+section.</p>
 </section>
-<section id="config">
-<h2>Config<a class="headerlink" href="#config" title="Link to this heading">¶</a></h2>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">eon/config.yaml</span></code> and the model list the same <code class="docutils literal notranslate"><span class="pre">[RgpotPot]</span></code> keys. <code class="docutils literal notranslate"><span class="pre">eonclient</span></code>
+reads those keys from <code class="docutils literal notranslate"><span class="pre">config.ini</span></code>.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[RgpotPot]</span>
+</span></pre></div>
+</div>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot">
+<span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">RgpotPot</span></span><a class="reference internal" href="../_modules/eon_schema/config/models.html#RgpotPot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.RgpotPot" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">backend</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">basis</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">theory</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">scf_type</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">functional</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cpmd_functional</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cutoff_ry</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cutOffRy</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cpmd_cut_off_ry</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">charge</span> <span class="pre">(int)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">multiplicity</span> <span class="pre">(int)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">engine_path</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">engine_library</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_path</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">device</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">length_unit</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">extensions_directory</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_consistency</span> <span class="pre">(bool)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">uncertainty_threshold</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">torch_determinism_strict</span> <span class="pre">(bool)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">paramset</span> <span class="pre">(Literal['GFNFF',</span> <span class="pre">'GFN0xTB',</span> <span class="pre">'GFN1xTB',</span> <span class="pre">'GFN2xTB'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">accuracy</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">electronic_temperature</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_iterations</span> <span class="pre">(int)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">uhf</span> <span class="pre">(int)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xtb_charge</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">engine_root</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">title</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">memory_mb</span> <span class="pre">(int)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">scratch_dir</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">input_block</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">permanent_dir</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">params_path</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ranks_per_image</span> <span class="pre">(int)</span></code></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.backend">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">backend</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'nwchemc'</span></span><a class="headerlink" href="#eon.schema.RgpotPot.backend" title="Link to this definition">¶</a></dt>
+<dd><p>rgpot backend: ‘nwchemc’, ‘cpmdc’, ‘metatomic’, or ‘xtb’ (aliases: nwchem/cpmd/mta/gfn). metatomic/xtb dlopen libmetatomic_engine.so / libxtb_engine.so for packaging.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.basis">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">basis</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sto-3g'</span></span><a class="headerlink" href="#eon.schema.RgpotPot.basis" title="Link to this definition">¶</a></dt>
+<dd><p>Basis set for the NWChem backend.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.theory">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">theory</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'scf'</span></span><a class="headerlink" href="#eon.schema.RgpotPot.theory" title="Link to this definition">¶</a></dt>
+<dd><p>Theory level for the NWChem backend.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.scf_type">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">scf_type</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'rhf'</span></span><a class="headerlink" href="#eon.schema.RgpotPot.scf_type" title="Link to this definition">¶</a></dt>
+<dd><p>SCF type for the NWChem backend.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.functional">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">functional</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'BLYP'</span></span><a class="headerlink" href="#eon.schema.RgpotPot.functional" title="Link to this definition">¶</a></dt>
+<dd><p>XC functional for the CPMD backend. [cpmd] functional overrides this key when params_path is empty.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.cpmd_functional">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cpmd_functional</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'BLYP'</span></span><a class="headerlink" href="#eon.schema.RgpotPot.cpmd_functional" title="Link to this definition">¶</a></dt>
+<dd><p>Alias of functional, read when functional is absent.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.cutoff_ry">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cutoff_ry</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">70.0</span></span><a class="headerlink" href="#eon.schema.RgpotPot.cutoff_ry" title="Link to this definition">¶</a></dt>
+<dd><p>Plane-wave cutoff (Ry) for the CPMD backend. [cpmd] cutOffRy overrides this key when params_path is empty.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.cutOffRy">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cutOffRy</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">70.0</span></span><a class="headerlink" href="#eon.schema.RgpotPot.cutOffRy" title="Link to this definition">¶</a></dt>
+<dd><p>Alias of cutoff_ry that wins over it when both are set.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.cpmd_cut_off_ry">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cpmd_cut_off_ry</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">70.0</span></span><a class="headerlink" href="#eon.schema.RgpotPot.cpmd_cut_off_ry" title="Link to this definition">¶</a></dt>
+<dd><p>Alias of cutoff_ry, read when cutOffRy and cutoff_ry are absent.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.charge">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">charge</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#eon.schema.RgpotPot.charge" title="Link to this definition">¶</a></dt>
+<dd><p>Total charge.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.multiplicity">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">multiplicity</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></span><a class="headerlink" href="#eon.schema.RgpotPot.multiplicity" title="Link to this definition">¶</a></dt>
+<dd><p>Spin multiplicity.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.engine_path">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">engine_path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.RgpotPot.engine_path" title="Link to this definition">¶</a></dt>
+<dd><p>Engine .so path (libnwchemc / libcpmdc / libmetatomic_engine / libxtb_engine).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.engine_library">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">engine_library</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.RgpotPot.engine_library" title="Link to this definition">¶</a></dt>
+<dd><p>Alias for engine_path; used when engine_path is empty.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.model_path">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">model_path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.RgpotPot.model_path" title="Link to this definition">¶</a></dt>
+<dd><p>Metatomic model path when backend=metatomic.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.device">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">device</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cpu'</span></span><a class="headerlink" href="#eon.schema.RgpotPot.device" title="Link to this definition">¶</a></dt>
+<dd><p>Metatomic device when backend=metatomic.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.length_unit">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">length_unit</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'angstrom'</span></span><a class="headerlink" href="#eon.schema.RgpotPot.length_unit" title="Link to this definition">¶</a></dt>
+<dd><p>Metatomic length unit when backend=metatomic.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.extensions_directory">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">extensions_directory</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.RgpotPot.extensions_directory" title="Link to this definition">¶</a></dt>
+<dd><p>Metatomic extensions directory when backend=metatomic.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.check_consistency">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.RgpotPot.check_consistency" title="Link to this definition">¶</a></dt>
+<dd><p>Metatomic consistency checks when backend=metatomic.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.uncertainty_threshold">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">uncertainty_threshold</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1.0</span></span><a class="headerlink" href="#eon.schema.RgpotPot.uncertainty_threshold" title="Link to this definition">¶</a></dt>
+<dd><p>Metatomic uncertainty threshold when backend=metatomic.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.torch_determinism_strict">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">torch_determinism_strict</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.RgpotPot.torch_determinism_strict" title="Link to this definition">¶</a></dt>
+<dd><p>Strict Torch determinism when backend=metatomic.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.paramset">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">paramset</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'GFNFF'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'GFN0xTB'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'GFN1xTB'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'GFN2xTB'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'GFN2xTB'</span></span><a class="headerlink" href="#eon.schema.RgpotPot.paramset" title="Link to this definition">¶</a></dt>
+<dd><p>XTB paramset when backend=xtb.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.accuracy">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">accuracy</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></span><a class="headerlink" href="#eon.schema.RgpotPot.accuracy" title="Link to this definition">¶</a></dt>
+<dd><p>XTB accuracy when backend=xtb.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.electronic_temperature">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">electronic_temperature</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">300.0</span></span><a class="headerlink" href="#eon.schema.RgpotPot.electronic_temperature" title="Link to this definition">¶</a></dt>
+<dd><p>XTB electronic temperature (K) when backend=xtb.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.max_iterations">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">max_iterations</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">250</span></span><a class="headerlink" href="#eon.schema.RgpotPot.max_iterations" title="Link to this definition">¶</a></dt>
+<dd><p>XTB max iterations when backend=xtb.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.uhf">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">uhf</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#eon.schema.RgpotPot.uhf" title="Link to this definition">¶</a></dt>
+<dd><p>XTB unpaired electrons when backend=xtb.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.xtb_charge">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">xtb_charge</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#eon.schema.RgpotPot.xtb_charge" title="Link to this definition">¶</a></dt>
+<dd><p>XTB total charge when backend=xtb. An omitted key uses charge.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.engine_root">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">engine_root</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.RgpotPot.engine_root" title="Link to this definition">¶</a></dt>
+<dd><p>Engine installation root (NWCHEM_ROOT / CPMD_ROOT).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.title">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">title</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.RgpotPot.title" title="Link to this definition">¶</a></dt>
+<dd><p>Job title passed to the engine.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.memory_mb">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">memory_mb</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#eon.schema.RgpotPot.memory_mb" title="Link to this definition">¶</a></dt>
+<dd><p>Engine memory limit in MB (0 uses the engine default).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.scratch_dir">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">scratch_dir</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.RgpotPot.scratch_dir" title="Link to this definition">¶</a></dt>
+<dd><p>Engine scratch directory.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.input_block">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">input_block</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.RgpotPot.input_block" title="Link to this definition">¶</a></dt>
+<dd><p>Verbatim input block. For NWChem this is inputBlocks. For CPMD, [cpmd] input_block overrides this key and the text is appended to the message inputBlocks.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.permanent_dir">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">permanent_dir</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.RgpotPot.permanent_dir" title="Link to this definition">¶</a></dt>
+<dd><p>CPMD FILEPATH directory for RESTART files (backend=cpmdc).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.params_path">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">params_path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.RgpotPot.params_path" title="Link to this definition">¶</a></dt>
+<dd><p>Path to a Cap’n Proto CPMDParams message. The file owns the CPMD method, including inputSections and inputBlocks, and the scalar keys are not written over it. input_block is appended to inputBlocks. engine_path, engine_root, scratch_dir, and permanent_dir still place the run.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.ranks_per_image">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ranks_per_image</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#eon.schema.RgpotPot.ranks_per_image" title="Link to this definition">¶</a></dt>
+<dd><p>Ranks per CPMD calculator group. The MPI world is split into groups of this size, with one CPMD session per group. Rank 0 drives eOn and the other ranks serve force requests. 0 is one group of all ranks.</p>
+</dd></dl>
+
+</dd></dl>
+
+<section id="nwchem">
+<h3>NWChem<a class="headerlink" href="#nwchem" title="Link to this heading">¶</a></h3>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Main]</span>
 </span><span data-line="2"><span class="na">job</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">point</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="k">[Potential]</span>
-</span><span data-line="5"><span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">RGPOT</span>
+</span><span data-line="5"><span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">rgpot</span>
 </span><span data-line="6">
 </span><span data-line="7"><span class="k">[RgpotPot]</span>
 </span><span data-line="8"><span class="na">backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">nwchemc</span>
@@ -461,83 +785,344 @@ locator); see rgpot NWChemPot.</p>
 </span><span data-line="11"><span class="na">scf_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">rhf</span>
 </span><span data-line="12"><span class="na">charge</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0</span>
 </span><span data-line="13"><span class="na">multiplicity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1</span>
-</span><span data-line="14"><span class="c1"># engine_path = /path/to/libnwchemc.so</span>
 </span></pre></div>
 </div>
-<p>For CPMD:</p>
-<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[RgpotPot]</span>
-</span><span data-line="2"><span class="na">backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">cpmdc</span>
-</span><span data-line="3"><span class="na">functional</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">BLYP</span>
-</span><span data-line="4"><span class="na">cutoff_ry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">70.0</span>
-</span></pre></div>
-</div>
-<p>For Metatomic (dlopen engine; no fat metatomic/torch link into eOn):</p>
+<p><code class="docutils literal notranslate"><span class="pre">engine_path</span></code>, or <code class="docutils literal notranslate"><span class="pre">engine_library</span></code> when <code class="docutils literal notranslate"><span class="pre">engine_path</span></code> is empty, selects
+<code class="docutils literal notranslate"><span class="pre">libnwchemc.so</span></code>. For this backend the client also reads <code class="docutils literal notranslate"><span class="pre">NWCHEMC_LIBRARY</span></code>
+and <code class="docutils literal notranslate"><span class="pre">RGPOT_NWCHEMC_ENGINE</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">input_block</span></code>, or <code class="docutils literal notranslate"><span class="pre">RGPOT_NWCHEM_INPUT_BLOCK</span></code> when the key is empty, is
+NWChem <code class="docutils literal notranslate"><span class="pre">inputBlocks</span></code> text. When <code class="docutils literal notranslate"><span class="pre">theory</span></code> is <code class="docutils literal notranslate"><span class="pre">dft</span></code> and <code class="docutils literal notranslate"><span class="pre">scf_type</span></code> names an
+exchange-correlation functional such as <code class="docutils literal notranslate"><span class="pre">b3lyp</span></code>, the client writes a short
+density functional theory (DFT) block.</p>
+</section>
+<section id="metatomic">
+<h3>Metatomic<a class="headerlink" href="#metatomic" title="Link to this heading">¶</a></h3>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Potential]</span>
-</span><span data-line="2"><span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">RGPOT</span>
+</span><span data-line="2"><span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">rgpot</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="k">[RgpotPot]</span>
 </span><span data-line="5"><span class="na">backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">metatomic</span>
 </span><span data-line="6"><span class="na">model_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/path/to/model.pt</span>
 </span><span data-line="7"><span class="na">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">cpu</span>
-</span><span data-line="8"><span class="c1"># engine_path = /path/to/libmetatomic_engine.so</span>
-</span><span data-line="9"><span class="c1"># or: export RGPOT_METATOMIC_ENGINE=...</span>
 </span></pre></div>
 </div>
-<p>For xTB (preferred packaging path; leaves <code class="docutils literal notranslate"><span class="pre">-Dwith_xtb=false</span></code>):</p>
+<p><code class="docutils literal notranslate"><span class="pre">engine_path</span></code> may point at <code class="docutils literal notranslate"><span class="pre">libmetatomic_engine.so</span></code>. The client also reads
+<code class="docutils literal notranslate"><span class="pre">RGPOT_METATOMIC_ENGINE</span></code> and <code class="docutils literal notranslate"><span class="pre">METATOMIC_ENGINE</span></code>.</p>
+</section>
+<section id="xtb">
+<h3>xTB<a class="headerlink" href="#xtb" title="Link to this heading">¶</a></h3>
+<p>This backend leaves <code class="docutils literal notranslate"><span class="pre">-Dwith_xtb=false</span></code> on the eOn build. The engine is
+<code class="docutils literal notranslate"><span class="pre">libxtb_engine.so</span></code>, loaded at run time.</p>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Potential]</span>
-</span><span data-line="2"><span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">RGPOT</span>
+</span><span data-line="2"><span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">rgpot</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="k">[RgpotPot]</span>
 </span><span data-line="5"><span class="na">backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">xtb</span>
 </span><span data-line="6"><span class="na">paramset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">GFN2xTB</span>
 </span><span data-line="7"><span class="na">accuracy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1.0</span>
-</span><span data-line="8"><span class="c1"># engine_path = /path/to/libxtb_engine.so</span>
-</span><span data-line="9"><span class="c1"># or: export RGPOT_XTB_ENGINE=...</span>
 </span></pre></div>
 </div>
-<p>Optional <code class="docutils literal notranslate"><span class="pre">input_block</span></code> (or env <code class="docutils literal notranslate"><span class="pre">RGPOT_NWCHEM_INPUT_BLOCK</span></code>) supplies NWChem
-<code class="docutils literal notranslate"><span class="pre">inputBlocks</span></code> (e.g. explicit <code class="docutils literal notranslate"><span class="pre">dft</span></code> / <code class="docutils literal notranslate"><span class="pre">xc</span></code> stanzas). When <code class="docutils literal notranslate"><span class="pre">theory=dft</span></code> and
-<code class="docutils literal notranslate"><span class="pre">scf_type</span></code> looks like an XC label (e.g. <code class="docutils literal notranslate"><span class="pre">b3lyp</span></code>), a minimal DFT block is
-emitted automatically.</p>
-<p>Installed rgpot ≥ 2.5.0 is preferred via <code class="docutils literal notranslate"><span class="pre">pkg-config</span></code> (<code class="docutils literal notranslate"><span class="pre">dependency('rgpot')</span></code>);
-the Meson wrap is the fallback for hermetic/dev builds.</p>
+<p><code class="docutils literal notranslate"><span class="pre">engine_path</span></code> may point at <code class="docutils literal notranslate"><span class="pre">libxtb_engine.so</span></code>. The client also reads
+<code class="docutils literal notranslate"><span class="pre">RGPOT_XTB_ENGINE</span></code> and <code class="docutils literal notranslate"><span class="pre">XTB_ENGINE</span></code>.</p>
 </section>
-<section id="vs-socketnwchem">
-<h2>vs SocketNWChem<a class="headerlink" href="#vs-socketnwchem" title="Link to this heading">¶</a></h2>
-<div class="table-wrapper colwidths-auto docutils container">
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p></p></th>
-<th class="head"><p>SocketNWChem</p></th>
-<th class="head"><p>RGPOT (this pot)</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>Protocol</p></td>
-<td><p>i-PI socket; eOn listens</p></td>
-<td><p>In-process <code class="docutils literal notranslate"><span class="pre">dlopen</span></code> via rgpot frontends</p></td>
-</tr>
-<tr class="row-odd"><td><p>Engine process</p></td>
-<td><p>External NWChem</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">libnwchemc.so</span></code> / <code class="docutils literal notranslate"><span class="pre">libcpmdc.so</span></code> in eOn</p></td>
-</tr>
-<tr class="row-even"><td><p>Multi-call SCF</p></td>
-<td><p>Warm NWChem across POSDATA</p></td>
-<td><p>nwchemc warm params cache (skip full RTDB reset when method blob unchanged)</p></td>
-</tr>
-</tbody>
-</table>
+</section>
+<section id="cpmd">
+<h2>CPMD<a class="headerlink" href="#cpmd" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">backend</span> <span class="pre">=</span> <span class="pre">cpmdc</span></code> runs one Car-Parrinello molecular dynamics (CPMD)
+session inside <code class="docutils literal notranslate"><span class="pre">eonclient</span></code>. The shared library is
+<a class="reference external" href="https://github.com/OmniPotentRPC/cpmdc">libcpmdc</a>.
+The engine documentation is at <a class="reference external" href="https://cpmdc.rgoswami.me">cpmdc.rgoswami.me</a>.</p>
+<p>Calculator groups need rgpot built with the Message Passing Interface (MPI).
+Pass the flag to the wrap:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">meson<span class="w"> </span>setup<span class="w"> </span>bbdir<span class="w"> </span>-Drgpot:with_mpi<span class="o">=</span>enabled
+</span><span data-line="2">meson<span class="w"> </span>compile<span class="w"> </span>-C<span class="w"> </span>bbdir
+</span></pre></div>
 </div>
+<p>The flag configures the wrap. A <code class="docutils literal notranslate"><span class="pre">pkg-config</span></code> rgpot must already be an MPI
+build. If it is not, <code class="docutils literal notranslate"><span class="pre">ranks_per_image</span></code> greater than 0 raises.</p>
+<p>The construction agreement and the grouped exit handler below compile
+when rgpot links MPI: the wrap with <code class="docutils literal notranslate"><span class="pre">-Drgpot:with_mpi=enabled</span></code>, or an
+installed rgpot whose <code class="docutils literal notranslate"><span class="pre">rgpot.pc</span></code> defines <code class="docutils literal notranslate"><span class="pre">RGPOT_HAS_MPI</span></code>. Against an
+installed rgpot without that define, eOn’s <code class="docutils literal notranslate"><span class="pre">-Dwith_mpi=enabled</span></code> turns
+them on. After a failed engine call rgpot asks for <code class="docutils literal notranslate"><span class="pre">MPI_Abort</span></code> at exit,
+and the exit handler aborts the world instead of waiting in
+<code class="docutils literal notranslate"><span class="pre">MPI_Finalize</span></code> for ranks left inside a CPMD collective.</p>
+<p>eOn’s <code class="docutils literal notranslate"><span class="pre">-Dwith_mpi=enabled</span></code> option builds the client/server program. Calculator
+groups are this page’s launch, <code class="docutils literal notranslate"><span class="pre">mpirun</span> <span class="pre">-np</span> <span class="pre">N</span> <span class="pre">eonclient</span></code>, with rgpot built
+<code class="docutils literal notranslate"><span class="pre">-Drgpot:with_mpi=enabled</span></code>.</p>
+<section id="cpmdparams-file-and-the-cpmd-section">
+<h3>CPMDParams file and the cpmd section<a class="headerlink" href="#cpmdparams-file-and-the-cpmd-section" title="Link to this heading">¶</a></h3>
+<p>Three layers build the message CPMD receives.</p>
+<p><code class="docutils literal notranslate"><span class="pre">params_path</span></code> on <code class="docutils literal notranslate"><span class="pre">[RgpotPot]</span></code> is a Cap’n Proto CPMDParams file. It owns
+<code class="docutils literal notranslate"><span class="pre">functional</span></code>, <code class="docutils literal notranslate"><span class="pre">cutOffRy</span></code>, <code class="docutils literal notranslate"><span class="pre">charge</span></code>, <code class="docutils literal notranslate"><span class="pre">multiplicity</span></code>, <code class="docutils literal notranslate"><span class="pre">title</span></code>, <code class="docutils literal notranslate"><span class="pre">memoryMb</span></code>,
+<code class="docutils literal notranslate"><span class="pre">inputSections</span></code>, and <code class="docutils literal notranslate"><span class="pre">inputBlocks</span></code>. <code class="docutils literal notranslate"><span class="pre">RGPOT_PARAMS_PATH</span></code> overrides the
+ini key. Scalar keys are not written over a file that loaded. Every rank
+reads the file before <code class="docutils literal notranslate"><span class="pre">MPI_Comm_split</span></code>. When any rank cannot read it,
+every rank throws that error and the split does not run.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">params_path</span></code> is empty, <code class="docutils literal notranslate"><span class="pre">[cpmd]</span></code> supplies those scalars and overrides
+the copies on <code class="docutils literal notranslate"><span class="pre">[RgpotPot]</span></code>. Three spellings set the cutoff on either
+section: <code class="docutils literal notranslate"><span class="pre">cutOffRy</span></code>, then <code class="docutils literal notranslate"><span class="pre">cutoff_ry</span></code>, then <code class="docutils literal notranslate"><span class="pre">cpmd_cut_off_ry</span></code>. The first
+one present wins. <code class="docutils literal notranslate"><span class="pre">functional</span></code> wins over <code class="docutils literal notranslate"><span class="pre">cpmd_functional</span></code>. The client and
+the Python server accept every spelling; the <code class="docutils literal notranslate"><span class="pre">Cpmd</span></code> and <code class="docutils literal notranslate"><span class="pre">RgpotPot</span></code> models
+write only <code class="docutils literal notranslate"><span class="pre">cutOffRy</span></code> on <code class="docutils literal notranslate"><span class="pre">[cpmd]</span></code> and <code class="docutils literal notranslate"><span class="pre">cutoff_ry</span></code> on <code class="docutils literal notranslate"><span class="pre">[RgpotPot]</span></code>.
+<code class="docutils literal notranslate"><span class="pre">[cpmd]</span></code> is read only when <code class="docutils literal notranslate"><span class="pre">backend</span></code> is <code class="docutils literal notranslate"><span class="pre">cpmd</span></code>, <code class="docutils literal notranslate"><span class="pre">cpmdc</span></code>, or <code class="docutils literal notranslate"><span class="pre">cpmdpot</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">engine_path</span></code>, <code class="docutils literal notranslate"><span class="pre">engine_library</span></code>, <code class="docutils literal notranslate"><span class="pre">engine_root</span></code>, <code class="docutils literal notranslate"><span class="pre">scratch_dir</span></code>,
+<code class="docutils literal notranslate"><span class="pre">permanent_dir</span></code>, and <code class="docutils literal notranslate"><span class="pre">ranks_per_image</span></code> stay on <code class="docutils literal notranslate"><span class="pre">[RgpotPot]</span></code>. They place
+the process and apply after either source.</p>
+<p><code class="docutils literal notranslate"><span class="pre">input_block</span></code> is one more <code class="docutils literal notranslate"><span class="pre">inputBlocks</span></code> entry. <code class="docutils literal notranslate"><span class="pre">[cpmd]</span></code> supplies it, then
+<code class="docutils literal notranslate"><span class="pre">[RgpotPot]</span></code>, then <code class="docutils literal notranslate"><span class="pre">RGPOT_CPMD_INPUT_BLOCK</span></code> when those strings are empty.
+Sections loaded from the file stay. A block already in the file stays,
+and the ini text follows it. An empty <code class="docutils literal notranslate"><span class="pre">input_block</span></code> leaves the file’s
+blocks unchanged.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Potential]</span>
+</span><span data-line="2"><span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">rgpot</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">[RgpotPot]</span>
+</span><span data-line="5"><span class="na">backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">cpmdc</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="k">[cpmd]</span>
+</span><span data-line="8"><span class="na">functional</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">BLYP</span>
+</span><span data-line="9"><span class="na">cutOffRy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">70.0</span>
+</span><span data-line="10"><span class="na">charge</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0</span>
+</span><span data-line="11"><span class="na">multiplicity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1</span>
+</span></pre></div>
+</div>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="eon.schema.Cpmd">
+<span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">Cpmd</span></span><a class="reference internal" href="../_modules/eon_schema/config/models.html#Cpmd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.Cpmd" title="Link to this definition">¶</a></dt>
+<dd><p>Scalar CPMD message used when <code class="docutils literal notranslate"><span class="pre">[RgpotPot]</span> <span class="pre">params_path</span></code> is empty.</p>
+<p><code class="docutils literal notranslate"><span class="pre">cutOffRy</span></code> is the cutoff key. The C++ reader also accepts <code class="docutils literal notranslate"><span class="pre">cutoff_ry</span></code>
+and <code class="docutils literal notranslate"><span class="pre">cpmd_cut_off_ry</span></code>, and <code class="docutils literal notranslate"><span class="pre">cpmd_functional</span></code> for <code class="docutils literal notranslate"><span class="pre">functional</span></code>.
+The aliases are accepted on input and never written by <code class="docutils literal notranslate"><span class="pre">model_dump</span></code>,
+so a written file carries one cutoff key. A <code class="docutils literal notranslate"><span class="pre">params_path</span></code> file owns
+these fields, and <code class="docutils literal notranslate"><span class="pre">input_block</span></code> is still appended to that file’s
+blocks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">functional</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cpmd_functional</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cutOffRy</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cutoff_ry</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cpmd_cut_off_ry</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">charge</span> <span class="pre">(int)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">multiplicity</span> <span class="pre">(int)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">title</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">memory_mb</span> <span class="pre">(int)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">input_block</span> <span class="pre">(str)</span></code></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Cpmd.functional">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">functional</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'BLYP'</span></span><a class="headerlink" href="#eon.schema.Cpmd.functional" title="Link to this definition">¶</a></dt>
+<dd><p>XC functional. Overrides [RgpotPot] functional.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Cpmd.cpmd_functional">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cpmd_functional</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'BLYP'</span></span><a class="headerlink" href="#eon.schema.Cpmd.cpmd_functional" title="Link to this definition">¶</a></dt>
+<dd><p>Alias of functional, read when functional is absent.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Cpmd.cutOffRy">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cutOffRy</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">70.0</span></span><a class="headerlink" href="#eon.schema.Cpmd.cutOffRy" title="Link to this definition">¶</a></dt>
+<dd><p>Plane-wave cutoff in Rydberg. Overrides [RgpotPot] cutoff_ry.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Cpmd.cutoff_ry">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cutoff_ry</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">70.0</span></span><a class="headerlink" href="#eon.schema.Cpmd.cutoff_ry" title="Link to this definition">¶</a></dt>
+<dd><p>Alias of cutOffRy, read when cutOffRy is absent.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Cpmd.cpmd_cut_off_ry">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cpmd_cut_off_ry</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">70.0</span></span><a class="headerlink" href="#eon.schema.Cpmd.cpmd_cut_off_ry" title="Link to this definition">¶</a></dt>
+<dd><p>Alias of cutOffRy, read when cutOffRy and cutoff_ry are absent.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Cpmd.charge">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">charge</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#eon.schema.Cpmd.charge" title="Link to this definition">¶</a></dt>
+<dd><p>Total charge.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Cpmd.multiplicity">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">multiplicity</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></span><a class="headerlink" href="#eon.schema.Cpmd.multiplicity" title="Link to this definition">¶</a></dt>
+<dd><p>Spin multiplicity (2S+1).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Cpmd.title">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">title</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.Cpmd.title" title="Link to this definition">¶</a></dt>
+<dd><p>Comment header in the rendered deck.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Cpmd.memory_mb">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">memory_mb</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#eon.schema.Cpmd.memory_mb" title="Link to this definition">¶</a></dt>
+<dd><p>Engine memory limit in MB. 0 uses the engine default.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Cpmd.input_block">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">input_block</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.Cpmd.input_block" title="Link to this definition">¶</a></dt>
+<dd><p>CPMD &amp;SECTION text appended to inputBlocks. Sections loaded from params_path stay.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>That example is the scalar layer. The point, minimization, and band
+examples below keep <code class="docutils literal notranslate"><span class="pre">params_path</span></code>, which is the file layer.</p>
+<p>Write the message as Cap’n Proto text. The field names are in the
+<a class="reference external" href="https://github.com/OmniPotentRPC/cpmdc/blob/main/docs/source/howto/write-cpmdparams.rst">write-cpmdparams how-to</a>.
+From a cpmdc checkout, encode it:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">capnp<span class="w"> </span>encode<span class="w"> </span>schema/Potentials.capnp<span class="w"> </span>CPMDParams<span class="w"> </span><span class="se">\</span>
+</span><span data-line="2"><span class="w">  </span>&lt;<span class="w"> </span>cluster.params.txt<span class="w"> </span>&gt;<span class="w"> </span>cluster.params.bin
+</span></pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">capnp</span> <span class="pre">encode</span></code> writes the flat message <code class="docutils literal notranslate"><span class="pre">eonclient</span></code> reads. A field name
+that is not in the schema fails at this step.</p>
+</section>
+<section id="environment">
+<h3>Environment<a class="headerlink" href="#environment" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nb">export</span><span class="w"> </span><span class="nv">CPMDC_LIBRARY</span><span class="o">=</span>/path/to/libcpmdc.so
+</span><span data-line="2"><span class="nb">export</span><span class="w"> </span><span class="nv">CPMDC_PSEUDO_DIR</span><span class="o">=</span>/path/to/PP_LIBRARY
+</span></pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">RGPOT_CPMDC_ENGINE</span></code> is the other library path the client reads. rgpot
+then tries <code class="docutils literal notranslate"><span class="pre">RGPOT_CPMD_ENGINE</span></code>, then <code class="docutils literal notranslate"><span class="pre">libcpmdc.so</span></code> on the loader path.</p>
+<p>libcpmdc reads <code class="docutils literal notranslate"><span class="pre">CPMDC_PSEUDO_DIR</span></code> for the pseudopotential directory. When
+that variable is unset, it reads <code class="docutils literal notranslate"><span class="pre">CPMD_PP_LIBRARY_PATH</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">RGPOT_CPMD_INPUT_BLOCK</span></code> fills <code class="docutils literal notranslate"><span class="pre">input_block</span></code> when the <code class="docutils literal notranslate"><span class="pre">[cpmd]</span></code> key and
+the <code class="docutils literal notranslate"><span class="pre">[RgpotPot]</span></code> key are empty. The text is appended to <code class="docutils literal notranslate"><span class="pre">inputBlocks</span></code>.
+cpmdc places those blocks ahead of the sections it generates. Sections
+in the CPMDParams file are not removed.</p>
+<p><code class="docutils literal notranslate"><span class="pre">permanent_dir</span></code> is the CPMD <code class="docutils literal notranslate"><span class="pre">FILEPATH</span></code> for <code class="docutils literal notranslate"><span class="pre">RESTART</span></code> files. <code class="docutils literal notranslate"><span class="pre">scratch_dir</span></code>
+is the fallback directory.</p>
+</section>
+<section id="files-from-libcpmdc">
+<h3>Files from libcpmdc<a class="headerlink" href="#files-from-libcpmdc" title="Link to this heading">¶</a></h3>
+<p>A library force call writes no <code class="docutils literal notranslate"><span class="pre">RESTART.1</span></code>, <code class="docutils literal notranslate"><span class="pre">LATEST</span></code>, <code class="docutils literal notranslate"><span class="pre">GEOMETRY</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">GEOMETRY.xyz</span></code>. The orbitals for the next call stay in memory. <code class="docutils literal notranslate"><span class="pre">cpmd.x</span></code>
+writes those four files in <code class="docutils literal notranslate"><span class="pre">permanent_dir</span></code> when that key is set, otherwise
+in <code class="docutils literal notranslate"><span class="pre">scratch_dir</span></code>, otherwise in the working directory.</p>
+<p>eOn’s own files are written by rank 0. The names depend on the job.</p>
+</section>
+<section id="a-point">
+<h3>A point<a class="headerlink" href="#a-point" title="Link to this heading">¶</a></h3>
+<p>The geometry is <code class="docutils literal notranslate"><span class="pre">pos.con</span></code>. <code class="docutils literal notranslate"><span class="pre">ranks_per_image</span> <span class="pre">=</span> <span class="pre">0</span></code> is one group of all
+ranks. One process is that group.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Main]</span>
+</span><span data-line="2"><span class="na">job</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">point</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">[Potential]</span>
+</span><span data-line="5"><span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">rgpot</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="k">[RgpotPot]</span>
+</span><span data-line="8"><span class="na">backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">cpmdc</span>
+</span><span data-line="9"><span class="na">params_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">cluster.params.bin</span>
+</span><span data-line="10"><span class="na">ranks_per_image</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0</span>
+</span></pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">eonclient
+</span></pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">results.dat</span></code> records the energy in eV, the maximum force in eV/A, the
+force-call count, and the termination status.</p>
+<p><code class="docutils literal notranslate"><span class="pre">mpirun</span> <span class="pre">-np</span> <span class="pre">4</span> <span class="pre">eonclient</span></code> with the same <code class="docutils literal notranslate"><span class="pre">ranks_per_image</span></code> is still one
+group. Those 4 ranks share one CPMD session. Rank 0 runs the job. The
+other ranks serve force requests.</p>
+</section>
+<section id="a-minimization">
+<h3>A minimization<a class="headerlink" href="#a-minimization" title="Link to this heading">¶</a></h3>
+<p>The input geometry is <code class="docutils literal notranslate"><span class="pre">pos.con</span></code>. The job writes <code class="docutils literal notranslate"><span class="pre">min.con</span></code> and
+<code class="docutils literal notranslate"><span class="pre">results.dat</span></code>. <code class="docutils literal notranslate"><span class="pre">min.con</span></code> is the minimized structure. <code class="docutils literal notranslate"><span class="pre">results.dat</span></code> records
+the energy in eV, the force-call count, and whether the run converged.</p>
+<p><code class="docutils literal notranslate"><span class="pre">converged_force</span></code> is a threshold in eV/A.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Main]</span>
+</span><span data-line="2"><span class="na">job</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">minimization</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">[Potential]</span>
+</span><span data-line="5"><span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">rgpot</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="k">[Optimizer]</span>
+</span><span data-line="8"><span class="na">opt_method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">lbfgs</span>
+</span><span data-line="9"><span class="na">converged_force</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0.01</span>
+</span><span data-line="10"><span class="na">max_iterations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1000</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="k">[RgpotPot]</span>
+</span><span data-line="13"><span class="na">backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">cpmdc</span>
+</span><span data-line="14"><span class="na">params_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">cluster.params.bin</span>
+</span><span data-line="15"><span class="na">ranks_per_image</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0</span>
+</span></pre></div>
+</div>
+<p>Launch it with the same <code class="docutils literal notranslate"><span class="pre">eonclient</span></code> or <code class="docutils literal notranslate"><span class="pre">mpirun</span></code> line as the point job.</p>
+</section>
+<section id="a-7-image-nudged-elastic-band-neb">
+<h3>A 7-image nudged elastic band (NEB)<a class="headerlink" href="#a-7-image-nudged-elastic-band-neb" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">images</span> <span class="pre">=</span> <span class="pre">7</span></code> asks for 7 intermediate images. A band update evaluates
+each image whose positions changed.</p>
+<p>The reactant and the product are one batch at the start. The reactant
+runs on group 0. The product runs on group 1.</p>
+<p>Seven groups of 4 ranks need 28 ranks. Intermediate image 1 runs on
+group 0, and image 7 runs on group 6. An update that skips an image
+leaves the others on those groups.</p>
+<p>The run reads <code class="docutils literal notranslate"><span class="pre">reactant.con</span></code> and <code class="docutils literal notranslate"><span class="pre">product.con</span></code>.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Main]</span>
+</span><span data-line="2"><span class="na">job</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">nudged_elastic_band</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">[Potential]</span>
+</span><span data-line="5"><span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">rgpot</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="k">[Optimizer]</span>
+</span><span data-line="8"><span class="na">opt_method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">lbfgs</span>
+</span><span data-line="9"><span class="na">converged_force</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0.01</span>
+</span><span data-line="10"><span class="na">max_iterations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1000</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="k">[Nudged Elastic Band]</span>
+</span><span data-line="13"><span class="na">images</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">7</span>
+</span><span data-line="14"><span class="na">converged_force</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0.01</span>
+</span><span data-line="15">
+</span><span data-line="16"><span class="k">[RgpotPot]</span>
+</span><span data-line="17"><span class="na">backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">cpmdc</span>
+</span><span data-line="18"><span class="na">params_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">cluster.params.bin</span>
+</span><span data-line="19"><span class="na">ranks_per_image</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">4</span>
+</span></pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">mpirun<span class="w"> </span>-np<span class="w"> </span><span class="m">28</span><span class="w"> </span>eonclient
+</span></pre></div>
+</div>
+<p>Rank 0 runs the job and writes the files. The other ranks serve force
+requests. At exit, rank 0 sends a stop. Every rank calls <code class="docutils literal notranslate"><span class="pre">cpmdc_finalize</span></code>
+while MPI is still up, then <code class="docutils literal notranslate"><span class="pre">MPI_Finalize</span></code>, then <code class="docutils literal notranslate"><span class="pre">_Exit</span></code>. <code class="docutils literal notranslate"><span class="pre">_Exit</span></code> returns
+to the kernel, and the dynamic linker does not run the CPMD or MPI
+library destructors on a finalized world. Worker ranks use status 0.
+Rank 0 uses the job status, and a calculator error on another rank is
+part of the message it prints.</p>
+<p>The job writes <code class="docutils literal notranslate"><span class="pre">results.dat</span></code>, <code class="docutils literal notranslate"><span class="pre">neb.con</span></code>, <code class="docutils literal notranslate"><span class="pre">neb.dat</span></code>, and <code class="docutils literal notranslate"><span class="pre">sp.con</span></code>.
+<code class="docutils literal notranslate"><span class="pre">sp.con</span></code> is the highest-energy image. A spline maximum more than 0.05 eV
+above the reactant also produces <code class="docutils literal notranslate"><span class="pre">peak00_pos.con</span></code> and <code class="docutils literal notranslate"><span class="pre">peak00_mode.dat</span></code>,
+numbered from <code class="docutils literal notranslate"><span class="pre">00</span></code>. The default of <code class="docutils literal notranslate"><span class="pre">setup_mmf_peaks</span></code> leaves those files on.</p>
+</section>
+</section>
+<section id="socketnwchem">
+<h2>SocketNWChem<a class="headerlink" href="#socketnwchem" title="Link to this heading">¶</a></h2>
+<p>SocketNWChem speaks the i-PI socket, and eOn listens. The direct potential
+(RGPOT) loads <code class="docutils literal notranslate"><span class="pre">libnwchemc.so</span></code> or <code class="docutils literal notranslate"><span class="pre">libcpmdc.so</span></code> in the eOn process.
+SocketNWChem keeps an external NWChem process warm across calls. RGPOT
+keeps one session, and that session keeps the orbitals.</p>
 </section>
 <section id="implementation-notes">
 <h2>Implementation notes<a class="headerlink" href="#implementation-notes" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">RgpotPot</span></code> (eOn <code class="docutils literal notranslate"><span class="pre">Potential</span></code>) owns an opaque <code class="docutils literal notranslate"><span class="pre">RGPotEngine</span></code> TU that includes
-<strong>only</strong> rgpot headers — avoids Cap’n Proto type name <code class="docutils literal notranslate"><span class="pre">Potential</span></code> colliding
-with eOn’s <code class="docutils literal notranslate"><span class="pre">Potential</span></code> class.</p></li>
-<li><p>Forces and energies use eOn units (eV, eV/Å) after rgpot conversion from
-Hartree / Hartree·bohr⁻¹.</p></li>
-</ul>
+<p><code class="docutils literal notranslate"><span class="pre">RgpotPot</span></code> owns one translation unit. That unit includes rgpot headers and
+no eOn potential header. The Cap’n Proto name <code class="docutils literal notranslate"><span class="pre">Potential</span></code> stays off eOn’s
+<code class="docutils literal notranslate"><span class="pre">Potential</span></code> class.</p>
+<p>Energies are in eV and forces are in eV/A. rgpot converts the Hartree and
+Hartree/bohr values that the engine returns.</p>
 </section>
 </section>
 

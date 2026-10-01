@@ -27,7 +27,8 @@ var BaseStructures_8h =
       [ "eonc::JobType::Monte_Carlo", "namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a9de6455dd98217681c11484dd32f373b", null ],
       [ "eonc::JobType::Test", "namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a0cbc6611f5540bd0809a388dc95a615b", null ],
       [ "eonc::JobType::GP_Surrogate", "namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379aaff099e938d23e84611548dcfd6be790", null ],
-      [ "eonc::JobType::OH_TST", "namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ac293911fe4119863c48c2c41e7cf1b6e", null ]
+      [ "eonc::JobType::OH_TST", "namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ac293911fe4119863c48c2c41e7cf1b6e", null ],
+      [ "eonc::JobType::Instanton", "namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ae9f086a13f4f6c7b47b2e6b9ea36f476", null ]
     ] ],
     [ "eonc::NEBInit", "namespaceeonc.html#a323be6616e43feab55a65202288b9459", [
       [ "eonc::NEBInit::LINEAR", "namespaceeonc.html#a323be6616e43feab55a65202288b9459aaac544aacc3615aada24897a215f5046", null ],

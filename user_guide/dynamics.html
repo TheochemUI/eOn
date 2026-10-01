@@ -130,6 +130,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="lanczos.html">Lanczos</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="akmc.html">Adaptive kinetic Monte Carlo</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="saddle_search.html">Saddle search</a></li>
@@ -198,7 +199,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
@@ -216,6 +216,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.process_catalog.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_catalog</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 </ul>
@@ -224,6 +225,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.5.0/index.html">[v3.5.0] - 2026-10-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.5.0/release-notes.html">eOn 3.5.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
 </ul>
@@ -325,16 +330,24 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#langevin-thermostat">Langevin thermostat</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#path-integral-sampling">Path-integral sampling</a></li>
 <li><a class="reference internal" href="#time-parameters">Time parameters</a></li>
 <li><a class="reference internal" href="#configuration">Configuration</a><ul>
 <li><a class="reference internal" href="#eon.schema.DynamicsConfig"><code class="docutils literal notranslate"><span class="pre">DynamicsConfig</span></code></a><ul>
-<li><a class="reference internal" href="#eon.schema.DynamicsConfig.andersen_alpha"><code class="docutils literal notranslate">andersen_alpha</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.DynamicsConfig.andersen_collision_period"><code class="docutils literal notranslate">andersen_collision_period</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.DynamicsConfig.langevin_friction"><code class="docutils literal notranslate">langevin_friction</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.DynamicsConfig.nose_mass"><code class="docutils literal notranslate">nose_mass</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.DynamicsConfig.thermostat"><code class="docutils literal notranslate">thermostat</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.DynamicsConfig.time"><code class="docutils literal notranslate">time</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.DynamicsConfig.time_step"><code class="docutils literal notranslate">time_step</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.DynamicsConfig.time"><code class="docutils literal notranslate">time</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.DynamicsConfig.thermostat"><code class="docutils literal notranslate">thermostat</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.DynamicsConfig.path_beads"><code class="docutils literal notranslate">path_beads</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.DynamicsConfig.path_springs"><code class="docutils literal notranslate">path_springs</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.DynamicsConfig.path_eco_omega_max"><code class="docutils literal notranslate">path_eco_omega_max</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.DynamicsConfig.path_gle_file"><code class="docutils literal notranslate">path_gle_file</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.DynamicsConfig.path_pile_tau"><code class="docutils literal notranslate">path_pile_tau</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.DynamicsConfig.path_pile_scale"><code class="docutils literal notranslate">path_pile_scale</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.DynamicsConfig.path_seed"><code class="docutils literal notranslate">path_seed</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.DynamicsConfig.andersen_collision_period"><code class="docutils literal notranslate">andersen_collision_period</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.DynamicsConfig.andersen_alpha"><code class="docutils literal notranslate">andersen_alpha</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.DynamicsConfig.nose_mass"><code class="docutils literal notranslate">nose_mass</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.DynamicsConfig.langevin_friction"><code class="docutils literal notranslate">langevin_friction</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -466,7 +479,7 @@ building block for accelerated methods (Parallel Replica, TAD, Hyperdynamics).</
 </div>
 <section id="thermostats">
 <h2>Thermostats<a class="headerlink" href="#thermostats" title="Link to this heading">¶</a></h2>
-<p>Four thermostat options are available:</p>
+<p>Six thermostat options are available:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -491,6 +504,14 @@ building block for accelerated methods (Parallel Replica, TAD, Hyperdynamics).</
 <tr class="row-odd"><td><p><strong>None</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">none</span></code></p></td>
 <td><p>NVE ensemble (constant energy, no temperature control)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>PILE</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pile</span></code></p></td>
+<td><p>Ring-polymer Langevin equation on the normal modes</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>PIGLET</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">piglet</span></code></p></td>
+<td><p>Normal-mode GLE on the internal modes, Langevin on the centroid</p></td>
 </tr>
 </tbody>
 </table>
@@ -517,6 +538,39 @@ coupling strength to the heat bath:</p>
 </div>
 </section>
 </section>
+<section id="path-integral-sampling">
+<h2>Path-integral sampling<a class="headerlink" href="#path-integral-sampling" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">pile</span></code> and <code class="docutils literal notranslate"><span class="pre">piglet</span></code> integrate a ring polymer. The velocity Verlet step
+above stays the classical update and does not move the beads. Each step
+evaluates every bead in one force batch, so calculator groups carry the
+beads together.</p>
+<p><code class="docutils literal notranslate"><span class="pre">path_beads</span></code> is the bead count. <code class="docutils literal notranslate"><span class="pre">path_springs</span> <span class="pre">=</span> <span class="pre">trotter</span></code> uses the
+primitive ring-polymer frequencies. <code class="docutils literal notranslate"><span class="pre">path_springs</span> <span class="pre">=</span> <span class="pre">eco</span></code> uses economised
+springs fitted to harmonic radii of gyration up to <code class="docutils literal notranslate"><span class="pre">path_eco_omega_max</span></code>.
+Economised springs are refused with <code class="docutils literal notranslate"><span class="pre">piglet</span></code>. The instanton refuses them
+as well, because that discretisation assumes Trotter springs.</p>
+<p><code class="docutils literal notranslate"><span class="pre">path_eco_omega_max</span></code> is an angular frequency in inverse internal time
+units. One internal time unit is 10.18 fs, so 1.0 is 9.82e13 rad/s and
+hbar omega = 0.0647 eV.</p>
+<p><code class="docutils literal notranslate"><span class="pre">piglet</span></code> reads one drift matrix and one covariance per internal mode from
+<code class="docutils literal notranslate"><span class="pre">path_gle_file</span></code>. The file holds the mode count and the matrix size, then
+for each mode the drift matrix and the covariance, row by row. The drift
+matrix is in inverse internal time units. The covariance is in kelvin:
+kB times it is the covariance of the mass-scaled extended momenta in eV,
+so a canonical GLE at the ring temperature has N T on the diagonal, with
+N = <code class="docutils literal notranslate"><span class="pre">path_beads</span></code> and T the <code class="docutils literal notranslate"><span class="pre">[Main]</span></code> temperature. A file with one matrix
+pair fewer than the bead count covers the internal modes; one with a pair
+per bead skips the first, centroid, pair. The centroid keeps a separate
+Langevin thermostat.
+<code class="docutils literal notranslate"><span class="pre">path_pile_tau</span></code> is that damping time in femtoseconds, and
+<code class="docutils literal notranslate"><span class="pre">path_pile_scale</span></code> multiplies the critical damping of the internal modes
+when the thermostat is <code class="docutils literal notranslate"><span class="pre">pile</span></code>. <code class="docutils literal notranslate"><span class="pre">path_seed</span></code> seeds the path-integral
+random numbers.</p>
+<p>The sampler can hold the centroid on a hyperplane and average the
+Cartesian force along the normal. That average is the mean force for
+thermodynamic integration along a band. Its negative is the derivative
+of the potential of mean force.</p>
+</section>
 <section id="time-parameters">
 <h2>Time parameters<a class="headerlink" href="#time-parameters" title="Link to this heading">¶</a></h2>
 <p>All times are specified in femtoseconds (fs). The internal time unit conversion
@@ -535,114 +589,30 @@ is handled automatically.</p>
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="eon.schema.DynamicsConfig">
 <span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">DynamicsConfig</span></span><a class="reference internal" href="../_modules/eon_schema/config/models.html#DynamicsConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.DynamicsConfig" title="Link to this definition">¶</a></dt>
-<dd><p><details  class="autodoc_pydantic_collapsable_json">
-<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
-</span><span data-line="2"><span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DynamicsConfig&quot;</span><span class="p">,</span>
-</span><span data-line="3"><span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
-</span><span data-line="4"><span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="5"><span class="w">      </span><span class="nt">&quot;time_step&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="6"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
-</span><span data-line="7"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The duration of each MD step, in femtoseconds.&quot;</span><span class="p">,</span>
-</span><span data-line="8"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Time Step&quot;</span><span class="p">,</span>
-</span><span data-line="9"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="10"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="11"><span class="w">      </span><span class="nt">&quot;time&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="12"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
-</span><span data-line="13"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Total MD time, in femtoseconds.&quot;</span><span class="p">,</span>
-</span><span data-line="14"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Time&quot;</span><span class="p">,</span>
-</span><span data-line="15"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="16"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="17"><span class="w">      </span><span class="nt">&quot;thermostat&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="18"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
-</span><span data-line="19"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Thermostat to use for the dynamics simulation.&quot;</span><span class="p">,</span>
-</span><span data-line="20"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span data-line="21"><span class="w">            </span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
-</span><span data-line="22"><span class="w">            </span><span class="s2">&quot;andersen&quot;</span><span class="p">,</span>
-</span><span data-line="23"><span class="w">            </span><span class="s2">&quot;langevin&quot;</span><span class="p">,</span>
-</span><span data-line="24"><span class="w">            </span><span class="s2">&quot;nose_hoover&quot;</span>
-</span><span data-line="25"><span class="w">         </span><span class="p">],</span>
-</span><span data-line="26"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Thermostat&quot;</span><span class="p">,</span>
-</span><span data-line="27"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="28"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="29"><span class="w">      </span><span class="nt">&quot;andersen_collision_period&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="30"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span><span class="p">,</span>
-</span><span data-line="31"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The collision period (in fs) for the Andersen thermostat.&quot;</span><span class="p">,</span>
-</span><span data-line="32"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Andersen Collision Period&quot;</span><span class="p">,</span>
-</span><span data-line="33"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="34"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="35"><span class="w">      </span><span class="nt">&quot;andersen_alpha&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="36"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
-</span><span data-line="37"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The collision strength in the Andersen thermostat.&quot;</span><span class="p">,</span>
-</span><span data-line="38"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Andersen Alpha&quot;</span><span class="p">,</span>
-</span><span data-line="39"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="40"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="41"><span class="w">      </span><span class="nt">&quot;nose_mass&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="42"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
-</span><span data-line="43"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The effective mass of the additional degree of freedom in the Nos\u00e9-Hoover thermostat, which determines the coupling frequency of the thermostat.&quot;</span><span class="p">,</span>
-</span><span data-line="44"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Nose Mass&quot;</span><span class="p">,</span>
-</span><span data-line="45"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="46"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="47"><span class="w">      </span><span class="nt">&quot;langevin_friction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="48"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.01</span><span class="p">,</span>
-</span><span data-line="49"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The damping coefficient for Langevin dynamics (1/fs).&quot;</span><span class="p">,</span>
-</span><span data-line="50"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Langevin Friction&quot;</span><span class="p">,</span>
-</span><span data-line="51"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="52"><span class="w">      </span><span class="p">}</span>
-</span><span data-line="53"><span class="w">   </span><span class="p">}</span>
-</span><span data-line="54"><span class="p">}</span>
-</span></pre></div>
-</div>
-</details></p><dl class="field-list simple">
-<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
-</ul>
-</dd>
-<dt class="field-even">Fields<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">andersen_alpha</span> <span class="pre">(float)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">andersen_collision_period</span> <span class="pre">(float)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">langevin_friction</span> <span class="pre">(float)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nose_mass</span> <span class="pre">(float)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">thermostat</span> <span class="pre">(Literal['none',</span> <span class="pre">'andersen',</span> <span class="pre">'langevin',</span> <span class="pre">'nose_hoover'])</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">time</span> <span class="pre">(float)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_step</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">time</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">thermostat</span> <span class="pre">(Literal['none',</span> <span class="pre">'andersen',</span> <span class="pre">'langevin',</span> <span class="pre">'nose_hoover',</span> <span class="pre">'pile',</span> <span class="pre">'piglet'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">path_beads</span> <span class="pre">(int)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">path_springs</span> <span class="pre">(Literal['trotter',</span> <span class="pre">'eco'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">path_eco_omega_max</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">path_gle_file</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">path_pile_tau</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">path_pile_scale</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">path_seed</span> <span class="pre">(int)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">andersen_collision_period</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">andersen_alpha</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nose_mass</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">langevin_friction</span> <span class="pre">(float)</span></code></p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.DynamicsConfig.andersen_alpha">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">andersen_alpha</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></span><a class="headerlink" href="#eon.schema.DynamicsConfig.andersen_alpha" title="Link to this definition">¶</a></dt>
-<dd><p>The collision strength in the Andersen thermostat.</p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.DynamicsConfig.andersen_collision_period">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">andersen_collision_period</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100.0</span></span><a class="headerlink" href="#eon.schema.DynamicsConfig.andersen_collision_period" title="Link to this definition">¶</a></dt>
-<dd><p>The collision period (in fs) for the Andersen thermostat.</p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.DynamicsConfig.langevin_friction">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">langevin_friction</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.01</span></span><a class="headerlink" href="#eon.schema.DynamicsConfig.langevin_friction" title="Link to this definition">¶</a></dt>
-<dd><p>The damping coefficient for Langevin dynamics (1/fs).</p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.DynamicsConfig.nose_mass">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">nose_mass</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></span><a class="headerlink" href="#eon.schema.DynamicsConfig.nose_mass" title="Link to this definition">¶</a></dt>
-<dd><p>The effective mass of the additional degree of freedom in the Nosé-Hoover thermostat, which determines the coupling frequency of the thermostat.</p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.DynamicsConfig.thermostat">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">thermostat</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'andersen'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'langevin'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'nose_hoover'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'none'</span></span><a class="headerlink" href="#eon.schema.DynamicsConfig.thermostat" title="Link to this definition">¶</a></dt>
-<dd><p>Options:
-- <code class="docutils literal notranslate"><span class="pre">none</span></code>: NVE dynamics with the verlet algorithm. Initial velocities set by temperature.
-- <code class="docutils literal notranslate"><span class="pre">andersen</span></code>: Andersen thermostat with the Verlet algorithm.
-- <code class="docutils literal notranslate"><span class="pre">langevin</span></code>: Langevin thermostat with the Verlet algorithm.
-- <code class="docutils literal notranslate"><span class="pre">nose_hoover</span></code>: Nosé-Hoover thermostat with the Verlet algorithm.</p>
-<p>Thermostat to use for the dynamics simulation.</p>
+<dt class="sig sig-object py" id="eon.schema.DynamicsConfig.time_step">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">time_step</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></span><a class="headerlink" href="#eon.schema.DynamicsConfig.time_step" title="Link to this definition">¶</a></dt>
+<dd><p>The duration of each MD step, in femtoseconds.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -652,9 +622,117 @@ is handled automatically.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.DynamicsConfig.time_step">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">time_step</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></span><a class="headerlink" href="#eon.schema.DynamicsConfig.time_step" title="Link to this definition">¶</a></dt>
-<dd><p>The duration of each MD step, in femtoseconds.</p>
+<dt class="sig sig-object py" id="eon.schema.DynamicsConfig.thermostat">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">thermostat</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'andersen'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'langevin'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'nose_hoover'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pile'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'piglet'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'none'</span></span><a class="headerlink" href="#eon.schema.DynamicsConfig.thermostat" title="Link to this definition">¶</a></dt>
+<dd><p>Options:
+- <code class="docutils literal notranslate"><span class="pre">none</span></code>: NVE dynamics with the verlet algorithm. Initial velocities set by temperature.
+- <code class="docutils literal notranslate"><span class="pre">andersen</span></code>: Andersen thermostat with the Verlet algorithm.
+- <code class="docutils literal notranslate"><span class="pre">langevin</span></code>: Langevin thermostat with the Verlet algorithm.
+- <code class="docutils literal notranslate"><span class="pre">nose_hoover</span></code>: Nosé-Hoover thermostat with the Verlet algorithm.
+- <code class="docutils literal notranslate"><span class="pre">pile</span></code>: path-integral Langevin equation on the ring-polymer normal modes.
+- <code class="docutils literal notranslate"><span class="pre">piglet</span></code>: normal-mode GLE on the internal modes, Langevin on the centroid.</p>
+<p>Thermostat to use for the dynamics simulation.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.DynamicsConfig.path_beads">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">path_beads</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></span><a class="headerlink" href="#eon.schema.DynamicsConfig.path_beads" title="Link to this definition">¶</a></dt>
+<dd><p>Beads in a pile or piglet trajectory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Constraints<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ge</strong> = 1</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.DynamicsConfig.path_springs">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">path_springs</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'trotter'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'eco'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'trotter'</span></span><a class="headerlink" href="#eon.schema.DynamicsConfig.path_springs" title="Link to this definition">¶</a></dt>
+<dd><p>Trotter ring-polymer springs, or economised springs. eco is refused with piglet.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.DynamicsConfig.path_eco_omega_max">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">path_eco_omega_max</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#eon.schema.DynamicsConfig.path_eco_omega_max" title="Link to this definition">¶</a></dt>
+<dd><p>Highest physical frequency, in internal frequency units, reproduced by economised springs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Constraints<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ge</strong> = 0.0</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.DynamicsConfig.path_gle_file">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">path_gle_file</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.DynamicsConfig.path_gle_file" title="Link to this definition">¶</a></dt>
+<dd><p>Normal-mode GLE matrices for piglet. The file starts with the mode count and the matrix dimension, then each mode’s drift matrix and covariance.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.DynamicsConfig.path_pile_tau">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">path_pile_tau</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100.0</span></span><a class="headerlink" href="#eon.schema.DynamicsConfig.path_pile_tau" title="Link to this definition">¶</a></dt>
+<dd><p>Centroid Langevin damping time, in femtoseconds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Constraints<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gt</strong> = 0.0</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.DynamicsConfig.path_pile_scale">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">path_pile_scale</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></span><a class="headerlink" href="#eon.schema.DynamicsConfig.path_pile_scale" title="Link to this definition">¶</a></dt>
+<dd><p>Scales the critical damping of the internal PILE modes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Constraints<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gt</strong> = 0.0</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.DynamicsConfig.path_seed">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">path_seed</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></span><a class="headerlink" href="#eon.schema.DynamicsConfig.path_seed" title="Link to this definition">¶</a></dt>
+<dd><p>Seed for the path-integral random numbers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Constraints<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ge</strong> = 0</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.DynamicsConfig.andersen_collision_period">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">andersen_collision_period</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100.0</span></span><a class="headerlink" href="#eon.schema.DynamicsConfig.andersen_collision_period" title="Link to this definition">¶</a></dt>
+<dd><p>The collision period (in fs) for the Andersen thermostat.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.DynamicsConfig.andersen_alpha">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">andersen_alpha</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></span><a class="headerlink" href="#eon.schema.DynamicsConfig.andersen_alpha" title="Link to this definition">¶</a></dt>
+<dd><p>The collision strength in the Andersen thermostat.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.DynamicsConfig.nose_mass">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">nose_mass</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></span><a class="headerlink" href="#eon.schema.DynamicsConfig.nose_mass" title="Link to this definition">¶</a></dt>
+<dd><p>The effective mass of the additional degree of freedom in the Nosé-Hoover thermostat, which determines the coupling frequency of the thermostat.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.DynamicsConfig.langevin_friction">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">langevin_friction</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.01</span></span><a class="headerlink" href="#eon.schema.DynamicsConfig.langevin_friction" title="Link to this definition">¶</a></dt>
+<dd><p>The damping coefficient for Langevin dynamics (1/fs).</p>
 </dd></dl>
 
 </dd></dl>

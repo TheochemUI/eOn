@@ -263,11 +263,15 @@ Static Public Attributes</h2></td></tr>
 <tr class="memitem:a7779f64527a94d1d41e0af6dd857ef7e" id="r_a7779f64527a94d1d41e0af6dd857ef7e"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="#a7779f64527a94d1d41e0af6dd857ef7e">NOSE_HOOVER</a> [] = &quot;nose_hoover&quot;</td></tr>
 <tr class="memitem:a0c46f9199a2ba2c90b7e5f3573364c8e" id="r_a0c46f9199a2ba2c90b7e5f3573364c8e"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="#a0c46f9199a2ba2c90b7e5f3573364c8e">LANGEVIN</a> [] = &quot;langevin&quot;</td></tr>
 <tr class="memitem:a0834414d024777d5f9756577184f11b1" id="r_a0834414d024777d5f9756577184f11b1"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="#a0834414d024777d5f9756577184f11b1">NONE</a> [] = &quot;none&quot;</td></tr>
+<tr class="memitem:aa9a4e4ca0423d2cd06fae8868a8226a6" id="r_aa9a4e4ca0423d2cd06fae8868a8226a6"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="#aa9a4e4ca0423d2cd06fae8868a8226a6">PILE</a> [] = &quot;pile&quot;</td></tr>
+<tr class="memitem:ad584b93fc60c6ea8e9ff56af0aa17fd7" id="r_ad584b93fc60c6ea8e9ff56af0aa17fd7"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="#ad584b93fc60c6ea8e9ff56af0aa17fd7">PIGLET</a> [] = &quot;piglet&quot;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
 <tr class="memitem:a7f6f5112556f7cc342fd5c5314e337a7" id="r_a7f6f5112556f7cc342fd5c5314e337a7"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a7f6f5112556f7cc342fd5c5314e337a7">nhcChainHalfStep</a> (<a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;vel, double &amp;kinE)</td></tr>
 <tr class="memdesc:a7f6f5112556f7cc342fd5c5314e337a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">One Martyna-Klein-Tuckerman chain half-step.  <br /></td></tr>
+<tr class="memitem:adf2d17f4d4c012cd02f28748f643a8eb" id="r_adf2d17f4d4c012cd02f28748f643a8eb"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#adf2d17f4d4c012cd02f28748f643a8eb">runPathIntegral</a> ()</td></tr>
+<tr class="memdesc:adf2d17f4d4c012cd02f28748f643a8eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ring-polymer trajectory. Beads do not enter velocityVerlet.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -286,7 +290,7 @@ Private Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00054">54</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00070">70</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a95668e346bd07386455e275e4463c4ee" name="a95668e346bd07386455e275e4463c4ee"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a95668e346bd07386455e275e4463c4ee">&#9670;&#160;</a></span>Dynamics() <span class="overload">[1/2]</span></h2>
@@ -307,38 +311,38 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8cpp_source.html#l00025">25</a> of file <a class="el" href="Dynamics_8cpp_source.html">Dynamics.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   26</span>    : <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>{matter_in},</div>
-<div class="line"><span class="lineno">   27</span>      <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>{config} {</div>
-<div class="line"><span class="lineno">   28</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>) {</div>
-<div class="line"><span class="lineno">   29</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;Dynamics: null Matter&quot;</span>);</div>
-<div class="line"><span class="lineno">   30</span>  }</div>
-<div class="line"><span class="lineno">   31</span>  <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a> = <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.time_step;</div>
-<div class="line"><span class="lineno">   32</span>  <a class="code hl_variable" href="#ac299b2c0ef6ce41d257a0991b05f0795">nAtoms</a> = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;numberOfAtoms();</div>
-<div class="line"><span class="lineno">   33</span>  <span class="comment">// Unfixed axes only. A partly fixed atom is not three degrees of freedom.</span></div>
-<div class="line"><span class="lineno">   34</span>  <a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a> = 0;</div>
-<div class="line"><span class="lineno">   35</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#ac299b2c0ef6ce41d257a0991b05f0795">nAtoms</a>; ++i) {</div>
-<div class="line"><span class="lineno">   36</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> axis = 0; axis &lt; 3; ++axis) {</div>
-<div class="line"><span class="lineno">   37</span>      <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getFixed(i, axis)) {</div>
-<div class="line"><span class="lineno">   38</span>        ++<a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a>;</div>
-<div class="line"><span class="lineno">   39</span>      }</div>
-<div class="line"><span class="lineno">   40</span>    }</div>
-<div class="line"><span class="lineno">   41</span>  }</div>
-<div class="line"><span class="lineno">   42</span>  <a class="code hl_variable" href="#a33f2222119739a4478e3f4142f06d903">temperature</a> = <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.temperature;</div>
-<div class="line"><span class="lineno">   43</span>  <a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> = <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.kB;</div>
-<div class="line"><span class="lineno">   44</span>  <a class="code hl_variable" href="#abf77bb6d483d2c8933766b4df171b6b8">vxi1</a> = <a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a> = <a class="code hl_variable" href="#a807105f7a74f8556cbd70dc7be0b0ff6">xi1</a> = <a class="code hl_variable" href="#ab36498b538f946040888092485530d6e">xi2</a> = 0.0;</div>
-<div class="line"><span class="lineno">   45</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_a00902b7db57a1a0854fb6eaa00a153c5"><div class="ttname"><a href="#a00902b7db57a1a0854fb6eaa00a153c5">eonc::Dynamics::kB</a></div><div class="ttdeci">double kB</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00091">Dynamics.h:91</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_a09e086d5b2ee8480421a165ee4bdbc5b"><div class="ttname"><a href="#a09e086d5b2ee8480421a165ee4bdbc5b">eonc::Dynamics::nFreeCoords</a></div><div class="ttdeci">long nFreeCoords</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00085">Dynamics.h:85</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_a33f2222119739a4478e3f4142f06d903"><div class="ttname"><a href="#a33f2222119739a4478e3f4142f06d903">eonc::Dynamics::temperature</a></div><div class="ttdeci">double temperature</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00092">Dynamics.h:92</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_a5bdde1675a66664085195542d4fd71bc"><div class="ttname"><a href="#a5bdde1675a66664085195542d4fd71bc">eonc::Dynamics::dt</a></div><div class="ttdeci">double dt</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00090">Dynamics.h:90</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_a75d7ca3d6afd69c60f2688bcf2708a91"><div class="ttname"><a href="#a75d7ca3d6afd69c60f2688bcf2708a91">eonc::Dynamics::vxi2</a></div><div class="ttdeci">double vxi2</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00093">Dynamics.h:93</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_a805fd401748e71c8839864f1b10312b5"><div class="ttname"><a href="#a805fd401748e71c8839864f1b10312b5">eonc::Dynamics::matter</a></div><div class="ttdeci">Matter * matter</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00087">Dynamics.h:87</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_a807105f7a74f8556cbd70dc7be0b0ff6"><div class="ttname"><a href="#a807105f7a74f8556cbd70dc7be0b0ff6">eonc::Dynamics::xi1</a></div><div class="ttdeci">double xi1</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00093">Dynamics.h:93</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_ab36498b538f946040888092485530d6e"><div class="ttname"><a href="#ab36498b538f946040888092485530d6e">eonc::Dynamics::xi2</a></div><div class="ttdeci">double xi2</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00093">Dynamics.h:93</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_abf77bb6d483d2c8933766b4df171b6b8"><div class="ttname"><a href="#abf77bb6d483d2c8933766b4df171b6b8">eonc::Dynamics::vxi1</a></div><div class="ttdeci">double vxi1</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00093">Dynamics.h:93</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_ac299b2c0ef6ce41d257a0991b05f0795"><div class="ttname"><a href="#ac299b2c0ef6ce41d257a0991b05f0795">eonc::Dynamics::nAtoms</a></div><div class="ttdeci">long nAtoms</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00085">Dynamics.h:85</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_aea90b98d375c91f2c534b7e5b522276a"><div class="ttname"><a href="#aea90b98d375c91f2c534b7e5b522276a">eonc::Dynamics::m_config</a></div><div class="ttdeci">DynamicsConfig m_config</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00088">Dynamics.h:88</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8cpp_source.html#l00029">29</a> of file <a class="el" href="Dynamics_8cpp_source.html">Dynamics.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   30</span>    : <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>{matter_in},</div>
+<div class="line"><span class="lineno">   31</span>      <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>{config} {</div>
+<div class="line"><span class="lineno">   32</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>) {</div>
+<div class="line"><span class="lineno">   33</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;Dynamics: null Matter&quot;</span>);</div>
+<div class="line"><span class="lineno">   34</span>  }</div>
+<div class="line"><span class="lineno">   35</span>  <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a> = <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.time_step;</div>
+<div class="line"><span class="lineno">   36</span>  <a class="code hl_variable" href="#ac299b2c0ef6ce41d257a0991b05f0795">nAtoms</a> = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;numberOfAtoms();</div>
+<div class="line"><span class="lineno">   37</span>  <span class="comment">// Unfixed axes only. A partly fixed atom is not three degrees of freedom.</span></div>
+<div class="line"><span class="lineno">   38</span>  <a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a> = 0;</div>
+<div class="line"><span class="lineno">   39</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#ac299b2c0ef6ce41d257a0991b05f0795">nAtoms</a>; ++i) {</div>
+<div class="line"><span class="lineno">   40</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> axis = 0; axis &lt; 3; ++axis) {</div>
+<div class="line"><span class="lineno">   41</span>      <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getFixed(i, axis)) {</div>
+<div class="line"><span class="lineno">   42</span>        ++<a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a>;</div>
+<div class="line"><span class="lineno">   43</span>      }</div>
+<div class="line"><span class="lineno">   44</span>    }</div>
+<div class="line"><span class="lineno">   45</span>  }</div>
+<div class="line"><span class="lineno">   46</span>  <a class="code hl_variable" href="#a33f2222119739a4478e3f4142f06d903">temperature</a> = <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.temperature;</div>
+<div class="line"><span class="lineno">   47</span>  <a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> = <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.kB;</div>
+<div class="line"><span class="lineno">   48</span>  <a class="code hl_variable" href="#abf77bb6d483d2c8933766b4df171b6b8">vxi1</a> = <a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a> = <a class="code hl_variable" href="#a807105f7a74f8556cbd70dc7be0b0ff6">xi1</a> = <a class="code hl_variable" href="#ab36498b538f946040888092485530d6e">xi2</a> = 0.0;</div>
+<div class="line"><span class="lineno">   49</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_a00902b7db57a1a0854fb6eaa00a153c5"><div class="ttname"><a href="#a00902b7db57a1a0854fb6eaa00a153c5">eonc::Dynamics::kB</a></div><div class="ttdeci">double kB</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00111">Dynamics.h:111</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_a09e086d5b2ee8480421a165ee4bdbc5b"><div class="ttname"><a href="#a09e086d5b2ee8480421a165ee4bdbc5b">eonc::Dynamics::nFreeCoords</a></div><div class="ttdeci">long nFreeCoords</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00105">Dynamics.h:105</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_a33f2222119739a4478e3f4142f06d903"><div class="ttname"><a href="#a33f2222119739a4478e3f4142f06d903">eonc::Dynamics::temperature</a></div><div class="ttdeci">double temperature</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00112">Dynamics.h:112</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_a5bdde1675a66664085195542d4fd71bc"><div class="ttname"><a href="#a5bdde1675a66664085195542d4fd71bc">eonc::Dynamics::dt</a></div><div class="ttdeci">double dt</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00110">Dynamics.h:110</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_a75d7ca3d6afd69c60f2688bcf2708a91"><div class="ttname"><a href="#a75d7ca3d6afd69c60f2688bcf2708a91">eonc::Dynamics::vxi2</a></div><div class="ttdeci">double vxi2</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00113">Dynamics.h:113</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_a805fd401748e71c8839864f1b10312b5"><div class="ttname"><a href="#a805fd401748e71c8839864f1b10312b5">eonc::Dynamics::matter</a></div><div class="ttdeci">Matter * matter</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00107">Dynamics.h:107</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_a807105f7a74f8556cbd70dc7be0b0ff6"><div class="ttname"><a href="#a807105f7a74f8556cbd70dc7be0b0ff6">eonc::Dynamics::xi1</a></div><div class="ttdeci">double xi1</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00113">Dynamics.h:113</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_ab36498b538f946040888092485530d6e"><div class="ttname"><a href="#ab36498b538f946040888092485530d6e">eonc::Dynamics::xi2</a></div><div class="ttdeci">double xi2</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00113">Dynamics.h:113</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_abf77bb6d483d2c8933766b4df171b6b8"><div class="ttname"><a href="#abf77bb6d483d2c8933766b4df171b6b8">eonc::Dynamics::vxi1</a></div><div class="ttdeci">double vxi1</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00113">Dynamics.h:113</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_ac299b2c0ef6ce41d257a0991b05f0795"><div class="ttname"><a href="#ac299b2c0ef6ce41d257a0991b05f0795">eonc::Dynamics::nAtoms</a></div><div class="ttdeci">long nAtoms</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00105">Dynamics.h:105</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_aea90b98d375c91f2c534b7e5b522276a"><div class="ttname"><a href="#aea90b98d375c91f2c534b7e5b522276a">eonc::Dynamics::m_config</a></div><div class="ttdeci">DynamicsConfig m_config</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00108">Dynamics.h:108</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -369,10 +373,10 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00065">65</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   66</span>      : <a class="code hl_function" href="#a95668e346bd07386455e275e4463c4ee">Dynamics</a>(<a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>, <a class="code hl_function" href="structeonc_1_1DynamicsConfig.html#a1d5ebccd159cd2d5e56ec19306dbc234">DynamicsConfig::fromParams</a>(parameters)) {}</div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_a95668e346bd07386455e275e4463c4ee"><div class="ttname"><a href="#a95668e346bd07386455e275e4463c4ee">eonc::Dynamics::Dynamics</a></div><div class="ttdeci">Dynamics(Matter *matter, const DynamicsConfig &amp;config)</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8cpp_source.html#l00025">Dynamics.cpp:25</a></div></div>
-<div class="ttc" id="astructeonc_1_1DynamicsConfig_html_a1d5ebccd159cd2d5e56ec19306dbc234"><div class="ttname"><a href="structeonc_1_1DynamicsConfig.html#a1d5ebccd159cd2d5e56ec19306dbc234">eonc::DynamicsConfig::fromParams</a></div><div class="ttdeci">static DynamicsConfig fromParams(const Parameters &amp;p)</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00038">Dynamics.h:38</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00083">83</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   84</span>      : <a class="code hl_function" href="#a95668e346bd07386455e275e4463c4ee">Dynamics</a>(<a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>, <a class="code hl_function" href="structeonc_1_1DynamicsConfig.html#a1d5ebccd159cd2d5e56ec19306dbc234">DynamicsConfig::fromParams</a>(parameters)) {}</div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_a95668e346bd07386455e275e4463c4ee"><div class="ttname"><a href="#a95668e346bd07386455e275e4463c4ee">eonc::Dynamics::Dynamics</a></div><div class="ttdeci">Dynamics(Matter *matter, const DynamicsConfig &amp;config)</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8cpp_source.html#l00029">Dynamics.cpp:29</a></div></div>
+<div class="ttc" id="astructeonc_1_1DynamicsConfig_html_a1d5ebccd159cd2d5e56ec19306dbc234"><div class="ttname"><a href="structeonc_1_1DynamicsConfig.html#a1d5ebccd159cd2d5e56ec19306dbc234">eonc::DynamicsConfig::fromParams</a></div><div class="ttdeci">static DynamicsConfig fromParams(const Parameters &amp;p)</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00047">Dynamics.h:47</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -417,29 +421,29 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8cpp_source.html#l00154">154</a> of file <a class="el" href="Dynamics_8cpp_source.html">Dynamics.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  154</span>                                 {</div>
-<div class="line"><span class="lineno">  155</span>  <span class="keywordtype">double</span> alpha = <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.andersen_alpha;</div>
-<div class="line"><span class="lineno">  156</span>  <span class="keywordtype">double</span> tCol = <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.andersen_tcol;</div>
-<div class="line"><span class="lineno">  157</span>  <span class="keywordtype">double</span> pCol = 1.0 - std::exp(-<a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.time_step / tCol);</div>
-<div class="line"><span class="lineno">  158</span> </div>
-<div class="line"><span class="lineno">  159</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> velocity = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getVelocities();</div>
-<div class="line"><span class="lineno">  160</span>  <span class="keyword">auto</span> mass = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getMasses();</div>
-<div class="line"><span class="lineno">  161</span> </div>
-<div class="line"><span class="lineno">  162</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#ac299b2c0ef6ce41d257a0991b05f0795">nAtoms</a>; i++) {</div>
-<div class="line"><span class="lineno">  163</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="namespaceeonc_1_1rng.html#a699a6770b311d7f44a437f4f915bad69">eonc::rng::randomDouble</a>() &lt; pCol &amp;&amp; !<a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getFixed(i)) {</div>
-<div class="line"><span class="lineno">  164</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; 3; j++) {</div>
-<div class="line"><span class="lineno">  165</span>        <span class="keywordtype">double</span> vOld = velocity(i, j);</div>
-<div class="line"><span class="lineno">  166</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> vNew = (mass[i] &gt; 0.0 &amp;&amp; <a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> &gt; 0.0 &amp;&amp; <a class="code hl_variable" href="#a33f2222119739a4478e3f4142f06d903">temperature</a> &gt; 0.0)</div>
-<div class="line"><span class="lineno">  167</span>                                ? std::sqrt(<a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> * <a class="code hl_variable" href="#a33f2222119739a4478e3f4142f06d903">temperature</a> / mass[i]) *</div>
-<div class="line"><span class="lineno">  168</span>                                      <a class="code hl_function" href="namespaceeonc_1_1rng.html#acec44c143227d3b4957ed2c919a551c3">eonc::rng::gaussRandom</a>(0.0, 1.0)</div>
-<div class="line"><span class="lineno">  169</span>                                : 0.0;</div>
-<div class="line"><span class="lineno">  170</span>        velocity(i, j) = std::sqrt(1.0 - alpha * alpha) * vOld + alpha * vNew;</div>
-<div class="line"><span class="lineno">  171</span>      }</div>
-<div class="line"><span class="lineno">  172</span>    }</div>
-<div class="line"><span class="lineno">  173</span>  }</div>
-<div class="line"><span class="lineno">  174</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setVelocities(velocity);</div>
-<div class="line"><span class="lineno">  175</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8cpp_source.html#l00224">224</a> of file <a class="el" href="Dynamics_8cpp_source.html">Dynamics.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  224</span>                                 {</div>
+<div class="line"><span class="lineno">  225</span>  <span class="keywordtype">double</span> alpha = <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.andersen_alpha;</div>
+<div class="line"><span class="lineno">  226</span>  <span class="keywordtype">double</span> tCol = <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.andersen_tcol;</div>
+<div class="line"><span class="lineno">  227</span>  <span class="keywordtype">double</span> pCol = 1.0 - std::exp(-<a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.time_step / tCol);</div>
+<div class="line"><span class="lineno">  228</span> </div>
+<div class="line"><span class="lineno">  229</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> velocity = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getVelocities();</div>
+<div class="line"><span class="lineno">  230</span>  <span class="keyword">auto</span> mass = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getMasses();</div>
+<div class="line"><span class="lineno">  231</span> </div>
+<div class="line"><span class="lineno">  232</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#ac299b2c0ef6ce41d257a0991b05f0795">nAtoms</a>; i++) {</div>
+<div class="line"><span class="lineno">  233</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="namespaceeonc_1_1rng.html#a699a6770b311d7f44a437f4f915bad69">eonc::rng::randomDouble</a>() &lt; pCol &amp;&amp; !<a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getFixed(i)) {</div>
+<div class="line"><span class="lineno">  234</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; 3; j++) {</div>
+<div class="line"><span class="lineno">  235</span>        <span class="keywordtype">double</span> vOld = velocity(i, j);</div>
+<div class="line"><span class="lineno">  236</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> vNew = (mass[i] &gt; 0.0 &amp;&amp; <a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> &gt; 0.0 &amp;&amp; <a class="code hl_variable" href="#a33f2222119739a4478e3f4142f06d903">temperature</a> &gt; 0.0)</div>
+<div class="line"><span class="lineno">  237</span>                                ? std::sqrt(<a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> * <a class="code hl_variable" href="#a33f2222119739a4478e3f4142f06d903">temperature</a> / mass[i]) *</div>
+<div class="line"><span class="lineno">  238</span>                                      <a class="code hl_function" href="namespaceeonc_1_1rng.html#acec44c143227d3b4957ed2c919a551c3">eonc::rng::gaussRandom</a>(0.0, 1.0)</div>
+<div class="line"><span class="lineno">  239</span>                                : 0.0;</div>
+<div class="line"><span class="lineno">  240</span>        velocity(i, j) = std::sqrt(1.0 - alpha * alpha) * vOld + alpha * vNew;</div>
+<div class="line"><span class="lineno">  241</span>      }</div>
+<div class="line"><span class="lineno">  242</span>    }</div>
+<div class="line"><span class="lineno">  243</span>  }</div>
+<div class="line"><span class="lineno">  244</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setVelocities(velocity);</div>
+<div class="line"><span class="lineno">  245</span>}</div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1rng_html_a699a6770b311d7f44a437f4f915bad69"><div class="ttname"><a href="namespaceeonc_1_1rng.html#a699a6770b311d7f44a437f4f915bad69">eonc::rng::randomDouble</a></div><div class="ttdeci">double randomDouble()</div><div class="ttdef"><b>Definition</b> <a href="RandomNumbers_8cpp_source.html#l00072">RandomNumbers.cpp:72</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1rng_html_acec44c143227d3b4957ed2c919a551c3"><div class="ttname"><a href="namespaceeonc_1_1rng.html#acec44c143227d3b4957ed2c919a551c3">eonc::rng::gaussRandom</a></div><div class="ttdeci">double gaussRandom(double avg, double std)</div><div class="ttdef"><b>Definition</b> <a href="RandomNumbers_8cpp_source.html#l00090">RandomNumbers.cpp:90</a></div></div>
@@ -464,60 +468,60 @@ Private Attributes</h2></td></tr>
 <p>Langevin dynamics (velocity-Verlet with friction and random forces). </p>
 <p>Matter::getFixed(atom) is true only when every axis is fixed, so noise and the position kick are applied per free axis. </p>
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8cpp_source.html#l00262">262</a> of file <a class="el" href="Dynamics_8cpp_source.html">Dynamics.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  262</span>                              {</div>
-<div class="line"><span class="lineno">  263</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> gamma = <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.langevin_friction;</div>
-<div class="line"><span class="lineno">  264</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getPositions();</div>
-<div class="line"><span class="lineno">  265</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> vel = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getVelocities();</div>
-<div class="line"><span class="lineno">  266</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> acc = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getAccelerations();</div>
-<div class="line"><span class="lineno">  267</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> noise = AtomMatrix::Zero(<a class="code hl_variable" href="#ac299b2c0ef6ce41d257a0991b05f0795">nAtoms</a>, 3);</div>
-<div class="line"><span class="lineno">  268</span>  <span class="keyword">const</span> <span class="keyword">auto</span> mass = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getMasses();</div>
-<div class="line"><span class="lineno">  269</span> </div>
-<div class="line"><span class="lineno">  270</span>  <span class="comment">// Zero a frozen axis by assignment. Multiplying by the free mask leaves</span></div>
-<div class="line"><span class="lineno">  271</span>  <span class="comment">// a NaN in place, and setPositions stores every component.</span></div>
-<div class="line"><span class="lineno">  272</span>  <span class="keyword">auto</span> holdFixed = [&amp;](<a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;m) {</div>
-<div class="line"><span class="lineno">  273</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#ac299b2c0ef6ce41d257a0991b05f0795">nAtoms</a>; i++) {</div>
-<div class="line"><span class="lineno">  274</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; 3; j++) {</div>
-<div class="line"><span class="lineno">  275</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getFixed(i, j)) {</div>
-<div class="line"><span class="lineno">  276</span>          m(i, j) = 0.0;</div>
-<div class="line"><span class="lineno">  277</span>        }</div>
-<div class="line"><span class="lineno">  278</span>      }</div>
-<div class="line"><span class="lineno">  279</span>    }</div>
-<div class="line"><span class="lineno">  280</span>  };</div>
-<div class="line"><span class="lineno">  281</span>  <span class="keyword">auto</span> addNoise = [&amp;]() {</div>
-<div class="line"><span class="lineno">  282</span>    noise.setZero();</div>
-<div class="line"><span class="lineno">  283</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#ac299b2c0ef6ce41d257a0991b05f0795">nAtoms</a>; i++) {</div>
-<div class="line"><span class="lineno">  284</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; 3; j++) {</div>
-<div class="line"><span class="lineno">  285</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getFixed(i, j)) {</div>
-<div class="line"><span class="lineno">  286</span>          <span class="keywordflow">continue</span>;</div>
-<div class="line"><span class="lineno">  287</span>        }</div>
-<div class="line"><span class="lineno">  288</span>        noise(i, j) = std::sqrt(4.0 * gamma * <a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> * <a class="code hl_variable" href="#a33f2222119739a4478e3f4142f06d903">temperature</a> / <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a> / mass[i]) *</div>
-<div class="line"><span class="lineno">  289</span>                      <a class="code hl_function" href="namespaceeonc_1_1rng.html#acec44c143227d3b4957ed2c919a551c3">eonc::rng::gaussRandom</a>(0.0, 1.0);</div>
-<div class="line"><span class="lineno">  290</span>      }</div>
-<div class="line"><span class="lineno">  291</span>    }</div>
-<div class="line"><span class="lineno">  292</span>  };</div>
-<div class="line"><span class="lineno">  293</span> </div>
-<div class="line"><span class="lineno">  294</span>  addNoise();</div>
-<div class="line"><span class="lineno">  295</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> friction = -gamma * vel;</div>
-<div class="line"><span class="lineno">  296</span>  holdFixed(friction);</div>
-<div class="line"><span class="lineno">  297</span>  holdFixed(acc);</div>
-<div class="line"><span class="lineno">  298</span>  acc += friction + noise;</div>
-<div class="line"><span class="lineno">  299</span> </div>
-<div class="line"><span class="lineno">  300</span>  vel += acc * 0.5 * <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a>;</div>
-<div class="line"><span class="lineno">  301</span>  holdFixed(vel);</div>
-<div class="line"><span class="lineno">  302</span>  pos += vel * <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a>;</div>
-<div class="line"><span class="lineno">  303</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setPositions(pos);</div>
-<div class="line"><span class="lineno">  304</span> </div>
-<div class="line"><span class="lineno">  305</span>  acc = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getAccelerations();</div>
-<div class="line"><span class="lineno">  306</span>  addNoise();</div>
-<div class="line"><span class="lineno">  307</span>  friction = -gamma * vel;</div>
-<div class="line"><span class="lineno">  308</span>  holdFixed(friction);</div>
-<div class="line"><span class="lineno">  309</span>  holdFixed(acc);</div>
-<div class="line"><span class="lineno">  310</span>  acc += friction + noise;</div>
-<div class="line"><span class="lineno">  311</span>  vel += 0.5 * <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a> * acc;</div>
-<div class="line"><span class="lineno">  312</span>  holdFixed(vel);</div>
-<div class="line"><span class="lineno">  313</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setVelocities(vel);</div>
-<div class="line"><span class="lineno">  314</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8cpp_source.html#l00332">332</a> of file <a class="el" href="Dynamics_8cpp_source.html">Dynamics.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  332</span>                              {</div>
+<div class="line"><span class="lineno">  333</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> gamma = <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.langevin_friction;</div>
+<div class="line"><span class="lineno">  334</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getPositions();</div>
+<div class="line"><span class="lineno">  335</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> vel = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getVelocities();</div>
+<div class="line"><span class="lineno">  336</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> acc = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getAccelerations();</div>
+<div class="line"><span class="lineno">  337</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> noise = AtomMatrix::Zero(<a class="code hl_variable" href="#ac299b2c0ef6ce41d257a0991b05f0795">nAtoms</a>, 3);</div>
+<div class="line"><span class="lineno">  338</span>  <span class="keyword">const</span> <span class="keyword">auto</span> mass = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getMasses();</div>
+<div class="line"><span class="lineno">  339</span> </div>
+<div class="line"><span class="lineno">  340</span>  <span class="comment">// Zero a frozen axis by assignment. Multiplying by the free mask leaves</span></div>
+<div class="line"><span class="lineno">  341</span>  <span class="comment">// a NaN in place, and setPositions stores every component.</span></div>
+<div class="line"><span class="lineno">  342</span>  <span class="keyword">auto</span> holdFixed = [&amp;](<a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;m) {</div>
+<div class="line"><span class="lineno">  343</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#ac299b2c0ef6ce41d257a0991b05f0795">nAtoms</a>; i++) {</div>
+<div class="line"><span class="lineno">  344</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; 3; j++) {</div>
+<div class="line"><span class="lineno">  345</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getFixed(i, j)) {</div>
+<div class="line"><span class="lineno">  346</span>          m(i, j) = 0.0;</div>
+<div class="line"><span class="lineno">  347</span>        }</div>
+<div class="line"><span class="lineno">  348</span>      }</div>
+<div class="line"><span class="lineno">  349</span>    }</div>
+<div class="line"><span class="lineno">  350</span>  };</div>
+<div class="line"><span class="lineno">  351</span>  <span class="keyword">auto</span> addNoise = [&amp;]() {</div>
+<div class="line"><span class="lineno">  352</span>    noise.setZero();</div>
+<div class="line"><span class="lineno">  353</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#ac299b2c0ef6ce41d257a0991b05f0795">nAtoms</a>; i++) {</div>
+<div class="line"><span class="lineno">  354</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; 3; j++) {</div>
+<div class="line"><span class="lineno">  355</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getFixed(i, j)) {</div>
+<div class="line"><span class="lineno">  356</span>          <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  357</span>        }</div>
+<div class="line"><span class="lineno">  358</span>        noise(i, j) = std::sqrt(4.0 * gamma * <a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> * <a class="code hl_variable" href="#a33f2222119739a4478e3f4142f06d903">temperature</a> / <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a> / mass[i]) *</div>
+<div class="line"><span class="lineno">  359</span>                      <a class="code hl_function" href="namespaceeonc_1_1rng.html#acec44c143227d3b4957ed2c919a551c3">eonc::rng::gaussRandom</a>(0.0, 1.0);</div>
+<div class="line"><span class="lineno">  360</span>      }</div>
+<div class="line"><span class="lineno">  361</span>    }</div>
+<div class="line"><span class="lineno">  362</span>  };</div>
+<div class="line"><span class="lineno">  363</span> </div>
+<div class="line"><span class="lineno">  364</span>  addNoise();</div>
+<div class="line"><span class="lineno">  365</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> friction = -gamma * vel;</div>
+<div class="line"><span class="lineno">  366</span>  holdFixed(friction);</div>
+<div class="line"><span class="lineno">  367</span>  holdFixed(acc);</div>
+<div class="line"><span class="lineno">  368</span>  acc += friction + noise;</div>
+<div class="line"><span class="lineno">  369</span> </div>
+<div class="line"><span class="lineno">  370</span>  vel += acc * 0.5 * <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a>;</div>
+<div class="line"><span class="lineno">  371</span>  holdFixed(vel);</div>
+<div class="line"><span class="lineno">  372</span>  pos += vel * <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a>;</div>
+<div class="line"><span class="lineno">  373</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setPositions(pos);</div>
+<div class="line"><span class="lineno">  374</span> </div>
+<div class="line"><span class="lineno">  375</span>  acc = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getAccelerations();</div>
+<div class="line"><span class="lineno">  376</span>  addNoise();</div>
+<div class="line"><span class="lineno">  377</span>  friction = -gamma * vel;</div>
+<div class="line"><span class="lineno">  378</span>  holdFixed(friction);</div>
+<div class="line"><span class="lineno">  379</span>  holdFixed(acc);</div>
+<div class="line"><span class="lineno">  380</span>  acc += friction + noise;</div>
+<div class="line"><span class="lineno">  381</span>  vel += 0.5 * <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a> * acc;</div>
+<div class="line"><span class="lineno">  382</span>  holdFixed(vel);</div>
+<div class="line"><span class="lineno">  383</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setVelocities(vel);</div>
+<div class="line"><span class="lineno">  384</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -551,36 +555,36 @@ Private Attributes</h2></td></tr>
 <p>One Martyna-Klein-Tuckerman chain half-step. </p>
 <p>G2 is always (Q1 vxi1^2 - kT) / Q2. </p>
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8cpp_source.html#l00205">205</a> of file <a class="el" href="Dynamics_8cpp_source.html">Dynamics.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  205</span>                                                             {</div>
-<div class="line"><span class="lineno">  206</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> dt2 = 0.5 * <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a>;</div>
-<div class="line"><span class="lineno">  207</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> dt4 = 0.25 * <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a>;</div>
-<div class="line"><span class="lineno">  208</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> dt8 = 0.125 * <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a>;</div>
-<div class="line"><span class="lineno">  209</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> q1 = <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.nose_mass;</div>
-<div class="line"><span class="lineno">  210</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> q2 = q1;</div>
-<div class="line"><span class="lineno">  211</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> Temp = <a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> * <a class="code hl_variable" href="#a33f2222119739a4478e3f4142f06d903">temperature</a>;</div>
-<div class="line"><span class="lineno">  212</span>  <span class="keywordflow">if</span> (!(q1 &gt; 0.0)) {</div>
-<div class="line"><span class="lineno">  213</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;thermostat.nose_mass must be positive&quot;</span>);</div>
-<div class="line"><span class="lineno">  214</span>  }</div>
-<div class="line"><span class="lineno">  215</span> </div>
-<div class="line"><span class="lineno">  216</span>  <span class="comment">// Martyna, Klein, Tuckerman JCP 97, 2635 (1992): G2 = (Q1 v_ξ1² − kT) / Q2.</span></div>
-<div class="line"><span class="lineno">  217</span>  <span class="keyword">auto</span> g2 = [&amp;]() { <span class="keywordflow">return</span> (q1 * <a class="code hl_variable" href="#abf77bb6d483d2c8933766b4df171b6b8">vxi1</a> * <a class="code hl_variable" href="#abf77bb6d483d2c8933766b4df171b6b8">vxi1</a> - Temp) / q2; };</div>
-<div class="line"><span class="lineno">  218</span>  <span class="keyword">auto</span> g1 = [&amp;]() { <span class="keywordflow">return</span> (2.0 * kinE - <a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a> * Temp) / q1; };</div>
-<div class="line"><span class="lineno">  219</span> </div>
-<div class="line"><span class="lineno">  220</span>  <a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a> += g2() * dt4;</div>
-<div class="line"><span class="lineno">  221</span>  <a class="code hl_variable" href="#abf77bb6d483d2c8933766b4df171b6b8">vxi1</a> *= std::exp(-<a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a> * dt8);</div>
-<div class="line"><span class="lineno">  222</span>  <a class="code hl_variable" href="#abf77bb6d483d2c8933766b4df171b6b8">vxi1</a> += g1() * dt4;</div>
-<div class="line"><span class="lineno">  223</span>  <a class="code hl_variable" href="#abf77bb6d483d2c8933766b4df171b6b8">vxi1</a> *= std::exp(-<a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a> * dt8);</div>
-<div class="line"><span class="lineno">  224</span>  <a class="code hl_variable" href="#a807105f7a74f8556cbd70dc7be0b0ff6">xi1</a> += <a class="code hl_variable" href="#abf77bb6d483d2c8933766b4df171b6b8">vxi1</a> * dt2;</div>
-<div class="line"><span class="lineno">  225</span>  <a class="code hl_variable" href="#ab36498b538f946040888092485530d6e">xi2</a> += <a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a> * dt2;</div>
-<div class="line"><span class="lineno">  226</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> s = std::exp(-<a class="code hl_variable" href="#abf77bb6d483d2c8933766b4df171b6b8">vxi1</a> * dt2);</div>
-<div class="line"><span class="lineno">  227</span>  vel *= s;</div>
-<div class="line"><span class="lineno">  228</span>  kinE *= s * s;</div>
-<div class="line"><span class="lineno">  229</span>  <a class="code hl_variable" href="#abf77bb6d483d2c8933766b4df171b6b8">vxi1</a> *= std::exp(-<a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a> * dt8);</div>
-<div class="line"><span class="lineno">  230</span>  <a class="code hl_variable" href="#abf77bb6d483d2c8933766b4df171b6b8">vxi1</a> += g1() * dt4;</div>
-<div class="line"><span class="lineno">  231</span>  <a class="code hl_variable" href="#abf77bb6d483d2c8933766b4df171b6b8">vxi1</a> *= std::exp(-<a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a> * dt8);</div>
-<div class="line"><span class="lineno">  232</span>  <a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a> += g2() * dt4;</div>
-<div class="line"><span class="lineno">  233</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8cpp_source.html#l00275">275</a> of file <a class="el" href="Dynamics_8cpp_source.html">Dynamics.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  275</span>                                                             {</div>
+<div class="line"><span class="lineno">  276</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> dt2 = 0.5 * <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a>;</div>
+<div class="line"><span class="lineno">  277</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> dt4 = 0.25 * <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a>;</div>
+<div class="line"><span class="lineno">  278</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> dt8 = 0.125 * <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a>;</div>
+<div class="line"><span class="lineno">  279</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> q1 = <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.nose_mass;</div>
+<div class="line"><span class="lineno">  280</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> q2 = q1;</div>
+<div class="line"><span class="lineno">  281</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> Temp = <a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> * <a class="code hl_variable" href="#a33f2222119739a4478e3f4142f06d903">temperature</a>;</div>
+<div class="line"><span class="lineno">  282</span>  <span class="keywordflow">if</span> (!(q1 &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  283</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;thermostat.nose_mass must be positive&quot;</span>);</div>
+<div class="line"><span class="lineno">  284</span>  }</div>
+<div class="line"><span class="lineno">  285</span> </div>
+<div class="line"><span class="lineno">  286</span>  <span class="comment">// Martyna, Klein, Tuckerman JCP 97, 2635 (1992): G2 = (Q1 v_ξ1² − kT) / Q2.</span></div>
+<div class="line"><span class="lineno">  287</span>  <span class="keyword">auto</span> g2 = [&amp;]() { <span class="keywordflow">return</span> (q1 * <a class="code hl_variable" href="#abf77bb6d483d2c8933766b4df171b6b8">vxi1</a> * <a class="code hl_variable" href="#abf77bb6d483d2c8933766b4df171b6b8">vxi1</a> - Temp) / q2; };</div>
+<div class="line"><span class="lineno">  288</span>  <span class="keyword">auto</span> g1 = [&amp;]() { <span class="keywordflow">return</span> (2.0 * kinE - <a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a> * Temp) / q1; };</div>
+<div class="line"><span class="lineno">  289</span> </div>
+<div class="line"><span class="lineno">  290</span>  <a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a> += g2() * dt4;</div>
+<div class="line"><span class="lineno">  291</span>  <a class="code hl_variable" href="#abf77bb6d483d2c8933766b4df171b6b8">vxi1</a> *= std::exp(-<a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a> * dt8);</div>
+<div class="line"><span class="lineno">  292</span>  <a class="code hl_variable" href="#abf77bb6d483d2c8933766b4df171b6b8">vxi1</a> += g1() * dt4;</div>
+<div class="line"><span class="lineno">  293</span>  <a class="code hl_variable" href="#abf77bb6d483d2c8933766b4df171b6b8">vxi1</a> *= std::exp(-<a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a> * dt8);</div>
+<div class="line"><span class="lineno">  294</span>  <a class="code hl_variable" href="#a807105f7a74f8556cbd70dc7be0b0ff6">xi1</a> += <a class="code hl_variable" href="#abf77bb6d483d2c8933766b4df171b6b8">vxi1</a> * dt2;</div>
+<div class="line"><span class="lineno">  295</span>  <a class="code hl_variable" href="#ab36498b538f946040888092485530d6e">xi2</a> += <a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a> * dt2;</div>
+<div class="line"><span class="lineno">  296</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> s = std::exp(-<a class="code hl_variable" href="#abf77bb6d483d2c8933766b4df171b6b8">vxi1</a> * dt2);</div>
+<div class="line"><span class="lineno">  297</span>  vel *= s;</div>
+<div class="line"><span class="lineno">  298</span>  kinE *= s * s;</div>
+<div class="line"><span class="lineno">  299</span>  <a class="code hl_variable" href="#abf77bb6d483d2c8933766b4df171b6b8">vxi1</a> *= std::exp(-<a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a> * dt8);</div>
+<div class="line"><span class="lineno">  300</span>  <a class="code hl_variable" href="#abf77bb6d483d2c8933766b4df171b6b8">vxi1</a> += g1() * dt4;</div>
+<div class="line"><span class="lineno">  301</span>  <a class="code hl_variable" href="#abf77bb6d483d2c8933766b4df171b6b8">vxi1</a> *= std::exp(-<a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a> * dt8);</div>
+<div class="line"><span class="lineno">  302</span>  <a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a> += g2() * dt4;</div>
+<div class="line"><span class="lineno">  303</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -602,29 +606,29 @@ Private Attributes</h2></td></tr>
 <p>Nose-Hoover chain thermostat (Martyna-Klein-Tuckerman algorithm). </p>
 <p>Two chain variables (xi1, xi2) with velocities (vxi1, vxi2). </p>
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8cpp_source.html#l00237">237</a> of file <a class="el" href="Dynamics_8cpp_source.html">Dynamics.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  237</span>                                {</div>
-<div class="line"><span class="lineno">  238</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> dt2 = 0.5 * <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a>;</div>
-<div class="line"><span class="lineno">  239</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> vel = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getVelocities();</div>
-<div class="line"><span class="lineno">  240</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getPositions();</div>
-<div class="line"><span class="lineno">  241</span>  <span class="keywordtype">double</span> kinE = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getKineticEnergy();</div>
-<div class="line"><span class="lineno">  242</span> </div>
-<div class="line"><span class="lineno">  243</span>  <a class="code hl_function" href="#a7f6f5112556f7cc342fd5c5314e337a7">nhcChainHalfStep</a>(vel, kinE);</div>
-<div class="line"><span class="lineno">  244</span> </div>
-<div class="line"><span class="lineno">  245</span>  pos += vel * dt2;</div>
-<div class="line"><span class="lineno">  246</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setPositions(pos);</div>
-<div class="line"><span class="lineno">  247</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> acc = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getAccelerations();</div>
-<div class="line"><span class="lineno">  248</span>  vel += acc * <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a>;</div>
-<div class="line"><span class="lineno">  249</span>  pos += vel * dt2;</div>
-<div class="line"><span class="lineno">  250</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setPositions(pos);</div>
-<div class="line"><span class="lineno">  251</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setVelocities(vel);</div>
-<div class="line"><span class="lineno">  252</span>  kinE = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getKineticEnergy();</div>
-<div class="line"><span class="lineno">  253</span> </div>
-<div class="line"><span class="lineno">  254</span>  <a class="code hl_function" href="#a7f6f5112556f7cc342fd5c5314e337a7">nhcChainHalfStep</a>(vel, kinE);</div>
-<div class="line"><span class="lineno">  255</span> </div>
-<div class="line"><span class="lineno">  256</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setVelocities(vel);</div>
-<div class="line"><span class="lineno">  257</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_a7f6f5112556f7cc342fd5c5314e337a7"><div class="ttname"><a href="#a7f6f5112556f7cc342fd5c5314e337a7">eonc::Dynamics::nhcChainHalfStep</a></div><div class="ttdeci">void nhcChainHalfStep(AtomMatrix &amp;vel, double &amp;kinE)</div><div class="ttdoc">One Martyna-Klein-Tuckerman chain half-step.</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8cpp_source.html#l00205">Dynamics.cpp:205</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8cpp_source.html#l00307">307</a> of file <a class="el" href="Dynamics_8cpp_source.html">Dynamics.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  307</span>                                {</div>
+<div class="line"><span class="lineno">  308</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> dt2 = 0.5 * <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a>;</div>
+<div class="line"><span class="lineno">  309</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> vel = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getVelocities();</div>
+<div class="line"><span class="lineno">  310</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getPositions();</div>
+<div class="line"><span class="lineno">  311</span>  <span class="keywordtype">double</span> kinE = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getKineticEnergy();</div>
+<div class="line"><span class="lineno">  312</span> </div>
+<div class="line"><span class="lineno">  313</span>  <a class="code hl_function" href="#a7f6f5112556f7cc342fd5c5314e337a7">nhcChainHalfStep</a>(vel, kinE);</div>
+<div class="line"><span class="lineno">  314</span> </div>
+<div class="line"><span class="lineno">  315</span>  pos += vel * dt2;</div>
+<div class="line"><span class="lineno">  316</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setPositions(pos);</div>
+<div class="line"><span class="lineno">  317</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> acc = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getAccelerations();</div>
+<div class="line"><span class="lineno">  318</span>  vel += acc * <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a>;</div>
+<div class="line"><span class="lineno">  319</span>  pos += vel * dt2;</div>
+<div class="line"><span class="lineno">  320</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setPositions(pos);</div>
+<div class="line"><span class="lineno">  321</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setVelocities(vel);</div>
+<div class="line"><span class="lineno">  322</span>  kinE = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getKineticEnergy();</div>
+<div class="line"><span class="lineno">  323</span> </div>
+<div class="line"><span class="lineno">  324</span>  <a class="code hl_function" href="#a7f6f5112556f7cc342fd5c5314e337a7">nhcChainHalfStep</a>(vel, kinE);</div>
+<div class="line"><span class="lineno">  325</span> </div>
+<div class="line"><span class="lineno">  326</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setVelocities(vel);</div>
+<div class="line"><span class="lineno">  327</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_a7f6f5112556f7cc342fd5c5314e337a7"><div class="ttname"><a href="#a7f6f5112556f7cc342fd5c5314e337a7">eonc::Dynamics::nhcChainHalfStep</a></div><div class="ttdeci">void nhcChainHalfStep(AtomMatrix &amp;vel, double &amp;kinE)</div><div class="ttdoc">One Martyna-Klein-Tuckerman chain half-step.</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8cpp_source.html#l00275">Dynamics.cpp:275</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -643,44 +647,51 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8cpp_source.html#l00053">53</a> of file <a class="el" href="Dynamics_8cpp_source.html">Dynamics.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   53</span>                                     {</div>
-<div class="line"><span class="lineno">   54</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.thermostat_kind == <a class="code hl_variable" href="#a7684c79c64eddc0e31c194c35059225a">ANDERSEN</a>) {</div>
-<div class="line"><span class="lineno">   55</span>    <a class="code hl_function" href="#a53a141002a937bbb8f13819f540c6228">andersenCollision</a>();</div>
-<div class="line"><span class="lineno">   56</span>    <a class="code hl_function" href="#afa99630c07f9015664f5c9473eb7fad3">velocityVerlet</a>();</div>
-<div class="line"><span class="lineno">   57</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.thermostat_kind == <a class="code hl_variable" href="#a7779f64527a94d1d41e0af6dd857ef7e">NOSE_HOOVER</a>) {</div>
-<div class="line"><span class="lineno">   58</span>    <a class="code hl_function" href="#a3166cd5a7c7a6e1aef9fdb76ee8db329">noseHooverVerlet</a>();</div>
-<div class="line"><span class="lineno">   59</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.thermostat_kind == <a class="code hl_variable" href="#a0c46f9199a2ba2c90b7e5f3573364c8e">LANGEVIN</a>) {</div>
-<div class="line"><span class="lineno">   60</span>    <a class="code hl_function" href="#a2b3b4bc4aefb4c02695644af5d810f5c">langevinVerlet</a>();</div>
-<div class="line"><span class="lineno">   61</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.thermostat_kind == <a class="code hl_variable" href="#a0834414d024777d5f9756577184f11b1">NONE</a>) {</div>
-<div class="line"><span class="lineno">   62</span>    <a class="code hl_function" href="#afa99630c07f9015664f5c9473eb7fad3">velocityVerlet</a>();</div>
-<div class="line"><span class="lineno">   63</span>  }</div>
-<div class="line"><span class="lineno">   64</span> </div>
-<div class="line"><span class="lineno">   65</span>  <span class="keywordflow">if</span> (stepNumber != -1) {</div>
-<div class="line"><span class="lineno">   66</span>    <span class="keywordflow">if</span> (stepNumber == 1) {</div>
-<div class="line"><span class="lineno">   67</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a9fbb01f48819fbd44b6d11ab42afec89">log</a>, <span class="stringliteral">&quot;{} {:8s} {:10s} {:12s} {:12s} {:10s}\n&quot;</span>,</div>
-<div class="line"><span class="lineno">   68</span>                      <span class="stringliteral">&quot;[Dynamics]&quot;</span>, <span class="stringliteral">&quot;Step&quot;</span>, <span class="stringliteral">&quot;KE&quot;</span>, <span class="stringliteral">&quot;PE&quot;</span>, <span class="stringliteral">&quot;TE&quot;</span>, <span class="stringliteral">&quot;KinT&quot;</span>);</div>
-<div class="line"><span class="lineno">   69</span>    }</div>
-<div class="line"><span class="lineno">   70</span>    <span class="keywordtype">double</span> kinE = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getKineticEnergy();</div>
-<div class="line"><span class="lineno">   71</span>    <span class="keywordtype">double</span> potE = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getPotentialEnergy();</div>
-<div class="line"><span class="lineno">   72</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> kinT =</div>
-<div class="line"><span class="lineno">   73</span>        (<a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a> &gt; 0 &amp;&amp; <a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> &gt; 0.0) ? 2.0 * kinE / <a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a> / <a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> : 0.0;</div>
-<div class="line"><span class="lineno">   74</span> </div>
-<div class="line"><span class="lineno">   75</span>    <span class="keywordflow">if</span> (stepNumber % <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.write_movies_interval == 0) {</div>
-<div class="line"><span class="lineno">   76</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a9fbb01f48819fbd44b6d11ab42afec89">log</a>, <span class="stringliteral">&quot;{} {:8} {:10.4} {:12.4} {:12.4} {:10.2}\n&quot;</span>,</div>
-<div class="line"><span class="lineno">   77</span>                      <span class="stringliteral">&quot;[Dynamics]&quot;</span>, stepNumber, kinE, potE, kinE + potE, kinT);</div>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8cpp_source.html#l00057">57</a> of file <a class="el" href="Dynamics_8cpp_source.html">Dynamics.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   57</span>                                     {</div>
+<div class="line"><span class="lineno">   58</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.thermostat_kind == <a class="code hl_variable" href="#a7684c79c64eddc0e31c194c35059225a">ANDERSEN</a>) {</div>
+<div class="line"><span class="lineno">   59</span>    <a class="code hl_function" href="#a53a141002a937bbb8f13819f540c6228">andersenCollision</a>();</div>
+<div class="line"><span class="lineno">   60</span>    <a class="code hl_function" href="#afa99630c07f9015664f5c9473eb7fad3">velocityVerlet</a>();</div>
+<div class="line"><span class="lineno">   61</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.thermostat_kind == <a class="code hl_variable" href="#a7779f64527a94d1d41e0af6dd857ef7e">NOSE_HOOVER</a>) {</div>
+<div class="line"><span class="lineno">   62</span>    <a class="code hl_function" href="#a3166cd5a7c7a6e1aef9fdb76ee8db329">noseHooverVerlet</a>();</div>
+<div class="line"><span class="lineno">   63</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.thermostat_kind == <a class="code hl_variable" href="#a0c46f9199a2ba2c90b7e5f3573364c8e">LANGEVIN</a>) {</div>
+<div class="line"><span class="lineno">   64</span>    <a class="code hl_function" href="#a2b3b4bc4aefb4c02695644af5d810f5c">langevinVerlet</a>();</div>
+<div class="line"><span class="lineno">   65</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.thermostat_kind == <a class="code hl_variable" href="#a0834414d024777d5f9756577184f11b1">NONE</a>) {</div>
+<div class="line"><span class="lineno">   66</span>    <a class="code hl_function" href="#afa99630c07f9015664f5c9473eb7fad3">velocityVerlet</a>();</div>
+<div class="line"><span class="lineno">   67</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.thermostat_kind == <a class="code hl_variable" href="#aa9a4e4ca0423d2cd06fae8868a8226a6">PILE</a> ||</div>
+<div class="line"><span class="lineno">   68</span>             <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.thermostat_kind == <a class="code hl_variable" href="#ad584b93fc60c6ea8e9ff56af0aa17fd7">PIGLET</a>) {</div>
+<div class="line"><span class="lineno">   69</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">   70</span>        <span class="stringliteral">&quot;path-integral dynamics is a ring-polymer trajectory, not a &quot;</span></div>
+<div class="line"><span class="lineno">   71</span>        <span class="stringliteral">&quot;velocity Verlet step&quot;</span>);</div>
+<div class="line"><span class="lineno">   72</span>  }</div>
+<div class="line"><span class="lineno">   73</span> </div>
+<div class="line"><span class="lineno">   74</span>  <span class="keywordflow">if</span> (stepNumber != -1) {</div>
+<div class="line"><span class="lineno">   75</span>    <span class="keywordflow">if</span> (stepNumber == 1) {</div>
+<div class="line"><span class="lineno">   76</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a9fbb01f48819fbd44b6d11ab42afec89">log</a>, <span class="stringliteral">&quot;{} {:8s} {:10s} {:12s} {:12s} {:10s}\n&quot;</span>,</div>
+<div class="line"><span class="lineno">   77</span>                      <span class="stringliteral">&quot;[Dynamics]&quot;</span>, <span class="stringliteral">&quot;Step&quot;</span>, <span class="stringliteral">&quot;KE&quot;</span>, <span class="stringliteral">&quot;PE&quot;</span>, <span class="stringliteral">&quot;TE&quot;</span>, <span class="stringliteral">&quot;KinT&quot;</span>);</div>
 <div class="line"><span class="lineno">   78</span>    }</div>
-<div class="line"><span class="lineno">   79</span>  }</div>
-<div class="line"><span class="lineno">   80</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_a0834414d024777d5f9756577184f11b1"><div class="ttname"><a href="#a0834414d024777d5f9756577184f11b1">eonc::Dynamics::NONE</a></div><div class="ttdeci">static const char NONE[]</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00060">Dynamics.h:60</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_a0c46f9199a2ba2c90b7e5f3573364c8e"><div class="ttname"><a href="#a0c46f9199a2ba2c90b7e5f3573364c8e">eonc::Dynamics::LANGEVIN</a></div><div class="ttdeci">static const char LANGEVIN[]</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00059">Dynamics.h:59</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_a2b3b4bc4aefb4c02695644af5d810f5c"><div class="ttname"><a href="#a2b3b4bc4aefb4c02695644af5d810f5c">eonc::Dynamics::langevinVerlet</a></div><div class="ttdeci">void langevinVerlet()</div><div class="ttdoc">Langevin dynamics (velocity-Verlet with friction and random forces).</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8cpp_source.html#l00262">Dynamics.cpp:262</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_a3166cd5a7c7a6e1aef9fdb76ee8db329"><div class="ttname"><a href="#a3166cd5a7c7a6e1aef9fdb76ee8db329">eonc::Dynamics::noseHooverVerlet</a></div><div class="ttdeci">void noseHooverVerlet()</div><div class="ttdoc">Nose-Hoover chain thermostat (Martyna-Klein-Tuckerman algorithm).</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8cpp_source.html#l00237">Dynamics.cpp:237</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_a53a141002a937bbb8f13819f540c6228"><div class="ttname"><a href="#a53a141002a937bbb8f13819f540c6228">eonc::Dynamics::andersenCollision</a></div><div class="ttdeci">void andersenCollision()</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8cpp_source.html#l00154">Dynamics.cpp:154</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_a7684c79c64eddc0e31c194c35059225a"><div class="ttname"><a href="#a7684c79c64eddc0e31c194c35059225a">eonc::Dynamics::ANDERSEN</a></div><div class="ttdeci">static const char ANDERSEN[]</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00057">Dynamics.h:57</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_a7779f64527a94d1d41e0af6dd857ef7e"><div class="ttname"><a href="#a7779f64527a94d1d41e0af6dd857ef7e">eonc::Dynamics::NOSE_HOOVER</a></div><div class="ttdeci">static const char NOSE_HOOVER[]</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00058">Dynamics.h:58</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_a9fbb01f48819fbd44b6d11ab42afec89"><div class="ttname"><a href="#a9fbb01f48819fbd44b6d11ab42afec89">eonc::Dynamics::log</a></div><div class="ttdeci">eonc::log::Scoped log</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00094">Dynamics.h:94</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_afa99630c07f9015664f5c9473eb7fad3"><div class="ttname"><a href="#afa99630c07f9015664f5c9473eb7fad3">eonc::Dynamics::velocityVerlet</a></div><div class="ttdeci">void velocityVerlet()</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8cpp_source.html#l00082">Dynamics.cpp:82</a></div></div>
+<div class="line"><span class="lineno">   79</span>    <span class="keywordtype">double</span> kinE = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getKineticEnergy();</div>
+<div class="line"><span class="lineno">   80</span>    <span class="keywordtype">double</span> potE = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getPotentialEnergy();</div>
+<div class="line"><span class="lineno">   81</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> kinT =</div>
+<div class="line"><span class="lineno">   82</span>        (<a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a> &gt; 0 &amp;&amp; <a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> &gt; 0.0) ? 2.0 * kinE / <a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a> / <a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> : 0.0;</div>
+<div class="line"><span class="lineno">   83</span> </div>
+<div class="line"><span class="lineno">   84</span>    <span class="keywordflow">if</span> (stepNumber % <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.write_movies_interval == 0) {</div>
+<div class="line"><span class="lineno">   85</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a9fbb01f48819fbd44b6d11ab42afec89">log</a>, <span class="stringliteral">&quot;{} {:8} {:10.4} {:12.4} {:12.4} {:10.2}\n&quot;</span>,</div>
+<div class="line"><span class="lineno">   86</span>                      <span class="stringliteral">&quot;[Dynamics]&quot;</span>, stepNumber, kinE, potE, kinE + potE, kinT);</div>
+<div class="line"><span class="lineno">   87</span>    }</div>
+<div class="line"><span class="lineno">   88</span>  }</div>
+<div class="line"><span class="lineno">   89</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_a0834414d024777d5f9756577184f11b1"><div class="ttname"><a href="#a0834414d024777d5f9756577184f11b1">eonc::Dynamics::NONE</a></div><div class="ttdeci">static const char NONE[]</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00076">Dynamics.h:76</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_a0c46f9199a2ba2c90b7e5f3573364c8e"><div class="ttname"><a href="#a0c46f9199a2ba2c90b7e5f3573364c8e">eonc::Dynamics::LANGEVIN</a></div><div class="ttdeci">static const char LANGEVIN[]</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00075">Dynamics.h:75</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_a2b3b4bc4aefb4c02695644af5d810f5c"><div class="ttname"><a href="#a2b3b4bc4aefb4c02695644af5d810f5c">eonc::Dynamics::langevinVerlet</a></div><div class="ttdeci">void langevinVerlet()</div><div class="ttdoc">Langevin dynamics (velocity-Verlet with friction and random forces).</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8cpp_source.html#l00332">Dynamics.cpp:332</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_a3166cd5a7c7a6e1aef9fdb76ee8db329"><div class="ttname"><a href="#a3166cd5a7c7a6e1aef9fdb76ee8db329">eonc::Dynamics::noseHooverVerlet</a></div><div class="ttdeci">void noseHooverVerlet()</div><div class="ttdoc">Nose-Hoover chain thermostat (Martyna-Klein-Tuckerman algorithm).</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8cpp_source.html#l00307">Dynamics.cpp:307</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_a53a141002a937bbb8f13819f540c6228"><div class="ttname"><a href="#a53a141002a937bbb8f13819f540c6228">eonc::Dynamics::andersenCollision</a></div><div class="ttdeci">void andersenCollision()</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8cpp_source.html#l00224">Dynamics.cpp:224</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_a7684c79c64eddc0e31c194c35059225a"><div class="ttname"><a href="#a7684c79c64eddc0e31c194c35059225a">eonc::Dynamics::ANDERSEN</a></div><div class="ttdeci">static const char ANDERSEN[]</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00073">Dynamics.h:73</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_a7779f64527a94d1d41e0af6dd857ef7e"><div class="ttname"><a href="#a7779f64527a94d1d41e0af6dd857ef7e">eonc::Dynamics::NOSE_HOOVER</a></div><div class="ttdeci">static const char NOSE_HOOVER[]</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00074">Dynamics.h:74</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_a9fbb01f48819fbd44b6d11ab42afec89"><div class="ttname"><a href="#a9fbb01f48819fbd44b6d11ab42afec89">eonc::Dynamics::log</a></div><div class="ttdeci">eonc::log::Scoped log</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00114">Dynamics.h:114</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_aa9a4e4ca0423d2cd06fae8868a8226a6"><div class="ttname"><a href="#aa9a4e4ca0423d2cd06fae8868a8226a6">eonc::Dynamics::PILE</a></div><div class="ttdeci">static const char PILE[]</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00077">Dynamics.h:77</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_ad584b93fc60c6ea8e9ff56af0aa17fd7"><div class="ttname"><a href="#ad584b93fc60c6ea8e9ff56af0aa17fd7">eonc::Dynamics::PIGLET</a></div><div class="ttdeci">static const char PIGLET[]</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00078">Dynamics.h:78</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_afa99630c07f9015664f5c9473eb7fad3"><div class="ttname"><a href="#afa99630c07f9015664f5c9473eb7fad3">eonc::Dynamics::velocityVerlet</a></div><div class="ttdeci">void velocityVerlet()</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8cpp_source.html#l00091">Dynamics.cpp:91</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -699,17 +710,17 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8cpp_source.html#l00194">194</a> of file <a class="el" href="Dynamics_8cpp_source.html">Dynamics.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  194</span>                               {</div>
-<div class="line"><span class="lineno">  195</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> velocity = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getVelocities();</div>
-<div class="line"><span class="lineno">  196</span>  <span class="keywordtype">double</span> kinE = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getKineticEnergy();</div>
-<div class="line"><span class="lineno">  197</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> kinT =</div>
-<div class="line"><span class="lineno">  198</span>      (<a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a> &gt; 0 &amp;&amp; <a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> &gt; 0.0) ? 2.0 * kinE / <a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a> / <a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> : 0.0;</div>
-<div class="line"><span class="lineno">  199</span>  <span class="keywordflow">if</span> (!(kinT &gt; 0.0) || !(<a class="code hl_variable" href="#a33f2222119739a4478e3f4142f06d903">temperature</a> &gt; 0.0)) {</div>
-<div class="line"><span class="lineno">  200</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  201</span>  }</div>
-<div class="line"><span class="lineno">  202</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setVelocities(velocity * std::sqrt(<a class="code hl_variable" href="#a33f2222119739a4478e3f4142f06d903">temperature</a> / kinT));</div>
-<div class="line"><span class="lineno">  203</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8cpp_source.html#l00264">264</a> of file <a class="el" href="Dynamics_8cpp_source.html">Dynamics.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  264</span>                               {</div>
+<div class="line"><span class="lineno">  265</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> velocity = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getVelocities();</div>
+<div class="line"><span class="lineno">  266</span>  <span class="keywordtype">double</span> kinE = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getKineticEnergy();</div>
+<div class="line"><span class="lineno">  267</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> kinT =</div>
+<div class="line"><span class="lineno">  268</span>      (<a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a> &gt; 0 &amp;&amp; <a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> &gt; 0.0) ? 2.0 * kinE / <a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a> / <a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> : 0.0;</div>
+<div class="line"><span class="lineno">  269</span>  <span class="keywordflow">if</span> (!(kinT &gt; 0.0) || !(<a class="code hl_variable" href="#a33f2222119739a4478e3f4142f06d903">temperature</a> &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  270</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  271</span>  }</div>
+<div class="line"><span class="lineno">  272</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setVelocities(velocity * std::sqrt(<a class="code hl_variable" href="#a33f2222119739a4478e3f4142f06d903">temperature</a> / kinT));</div>
+<div class="line"><span class="lineno">  273</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -728,68 +739,164 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8cpp_source.html#l00095">95</a> of file <a class="el" href="Dynamics_8cpp_source.html">Dynamics.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   95</span>                   {</div>
-<div class="line"><span class="lineno">   96</span>  <span class="keywordtype">double</span> sumT = 0.0, sumT2 = 0.0;</div>
-<div class="line"><span class="lineno">   97</span> </div>
-<div class="line"><span class="lineno">   98</span>  <a class="code hl_function" href="#a154950e879fc19ae072ed6bca8fc743b">setThermalVelocity</a>();</div>
-<div class="line"><span class="lineno">   99</span> </div>
-<div class="line"><span class="lineno">  100</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.thermostat_kind != <a class="code hl_variable" href="#a0834414d024777d5f9756577184f11b1">NONE</a>) {</div>
-<div class="line"><span class="lineno">  101</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a9fbb01f48819fbd44b6d11ab42afec89">log</a>,</div>
-<div class="line"><span class="lineno">  102</span>                    <span class="stringliteral">&quot;{} Running NVT molecular dynamics: {:8.2f} K for {} &quot;</span></div>
-<div class="line"><span class="lineno">  103</span>                    <span class="stringliteral">&quot;steps ({:.4e} s)\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  104</span>                    <span class="stringliteral">&quot;[Dynamics]&quot;</span>, <a class="code hl_variable" href="#a33f2222119739a4478e3f4142f06d903">temperature</a>, <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.steps,</div>
-<div class="line"><span class="lineno">  105</span>                    1e-15 * <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.time_step * <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.timeUnit *</div>
-<div class="line"><span class="lineno">  106</span>                        <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.steps);</div>
-<div class="line"><span class="lineno">  107</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  108</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a9fbb01f48819fbd44b6d11ab42afec89">log</a>, <span class="stringliteral">&quot;{} Running NVE molecular dynamics: {} steps\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  109</span>                    <span class="stringliteral">&quot;[Dynamics]&quot;</span>, <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.steps);</div>
-<div class="line"><span class="lineno">  110</span>  }</div>
-<div class="line"><span class="lineno">  111</span> </div>
-<div class="line"><span class="lineno">  112</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.write_movies) {</div>
-<div class="line"><span class="lineno">  113</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;matter2con(<span class="stringliteral">&quot;dynamics&quot;</span>, <span class="keyword">false</span>))) {</div>
-<div class="line"><span class="lineno">  114</span>      QUILL_LOG_WARNING(<a class="code hl_variable" href="#a9fbb01f48819fbd44b6d11ab42afec89">log</a>, <span class="stringliteral">&quot;Failed to write dynamics movie header frame&quot;</span>);</div>
-<div class="line"><span class="lineno">  115</span>    }</div>
-<div class="line"><span class="lineno">  116</span>  }</div>
-<div class="line"><span class="lineno">  117</span> </div>
-<div class="line"><span class="lineno">  118</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a9fbb01f48819fbd44b6d11ab42afec89">log</a>, <span class="stringliteral">&quot;{} {:8} {:10} {:12} {:12} {:10}\n&quot;</span>, <span class="stringliteral">&quot;[Dynamics]&quot;</span>,</div>
-<div class="line"><span class="lineno">  119</span>                  <span class="stringliteral">&quot;step&quot;</span>, <span class="stringliteral">&quot;KE&quot;</span>, <span class="stringliteral">&quot;PE&quot;</span>, <span class="stringliteral">&quot;TE&quot;</span>, <span class="stringliteral">&quot;kinT&quot;</span>);</div>
-<div class="line"><span class="lineno">  120</span> </div>
-<div class="line"><span class="lineno">  121</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> step = 0; step &lt; <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.steps; step++) {</div>
-<div class="line"><span class="lineno">  122</span>    <a class="code hl_function" href="#a38ec07ca3fbb9d8231ca493cb24ddfb7">oneStep</a>();</div>
-<div class="line"><span class="lineno">  123</span> </div>
-<div class="line"><span class="lineno">  124</span>    <span class="keywordtype">double</span> kinE = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getKineticEnergy();</div>
-<div class="line"><span class="lineno">  125</span>    <span class="keywordtype">double</span> potE = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getPotentialEnergy();</div>
-<div class="line"><span class="lineno">  126</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> kinT =</div>
-<div class="line"><span class="lineno">  127</span>        (<a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a> &gt; 0 &amp;&amp; <a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> &gt; 0.0) ? 2.0 * kinE / <a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a> / <a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> : 0.0;</div>
-<div class="line"><span class="lineno">  128</span>    sumT += kinT;</div>
-<div class="line"><span class="lineno">  129</span>    sumT2 += kinT * kinT;</div>
-<div class="line"><span class="lineno">  130</span> </div>
-<div class="line"><span class="lineno">  131</span>    <span class="keywordflow">if</span> (step % <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.write_movies_interval == 0) {</div>
-<div class="line"><span class="lineno">  132</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a9fbb01f48819fbd44b6d11ab42afec89">log</a>, <span class="stringliteral">&quot;{} {} {} {} {} {}\n&quot;</span>, <span class="stringliteral">&quot;[Dynamics]&quot;</span>, step, kinE,</div>
-<div class="line"><span class="lineno">  133</span>                      potE, kinE + potE, kinT);</div>
-<div class="line"><span class="lineno">  134</span>    }</div>
-<div class="line"><span class="lineno">  135</span> </div>
-<div class="line"><span class="lineno">  136</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.write_movies &amp;&amp; (step % <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.write_movies_interval == 0)) {</div>
-<div class="line"><span class="lineno">  137</span>      <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;matter2con(<span class="stringliteral">&quot;dynamics&quot;</span>, <span class="keyword">true</span>))) {</div>
-<div class="line"><span class="lineno">  138</span>        QUILL_LOG_WARNING(<a class="code hl_variable" href="#a9fbb01f48819fbd44b6d11ab42afec89">log</a>, <span class="stringliteral">&quot;Failed to append dynamics movie frame&quot;</span>);</div>
-<div class="line"><span class="lineno">  139</span>      }</div>
-<div class="line"><span class="lineno">  140</span>    }</div>
-<div class="line"><span class="lineno">  141</span>  }</div>
-<div class="line"><span class="lineno">  142</span> </div>
-<div class="line"><span class="lineno">  143</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> nstat = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(std::max(<a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.steps, 1L));</div>
-<div class="line"><span class="lineno">  144</span>  <span class="keywordtype">double</span> avgT = sumT / nstat;</div>
-<div class="line"><span class="lineno">  145</span>  <span class="keywordtype">double</span> varT = sumT2 / nstat - avgT * avgT;</div>
-<div class="line"><span class="lineno">  146</span>  <span class="keywordtype">double</span> stdT = std::sqrt(varT);</div>
-<div class="line"><span class="lineno">  147</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a9fbb01f48819fbd44b6d11ab42afec89">log</a>,</div>
-<div class="line"><span class="lineno">  148</span>                  <span class="stringliteral">&quot;{} Temperature : Average = {:.2f} ; StdDev = {:.2f} ; &quot;</span></div>
-<div class="line"><span class="lineno">  149</span>                  <span class="stringliteral">&quot;Factor = {:.2f}\n&quot;</span>,</div>
-<div class="line"><span class="lineno">  150</span>                  <span class="stringliteral">&quot;[Dynamics]&quot;</span>, avgT, stdT,</div>
-<div class="line"><span class="lineno">  151</span>                  varT / avgT / avgT * <a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a> / 2.0);</div>
-<div class="line"><span class="lineno">  152</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_a154950e879fc19ae072ed6bca8fc743b"><div class="ttname"><a href="#a154950e879fc19ae072ed6bca8fc743b">eonc::Dynamics::setThermalVelocity</a></div><div class="ttdeci">void setThermalVelocity()</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8cpp_source.html#l00177">Dynamics.cpp:177</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Dynamics_html_a38ec07ca3fbb9d8231ca493cb24ddfb7"><div class="ttname"><a href="#a38ec07ca3fbb9d8231ca493cb24ddfb7">eonc::Dynamics::oneStep</a></div><div class="ttdeci">void oneStep(int stepNumber=-1)</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8cpp_source.html#l00053">Dynamics.cpp:53</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8cpp_source.html#l00161">161</a> of file <a class="el" href="Dynamics_8cpp_source.html">Dynamics.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  161</span>                   {</div>
+<div class="line"><span class="lineno">  162</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.thermostat_kind == <a class="code hl_variable" href="#aa9a4e4ca0423d2cd06fae8868a8226a6">PILE</a> || <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.thermostat_kind == <a class="code hl_variable" href="#ad584b93fc60c6ea8e9ff56af0aa17fd7">PIGLET</a>) {</div>
+<div class="line"><span class="lineno">  163</span>    <a class="code hl_function" href="#adf2d17f4d4c012cd02f28748f643a8eb">runPathIntegral</a>();</div>
+<div class="line"><span class="lineno">  164</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  165</span>  }</div>
+<div class="line"><span class="lineno">  166</span>  <span class="keywordtype">double</span> sumT = 0.0, sumT2 = 0.0;</div>
+<div class="line"><span class="lineno">  167</span> </div>
+<div class="line"><span class="lineno">  168</span>  <a class="code hl_function" href="#a154950e879fc19ae072ed6bca8fc743b">setThermalVelocity</a>();</div>
+<div class="line"><span class="lineno">  169</span> </div>
+<div class="line"><span class="lineno">  170</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.thermostat_kind != <a class="code hl_variable" href="#a0834414d024777d5f9756577184f11b1">NONE</a>) {</div>
+<div class="line"><span class="lineno">  171</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a9fbb01f48819fbd44b6d11ab42afec89">log</a>,</div>
+<div class="line"><span class="lineno">  172</span>                    <span class="stringliteral">&quot;{} Running NVT molecular dynamics: {:8.2f} K for {} &quot;</span></div>
+<div class="line"><span class="lineno">  173</span>                    <span class="stringliteral">&quot;steps ({:.4e} s)\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  174</span>                    <span class="stringliteral">&quot;[Dynamics]&quot;</span>, <a class="code hl_variable" href="#a33f2222119739a4478e3f4142f06d903">temperature</a>, <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.steps,</div>
+<div class="line"><span class="lineno">  175</span>                    1e-15 * <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.time_step * <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.timeUnit *</div>
+<div class="line"><span class="lineno">  176</span>                        <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.steps);</div>
+<div class="line"><span class="lineno">  177</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  178</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a9fbb01f48819fbd44b6d11ab42afec89">log</a>, <span class="stringliteral">&quot;{} Running NVE molecular dynamics: {} steps\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  179</span>                    <span class="stringliteral">&quot;[Dynamics]&quot;</span>, <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.steps);</div>
+<div class="line"><span class="lineno">  180</span>  }</div>
+<div class="line"><span class="lineno">  181</span> </div>
+<div class="line"><span class="lineno">  182</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.write_movies) {</div>
+<div class="line"><span class="lineno">  183</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;matter2con(<span class="stringliteral">&quot;dynamics&quot;</span>, <span class="keyword">false</span>))) {</div>
+<div class="line"><span class="lineno">  184</span>      QUILL_LOG_WARNING(<a class="code hl_variable" href="#a9fbb01f48819fbd44b6d11ab42afec89">log</a>, <span class="stringliteral">&quot;Failed to write dynamics movie header frame&quot;</span>);</div>
+<div class="line"><span class="lineno">  185</span>    }</div>
+<div class="line"><span class="lineno">  186</span>  }</div>
+<div class="line"><span class="lineno">  187</span> </div>
+<div class="line"><span class="lineno">  188</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a9fbb01f48819fbd44b6d11ab42afec89">log</a>, <span class="stringliteral">&quot;{} {:8} {:10} {:12} {:12} {:10}\n&quot;</span>, <span class="stringliteral">&quot;[Dynamics]&quot;</span>,</div>
+<div class="line"><span class="lineno">  189</span>                  <span class="stringliteral">&quot;step&quot;</span>, <span class="stringliteral">&quot;KE&quot;</span>, <span class="stringliteral">&quot;PE&quot;</span>, <span class="stringliteral">&quot;TE&quot;</span>, <span class="stringliteral">&quot;kinT&quot;</span>);</div>
+<div class="line"><span class="lineno">  190</span> </div>
+<div class="line"><span class="lineno">  191</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> step = 0; step &lt; <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.steps; step++) {</div>
+<div class="line"><span class="lineno">  192</span>    <a class="code hl_function" href="#a38ec07ca3fbb9d8231ca493cb24ddfb7">oneStep</a>();</div>
+<div class="line"><span class="lineno">  193</span> </div>
+<div class="line"><span class="lineno">  194</span>    <span class="keywordtype">double</span> kinE = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getKineticEnergy();</div>
+<div class="line"><span class="lineno">  195</span>    <span class="keywordtype">double</span> potE = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getPotentialEnergy();</div>
+<div class="line"><span class="lineno">  196</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> kinT =</div>
+<div class="line"><span class="lineno">  197</span>        (<a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a> &gt; 0 &amp;&amp; <a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> &gt; 0.0) ? 2.0 * kinE / <a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a> / <a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> : 0.0;</div>
+<div class="line"><span class="lineno">  198</span>    sumT += kinT;</div>
+<div class="line"><span class="lineno">  199</span>    sumT2 += kinT * kinT;</div>
+<div class="line"><span class="lineno">  200</span> </div>
+<div class="line"><span class="lineno">  201</span>    <span class="keywordflow">if</span> (step % <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.write_movies_interval == 0) {</div>
+<div class="line"><span class="lineno">  202</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a9fbb01f48819fbd44b6d11ab42afec89">log</a>, <span class="stringliteral">&quot;{} {} {} {} {} {}\n&quot;</span>, <span class="stringliteral">&quot;[Dynamics]&quot;</span>, step, kinE,</div>
+<div class="line"><span class="lineno">  203</span>                      potE, kinE + potE, kinT);</div>
+<div class="line"><span class="lineno">  204</span>    }</div>
+<div class="line"><span class="lineno">  205</span> </div>
+<div class="line"><span class="lineno">  206</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.write_movies &amp;&amp; (step % <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.write_movies_interval == 0)) {</div>
+<div class="line"><span class="lineno">  207</span>      <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(<a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;matter2con(<span class="stringliteral">&quot;dynamics&quot;</span>, <span class="keyword">true</span>))) {</div>
+<div class="line"><span class="lineno">  208</span>        QUILL_LOG_WARNING(<a class="code hl_variable" href="#a9fbb01f48819fbd44b6d11ab42afec89">log</a>, <span class="stringliteral">&quot;Failed to append dynamics movie frame&quot;</span>);</div>
+<div class="line"><span class="lineno">  209</span>      }</div>
+<div class="line"><span class="lineno">  210</span>    }</div>
+<div class="line"><span class="lineno">  211</span>  }</div>
+<div class="line"><span class="lineno">  212</span> </div>
+<div class="line"><span class="lineno">  213</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> nstat = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(std::max(<a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.steps, 1L));</div>
+<div class="line"><span class="lineno">  214</span>  <span class="keywordtype">double</span> avgT = sumT / nstat;</div>
+<div class="line"><span class="lineno">  215</span>  <span class="keywordtype">double</span> varT = sumT2 / nstat - avgT * avgT;</div>
+<div class="line"><span class="lineno">  216</span>  <span class="keywordtype">double</span> stdT = std::sqrt(varT);</div>
+<div class="line"><span class="lineno">  217</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a9fbb01f48819fbd44b6d11ab42afec89">log</a>,</div>
+<div class="line"><span class="lineno">  218</span>                  <span class="stringliteral">&quot;{} Temperature : Average = {:.2f} ; StdDev = {:.2f} ; &quot;</span></div>
+<div class="line"><span class="lineno">  219</span>                  <span class="stringliteral">&quot;Factor = {:.2f}\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  220</span>                  <span class="stringliteral">&quot;[Dynamics]&quot;</span>, avgT, stdT,</div>
+<div class="line"><span class="lineno">  221</span>                  varT / avgT / avgT * <a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a> / 2.0);</div>
+<div class="line"><span class="lineno">  222</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_a154950e879fc19ae072ed6bca8fc743b"><div class="ttname"><a href="#a154950e879fc19ae072ed6bca8fc743b">eonc::Dynamics::setThermalVelocity</a></div><div class="ttdeci">void setThermalVelocity()</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8cpp_source.html#l00247">Dynamics.cpp:247</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_a38ec07ca3fbb9d8231ca493cb24ddfb7"><div class="ttname"><a href="#a38ec07ca3fbb9d8231ca493cb24ddfb7">eonc::Dynamics::oneStep</a></div><div class="ttdeci">void oneStep(int stepNumber=-1)</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8cpp_source.html#l00057">Dynamics.cpp:57</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html_adf2d17f4d4c012cd02f28748f643a8eb"><div class="ttname"><a href="#adf2d17f4d4c012cd02f28748f643a8eb">eonc::Dynamics::runPathIntegral</a></div><div class="ttdeci">void runPathIntegral()</div><div class="ttdoc">Ring-polymer trajectory. Beads do not enter velocityVerlet.</div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8cpp_source.html#l00104">Dynamics.cpp:104</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_af66b2723d892a4095754f9b0354b4f78"><div class="ttname"><a href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a></div><div class="ttdeci">constexpr bool io_ok(IoStatus s) noexcept</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00038">ConFileIO.h:38</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="adf2d17f4d4c012cd02f28748f643a8eb" name="adf2d17f4d4c012cd02f28748f643a8eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf2d17f4d4c012cd02f28748f643a8eb">&#9670;&#160;</a></span>runPathIntegral()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::Dynamics::runPathIntegral </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Ring-polymer trajectory. Beads do not enter velocityVerlet. </p>
+
+<p class="definition">Definition at line <a class="el" href="Dynamics_8cpp_source.html#l00104">104</a> of file <a class="el" href="Dynamics_8cpp_source.html">Dynamics.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  104</span>                               {</div>
+<div class="line"><span class="lineno">  105</span>  <span class="keyword">auto</span> pot = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getPotential();</div>
+<div class="line"><span class="lineno">  106</span>  <span class="keywordflow">if</span> (!pot) {</div>
+<div class="line"><span class="lineno">  107</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;path-integral dynamics has no potential&quot;</span>);</div>
+<div class="line"><span class="lineno">  108</span>  }</div>
+<div class="line"><span class="lineno">  109</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> atoms = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;numberOfAtoms();</div>
+<div class="line"><span class="lineno">  110</span>  std::vector&lt;double&gt; masses(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(atoms));</div>
+<div class="line"><span class="lineno">  111</span>  std::vector&lt;int&gt; numbers(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(atoms));</div>
+<div class="line"><span class="lineno">  112</span>  std::vector&lt;char&gt; free(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(3 * atoms), 1);</div>
+<div class="line"><span class="lineno">  113</span>  <span class="keyword">const</span> VectorXi z = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getAtomicNrs();</div>
+<div class="line"><span class="lineno">  114</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; atoms; ++i) {</div>
+<div class="line"><span class="lineno">  115</span>    masses[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getMass(i);</div>
+<div class="line"><span class="lineno">  116</span>    numbers[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] = z[i];</div>
+<div class="line"><span class="lineno">  117</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> axis = 0; axis &lt; 3; ++axis) {</div>
+<div class="line"><span class="lineno">  118</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getFixed(i, axis)) {</div>
+<div class="line"><span class="lineno">  119</span>        free[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(3 * i + axis)] = 0;</div>
+<div class="line"><span class="lineno">  120</span>      }</div>
+<div class="line"><span class="lineno">  121</span>    }</div>
+<div class="line"><span class="lineno">  122</span>  }</div>
+<div class="line"><span class="lineno">  123</span>  pathintegral::Options opt;</div>
+<div class="line"><span class="lineno">  124</span>  opt.beads = <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.path_beads;</div>
+<div class="line"><span class="lineno">  125</span>  opt.temperature = <a class="code hl_variable" href="#a33f2222119739a4478e3f4142f06d903">temperature</a>;</div>
+<div class="line"><span class="lineno">  126</span>  opt.kB = <a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a>;</div>
+<div class="line"><span class="lineno">  127</span>  opt.hbar = <a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#a9226451a02d96e8651470ee1fb21eaa9">tunneling::kHbar</a>;</div>
+<div class="line"><span class="lineno">  128</span>  opt.dt = <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a>;</div>
+<div class="line"><span class="lineno">  129</span>  opt.springs = <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.path_springs == <span class="stringliteral">&quot;eco&quot;</span> ? <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#abe31f237ac5f5aff8dce43642078966ea91efa9e46e4c6cbb78d9fd0a773cc6d5">pathintegral::Springs::Eco</a></div>
+<div class="line"><span class="lineno">  130</span>                                               : <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#abe31f237ac5f5aff8dce43642078966eab830e5e056ff2368bbf3b74d3b0fbc02">pathintegral::Springs::Trotter</a>;</div>
+<div class="line"><span class="lineno">  131</span>  opt.thermostat = <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.thermostat_kind == <a class="code hl_variable" href="#ad584b93fc60c6ea8e9ff56af0aa17fd7">PIGLET</a></div>
+<div class="line"><span class="lineno">  132</span>                       ? <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8a8c09ee8e1496710919dcbd718ff285dd">pathintegral::Thermostat::Piglet</a></div>
+<div class="line"><span class="lineno">  133</span>                       : <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8adac4e478206552d57f74e6a5f9fc80bc">pathintegral::Thermostat::Pile</a>;</div>
+<div class="line"><span class="lineno">  134</span>  opt.pileTau = <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.path_pile_tau;</div>
+<div class="line"><span class="lineno">  135</span>  opt.pileScale = <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.path_pile_scale;</div>
+<div class="line"><span class="lineno">  136</span>  opt.ecoOmegaMax = <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.path_eco_omega_max;</div>
+<div class="line"><span class="lineno">  137</span>  opt.gleFile = <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.path_gle_file;</div>
+<div class="line"><span class="lineno">  138</span>  opt.seed = <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.path_seed;</div>
+<div class="line"><span class="lineno">  139</span>  pathintegral::RingPolymer ring(atoms, masses, numbers, free, opt);</div>
+<div class="line"><span class="lineno">  140</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getPositions();</div>
+<div class="line"><span class="lineno">  141</span>  ring.setAllBeads(pos.data());</div>
+<div class="line"><span class="lineno">  142</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> box =</div>
+<div class="line"><span class="lineno">  143</span>      <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getPeriodic() ? <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getCell() : Matrix3d::Zero().eval();</div>
+<div class="line"><span class="lineno">  144</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> step = 0; step &lt; <a class="code hl_variable" href="#aea90b98d375c91f2c534b7e5b522276a">m_config</a>.steps; ++step) {</div>
+<div class="line"><span class="lineno">  145</span>    ring.step(*pot, box.data(), <span class="keyword">false</span>);</div>
+<div class="line"><span class="lineno">  146</span>  }</div>
+<div class="line"><span class="lineno">  147</span>  <span class="keyword">const</span> VectorXd centroid = ring.centroid();</div>
+<div class="line"><span class="lineno">  148</span>  <span class="keyword">const</span> VectorXd velocity = ring.centroidVelocity();</div>
+<div class="line"><span class="lineno">  149</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> out = pos;</div>
+<div class="line"><span class="lineno">  150</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> vel = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getVelocities();</div>
+<div class="line"><span class="lineno">  151</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; atoms; ++i) {</div>
+<div class="line"><span class="lineno">  152</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> axis = 0; axis &lt; 3; ++axis) {</div>
+<div class="line"><span class="lineno">  153</span>      out(i, axis) = centroid[3 * i + axis];</div>
+<div class="line"><span class="lineno">  154</span>      vel(i, axis) = velocity[3 * i + axis];</div>
+<div class="line"><span class="lineno">  155</span>    }</div>
+<div class="line"><span class="lineno">  156</span>  }</div>
+<div class="line"><span class="lineno">  157</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setPositions(out);</div>
+<div class="line"><span class="lineno">  158</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setVelocities(vel);</div>
+<div class="line"><span class="lineno">  159</span>}</div>
+<div class="ttc" id="aEigen_8h_html_a5a21583e98df78e5b867b370291714d0"><div class="ttname"><a href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 3, 3, eOnStorageOrder &gt; Matrix3d</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00035">Eigen.h:35</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pathintegral_html_abe31f237ac5f5aff8dce43642078966ea91efa9e46e4c6cbb78d9fd0a773cc6d5"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#abe31f237ac5f5aff8dce43642078966ea91efa9e46e4c6cbb78d9fd0a773cc6d5">eonc::pathintegral::Springs::Eco</a></div><div class="ttdeci">@ Eco</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00042">PathIntegral.h:42</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pathintegral_html_abe31f237ac5f5aff8dce43642078966eab830e5e056ff2368bbf3b74d3b0fbc02"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#abe31f237ac5f5aff8dce43642078966eab830e5e056ff2368bbf3b74d3b0fbc02">eonc::pathintegral::Springs::Trotter</a></div><div class="ttdeci">@ Trotter</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00042">PathIntegral.h:42</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pathintegral_html_ae25079e6f1ebbf96835a7214c8d42ce8a8c09ee8e1496710919dcbd718ff285dd"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8a8c09ee8e1496710919dcbd718ff285dd">eonc::pathintegral::Thermostat::Piglet</a></div><div class="ttdeci">@ Piglet</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00046">PathIntegral.h:46</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pathintegral_html_ae25079e6f1ebbf96835a7214c8d42ce8adac4e478206552d57f74e6a5f9fc80bc"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8adac4e478206552d57f74e6a5f9fc80bc">eonc::pathintegral::Thermostat::Pile</a></div><div class="ttdeci">@ Pile</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8h_source.html#l00046">PathIntegral.h:46</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1tunneling_html_a9226451a02d96e8651470ee1fb21eaa9"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#a9226451a02d96e8651470ee1fb21eaa9">eonc::tunneling::kHbar</a></div><div class="ttdeci">constexpr double kHbar</div><div class="ttdoc">hbar in eV^0.5 amu^0.5 Angstrom, correctly rounded from the exact SI values (h = 6....</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8h_source.html#l00037">Tunneling.h:37</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -808,10 +915,10 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8cpp_source.html#l00049">49</a> of file <a class="el" href="Dynamics_8cpp_source.html">Dynamics.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   49</span>                                                   {</div>
-<div class="line"><span class="lineno">   50</span>  <a class="code hl_variable" href="#a33f2222119739a4478e3f4142f06d903">temperature</a> = temperature_in;</div>
-<div class="line"><span class="lineno">   51</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8cpp_source.html#l00053">53</a> of file <a class="el" href="Dynamics_8cpp_source.html">Dynamics.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   53</span>                                                   {</div>
+<div class="line"><span class="lineno">   54</span>  <a class="code hl_variable" href="#a33f2222119739a4478e3f4142f06d903">temperature</a> = temperature_in;</div>
+<div class="line"><span class="lineno">   55</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -830,23 +937,23 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8cpp_source.html#l00177">177</a> of file <a class="el" href="Dynamics_8cpp_source.html">Dynamics.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  177</span>                                  {</div>
-<div class="line"><span class="lineno">  178</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> velocity = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getVelocities();</div>
-<div class="line"><span class="lineno">  179</span>  <span class="keyword">auto</span> mass = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getMasses();</div>
-<div class="line"><span class="lineno">  180</span> </div>
-<div class="line"><span class="lineno">  181</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#ac299b2c0ef6ce41d257a0991b05f0795">nAtoms</a>; i++) {</div>
-<div class="line"><span class="lineno">  182</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getFixed(i)) {</div>
-<div class="line"><span class="lineno">  183</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; 3; j++) {</div>
-<div class="line"><span class="lineno">  184</span>        velocity(i, j) = (mass[i] &gt; 0.0 &amp;&amp; <a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> &gt; 0.0 &amp;&amp; <a class="code hl_variable" href="#a33f2222119739a4478e3f4142f06d903">temperature</a> &gt; 0.0)</div>
-<div class="line"><span class="lineno">  185</span>                             ? std::sqrt(<a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> * <a class="code hl_variable" href="#a33f2222119739a4478e3f4142f06d903">temperature</a> / mass[i]) *</div>
-<div class="line"><span class="lineno">  186</span>                                   <a class="code hl_function" href="namespaceeonc_1_1rng.html#acec44c143227d3b4957ed2c919a551c3">eonc::rng::gaussRandom</a>(0.0, 1.0)</div>
-<div class="line"><span class="lineno">  187</span>                             : 0.0;</div>
-<div class="line"><span class="lineno">  188</span>      }</div>
-<div class="line"><span class="lineno">  189</span>    }</div>
-<div class="line"><span class="lineno">  190</span>  }</div>
-<div class="line"><span class="lineno">  191</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setVelocities(velocity);</div>
-<div class="line"><span class="lineno">  192</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8cpp_source.html#l00247">247</a> of file <a class="el" href="Dynamics_8cpp_source.html">Dynamics.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  247</span>                                  {</div>
+<div class="line"><span class="lineno">  248</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> velocity = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getVelocities();</div>
+<div class="line"><span class="lineno">  249</span>  <span class="keyword">auto</span> mass = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getMasses();</div>
+<div class="line"><span class="lineno">  250</span> </div>
+<div class="line"><span class="lineno">  251</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#ac299b2c0ef6ce41d257a0991b05f0795">nAtoms</a>; i++) {</div>
+<div class="line"><span class="lineno">  252</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getFixed(i)) {</div>
+<div class="line"><span class="lineno">  253</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; 3; j++) {</div>
+<div class="line"><span class="lineno">  254</span>        velocity(i, j) = (mass[i] &gt; 0.0 &amp;&amp; <a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> &gt; 0.0 &amp;&amp; <a class="code hl_variable" href="#a33f2222119739a4478e3f4142f06d903">temperature</a> &gt; 0.0)</div>
+<div class="line"><span class="lineno">  255</span>                             ? std::sqrt(<a class="code hl_variable" href="#a00902b7db57a1a0854fb6eaa00a153c5">kB</a> * <a class="code hl_variable" href="#a33f2222119739a4478e3f4142f06d903">temperature</a> / mass[i]) *</div>
+<div class="line"><span class="lineno">  256</span>                                   <a class="code hl_function" href="namespaceeonc_1_1rng.html#acec44c143227d3b4957ed2c919a551c3">eonc::rng::gaussRandom</a>(0.0, 1.0)</div>
+<div class="line"><span class="lineno">  257</span>                             : 0.0;</div>
+<div class="line"><span class="lineno">  258</span>      }</div>
+<div class="line"><span class="lineno">  259</span>    }</div>
+<div class="line"><span class="lineno">  260</span>  }</div>
+<div class="line"><span class="lineno">  261</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setVelocities(velocity);</div>
+<div class="line"><span class="lineno">  262</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -865,19 +972,19 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8cpp_source.html#l00082">82</a> of file <a class="el" href="Dynamics_8cpp_source.html">Dynamics.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   82</span>                              {</div>
-<div class="line"><span class="lineno">   83</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> positions = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getPositions();</div>
-<div class="line"><span class="lineno">   84</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> velocities = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getVelocities();</div>
-<div class="line"><span class="lineno">   85</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> accInit = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getAccelerations();</div>
-<div class="line"><span class="lineno">   86</span> </div>
-<div class="line"><span class="lineno">   87</span>  positions += <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a> * velocities + 0.5 * <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a> * <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a> * accInit;</div>
-<div class="line"><span class="lineno">   88</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setPositions(positions);</div>
-<div class="line"><span class="lineno">   89</span> </div>
-<div class="line"><span class="lineno">   90</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> accFinal = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getAccelerations();</div>
-<div class="line"><span class="lineno">   91</span>  velocities += 0.5 * <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a> * (accInit + accFinal);</div>
-<div class="line"><span class="lineno">   92</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setVelocities(velocities);</div>
-<div class="line"><span class="lineno">   93</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8cpp_source.html#l00091">91</a> of file <a class="el" href="Dynamics_8cpp_source.html">Dynamics.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   91</span>                              {</div>
+<div class="line"><span class="lineno">   92</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> positions = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getPositions();</div>
+<div class="line"><span class="lineno">   93</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> velocities = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getVelocities();</div>
+<div class="line"><span class="lineno">   94</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> accInit = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getAccelerations();</div>
+<div class="line"><span class="lineno">   95</span> </div>
+<div class="line"><span class="lineno">   96</span>  positions += <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a> * velocities + 0.5 * <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a> * <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a> * accInit;</div>
+<div class="line"><span class="lineno">   97</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setPositions(positions);</div>
+<div class="line"><span class="lineno">   98</span> </div>
+<div class="line"><span class="lineno">   99</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> accFinal = <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;getAccelerations();</div>
+<div class="line"><span class="lineno">  100</span>  velocities += 0.5 * <a class="code hl_variable" href="#a5bdde1675a66664085195542d4fd71bc">dt</a> * (accInit + accFinal);</div>
+<div class="line"><span class="lineno">  101</span>  <a class="code hl_variable" href="#a805fd401748e71c8839864f1b10312b5">matter</a>-&gt;setVelocities(velocities);</div>
+<div class="line"><span class="lineno">  102</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -902,7 +1009,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00057">57</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00073">73</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
 
 </div>
 </div>
@@ -926,8 +1033,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00090">90</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   90</span>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00110">110</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  110</span>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -951,8 +1058,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00091">91</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   91</span>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00111">111</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  111</span>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -976,7 +1083,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00059">59</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00075">75</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
 
 </div>
 </div>
@@ -1000,7 +1107,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00094">94</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00114">114</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
 
 </div>
 </div>
@@ -1024,7 +1131,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00088">88</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00108">108</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
 
 </div>
 </div>
@@ -1048,7 +1155,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00087">87</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00107">107</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
 
 </div>
 </div>
@@ -1072,8 +1179,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00085">85</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   85</span>{0}, <a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a>{0};</div>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00105">105</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  105</span>{0}, <a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a>{0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1097,8 +1204,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00085">85</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   85</span>{0}, <a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a>{0};</div>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00105">105</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  105</span>{0}, <a class="code hl_variable" href="#a09e086d5b2ee8480421a165ee4bdbc5b">nFreeCoords</a>{0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1122,7 +1229,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00060">60</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00076">76</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
 
 </div>
 </div>
@@ -1146,7 +1253,55 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00058">58</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00074">74</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
+
+</div>
+</div>
+<a id="ad584b93fc60c6ea8e9ff56af0aa17fd7" name="ad584b93fc60c6ea8e9ff56af0aa17fd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad584b93fc60c6ea8e9ff56af0aa17fd7">&#9670;&#160;</a></span>PIGLET</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char eonc::Dynamics::PIGLET = &quot;piglet&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00078">78</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
+
+</div>
+</div>
+<a id="aa9a4e4ca0423d2cd06fae8868a8226a6" name="aa9a4e4ca0423d2cd06fae8868a8226a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9a4e4ca0423d2cd06fae8868a8226a6">&#9670;&#160;</a></span>PILE</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char eonc::Dynamics::PILE = &quot;pile&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00077">77</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
 
 </div>
 </div>
@@ -1170,8 +1325,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00092">92</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   92</span>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00112">112</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  112</span>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1195,8 +1350,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00093">93</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   93</span>{0.0}, <a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a>{0.0}, <a class="code hl_variable" href="#a807105f7a74f8556cbd70dc7be0b0ff6">xi1</a>{0.0}, <a class="code hl_variable" href="#ab36498b538f946040888092485530d6e">xi2</a>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00113">113</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  113</span>{0.0}, <a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a>{0.0}, <a class="code hl_variable" href="#a807105f7a74f8556cbd70dc7be0b0ff6">xi1</a>{0.0}, <a class="code hl_variable" href="#ab36498b538f946040888092485530d6e">xi2</a>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1220,8 +1375,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00093">93</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   93</span>{0.0}, <a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a>{0.0}, <a class="code hl_variable" href="#a807105f7a74f8556cbd70dc7be0b0ff6">xi1</a>{0.0}, <a class="code hl_variable" href="#ab36498b538f946040888092485530d6e">xi2</a>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00113">113</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  113</span>{0.0}, <a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a>{0.0}, <a class="code hl_variable" href="#a807105f7a74f8556cbd70dc7be0b0ff6">xi1</a>{0.0}, <a class="code hl_variable" href="#ab36498b538f946040888092485530d6e">xi2</a>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1245,8 +1400,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00093">93</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   93</span>{0.0}, <a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a>{0.0}, <a class="code hl_variable" href="#a807105f7a74f8556cbd70dc7be0b0ff6">xi1</a>{0.0}, <a class="code hl_variable" href="#ab36498b538f946040888092485530d6e">xi2</a>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00113">113</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  113</span>{0.0}, <a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a>{0.0}, <a class="code hl_variable" href="#a807105f7a74f8556cbd70dc7be0b0ff6">xi1</a>{0.0}, <a class="code hl_variable" href="#ab36498b538f946040888092485530d6e">xi2</a>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1270,8 +1425,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00093">93</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   93</span>{0.0}, <a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a>{0.0}, <a class="code hl_variable" href="#a807105f7a74f8556cbd70dc7be0b0ff6">xi1</a>{0.0}, <a class="code hl_variable" href="#ab36498b538f946040888092485530d6e">xi2</a>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="Dynamics_8h_source.html#l00113">113</a> of file <a class="el" href="Dynamics_8h_source.html">Dynamics.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  113</span>{0.0}, <a class="code hl_variable" href="#a75d7ca3d6afd69c60f2688bcf2708a91">vxi2</a>{0.0}, <a class="code hl_variable" href="#a807105f7a74f8556cbd70dc7be0b0ff6">xi1</a>{0.0}, <a class="code hl_variable" href="#ab36498b538f946040888092485530d6e">xi2</a>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>

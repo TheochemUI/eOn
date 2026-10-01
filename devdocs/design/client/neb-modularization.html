@@ -130,6 +130,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/lanczos.html">Lanczos</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/akmc.html">Adaptive kinetic Monte Carlo</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/saddle_search.html">Saddle search</a></li>
@@ -198,7 +199,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
@@ -216,6 +216,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.process_catalog.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_catalog</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 </ul>
@@ -224,6 +225,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../releases/v3.5.0/index.html">[v3.5.0] - 2026-10-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../releases/v3.5.0/release-notes.html">eOn 3.5.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
 </ul>
@@ -329,6 +334,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li><a class="reference internal" href="#climbing-image-and-ocineb">Climbing image and OCINEB</a></li>
 <li><a class="reference internal" href="#eigenmode-methods">Eigenmode methods</a></li>
+<li><a class="reference internal" href="#solid-state-band">Solid-state band</a></li>
 <li><a class="reference internal" href="#parallel-force-evaluation">Parallel force evaluation</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
@@ -509,7 +515,7 @@ Higher <code class="docutils literal notranslate"><span class="pre">k</span></co
 <h2>Climbing image and OCINEB<a class="headerlink" href="#climbing-image-and-ocineb" title="Link to this heading">¶</a></h2>
 <p>The climbing image (CI-NEB) modification activates after initial convergence:
 the highest-energy image climbs along the band to the exact saddle point.</p>
-<p>OCINEB (Off-Path Climbing Image NEB) <span id="id1">Goswami <em>et al.</em> [<a class="reference internal" href="../../../user_guide/neb.html#id40" title="Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. Frontiers in Chemistry, 2026. arXiv:2601.12630, doi:10.3389/fchem.2026.1807063.">NEB_GGJonsson26</a>]</span>
+<p>OCINEB (Off-Path Climbing Image NEB) <span id="id1">Goswami <em>et al.</em> [<a class="reference internal" href="../../../user_guide/neb.html#id42" title="Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. Frontiers in Chemistry, 2026. arXiv:2601.12630, doi:10.3389/fchem.2026.1807063.">NEB_GGJonsson26</a>]</span>
 extends CI-NEB with Min-Mode Following (MMF) and hessian eigenmode alignment:
 once the climbing image stabilizes, a dimer search refines the saddle point.
 <code class="docutils literal notranslate"><span class="pre">NEBOcinebController</span></code> monitors CI stability and
@@ -526,10 +532,21 @@ an abstract base class:</p>
 <p>The variant removes virtual dispatch overhead and gives value semantics. It
 is constructed by <code class="docutils literal notranslate"><span class="pre">buildEigenmodeStrategy()</span></code> based on configuration.</p>
 </section>
+<section id="solid-state-band">
+<h2>Solid-state band<a class="headerlink" href="#solid-state-band" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">solid_state</span></code> extends the band coordinate with the lower triangle of the
+cell. <code class="docutils literal notranslate"><span class="pre">SolidStateNEB</span></code> builds the joint displacement, the Jacobian, and the
+Cartesian step <code class="docutils literal notranslate"><span class="pre">delta_h</span> <span class="pre">=</span> <span class="pre">h</span> <span class="pre">F_cell</span> <span class="pre">/</span> <span class="pre">J</span></code>. <code class="docutils literal notranslate"><span class="pre">projectSolidState</span></code> applies the
+tangent and the spring in that metric. OCINEB and zoom are refused because
+their walks do not carry the cell.</p>
+</section>
 <section id="parallel-force-evaluation">
 <h2>Parallel force evaluation<a class="headerlink" href="#parallel-force-evaluation" title="Link to this heading">¶</a></h2>
-<p>When built with <code class="docutils literal notranslate"><span class="pre">-Deon_parallel_neb=true</span></code> (requires TBB), NEB evaluates image
-forces in parallel using <code class="docutils literal notranslate"><span class="pre">std::for_each</span></code> with <code class="docutils literal notranslate"><span class="pre">std::execution::par</span></code>. The
+<p>With <code class="docutils literal notranslate"><span class="pre">[Main]</span> <span class="pre">parallel</span> <span class="pre">=</span> <span class="pre">true</span></code>, NEB evaluates image forces on a pool of at
+most <code class="docutils literal notranslate"><span class="pre">std::thread::hardware_concurrency()</span></code> threads (<code class="docutils literal notranslate"><span class="pre">forEachImage</span></code> in
+<code class="docutils literal notranslate"><span class="pre">NudgedElasticBand.cpp</span></code>); an nvc++ build with <code class="docutils literal notranslate"><span class="pre">-Dstdpar</span></code> uses
+<code class="docutils literal notranslate"><span class="pre">std::for_each(std::execution::par)</span></code> instead. The first exception from any
+image is rethrown once every thread has joined. The
 <code class="docutils literal notranslate"><span class="pre">Potential::isThreadSafe()</span></code> virtual method controls parallelism: Python-based
 potentials (ASE, CatLearn) return <code class="docutils literal notranslate"><span class="pre">false</span></code> and fall back to serial evaluation.</p>
 </section>

@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "eOn RGPOT potential: in-process rgpot NWChemPot/CPMDPot via dlopen."
-    "keywords": "eOn, RGPOT, rgpot, NWChemPot, CPMDPot, libnwchemc, dlopen"
+    "description": "eOn RGPOT potential: in-process rgpot NWChem and CPMD, including a CPMDParams file and MPI calculator groups."
+    "keywords": "eOn, RGPOT, rgpot, CPMD, libcpmdc, params_path, ranks_per_image"
 ---
 
 # RgpotPot (direct in-process rgpot)
@@ -10,43 +10,53 @@ myst:
 ```{versionadded} 2.16.0
 ```
 
-On non-Windows builds, potential type `RGPOT` links
-[rgpot](https://github.com/OmniPotentRPC/rgpot) NWChemPot / CPMDPot and loads
-`libnwchemc.so` / `libcpmdc.so` with `dlopen` in the eOn process.
+On non-Windows builds, potential `rgpot` links
+[rgpot](https://github.com/OmniPotentRPC/rgpot) and loads `libnwchemc.so` or
+`libcpmdc.so` with `dlopen` in the eOn process.
+`RGPOT` and `rgpot` name the same potential.
 The cpmdc engine is documented at [cpmdc.rgoswami.me](https://cpmdc.rgoswami.me).
 
-Sibling roles live elsewhere: potserv Cap'n Proto clients, `eonclient --serve`
-([Serve mode](project:serve_mode.md)), and SocketNWChem (i-PI to a standalone
-NWChem binary). Overview: [rgpot integration](project:rgpot_integration.md).
+Potserv clients, `eonclient --serve`
+([Serve mode](project:serve_mode.md)), and SocketNWChem are separate.
+Overview: [rgpot integration](project:rgpot_integration.md).
 
 ## Build
 
 ```{code-block} bash
-meson setup bbdir-rgpot -Dwith_tests=true
-meson compile -C bbdir-rgpot
+meson setup bbdir -Dwith_tests=true
+meson compile -C bbdir
 ```
 
-Requires Cap'n Proto headers and libs (method params are Cap'n Proto messages
-passed into the C ABI) and the `rgpot` Meson subproject
-(`subprojects/rgpot.wrap`). The build pulls `nwchempot_dep` / `cpmdpot_dep`.
-Serve mode uses `ptlrpc_dep` under `-Dwith_serve`.
+The build needs Cap'n Proto headers and libraries. Method parameters are
+Cap'n Proto messages passed into the C ABI. The `rgpot` Meson subproject is
+`subprojects/rgpot.wrap`, and the build pulls `nwchempot_dep` and
+`cpmdpot_dep`. Serve mode uses `ptlrpc_dep` under `-Dwith_serve`.
 
-Engines are resolved at runtime:
+`dependency('rgpot')` prefers an installed rgpot at 3.2.0 or newer. The Meson
+wrap is the fallback. A CPMD run that splits ranks uses the flag in the CPMD
+section.
 
-- `NWCHEMC_LIBRARY` or `RGPOT_NWCHEMC_ENGINE` (NWChem embed library), or
-- `[RgpotPot] engine_path` / `engine_library` in the config.
+## Configuration
 
-`enginePath` in the Cap'n Proto blob is stripped before the ABI call (host-only
-locator); see rgpot NWChemPot.
+`eon/config.yaml` and the model list the same `[RgpotPot]` keys. `eonclient`
+reads those keys from `config.ini`.
 
-## Config
+```{code-block} ini
+[RgpotPot]
+```
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.RgpotPot
+```
+
+### NWChem
 
 ```{code-block} ini
 [Main]
 job = point
 
 [Potential]
-potential = RGPOT
+potential = rgpot
 
 [RgpotPot]
 backend = nwchemc
@@ -55,66 +65,294 @@ theory = scf
 scf_type = rhf
 charge = 0
 multiplicity = 1
-# engine_path = /path/to/libnwchemc.so
 ```
 
-For CPMD:
+`engine_path`, or `engine_library` when `engine_path` is empty, selects
+`libnwchemc.so`. For this backend the client also reads `NWCHEMC_LIBRARY`
+and `RGPOT_NWCHEMC_ENGINE`.
 
-```{code-block} ini
-[RgpotPot]
-backend = cpmdc
-functional = BLYP
-cutoff_ry = 70.0
-```
+`input_block`, or `RGPOT_NWCHEM_INPUT_BLOCK` when the key is empty, is
+NWChem `inputBlocks` text. When `theory` is `dft` and `scf_type` names an
+exchange-correlation functional such as `b3lyp`, the client writes a short
+density functional theory (DFT) block.
 
-For Metatomic (dlopen engine; no fat metatomic/torch link into eOn):
+### Metatomic
 
 ```{code-block} ini
 [Potential]
-potential = RGPOT
+potential = rgpot
 
 [RgpotPot]
 backend = metatomic
 model_path = /path/to/model.pt
 device = cpu
-# engine_path = /path/to/libmetatomic_engine.so
-# or: export RGPOT_METATOMIC_ENGINE=...
 ```
 
-For xTB (preferred packaging path; leaves `-Dwith_xtb=false`):
+`engine_path` may point at `libmetatomic_engine.so`. The client also reads
+`RGPOT_METATOMIC_ENGINE` and `METATOMIC_ENGINE`.
+
+### xTB
+
+This backend leaves `-Dwith_xtb=false` on the eOn build. The engine is
+`libxtb_engine.so`, loaded at run time.
 
 ```{code-block} ini
 [Potential]
-potential = RGPOT
+potential = rgpot
 
 [RgpotPot]
 backend = xtb
 paramset = GFN2xTB
 accuracy = 1.0
-# engine_path = /path/to/libxtb_engine.so
-# or: export RGPOT_XTB_ENGINE=...
 ```
 
-Optional `input_block` (or env `RGPOT_NWCHEM_INPUT_BLOCK`) supplies NWChem
-`inputBlocks` (e.g. explicit `dft` / `xc` stanzas). When `theory=dft` and
-`scf_type` looks like an XC label (e.g. `b3lyp`), a minimal DFT block is
-emitted automatically.
+`engine_path` may point at `libxtb_engine.so`. The client also reads
+`RGPOT_XTB_ENGINE` and `XTB_ENGINE`.
 
-Installed rgpot ≥ 2.5.0 is preferred via `pkg-config` (`dependency('rgpot')`);
-the Meson wrap is the fallback for hermetic/dev builds.
+## CPMD
 
-## vs SocketNWChem
+`backend = cpmdc` runs one Car-Parrinello molecular dynamics (CPMD)
+session inside `eonclient`. The shared library is
+[libcpmdc](https://github.com/OmniPotentRPC/cpmdc).
+The engine documentation is at [cpmdc.rgoswami.me](https://cpmdc.rgoswami.me).
 
-| | SocketNWChem | RGPOT (this pot) |
-| --- | --- | --- |
-| Protocol | i-PI socket; eOn listens | In-process `dlopen` via rgpot frontends |
-| Engine process | External NWChem | `libnwchemc.so` / `libcpmdc.so` in eOn |
-| Multi-call SCF | Warm NWChem across POSDATA | nwchemc warm params cache (skip full RTDB reset when method blob unchanged) |
+Calculator groups need rgpot built with the Message Passing Interface (MPI).
+Pass the flag to the wrap:
+
+```{code-block} bash
+meson setup bbdir -Drgpot:with_mpi=enabled
+meson compile -C bbdir
+```
+
+The flag configures the wrap. A `pkg-config` rgpot must already be an MPI
+build. If it is not, `ranks_per_image` greater than 0 raises.
+
+The construction agreement and the grouped exit handler below compile
+when rgpot links MPI: the wrap with `-Drgpot:with_mpi=enabled`, or an
+installed rgpot whose `rgpot.pc` defines `RGPOT_HAS_MPI`. Against an
+installed rgpot without that define, eOn's `-Dwith_mpi=enabled` turns
+them on. After a failed engine call rgpot asks for `MPI_Abort` at exit,
+and the exit handler aborts the world instead of waiting in
+`MPI_Finalize` for ranks left inside a CPMD collective.
+
+eOn's `-Dwith_mpi=enabled` option builds the client/server program. Calculator
+groups are this page's launch, `mpirun -np N eonclient`, with rgpot built
+`-Drgpot:with_mpi=enabled`.
+
+### CPMDParams file and the cpmd section
+
+Three layers build the message CPMD receives.
+
+`params_path` on `[RgpotPot]` is a Cap'n Proto CPMDParams file. It owns
+`functional`, `cutOffRy`, `charge`, `multiplicity`, `title`, `memoryMb`,
+`inputSections`, and `inputBlocks`. `RGPOT_PARAMS_PATH` overrides the
+ini key. Scalar keys are not written over a file that loaded. Every rank
+reads the file before `MPI_Comm_split`. When any rank cannot read it,
+every rank throws that error and the split does not run.
+
+When `params_path` is empty, `[cpmd]` supplies those scalars and overrides
+the copies on `[RgpotPot]`. Three spellings set the cutoff on either
+section: `cutOffRy`, then `cutoff_ry`, then `cpmd_cut_off_ry`. The first
+one present wins. `functional` wins over `cpmd_functional`. The client and
+the Python server accept every spelling; the `Cpmd` and `RgpotPot` models
+write only `cutOffRy` on `[cpmd]` and `cutoff_ry` on `[RgpotPot]`.
+`[cpmd]` is read only when `backend` is `cpmd`, `cpmdc`, or `cpmdpot`.
+
+`engine_path`, `engine_library`, `engine_root`, `scratch_dir`,
+`permanent_dir`, and `ranks_per_image` stay on `[RgpotPot]`. They place
+the process and apply after either source.
+
+`input_block` is one more `inputBlocks` entry. `[cpmd]` supplies it, then
+`[RgpotPot]`, then `RGPOT_CPMD_INPUT_BLOCK` when those strings are empty.
+Sections loaded from the file stay. A block already in the file stays,
+and the ini text follows it. An empty `input_block` leaves the file's
+blocks unchanged.
+
+```{code-block} ini
+[Potential]
+potential = rgpot
+
+[RgpotPot]
+backend = cpmdc
+
+[cpmd]
+functional = BLYP
+cutOffRy = 70.0
+charge = 0
+multiplicity = 1
+```
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.Cpmd
+```
+
+That example is the scalar layer. The point, minimization, and band
+examples below keep `params_path`, which is the file layer.
+
+Write the message as Cap'n Proto text. The field names are in the
+[write-cpmdparams how-to](https://github.com/OmniPotentRPC/cpmdc/blob/main/docs/source/howto/write-cpmdparams.rst).
+From a cpmdc checkout, encode it:
+
+```{code-block} bash
+capnp encode schema/Potentials.capnp CPMDParams \
+  < cluster.params.txt > cluster.params.bin
+```
+
+`capnp encode` writes the flat message `eonclient` reads. A field name
+that is not in the schema fails at this step.
+
+### Environment
+
+```{code-block} bash
+export CPMDC_LIBRARY=/path/to/libcpmdc.so
+export CPMDC_PSEUDO_DIR=/path/to/PP_LIBRARY
+```
+
+`RGPOT_CPMDC_ENGINE` is the other library path the client reads. rgpot
+then tries `RGPOT_CPMD_ENGINE`, then `libcpmdc.so` on the loader path.
+
+libcpmdc reads `CPMDC_PSEUDO_DIR` for the pseudopotential directory. When
+that variable is unset, it reads `CPMD_PP_LIBRARY_PATH`.
+
+`RGPOT_CPMD_INPUT_BLOCK` fills `input_block` when the `[cpmd]` key and
+the `[RgpotPot]` key are empty. The text is appended to `inputBlocks`.
+cpmdc places those blocks ahead of the sections it generates. Sections
+in the CPMDParams file are not removed.
+
+`permanent_dir` is the CPMD `FILEPATH` for `RESTART` files. `scratch_dir`
+is the fallback directory.
+
+### Files from libcpmdc
+
+A library force call writes no `RESTART.1`, `LATEST`, `GEOMETRY`, or
+`GEOMETRY.xyz`. The orbitals for the next call stay in memory. `cpmd.x`
+writes those four files in `permanent_dir` when that key is set, otherwise
+in `scratch_dir`, otherwise in the working directory.
+
+eOn's own files are written by rank 0. The names depend on the job.
+
+### A point
+
+The geometry is `pos.con`. `ranks_per_image = 0` is one group of all
+ranks. One process is that group.
+
+```{code-block} ini
+[Main]
+job = point
+
+[Potential]
+potential = rgpot
+
+[RgpotPot]
+backend = cpmdc
+params_path = cluster.params.bin
+ranks_per_image = 0
+```
+
+```{code-block} bash
+eonclient
+```
+
+`results.dat` records the energy in eV, the maximum force in eV/A, the
+force-call count, and the termination status.
+
+`mpirun -np 4 eonclient` with the same `ranks_per_image` is still one
+group. Those 4 ranks share one CPMD session. Rank 0 runs the job. The
+other ranks serve force requests.
+
+### A minimization
+
+The input geometry is `pos.con`. The job writes `min.con` and
+`results.dat`. `min.con` is the minimized structure. `results.dat` records
+the energy in eV, the force-call count, and whether the run converged.
+
+`converged_force` is a threshold in eV/A.
+
+```{code-block} ini
+[Main]
+job = minimization
+
+[Potential]
+potential = rgpot
+
+[Optimizer]
+opt_method = lbfgs
+converged_force = 0.01
+max_iterations = 1000
+
+[RgpotPot]
+backend = cpmdc
+params_path = cluster.params.bin
+ranks_per_image = 0
+```
+
+Launch it with the same `eonclient` or `mpirun` line as the point job.
+
+### A 7-image nudged elastic band (NEB)
+
+`images = 7` asks for 7 intermediate images. A band update evaluates
+each image whose positions changed.
+
+The reactant and the product are one batch at the start. The reactant
+runs on group 0. The product runs on group 1.
+
+Seven groups of 4 ranks need 28 ranks. Intermediate image 1 runs on
+group 0, and image 7 runs on group 6. An update that skips an image
+leaves the others on those groups.
+
+The run reads `reactant.con` and `product.con`.
+
+```{code-block} ini
+[Main]
+job = nudged_elastic_band
+
+[Potential]
+potential = rgpot
+
+[Optimizer]
+opt_method = lbfgs
+converged_force = 0.01
+max_iterations = 1000
+
+[Nudged Elastic Band]
+images = 7
+converged_force = 0.01
+
+[RgpotPot]
+backend = cpmdc
+params_path = cluster.params.bin
+ranks_per_image = 4
+```
+
+```{code-block} bash
+mpirun -np 28 eonclient
+```
+
+Rank 0 runs the job and writes the files. The other ranks serve force
+requests. At exit, rank 0 sends a stop. Every rank calls `cpmdc_finalize`
+while MPI is still up, then `MPI_Finalize`, then `_Exit`. `_Exit` returns
+to the kernel, and the dynamic linker does not run the CPMD or MPI
+library destructors on a finalized world. Worker ranks use status 0.
+Rank 0 uses the job status, and a calculator error on another rank is
+part of the message it prints.
+
+The job writes `results.dat`, `neb.con`, `neb.dat`, and `sp.con`.
+`sp.con` is the highest-energy image. A spline maximum more than 0.05 eV
+above the reactant also produces `peak00_pos.con` and `peak00_mode.dat`,
+numbered from `00`. The default of `setup_mmf_peaks` leaves those files on.
+
+## SocketNWChem
+
+SocketNWChem speaks the i-PI socket, and eOn listens. The direct potential
+(RGPOT) loads `libnwchemc.so` or `libcpmdc.so` in the eOn process.
+SocketNWChem keeps an external NWChem process warm across calls. RGPOT
+keeps one session, and that session keeps the orbitals.
 
 ## Implementation notes
 
-- `RgpotPot` (eOn `Potential`) owns an opaque `RGPotEngine` TU that includes
-  **only** rgpot headers — avoids Cap'n Proto type name `Potential` colliding
-  with eOn's `Potential` class.
-- Forces and energies use eOn units (eV, eV/Å) after rgpot conversion from
-  Hartree / Hartree·bohr⁻¹.
+`RgpotPot` owns one translation unit. That unit includes rgpot headers and
+no eOn potential header. The Cap'n Proto name `Potential` stays off eOn's
+`Potential` class.
+
+Energies are in eV and forces are in eV/A. rgpot converts the Hartree and
+Hartree/bohr values that the engine returns.

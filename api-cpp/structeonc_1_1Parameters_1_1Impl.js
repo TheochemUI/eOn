@@ -19,6 +19,7 @@ var structeonc_1_1Parameters_1_1Impl =
     [ "gpr_dimer_options_", "structeonc_1_1Parameters_1_1Impl.html#acf0df5c154c8a3d8d638cb7ea2b40188", null ],
     [ "hessian_options_", "structeonc_1_1Parameters_1_1Impl.html#ad74d4054e4684343f69bf89c09959d7c", null ],
     [ "hyperdynamics_options_", "structeonc_1_1Parameters_1_1Impl.html#a087a0c1af46dba1ee485d07f8257affa", null ],
+    [ "instanton_options_", "structeonc_1_1Parameters_1_1Impl.html#ac356626c367e169bc4684966b59edd60", null ],
     [ "ira_options_", "structeonc_1_1Parameters_1_1Impl.html#a68ee6ce50cc5f16dcbd235a88972c684", null ],
     [ "lanczos_options_", "structeonc_1_1Parameters_1_1Impl.html#ab2537af678eb73b30cf13da582423875", null ],
     [ "last_error", "structeonc_1_1Parameters_1_1Impl.html#a3ffa78f86c588c57341487aae001f27f", null ],

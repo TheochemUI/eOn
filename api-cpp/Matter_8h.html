@@ -239,14 +239,15 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('Matter_8h.html
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="ConFileIO_8h_source.html">ConFileIO.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Eigen_8h_source.html">Eigen.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="PbcSimd_8h_source.html">PbcSimd.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="PbcSimd_8h_source.html">PbcSimd.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Potential_8h_source.html">Potential.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="StructureComparisonOptions_8h_source.html">StructureComparisonOptions.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="SurrogatePotential_8h_source.html">SurrogatePotential.h</a>&quot;</code><br />
 <code>#include &lt;array&gt;</code><br />
 <code>#include &lt;cstdint&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;span&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 </div>
@@ -274,6 +275,8 @@ Functions</h2></td></tr>
 <tr class="memitem:aa30c19bf4a78bd641a3087cd2d228c19" id="r_aa30c19bf4a78bd641a3087cd2d228c19"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1pbc.html#aa30c19bf4a78bd641a3087cd2d228c19">eonc::pbc::applyLegacy</a> (const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;coords, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;cell, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;cellInverse)</td></tr>
 <tr class="memitem:abad2bfe4d09d881af9d6df88063455cf" id="r_abad2bfe4d09d881af9d6df88063455cf"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1pbc.html#abad2bfe4d09d881af9d6df88063455cf">eonc::pbc::applyPositions</a> (const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;coords, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;cell, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;cellInverse, <a class="el" href="namespaceeonc.html#a80ab802e9396a8f80486e4ee8a309a8f">PbcConvention</a> convention)</td></tr>
 <tr class="memitem:ac9275cb7a90e6142c029620e501a7f14" id="r_ac9275cb7a90e6142c029620e501a7f14"><td class="memItemLeft">VectorXd&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1pbc.html#ac9275cb7a90e6142c029620e501a7f14">eonc::pbc::applyV</a> (const VectorXd &amp;diffVector, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;cell, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;cellInverse)</td></tr>
+<tr class="memitem:a0a75f0d31324c1f054a663565625d66c" id="r_a0a75f0d31324c1f054a663565625d66c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a0a75f0d31324c1f054a663565625d66c">eonc::evaluateTogether</a> (<a class="el" href="classeonc_1_1Potential.html">Potential</a> &amp;pot, std::span&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> *const  &gt; systems)</td></tr>
+<tr class="memdesc:a0a75f0d31324c1f054a663565625d66c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluates every system that needs a force update.  <br /></td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -49,6 +49,7 @@ var ParametersOptions_8h =
     [ "eonc::neb_options_t::zoom_options_t", "structeonc_1_1neb__options__t_1_1zoom__options__t.html", "structeonc_1_1neb__options__t_1_1zoom__options__t" ],
     [ "eonc::neb_options_t::path_initialization_t", "structeonc_1_1neb__options__t_1_1path__initialization__t.html", "structeonc_1_1neb__options__t_1_1path__initialization__t" ],
     [ "eonc::neb_options_t::endpoint_options_t", "structeonc_1_1neb__options__t_1_1endpoint__options__t.html", "structeonc_1_1neb__options__t_1_1endpoint__options__t" ],
+    [ "eonc::neb_options_t::solid_state_options_t", "structeonc_1_1neb__options__t_1_1solid__state__options__t.html", "structeonc_1_1neb__options__t_1_1solid__state__options__t" ],
     [ "eonc::dynamics_options_t", "structeonc_1_1dynamics__options__t.html", "structeonc_1_1dynamics__options__t" ],
     [ "eonc::parallel_replica_options_t", "structeonc_1_1parallel__replica__options__t.html", "structeonc_1_1parallel__replica__options__t" ],
     [ "eonc::tad_options_t", "structeonc_1_1tad__options__t.html", "structeonc_1_1tad__options__t" ],
@@ -63,6 +64,7 @@ var ParametersOptions_8h =
     [ "eonc::artn_options_t", "structeonc_1_1artn__options__t.html", "structeonc_1_1artn__options__t" ],
     [ "eonc::ira_options_t", "structeonc_1_1ira__options__t.html", "structeonc_1_1ira__options__t" ],
     [ "eonc::debug_options_t", "structeonc_1_1debug__options__t.html", "structeonc_1_1debug__options__t" ],
+    [ "eonc::instanton_options_t", "structeonc_1_1instanton__options__t.html", "structeonc_1_1instanton__options__t" ],
     [ "eonc::oh_tst_options_t", "structeonc_1_1oh__tst__options__t.html", "structeonc_1_1oh__tst__options__t" ],
     [ "eonc::structure_comparison_options_t", "namespaceeonc.html#a212f2d1f7e3dba9a689478884b514c7e", null ]
 ];

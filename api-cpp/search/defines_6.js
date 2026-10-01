@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['pybind11_5fdetailed_5ferror_5fmessages_0',['PYBIND11_DETAILED_ERROR_MESSAGES',['../ASE__NWCHEM_8h.html#a7043d9d872fdca0ec538d37d04325f31',1,'PYBIND11_DETAILED_ERROR_MESSAGES:&#160;ASE_NWCHEM.h'],['../ASE__ORCA_8h.html#a7043d9d872fdca0ec538d37d04325f31',1,'PYBIND11_DETAILED_ERROR_MESSAGES:&#160;ASE_ORCA.h'],['../CatLearnPot_8h.html#a7043d9d872fdca0ec538d37d04325f31',1,'PYBIND11_DETAILED_ERROR_MESSAGES:&#160;CatLearnPot.h']]]
+  ['nparams_0',['NPARAMS',['../potentials_2EAM_2Parameters_8h.html#ae468832efa6adf5e9a96cabd8f878b47',1,'Parameters.h']]]
 ];

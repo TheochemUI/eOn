@@ -130,6 +130,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="lanczos.html">Lanczos</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="akmc.html">Adaptive kinetic Monte Carlo</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="saddle_search.html">Saddle search</a></li>
@@ -198,7 +199,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
@@ -216,6 +216,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.process_catalog.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_catalog</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 </ul>
@@ -224,6 +225,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.5.0/index.html">[v3.5.0] - 2026-10-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.5.0/release-notes.html">eOn 3.5.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
 </ul>
@@ -324,7 +329,23 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#convergence">Convergence</a></li>
 <li><a class="reference internal" href="#refinement">Refinement</a></li>
 <li><a class="reference internal" href="#output">Output</a></li>
-<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li><a class="reference internal" href="#eon.schema.OptimizerConfig"><code class="docutils literal notranslate"><span class="pre">OptimizerConfig</span></code></a><ul>
+<li><a class="reference internal" href="#eon.schema.OptimizerConfig.opt_method"><code class="docutils literal notranslate">opt_method</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.OptimizerConfig.convergence_metric"><code class="docutils literal notranslate">convergence_metric</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.OptimizerConfig.converged_force"><code class="docutils literal notranslate">converged_force</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.OptimizerConfig.max_move"><code class="docutils literal notranslate">max_move</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.OptimizerConfig.time_step"><code class="docutils literal notranslate">time_step</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.OptimizerConfig.max_iterations"><code class="docutils literal notranslate">max_iterations</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#eon.schema.RefineConfig"><code class="docutils literal notranslate"><span class="pre">RefineConfig</span></code></a><ul>
+<li><a class="reference internal" href="#eon.schema.RefineConfig.refine_opt_method"><code class="docutils literal notranslate">refine_opt_method</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RefineConfig.refine_threshold"><code class="docutils literal notranslate">refine_threshold</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
   data-type="github" data-user="TheochemUI" data-repo="eOn">
@@ -607,6 +628,118 @@ structured JSON metadata in the second CON header line via <code class="docutils
 </section>
 <section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
+<p>The minimization job reads <code class="docutils literal notranslate"><span class="pre">[Optimizer]</span></code>.
+An optional <code class="docutils literal notranslate"><span class="pre">[Refine]</span></code> block switches method once the maximum force drops below its threshold.</p>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="eon.schema.OptimizerConfig">
+<span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">OptimizerConfig</span></span><a class="reference internal" href="../_modules/eon_schema/config/models.html#OptimizerConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.OptimizerConfig" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">opt_method</span> <span class="pre">(Literal['box',</span> <span class="pre">'cg',</span> <span class="pre">'qm',</span> <span class="pre">'lbfgs',</span> <span class="pre">'fire',</span> <span class="pre">'sd',</span> <span class="pre">'xtsci'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">convergence_metric</span> <span class="pre">(Literal['norm',</span> <span class="pre">'rms',</span> <span class="pre">'max_atom',</span> <span class="pre">'max_component'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">converged_force</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_move</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_step</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_iterations</span> <span class="pre">(int)</span></code></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.OptimizerConfig.opt_method">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">opt_method</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'box'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'cg'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'qm'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lbfgs'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fire'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sd'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'xtsci'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cg'</span></span><a class="headerlink" href="#eon.schema.OptimizerConfig.opt_method" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Options:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">box</span></code>: Optimizes the atom positions and box using quickmin</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cg</span></code>: Conjugate gradient</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">qm</span></code>: Quickmin</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lbfgs</span></code>: Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton optimizer</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fire</span></code>: Fast inertial relaxation engine</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sd</span></code>: Steepest descent</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xtsci</span></code>: xtsci-optimize engine. Pick the solver with <code class="docutils literal notranslate"><span class="pre">[Xtsci]</span> <span class="pre">method</span></code>. Needs <code class="docutils literal notranslate"><span class="pre">-Dwith_xtsci=true</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<p>The optimization method to use.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.OptimizerConfig.convergence_metric">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">convergence_metric</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'norm'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rms'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'max_atom'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'max_component'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'norm'</span></span><a class="headerlink" href="#eon.schema.OptimizerConfig.convergence_metric" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Options:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">norm</span></code>: Euclidean <code class="docutils literal notranslate"><span class="pre">||F||_2</span></code> of the free-atom force vector (default)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rms</span></code>: <code class="docutils literal notranslate"><span class="pre">||F||_2</span> <span class="pre">/</span> <span class="pre">sqrt(3</span> <span class="pre">N_free)</span></code>, OPTIM MYLBFGS RMS. Opt-in.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_atom</span></code>: The maximum force on any non-frozen atom</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_component</span></code>: The maximum force on any non-frozen degree of freedom</p></li>
+</ul>
+</dd>
+</dl>
+<p>The metric to use to determine when an optimization is complete.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.OptimizerConfig.converged_force">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">converged_force</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.01</span></span><a class="headerlink" href="#eon.schema.OptimizerConfig.converged_force" title="Link to this definition">¶</a></dt>
+<dd><p>When the convergence_metric is smaller than this value (eV/A), the structure is considered minimized.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.OptimizerConfig.max_move">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">max_move</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.2</span></span><a class="headerlink" href="#eon.schema.OptimizerConfig.max_move" title="Link to this definition">¶</a></dt>
+<dd><p>Maximum distance that an atom may be moved in a single optimization step (Angstroms).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.OptimizerConfig.time_step">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">time_step</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></span><a class="headerlink" href="#eon.schema.OptimizerConfig.time_step" title="Link to this definition">¶</a></dt>
+<dd><p>The dynamical timestep for the quickmin algorithm (fs).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.OptimizerConfig.max_iterations">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">max_iterations</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1000</span></span><a class="headerlink" href="#eon.schema.OptimizerConfig.max_iterations" title="Link to this definition">¶</a></dt>
+<dd><p>The maximum number of optimization iterations that will be performed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="eon.schema.RefineConfig">
+<span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">RefineConfig</span></span><a class="reference internal" href="../_modules/eon_schema/config/models.html#RefineConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.RefineConfig" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">refine_opt_method</span> <span class="pre">(Literal['none',</span> <span class="pre">'cg',</span> <span class="pre">'lbfgs',</span> <span class="pre">'fire',</span> <span class="pre">'box',</span> <span class="pre">'qm'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">refine_threshold</span> <span class="pre">(float)</span></code></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RefineConfig.refine_opt_method">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">refine_opt_method</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'cg'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lbfgs'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fire'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'box'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'qm'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'none'</span></span><a class="headerlink" href="#eon.schema.RefineConfig.refine_opt_method" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Options:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">none</span></code>: No refinement optimization</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cg</span></code>: Conjugate gradient</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lbfgs</span></code>: Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton optimizer</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fire</span></code>: Fast inertial relaxation engine</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">box</span></code>: Optimizes the atom positions and box using quickmin</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">qm</span></code>: Quickmin</p></li>
+</ul>
+</dd>
+</dl>
+<p>The optimization method to use for refinement.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RefineConfig.refine_threshold">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">refine_threshold</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></span><a class="headerlink" href="#eon.schema.RefineConfig.refine_threshold" title="Link to this definition">¶</a></dt>
+<dd><p>Threshold for refinement optimization.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 

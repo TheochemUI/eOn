@@ -267,6 +267,7 @@ Public Member Functions</h2></td></tr>
 <tr class="inherit_header pub_methods_classeonc_1_1ObjectiveFunction"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1ObjectiveFunction')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1ObjectiveFunction.html">eonc::ObjectiveFunction</a></td></tr>
 <tr class="memitem:a7539f6688c5b9e68654bf0a8762e8c34 inherit pub_methods_classeonc_1_1ObjectiveFunction" id="r_a7539f6688c5b9e68654bf0a8762e8c34"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ObjectiveFunction.html#a7539f6688c5b9e68654bf0a8762e8c34">ObjectiveFunction</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;paramsPassed)</td></tr>
 <tr class="memitem:a2757b1b7f7d80d47c033ee32adb8d667 inherit pub_methods_classeonc_1_1ObjectiveFunction" id="r_a2757b1b7f7d80d47c033ee32adb8d667"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ObjectiveFunction.html#a2757b1b7f7d80d47c033ee32adb8d667">~ObjectiveFunction</a> ()</td></tr>
+<tr class="memitem:aa52b364b8d8eb6fcb6cddc409aaa6691 inherit pub_methods_classeonc_1_1ObjectiveFunction" id="r_aa52b364b8d8eb6fcb6cddc409aaa6691"><td class="memItemLeft">virtual std::optional&lt; double &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ObjectiveFunction.html#aa52b364b8d8eb6fcb6cddc409aaa6691">knownCurvature</a> () const</td></tr>
 <tr class="memitem:af3271abcddd3c2ec4808a5b3f25e4b77 inherit pub_methods_classeonc_1_1ObjectiveFunction" id="r_af3271abcddd3c2ec4808a5b3f25e4b77"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ObjectiveFunction.html#af3271abcddd3c2ec4808a5b3f25e4b77">minimumImage</a> (Eigen::Ref&lt; Eigen::Vector3d &gt;) const</td></tr>
 <tr class="memitem:a8f2672688adbd931070f00fa29b72be8 inherit pub_methods_classeonc_1_1ObjectiveFunction" id="r_a8f2672688adbd931070f00fa29b72be8"><td class="memItemLeft">virtual VectorXd&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ObjectiveFunction.html#a8f2672688adbd931070f00fa29b72be8">getMasses</a> () const</td></tr>
 <tr class="memitem:a9026e74111d5f55078d5c5f8a47501aa inherit pub_methods_classeonc_1_1ObjectiveFunction" id="r_a9026e74111d5f55078d5c5f8a47501aa"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ObjectiveFunction.html#a9026e74111d5f55078d5c5f8a47501aa">getPeriodic</a> () const</td></tr>
@@ -286,7 +287,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="NudgedElasticBand_8h_source.html#l00109">109</a> of file <a class="el" href="NudgedElasticBand_8h_source.html">NudgedElasticBand.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="NudgedElasticBand_8h_source.html#l00119">119</a> of file <a class="el" href="NudgedElasticBand_8h_source.html">NudgedElasticBand.h</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aedd1f0f4c63e96afa561e32017aebebb" name="aedd1f0f4c63e96afa561e32017aebebb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aedd1f0f4c63e96afa561e32017aebebb">&#9670;&#160;</a></span>NEBObjectiveFunction()</h2>
@@ -315,10 +316,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NudgedElasticBand_8h_source.html#l00111">111</a> of file <a class="el" href="NudgedElasticBand_8h_source.html">NudgedElasticBand.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  113</span>      : <a class="code hl_function" href="classeonc_1_1ObjectiveFunction.html#a7539f6688c5b9e68654bf0a8762e8c34">ObjectiveFunction</a>(parametersPassed), <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>{nebPassed} {}</div>
-<div class="ttc" id="aclasseonc_1_1NEBObjectiveFunction_html_a7f5773f645eaaaadf740cf82af64b760"><div class="ttname"><a href="#a7f5773f645eaaaadf740cf82af64b760">eonc::NEBObjectiveFunction::neb</a></div><div class="ttdeci">NudgedElasticBand * neb</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00132">NudgedElasticBand.h:132</a></div></div>
-<div class="ttc" id="aclasseonc_1_1ObjectiveFunction_html_a7539f6688c5b9e68654bf0a8762e8c34"><div class="ttname"><a href="classeonc_1_1ObjectiveFunction.html#a7539f6688c5b9e68654bf0a8762e8c34">eonc::ObjectiveFunction::ObjectiveFunction</a></div><div class="ttdeci">ObjectiveFunction(const Parameters &amp;paramsPassed)</div><div class="ttdef"><b>Definition</b> <a href="ObjectiveFunction_8h_source.html#l00023">ObjectiveFunction.h:23</a></div></div>
+<p class="definition">Definition at line <a class="el" href="NudgedElasticBand_8h_source.html#l00121">121</a> of file <a class="el" href="NudgedElasticBand_8h_source.html">NudgedElasticBand.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  123</span>      : <a class="code hl_function" href="classeonc_1_1ObjectiveFunction.html#a7539f6688c5b9e68654bf0a8762e8c34">ObjectiveFunction</a>(parametersPassed), <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>{nebPassed} {}</div>
+<div class="ttc" id="aclasseonc_1_1NEBObjectiveFunction_html_a7f5773f645eaaaadf740cf82af64b760"><div class="ttname"><a href="#a7f5773f645eaaaadf740cf82af64b760">eonc::NEBObjectiveFunction::neb</a></div><div class="ttdeci">NudgedElasticBand * neb</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00142">NudgedElasticBand.h:142</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ObjectiveFunction_html_a7539f6688c5b9e68654bf0a8762e8c34"><div class="ttname"><a href="classeonc_1_1ObjectiveFunction.html#a7539f6688c5b9e68654bf0a8762e8c34">eonc::ObjectiveFunction::ObjectiveFunction</a></div><div class="ttdeci">ObjectiveFunction(const Parameters &amp;paramsPassed)</div><div class="ttdef"><b>Definition</b> <a href="ObjectiveFunction_8h_source.html#l00025">ObjectiveFunction.h:25</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -345,8 +346,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NudgedElasticBand_8h_source.html#l00116">116</a> of file <a class="el" href="NudgedElasticBand_8h_source.html">NudgedElasticBand.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  116</span>{};</div>
+<p class="definition">Definition at line <a class="el" href="NudgedElasticBand_8h_source.html#l00126">126</a> of file <a class="el" href="NudgedElasticBand_8h_source.html">NudgedElasticBand.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  126</span>{};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -376,10 +377,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#ae183480aed0570a0187cabe81bd11ffb">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="NEBObjectiveFunction_8cpp_source.html#l00056">56</a> of file <a class="el" href="NEBObjectiveFunction_8cpp_source.html">NEBObjectiveFunction.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   56</span>                                           {</div>
-<div class="line"><span class="lineno">   57</span>  <span class="keywordflow">return</span> 3 * <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;numImages * <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;atoms;</div>
-<div class="line"><span class="lineno">   58</span>}</div>
+<p class="definition">Definition at line <a class="el" href="NEBObjectiveFunction_8cpp_source.html#l00093">93</a> of file <a class="el" href="NEBObjectiveFunction_8cpp_source.html">NEBObjectiveFunction.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   93</span>                                           {</div>
+<div class="line"><span class="lineno">   94</span>  <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(nebSegment(*<a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>) * <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;numImages);</div>
+<div class="line"><span class="lineno">   95</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -412,17 +413,22 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#a71d9f4b931fccd6ae74a054a92ab1fa9">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="NEBObjectiveFunction_8cpp_source.html#l00085">85</a> of file <a class="el" href="NEBObjectiveFunction_8cpp_source.html">NEBObjectiveFunction.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   86</span>                                                             {</div>
-<div class="line"><span class="lineno">   87</span>  VectorXd pbcDiff(3 * <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;numImages * <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;atoms);</div>
-<div class="line"><span class="lineno">   88</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 1; i &lt;= <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;numImages; i++) {</div>
-<div class="line"><span class="lineno">   89</span>    <span class="keywordtype">int</span> n = (i - 1) * 3 * <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;atoms;</div>
-<div class="line"><span class="lineno">   90</span>    <span class="keywordtype">int</span> m = 3 * <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;atoms;</div>
-<div class="line"><span class="lineno">   91</span>    pbcDiff.segment(n, m) =</div>
-<div class="line"><span class="lineno">   92</span>        <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;path[i]-&gt;pbcV(a.segment(n, m) - b.segment(n, m));</div>
-<div class="line"><span class="lineno">   93</span>  }</div>
-<div class="line"><span class="lineno">   94</span>  <span class="keywordflow">return</span> pbcDiff;</div>
-<div class="line"><span class="lineno">   95</span>}</div>
+<p class="definition">Definition at line <a class="el" href="NEBObjectiveFunction_8cpp_source.html#l00122">122</a> of file <a class="el" href="NEBObjectiveFunction_8cpp_source.html">NEBObjectiveFunction.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  123</span>                                                             {</div>
+<div class="line"><span class="lineno">  124</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> seg = nebSegment(*<a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>);</div>
+<div class="line"><span class="lineno">  125</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> atomDof = 3L * <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;atoms;</div>
+<div class="line"><span class="lineno">  126</span>  VectorXd pbcDiff(seg * <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;numImages);</div>
+<div class="line"><span class="lineno">  127</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 1; i &lt;= <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;numImages; i++) {</div>
+<div class="line"><span class="lineno">  128</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> n = (i - 1) * <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(seg);</div>
+<div class="line"><span class="lineno">  129</span>    pbcDiff.segment(n, atomDof) =</div>
+<div class="line"><span class="lineno">  130</span>        <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;path[i]-&gt;pbcV(a.segment(n, atomDof) - b.segment(n, atomDof));</div>
+<div class="line"><span class="lineno">  131</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;solidState()) {</div>
+<div class="line"><span class="lineno">  132</span>      pbcDiff.segment(n + atomDof, 9) =</div>
+<div class="line"><span class="lineno">  133</span>          a.segment(n + atomDof, 9) - b.segment(n + atomDof, 9);</div>
+<div class="line"><span class="lineno">  134</span>    }</div>
+<div class="line"><span class="lineno">  135</span>  }</div>
+<div class="line"><span class="lineno">  136</span>  <span class="keywordflow">return</span> pbcDiff;</div>
+<div class="line"><span class="lineno">  137</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -451,10 +457,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#adb5aa05d56bdb3f5eca741688f4f4e2d">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="NEBObjectiveFunction_8cpp_source.html#l00081">81</a> of file <a class="el" href="NEBObjectiveFunction_8cpp_source.html">NEBObjectiveFunction.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   81</span>                                            {</div>
-<div class="line"><span class="lineno">   82</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;convergenceForce();</div>
-<div class="line"><span class="lineno">   83</span>}</div>
+<p class="definition">Definition at line <a class="el" href="NEBObjectiveFunction_8cpp_source.html#l00118">118</a> of file <a class="el" href="NEBObjectiveFunction_8cpp_source.html">NEBObjectiveFunction.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  118</span>                                            {</div>
+<div class="line"><span class="lineno">  119</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;convergenceForce();</div>
+<div class="line"><span class="lineno">  120</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -483,14 +489,18 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#ac33d8c01a468c94e97e46add563a21c2">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="NEBObjectiveFunction_8cpp_source.html#l00029">29</a> of file <a class="el" href="NEBObjectiveFunction_8cpp_source.html">NEBObjectiveFunction.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   29</span>                                       {</div>
-<div class="line"><span class="lineno">   30</span>  <span class="keywordtype">double</span> Energy{0};</div>
-<div class="line"><span class="lineno">   31</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 1; i &lt;= <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;numImages; i++) {</div>
-<div class="line"><span class="lineno">   32</span>    Energy += <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;path[i]-&gt;getPotentialEnergy();</div>
-<div class="line"><span class="lineno">   33</span>  }</div>
-<div class="line"><span class="lineno">   34</span>  <span class="keywordflow">return</span> Energy;</div>
-<div class="line"><span class="lineno">   35</span>}</div>
+<p class="definition">Definition at line <a class="el" href="NEBObjectiveFunction_8cpp_source.html#l00047">47</a> of file <a class="el" href="NEBObjectiveFunction_8cpp_source.html">NEBObjectiveFunction.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   47</span>                                       {</div>
+<div class="line"><span class="lineno">   48</span>  <span class="comment">// The band update evaluates dirty images as one batch; summing image</span></div>
+<div class="line"><span class="lineno">   49</span>  <span class="comment">// energies on a moved band would otherwise evaluate them one at a time.</span></div>
+<div class="line"><span class="lineno">   50</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;movedAfterForceCall)</div>
+<div class="line"><span class="lineno">   51</span>    <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;updateForces();</div>
+<div class="line"><span class="lineno">   52</span>  <span class="keywordtype">double</span> Energy{0};</div>
+<div class="line"><span class="lineno">   53</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 1; i &lt;= <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;numImages; i++) {</div>
+<div class="line"><span class="lineno">   54</span>    Energy += <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;path[i]-&gt;getPotentialEnergy();</div>
+<div class="line"><span class="lineno">   55</span>  }</div>
+<div class="line"><span class="lineno">   56</span>  <span class="keywordflow">return</span> Energy;</div>
+<div class="line"><span class="lineno">   57</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -519,19 +529,32 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#a2cde804855ed7d58658f912636254352">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="NEBObjectiveFunction_8cpp_source.html#l00016">16</a> of file <a class="el" href="NEBObjectiveFunction_8cpp_source.html">NEBObjectiveFunction.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   16</span>                                                      {</div>
-<div class="line"><span class="lineno">   17</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;movedAfterForceCall)</div>
-<div class="line"><span class="lineno">   18</span>    <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;updateForces();</div>
-<div class="line"><span class="lineno">   19</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> seg = 3 * <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;atoms;</div>
-<div class="line"><span class="lineno">   20</span>  VectorXd gradV(seg * <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;numImages);</div>
-<div class="line"><span class="lineno">   21</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 1; i &lt;= <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;numImages; i++) {</div>
-<div class="line"><span class="lineno">   22</span>    <span class="comment">// Negate in-place during copy to avoid a second pass over 40KB</span></div>
-<div class="line"><span class="lineno">   23</span>    gradV.segment(seg * (i - 1), seg) =</div>
-<div class="line"><span class="lineno">   24</span>        -VectorXd::Map(<a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;projectedForce[i]-&gt;data(), seg);</div>
-<div class="line"><span class="lineno">   25</span>  }</div>
-<div class="line"><span class="lineno">   26</span>  <span class="keywordflow">return</span> gradV;</div>
-<div class="line"><span class="lineno">   27</span>}</div>
+<p class="definition">Definition at line <a class="el" href="NEBObjectiveFunction_8cpp_source.html#l00024">24</a> of file <a class="el" href="NEBObjectiveFunction_8cpp_source.html">NEBObjectiveFunction.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   24</span>                                                      {</div>
+<div class="line"><span class="lineno">   25</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;movedAfterForceCall)</div>
+<div class="line"><span class="lineno">   26</span>    <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;updateForces();</div>
+<div class="line"><span class="lineno">   27</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> seg = nebSegment(*<a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>);</div>
+<div class="line"><span class="lineno">   28</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> atomDof = 3L * <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;atoms;</div>
+<div class="line"><span class="lineno">   29</span>  VectorXd gradV(seg * <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;numImages);</div>
+<div class="line"><span class="lineno">   30</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 1; i &lt;= <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;numImages; i++) {</div>
+<div class="line"><span class="lineno">   31</span>    <span class="comment">// Negate in-place during copy to avoid a second pass over 40KB</span></div>
+<div class="line"><span class="lineno">   32</span>    gradV.segment(seg * (i - 1), atomDof) =</div>
+<div class="line"><span class="lineno">   33</span>        -VectorXd::Map(<a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;projectedForce[i]-&gt;data(), atomDof);</div>
+<div class="line"><span class="lineno">   34</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;solidState()) {</div>
+<div class="line"><span class="lineno">   35</span>      <span class="keyword">const</span> eonc::neb::CartesianStep step = <a class="code hl_function" href="namespaceeonc_1_1neb.html#a3c6d7be8fb5777d625b17120e3e1c736">eonc::neb::solidStateCartesianStep</a>(</div>
+<div class="line"><span class="lineno">   36</span>          *<a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;path[i], *<a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;projectedForce[i], <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;cellForce(i),</div>
+<div class="line"><span class="lineno">   37</span>          <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;solidJacobian());</div>
+<div class="line"><span class="lineno">   38</span>      gradV.segment(seg * (i - 1), atomDof) =</div>
+<div class="line"><span class="lineno">   39</span>          -VectorXd::Map(step.<a class="code hl_variable" href="structeonc_1_1neb_1_1CartesianStep.html#a5bec405999c4ed322cbd3c0908b531f9">positions</a>.data(), atomDof);</div>
+<div class="line"><span class="lineno">   40</span>      gradV.segment(seg * (i - 1) + atomDof, 9) =</div>
+<div class="line"><span class="lineno">   41</span>          -VectorXd::Map(step.<a class="code hl_variable" href="structeonc_1_1neb_1_1CartesianStep.html#aeb63d725a505a05bfc3cf35496fee147">cell</a>.data(), 9);</div>
+<div class="line"><span class="lineno">   42</span>    }</div>
+<div class="line"><span class="lineno">   43</span>  }</div>
+<div class="line"><span class="lineno">   44</span>  <span class="keywordflow">return</span> gradV;</div>
+<div class="line"><span class="lineno">   45</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1neb_html_a3c6d7be8fb5777d625b17120e3e1c736"><div class="ttname"><a href="namespaceeonc_1_1neb.html#a3c6d7be8fb5777d625b17120e3e1c736">eonc::neb::solidStateCartesianStep</a></div><div class="ttdeci">CartesianStep solidStateCartesianStep(const Matter &amp;image, const AtomMatrix &amp;atomicForce, const Matrix3d &amp;cellForce, double jacobian)</div><div class="ttdef"><b>Definition</b> <a href="SolidStateNEB_8cpp_source.html#l00203">SolidStateNEB.cpp:203</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb_1_1CartesianStep_html_a5bec405999c4ed322cbd3c0908b531f9"><div class="ttname"><a href="structeonc_1_1neb_1_1CartesianStep.html#a5bec405999c4ed322cbd3c0908b531f9">eonc::neb::CartesianStep::positions</a></div><div class="ttdeci">AtomMatrix positions</div><div class="ttdef"><b>Definition</b> <a href="SolidStateNEB_8h_source.html#l00071">SolidStateNEB.h:71</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb_1_1CartesianStep_html_aeb63d725a505a05bfc3cf35496fee147"><div class="ttname"><a href="structeonc_1_1neb_1_1CartesianStep.html#aeb63d725a505a05bfc3cf35496fee147">eonc::neb::CartesianStep::cell</a></div><div class="ttdeci">Matrix3d cell</div><div class="ttdef"><b>Definition</b> <a href="SolidStateNEB_8h_source.html#l00072">SolidStateNEB.h:72</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -560,16 +583,22 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#aa06776d23dd7b6ffa23db1555d657261">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="NEBObjectiveFunction_8cpp_source.html#l00046">46</a> of file <a class="el" href="NEBObjectiveFunction_8cpp_source.html">NEBObjectiveFunction.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   46</span>                                            {</div>
-<div class="line"><span class="lineno">   47</span>  VectorXd posV;</div>
-<div class="line"><span class="lineno">   48</span>  posV.resize(3 * <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;atoms * <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;numImages);</div>
-<div class="line"><span class="lineno">   49</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 1; i &lt;= <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;numImages; i++) {</div>
-<div class="line"><span class="lineno">   50</span>    posV.segment(3 * <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;atoms * (i - 1), 3 * <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;atoms) =</div>
-<div class="line"><span class="lineno">   51</span>        VectorXd::Map(<a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;path[i]-&gt;getPositions().data(), 3 * <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;atoms);</div>
-<div class="line"><span class="lineno">   52</span>  }</div>
-<div class="line"><span class="lineno">   53</span>  <span class="keywordflow">return</span> posV;</div>
-<div class="line"><span class="lineno">   54</span>}</div>
+<p class="definition">Definition at line <a class="el" href="NEBObjectiveFunction_8cpp_source.html#l00077">77</a> of file <a class="el" href="NEBObjectiveFunction_8cpp_source.html">NEBObjectiveFunction.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   77</span>                                            {</div>
+<div class="line"><span class="lineno">   78</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> seg = nebSegment(*<a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>);</div>
+<div class="line"><span class="lineno">   79</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> atomDof = 3L * <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;atoms;</div>
+<div class="line"><span class="lineno">   80</span>  VectorXd posV(seg * <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;numImages);</div>
+<div class="line"><span class="lineno">   81</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 1; i &lt;= <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;numImages; i++) {</div>
+<div class="line"><span class="lineno">   82</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> offset = seg * (i - 1);</div>
+<div class="line"><span class="lineno">   83</span>    posV.segment(offset, atomDof) =</div>
+<div class="line"><span class="lineno">   84</span>        VectorXd::Map(<a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;path[i]-&gt;getPositions().data(), atomDof);</div>
+<div class="line"><span class="lineno">   85</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;solidState()) {</div>
+<div class="line"><span class="lineno">   86</span>      posV.segment(offset + atomDof, 9) =</div>
+<div class="line"><span class="lineno">   87</span>          VectorXd::Map(<a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;path[i]-&gt;getCell().data(), 9);</div>
+<div class="line"><span class="lineno">   88</span>    }</div>
+<div class="line"><span class="lineno">   89</span>  }</div>
+<div class="line"><span class="lineno">   90</span>  <span class="keywordflow">return</span> posV;</div>
+<div class="line"><span class="lineno">   91</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -598,13 +627,13 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#a90d7874f2d2686d628c9d6057f841925">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="NEBObjectiveFunction_8cpp_source.html#l00076">76</a> of file <a class="el" href="NEBObjectiveFunction_8cpp_source.html">NEBObjectiveFunction.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   76</span>                                       {</div>
-<div class="line"><span class="lineno">   77</span>  <span class="keywordtype">bool</span> force_conv = <a class="code hl_function" href="#a3c6538fb4e9f395a56f17a4f093f41c3">getConvergence</a>() &lt; <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.neb_options().force_tolerance;</div>
-<div class="line"><span class="lineno">   78</span>  <span class="keywordflow">return</span> force_conv;</div>
-<div class="line"><span class="lineno">   79</span>}</div>
-<div class="ttc" id="aclasseonc_1_1NEBObjectiveFunction_html_a3c6538fb4e9f395a56f17a4f093f41c3"><div class="ttname"><a href="#a3c6538fb4e9f395a56f17a4f093f41c3">eonc::NEBObjectiveFunction::getConvergence</a></div><div class="ttdeci">double getConvergence()</div><div class="ttdef"><b>Definition</b> <a href="NEBObjectiveFunction_8cpp_source.html#l00081">NEBObjectiveFunction.cpp:81</a></div></div>
-<div class="ttc" id="aclasseonc_1_1ObjectiveFunction_html_a9d74eea28a1c17f36202adff592ca871"><div class="ttname"><a href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">eonc::ObjectiveFunction::params</a></div><div class="ttdeci">const Parameters &amp; params</div><div class="ttdef"><b>Definition</b> <a href="ObjectiveFunction_8h_source.html#l00020">ObjectiveFunction.h:20</a></div></div>
+<p class="definition">Definition at line <a class="el" href="NEBObjectiveFunction_8cpp_source.html#l00113">113</a> of file <a class="el" href="NEBObjectiveFunction_8cpp_source.html">NEBObjectiveFunction.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  113</span>                                       {</div>
+<div class="line"><span class="lineno">  114</span>  <span class="keywordtype">bool</span> force_conv = <a class="code hl_function" href="#a3c6538fb4e9f395a56f17a4f093f41c3">getConvergence</a>() &lt; <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.neb_options().force_tolerance;</div>
+<div class="line"><span class="lineno">  115</span>  <span class="keywordflow">return</span> force_conv;</div>
+<div class="line"><span class="lineno">  116</span>}</div>
+<div class="ttc" id="aclasseonc_1_1NEBObjectiveFunction_html_a3c6538fb4e9f395a56f17a4f093f41c3"><div class="ttname"><a href="#a3c6538fb4e9f395a56f17a4f093f41c3">eonc::NEBObjectiveFunction::getConvergence</a></div><div class="ttdeci">double getConvergence()</div><div class="ttdef"><b>Definition</b> <a href="NEBObjectiveFunction_8cpp_source.html#l00118">NEBObjectiveFunction.cpp:118</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ObjectiveFunction_html_a9d74eea28a1c17f36202adff592ca871"><div class="ttname"><a href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">eonc::ObjectiveFunction::params</a></div><div class="ttdeci">const Parameters &amp; params</div><div class="ttdef"><b>Definition</b> <a href="ObjectiveFunction_8h_source.html#l00022">ObjectiveFunction.h:22</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -623,23 +652,23 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NEBObjectiveFunction_8cpp_source.html#l00060">60</a> of file <a class="el" href="NEBObjectiveFunction_8cpp_source.html">NEBObjectiveFunction.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   60</span>                                       {</div>
-<div class="line"><span class="lineno">   61</span>  <span class="keywordtype">double</span> maxMaxUnc = std::numeric_limits&lt;double&gt;::lowest();</div>
-<div class="line"><span class="lineno">   62</span>  <span class="keywordtype">double</span> currentMaxUnc{0};</div>
-<div class="line"><span class="lineno">   63</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> idx = 0; idx &lt;= <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;numImages + 1; idx++) {</div>
-<div class="line"><span class="lineno">   64</span>    currentMaxUnc = <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;path[idx]-&gt;getEnergyVariance();</div>
-<div class="line"><span class="lineno">   65</span>    <span class="keywordflow">if</span> (currentMaxUnc &gt; maxMaxUnc) {</div>
-<div class="line"><span class="lineno">   66</span>      maxMaxUnc = currentMaxUnc;</div>
-<div class="line"><span class="lineno">   67</span>    }</div>
-<div class="line"><span class="lineno">   68</span>  }</div>
-<div class="line"><span class="lineno">   69</span>  <span class="keywordtype">bool</span> unc_conv{maxMaxUnc &gt; <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.gp_surrogate_options().uncertainty};</div>
-<div class="line"><span class="lineno">   70</span>  <span class="keywordflow">if</span> (unc_conv) {</div>
-<div class="line"><span class="lineno">   71</span>    this-&gt;<a class="code hl_variable" href="#a17add47c532daba37a5b3b9b4c28b30c">status</a> = <a class="code hl_enumvalue" href="classeonc_1_1NudgedElasticBand.html#ae4aa0062944f9d1fb091b3c4f5bd1016ac45d59fc6c6e8e3d9f5468639ba94278">NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY</a>;</div>
-<div class="line"><span class="lineno">   72</span>  }</div>
-<div class="line"><span class="lineno">   73</span>  <span class="keywordflow">return</span> unc_conv;</div>
-<div class="line"><span class="lineno">   74</span>}</div>
-<div class="ttc" id="aclasseonc_1_1NEBObjectiveFunction_html_a17add47c532daba37a5b3b9b4c28b30c"><div class="ttname"><a href="#a17add47c532daba37a5b3b9b4c28b30c">eonc::NEBObjectiveFunction::status</a></div><div class="ttdeci">NudgedElasticBand::NEBStatus status</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00129">NudgedElasticBand.h:129</a></div></div>
+<p class="definition">Definition at line <a class="el" href="NEBObjectiveFunction_8cpp_source.html#l00097">97</a> of file <a class="el" href="NEBObjectiveFunction_8cpp_source.html">NEBObjectiveFunction.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   97</span>                                       {</div>
+<div class="line"><span class="lineno">   98</span>  <span class="keywordtype">double</span> maxMaxUnc = std::numeric_limits&lt;double&gt;::lowest();</div>
+<div class="line"><span class="lineno">   99</span>  <span class="keywordtype">double</span> currentMaxUnc{0};</div>
+<div class="line"><span class="lineno">  100</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> idx = 0; idx &lt;= <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;numImages + 1; idx++) {</div>
+<div class="line"><span class="lineno">  101</span>    currentMaxUnc = <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;path[idx]-&gt;getEnergyVariance();</div>
+<div class="line"><span class="lineno">  102</span>    <span class="keywordflow">if</span> (currentMaxUnc &gt; maxMaxUnc) {</div>
+<div class="line"><span class="lineno">  103</span>      maxMaxUnc = currentMaxUnc;</div>
+<div class="line"><span class="lineno">  104</span>    }</div>
+<div class="line"><span class="lineno">  105</span>  }</div>
+<div class="line"><span class="lineno">  106</span>  <span class="keywordtype">bool</span> unc_conv{maxMaxUnc &gt; <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.gp_surrogate_options().uncertainty};</div>
+<div class="line"><span class="lineno">  107</span>  <span class="keywordflow">if</span> (unc_conv) {</div>
+<div class="line"><span class="lineno">  108</span>    this-&gt;<a class="code hl_variable" href="#a17add47c532daba37a5b3b9b4c28b30c">status</a> = <a class="code hl_enumvalue" href="classeonc_1_1NudgedElasticBand.html#ae4aa0062944f9d1fb091b3c4f5bd1016ac45d59fc6c6e8e3d9f5468639ba94278">NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY</a>;</div>
+<div class="line"><span class="lineno">  109</span>  }</div>
+<div class="line"><span class="lineno">  110</span>  <span class="keywordflow">return</span> unc_conv;</div>
+<div class="line"><span class="lineno">  111</span>}</div>
+<div class="ttc" id="aclasseonc_1_1NEBObjectiveFunction_html_a17add47c532daba37a5b3b9b4c28b30c"><div class="ttname"><a href="#a17add47c532daba37a5b3b9b4c28b30c">eonc::NEBObjectiveFunction::status</a></div><div class="ttdeci">NudgedElasticBand::NEBStatus status</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00139">NudgedElasticBand.h:139</a></div></div>
 <div class="ttc" id="aclasseonc_1_1NudgedElasticBand_html_ae4aa0062944f9d1fb091b3c4f5bd1016ac45d59fc6c6e8e3d9f5468639ba94278"><div class="ttname"><a href="classeonc_1_1NudgedElasticBand.html#ae4aa0062944f9d1fb091b3c4f5bd1016ac45d59fc6c6e8e3d9f5468639ba94278">eonc::NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY</a></div><div class="ttdeci">@ MAX_UNCERTAINTY</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00047">NudgedElasticBand.h:47</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -669,15 +698,25 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#ab285e512e05c11a1438a93d72a0ec527">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="NEBObjectiveFunction_8cpp_source.html#l00037">37</a> of file <a class="el" href="NEBObjectiveFunction_8cpp_source.html">NEBObjectiveFunction.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   37</span>                                                         {</div>
-<div class="line"><span class="lineno">   38</span>  <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;movedAfterForceCall = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">   39</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 1; i &lt;= <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;numImages; i++) {</div>
-<div class="line"><span class="lineno">   40</span>    <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;path[i]-&gt;setPositions(AtomMatrix::Map(</div>
-<div class="line"><span class="lineno">   41</span>        x.segment(3 * <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;atoms * (i - 1), 3 * <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;atoms).data(), <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;atoms,</div>
-<div class="line"><span class="lineno">   42</span>        3));</div>
-<div class="line"><span class="lineno">   43</span>  }</div>
-<div class="line"><span class="lineno">   44</span>}</div>
+<p class="definition">Definition at line <a class="el" href="NEBObjectiveFunction_8cpp_source.html#l00059">59</a> of file <a class="el" href="NEBObjectiveFunction_8cpp_source.html">NEBObjectiveFunction.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   59</span>                                                         {</div>
+<div class="line"><span class="lineno">   60</span>  <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;movedAfterForceCall = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   61</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> seg = nebSegment(*<a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>);</div>
+<div class="line"><span class="lineno">   62</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> atomDof = 3L * <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;atoms;</div>
+<div class="line"><span class="lineno">   63</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 1; i &lt;= <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;numImages; i++) {</div>
+<div class="line"><span class="lineno">   64</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> offset = seg * (i - 1);</div>
+<div class="line"><span class="lineno">   65</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;solidState()) {</div>
+<div class="line"><span class="lineno">   66</span>      <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> cell = Matrix3d::Map(x.segment(offset + atomDof, 9).data());</div>
+<div class="line"><span class="lineno">   67</span>      cell(0, 1) = 0.0;</div>
+<div class="line"><span class="lineno">   68</span>      cell(0, 2) = 0.0;</div>
+<div class="line"><span class="lineno">   69</span>      cell(1, 2) = 0.0;</div>
+<div class="line"><span class="lineno">   70</span>      <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;path[i]-&gt;setCell(cell);</div>
+<div class="line"><span class="lineno">   71</span>    }</div>
+<div class="line"><span class="lineno">   72</span>    <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;path[i]-&gt;setPositions(</div>
+<div class="line"><span class="lineno">   73</span>        AtomMatrix::Map(x.segment(offset, atomDof).data(), <a class="code hl_variable" href="#a7f5773f645eaaaadf740cf82af64b760">neb</a>-&gt;atoms, 3));</div>
+<div class="line"><span class="lineno">   74</span>  }</div>
+<div class="line"><span class="lineno">   75</span>}</div>
+<div class="ttc" id="aEigen_8h_html_a5a21583e98df78e5b867b370291714d0"><div class="ttname"><a href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 3, 3, eOnStorageOrder &gt; Matrix3d</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00035">Eigen.h:35</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -706,8 +745,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classeonc_1_1ObjectiveFunction.html#a1b411c5e39f354a9ec1058e84c172e54">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="NudgedElasticBand_8h_source.html#l00128">128</a> of file <a class="el" href="NudgedElasticBand_8h_source.html">NudgedElasticBand.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  128</span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
+<p class="definition">Definition at line <a class="el" href="NudgedElasticBand_8h_source.html#l00138">138</a> of file <a class="el" href="NudgedElasticBand_8h_source.html">NudgedElasticBand.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  138</span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -732,7 +771,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NudgedElasticBand_8h_source.html#l00132">132</a> of file <a class="el" href="NudgedElasticBand_8h_source.html">NudgedElasticBand.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="NudgedElasticBand_8h_source.html#l00142">142</a> of file <a class="el" href="NudgedElasticBand_8h_source.html">NudgedElasticBand.h</a>.</p>
 
 </div>
 </div>
@@ -748,7 +787,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NudgedElasticBand_8h_source.html#l00129">129</a> of file <a class="el" href="NudgedElasticBand_8h_source.html">NudgedElasticBand.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="NudgedElasticBand_8h_source.html#l00139">139</a> of file <a class="el" href="NudgedElasticBand_8h_source.html">NudgedElasticBand.h</a>.</p>
 
 </div>
 </div>

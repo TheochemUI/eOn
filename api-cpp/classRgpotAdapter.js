@@ -6,6 +6,8 @@ var classRgpotAdapter =
     [ "RgpotAdapter", "classRgpotAdapter.html#a55dc92652f64547be3f246157bd4bc0a", null ],
     [ "RgpotAdapter", "classRgpotAdapter.html#a00f9defffdf81aed41739d421b9d53a1", null ],
     [ "RgpotAdapter", "classRgpotAdapter.html#af6ef4d12be06ab03c5df65b363d393b0", null ],
+    [ "cauchyStress", "classRgpotAdapter.html#aa3c136cf6b45701ae48bb91c879a4620", null ],
+    [ "computesStress", "classRgpotAdapter.html#a32b01ed4f75896e5c6705bbef20ad191", null ],
     [ "finishConstruct", "classRgpotAdapter.html#a6d9f61f0b829dcab48e29f47e81ca52c", null ],
     [ "finiteCutoff", "classRgpotAdapter.html#ad1777f60faa4e44fefedb5380730627b", null ],
     [ "force", "classRgpotAdapter.html#a350328b66270a821ccb8e1d764d7e5d1", null ],
@@ -13,8 +15,12 @@ var classRgpotAdapter =
     [ "isThreadSafe", "classRgpotAdapter.html#a055a5f208ff16306b35632596a161674", null ],
     [ "kernel", "classRgpotAdapter.html#a5d2b00bf64a722a4829e19076f82fb2d", null ],
     [ "needsPerImageInstance", "classRgpotAdapter.html#a9c53cdefdb91580b0ed424b3cb90946f", null ],
+    [ "requiresIsolatedMoleculeLayout", "classRgpotAdapter.html#a18f57c04222975e8937d95623fb264d8", null ],
+    [ "storeStress", "classRgpotAdapter.html#a6c15203416b0209f8b2b03446b3268ff", null ],
     [ "supportsBatchEvaluation", "classRgpotAdapter.html#a1325b13dceca141f31feda2e1171fcdc", null ],
     [ "validateCaps", "classRgpotAdapter.html#a5d9f82311bf9a6e71a55e9d7debaecbf", null ],
+    [ "haveStress_", "classRgpotAdapter.html#afb92c950dd425fab76f1f81d76749be2", null ],
     [ "loader_", "classRgpotAdapter.html#a2eafb88cad1f014be27fd142e926a9f1", null ],
-    [ "pot_", "classRgpotAdapter.html#ac358cd271cfe5c2e2dfe3a06f8c15891", null ]
+    [ "pot_", "classRgpotAdapter.html#ac358cd271cfe5c2e2dfe3a06f8c15891", null ],
+    [ "stress_", "classRgpotAdapter.html#a70a47f9c333748bb0fec88f7ba55937b", null ]
 ];

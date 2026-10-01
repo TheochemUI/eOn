@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="teal" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Tunnelling splittings - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Prefactor" href="prefactor.html" /><link rel="prev" title="Hessian" href="hessian.html" />
+      <link rel="canonical" href="https://eondocs.org/user_guide/instanton.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=44020203" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_contributors.css?v=fe9086e2" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=c1ed689c" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://eondocs.org/user_guide/instanton.html"/>
+  <meta property="og:title" content="Tunnelling splittings"/>
+    <meta name="twitter:card" content="summary"/>
+  <!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener('click',function(e){var a=e.target.closest('a');if(a&&a.hostname&&a.hostname!==location.hostname)antics.event('Outbound Link',{url:a.href})});</script></head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>eOn</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link"><a href="/api-cpp/index.html">C++ API</a></li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
+            <span>Ecosystem</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="https://rgpycrumbs.rgoswami.me">
+                <span>rgpycrumbs</span>
+                <small>Python helpers for eOn workflows</small>
+              </a></li><li><a href="https://chemparseplot.rgoswami.me">
+                <span>chemparseplot</span>
+                <small>Parsing and plotting for computational chemistry</small>
+              </a></li></ul>
+      </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/TheochemUI/eOn" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1 _expand"><a class="reference internal" href="../team.html">eOn team</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html">Installation</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../install/eessi.html">Build develop on EESSI</a></li>
+</ul>
+</li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html#obtaining-sources">Obtaining sources</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html#european-environment-for-scientific-software-installations-eessi">European environment for scientific software installations (EESSI)</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html#licenses">Licenses</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/systems/index.html">Real systems for documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/morse_pt_neb.html">Morse Pt NEB (built-in potential)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/lj_minimization.html">LJ cluster minimization (built-in potential)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/systems/pt_saddle.html">Morse Pt saddle search (built-in potential)</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/akmc.html">AKMC Tutorial</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/displacement_scripts.html">Targeted displacement for saddle searches</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/dict_config.html">Dictionary-Style Configuration</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/visualization.html">Visualizing optimization trajectories</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User guide</a><ul class="current">
+<li class="toctree-l2 _expand"><a class="reference internal" href="pyeonclient.html">pyeonclient</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="neighbor_lists.html">Neighbor lists (vesin)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="ext_pot.html">External Potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="lammps_pot.html">LAMMPS Potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="ase_pot.html">ASE interface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="metatomic_pot.html">Metatomic interface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="quip.html">QUIP with LAMMPS</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="mpi_potential.html">MPI potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="algorithm_selection.html">Choosing an algorithm</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="main.html">General simulation parameters</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="potential.html">Potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="structure_comparison.html">Structure comparison</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="minimization.html">Minimization</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="neb.html">Nudged elastic band</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="dimer.html">Dimer method</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="lanczos.html">Lanczos</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="hessian.html">Hessian</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Tunnelling splittings</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="prefactor.html">Prefactor</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="akmc.html">Adaptive kinetic Monte Carlo</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="saddle_search.html">Saddle search</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="basin_hopping.html">Basin hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="process_search.html">Process search</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="recycling.html">Recycling</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="coarse_graining.html">Coarse graining</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="dynamics.html">Dynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="parallel_replica.html">Parallel replica</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="communicator.html">Communicator</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="debug.html">Debug</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="paths.html">Paths</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="stdpar.html">nvc++ stdpar (NEB image forces)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="kdb.html">Kinetic database</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_integration.html">rgpot integration (three roles)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_pot.html">RgpotPot (direct in-process rgpot)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_metatomic.html">Metatomic backends (fat, RGPOT, ASE)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="serve_mode.html">Serve mode</a></li>
+</ul>
+</li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../devdocs/index.html">Development documentation</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/testing.html">Tests</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/benchmarks.html">Benchmarks</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/parallel-potentials.html">Parallel force evaluation</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/library-api.html">Library API</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/in-process.html">In-process jobs (no file IPC)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/abi-surface.html">Public C++ surface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/rgpot-migration.html">rgpot kernel inventory</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/porting_potentials.html">Porting potentials</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/docbuild.html">Working with the documentation</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn.html">Subversion</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn-migration.html">Migrating from SVN</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/tracking-changes.html">Tracking changes</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/release.html">Release workflow</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/pyeonclient.html">pyeonclient (nanobind client bindings)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/eon-schema.html">eon-schema (shared parameter package)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/pyeonclient-pypi.html">pyeonclient on PyPI</a></li>
+</ul>
+</li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../apidocs/index.html">API Reference</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.geometry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.pbc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.wire.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.wire</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.concorpus.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.concorpus</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.params_ssot.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.params_ssot</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.cancel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.cancel</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.structure.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.structure</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.process_id.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.process_catalog.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_catalog</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.5.0/index.html">[v3.5.0] - 2026-10-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.5.0/release-notes.html">eOn 3.5.0</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.3.1/index.html">[v3.3.1] - 2026-09-27</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.3.1/release-notes.html">eOn 3.3.1</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.3.0/index.html">[v3.3.0] - 2026-09-15</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.3.0/release-notes.html">eOn 3.3.0</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.2.1/index.html">[v3.2.1] - 2026-09-13</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.2.1/release-notes.html">eOn 3.2.1</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.2.0/index.html">[v3.2.0] - 2026-08-16</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.2.0/release-notes.html">eOn 3.2.0</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.16.0/index.html">[v2.16.0] - 2026-07-03</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.16.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.15.0/index.html">[v2.15.0] - 2026-06-24</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.15.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.14.0/index.html">[v2.14.0] - 2026-04-24</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.14.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.13.0/index.html">[v2.13.0] - 2026-04-18</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.13.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.12.0/index.html">[v2.12.0] - 2026-03-08</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.12.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.11.2/index.html">[v2.11.2] - 2026-03-02</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.11.2/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.11.1/index.html">[v2.11.1] - 2026-03-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.11.1/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.11.0/index.html">[v2.11.0] - 2026-02-24</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.11.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.10.2/index.html">[v2.10.2] - 2026-02-22</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.10.2/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.10.1/index.html">[v2.10.1] - 2026-02-18</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.10.1/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.10.0/index.html">[v2.10.0] - 2026-02-15</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.10.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.9.0/index.html">[v2.9.0] - 2026-01-27</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.9.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.9.0/publications.html">Related publications</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.8.2/index.html">[v2.8.2] - 2025-12-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.2/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.8.1/index.html">[v2.8.1] - 2025-11-03</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/publications.html">Related Publications</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.8.0/index.html">[v2.8.0] - 2025-09-04</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.0/publications.html">Related publications</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#wkb-along-a-neb-band">WKB along a NEB band</a></li>
+<li><a class="reference internal" href="#the-instanton-job">The instanton job</a></li>
+<li><a class="reference internal" href="#which-path-object">Which path object</a></li>
+<li><a class="reference internal" href="#the-rate-below-the-crossover">The rate below the crossover</a></li>
+<li><a class="reference internal" href="#path-integral-quantum-tst-on-planes">Path-integral quantum TST on planes</a><ul>
+<li><a class="reference internal" href="#recrossing-and-the-rpmd-rate">Recrossing and the RPMD rate</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#centroid-and-spread">Centroid and spread</a></li>
+<li><a class="reference internal" href="#checks">Checks</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
+  data-type="github" data-user="TheochemUI" data-repo="eOn">
+  <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </span>
+  <span class="flex-grow px-2 break-all">
+    
+    
+      <span>TheochemUI/eOn</span>
+    
+    <span class="flex text-sm repo-stats-count">
+      <span class="flex items-center pr-3">
+        <iconify-icon icon="lucide:star"></iconify-icon>
+        <strong class="js-repo-stars ml-1">0</strong>
+      </span>
+      <span class="flex items-center">
+        <iconify-icon icon="lucide:git-fork"></iconify-icon>
+        <strong class="js-repo-forks ml-1">0</strong>
+      </span>
+    </span>
+  </span>
+</a><div class="edit-this-page">
+  <a href="https://github.com/TheochemUI/eOn/blob/main/docs/source/user_guide/instanton.md">Edit this page</a>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">eOn</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">User guide</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Tunnelling splittings</strong>
+        <meta itemprop="position" content="3" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <div class="copy-page-wrapper relative pb-4 lg:absolute lg:top-8 lg:right-6 xl:right-12">
+  <div id="copy-page-trigger">
+    <button
+      type="button"
+      class="js-copy px-3 py-1 inline-flex items-center gap-1"
+      data-url="https://eondocs.org/_sources/user_guide/instanton.md.txt"
+    >
+      <i class="i-lucide" data-icon="copy"></i>
+      <span>Copy page</span>
+    </button>
+    <button class="js-menu px-2 py-1" type="button" aria-label="More actions"
+      aria-haspopup="menu" aria-expanded="false" aria-controls="copy-page-content">
+      <i class="i-lucide chevron-down"></i>
+    </button>
+  </div>
+  <div id="copy-page-content" role="menu" aria-orientation="vertical" aria-hidden="true">
+    <div role="presentation">
+      <div class="flex flex-col" role="group">
+        <button class="js-copy" type="button" role="menuitem"
+          data-url="https://eondocs.org/_sources/user_guide/instanton.md.txt">
+          <span class="iconify-icon">
+            <i class="i-lucide" data-icon="copy"></i>
+          </span>
+          <span>Copy page</span>
+        </button>
+        <a role="menuitem" href="https://eondocs.org/_sources/user_guide/instanton.md.txt" target="_blank" rel="nofollow"><iconify-icon icon="bi:markdown"></iconify-icon>
+            <span>View as Markdown</span></a><a role="menuitem" href="https://chatgpt.com/?hints=search&q=Read%20https%3A//eondocs.org/_sources/user_guide/instanton.md.txt%20so%20I%20can%20ask%20questions%20about%20it." target="_blank" rel="nofollow">
+          <iconify-icon icon="bi:openai"></iconify-icon>
+          <span>Open in ChatGPT</span>
+        </a><a role="menuitem" href="https://claude.ai/new?q=Read%20https%3A//eondocs.org/_sources/user_guide/instanton.md.txt%20so%20I%20can%20ask%20questions%20about%20it." target="_blank" rel="nofollow">
+          <iconify-icon icon="bi:claude"></iconify-icon>
+          <span>Open in Claude</span>
+        </a></div>
+    </div>
+  </div>
+</div><article class="yue dark-code" role="main">
+          <section id="tunnelling-splittings">
+<h1>Tunnelling splittings<a class="headerlink" href="#tunnelling-splittings" title="Link to this heading">¶</a></h1>
+<p>A two-level system (TLS) in a glass is a pair of adjacent minima that the
+structure tunnels between at about one kelvin. Its tunnelling splitting
+<span class="math notranslate nohighlight">\(\Delta_0\)</span> and asymmetry <span class="math notranslate nohighlight">\(\Delta\)</span> set the TLS energy
+<span class="math notranslate nohighlight">\(E = \sqrt{\Delta^2 + \Delta_0^2}\)</span>. eOn estimates <span class="math notranslate nohighlight">\(\Delta_0\)</span> in two
+ways:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p>NEB band (WKB)</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">job</span> <span class="pre">=</span> <span class="pre">instanton</span></code></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Path</p></td>
+<td><p>the minimum energy path</p></td>
+<td><p>the path of least imaginary-time action</p></td>
+</tr>
+<tr class="row-odd"><td><p>Dimensions</p></td>
+<td><p>one, along the mass-weighted band</p></td>
+<td><p>every free degree of freedom</p></td>
+</tr>
+<tr class="row-even"><td><p>Cost</p></td>
+<td><p>the NEB itself</p></td>
+<td><p>one batch of forces per iteration over the beads, plus a Hessian per bead</p></td>
+</tr>
+<tr class="row-odd"><td><p>Output</p></td>
+<td><p>first frame of <code class="docutils literal notranslate"><span class="pre">neb.con</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">instanton.con</span></code> and <code class="docutils literal notranslate"><span class="pre">results.dat</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>With <code class="docutils literal notranslate"><span class="pre">mode</span> <span class="pre">=</span> <span class="pre">rate</span></code> the same job estimates the thermal rate through a saddle
+instead of a splitting. That path is below.</p>
+<p>Energies are in eV, lengths in Å and masses in amu throughout, so
+mass-weighted lengths are in amu^0.5 Å.</p>
+<section id="wkb-along-a-neb-band">
+<h2>WKB along a NEB band<a class="headerlink" href="#wkb-along-a-neb-band" title="Link to this heading">¶</a></h2>
+<p>Every nudged elastic band (NEB) job writes <code class="docutils literal notranslate"><span class="pre">reaction_coordinate_mw</span></code>, the mass-weighted arc length, on
+each frame of <code class="docutils literal notranslate"><span class="pre">neb.con</span></code>. The first frame also carries the band’s Wentzel-Kramers-Brillouin (WKB) estimate.
+The keys are:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hbar_omega_reactant</span></code>, <code class="docutils literal notranslate"><span class="pre">hbar_omega_product</span></code></p></td>
+<td><p>Wells: <span class="math notranslate nohighlight">\(\hbar\omega\)</span> of each well along the band, from a fit of <span class="math notranslate nohighlight">\(a s^2 + b s^3\)</span> to the images within half the barrier</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tunnel_action</span></code></p></td>
+<td><p>Action: <span class="math notranslate nohighlight">\(S = \hbar^{-1} \int \sqrt{2 (V(s) - E)}\, ds\)</span> over the forbidden region</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tunnel_splitting</span></code></p></td>
+<td><p>Estimate: <span class="math notranslate nohighlight">\(\Delta_0 = (\hbar\omega / \pi) e^{-S}\)</span>, with <span class="math notranslate nohighlight">\(\omega\)</span> the geometric mean of the wells</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tls_energy</span></code></p></td>
+<td><p>Energy: <span class="math notranslate nohighlight">\(\sqrt{\Delta^2 + \Delta_0^2}\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tunnel_deep_wells</span></code></p></td>
+<td><p>Flag: 1 when both barriers exceed <span class="math notranslate nohighlight">\(\hbar\omega\)</span>; below that, WKB is the wrong tool</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The profile between images is a monotone cubic, so it cannot dip below the
+data. The level <span class="math notranslate nohighlight">\(E\)</span> is the higher of the two harmonic ground states. A
+structure without masses, or a band whose end is flat, leaves these keys out.</p>
+<p>WKB along the band is exact in one dimension up to its semiclassical error.
+When the path curves, the tunnelling cuts the corner, and the transverse
+zero-point energy changes along the way. In the two-dimensional test valley
+below, both effects together put the band estimate a factor of 2.8 below the
+exact splitting.</p>
+</section>
+<section id="the-instanton-job">
+<h2>The instanton job<a class="headerlink" href="#the-instanton-job" title="Link to this heading">¶</a></h2>
+<p>The instanton is a path of <span class="math notranslate nohighlight">\(P + 1\)</span> beads in imaginary time
+<span class="math notranslate nohighlight">\(\beta\hbar\)</span>, with its ends fixed at the two minima. It minimises the
+discretised Euclidean action</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[S = \sum_j \frac{|q_{j+1} - q_j|^2}{2\,\delta\tau} + \delta\tau \sum_j V(q_j),
+\qquad \delta\tau = \beta\hbar / P,\]</div>
+</div>
+<p>in mass-weighted coordinates <span class="math notranslate nohighlight">\(q\)</span>. The splitting comes from the ratio of
+the off-diagonal to the diagonal imaginary-time propagator, both taken in the
+same steepest-descent approximation.</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\Delta_0 = 2\hbar \sqrt{\frac{S_0}{2\pi\hbar\,\delta\tau}}
+\sqrt{\frac{\det J_\text{well}}{\det' J}}\; e^{-(S - S_\text{well})/\hbar}.\]</div>
+</div>
+<p>Here <span class="math notranslate nohighlight">\(J\)</span> is the Hessian of <span class="math notranslate nohighlight">\(S\)</span> over the interior beads. The
+prime leaves out its zero mode, the kink’s position in imaginary time.
+<span class="math notranslate nohighlight">\(S_0 = \int |\dot q|^2 d\tau\)</span>, and <span class="math notranslate nohighlight">\(J_\text{well}\)</span> is the same
+Hessian with every bead at a minimum.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Main]</span>
+</span><span data-line="2"><span class="na">job</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">instanton</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">[Potential]</span>
+</span><span data-line="5"><span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">rgpot</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="k">[Instanton]</span>
+</span><span data-line="8"><span class="na">reactant_filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">reactant.con</span>
+</span><span data-line="9"><span class="na">product_filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">product.con</span>
+</span><span data-line="10"><span class="c1">; start from a converged band instead of the straight line</span>
+</span><span data-line="11"><span class="na">initial_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">neb.con</span>
+</span><span data-line="12"><span class="na">beads</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">256</span>
+</span><span data-line="13"><span class="na">springs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">trotter</span>
+</span><span data-line="14"><span class="na">beta_hbar_omega</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">30</span>
+</span><span data-line="15"><span class="na">force_tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1e-3</span>
+</span><span data-line="16"><span class="c1">; one finite-difference Hessian every 4 beads, linear in between</span>
+</span><span data-line="17"><span class="na">hessian_stride</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">4</span>
+</span></pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">springs</span> <span class="pre">=</span> <span class="pre">eco</span></code> is refused. The instanton is a Trotter discretisation of
+the ring.</p>
+<p><code class="docutils literal notranslate"><span class="pre">beta_hbar_omega</span></code> sets the imaginary time in units of <span class="math notranslate nohighlight">\(1/\omega\)</span> of
+the stiffer minimum along the line between them. It must be long enough for
+the kink to relax into both wells. <code class="docutils literal notranslate"><span class="pre">results.dat</span></code> reports
+<code class="docutils literal notranslate"><span class="pre">instanton_mode_separation</span></code>, the second eigenvalue of <span class="math notranslate nohighlight">\(J\)</span> over its zero
+mode. Values above <span class="math notranslate nohighlight">\(10^3\)</span> mean the kink is isolated; small values mean
+<span class="math notranslate nohighlight">\(\beta\hbar\)</span> is too short. With no atom fixed, the product is aligned
+to the reactant first: its mass-weighted mean displacement is removed, and
+for a cluster its best rotation as well.</p>
+<p>With that reactant rotation removed, each iteration evaluates every interior bead of the kink in one call. Under
+<code class="docutils literal notranslate"><span class="pre">[RgpotPot]</span> <span class="pre">ranks_per_image</span></code>, that call spreads the beads over the Car-Parrinello molecular dynamics (CPMD)
+calculator groups the same way a NEB spreads its images.</p>
+<p><code class="docutils literal notranslate"><span class="pre">instanton.con</span></code> writes one frame per bead, with <code class="docutils literal notranslate"><span class="pre">imaginary_time_fs</span></code>. The keys are:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tunnel_splitting_instanton</span></code></p></td>
+<td><p>Splitting: <span class="math notranslate nohighlight">\(\Delta_0\)</span>, eV</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">instanton_action</span></code></p></td>
+<td><p>Action: <span class="math notranslate nohighlight">\((S - S_\text{well})/\hbar\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tls_energy_instanton</span></code></p></td>
+<td><p>Energy: <span class="math notranslate nohighlight">\(\sqrt{\Delta^2 + \Delta_0^2}\)</span>, eV</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tunnel_asymmetry</span></code></p></td>
+<td><p>Asymmetry: <span class="math notranslate nohighlight">\(V(\text{product}) - V(\text{reactant})\)</span>, eV</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">instanton_temperature_K</span></code></p></td>
+<td><p>Temperature: <span class="math notranslate nohighlight">\(1/(k_B \beta)\)</span> for the imaginary time used</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">instanton_mode_separation</span></code></p></td>
+<td><p>Separation: how well the kink’s translation separates from the other modes</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">instanton_symmetric</span></code></p></td>
+<td><p>Symmetry: 1 when {math}`\beta</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">instanton_beta_asymmetry</span></code></p></td>
+<td><p>Magnitude: {math}`\beta</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The propagator ratio measures the splitting <span class="math notranslate nohighlight">\(\Delta_0\)</span> when the two wells lie within
+a small fraction of <span class="math notranslate nohighlight">\(k_B T\)</span> of each other. <code class="docutils literal notranslate"><span class="pre">instanton_symmetric</span> <span class="pre">=</span> <span class="pre">0</span></code>
+flags a pair outside that window. The job still writes the path and the
+action, but no <code class="docutils literal notranslate"><span class="pre">tunnel_splitting_instanton</span></code>, and reports success: the flag
+says why. For such a pair, set <code class="docutils literal notranslate"><span class="pre">mode</span> <span class="pre">=</span> <span class="pre">rate</span></code>, give the saddle and a
+temperature below the crossover, and read the rate in the next sections.</p>
+</section>
+<section id="which-path-object">
+<h2>Which path object<a class="headerlink" href="#which-path-object" title="Link to this heading">¶</a></h2>
+<p>NEB images and ring-polymer beads are different objects. An image is a point
+on a path in configuration space between two minima. Its springs are
+fictitious. The parallel force is removed. A bead is
+one imaginary-time slice of a single quantum system. Its springs are
+physical, with stiffness fixed by the temperature and the number of beads.</p>
+<p>The columns are:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Object</p></th>
+<th class="head"><p>Points</p></th>
+<th class="head"><p>Springs</p></th>
+<th class="head"><p>What it returns</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mode</span> <span class="pre">=</span> <span class="pre">splitting</span></code></p></td>
+<td><p>open string between two minima, started from a band when one is present</p></td>
+<td><p>Euclidean action, no tangent projection</p></td>
+<td><p>tunnelling splitting when the wells are close in energy</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mode</span> <span class="pre">=</span> <span class="pre">rate</span></code></p></td>
+<td><p>closed ring through one saddle</p></td>
+<td><p>same action, stiffness set by <span class="math notranslate nohighlight">\(T\)</span> and <span class="math notranslate nohighlight">\(N\)</span></p></td>
+<td><p>thermal rate: the ring below the crossover, the parabolic factor above it</p></td>
+</tr>
+<tr class="row-even"><td><p>Centroid potential of mean force (PMF)</p></td>
+<td><p>one ring per image, centroid held on the image</p></td>
+<td><p>sampled, not minimised</p></td>
+<td><p>quantum free-energy barrier along the path</p></td>
+</tr>
+<tr class="row-odd"><td><p>Harmonic centroid string</p></td>
+<td><p>a ring at each image, optimised</p></td>
+<td><p>local harmonic quantum correction</p></td>
+<td><p>a free-energy estimate as good as that harmonic well</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The first two rows are <code class="docutils literal notranslate"><span class="pre">job</span> <span class="pre">=</span> <span class="pre">instanton</span></code>. The centroid potential of mean
+force is a constrained path-integral molecular dynamics sample, one
+thermostatted ring per image. That sample is not an optimisation, and it
+does not belong in this job. A string of harmonically corrected rings is a
+different calculation again, and this page does not implement it.</p>
+</section>
+<section id="the-rate-below-the-crossover">
+<h2>The rate below the crossover<a class="headerlink" href="#the-rate-below-the-crossover" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">mode</span> <span class="pre">=</span> <span class="pre">rate</span></code> reads the reactant and <code class="docutils literal notranslate"><span class="pre">saddle_filename</span></code> (default <code class="docutils literal notranslate"><span class="pre">saddle.con</span></code>).
+The instanton is a closed ring, a first-order saddle of the ring-polymer
+potential, with one negative eigenvalue and one zero eigenvalue that cycles
+the beads. <span id="id1">Richardson and Althorpe [<a class="reference internal" href="#id108" title="Jeremy O. Richardson and Stuart C. Althorpe. Ring-polymer molecular dynamics rate-theory in the deep-tunneling regime: connection with semiclassical instanton theory. The Journal of Chemical Physics, 131(21):214106, 2009. doi:10.1063/1.3267318.">INST_RA09</a>]</span> give</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[k Z_r = \frac{1}{\beta_N \hbar}
+\sqrt{\frac{B_N}{2\pi \beta_N \hbar^2}}
+\prod_k' \frac{1}{\beta_N \hbar |\omega_k|}
+\exp(-\beta_N U_N).\]</div>
+</div>
+<p><span class="math notranslate nohighlight">\(B_N\)</span> is the sum of squared steps around the ring, <span class="math notranslate nohighlight">\(\omega_k^2\)</span>
+are the eigenvalues of the mass-weighted ring Hessian, and the prime leaves
+out the cyclic zero mode and the rigid translations and rotations.
+<span class="math notranslate nohighlight">\(Z_r\)</span> is the harmonic ring-polymer partition function of the reactant.
+<span class="math notranslate nohighlight">\(U_N\)</span> is the ring-polymer potential, the bead potentials plus the springs.</p>
+<p>The crossover temperature is <span class="math notranslate nohighlight">\(T_c = \hbar \omega_b / (2\pi k_B)\)</span>, with
+<span class="math notranslate nohighlight">\(\omega_b\)</span> the imaginary frequency at the saddle. At or above <span class="math notranslate nohighlight">\(T_c\)</span>
+the ring collapses onto the saddle. Above <span class="math notranslate nohighlight">\(T_c\)</span> the rate is the
+parabolic barrier factor</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\kappa = \frac{\pi T_c / T}{\sin(\pi T_c / T)}\]</div>
+</div>
+<p>times the classical harmonic transition-state theory rate from the same
+Hessians. <span class="math notranslate nohighlight">\(\kappa\)</span> tends to 1 at high temperature, which is the
+one-bead limit. The factor diverges as <span class="math notranslate nohighlight">\(T\)</span> approaches <span class="math notranslate nohighlight">\(T_c\)</span>
+from above, and at <span class="math notranslate nohighlight">\(T_c\)</span> the job stops. A large factor means the
+temperature is close to the crossover.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Main]</span>
+</span><span data-line="2"><span class="na">job</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">instanton</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">[Instanton]</span>
+</span><span data-line="5"><span class="na">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">rate</span>
+</span><span data-line="6"><span class="na">reactant_filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">reactant.con</span>
+</span><span data-line="7"><span class="na">saddle_filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">saddle.con</span>
+</span><span data-line="8"><span class="na">temperature</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">5</span>
+</span><span data-line="9"><span class="na">beads</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">256</span>
+</span><span data-line="10"><span class="na">hessian_stride</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1</span>
+</span></pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">temperature</span></code> is in kelvin. It must be positive. Below <span class="math notranslate nohighlight">\(T_c\)</span> the job
+optimises the ring. Above <span class="math notranslate nohighlight">\(T_c\)</span> it writes the parabolic rate and does
+not optimise a ring. The default 0 means the temperature was not set, and
+<code class="docutils literal notranslate"><span class="pre">mode</span> <span class="pre">=</span> <span class="pre">rate</span></code> then refuses to run. <code class="docutils literal notranslate"><span class="pre">beads</span></code> defaults to 256, the same default as the splitting. A ring
+of 32 beads at 5 K does not resolve a stiff bond: the path integral starts
+to converge once the bead count exceeds <span class="math notranslate nohighlight">\(\beta \hbar \omega\)</span> of the
+stiffest mode. <code class="docutils literal notranslate"><span class="pre">hessian_stride</span></code> of 1 takes a Hessian on every bead. A larger
+stride keeps a Hessian on every stride-th bead and interpolates linearly
+between those anchors. That interpolation is an approximation: the rate
+formula uses the Hessian of every bead.</p>
+<p><code class="docutils literal notranslate"><span class="pre">half_ring</span></code> defaults to enabled. On an even bead count the potential is
+evaluated from one turning point to the other and copied onto the mirror.
+An odd count keeps every bead. <code class="docutils literal notranslate"><span class="pre">energy_shift</span></code> (default 0, in eV) is
+subtracted from every bead potential and from the reactant and saddle
+energies in the rate.</p>
+<p>The search is an index-1 Newton step on the ring Hessian. Without an
+<code class="docutils literal notranslate"><span class="pre">initial_path</span></code>, the rate job traces a steepest-descent path out of the
+saddle along both signs of its unstable mode and seeds the ring from it by
+the period condition below. On LJ13 that path costs 586 gradient calls. Cooling a cosine
+ring from 0.85 of the crossover is the fallback when no path can be
+built; it finds the ring only where the ring grows continuously out of
+the saddle as the temperature drops. Where it does not, the search walks
+to a neighbouring saddle, so a converged ring with no bead on either side
+of the saddle’s dividing plane (the plane normal to its unstable mode) is
+refused and no rate is written. The step climbs the mode that overlaps
+the last climb and turns every other negative curvature downhill; the
+imaginary-time cycle and the rigid motions of the whole ring, rebuilt
+from the current beads, are held in place and left out of the step. A
+converged gradient is classified with finite-difference bead Hessians,
+since the Bofill blocks can carry negative curvatures the surface does
+not have; a second negative curvature that survives is a higher-index
+stationary ring, and the search steps down that mode. The ring Hessian is block cyclic
+tridiagonal in the beads, and every solve, determinant and inertia count
+goes through a block LU of the open chain plus a low-rank Woodbury
+correction for the closure, the cycle, the rigid modes and each
+eigenvector-following flip: <span class="math notranslate nohighlight">\(O(N f^3)\)</span> for <span class="math notranslate nohighlight">\(f\)</span> degrees of
+freedom, and the <span class="math notranslate nohighlight">\(Nf \times Nf\)</span> matrix is never formed, so the same
+step serves a seven-atom cluster and a 254-atom cell. The lowest ring
+modes come from Lanczos on matrix-vector products. The bead curvature
+blocks start from the saddle Hessian (<code class="docutils literal notranslate"><span class="pre">initial_hessians</span> <span class="pre">=</span> <span class="pre">saddle</span></code>, no force
+calls) and follow accepted moves with a Bofill update, rebuilt from
+finite differences up to three times when the trust radius reaches its
+floor;
+<code class="docutils literal notranslate"><span class="pre">initial_hessians</span> <span class="pre">=</span> <span class="pre">finite_difference</span></code> takes <span class="math notranslate nohighlight">\(2f\)</span> gradient calls per
+bead first. The rate uses the bead Hessians chosen by <code class="docutils literal notranslate"><span class="pre">hessian_final</span></code>, not
+that update. On the one-dimensional Eckart barrier the search converges
+in 4 to 7 steps from either seed.</p>
+<p><code class="docutils literal notranslate"><span class="pre">temperatures</span></code> is a comma-separated list in kelvin. The search starts at
+the highest and each ring starts the next, colder one. An empty list uses
+<code class="docutils literal notranslate"><span class="pre">temperature</span></code>. <code class="docutils literal notranslate"><span class="pre">bead_ladder</span></code> (default off) starts a ring of at least 16
+beads at a quarter of that count and doubles. <code class="docutils literal notranslate"><span class="pre">hessian_final</span></code> is
+<code class="docutils literal notranslate"><span class="pre">recomputed</span></code>: the rate takes a Hessian on every stride-th bead.</p>
+<p>On a rate calculation, <code class="docutils literal notranslate"><span class="pre">initial_path</span></code> is a band over the barrier. The ring
+starts on the closed orbit of that band whose period is <span class="math notranslate nohighlight">\(\beta \hbar\)</span>,
+and the same band carries a one-dimensional WKB rate.
+<code class="docutils literal notranslate"><span class="pre">rate_instanton.dat</span></code> has one row per temperature, with columns <code class="docutils literal notranslate"><span class="pre">T_K</span></code>,
+<code class="docutils literal notranslate"><span class="pre">T_c_K</span></code>, <code class="docutils literal notranslate"><span class="pre">beads</span></code>, <code class="docutils literal notranslate"><span class="pre">converged</span></code>, <code class="docutils literal notranslate"><span class="pre">iterations</span></code>, <code class="docutils literal notranslate"><span class="pre">U_N_eV</span></code>, <code class="docutils literal notranslate"><span class="pre">negative_modes</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ln_k_per_s</span></code>, <code class="docutils literal notranslate"><span class="pre">k_per_s</span></code>, <code class="docutils literal notranslate"><span class="pre">ln_k_htst_per_s</span></code>, <code class="docutils literal notranslate"><span class="pre">barrier_effective_eV</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ln_k_wkb_path_per_s</span></code>, <code class="docutils literal notranslate"><span class="pre">ln_k_parabolic_per_s</span></code> and <code class="docutils literal notranslate"><span class="pre">parabolic_factor</span></code>.
+Above <span class="math notranslate nohighlight">\(T_c\)</span> the instanton columns are empty and the last two hold
+the parabolic rate. Below <span class="math notranslate nohighlight">\(T_c\)</span> those two are empty. A run at more than one temperature also writes
+<code class="docutils literal notranslate"><span class="pre">instanton_&lt;T&gt;K.con</span></code>. The coldest temperature is written to <code class="docutils literal notranslate"><span class="pre">instanton.con</span></code>.</p>
+<p>With no atom fixed, both the reactant and the instanton omit the three
+translations. A
+rotation is omitted when it is a zero mode of the reactant Hessian, which a
+free cluster has and a crystal does not. A cluster in a large periodic cell
+is told apart by that Hessian, not by the periodic flag. The springs along
+those directions stay, so they cancel between the instanton and the reactant.</p>
+<p><code class="docutils literal notranslate"><span class="pre">results.dat</span></code> reports the rate. The keys are:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rate_instanton</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(k\)</span> in s^{-1}</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rate_instanton_log</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\ln(k\,/\,\mathrm{s}^{-1})\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rate_htst_log</span></code></p></td>
+<td><p>classical harmonic transition-state theory, the same logarithm</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">parabolic_factor</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\kappa\)</span>, above <span class="math notranslate nohighlight">\(T_c\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rate_parabolic</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\kappa\)</span> times the harmonic TST rate, s^{-1}</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rate_parabolic_log</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\ln(k\,/\,\mathrm{s}^{-1})\)</span> of that rate</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">instanton_crossover_K</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(T_c\)</span>, K</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">instanton_negative_modes</span></code></p></td>
+<td><p>negative eigenvalues of the ring Hessian; a first-order saddle has 1</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">instanton_zero_mode</span></code></p></td>
+<td><p>the eigenvalue left out</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><span id="id2">Habershon <em>et al.</em> [<a class="reference internal" href="#id107" title="Scott Habershon, David E. Manolopoulos, Thomas E. Markland, and Thomas F. Miller. Ring-polymer molecular dynamics: quantum effects in chemical dynamics from classical trajectories in an extended phase space. Annual Review of Physical Chemistry, 64(1):387–413, April 2013. doi:10.1146/annurev-physchem-040412-110122.">INST_HMMM13</a>]</span> expect the sampled
+ring-polymer rate to lie within about a factor of two of the exact quantum
+rate between <span class="math notranslate nohighlight">\(T_c\)</span> and <span class="math notranslate nohighlight">\(T_c/2\)</span>. That bound compares the sampled
+rate with the exact rate. It is not a comparison of this instanton with a
+free-energy profile.</p>
+<p>The cubic metastable well, <span class="math notranslate nohighlight">\(V = \omega_0^2 q^2/2 - g q^3/3\)</span>, is the
+check. Deep below the crossover its rate approaches the zero-temperature
+decay of <span id="id3">Caldeira and Leggett [<a class="reference internal" href="#id106" title="A. Caldeira and A. Leggett. Quantum tunnelling in a dissipative system. Annals of Physics, 1983. doi:10.1016/0003-4916(83)90202-6.">INST_CL83</a>]</span>.</p>
+</section>
+<section id="path-integral-quantum-tst-on-planes">
+<h2>Path-integral quantum TST on planes<a class="headerlink" href="#path-integral-quantum-tst-on-planes" title="Link to this heading">¶</a></h2>
+<p>With <code class="docutils literal notranslate"><span class="pre">pi_planes</span></code> above 0, <code class="docutils literal notranslate"><span class="pre">mode</span> <span class="pre">=</span> <span class="pre">rate</span></code> follows the instanton with
+path-integral quantum transition-state theory (PI-QTST,
+<span id="id4">Voth <em>et al.</em> [<a class="reference internal" href="#id109" title="Gregory A. Voth, David Chandler, and William H. Miller. Rigorous formulation of quantum transition state theory and its dynamical corrections. The Journal of Chemical Physics, 91(12):7749–7760, 1989. doi:10.1063/1.457242.">INST_VCM89</a>]</span>; review in
+<span id="id5">Voth [<a class="reference internal" href="#id110" title="Gregory A. Voth. Feynman path integral formulation of quantum mechanical transition-state theory. The Journal of Physical Chemistry, 97(32):8365–8377, 1993. doi:10.1021/j100134a002.">INST_Vot93</a>]</span>). A ring polymer is sampled with
+its centroid held on each of a set of parallel planes. The centroid
+potential of mean force along the plane coordinate gives a free-energy
+barrier and a rate at every temperature in <code class="docutils literal notranslate"><span class="pre">temperature</span></code> or <code class="docutils literal notranslate"><span class="pre">temperatures</span></code>.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Instanton]</span>
+</span><span data-line="2"><span class="na">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">rate</span>
+</span><span data-line="3"><span class="na">saddle_filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">saddle.con</span>
+</span><span data-line="4"><span class="na">temperatures</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">150, 105</span>
+</span><span data-line="5"><span class="na">pi_planes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">21</span>
+</span><span data-line="6"><span class="na">pi_beads</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">32</span>
+</span><span data-line="7"><span class="na">pi_equilibration_steps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">500</span>
+</span><span data-line="8"><span class="na">pi_sampling_steps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">4000</span>
+</span><span data-line="9"><span class="na">pi_time_step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0.5</span>
+</span><span data-line="10"><span class="na">pi_thermostat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">pile</span>
+</span><span data-line="11"><span class="na">pi_direction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">mode</span>
+</span><span data-line="12"><span class="na">pi_reactant_extent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0.5</span>
+</span></pre></div>
+</div>
+<p>The coordinate. With <span class="math notranslate nohighlight">\(q\)</span> the mass-weighted displacement from the
+reactant over the free atoms and <span class="math notranslate nohighlight">\(\hat n\)</span> a unit vector in those
+coordinates, the plane coordinate is <span class="math notranslate nohighlight">\(s = \hat n \cdot q\)</span>, in
+amu^0.5 Å. The reactant sits at <span class="math notranslate nohighlight">\(s = 0\)</span> and the saddle at
+<span class="math notranslate nohighlight">\(s^* = \hat n \cdot q_\mathrm{saddle}\)</span>. <code class="docutils literal notranslate"><span class="pre">pi_direction</span> <span class="pre">=</span> <span class="pre">mode</span></code> (the
+default) takes <span class="math notranslate nohighlight">\(\hat n\)</span> from the unstable eigenvector of the saddle’s
+mass-weighted Hessian, oriented toward the saddle, so the last plane is the
+dividing surface normal to the barrier mode. When that mode makes more than
+60 degrees with the reactant-saddle line, or the saddle has no negative
+eigenvalue, the job warns and uses <code class="docutils literal notranslate"><span class="pre">pi_direction</span> <span class="pre">=</span> <span class="pre">line</span></code>, the straight
+mass-weighted line from the reactant to the saddle. One normal serves every
+plane, so <span class="math notranslate nohighlight">\(s\)</span> is a linear coordinate and its mean force integrates to
+its free energy with no metric correction. The planes are fixed in the reactant’s frame. Translations
+of a structure with no atom fixed lie within every plane, because the
+unstable mode of the projected Hessian has no rigid component, but a
+rotation of a free cluster changes <span class="math notranslate nohighlight">\(s\)</span>; fix an atom, or use a cell,
+when the sampling is long enough for the cluster to turn. The job warns
+when no atom is fixed in an aperiodic cell. <code class="docutils literal notranslate"><span class="pre">pi_planes</span></code> planes are spaced
+uniformly from <span class="math notranslate nohighlight">\(s_0 = -\,\mathtt{pi\_reactant\_extent}\; s^*\)</span>, behind
+the reactant, to <span class="math notranslate nohighlight">\(s^*\)</span>.</p>
+<p>The sampling. On each plane the ring’s centroid starts where
+<code class="docutils literal notranslate"><span class="pre">initial_path</span></code> crosses the plane, or on the reactant-saddle line when no
+band is given. Projecting the centroid position and momentum holds it on
+the plane. The ring is carried from plane to plane: its centroid moves to
+the next plane and its internal modes keep their thermalised state.
+The free-ring springs are propagated exactly, so <code class="docutils literal notranslate"><span class="pre">pi_time_step</span></code> is
+limited by the physical vibrations, as for classical dynamics.
+<code class="docutils literal notranslate"><span class="pre">pi_equilibration_steps</span></code> are discarded, then <code class="docutils literal notranslate"><span class="pre">pi_sampling_steps</span></code> steps of
+<code class="docutils literal notranslate"><span class="pre">pi_time_step</span></code> fs record <span class="math notranslate nohighlight">\(n \cdot f_c\)</span>, the centroid force along the
+plane normal. The bead forces of a step are one batch, so a calculator
+group carries the beads. <code class="docutils literal notranslate"><span class="pre">pi_thermostat</span> <span class="pre">=</span> <span class="pre">pile</span></code> puts PILE on the internal
+modes and a Langevin thermostat of time <code class="docutils literal notranslate"><span class="pre">pi_pile_tau</span></code> fs on the centroid
+within the plane, and <code class="docutils literal notranslate"><span class="pre">pi_pile_scale</span></code> (default 1) scales the critical
+damping of the internal modes. Below the crossover the lowest ring modes
+are soft at the barrier and overdamped at critical damping; on the Eckart
+check 0.5 cuts the mean-force error at 0.7 <span class="math notranslate nohighlight">\(T_c\)</span> by a third. <code class="docutils literal notranslate"><span class="pre">piglet</span></code> reads a normal-mode GLE from <code class="docutils literal notranslate"><span class="pre">pi_gle_file</span></code>, in
+the same format and with the same meaning as <code class="docutils literal notranslate"><span class="pre">[Dynamics]</span> <span class="pre">path_gle_file</span></code>.
+<code class="docutils literal notranslate"><span class="pre">pi_seed</span></code> seeds the noise.</p>
+<p>The free energy. The mean force on the plane at <span class="math notranslate nohighlight">\(s\)</span> is</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[F'(s) = -\left\langle \hat n \cdot M^{-1/2} f_c \right\rangle_s ,\]</div>
+</div>
+<p>in eV per amu^0.5 Å, and <span class="math notranslate nohighlight">\(F(s)\)</span> is its trapezoid integral from
+<span class="math notranslate nohighlight">\(s_0\)</span>. The production run is cut into ten equal blocks. The standard
+error of the block means is the error of <span class="math notranslate nohighlight">\(F'(s)\)</span>. The errors of
+<span class="math notranslate nohighlight">\(F\)</span> and of the rate follow by linear propagation, with the planes
+taken as independent. The quantum free-energy barrier is
+<span class="math notranslate nohighlight">\(\Delta F = F(s^*) - \min_{s &lt; s^*} F(s)\)</span>. The log and <code class="docutils literal notranslate"><span class="pre">results.dat</span></code>
+give it beside the classical barrier
+<span class="math notranslate nohighlight">\(V(\mathrm{saddle}) - V(\mathrm{reactant})\)</span> and the instanton’s
+effective barrier.</p>
+<p>The rate. With <span class="math notranslate nohighlight">\(s\)</span> a unit-mass coordinate,</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[k_\mathrm{PI\text{-}QTST} = \frac{1}{2}\sqrt{\frac{2}{\pi\beta}}\;
+\frac{e^{-\beta F(s^*)}}{\int_{s_0}^{s^*} e^{-\beta F(s)}\,ds},\]</div>
+</div>
+<p>with <span class="math notranslate nohighlight">\(\beta = 1/k_B T\)</span> in eV^{-1}. The prefactor is
+<span class="math notranslate nohighlight">\(\tfrac12\langle|\dot s|\rangle\)</span>, half the mean speed of a free unit
+mass, in amu^0.5 Å per time unit of
+<span class="math notranslate nohighlight">\(\sqrt{\mathrm{amu}\,\mathrm{Å}^2/\mathrm{eV}}\)</span> (10.18 fs). The
+integral, again the trapezoid rule over the planes, is the reactant’s
+centroid density along <span class="math notranslate nohighlight">\(s\)</span>. The job reports <span class="math notranslate nohighlight">\(k\)</span> in s^{-1}. The
+integral stops at the first plane, so that plane must sit several
+<span class="math notranslate nohighlight">\(k_B T\)</span> above the reactant minimum of <span class="math notranslate nohighlight">\(F\)</span>; the job warns below
+5 <span class="math notranslate nohighlight">\(k_B T\)</span>. It also warns when <span class="math notranslate nohighlight">\(F'(s^*)\)</span> differs from zero by
+more than three standard errors: the maximum of the centroid free energy
+then lies off the classical saddle’s plane.</p>
+<p>The formula is classical TST on the centroid free-energy surface. With one
+bead, <span class="math notranslate nohighlight">\(F\)</span> is the classical free energy and the rate is classical TST
+along <span class="math notranslate nohighlight">\(s\)</span>. Near and above the crossover it carries the tunnelling
+correction of a symmetric barrier. For strongly asymmetric barriers well
+below the crossover it fails <span id="id6">[<a class="reference internal" href="#id110" title="Gregory A. Voth. Feynman path integral formulation of quantum mechanical transition-state theory. The Journal of Physical Chemistry, 97(32):8365–8377, 1993. doi:10.1021/j100134a002.">INST_Vot93</a>]</span>,
+and the instanton gives the rate there.</p>
+<p>Output. <code class="docutils literal notranslate"><span class="pre">rate_piqtst.dat</span></code> has one row per temperature and plane, with
+columns <code class="docutils literal notranslate"><span class="pre">T_K</span></code>, <code class="docutils literal notranslate"><span class="pre">s_amu05A</span></code>, <code class="docutils literal notranslate"><span class="pre">dF_ds_eV_per_amu05A</span></code>, <code class="docutils literal notranslate"><span class="pre">dF_ds_error</span></code>, <code class="docutils literal notranslate"><span class="pre">F_eV</span></code>,
+<code class="docutils literal notranslate"><span class="pre">F_error_eV</span></code> and <code class="docutils literal notranslate"><span class="pre">spread_max_A</span></code>. <code class="docutils literal notranslate"><span class="pre">piqtst_planes.con</span></code> holds one frame per
+plane at the coldest temperature, at the production-averaged centroid. Its
+readcon <code class="docutils literal notranslate"><span class="pre">spreads</span></code> section holds each atom’s root-mean-square bead
+displacement from the centroid along x, y and z in Å. The scalars carry
+<span class="math notranslate nohighlight">\(s\)</span>, <span class="math notranslate nohighlight">\(F'\)</span> and <span class="math notranslate nohighlight">\(F\)</span> with their errors, the temperature and
+the bead count. A run at more than one temperature also writes
+<code class="docutils literal notranslate"><span class="pre">piqtst_planes_&lt;T&gt;K.con</span></code>. <code class="docutils literal notranslate"><span class="pre">results.dat</span></code> gains, for the coldest temperature:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">barrier_piqtst</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\Delta F\)</span>, eV</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">barrier_piqtst_error</span></code></p></td>
+<td><p>its standard error, eV</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rate_piqtst</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(k_\mathrm{PI\text{-}QTST}\)</span>, s^{-1}</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rate_piqtst_log</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\ln(k\,/\,\mathrm{s}^{-1})\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rate_piqtst_log_error</span></code></p></td>
+<td><p>standard error of that logarithm</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">piqtst_s_star</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(s^*\)</span>, amu^0.5 Å</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">piqtst_dF_ds_star</span></code>, <code class="docutils literal notranslate"><span class="pre">piqtst_dF_ds_star_error</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(F'(s^*)\)</span> and its error</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">piqtst_first_plane_kT</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\beta (F(s_0) - \min F)\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">piqtst_temperature_K</span></code>, <code class="docutils literal notranslate"><span class="pre">piqtst_planes</span></code>, <code class="docutils literal notranslate"><span class="pre">piqtst_beads</span></code></p></td>
+<td><p>the run</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Cost: <code class="docutils literal notranslate"><span class="pre">pi_planes</span></code> times (<code class="docutils literal notranslate"><span class="pre">pi_equilibration_steps</span></code> plus <code class="docutils literal notranslate"><span class="pre">pi_sampling_steps</span></code>)
+steps per temperature, each step two force batches of <code class="docutils literal notranslate"><span class="pre">pi_beads</span></code> beads.</p>
+<section id="recrossing-and-the-rpmd-rate">
+<h3>Recrossing and the RPMD rate<a class="headerlink" href="#recrossing-and-the-rpmd-rate" title="Link to this heading">¶</a></h3>
+<p>PI-QTST counts every centroid that reaches <span class="math notranslate nohighlight">\(s^*\)</span> moving forward as
+reactive. Some of those trajectories turn back. With
+<code class="docutils literal notranslate"><span class="pre">pi_recrossing_parents</span></code> above 0 the job measures that fraction, the
+Bennett-Chandler transmission factor of ring-polymer molecular dynamics
+(RPMD, <span id="id7">Craig and Manolopoulos [<a class="reference internal" href="#id111" title="Ian R. Craig and David E. Manolopoulos. Chemical reaction rates from ring polymer molecular dynamics. The Journal of Chemical Physics, 122(8):084106, 2005. doi:10.1063/1.1850093.">INST_CM05</a>]</span>; the two-step scheme
+of <span id="id8">Suleimanov <em>et al.</em> [<a class="reference internal" href="#id112" title="Yury V. Suleimanov, Joshua W. Allen, and William H. Green. RPMDrate: bimolecular chemical reaction rates from ring polymer molecular dynamics. Computer Physics Communications, 184(3):833–840, 2013. doi:10.1016/j.cpc.2012.10.017.">INST_SAG13</a>]</span>), and reports</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[k_\mathrm{RPMD} = \kappa\, k_\mathrm{PI\text{-}QTST} .\]</div>
+</div>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Instanton]</span>
+</span><span data-line="2"><span class="na">pi_recrossing_parents</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">100</span>
+</span><span data-line="3"><span class="na">pi_recrossing_children</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">20</span>
+</span><span data-line="4"><span class="na">pi_recrossing_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">100</span>
+</span><span data-line="5"><span class="na">pi_recrossing_spacing</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">50</span>
+</span></pre></div>
+</div>
+<p>The parents. A ring with its centroid held on the top plane <span class="math notranslate nohighlight">\(s^*\)</span>,
+the dividing surface of the scan, is thermostatted as in the scan for
+<code class="docutils literal notranslate"><span class="pre">pi_equilibration_steps</span></code>. Every <code class="docutils literal notranslate"><span class="pre">pi_recrossing_spacing</span></code> steps after that its
+beads are one parent, <code class="docutils literal notranslate"><span class="pre">pi_recrossing_parents</span></code> in all.</p>
+<p>The children. Each parent launches <code class="docutils literal notranslate"><span class="pre">pi_recrossing_children</span></code> momentum draws.
+A draw takes every ring normal mode from the Maxwell-Boltzmann distribution
+at <span class="math notranslate nohighlight">\(\beta_P = \beta / P\)</span> with the plane constraint removed, and runs
+twice, with <span class="math notranslate nohighlight">\(p\)</span> and with <span class="math notranslate nohighlight">\(-p\)</span>, which halves the variance. Each
+child runs <code class="docutils literal notranslate"><span class="pre">pi_recrossing_time</span></code> fs of thermostat-free RPMD in steps of
+<code class="docutils literal notranslate"><span class="pre">pi_time_step</span></code>: velocity Verlet on the physical forces with the free ring
+propagated exactly in normal modes. Along the way the job records the
+centroid coordinate <span class="math notranslate nohighlight">\(s(t)\)</span>. The centroid velocity along the coordinate is
+<span class="math notranslate nohighlight">\(\dot s = \hat n \cdot M^{1/2} v_c\)</span>, and</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\kappa(t) = \frac{\langle \dot s(0)\, h(s(t) - s^*) \rangle}
+                  {\langle \dot s(0)\, h(\dot s(0)) \rangle} ,\]</div>
+</div>
+<p>with <span class="math notranslate nohighlight">\(h\)</span> the step function. At <span class="math notranslate nohighlight">\(t = 0\)</span> the side is that of
+<span class="math notranslate nohighlight">\(\dot s(0)\)</span>, the limit <span class="math notranslate nohighlight">\(t \to 0^+\)</span>, so <span class="math notranslate nohighlight">\(\kappa(0) = 1\)</span>.
+<span class="math notranslate nohighlight">\(\kappa(t)\)</span> falls as children recross and levels off once they have
+committed to a side. The reported <span class="math notranslate nohighlight">\(\kappa\)</span> is the mean of
+<span class="math notranslate nohighlight">\(\kappa(t)\)</span> over the last quarter of <code class="docutils literal notranslate"><span class="pre">pi_recrossing_time</span></code>. Its
+standard error is the jackknife over parents. Lengthen
+<code class="docutils literal notranslate"><span class="pre">pi_recrossing_time</span></code> when <code class="docutils literal notranslate"><span class="pre">kappa_piqtst.dat</span></code> has not levelled off by the last
+quarter.</p>
+<p>What <span class="math notranslate nohighlight">\(\kappa\)</span> means. <span class="math notranslate nohighlight">\(\kappa\)</span> lies between 0 and 1. A value
+of 1 means no trajectory that crosses <span class="math notranslate nohighlight">\(s^*\)</span> forward returns, and
+PI-QTST is the RPMD rate. A value below 1 means the plane is not the
+dynamical bottleneck: either it is tilted from the barrier’s own dividing
+surface, or a bath coupling turns trajectories back. One bead gives the
+classical transmission through the plane. On a harmonic saddle whose plane
+normal makes an angle <span class="math notranslate nohighlight">\(\theta\)</span> with the unstable mode it is
+<span class="math notranslate nohighlight">\(\sqrt{\cos^2\theta - \sin^2\theta\,\omega_b^2/\omega_\perp^2}\)</span>.
+The RPMD rate is independent of the choice of <span class="math notranslate nohighlight">\(s^*\)</span> in the
+long-time limit. The PI-QTST rate is not.</p>
+<p>Output. <code class="docutils literal notranslate"><span class="pre">kappa_piqtst.dat</span></code> has the coldest temperature’s curve, columns
+<code class="docutils literal notranslate"><span class="pre">t_fs</span></code> and <code class="docutils literal notranslate"><span class="pre">kappa</span></code>. A run at more than one temperature also writes
+<code class="docutils literal notranslate"><span class="pre">kappa_piqtst_&lt;T&gt;K.dat</span></code>. <code class="docutils literal notranslate"><span class="pre">rate_piqtst.dat</span></code> gains the columns <code class="docutils literal notranslate"><span class="pre">kappa</span></code>,
+<code class="docutils literal notranslate"><span class="pre">kappa_error</span></code>, <code class="docutils literal notranslate"><span class="pre">ln_k_rpmd_s</span></code> and <code class="docutils literal notranslate"><span class="pre">ln_k_rpmd_s_error</span></code>, the same on every
+plane of a temperature. <code class="docutils literal notranslate"><span class="pre">results.dat</span></code> gains:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">piqtst_kappa</span></code>, <code class="docutils literal notranslate"><span class="pre">piqtst_kappa_error</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\kappa\)</span> and its standard error</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rate_rpmd</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(k_\mathrm{RPMD}\)</span>, s^{-1}</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rate_rpmd_log</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\ln(k_\mathrm{RPMD}\,/\,\mathrm{s}^{-1})\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rate_rpmd_log_error</span></code></p></td>
+<td><p>its standard error, both errors in quadrature</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pi_recrossing_parents</span></code></p></td>
+<td><p>0</p></td>
+<td><p>parent configurations; 0 is off, otherwise at least 2</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pi_recrossing_children</span></code></p></td>
+<td><p>20</p></td>
+<td><p>momentum draws per parent, each run forward and reversed</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pi_recrossing_time</span></code></p></td>
+<td><p>100</p></td>
+<td><p>fs per child, at least four <code class="docutils literal notranslate"><span class="pre">pi_time_step</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pi_recrossing_spacing</span></code></p></td>
+<td><p>50</p></td>
+<td><p>thermostatted steps between parents</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Cost: <code class="docutils literal notranslate"><span class="pre">pi_equilibration_steps</span></code> plus <code class="docutils literal notranslate"><span class="pre">pi_recrossing_parents</span></code> times
+<code class="docutils literal notranslate"><span class="pre">pi_recrossing_spacing</span></code> constrained steps (two force batches each), and
+<code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">pi_recrossing_parents</span> <span class="pre">*</span> <span class="pre">pi_recrossing_children</span> <span class="pre">*</span> <span class="pre">pi_recrossing_time</span> <span class="pre">/</span> <span class="pre">pi_time_step</span></code> child steps (one force batch each) per temperature.</p>
+</section>
+</section>
+<section id="centroid-and-spread">
+<h2>Centroid and spread<a class="headerlink" href="#centroid-and-spread" title="Link to this heading">¶</a></h2>
+<p>Both modes also write <code class="docutils literal notranslate"><span class="pre">instanton_centroid.con</span></code> (and
+<code class="docutils literal notranslate"><span class="pre">instanton_centroid_&lt;T&gt;K.con</span></code> per temperature): one frame at the mean of
+the beads, with the readcon <code class="docutils literal notranslate"><span class="pre">spreads</span></code> section holding each atom’s
+root-mean-square displacement from that mean along x, y and z in Å. This is
+the delocalised configuration as a centroid plus a per-atom spread, the same
+representation a path-integral trajectory collapses to, so the atoms that
+tunnel and how far they spread read off one frame. Below the crossover the
+density is bimodal along the reaction path and the spread there is a width,
+not a Gaussian; the beads in <code class="docutils literal notranslate"><span class="pre">instanton.con</span></code> keep the full path. The frame
+carries <code class="docutils literal notranslate"><span class="pre">spread_max</span></code>, the largest entry, beside the temperature.</p>
+</section>
+<section id="checks">
+<h2>Checks<a class="headerlink" href="#checks" title="Link to this heading">¶</a></h2>
+<p>These checks use two Catch2 cases. The curved-valley case is <code class="docutils literal notranslate"><span class="pre">Instanton</span> <span class="pre">splitting</span> <span class="pre">in</span> <span class="pre">a</span> <span class="pre">curved</span> <span class="pre">valley</span> <span class="pre">matches</span> <span class="pre">the</span> <span class="pre">exact</span> <span class="pre">gap</span></code>. The corner case is <code class="docutils literal notranslate"><span class="pre">The</span> <span class="pre">instanton</span> <span class="pre">cuts</span> <span class="pre">the</span> <span class="pre">corner</span> <span class="pre">the</span> <span class="pre">minimum</span> <span class="pre">energy</span> <span class="pre">path</span> <span class="pre">takes</span></code>.
+The potential is <span class="math notranslate nohighlight">\(V = V_0 (x^2 - 1)^2 + \tfrac{K}{2} (y - C (1 - x^2))^2\)</span> at unit mass
+with <span class="math notranslate nohighlight">\(K = 4\)</span> eV/Å². The exact gap comes from a fourth-order
+finite-difference Hamiltonian, converged to <span class="math notranslate nohighlight">\(10^{-5}\)</span>.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><span class="math notranslate nohighlight">\(V_0\)</span> / eV</p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(C\)</span> / Å</p></th>
+<th class="head"><p>exact <span class="math notranslate nohighlight">\(\Delta_0\)</span> / eV</p></th>
+<th class="head"><p>instanton / exact</p></th>
+<th class="head"><p>WKB on the valley floor / exact</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0.12</p></td>
+<td><p>0.35</p></td>
+<td><p>2.520e-5</p></td>
+<td><p>1.17</p></td>
+<td><p>0.35</p></td>
+</tr>
+<tr class="row-odd"><td><p>0.30</p></td>
+<td><p>0.35</p></td>
+<td><p>9.818e-8</p></td>
+<td><p>1.08</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>0.12</p></td>
+<td><p>0</p></td>
+<td><p>2.040e-5</p></td>
+<td><p>1.12</p></td>
+<td><p>1.02</p></td>
+</tr>
+<tr class="row-odd"><td><p>0.30</p></td>
+<td><p>0</p></td>
+<td><p>1.195e-7</p></td>
+<td><p>1.07</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The instanton’s error falls as the barrier deepens, the regime glass TLS sit
+in. The same cases tie the C++ path and splitting to an independent
+implementation of the discretisation to <span class="math notranslate nohighlight">\(2 \times 10^{-3}\)</span>.</p>
+<p>For the rate, <code class="docutils literal notranslate"><span class="pre">The</span> <span class="pre">Eckart</span> <span class="pre">rate</span> <span class="pre">instanton</span> <span class="pre">matches</span> <span class="pre">the</span> <span class="pre">exact</span> <span class="pre">flux</span> <span class="pre">to</span> <span class="pre">its</span> <span class="pre">semiclassical</span> <span class="pre">error</span></code> compares <span class="math notranslate nohighlight">\(k Z_r\)</span> through the symmetric Eckart
+barrier <span class="math notranslate nohighlight">\(V_0 / \cosh^2(x/a)\)</span> (<span class="math notranslate nohighlight">\(V_0 = 0.425\)</span> eV, <span class="math notranslate nohighlight">\(a = 0.734\)</span> amu^0.5 Å, <span class="math notranslate nohighlight">\(T_c = 150\)</span> K) with the exact flux
+<span class="math notranslate nohighlight">\((2\pi\hbar)^{-1}\int P(E) e^{-\beta E} dE\)</span> from Eckart’s transmission
+probability, at <span class="math notranslate nohighlight">\(T = 0.5\,T_c\)</span> and <span class="math notranslate nohighlight">\(0.35\,T_c\)</span>:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>beads</p></th>
+<th class="head"><p>instanton / exact</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>64</p></td>
+<td><p>0.94 to 0.96</p></td>
+</tr>
+<tr class="row-odd"><td><p>128</p></td>
+<td><p>0.93 to 0.94</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(N \to \infty\)</span> (1/N² extrapolation)</p></td>
+<td><p>0.928</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>In one dimension the instanton is the steepest-descent evaluation of the
+WKB thermal integral, so its limit shares the uniform WKB error; the Kemble
+integral along the path gives the same 0.928. <code class="docutils literal notranslate"><span class="pre">The</span> <span class="pre">ring</span> <span class="pre">spectrum</span> <span class="pre">from</span> <span class="pre">the</span> <span class="pre">block</span> <span class="pre">chain</span> <span class="pre">matches</span> <span class="pre">the</span> <span class="pre">dense</span> <span class="pre">Hessian</span></code> ties the chain’s determinant and
+inertia to a dense eigendecomposition, and <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">rigid</span> <span class="pre">mode</span> <span class="pre">leaves</span> <span class="pre">the</span> <span class="pre">instanton</span> <span class="pre">rate</span> <span class="pre">unchanged</span></code> checks the rigid-mode bookkeeping through the
+search.</p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
+<div class="docutils container" id="id9">
+<div role="list" class="citation-list">
+<div class="citation" id="id106" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">INST_CL83</a><span class="fn-bracket">]</span></span>
+<p>A. Caldeira and A. Leggett. Quantum tunnelling in a dissipative system. <em>Annals of Physics</em>, 1983. <a class="reference external" href="https://doi.org/10.1016/0003-4916(83)90202-6">doi:10.1016/0003-4916(83)90202-6</a>.</p>
+</div>
+<div class="citation" id="id111" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">INST_CM05</a><span class="fn-bracket">]</span></span>
+<p>Ian R. Craig and David E. Manolopoulos. Chemical reaction rates from ring polymer molecular dynamics. <em>The Journal of Chemical Physics</em>, 122(8):084106, 2005. <a class="reference external" href="https://doi.org/10.1063/1.1850093">doi:10.1063/1.1850093</a>.</p>
+</div>
+<div class="citation" id="id107" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">INST_HMMM13</a><span class="fn-bracket">]</span></span>
+<p>Scott Habershon, David E. Manolopoulos, Thomas E. Markland, and Thomas F. Miller. Ring-polymer molecular dynamics: quantum effects in chemical dynamics from classical trajectories in an extended phase space. <em>Annual Review of Physical Chemistry</em>, 64(1):387–413, April 2013. <a class="reference external" href="https://doi.org/10.1146/annurev-physchem-040412-110122">doi:10.1146/annurev-physchem-040412-110122</a>.</p>
+</div>
+<div class="citation" id="id108" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">INST_RA09</a><span class="fn-bracket">]</span></span>
+<p>Jeremy O. Richardson and Stuart C. Althorpe. Ring-polymer molecular dynamics rate-theory in the deep-tunneling regime: connection with semiclassical instanton theory. <em>The Journal of Chemical Physics</em>, 131(21):214106, 2009. <a class="reference external" href="https://doi.org/10.1063/1.3267318">doi:10.1063/1.3267318</a>.</p>
+</div>
+<div class="citation" id="id112" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">INST_SAG13</a><span class="fn-bracket">]</span></span>
+<p>Yury V. Suleimanov, Joshua W. Allen, and William H. Green. RPMDrate: bimolecular chemical reaction rates from ring polymer molecular dynamics. <em>Computer Physics Communications</em>, 184(3):833–840, 2013. <a class="reference external" href="https://doi.org/10.1016/j.cpc.2012.10.017">doi:10.1016/j.cpc.2012.10.017</a>.</p>
+</div>
+<div class="citation" id="id110" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>INST_Vot93<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id5">1</a>,<a role="doc-backlink" href="#id6">2</a>)</span>
+<p>Gregory A. Voth. Feynman path integral formulation of quantum mechanical transition-state theory. <em>The Journal of Physical Chemistry</em>, 97(32):8365–8377, 1993. <a class="reference external" href="https://doi.org/10.1021/j100134a002">doi:10.1021/j100134a002</a>.</p>
+</div>
+<div class="citation" id="id109" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">INST_VCM89</a><span class="fn-bracket">]</span></span>
+<p>Gregory A. Voth, David Chandler, and William H. Miller. Rigorous formulation of quantum transition state theory and its dynamical corrections. <em>The Journal of Chemical Physics</em>, 91(12):7749–7760, 1989. <a class="reference external" href="https://doi.org/10.1063/1.457242">doi:10.1063/1.457242</a>.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="hessian.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Hessian</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="prefactor.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Prefactor</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div
+      style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--sy-c-text-weak);
+        font-size: 0.9em;
+      "
+    >
+      <div
+        style="
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 1rem;
+          align-items: center;
+        "
+      >
+        
+        <span style="display: inline-flex; align-items: center; gap: 0.3em">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="1em"
+            height="1em"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z" />
+          </svg>
+          <span
+            >Analytics by
+            <a
+              href="https://antics.turtletech.us/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style="color: inherit; text-decoration: underline"
+              >antics</a
+            ></span
+          >
+        </span>
+
+        
+        <span style="display: inline-flex; align-items: center; gap: 0.3em">
+          <span>provided by</span>
+          <span style="display: inline-flex; align-items: center; gap: 0.3em">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+            <a
+              href="https://turtletech.us/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style="color: inherit; text-decoration: underline"
+              >TurtleTech ehf</a
+            >
+          </span>
+        </span>
+
+        
+        <span style="display: inline-flex; align-items: center; gap: 0.3em">
+          <span>hosted by</span>
+          <a
+            href="https://www.netlify.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style="color: inherit; text-decoration: underline"
+            >Netlify</a
+          >
+        </span>
+      </div>
+    </div>
+
+    
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2026, the eOn developers</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div> <div class="sy-foot-socials">
+<a href="https://github.com/TheochemUI/eOn" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=b0e360d0"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/shibuya.js?v=cac61aee"></script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script></body>
+</html>

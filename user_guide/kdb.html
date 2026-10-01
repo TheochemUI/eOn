@@ -130,6 +130,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="lanczos.html">Lanczos</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="akmc.html">Adaptive kinetic Monte Carlo</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="saddle_search.html">Saddle search</a></li>
@@ -198,7 +199,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
@@ -216,6 +216,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.process_catalog.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_catalog</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 </ul>
@@ -224,6 +225,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.5.0/index.html">[v3.5.0] - 2026-10-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.5.0/release-notes.html">eOn 3.5.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
 </ul>
@@ -320,16 +325,17 @@ data-aria-dark="Switch to auto color mode">
       <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
-<li><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li><a class="reference internal" href="#where-a-process-is-stored">Where a process is stored</a></li>
+<li><a class="reference internal" href="#resetting-a-run">Resetting a run</a></li>
 <li><a class="reference internal" href="#configuration">Configuration</a><ul>
 <li><a class="reference internal" href="#eon.schema.KDBConfig"><code class="docutils literal notranslate"><span class="pre">KDBConfig</span></code></a><ul>
-<li><a class="reference internal" href="#eon.schema.KDBConfig.kdb_dc"><code class="docutils literal notranslate">kdb_dc</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.KDBConfig.kdb_mac"><code class="docutils literal notranslate">kdb_mac</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.KDBConfig.kdb_name"><code class="docutils literal notranslate">kdb_name</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.KDBConfig.kdb_nf"><code class="docutils literal notranslate">kdb_nf</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.KDBConfig.use_kdb"><code class="docutils literal notranslate">use_kdb</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.KDBConfig.kdb_only"><code class="docutils literal notranslate">kdb_only</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.KDBConfig.remove_duplicates"><code class="docutils literal notranslate">remove_duplicates</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.KDBConfig.use_kdb"><code class="docutils literal notranslate">use_kdb</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.KDBConfig.kdb_name"><code class="docutils literal notranslate">kdb_name</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.KDBConfig.kdb_nf"><code class="docutils literal notranslate">kdb_nf</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.KDBConfig.kdb_dc"><code class="docutils literal notranslate">kdb_dc</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.KDBConfig.kdb_mac"><code class="docutils literal notranslate">kdb_mac</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -431,8 +437,8 @@ data-aria-dark="Switch to auto color mode">
 <h1>Kinetic database<a class="headerlink" href="#kinetic-database" title="Link to this heading">¶</a></h1>
 <p>One of the bottlenecks in an aKMC simulation is performing the saddle point
 searches. The kinetic database of
-<span id="id1">Terrell <em>et al.</em> [<a class="reference internal" href="#id83" title="Rye Terrell, Matthew Welborn, Samuel T. Chill, and Graeme Henkelman. Database of atomistic reaction mechanisms with application to kinetic Monte Carlo. The Journal of Chemical Physics, 137(1):014105, July 2012. doi:10.1063/1.4730746.">KDB_TWCH12</a>]</span> stores information about
-processes as they are found and uses it to predict future saddle points.</p>
+<span id="id1">Terrell <em>et al.</em> [<a class="reference internal" href="#id83" title="Rye Terrell, Matthew Welborn, Samuel T. Chill, and Graeme Henkelman. Database of atomistic reaction mechanisms with application to kinetic Monte Carlo. The Journal of Chemical Physics, 137(1):014105, July 2012. doi:10.1063/1.4730746.">KDB_TWCH12</a>]</span> stores each good process
+as it is registered and uses it to start the next search of a matching state.</p>
 <p>In the following figure, the hydrogen of a carboxyl group on an Au(111) surface
 transfers to the other oxygen (a). In this process, the hydrogen is determined
 to be the only moving atom, and the two oxygen atoms to be its neighbors. The
@@ -442,16 +448,48 @@ with a local configuration closely resembling either minimum of (b), the kinetic
 database will suggest a saddle to converge with a dimer search. The dimer starts
 with this suggested configuration and mode, and if it is a good suggestion,
 converges very rapidly to the saddle.</p>
-<figure class="align-center" id="id99">
+<figure class="align-center" id="id107">
 <img alt="Carboxyl group on an Au(111)" class="full-width" src="../_images/akmc-1.png" />
 <figcaption>
-<p><span class="caption-text">Snapshots of Carboxyl group on an Au(111). (a) Hydrogen of carboxyl transfers to another oxygen. (b) Other atoms are stripped and stored.</span><a class="headerlink" href="#id99" title="Link to this image">¶</a></p>
+<p><span class="caption-text">Snapshots of Carboxyl group on an Au(111). (a) Hydrogen of carboxyl transfers to another oxygen. (b) Other atoms are stripped and stored.</span><a class="headerlink" href="#id107" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
-<section id="dependencies">
-<h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">¶</a></h2>
-<p>The kinetic database is contained in a library separate from <code class="docutils literal notranslate"><span class="pre">eOn</span></code>. It is part
-of the <code class="docutils literal notranslate"><span class="pre">tsase</span></code> python module <a class="reference external" href="http://theory.cm.utexas.edu/tsase">located here</a>.</p>
+<section id="where-a-process-is-stored">
+<h2>Where a process is stored<a class="headerlink" href="#where-a-process-is-stored" title="Link to this heading">¶</a></h2>
+<p>The reactant, saddle, and product frames go into the run’s readcon-db
+corpus (<code class="docutils literal notranslate"><span class="pre">readcon.db</span></code> next to <code class="docutils literal notranslate"><span class="pre">config.ini</span></code>). The barrier in eV, the
+prefactor in s^-1, the mode, and the readcon-db frame keys go into
+<code class="docutils literal notranslate"><span class="pre">amsel.KdbStore</span></code>. The catalog directory is <code class="docutils literal notranslate"><span class="pre">Paths.kdb</span></code> (default
+<code class="docutils literal notranslate"><span class="pre">&lt;main_directory&gt;/kdb/</span></code>). <code class="docutils literal notranslate"><span class="pre">KdbStore</span></code> opens that directory.</p>
+<p>A suggestion refines from the stored saddle. The direction is the stored
+mode when its absolute cosine with the reactant-to-saddle vector is at
+least <code class="docutils literal notranslate"><span class="pre">kdb_mac</span></code>, and that vector otherwise. Each stored process is
+offered once. The next search is a random displacement when none remain.
+With <code class="docutils literal notranslate"><span class="pre">kdb_only</span> <span class="pre">=</span> <span class="pre">true</span></code> and an empty catalog, no random search is submitted.</p>
+<p><code class="docutils literal notranslate"><span class="pre">use_kdb</span> <span class="pre">=</span> <span class="pre">true</span></code> does not import the PyPI <code class="docutils literal notranslate"><span class="pre">kdb</span></code> package. It needs
+<code class="docutils literal notranslate"><span class="pre">amsel</span></code> and <code class="docutils literal notranslate"><span class="pre">readcon-db</span></code>. A missing <code class="docutils literal notranslate"><span class="pre">amsel</span></code> logs <code class="docutils literal notranslate"><span class="pre">amsel</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">installed</span></code>
+and leaves the state unmarked, so a later iteration can try again.</p>
+<p>The three match numbers are <code class="docutils literal notranslate"><span class="pre">kdb_nf</span></code>, <code class="docutils literal notranslate"><span class="pre">kdb_dc</span></code>, and <code class="docutils literal notranslate"><span class="pre">kdb_mac</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">kdb_nf</span></code> is the neighbor fudge, a fraction. The default is 0.2.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kdb_dc</span></code> is the distance cutoff in angstroms. The default is 0.3.
+A stored reactant matches the current state when every atom is within
+<code class="docutils literal notranslate"><span class="pre">kdb_dc</span> <span class="pre">*</span> <span class="pre">(1</span> <span class="pre">+</span> <span class="pre">kdb_nf)</span></code> angstroms.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kdb_mac</span></code> is the minimum absolute cosine between the stored mode and
+the reactant-to-saddle displacement. The default is 0.7. At or above
+that cosine the refine uses the stored mode, flipped when the cosine
+is negative. Below it, the refine uses the reactant-to-saddle vector.</p></li>
+</ul>
+<p>A query log line contains the <code class="docutils literal notranslate"><span class="pre">kdb_nf</span></code> value from the ini.</p>
+</section>
+<section id="resetting-a-run">
+<h2>Resetting a run<a class="headerlink" href="#resetting-a-run" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">eon.server</span> <span class="pre">--reset</span></code> removes the catalog directory <code class="docutils literal notranslate"><span class="pre">Paths.kdb</span></code>
+with the rest of the run’s data, wherever that path points. A catalog
+shared between runs or curated by hand needs a copy outside the run, or
+a <code class="docutils literal notranslate"><span class="pre">Paths.kdb</span></code> that names a copy. The readcon-db corpus <code class="docutils literal notranslate"><span class="pre">readcon.db</span></code> is
+not removed, so after a reset it holds frames that no catalog
+references. Delete it as well to start from an empty database.</p>
 </section>
 <section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
@@ -461,88 +499,22 @@ of the <code class="docutils literal notranslate"><span class="pre">tsase</span>
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="eon.schema.KDBConfig">
 <span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">KDBConfig</span></span><a class="reference internal" href="../_modules/eon_schema/config/models.html#KDBConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.KDBConfig" title="Link to this definition">¶</a></dt>
-<dd><p><details  class="autodoc_pydantic_collapsable_json">
-<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
-</span><span data-line="2"><span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;KDBConfig&quot;</span><span class="p">,</span>
-</span><span data-line="3"><span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
-</span><span data-line="4"><span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="5"><span class="w">      </span><span class="nt">&quot;use_kdb&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="6"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-</span><span data-line="7"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Use Kdb&quot;</span><span class="p">,</span>
-</span><span data-line="8"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="9"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="10"><span class="w">      </span><span class="nt">&quot;kdb_only&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="11"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-</span><span data-line="12"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Only use KDB in an AKMC simulation, no random searches.&quot;</span><span class="p">,</span>
-</span><span data-line="13"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Kdb Only&quot;</span><span class="p">,</span>
-</span><span data-line="14"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="15"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="16"><span class="w">      </span><span class="nt">&quot;remove_duplicates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="17"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-</span><span data-line="18"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;KDB will not make duplicate suggestions. This can slow KDB querying, so it may be best to use this only for slow potentials (DFT, etc.).&quot;</span><span class="p">,</span>
-</span><span data-line="19"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Remove Duplicates&quot;</span><span class="p">,</span>
-</span><span data-line="20"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="21"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="22"><span class="w">      </span><span class="nt">&quot;kdb_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="23"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;kdb.db&quot;</span><span class="p">,</span>
-</span><span data-line="24"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Kdb Name&quot;</span><span class="p">,</span>
-</span><span data-line="25"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="26"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="27"><span class="w">      </span><span class="nt">&quot;kdb_nf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="28"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.2</span><span class="p">,</span>
-</span><span data-line="29"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Kdb Nf&quot;</span><span class="p">,</span>
-</span><span data-line="30"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="31"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="32"><span class="w">      </span><span class="nt">&quot;kdb_dc&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="33"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.3</span><span class="p">,</span>
-</span><span data-line="34"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Kdb Dc&quot;</span><span class="p">,</span>
-</span><span data-line="35"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="36"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="37"><span class="w">      </span><span class="nt">&quot;kdb_mac&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="38"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.7</span><span class="p">,</span>
-</span><span data-line="39"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Kdb Mac&quot;</span><span class="p">,</span>
-</span><span data-line="40"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="41"><span class="w">      </span><span class="p">}</span>
-</span><span data-line="42"><span class="w">   </span><span class="p">}</span>
-</span><span data-line="43"><span class="p">}</span>
-</span></pre></div>
-</div>
-</details></p><dl class="field-list simple">
-<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
-</ul>
-</dd>
-<dt class="field-even">Fields<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">kdb_dc</span> <span class="pre">(float)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">kdb_mac</span> <span class="pre">(float)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">kdb_name</span> <span class="pre">(str)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">kdb_nf</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">use_kdb</span> <span class="pre">(bool)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">kdb_only</span> <span class="pre">(bool)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_duplicates</span> <span class="pre">(bool)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">use_kdb</span> <span class="pre">(bool)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">kdb_name</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">kdb_nf</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">kdb_dc</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">kdb_mac</span> <span class="pre">(float)</span></code></p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.KDBConfig.kdb_dc">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">kdb_dc</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.3</span></span><a class="headerlink" href="#eon.schema.KDBConfig.kdb_dc" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.KDBConfig.kdb_mac">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">kdb_mac</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.7</span></span><a class="headerlink" href="#eon.schema.KDBConfig.kdb_mac" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.KDBConfig.kdb_name">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">kdb_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'kdb.db'</span></span><a class="headerlink" href="#eon.schema.KDBConfig.kdb_name" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.KDBConfig.kdb_nf">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">kdb_nf</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.2</span></span><a class="headerlink" href="#eon.schema.KDBConfig.kdb_nf" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="eon.schema.KDBConfig.use_kdb">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">use_kdb</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.KDBConfig.use_kdb" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -558,9 +530,28 @@ of the <code class="docutils literal notranslate"><span class="pre">tsase</span>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.KDBConfig.use_kdb">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">use_kdb</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.KDBConfig.use_kdb" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="eon.schema.KDBConfig.kdb_name">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">kdb_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'kdb.db'</span></span><a class="headerlink" href="#eon.schema.KDBConfig.kdb_name" title="Link to this definition">¶</a></dt>
+<dd><p>Unused name kept so old ini files still parse. The catalog directory is Paths.kdb.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.KDBConfig.kdb_nf">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">kdb_nf</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.2</span></span><a class="headerlink" href="#eon.schema.KDBConfig.kdb_nf" title="Link to this definition">¶</a></dt>
+<dd><p>Neighbor fudge, a fraction. The match tolerance is kdb_dc * (1 + kdb_nf) angstroms.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.KDBConfig.kdb_dc">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">kdb_dc</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.3</span></span><a class="headerlink" href="#eon.schema.KDBConfig.kdb_dc" title="Link to this definition">¶</a></dt>
+<dd><p>Distance cutoff in angstroms. A stored reactant whose atoms sit farther than kdb_dc * (1 + kdb_nf) from the current state is not a match.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.KDBConfig.kdb_mac">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">kdb_mac</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.7</span></span><a class="headerlink" href="#eon.schema.KDBConfig.kdb_mac" title="Link to this definition">¶</a></dt>
+<dd><p>Minimum absolute cosine between the stored mode and the reactant-to-saddle displacement. At or above this value the refine uses the stored mode. Below it, the refine uses the reactant-to-saddle vector.</p>
+</dd></dl>
 
 </dd></dl>
 

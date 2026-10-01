@@ -252,6 +252,10 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a2a031c3e8c331a9fcd4b0b06ca9cde83" id="r_a2a031c3e8c331a9fcd4b0b06ca9cde83"><td class="memItemLeft">std::vector&lt; <a class="el" href="structeonc_1_1io_1_1ConMetadataValue.html">ConMetadataValue</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a2a031c3e8c331a9fcd4b0b06ca9cde83">scalars</a></td></tr>
 <tr class="memitem:a6a6e2de824dc0e89e696aa459f831f4d" id="r_a6a6e2de824dc0e89e696aa459f831f4d"><td class="memItemLeft">std::vector&lt; <a class="el" href="structeonc_1_1io_1_1ConMetadataText.html">ConMetadataText</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a6a6e2de824dc0e89e696aa459f831f4d">strings</a></td></tr>
 <tr class="memitem:a6f53f3c50f3b0968b1004af5a32f800e" id="r_a6f53f3c50f3b0968b1004af5a32f800e"><td class="memItemLeft">std::optional&lt; std::string &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a6f53f3c50f3b0968b1004af5a32f800e">raw_json</a></td></tr>
+<tr class="memitem:ac0874e75ccaacaeafa2486fac68d7bf3" id="r_ac0874e75ccaacaeafa2486fac68d7bf3"><td class="memItemLeft">std::vector&lt; double &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ac0874e75ccaacaeafa2486fac68d7bf3">displacements</a></td></tr>
+<tr class="memdesc:ac0874e75ccaacaeafa2486fac68d7bf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-atom displacement, row-major N x 3 in Angstrom (a normal mode, a dimer direction).  <br /></td></tr>
+<tr class="memitem:a1e1609724a95a29690f72798b5b51215" id="r_a1e1609724a95a29690f72798b5b51215"><td class="memItemLeft">std::vector&lt; double &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a1e1609724a95a29690f72798b5b51215">spreads</a></td></tr>
+<tr class="memdesc:a1e1609724a95a29690f72798b5b51215"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-atom root-mean-square spread of the position distribution about the written coordinates, row-major N x 3 in Angstrom (a ring-polymer centroid's beads, a path-integral trajectory).  <br /></td></tr>
 <tr class="memitem:af58aac5c164318bf2e21b322d37f0bc5" id="r_af58aac5c164318bf2e21b322d37f0bc5"><td class="memItemLeft">std::optional&lt; bool &gt;&#160;</td><td class="memItemRight"><a class="el" href="#af58aac5c164318bf2e21b322d37f0bc5">write_con_forces</a></td></tr>
 <tr class="memdesc:af58aac5c164318bf2e21b322d37f0bc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">When set, this write includes or omits force sections regardless of <a class="el" href="classeonc_1_1Parameters.html#a59bac76bd6b84cbdc50887d30346e129">Parameters.main_options()</a>.writeConForces or the process-wide flag.  <br /></td></tr>
 </table>
@@ -259,6 +263,25 @@ Public Attributes</h2></td></tr>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="ConFileIO_8h_source.html#l00071">71</a> of file <a class="el" href="ConFileIO_8h_source.html">ConFileIO.h</a>.</p>
 </div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="ac0874e75ccaacaeafa2486fac68d7bf3" name="ac0874e75ccaacaeafa2486fac68d7bf3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0874e75ccaacaeafa2486fac68d7bf3">&#9670;&#160;</a></span>displacements</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; eonc::io::ConFrameMetadata::displacements</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Per-atom displacement, row-major N x 3 in Angstrom (a normal mode, a dimer direction). </p>
+<p>Written as the readcon displacements section when not empty. </p>
+
+<p class="definition">Definition at line <a class="el" href="ConFileIO_8h_source.html#l00085">85</a> of file <a class="el" href="ConFileIO_8h_source.html">ConFileIO.h</a>.</p>
+
+</div>
+</div>
 <a id="a477c0c6939c5add657040782e213add1" name="a477c0c6939c5add657040782e213add1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a477c0c6939c5add657040782e213add1">&#9670;&#160;</a></span>energy</h2>
 
@@ -371,6 +394,25 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a1e1609724a95a29690f72798b5b51215" name="a1e1609724a95a29690f72798b5b51215"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e1609724a95a29690f72798b5b51215">&#9670;&#160;</a></span>spreads</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; eonc::io::ConFrameMetadata::spreads</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Per-atom root-mean-square spread of the position distribution about the written coordinates, row-major N x 3 in Angstrom (a ring-polymer centroid's beads, a path-integral trajectory). </p>
+<p>Written as the readcon spreads section when not empty. </p>
+
+<p class="definition">Definition at line <a class="el" href="ConFileIO_8h_source.html#l00090">90</a> of file <a class="el" href="ConFileIO_8h_source.html">ConFileIO.h</a>.</p>
+
+</div>
+</div>
 <a id="a6a6e2de824dc0e89e696aa459f831f4d" name="a6a6e2de824dc0e89e696aa459f831f4d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6a6e2de824dc0e89e696aa459f831f4d">&#9670;&#160;</a></span>strings</h2>
 
@@ -433,7 +475,7 @@ Public Attributes</h2></td></tr>
 
 <p>When set, this write includes or omits force sections regardless of <a class="el" href="classeonc_1_1Parameters.html#a59bac76bd6b84cbdc50887d30346e129">Parameters.main_options()</a>.writeConForces or the process-wide flag. </p>
 
-<p class="definition">Definition at line <a class="el" href="ConFileIO_8h_source.html#l00084">84</a> of file <a class="el" href="ConFileIO_8h_source.html">ConFileIO.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ConFileIO_8h_source.html#l00093">93</a> of file <a class="el" href="ConFileIO_8h_source.html">ConFileIO.h</a>.</p>
 
 </div>
 </div>

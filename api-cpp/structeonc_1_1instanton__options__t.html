@@ -1,0 +1,912 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: eonc::instanton_options_t Struct Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn 3.2.0</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('structeonc_1_1instanton__options__t.html','','structeonc_1_1instanton__options__t-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">eonc::instanton_options_t Struct Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a61a8da13917f23ebd5177b2598907851" id="r_a61a8da13917f23ebd5177b2598907851"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a61a8da13917f23ebd5177b2598907851">mode</a> {&quot;splitting&quot;}</td></tr>
+<tr class="memitem:ad4b7d7bd0147ebfbe13388b686c29968" id="r_ad4b7d7bd0147ebfbe13388b686c29968"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#ad4b7d7bd0147ebfbe13388b686c29968">reactant_filename</a> {&quot;reactant.con&quot;}</td></tr>
+<tr class="memitem:a780b36006943b24e6a50befa447e1264" id="r_a780b36006943b24e6a50befa447e1264"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a780b36006943b24e6a50befa447e1264">product_filename</a> {&quot;product.con&quot;}</td></tr>
+<tr class="memitem:a2226aa4be67afff6079b6817ea5940db" id="r_a2226aa4be67afff6079b6817ea5940db"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a2226aa4be67afff6079b6817ea5940db">initial_path</a> {&quot;&quot;}</td></tr>
+<tr class="memitem:a2cd366f7f8a50246f1d3aa57b2f7b6c7" id="r_a2cd366f7f8a50246f1d3aa57b2f7b6c7"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a2cd366f7f8a50246f1d3aa57b2f7b6c7">beads</a> {256}</td></tr>
+<tr class="memitem:a419d3f7a389f056feb0fc8ebc6fdf510" id="r_a419d3f7a389f056feb0fc8ebc6fdf510"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a419d3f7a389f056feb0fc8ebc6fdf510">beta_hbar_omega</a> {30.0}</td></tr>
+<tr class="memitem:ae6f2d6d8c1bcff94166b6c20233a0be3" id="r_ae6f2d6d8c1bcff94166b6c20233a0be3"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#ae6f2d6d8c1bcff94166b6c20233a0be3">max_iterations</a> {5000}</td></tr>
+<tr class="memitem:aed26ef719c61a8f379d28b6c57dc567b" id="r_aed26ef719c61a8f379d28b6c57dc567b"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#aed26ef719c61a8f379d28b6c57dc567b">force_tolerance</a> {1e-3}</td></tr>
+<tr class="memitem:a10eae9decad91e8c8fdd47b2fff6135a" id="r_a10eae9decad91e8c8fdd47b2fff6135a"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a10eae9decad91e8c8fdd47b2fff6135a">hessian_stride</a> {1}</td></tr>
+<tr class="memitem:acbec8fbcd163d8d5d8abc60af70f6a81" id="r_acbec8fbcd163d8d5d8abc60af70f6a81"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#acbec8fbcd163d8d5d8abc60af70f6a81">saddle_filename</a> {&quot;saddle.con&quot;}</td></tr>
+<tr class="memitem:aabfe9726b50466ad95c95e273f0b86e0" id="r_aabfe9726b50466ad95c95e273f0b86e0"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#aabfe9726b50466ad95c95e273f0b86e0">temperature</a> {0.0}</td></tr>
+<tr class="memitem:a1a1fa97d5bc1aadf7a374976b2c80883" id="r_a1a1fa97d5bc1aadf7a374976b2c80883"><td class="memItemLeft">std::vector&lt; double &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a1a1fa97d5bc1aadf7a374976b2c80883">temperatures</a> {}</td></tr>
+<tr class="memitem:a5e68a352a49951cc52f3f642954c4117" id="r_a5e68a352a49951cc52f3f642954c4117"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a5e68a352a49951cc52f3f642954c4117">half_ring</a> {true}</td></tr>
+<tr class="memitem:a2e653d0cdc0a70bd54034c1926864a73" id="r_a2e653d0cdc0a70bd54034c1926864a73"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a2e653d0cdc0a70bd54034c1926864a73">energy_shift</a> {0.0}</td></tr>
+<tr class="memitem:af33ec9e812eb36b36359bd9c33ffeb2d" id="r_af33ec9e812eb36b36359bd9c33ffeb2d"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#af33ec9e812eb36b36359bd9c33ffeb2d">initial_hessians</a> {&quot;saddle&quot;}</td></tr>
+<tr class="memitem:a173b75cd6c54c11d837d9623ad410494" id="r_a173b75cd6c54c11d837d9623ad410494"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a173b75cd6c54c11d837d9623ad410494">bead_ladder</a> {false}</td></tr>
+<tr class="memitem:a6a9e76e47e07ccbf0789f0ad39e48bf7" id="r_a6a9e76e47e07ccbf0789f0ad39e48bf7"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a6a9e76e47e07ccbf0789f0ad39e48bf7">hessian_final</a> {&quot;recomputed&quot;}</td></tr>
+<tr class="memitem:a10bb41472ceab6de812e8c81253a1a06" id="r_a10bb41472ceab6de812e8c81253a1a06"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a10bb41472ceab6de812e8c81253a1a06">springs</a> {&quot;trotter&quot;}</td></tr>
+<tr class="memitem:a6d7d235d5f376e6d681909a8bc6ca4a4" id="r_a6d7d235d5f376e6d681909a8bc6ca4a4"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a6d7d235d5f376e6d681909a8bc6ca4a4">pi_planes</a> {0}</td></tr>
+<tr class="memitem:ac3a44d4dea3d10267afbe44787d59aa5" id="r_ac3a44d4dea3d10267afbe44787d59aa5"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#ac3a44d4dea3d10267afbe44787d59aa5">pi_beads</a> {16}</td></tr>
+<tr class="memitem:a0bf7e376ee91702aa7d56aa101c4b90b" id="r_a0bf7e376ee91702aa7d56aa101c4b90b"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a0bf7e376ee91702aa7d56aa101c4b90b">pi_equilibration_steps</a> {500}</td></tr>
+<tr class="memitem:ac8a3dceb616c1f3ad9abf1103d826f2d" id="r_ac8a3dceb616c1f3ad9abf1103d826f2d"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#ac8a3dceb616c1f3ad9abf1103d826f2d">pi_sampling_steps</a> {2000}</td></tr>
+<tr class="memitem:aed3d650baba80662531c9d596e73c635" id="r_aed3d650baba80662531c9d596e73c635"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#aed3d650baba80662531c9d596e73c635">pi_time_step</a> {0.5}</td></tr>
+<tr class="memitem:a0418c85fd4c65d577777b0cf845543e2" id="r_a0418c85fd4c65d577777b0cf845543e2"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a0418c85fd4c65d577777b0cf845543e2">pi_thermostat</a> {&quot;pile&quot;}</td></tr>
+<tr class="memitem:aeb75919dd555e29b4550a9cf3caee6e2" id="r_aeb75919dd555e29b4550a9cf3caee6e2"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#aeb75919dd555e29b4550a9cf3caee6e2">pi_gle_file</a> {&quot;&quot;}</td></tr>
+<tr class="memitem:acfcb3930c6c60f6b9ef24dbd1ee7b33d" id="r_acfcb3930c6c60f6b9ef24dbd1ee7b33d"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#acfcb3930c6c60f6b9ef24dbd1ee7b33d">pi_pile_tau</a> {100.0}</td></tr>
+<tr class="memitem:ab082a6ace0c4a0a5224130fe0f1a4b17" id="r_ab082a6ace0c4a0a5224130fe0f1a4b17"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#ab082a6ace0c4a0a5224130fe0f1a4b17">pi_pile_scale</a> {1.0}</td></tr>
+<tr class="memitem:a0bfe825b48ab3687d00207c3a252b411" id="r_a0bfe825b48ab3687d00207c3a252b411"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a0bfe825b48ab3687d00207c3a252b411">pi_seed</a> {1}</td></tr>
+<tr class="memitem:a0780a3a5150e1503223d9ed813ef592f" id="r_a0780a3a5150e1503223d9ed813ef592f"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a0780a3a5150e1503223d9ed813ef592f">pi_direction</a> {&quot;mode&quot;}</td></tr>
+<tr class="memitem:a47a03ebd2863e5baefe4aeac61efb4e2" id="r_a47a03ebd2863e5baefe4aeac61efb4e2"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a47a03ebd2863e5baefe4aeac61efb4e2">pi_reactant_extent</a> {0.5}</td></tr>
+<tr class="memitem:acc9d657eaa2571d30bb3d5e22fde0d74" id="r_acc9d657eaa2571d30bb3d5e22fde0d74"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#acc9d657eaa2571d30bb3d5e22fde0d74">pi_recrossing_parents</a> {0}</td></tr>
+<tr class="memitem:a202591a87ba321cdc4b3f4b1cdef2c16" id="r_a202591a87ba321cdc4b3f4b1cdef2c16"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a202591a87ba321cdc4b3f4b1cdef2c16">pi_recrossing_children</a> {20}</td></tr>
+<tr class="memitem:a9d7f850fb5a68c059013565e7d6d6af8" id="r_a9d7f850fb5a68c059013565e7d6d6af8"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a9d7f850fb5a68c059013565e7d6d6af8">pi_recrossing_time</a> {100.0}</td></tr>
+<tr class="memitem:a77f34d0586383ddba203b83085f35ce3" id="r_a77f34d0586383ddba203b83085f35ce3"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a77f34d0586383ddba203b83085f35ce3">pi_recrossing_spacing</a> {50}</td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00808">808</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+</div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a173b75cd6c54c11d837d9623ad410494" name="a173b75cd6c54c11d837d9623ad410494"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a173b75cd6c54c11d837d9623ad410494">&#9670;&#160;</a></span>bead_ladder</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::instanton_options_t::bead_ladder {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00837">837</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  837</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2cd366f7f8a50246f1d3aa57b2f7b6c7" name="a2cd366f7f8a50246f1d3aa57b2f7b6c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cd366f7f8a50246f1d3aa57b2f7b6c7">&#9670;&#160;</a></span>beads</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::instanton_options_t::beads {256}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00815">815</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  815</span>{256};              <span class="comment">// P, segments from one minimum to the other</span></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a419d3f7a389f056feb0fc8ebc6fdf510" name="a419d3f7a389f056feb0fc8ebc6fdf510"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a419d3f7a389f056feb0fc8ebc6fdf510">&#9670;&#160;</a></span>beta_hbar_omega</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::instanton_options_t::beta_hbar_omega {30.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00816">816</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  816</span>{30.0}; <span class="comment">// imaginary time, in units of 1 / omega</span></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2e653d0cdc0a70bd54034c1926864a73" name="a2e653d0cdc0a70bd54034c1926864a73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e653d0cdc0a70bd54034c1926864a73">&#9670;&#160;</a></span>energy_shift</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::instanton_options_t::energy_shift {0.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00830">830</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  830</span>{0.0}; <span class="comment">// eV, subtracted from each bead potential</span></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aed26ef719c61a8f379d28b6c57dc567b" name="aed26ef719c61a8f379d28b6c57dc567b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed26ef719c61a8f379d28b6c57dc567b">&#9670;&#160;</a></span>force_tolerance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::instanton_options_t::force_tolerance {1e-3}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00818">818</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  818</span>{1e-3}; <span class="comment">// eV / (amu^0.5 A), largest bead residual</span></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a5e68a352a49951cc52f3f642954c4117" name="a5e68a352a49951cc52f3f642954c4117"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e68a352a49951cc52f3f642954c4117">&#9670;&#160;</a></span>half_ring</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::instanton_options_t::half_ring {true}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00829">829</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  829</span>{<span class="keyword">true</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a6a9e76e47e07ccbf0789f0ad39e48bf7" name="a6a9e76e47e07ccbf0789f0ad39e48bf7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a9e76e47e07ccbf0789f0ad39e48bf7">&#9670;&#160;</a></span>hessian_final</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::instanton_options_t::hessian_final {&quot;recomputed&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00839">839</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  839</span>{<span class="stringliteral">&quot;recomputed&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a10eae9decad91e8c8fdd47b2fff6135a" name="a10eae9decad91e8c8fdd47b2fff6135a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10eae9decad91e8c8fdd47b2fff6135a">&#9670;&#160;</a></span>hessian_stride</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::instanton_options_t::hessian_stride {1}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00820">820</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  820</span>{1};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af33ec9e812eb36b36359bd9c33ffeb2d" name="af33ec9e812eb36b36359bd9c33ffeb2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af33ec9e812eb36b36359bd9c33ffeb2d">&#9670;&#160;</a></span>initial_hessians</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::instanton_options_t::initial_hessians {&quot;saddle&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00834">834</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  834</span>{<span class="stringliteral">&quot;saddle&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2226aa4be67afff6079b6817ea5940db" name="a2226aa4be67afff6079b6817ea5940db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2226aa4be67afff6079b6817ea5940db">&#9670;&#160;</a></span>initial_path</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::instanton_options_t::initial_path {&quot;&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00814">814</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  814</span>{<span class="stringliteral">&quot;&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ae6f2d6d8c1bcff94166b6c20233a0be3" name="ae6f2d6d8c1bcff94166b6c20233a0be3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6f2d6d8c1bcff94166b6c20233a0be3">&#9670;&#160;</a></span>max_iterations</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::instanton_options_t::max_iterations {5000}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00817">817</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  817</span>{5000};    <span class="comment">// L-BFGS iterations on the action</span></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a61a8da13917f23ebd5177b2598907851" name="a61a8da13917f23ebd5177b2598907851"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61a8da13917f23ebd5177b2598907851">&#9670;&#160;</a></span>mode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::instanton_options_t::mode {&quot;splitting&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00809">809</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  809</span>{<span class="stringliteral">&quot;splitting&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac3a44d4dea3d10267afbe44787d59aa5" name="ac3a44d4dea3d10267afbe44787d59aa5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3a44d4dea3d10267afbe44787d59aa5">&#9670;&#160;</a></span>pi_beads</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::instanton_options_t::pi_beads {16}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00847">847</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  847</span>{16};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0780a3a5150e1503223d9ed813ef592f" name="a0780a3a5150e1503223d9ed813ef592f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0780a3a5150e1503223d9ed813ef592f">&#9670;&#160;</a></span>pi_direction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::instanton_options_t::pi_direction {&quot;mode&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00860">860</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  860</span>{<span class="stringliteral">&quot;mode&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0bf7e376ee91702aa7d56aa101c4b90b" name="a0bf7e376ee91702aa7d56aa101c4b90b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bf7e376ee91702aa7d56aa101c4b90b">&#9670;&#160;</a></span>pi_equilibration_steps</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::instanton_options_t::pi_equilibration_steps {500}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00848">848</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  848</span>{500};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aeb75919dd555e29b4550a9cf3caee6e2" name="aeb75919dd555e29b4550a9cf3caee6e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb75919dd555e29b4550a9cf3caee6e2">&#9670;&#160;</a></span>pi_gle_file</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::instanton_options_t::pi_gle_file {&quot;&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00854">854</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  854</span>{<span class="stringliteral">&quot;&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ab082a6ace0c4a0a5224130fe0f1a4b17" name="ab082a6ace0c4a0a5224130fe0f1a4b17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab082a6ace0c4a0a5224130fe0f1a4b17">&#9670;&#160;</a></span>pi_pile_scale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::instanton_options_t::pi_pile_scale {1.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00856">856</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  856</span>{1.0}; <span class="comment">// scales the internal-mode PILE damping</span></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="acfcb3930c6c60f6b9ef24dbd1ee7b33d" name="acfcb3930c6c60f6b9ef24dbd1ee7b33d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfcb3930c6c60f6b9ef24dbd1ee7b33d">&#9670;&#160;</a></span>pi_pile_tau</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::instanton_options_t::pi_pile_tau {100.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00855">855</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  855</span>{100.0}; <span class="comment">// fs, centroid Langevin time</span></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a6d7d235d5f376e6d681909a8bc6ca4a4" name="a6d7d235d5f376e6d681909a8bc6ca4a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d7d235d5f376e6d681909a8bc6ca4a4">&#9670;&#160;</a></span>pi_planes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::instanton_options_t::pi_planes {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00846">846</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  846</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a47a03ebd2863e5baefe4aeac61efb4e2" name="a47a03ebd2863e5baefe4aeac61efb4e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47a03ebd2863e5baefe4aeac61efb4e2">&#9670;&#160;</a></span>pi_reactant_extent</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::instanton_options_t::pi_reactant_extent {0.5}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00863">863</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  863</span>{0.5};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a202591a87ba321cdc4b3f4b1cdef2c16" name="a202591a87ba321cdc4b3f4b1cdef2c16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a202591a87ba321cdc4b3f4b1cdef2c16">&#9670;&#160;</a></span>pi_recrossing_children</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::instanton_options_t::pi_recrossing_children {20}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00869">869</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  869</span>{20};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="acc9d657eaa2571d30bb3d5e22fde0d74" name="acc9d657eaa2571d30bb3d5e22fde0d74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc9d657eaa2571d30bb3d5e22fde0d74">&#9670;&#160;</a></span>pi_recrossing_parents</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::instanton_options_t::pi_recrossing_parents {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00868">868</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  868</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a77f34d0586383ddba203b83085f35ce3" name="a77f34d0586383ddba203b83085f35ce3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77f34d0586383ddba203b83085f35ce3">&#9670;&#160;</a></span>pi_recrossing_spacing</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::instanton_options_t::pi_recrossing_spacing {50}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00871">871</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  871</span>{50};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a9d7f850fb5a68c059013565e7d6d6af8" name="a9d7f850fb5a68c059013565e7d6d6af8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d7f850fb5a68c059013565e7d6d6af8">&#9670;&#160;</a></span>pi_recrossing_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::instanton_options_t::pi_recrossing_time {100.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00870">870</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  870</span>{100.0}; <span class="comment">// fs</span></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac8a3dceb616c1f3ad9abf1103d826f2d" name="ac8a3dceb616c1f3ad9abf1103d826f2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8a3dceb616c1f3ad9abf1103d826f2d">&#9670;&#160;</a></span>pi_sampling_steps</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::instanton_options_t::pi_sampling_steps {2000}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00849">849</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  849</span>{2000};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0bfe825b48ab3687d00207c3a252b411" name="a0bfe825b48ab3687d00207c3a252b411"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bfe825b48ab3687d00207c3a252b411">&#9670;&#160;</a></span>pi_seed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::instanton_options_t::pi_seed {1}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00857">857</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  857</span>{1};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0418c85fd4c65d577777b0cf845543e2" name="a0418c85fd4c65d577777b0cf845543e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0418c85fd4c65d577777b0cf845543e2">&#9670;&#160;</a></span>pi_thermostat</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::instanton_options_t::pi_thermostat {&quot;pile&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00853">853</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  853</span>{<span class="stringliteral">&quot;pile&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aed3d650baba80662531c9d596e73c635" name="aed3d650baba80662531c9d596e73c635"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed3d650baba80662531c9d596e73c635">&#9670;&#160;</a></span>pi_time_step</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::instanton_options_t::pi_time_step {0.5}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00850">850</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  850</span>{0.5}; <span class="comment">// fs</span></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a780b36006943b24e6a50befa447e1264" name="a780b36006943b24e6a50befa447e1264"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a780b36006943b24e6a50befa447e1264">&#9670;&#160;</a></span>product_filename</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::instanton_options_t::product_filename {&quot;product.con&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00811">811</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  811</span>{<span class="stringliteral">&quot;product.con&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad4b7d7bd0147ebfbe13388b686c29968" name="ad4b7d7bd0147ebfbe13388b686c29968"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4b7d7bd0147ebfbe13388b686c29968">&#9670;&#160;</a></span>reactant_filename</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::instanton_options_t::reactant_filename {&quot;reactant.con&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00810">810</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  810</span>{<span class="stringliteral">&quot;reactant.con&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="acbec8fbcd163d8d5d8abc60af70f6a81" name="acbec8fbcd163d8d5d8abc60af70f6a81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbec8fbcd163d8d5d8abc60af70f6a81">&#9670;&#160;</a></span>saddle_filename</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::instanton_options_t::saddle_filename {&quot;saddle.con&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00822">822</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  822</span>{<span class="stringliteral">&quot;saddle.con&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a10bb41472ceab6de812e8c81253a1a06" name="a10bb41472ceab6de812e8c81253a1a06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10bb41472ceab6de812e8c81253a1a06">&#9670;&#160;</a></span>springs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::instanton_options_t::springs {&quot;trotter&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00842">842</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  842</span>{<span class="stringliteral">&quot;trotter&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aabfe9726b50466ad95c95e273f0b86e0" name="aabfe9726b50466ad95c95e273f0b86e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabfe9726b50466ad95c95e273f0b86e0">&#9670;&#160;</a></span>temperature</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::instanton_options_t::temperature {0.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00823">823</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  823</span>{0.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a1a1fa97d5bc1aadf7a374976b2c80883" name="a1a1fa97d5bc1aadf7a374976b2c80883"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a1fa97d5bc1aadf7a374976b2c80883">&#9670;&#160;</a></span>temperatures</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; eonc::instanton_options_t::temperatures {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00826">826</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  826</span>{};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/<a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="namespaceeonc.html">eonc</a></li><li class="navelem"><a href="structeonc_1_1instanton__options__t.html">instanton_options_t</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

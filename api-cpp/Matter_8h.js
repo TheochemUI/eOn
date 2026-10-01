@@ -8,5 +8,6 @@ var Matter_8h =
     [ "eonc::pbc::apply", "namespaceeonc_1_1pbc.html#a7bf2adae174e6b9e1265299d46b400ee", null ],
     [ "eonc::pbc::applyLegacy", "namespaceeonc_1_1pbc.html#aa30c19bf4a78bd641a3087cd2d228c19", null ],
     [ "eonc::pbc::applyPositions", "namespaceeonc_1_1pbc.html#abad2bfe4d09d881af9d6df88063455cf", null ],
-    [ "eonc::pbc::applyV", "namespaceeonc_1_1pbc.html#ac9275cb7a90e6142c029620e501a7f14", null ]
+    [ "eonc::pbc::applyV", "namespaceeonc_1_1pbc.html#ac9275cb7a90e6142c029620e501a7f14", null ],
+    [ "eonc::evaluateTogether", "namespaceeonc.html#a0a75f0d31324c1f054a663565625d66c", null ]
 ];

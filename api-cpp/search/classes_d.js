@@ -10,6 +10,6 @@ var searchData=
   ['optimizer_7',['Optimizer',['../classeonc_1_1Optimizer.html',1,'eonc']]],
   ['optimizer_5foptions_5ft_8',['optimizer_options_t',['../structeonc_1_1optimizer__options__t.html',1,'eonc']]],
   ['optimizerconfig_9',['OptimizerConfig',['../structeonc_1_1OptimizerConfig.html',1,'eonc']]],
-  ['options_10',['Options',['../structeonc_1_1VesinNeighbors_1_1Options.html',1,'eonc::VesinNeighbors']]],
+  ['options_10',['Options',['../structeonc_1_1pathintegral_1_1Options.html',1,'eonc::pathintegral::Options'],['../structeonc_1_1VesinNeighbors_1_1Options.html',1,'eonc::VesinNeighbors::Options']]],
   ['ostream_11',['ostream',['../classostream.html',1,'']]]
 ];

@@ -249,6 +249,8 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Zoom-NEB packs every image onto a window around the climbing image once that image is stable and the band force is below activation_threshold.  <a href="structeonc_1_1neb__options__t_1_1zoom__options__t.html#details">More...</a><br /></td></tr>
 <tr class="memitem:path_5Finitialization_5Ft" id="r_path_5Finitialization_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1neb__options__t_1_1path__initialization__t.html">path_initialization_t</a></td></tr>
 <tr class="memitem:endpoint_5Foptions_5Ft" id="r_endpoint_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1neb__options__t_1_1endpoint__options__t.html">endpoint_options_t</a></td></tr>
+<tr class="memitem:solid_5Fstate_5Foptions_5Ft" id="r_solid_5Fstate_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1neb__options__t_1_1solid__state__options__t.html">solid_state_options_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interior images relax a lower-triangular cell with the atoms.  <a href="structeonc_1_1neb__options__t_1_1solid__state__options__t.html#details">More...</a><br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -266,10 +268,11 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a25d97fc22a3afb5d8301ed36665b183b" id="r_a25d97fc22a3afb5d8301ed36665b183b"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1neb__options__t_1_1zoom__options__t.html">eonc::neb_options_t::zoom_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a25d97fc22a3afb5d8301ed36665b183b">zoom</a></td></tr>
 <tr class="memitem:ad7eb6b8cfadfede648637b8b84f77d0b" id="r_ad7eb6b8cfadfede648637b8b84f77d0b"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1neb__options__t_1_1path__initialization__t.html">eonc::neb_options_t::path_initialization_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#ad7eb6b8cfadfede648637b8b84f77d0b">initialization</a></td></tr>
 <tr class="memitem:a60aea66f89cb4a4790dcf50973f5768d" id="r_a60aea66f89cb4a4790dcf50973f5768d"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1neb__options__t_1_1endpoint__options__t.html">eonc::neb_options_t::endpoint_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a60aea66f89cb4a4790dcf50973f5768d">endpoints</a></td></tr>
+<tr class="memitem:a943bfb1885f304d7faec4288ef79a322" id="r_a943bfb1885f304d7faec4288ef79a322"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1neb__options__t_1_1solid__state__options__t.html">eonc::neb_options_t::solid_state_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a943bfb1885f304d7faec4288ef79a322">solid_state</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00500">500</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00517">517</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
 </div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
 <a id="a20679cefe27a467bc74193b3f856886f" name="a20679cefe27a467bc74193b3f856886f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a20679cefe27a467bc74193b3f856886f">&#9670;&#160;</a></span>climbing_image</h2>
@@ -311,8 +314,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00504">504</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  504</span>{0.01}; <span class="comment">// resolved to optimizer_options.converged_force</span></div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00521">521</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  521</span>{0.01}; <span class="comment">// resolved to optimizer_options.converged_force</span></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -328,8 +331,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00501">501</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  501</span>{5};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00518">518</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  518</span>{5};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -361,8 +364,8 @@ Public Attributes</h2></td></tr>
 
 <p>Permute+rotate the reactant onto the product before interpolation. </p>
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00510">510</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  510</span>{<span class="keyword">false</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00527">527</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  527</span>{<span class="keyword">false</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -380,8 +383,8 @@ Public Attributes</h2></td></tr>
 
 <p>"ira" uses <a class="el" href="classeonc_1_1IRACompare.html" title="C++ wrapper for the IRA (Iterative Rotations and Assignments) library.">IRACompare</a>. "hungarian" is accepted and falls back to ira. </p>
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00512">512</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  512</span>{<span class="stringliteral">&quot;ira&quot;</span>};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00529">529</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  529</span>{<span class="stringliteral">&quot;ira&quot;</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -397,8 +400,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00502">502</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  502</span>{1000};</div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00519">519</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  519</span>{1000};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -428,10 +431,24 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00503">503</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  503</span>{<a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a341acbe802de0e3a8902fb8d8a3a352c">OptType::LBFGS</a>};</div>
-<div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56a341acbe802de0e3a8902fb8d8a3a352c"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a341acbe802de0e3a8902fb8d8a3a352c">eonc::OptType::LBFGS</a></div><div class="ttdeci">@ LBFGS</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00108">BaseStructures.h:108</a></div></div>
+<p class="definition">Definition at line <a class="el" href="ParametersOptions_8h_source.html#l00520">520</a> of file <a class="el" href="ParametersOptions_8h_source.html">ParametersOptions.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  520</span>{<a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a341acbe802de0e3a8902fb8d8a3a352c">OptType::LBFGS</a>};</div>
+<div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56a341acbe802de0e3a8902fb8d8a3a352c"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a341acbe802de0e3a8902fb8d8a3a352c">eonc::OptType::LBFGS</a></div><div class="ttdeci">@ LBFGS</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00109">BaseStructures.h:109</a></div></div>
 </div><!-- fragment -->
+</div>
+</div>
+<a id="a943bfb1885f304d7faec4288ef79a322" name="a943bfb1885f304d7faec4288ef79a322"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a943bfb1885f304d7faec4288ef79a322">&#9670;&#160;</a></span>solid_state</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1neb__options__t_1_1solid__state__options__t.html">eonc::neb_options_t::solid_state_options_t</a> eonc::neb_options_t::solid_state</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
 </div>
 </div>
 <a id="a7ddcef2df030ddca7e0ee7b7aedfe2da" name="a7ddcef2df030ddca7e0ee7b7aedfe2da"></a>

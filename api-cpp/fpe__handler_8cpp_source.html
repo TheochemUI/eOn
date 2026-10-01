@@ -641,7 +641,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('fpe__handler_8
 <div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span><span class="preprocessor">#elif defined(__linux__) &amp;&amp; defined(__aarch64__)</span></div>
 <div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>  <span class="comment">// ARM polarity is the opposite of MXCSR: FPCR trap-enable bits SET mean</span></div>
 <div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>  <span class="comment">// trap. Clearing sticky FPSR flags alone re-executes with trapping still</span></div>
-<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>  <span class="comment">// armed (eOn-qkuw / eOn-g7fl on aarch64). Clear the matching FPCR enables.</span></div>
+<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>  <span class="comment">// armed on aarch64. Clear the matching FPCR enables.</span></div>
 <div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>  <span class="keyword">constexpr</span> uint32_t kFpsimdMagic = 0x46508001u;</div>
 <div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span>  <span class="keyword">constexpr</span> <span class="keywordtype">unsigned</span> kFpcrIoe = 1u &lt;&lt; 8;</div>
 <div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>  <span class="keyword">constexpr</span> <span class="keywordtype">unsigned</span> kFpcrDze = 1u &lt;&lt; 9;</div>

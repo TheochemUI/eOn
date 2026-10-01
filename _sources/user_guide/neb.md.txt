@@ -42,6 +42,11 @@ figures (full history, 1:1 reaction-valley panel, structure strip), see
 - Improved tangent method of {cite:t}`neb-henkelmanImprovedTangentEstimate2000`.
 - Climbing image NEB of {cite:t}`neb-henkelmanClimbingImageNudged2000`.
 - Doubly nudged method of {cite:t}`neb-trygubenkoDoublyNudgedElastic2004`.
+- Solid-state band of {cite:t}`neb-sheppardGeneralizedSolidstateNudged2012`,
+  enabled with `solid_state = true`. Interior images relax the cell with
+  the atoms. The cell stays lower triangular, and the tangent uses one
+  Jacobian for atomic displacements and cell strain
+  ([doi:10.1063/1.3684549](https://doi.org/10.1063/1.3684549)).
 
 ```{versionadded} 2.0
 - The energy weighted varying springs method of {cite:t}`neb-asgeirssonNudgedElasticBand2021`.
@@ -79,7 +84,7 @@ Via the surrogate potential interface, a native C++ implementation of the Gaussi
 ```{versionadded} 2.12
 - Onsager-Machlup action-based NEB for minimum action paths.
 - OCINEB (Off-Path Climbing Image NEB) {cite:t}`neb-goswamiEnhancedClimbingImage2026`: hybrid CI-NEB + Min-Mode Following with hessian eigenmode alignment for automated saddle point refinement.
-- Parallel image force evaluation (requires TBB, `-Dwith_parallel_neb=true`).
+- Parallel image force evaluation (`[Main] parallel = true`). In 2.12 it required TBB and `-Dwith_parallel_neb=true`; see the note under Parallel evaluation.
 - IDPP (Image Dependent Pair Potential) path initialization.
 - Modular strategy pattern for tangent, projection, and spring force components.
 ```
@@ -156,13 +161,53 @@ zoom_ci_stability = 5
 ci_mmf = true
 ```
 
+### Solid-state band
+
+`solid_state = true` gives each interior image its own cell. The reactant
+and product cells stay fixed. A proper rotation puts every cell into lower
+triangular form before the band moves: the first lattice vector lies on x
+and the second lies in the xy plane. That removes the three rotations of
+the cell. The initial path for `initializer = linear` is a fractional
+interpolation of those oriented endpoints. `initializer = file` keeps the
+supplied frames after the same rotation.
+
+The spring and the perpendicular force are evaluated in the joint metric of
+{cite:t}`neb-sheppardGeneralizedSolidstateNudged2012`. `solid_state_weight`
+multiplies the cell block of the Jacobian. The default, 1, gives a cell
+strain the same weight as an atomic displacement.
+`solid_state_pressure` is a hydrostatic pressure in eV/Angstrom^3 added to
+that metric. Positive pressure favors a smaller cell. Zero leaves the
+potential-energy surface.
+
+The cell force is the stress tensor. A potential that implements the Cauchy
+stress, with the sign `sigma = (1/V) dE/dε` for the right strain
+`h <- h (I+ε)` at fixed fractional coordinates, is used directly. Any other
+potential is differentiated on the six lower strain components.
+
+`ci_mmf`, `zoom_neb`, `onsager_machlup`, `neb_doubly_nudged`, and
+`neb_elastic_band` are refused. The climbing image itself is the joint-space
+reflection of the force. Peak files still carry the atomic block of the tangent.
+
+```ini
+[Nudged Elastic Band]
+solid_state = true
+solid_state_weight = 1.0
+solid_state_pressure = 0.0
+```
+
 ### Parallel evaluation
 
-When compiled with TBB (`-Dwith_parallel_neb=true`) or nvc++
-(`-Dstdpar=cpu` / `-Dstdpar=gpu`), dirty-image force calls use
-`std::execution::par`. nvc++ does not need TBB; see {doc}`stdpar`.
-Without those flags, `parallel = true` still fans out with one
-`std::thread` per image. Python-based potentials fall back to serial
+```{versionchanged} 3.5.0
+The image pool is plain `std::thread`, so GCC and Clang builds need no TBB.
+`-Dwith_parallel_neb` is deprecated and has no effect.
+```
+
+With `parallel = true`, dirty-image force calls run on at most
+`std::thread::hardware_concurrency()` threads, each taking the next image,
+so a 20-image band on 8 cores keeps 8 threads busy. An error in one image is
+reported after the other images finish. No extra library is needed.
+nvc++ builds with `-Dstdpar=cpu` / `-Dstdpar=gpu` use
+`std::execution::par` instead; see {doc}`stdpar`. Python-based potentials fall back to serial
 evaluation unless they report thread-safe shared instances or per-image
 copies. Morse and other host potentials stay on the CPU.
 

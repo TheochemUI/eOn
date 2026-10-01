@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="teal" data-content_root="../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Hessian - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Prefactor" href="prefactor.html" /><link rel="prev" title="ARTn (Activation-Relaxation Technique nouveau)" href="artn.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Hessian - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Tunnelling splittings" href="instanton.html" /><link rel="prev" title="ARTn (Activation-Relaxation Technique nouveau)" href="artn.html" />
       <link rel="canonical" href="https://eondocs.org/user_guide/hessian.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
@@ -130,6 +130,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="lanczos.html">Lanczos</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="akmc.html">Adaptive kinetic Monte Carlo</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="saddle_search.html">Saddle search</a></li>
@@ -198,7 +199,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
@@ -216,6 +216,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.process_catalog.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_catalog</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 </ul>
@@ -224,6 +225,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.5.0/index.html">[v3.5.0] - 2026-10-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.5.0/release-notes.html">eOn 3.5.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
 </ul>
@@ -511,6 +516,20 @@ column; a successful run removes the checkpoint.</p>
 mass-weighted matrix. <code class="docutils literal notranslate"><span class="pre">[Main]</span> <span class="pre">quiet</span> <span class="pre">=</span> <span class="pre">true</span></code> suppresses the write log line only.
 Eigenvalues (squared frequencies) are obtained by diagonalizing the symmetrized
 matrix (ColMajor eigen solve in the client).</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">[Hessian]</span> <span class="pre">write_modes</span> <span class="pre">=</span> <span class="pre">true</span></code> (the default), <code class="docutils literal notranslate"><span class="pre">modes.con</span></code> holds one frame
+per eigenvalue, lowest first. Each frame is the input structure with the mode
+in its <code class="docutils literal notranslate"><span class="pre">displacements</span></code> section: the Cartesian displacement (x = q/\sqrt{m})
+of the mass-weighted eigenvector (q), scaled to unit norm, and zero on atoms
+outside the mobile set. The frame metadata carries <code class="docutils literal notranslate"><span class="pre">mode_eigenvalue</span></code> in
+eV/(Å² amu), <code class="docutils literal notranslate"><span class="pre">hbar_omega</span></code> in eV and <code class="docutils literal notranslate"><span class="pre">wavenumber</span></code> in cm⁻¹. The last two are
+negative for an imaginary mode. Any readcon reader gets the mode as an
+N x 3 array beside the positions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">readcon</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="n">readcon</span><span class="o">.</span><span class="n">read_con</span><span class="p">(</span><span class="s2">&quot;modes.con&quot;</span><span class="p">):</span>
+</span><span data-line="4">    <span class="nb">print</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;wavenumber&quot;</span><span class="p">],</span> <span class="n">frame</span><span class="o">.</span><span class="n">disp</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</span></pre></div>
+</div>
 </section>
 <section id="free-fixed-versus-active-phva">
 <h2>Free/fixed versus active (PHVA)<a class="headerlink" href="#free-fixed-versus-active-phva" title="Link to this heading">¶</a></h2>
@@ -558,10 +577,10 @@ rather than (3 N_\mathrm{free}):</p>
         <span>Previous</span><div class="title">ARTn (Activation-Relaxation Technique nouveau)</div></div>
     </a>
   </div><div class="navigation-next">
-    <a href="prefactor.html">
+    <a href="instanton.html">
       <div class="page-info">
         <span>Next</span>
-        <div class="title">Prefactor</div>
+        <div class="title">Tunnelling splittings</div>
       </div>
       <i class="i-lucide chevron-right"></i>
     </a>

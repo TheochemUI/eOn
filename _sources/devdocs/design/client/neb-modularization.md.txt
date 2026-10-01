@@ -74,9 +74,20 @@ using EigenmodeStrategy = std::variant<DimerStrategy, ImprovedDimerStrategy,
 The variant removes virtual dispatch overhead and gives value semantics. It
 is constructed by `buildEigenmodeStrategy()` based on configuration.
 
+## Solid-state band
+
+`solid_state` extends the band coordinate with the lower triangle of the
+cell. `SolidStateNEB` builds the joint displacement, the Jacobian, and the
+Cartesian step `delta_h = h F_cell / J`. `projectSolidState` applies the
+tangent and the spring in that metric. OCINEB and zoom are refused because
+their walks do not carry the cell.
+
 ## Parallel force evaluation
 
-When built with `-Deon_parallel_neb=true` (requires TBB), NEB evaluates image
-forces in parallel using `std::for_each` with `std::execution::par`. The
+With `[Main] parallel = true`, NEB evaluates image forces on a pool of at
+most `std::thread::hardware_concurrency()` threads (`forEachImage` in
+`NudgedElasticBand.cpp`); an nvc++ build with `-Dstdpar` uses
+`std::for_each(std::execution::par)` instead. The first exception from any
+image is rethrown once every thread has joined. The
 `Potential::isThreadSafe()` virtual method controls parallelism: Python-based
 potentials (ASE, CatLearn) return `false` and fall back to serial evaluation.

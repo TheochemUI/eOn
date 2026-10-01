@@ -279,14 +279,16 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('EigenmodeStrat
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">return</span> std::make_shared&lt;AtomicGPDimer&gt;(matter, params, <a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a>);</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="preprocessor">#else</span></div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="stringliteral">&quot;min_mode_method=gprdimer requires -Dwith_gprd=true (WITH_GPRD)&quot;</span>);</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  }</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>  <span class="keywordflow">return</span> std::make_shared&lt;ImprovedDimer&gt;(matter, params, <a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a>);</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>}</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="stringliteral">&quot;min_mode_method=gprdimer needs a -Dwith_gprd build with the private &quot;</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="stringliteral">&quot;gpr_optim repository checked out in subprojects/gpr_optim &quot;</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="stringliteral">&quot;(rsync -a ../gpr_optim/ subprojects/gpr_optim/, then reconfigure)&quot;</span>);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>  }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>  <span class="keywordflow">return</span> std::make_shared&lt;ImprovedDimer&gt;(matter, params, <a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>}</div>
 </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>} <span class="comment">// namespace eonc</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>} <span class="comment">// namespace eonc</span></div>
 <div class="ttc" id="aAtomicGPDimer_8h_html"><div class="ttname"><a href="AtomicGPDimer_8h.html">AtomicGPDimer.h</a></div></div>
 <div class="ttc" id="aDavidson_8h_html"><div class="ttname"><a href="Davidson_8h.html">Davidson.h</a></div></div>
 <div class="ttc" id="aDimer_8h_html"><div class="ttname"><a href="Dimer_8h.html">Dimer.h</a></div></div>
@@ -304,8 +306,8 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('EigenmodeStrat
 <div class="ttc" id="anamespaceeonc_1_1pot_html"><div class="ttname"><a href="namespaceeonc_1_1pot.html">eonc::pot</a></div><div class="ttdef"><b>Definition</b> <a href="ExternalCommand_8h_source.html#l00022">ExternalCommand.h:22</a></div></div>
 <div class="ttc" id="anamespaceeonc_html"><div class="ttname"><a href="namespaceeonc.html">eonc</a></div><div class="ttdoc">RAII resource manager for the ARTn C library with global synchronization.</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00023">ARTnSaddleSearch.cpp:23</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a53a942db7f595f4023b790db6ca2758a"><div class="ttname"><a href="namespaceeonc.html#a53a942db7f595f4023b790db6ca2758a">eonc::buildEigenmodeStrategy</a></div><div class="ttdeci">std::shared_ptr&lt; LowestEigenmode &gt; buildEigenmodeStrategy(std::shared_ptr&lt; Matter &gt; matter, const Parameters &amp;params, std::shared_ptr&lt; Potential &gt; pot)</div><div class="ttdef"><b>Definition</b> <a href="#l00028">EigenmodeStrategy.cpp:28</a></div></div>
-<div class="ttc" id="astructeonc_1_1dimer__options__t_html_ac7d1f257a7247d0a5f06c3a84732989d"><div class="ttname"><a href="structeonc_1_1dimer__options__t.html#ac7d1f257a7247d0a5f06c3a84732989d">eonc::dimer_options_t::improved</a></div><div class="ttdeci">bool improved</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00289">ParametersOptions.h:289</a></div></div>
-<div class="ttc" id="astructeonc_1_1saddle__search__options__t_html_a974675e2852265ebc10cea51346fff47"><div class="ttname"><a href="structeonc_1_1saddle__search__options__t.html#a974675e2852265ebc10cea51346fff47">eonc::saddle_search_options_t::minmode_method</a></div><div class="ttdeci">std::string minmode_method</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00185">ParametersOptions.h:185</a></div></div>
+<div class="ttc" id="astructeonc_1_1dimer__options__t_html_ac7d1f257a7247d0a5f06c3a84732989d"><div class="ttname"><a href="structeonc_1_1dimer__options__t.html#ac7d1f257a7247d0a5f06c3a84732989d">eonc::dimer_options_t::improved</a></div><div class="ttdeci">bool improved</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00302">ParametersOptions.h:302</a></div></div>
+<div class="ttc" id="astructeonc_1_1saddle__search__options__t_html_a974675e2852265ebc10cea51346fff47"><div class="ttname"><a href="structeonc_1_1saddle__search__options__t.html#a974675e2852265ebc10cea51346fff47">eonc::saddle_search_options_t::minmode_method</a></div><div class="ttdeci">std::string minmode_method</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00198">ParametersOptions.h:198</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->

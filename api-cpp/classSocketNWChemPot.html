@@ -267,6 +267,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a1c3d7d3852d7bffa52051833c1f018e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this potential's <a class="el" href="#acb7244cf6eebf04c3281f29bec72ef3a" title="The method called to compute forces and energy.">force()</a> can be called from multiple threads on the SAME instance.  <br /></td></tr>
 <tr class="memitem:ae3ebead7bad2a55f753afd9868cbe899" id="r_ae3ebead7bad2a55f753afd9868cbe899"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#ae3ebead7bad2a55f753afd9868cbe899">needsPerImageInstance</a> () const noexcept override</td></tr>
 <tr class="memdesc:ae3ebead7bad2a55f753afd9868cbe899"><td class="mdescLeft">&#160;</td><td class="mdescRight">One listening socket and one NWChem client.  <br /></td></tr>
+<tr class="memitem:a1706b2a804564c68e8ebec53075636f1" id="r_a1706b2a804564c68e8ebec53075636f1"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a1706b2a804564c68e8ebec53075636f1">computesStress</a> () const noexcept override</td></tr>
+<tr class="memdesc:a1706b2a804564c68e8ebec53075636f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when <a class="el" href="#acb7244cf6eebf04c3281f29bec72ef3a" title="The method called to compute forces and energy.">force()</a> leaves a Cauchy stress that <a class="el" href="#a8f5d875bdc7874566820f95b4d2ec761" title="Cauchy stress in eV/Angstrom^3.">cauchyStress()</a> can read until the next <a class="el" href="#acb7244cf6eebf04c3281f29bec72ef3a" title="The method called to compute forces and energy.">force()</a> on this instance.  <br /></td></tr>
+<tr class="memitem:a8f5d875bdc7874566820f95b4d2ec761" id="r_a8f5d875bdc7874566820f95b4d2ec761"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a>&#160;</td><td class="memItemRight"><a class="el" href="#a8f5d875bdc7874566820f95b4d2ec761">cauchyStress</a> () const override</td></tr>
+<tr class="memdesc:a8f5d875bdc7874566820f95b4d2ec761"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cauchy stress in eV/Angstrom^3.  <br /></td></tr>
 <tr class="inherit_header pub_methods_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
 <tr class="memitem:af81acd9a6775ff13fab861a51fb9ba95 inherit pub_methods_classeonc_1_1Potential" id="r_af81acd9a6775ff13fab861a51fb9ba95"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> a_ptype)</td></tr>
 <tr class="memdesc:af81acd9a6775ff13fab861a51fb9ba95 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Production default: construction-scope registry, else <a class="el" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b" title="Process-lifetime singleton.">PotRegistry::get()</a>.  <br /></td></tr>
@@ -292,8 +296,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a59bc4af33d113751d3804054b79a4872 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Independent instance that does not reload from disk.  <br /></td></tr>
 <tr class="memitem:a2d8781e3cbea888f88b7523c5d00bc43 inherit pub_methods_classeonc_1_1Potential" id="r_a2d8781e3cbea888f88b7523c5d00bc43"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a2d8781e3cbea888f88b7523c5d00bc43">supportsBatchEvaluation</a> () const noexcept</td></tr>
 <tr class="memdesc:a2d8781e3cbea888f88b7523c5d00bc43 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this potential supports batched evaluation of N systems in a single call.  <br /></td></tr>
+<tr class="memitem:a44b9979c8df31acc86cfbe87dec05d26 inherit pub_methods_classeonc_1_1Potential" id="r_a44b9979c8df31acc86cfbe87dec05d26"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a44b9979c8df31acc86cfbe87dec05d26">forceBatchOwned</a> (long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes, const long *owners)</td></tr>
+<tr class="memdesc:a44b9979c8df31acc86cfbe87dec05d26 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate forces for N systems in a single call.  <br /></td></tr>
 <tr class="memitem:aa66e1416134ff55639a6d20a34e3c1c1 inherit pub_methods_classeonc_1_1Potential" id="r_aa66e1416134ff55639a6d20a34e3c1c1"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#aa66e1416134ff55639a6d20a34e3c1c1">forceBatch</a> (long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes)</td></tr>
-<tr class="memdesc:aa66e1416134ff55639a6d20a34e3c1c1 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate forces for N systems in a single call.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -318,6 +323,8 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:ac929c876cd575b94deadd57d03643bb2" id="r_ac929c876cd575b94deadd57d03643bb2"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a> {-1}</td></tr>
 <tr class="memitem:a996912da8b9c93ff9d7780b8e2fefd0a" id="r_a996912da8b9c93ff9d7780b8e2fefd0a"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a996912da8b9c93ff9d7780b8e2fefd0a">conn_fd</a> {-1}</td></tr>
 <tr class="memitem:a3c4adc6cb487b8db1b8946f947516632" id="r_a3c4adc6cb487b8db1b8946f947516632"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a3c4adc6cb487b8db1b8946f947516632">is_connected</a> {false}</td></tr>
+<tr class="memitem:a971d1197e7f4468055f433e2f3517f19" id="r_a971d1197e7f4468055f433e2f3517f19"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a>&#160;</td><td class="memItemRight"><a class="el" href="#a971d1197e7f4468055f433e2f3517f19">stress_</a> {Matrix3d::Zero()}</td></tr>
+<tr class="memitem:a7fc6b689f1c7b6e9cb280131b36f64f2" id="r_a7fc6b689f1c7b6e9cb280131b36f64f2"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a7fc6b689f1c7b6e9cb280131b36f64f2">haveStress_</a> {false}</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-static-attribs" class="groupheader"><a id="pri-static-attribs" name="pri-static-attribs"></a>
 Static Private Attributes</h2></td></tr>
@@ -332,7 +339,7 @@ Additional Inherited Members</h2></td></tr>
 , <a class="el" href="classeonc_1_1Potential.html#a6a35357f6786a54c47eceedf6eab2056a7c188dee6d54a1cb92a7c95534b34e93">NeedsWorkingDirectory</a> = 1u &lt;&lt; 1
 , <a class="el" href="classeonc_1_1Potential.html#a6a35357f6786a54c47eceedf6eab2056aacfc9fac11fea7710fbe22b6ba4b3a9e">Subprocess</a> = 1u &lt;&lt; 2
  }</td></tr>
-<tr class="memdesc:a6a35357f6786a54c47eceedf6eab2056"><td class="mdescLeft">&#160;</td><td class="mdescRight">How the pot is executed (eOn-12x7). Combine with bitwise or.  <a href="classeonc_1_1Potential.html#a6a35357f6786a54c47eceedf6eab2056">More...</a><br /></td></tr>
+<tr class="memdesc:a6a35357f6786a54c47eceedf6eab2056"><td class="mdescLeft">&#160;</td><td class="mdescRight">How the pot is executed. Combine with bitwise or.  <a href="classeonc_1_1Potential.html#a6a35357f6786a54c47eceedf6eab2056">More...</a><br /></td></tr>
 <tr class="inherit_header pub_attribs_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
 <tr class="memitem:a2ae7cca425e3d69d2825c58d1c7704eb inherit pub_attribs_classeonc_1_1Potential" id="r_a2ae7cca425e3d69d2825c58d1c7704eb"><td class="memItemLeft">std::atomic&lt; size_t &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">forceCallCounter</a></td></tr>
 <tr class="inherit_header pro_attribs_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
@@ -402,14 +409,14 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">   56</span>}</div>
 <div class="ttc" id="aEonLogger_8h_html_a4cf9b473cf6a1d850b3725fca6805f86"><div class="ttname"><a href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a></div><div class="ttdeci">#define EONC_LOG_ERROR(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00261">EonLogger.h:261</a></div></div>
 <div class="ttc" id="aEonLogger_8h_html_afba240899b90f3996875577cc095dc00"><div class="ttname"><a href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a></div><div class="ttdeci">#define EONC_LOG_INFO(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00249">EonLogger.h:249</a></div></div>
-<div class="ttc" id="aclassSocketNWChemPot_html_a01111cf49932d5d5e82840d3682e5eb2"><div class="ttname"><a href="#a01111cf49932d5d5e82840d3682e5eb2">SocketNWChemPot::setup_server</a></div><div class="ttdeci">void setup_server()</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8cpp_source.html#l00266">SocketNWChemPot.cpp:266</a></div></div>
-<div class="ttc" id="aclassSocketNWChemPot_html_a0e5882a48a022834731b35b6e58242f3"><div class="ttname"><a href="#a0e5882a48a022834731b35b6e58242f3">SocketNWChemPot::unix_socket_basename</a></div><div class="ttdeci">std::string unix_socket_basename</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00091">SocketNWChemPot.h:91</a></div></div>
-<div class="ttc" id="aclassSocketNWChemPot_html_a34a3aac8f7efda2afbaeb53e2a065d5d"><div class="ttname"><a href="#a34a3aac8f7efda2afbaeb53e2a065d5d">SocketNWChemPot::port</a></div><div class="ttdeci">int port</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00094">SocketNWChemPot.h:94</a></div></div>
-<div class="ttc" id="aclassSocketNWChemPot_html_a618578cfee4b63a3aa54d5d341224c6f"><div class="ttname"><a href="#a618578cfee4b63a3aa54d5d341224c6f">SocketNWChemPot::server_address</a></div><div class="ttdeci">std::string server_address</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00089">SocketNWChemPot.h:89</a></div></div>
-<div class="ttc" id="aclassSocketNWChemPot_html_a84411a28ac06ad1eb79aff65735e7c73"><div class="ttname"><a href="#a84411a28ac06ad1eb79aff65735e7c73">SocketNWChemPot::make_template_input</a></div><div class="ttdeci">bool make_template_input</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00096">SocketNWChemPot.h:96</a></div></div>
-<div class="ttc" id="aclassSocketNWChemPot_html_ab64177e411e7c5903a7b36eac2da7d14"><div class="ttname"><a href="#ab64177e411e7c5903a7b36eac2da7d14">SocketNWChemPot::nwchem_settings</a></div><div class="ttdeci">std::string nwchem_settings</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00093">SocketNWChemPot.h:93</a></div></div>
-<div class="ttc" id="aclassSocketNWChemPot_html_ac8cce3d488b95fd9e928f644f1291914"><div class="ttname"><a href="#ac8cce3d488b95fd9e928f644f1291914">SocketNWChemPot::unix_socket_mode</a></div><div class="ttdeci">bool unix_socket_mode</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00087">SocketNWChemPot.h:87</a></div></div>
-<div class="ttc" id="aclassSocketNWChemPot_html_af9d6251fef6af4db9dba9b435aa99523"><div class="ttname"><a href="#af9d6251fef6af4db9dba9b435aa99523">SocketNWChemPot::mem_in_gb</a></div><div class="ttdeci">int mem_in_gb</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00094">SocketNWChemPot.h:94</a></div></div>
+<div class="ttc" id="aclassSocketNWChemPot_html_a01111cf49932d5d5e82840d3682e5eb2"><div class="ttname"><a href="#a01111cf49932d5d5e82840d3682e5eb2">SocketNWChemPot::setup_server</a></div><div class="ttdeci">void setup_server()</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8cpp_source.html#l00284">SocketNWChemPot.cpp:284</a></div></div>
+<div class="ttc" id="aclassSocketNWChemPot_html_a0e5882a48a022834731b35b6e58242f3"><div class="ttname"><a href="#a0e5882a48a022834731b35b6e58242f3">SocketNWChemPot::unix_socket_basename</a></div><div class="ttdeci">std::string unix_socket_basename</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00097">SocketNWChemPot.h:97</a></div></div>
+<div class="ttc" id="aclassSocketNWChemPot_html_a34a3aac8f7efda2afbaeb53e2a065d5d"><div class="ttname"><a href="#a34a3aac8f7efda2afbaeb53e2a065d5d">SocketNWChemPot::port</a></div><div class="ttdeci">int port</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00100">SocketNWChemPot.h:100</a></div></div>
+<div class="ttc" id="aclassSocketNWChemPot_html_a618578cfee4b63a3aa54d5d341224c6f"><div class="ttname"><a href="#a618578cfee4b63a3aa54d5d341224c6f">SocketNWChemPot::server_address</a></div><div class="ttdeci">std::string server_address</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00095">SocketNWChemPot.h:95</a></div></div>
+<div class="ttc" id="aclassSocketNWChemPot_html_a84411a28ac06ad1eb79aff65735e7c73"><div class="ttname"><a href="#a84411a28ac06ad1eb79aff65735e7c73">SocketNWChemPot::make_template_input</a></div><div class="ttdeci">bool make_template_input</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00102">SocketNWChemPot.h:102</a></div></div>
+<div class="ttc" id="aclassSocketNWChemPot_html_ab64177e411e7c5903a7b36eac2da7d14"><div class="ttname"><a href="#ab64177e411e7c5903a7b36eac2da7d14">SocketNWChemPot::nwchem_settings</a></div><div class="ttdeci">std::string nwchem_settings</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00099">SocketNWChemPot.h:99</a></div></div>
+<div class="ttc" id="aclassSocketNWChemPot_html_ac8cce3d488b95fd9e928f644f1291914"><div class="ttname"><a href="#ac8cce3d488b95fd9e928f644f1291914">SocketNWChemPot::unix_socket_mode</a></div><div class="ttdeci">bool unix_socket_mode</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00093">SocketNWChemPot.h:93</a></div></div>
+<div class="ttc" id="aclassSocketNWChemPot_html_af9d6251fef6af4db9dba9b435aa99523"><div class="ttname"><a href="#af9d6251fef6af4db9dba9b435aa99523">SocketNWChemPot::mem_in_gb</a></div><div class="ttdeci">int mem_in_gb</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00100">SocketNWChemPot.h:100</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Parameters_html_ac0ead2105f866c193ed34a49fea40404"><div class="ttname"><a href="classeonc_1_1Parameters.html#ac0ead2105f866c193ed34a49fea40404">eonc::Parameters::socket_nwchem_options</a></div><div class="ttdeci">const socket_nwchem_options_t &amp; socket_nwchem_options() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00108">ParametersAccess.cpp:108</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2ae0fe01490c362129ccb544c5c3dc57f1"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ae0fe01490c362129ccb544c5c3dc57f1">eonc::PotType::SocketNWChem</a></div><div class="ttdeci">@ SocketNWChem</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00069">BaseStructures.h:69</a></div></div>
 <div class="ttc" id="astructeonc_1_1socket__nwchem__options__t_html_a0510fe84ee3845cc9dc549e2731df619"><div class="ttname"><a href="structeonc_1_1socket__nwchem__options__t.html#a0510fe84ee3845cc9dc549e2731df619">eonc::socket_nwchem_options_t::nwchem_settings</a></div><div class="ttdeci">std::string nwchem_settings</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00129">ParametersOptions.h:129</a></div></div>
@@ -463,10 +470,10 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">   72</span>    ::unlink(<a class="code hl_variable" href="#a618578cfee4b63a3aa54d5d341224c6f">server_address</a>.c_str());</div>
 <div class="line"><span class="lineno">   73</span>  }</div>
 <div class="line"><span class="lineno">   74</span>}</div>
-<div class="ttc" id="aclassSocketNWChemPot_html_a1fbb4f767a55c45691b28ab312db6cfa"><div class="ttname"><a href="#a1fbb4f767a55c45691b28ab312db6cfa">SocketNWChemPot::send_header</a></div><div class="ttdeci">void send_header(const char *msg)</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8cpp_source.html#l00342">SocketNWChemPot.cpp:342</a></div></div>
-<div class="ttc" id="aclassSocketNWChemPot_html_a3c4adc6cb487b8db1b8946f947516632"><div class="ttname"><a href="#a3c4adc6cb487b8db1b8946f947516632">SocketNWChemPot::is_connected</a></div><div class="ttdeci">bool is_connected</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00101">SocketNWChemPot.h:101</a></div></div>
-<div class="ttc" id="aclassSocketNWChemPot_html_a996912da8b9c93ff9d7780b8e2fefd0a"><div class="ttname"><a href="#a996912da8b9c93ff9d7780b8e2fefd0a">SocketNWChemPot::conn_fd</a></div><div class="ttdeci">int conn_fd</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00100">SocketNWChemPot.h:100</a></div></div>
-<div class="ttc" id="aclassSocketNWChemPot_html_ac929c876cd575b94deadd57d03643bb2"><div class="ttname"><a href="#ac929c876cd575b94deadd57d03643bb2">SocketNWChemPot::listen_fd</a></div><div class="ttdeci">int listen_fd</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00099">SocketNWChemPot.h:99</a></div></div>
+<div class="ttc" id="aclassSocketNWChemPot_html_a1fbb4f767a55c45691b28ab312db6cfa"><div class="ttname"><a href="#a1fbb4f767a55c45691b28ab312db6cfa">SocketNWChemPot::send_header</a></div><div class="ttdeci">void send_header(const char *msg)</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8cpp_source.html#l00360">SocketNWChemPot.cpp:360</a></div></div>
+<div class="ttc" id="aclassSocketNWChemPot_html_a3c4adc6cb487b8db1b8946f947516632"><div class="ttname"><a href="#a3c4adc6cb487b8db1b8946f947516632">SocketNWChemPot::is_connected</a></div><div class="ttdeci">bool is_connected</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00107">SocketNWChemPot.h:107</a></div></div>
+<div class="ttc" id="aclassSocketNWChemPot_html_a996912da8b9c93ff9d7780b8e2fefd0a"><div class="ttname"><a href="#a996912da8b9c93ff9d7780b8e2fefd0a">SocketNWChemPot::conn_fd</a></div><div class="ttdeci">int conn_fd</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00106">SocketNWChemPot.h:106</a></div></div>
+<div class="ttc" id="aclassSocketNWChemPot_html_ac929c876cd575b94deadd57d03643bb2"><div class="ttname"><a href="#ac929c876cd575b94deadd57d03643bb2">SocketNWChemPot::listen_fd</a></div><div class="ttdeci">int listen_fd</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00105">SocketNWChemPot.h:105</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -494,15 +501,84 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8cpp_source.html#l00325">325</a> of file <a class="el" href="SocketNWChemPot_8cpp_source.html">SocketNWChemPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  325</span>                                        {</div>
-<div class="line"><span class="lineno">  326</span>  <a class="code hl_variable" href="#a996912da8b9c93ff9d7780b8e2fefd0a">conn_fd</a> = ::accept(<a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a>, <span class="keyword">nullptr</span>, <span class="keyword">nullptr</span>);</div>
-<div class="line"><span class="lineno">  327</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a996912da8b9c93ff9d7780b8e2fefd0a">conn_fd</a> &lt; 0) {</div>
-<div class="line"><span class="lineno">  328</span>    <span class="keywordflow">throw</span> std::runtime_error(std::format(</div>
-<div class="line"><span class="lineno">  329</span>        <span class="stringliteral">&quot;Failed to accept client connection: {}&quot;</span>, std::strerror(errno)));</div>
-<div class="line"><span class="lineno">  330</span>  }</div>
-<div class="line"><span class="lineno">  331</span>  <a class="code hl_variable" href="#a3c4adc6cb487b8db1b8946f947516632">is_connected</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  332</span>}</div>
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8cpp_source.html#l00343">343</a> of file <a class="el" href="SocketNWChemPot_8cpp_source.html">SocketNWChemPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  343</span>                                        {</div>
+<div class="line"><span class="lineno">  344</span>  <a class="code hl_variable" href="#a996912da8b9c93ff9d7780b8e2fefd0a">conn_fd</a> = ::accept(<a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a>, <span class="keyword">nullptr</span>, <span class="keyword">nullptr</span>);</div>
+<div class="line"><span class="lineno">  345</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a996912da8b9c93ff9d7780b8e2fefd0a">conn_fd</a> &lt; 0) {</div>
+<div class="line"><span class="lineno">  346</span>    <span class="keywordflow">throw</span> std::runtime_error(std::format(</div>
+<div class="line"><span class="lineno">  347</span>        <span class="stringliteral">&quot;Failed to accept client connection: {}&quot;</span>, std::strerror(errno)));</div>
+<div class="line"><span class="lineno">  348</span>  }</div>
+<div class="line"><span class="lineno">  349</span>  <a class="code hl_variable" href="#a3c4adc6cb487b8db1b8946f947516632">is_connected</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  350</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8f5d875bdc7874566820f95b4d2ec761" name="a8f5d875bdc7874566820f95b4d2ec761"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f5d875bdc7874566820f95b4d2ec761">&#9670;&#160;</a></span>cauchyStress()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> SocketNWChemPot::cauchyStress </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cauchy stress in eV/Angstrom^3. </p>
+<p>sigma = (1/V) dE/dε for the right strain h &lt;- h (I+ε) at fixed fractional coordinates. </p>
+
+<p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#a98c3cc78cc840b21cb178a4d625437f2">eonc::Potential</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00077">77</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   77</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a971d1197e7f4468055f433e2f3517f19">stress_</a>; }</div>
+<div class="ttc" id="aclassSocketNWChemPot_html_a971d1197e7f4468055f433e2f3517f19"><div class="ttname"><a href="#a971d1197e7f4468055f433e2f3517f19">SocketNWChemPot::stress_</a></div><div class="ttdeci">Matrix3d stress_</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00115">SocketNWChemPot.h:115</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a1706b2a804564c68e8ebec53075636f1" name="a1706b2a804564c68e8ebec53075636f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1706b2a804564c68e8ebec53075636f1">&#9670;&#160;</a></span>computesStress()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool SocketNWChemPot::computesStress </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when <a class="el" href="#acb7244cf6eebf04c3281f29bec72ef3a" title="The method called to compute forces and energy.">force()</a> leaves a Cauchy stress that <a class="el" href="#a8f5d875bdc7874566820f95b4d2ec761" title="Cauchy stress in eV/Angstrom^3.">cauchyStress()</a> can read until the next <a class="el" href="#acb7244cf6eebf04c3281f29bec72ef3a" title="The method called to compute forces and energy.">force()</a> on this instance. </p>
+
+<p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#a12bba5921cf3936f25d13563ac49f90f">eonc::Potential</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00073">73</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   73</span>                                                              {</div>
+<div class="line"><span class="lineno">   74</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a7fc6b689f1c7b6e9cb280131b36f64f2">haveStress_</a>;</div>
+<div class="line"><span class="lineno">   75</span>  }</div>
+<div class="ttc" id="aclassSocketNWChemPot_html_a7fc6b689f1c7b6e9cb280131b36f64f2"><div class="ttname"><a href="#a7fc6b689f1c7b6e9cb280131b36f64f2">SocketNWChemPot::haveStress_</a></div><div class="ttdeci">bool haveStress_</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00116">SocketNWChemPot.h:116</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -529,14 +605,14 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8cpp_source.html#l00334">334</a> of file <a class="el" href="SocketNWChemPot_8cpp_source.html">SocketNWChemPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  334</span>                                      {</div>
-<div class="line"><span class="lineno">  335</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a996912da8b9c93ff9d7780b8e2fefd0a">conn_fd</a> &gt;= 0) {</div>
-<div class="line"><span class="lineno">  336</span>    ::close(<a class="code hl_variable" href="#a996912da8b9c93ff9d7780b8e2fefd0a">conn_fd</a>);</div>
-<div class="line"><span class="lineno">  337</span>    <a class="code hl_variable" href="#a996912da8b9c93ff9d7780b8e2fefd0a">conn_fd</a> = -1;</div>
-<div class="line"><span class="lineno">  338</span>  }</div>
-<div class="line"><span class="lineno">  339</span>  <a class="code hl_variable" href="#a3c4adc6cb487b8db1b8946f947516632">is_connected</a> = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  340</span>}</div>
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8cpp_source.html#l00352">352</a> of file <a class="el" href="SocketNWChemPot_8cpp_source.html">SocketNWChemPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  352</span>                                      {</div>
+<div class="line"><span class="lineno">  353</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a996912da8b9c93ff9d7780b8e2fefd0a">conn_fd</a> &gt;= 0) {</div>
+<div class="line"><span class="lineno">  354</span>    ::close(<a class="code hl_variable" href="#a996912da8b9c93ff9d7780b8e2fefd0a">conn_fd</a>);</div>
+<div class="line"><span class="lineno">  355</span>    <a class="code hl_variable" href="#a996912da8b9c93ff9d7780b8e2fefd0a">conn_fd</a> = -1;</div>
+<div class="line"><span class="lineno">  356</span>  }</div>
+<div class="line"><span class="lineno">  357</span>  <a class="code hl_variable" href="#a3c4adc6cb487b8db1b8946f947516632">is_connected</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  358</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -624,7 +700,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">  123</span>  }</div>
 <div class="line"><span class="lineno">  124</span>  <a class="code hl_function" href="#af427d30239468667d8373b61bea65477">forceOnce</a>(N, R, atomicNrs, F, U, variance, box);</div>
 <div class="line"><span class="lineno">  125</span>}</div>
-<div class="ttc" id="aclassSocketNWChemPot_html_aceab721040534b74e7ba44b180715089"><div class="ttname"><a href="#aceab721040534b74e7ba44b180715089">SocketNWChemPot::drop_connection</a></div><div class="ttdeci">void drop_connection()</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8cpp_source.html#l00334">SocketNWChemPot.cpp:334</a></div></div>
+<div class="ttc" id="aclassSocketNWChemPot_html_aceab721040534b74e7ba44b180715089"><div class="ttname"><a href="#aceab721040534b74e7ba44b180715089">SocketNWChemPot::drop_connection</a></div><div class="ttdeci">void drop_connection()</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8cpp_source.html#l00352">SocketNWChemPot.cpp:352</a></div></div>
 <div class="ttc" id="aclassSocketNWChemPot_html_af427d30239468667d8373b61bea65477"><div class="ttname"><a href="#af427d30239468667d8373b61bea65477">SocketNWChemPot::forceOnce</a></div><div class="ttdeci">void forceOnce(long N, const double *R, const int *atomicNrs, double *F, double *U, double *variance, const double *box)</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8cpp_source.html#l00127">SocketNWChemPot.cpp:127</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -787,28 +863,46 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">  231</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Atom count mismatch from NWChem&quot;</span>);</div>
 <div class="line"><span class="lineno">  232</span>  <a class="code hl_function" href="#a292c257368501d85ff6196bda2f69d42">recv_exact</a>(forces_ha_bohr.data(), forces_ha_bohr.size() * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
 <div class="line"><span class="lineno">  233</span>  <a class="code hl_function" href="#a292c257368501d85ff6196bda2f69d42">recv_exact</a>(virial_ha.data(), virial_ha.size() * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
-<div class="line"><span class="lineno">  234</span>  <a class="code hl_function" href="#a292c257368501d85ff6196bda2f69d42">recv_exact</a>(&amp;extra_len, <span class="keyword">sizeof</span>(extra_len));</div>
-<div class="line"><span class="lineno">  235</span>  <span class="keywordflow">if</span> (extra_len &gt; 0) {</div>
-<div class="line"><span class="lineno">  236</span>    std::vector&lt;char&gt; extra_buf(extra_len);</div>
-<div class="line"><span class="lineno">  237</span>    <a class="code hl_function" href="#a292c257368501d85ff6196bda2f69d42">recv_exact</a>(extra_buf.data(), extra_len);</div>
-<div class="line"><span class="lineno">  238</span>  }</div>
-<div class="line"><span class="lineno">  239</span> </div>
-<div class="line"><span class="lineno">  240</span>  <span class="comment">// Convert results back to eOn units (eV and Angstrom)</span></div>
-<div class="line"><span class="lineno">  241</span>  *U = energy_ha * <a class="code hl_variable" href="#a8114bf311fc165c49690f46be6c1204d">HARTREE_IN_EV</a>;</div>
-<div class="line"><span class="lineno">  242</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; N * 3; ++i) {</div>
-<div class="line"><span class="lineno">  243</span>    F[i] = forces_ha_bohr[i] * (<a class="code hl_variable" href="#a8114bf311fc165c49690f46be6c1204d">HARTREE_IN_EV</a> / <a class="code hl_variable" href="#a6cb616db95ee89e4151324a390b05475">BOHR_IN_ANGSTROM</a>);</div>
-<div class="line"><span class="lineno">  244</span>  }</div>
-<div class="line"><span class="lineno">  245</span>  <span class="keywordflow">if</span> (variance != <span class="keyword">nullptr</span>) {</div>
-<div class="line"><span class="lineno">  246</span>    *variance = 0.0;</div>
-<div class="line"><span class="lineno">  247</span>  }</div>
-<div class="line"><span class="lineno">  248</span>}</div>
-<div class="ttc" id="aclassSocketNWChemPot_html_a292c257368501d85ff6196bda2f69d42"><div class="ttname"><a href="#a292c257368501d85ff6196bda2f69d42">SocketNWChemPot::recv_exact</a></div><div class="ttdeci">void recv_exact(void *buffer, size_t n_bytes)</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8cpp_source.html#l00372">SocketNWChemPot.cpp:372</a></div></div>
-<div class="ttc" id="aclassSocketNWChemPot_html_a4726d403fca9b6450ebe6710c7a8591d"><div class="ttname"><a href="#a4726d403fca9b6450ebe6710c7a8591d">SocketNWChemPot::send_exact</a></div><div class="ttdeci">void send_exact(const void *buffer, size_t n_bytes)</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8cpp_source.html#l00359">SocketNWChemPot.cpp:359</a></div></div>
-<div class="ttc" id="aclassSocketNWChemPot_html_a6cb616db95ee89e4151324a390b05475"><div class="ttname"><a href="#a6cb616db95ee89e4151324a390b05475">SocketNWChemPot::BOHR_IN_ANGSTROM</a></div><div class="ttdeci">static constexpr double BOHR_IN_ANGSTROM</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00106">SocketNWChemPot.h:106</a></div></div>
-<div class="ttc" id="aclassSocketNWChemPot_html_a7ecdffb2e62b8558799819acad409d93"><div class="ttname"><a href="#a7ecdffb2e62b8558799819acad409d93">SocketNWChemPot::recv_header</a></div><div class="ttdeci">void recv_header(char *buffer)</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8cpp_source.html#l00349">SocketNWChemPot.cpp:349</a></div></div>
-<div class="ttc" id="aclassSocketNWChemPot_html_a8114bf311fc165c49690f46be6c1204d"><div class="ttname"><a href="#a8114bf311fc165c49690f46be6c1204d">SocketNWChemPot::HARTREE_IN_EV</a></div><div class="ttdeci">static constexpr double HARTREE_IN_EV</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00107">SocketNWChemPot.h:107</a></div></div>
+<div class="line"><span class="lineno">  234</span>  <span class="comment">// i-PI virial is in Hartree and is positive when the system pushes</span></div>
+<div class="line"><span class="lineno">  235</span>  <span class="comment">// outward, so sigma = (1/V) dE/dε = -virial / V. The buffer is</span></div>
+<div class="line"><span class="lineno">  236</span>  <span class="comment">// symmetric, so row-major and column-major agree after averaging.</span></div>
+<div class="line"><span class="lineno">  237</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> volume =</div>
+<div class="line"><span class="lineno">  238</span>      box == <span class="keyword">nullptr</span> ? 0.0 : std::abs(Matrix3d::Map(box).determinant());</div>
+<div class="line"><span class="lineno">  239</span>  <a class="code hl_variable" href="#a971d1197e7f4468055f433e2f3517f19">stress_</a>.setZero();</div>
+<div class="line"><span class="lineno">  240</span>  <a class="code hl_variable" href="#a7fc6b689f1c7b6e9cb280131b36f64f2">haveStress_</a> = volume &gt; 0.0;</div>
+<div class="line"><span class="lineno">  241</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a7fc6b689f1c7b6e9cb280131b36f64f2">haveStress_</a>) {</div>
+<div class="line"><span class="lineno">  242</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> scale = -<a class="code hl_variable" href="#a8114bf311fc165c49690f46be6c1204d">HARTREE_IN_EV</a> / volume;</div>
+<div class="line"><span class="lineno">  243</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> row = 0; row &lt; 3; ++row) {</div>
+<div class="line"><span class="lineno">  244</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> col = 0; col &lt; 3; ++col) {</div>
+<div class="line"><span class="lineno">  245</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> vij =</div>
+<div class="line"><span class="lineno">  246</span>            0.5 * (virial_ha[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(row * 3 + col)] +</div>
+<div class="line"><span class="lineno">  247</span>                   virial_ha[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(col * 3 + row)]);</div>
+<div class="line"><span class="lineno">  248</span>        <a class="code hl_variable" href="#a971d1197e7f4468055f433e2f3517f19">stress_</a>(row, col) = vij * scale;</div>
+<div class="line"><span class="lineno">  249</span>      }</div>
+<div class="line"><span class="lineno">  250</span>    }</div>
+<div class="line"><span class="lineno">  251</span>  }</div>
+<div class="line"><span class="lineno">  252</span>  <a class="code hl_function" href="#a292c257368501d85ff6196bda2f69d42">recv_exact</a>(&amp;extra_len, <span class="keyword">sizeof</span>(extra_len));</div>
+<div class="line"><span class="lineno">  253</span>  <span class="keywordflow">if</span> (extra_len &gt; 0) {</div>
+<div class="line"><span class="lineno">  254</span>    std::vector&lt;char&gt; extra_buf(extra_len);</div>
+<div class="line"><span class="lineno">  255</span>    <a class="code hl_function" href="#a292c257368501d85ff6196bda2f69d42">recv_exact</a>(extra_buf.data(), extra_len);</div>
+<div class="line"><span class="lineno">  256</span>  }</div>
+<div class="line"><span class="lineno">  257</span> </div>
+<div class="line"><span class="lineno">  258</span>  <span class="comment">// Convert results back to eOn units (eV and Angstrom)</span></div>
+<div class="line"><span class="lineno">  259</span>  *U = energy_ha * <a class="code hl_variable" href="#a8114bf311fc165c49690f46be6c1204d">HARTREE_IN_EV</a>;</div>
+<div class="line"><span class="lineno">  260</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; N * 3; ++i) {</div>
+<div class="line"><span class="lineno">  261</span>    F[i] = forces_ha_bohr[i] * (<a class="code hl_variable" href="#a8114bf311fc165c49690f46be6c1204d">HARTREE_IN_EV</a> / <a class="code hl_variable" href="#a6cb616db95ee89e4151324a390b05475">BOHR_IN_ANGSTROM</a>);</div>
+<div class="line"><span class="lineno">  262</span>  }</div>
+<div class="line"><span class="lineno">  263</span>  <span class="keywordflow">if</span> (variance != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  264</span>    *variance = 0.0;</div>
+<div class="line"><span class="lineno">  265</span>  }</div>
+<div class="line"><span class="lineno">  266</span>}</div>
+<div class="ttc" id="aclassSocketNWChemPot_html_a292c257368501d85ff6196bda2f69d42"><div class="ttname"><a href="#a292c257368501d85ff6196bda2f69d42">SocketNWChemPot::recv_exact</a></div><div class="ttdeci">void recv_exact(void *buffer, size_t n_bytes)</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8cpp_source.html#l00390">SocketNWChemPot.cpp:390</a></div></div>
+<div class="ttc" id="aclassSocketNWChemPot_html_a4726d403fca9b6450ebe6710c7a8591d"><div class="ttname"><a href="#a4726d403fca9b6450ebe6710c7a8591d">SocketNWChemPot::send_exact</a></div><div class="ttdeci">void send_exact(const void *buffer, size_t n_bytes)</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8cpp_source.html#l00377">SocketNWChemPot.cpp:377</a></div></div>
+<div class="ttc" id="aclassSocketNWChemPot_html_a6cb616db95ee89e4151324a390b05475"><div class="ttname"><a href="#a6cb616db95ee89e4151324a390b05475">SocketNWChemPot::BOHR_IN_ANGSTROM</a></div><div class="ttdeci">static constexpr double BOHR_IN_ANGSTROM</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00112">SocketNWChemPot.h:112</a></div></div>
+<div class="ttc" id="aclassSocketNWChemPot_html_a7ecdffb2e62b8558799819acad409d93"><div class="ttname"><a href="#a7ecdffb2e62b8558799819acad409d93">SocketNWChemPot::recv_header</a></div><div class="ttdeci">void recv_header(char *buffer)</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8cpp_source.html#l00367">SocketNWChemPot.cpp:367</a></div></div>
+<div class="ttc" id="aclassSocketNWChemPot_html_a8114bf311fc165c49690f46be6c1204d"><div class="ttname"><a href="#a8114bf311fc165c49690f46be6c1204d">SocketNWChemPot::HARTREE_IN_EV</a></div><div class="ttdeci">static constexpr double HARTREE_IN_EV</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00113">SocketNWChemPot.h:113</a></div></div>
 <div class="ttc" id="aclassSocketNWChemPot_html_ab00cf9de9faf299a0f13dcba0d1655d6"><div class="ttname"><a href="#ab00cf9de9faf299a0f13dcba0d1655d6">SocketNWChemPot::write_nwchem_template</a></div><div class="ttdeci">void write_nwchem_template(const std::string &amp;filename, long N, const std::vector&lt; std::string &gt; &amp;atom_symbols)</div><div class="ttdoc">Generates an NWChem input file (.nwi) configured to connect to this server.</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8cpp_source.html#l00080">SocketNWChemPot.cpp:80</a></div></div>
-<div class="ttc" id="aclassSocketNWChemPot_html_adbdd7fd9ee94aa095ac8ebeab8d95a23"><div class="ttname"><a href="#adbdd7fd9ee94aa095ac8ebeab8d95a23">SocketNWChemPot::accept_connection</a></div><div class="ttdeci">void accept_connection()</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8cpp_source.html#l00325">SocketNWChemPot.cpp:325</a></div></div>
+<div class="ttc" id="aclassSocketNWChemPot_html_adbdd7fd9ee94aa095ac8ebeab8d95a23"><div class="ttname"><a href="#adbdd7fd9ee94aa095ac8ebeab8d95a23">SocketNWChemPot::accept_connection</a></div><div class="ttdeci">void accept_connection()</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8cpp_source.html#l00343">SocketNWChemPot.cpp:343</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -907,19 +1001,19 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8cpp_source.html#l00372">372</a> of file <a class="el" href="SocketNWChemPot_8cpp_source.html">SocketNWChemPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  372</span>                                                             {</div>
-<div class="line"><span class="lineno">  373</span>  <span class="keywordtype">size_t</span> recvd = 0;</div>
-<div class="line"><span class="lineno">  374</span>  <span class="keywordflow">while</span> (recvd &lt; n_bytes) {</div>
-<div class="line"><span class="lineno">  375</span>    ssize_t n = ::recv(<a class="code hl_variable" href="#a996912da8b9c93ff9d7780b8e2fefd0a">conn_fd</a>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(buffer) + recvd,</div>
-<div class="line"><span class="lineno">  376</span>                       n_bytes - recvd, 0);</div>
-<div class="line"><span class="lineno">  377</span>    <span class="keywordflow">if</span> (n &lt;= 0) {</div>
-<div class="line"><span class="lineno">  378</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  379</span>          <span class="stringliteral">&quot;recv_exact failed: connection closed or error.&quot;</span>);</div>
-<div class="line"><span class="lineno">  380</span>    }</div>
-<div class="line"><span class="lineno">  381</span>    recvd += n;</div>
-<div class="line"><span class="lineno">  382</span>  }</div>
-<div class="line"><span class="lineno">  383</span>}</div>
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8cpp_source.html#l00390">390</a> of file <a class="el" href="SocketNWChemPot_8cpp_source.html">SocketNWChemPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  390</span>                                                             {</div>
+<div class="line"><span class="lineno">  391</span>  <span class="keywordtype">size_t</span> recvd = 0;</div>
+<div class="line"><span class="lineno">  392</span>  <span class="keywordflow">while</span> (recvd &lt; n_bytes) {</div>
+<div class="line"><span class="lineno">  393</span>    ssize_t n = ::recv(<a class="code hl_variable" href="#a996912da8b9c93ff9d7780b8e2fefd0a">conn_fd</a>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(buffer) + recvd,</div>
+<div class="line"><span class="lineno">  394</span>                       n_bytes - recvd, 0);</div>
+<div class="line"><span class="lineno">  395</span>    <span class="keywordflow">if</span> (n &lt;= 0) {</div>
+<div class="line"><span class="lineno">  396</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  397</span>          <span class="stringliteral">&quot;recv_exact failed: connection closed or error.&quot;</span>);</div>
+<div class="line"><span class="lineno">  398</span>    }</div>
+<div class="line"><span class="lineno">  399</span>    recvd += n;</div>
+<div class="line"><span class="lineno">  400</span>  }</div>
+<div class="line"><span class="lineno">  401</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -946,17 +1040,17 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8cpp_source.html#l00349">349</a> of file <a class="el" href="SocketNWChemPot_8cpp_source.html">SocketNWChemPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  349</span>                                              {</div>
-<div class="line"><span class="lineno">  350</span>  <a class="code hl_function" href="#a292c257368501d85ff6196bda2f69d42">recv_exact</a>(buffer, <a class="code hl_variable" href="#a15efb46e24d07a4737cfc3a1c8364f7f">MSG_LEN</a>);</div>
-<div class="line"><span class="lineno">  351</span>  buffer[<a class="code hl_variable" href="#a15efb46e24d07a4737cfc3a1c8364f7f">MSG_LEN</a>] = <span class="charliteral">&#39;\0&#39;</span>; <span class="comment">// Null-terminate</span></div>
-<div class="line"><span class="lineno">  352</span>  <span class="comment">// Trim trailing whitespace</span></div>
-<div class="line"><span class="lineno">  353</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = <a class="code hl_variable" href="#a15efb46e24d07a4737cfc3a1c8364f7f">MSG_LEN</a> - 1;</div>
-<div class="line"><span class="lineno">  354</span>       i &gt;= 0 &amp;&amp; std::isspace(<span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>(buffer[i])); --i) {</div>
-<div class="line"><span class="lineno">  355</span>    buffer[i] = <span class="charliteral">&#39;\0&#39;</span>;</div>
-<div class="line"><span class="lineno">  356</span>  }</div>
-<div class="line"><span class="lineno">  357</span>}</div>
-<div class="ttc" id="aclassSocketNWChemPot_html_a15efb46e24d07a4737cfc3a1c8364f7f"><div class="ttname"><a href="#a15efb46e24d07a4737cfc3a1c8364f7f">SocketNWChemPot::MSG_LEN</a></div><div class="ttdeci">static constexpr int MSG_LEN</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00104">SocketNWChemPot.h:104</a></div></div>
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8cpp_source.html#l00367">367</a> of file <a class="el" href="SocketNWChemPot_8cpp_source.html">SocketNWChemPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  367</span>                                              {</div>
+<div class="line"><span class="lineno">  368</span>  <a class="code hl_function" href="#a292c257368501d85ff6196bda2f69d42">recv_exact</a>(buffer, <a class="code hl_variable" href="#a15efb46e24d07a4737cfc3a1c8364f7f">MSG_LEN</a>);</div>
+<div class="line"><span class="lineno">  369</span>  buffer[<a class="code hl_variable" href="#a15efb46e24d07a4737cfc3a1c8364f7f">MSG_LEN</a>] = <span class="charliteral">&#39;\0&#39;</span>; <span class="comment">// Null-terminate</span></div>
+<div class="line"><span class="lineno">  370</span>  <span class="comment">// Trim trailing whitespace</span></div>
+<div class="line"><span class="lineno">  371</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = <a class="code hl_variable" href="#a15efb46e24d07a4737cfc3a1c8364f7f">MSG_LEN</a> - 1;</div>
+<div class="line"><span class="lineno">  372</span>       i &gt;= 0 &amp;&amp; std::isspace(<span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>(buffer[i])); --i) {</div>
+<div class="line"><span class="lineno">  373</span>    buffer[i] = <span class="charliteral">&#39;\0&#39;</span>;</div>
+<div class="line"><span class="lineno">  374</span>  }</div>
+<div class="line"><span class="lineno">  375</span>}</div>
+<div class="ttc" id="aclassSocketNWChemPot_html_a15efb46e24d07a4737cfc3a1c8364f7f"><div class="ttname"><a href="#a15efb46e24d07a4737cfc3a1c8364f7f">SocketNWChemPot::MSG_LEN</a></div><div class="ttdeci">static constexpr int MSG_LEN</div><div class="ttdef"><b>Definition</b> <a href="SocketNWChemPot_8h_source.html#l00110">SocketNWChemPot.h:110</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1021,19 +1115,19 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8cpp_source.html#l00359">359</a> of file <a class="el" href="SocketNWChemPot_8cpp_source.html">SocketNWChemPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  359</span>                                                                   {</div>
-<div class="line"><span class="lineno">  360</span>  <span class="keywordtype">size_t</span> sent = 0;</div>
-<div class="line"><span class="lineno">  361</span>  <span class="keywordflow">while</span> (sent &lt; n_bytes) {</div>
-<div class="line"><span class="lineno">  362</span>    ssize_t n = ::send(<a class="code hl_variable" href="#a996912da8b9c93ff9d7780b8e2fefd0a">conn_fd</a>, <span class="keyword">static_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(buffer) + sent,</div>
-<div class="line"><span class="lineno">  363</span>                       n_bytes - sent, 0);</div>
-<div class="line"><span class="lineno">  364</span>    <span class="keywordflow">if</span> (n &lt;= 0) {</div>
-<div class="line"><span class="lineno">  365</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  366</span>          <span class="stringliteral">&quot;send_exact failed: connection closed or error.&quot;</span>);</div>
-<div class="line"><span class="lineno">  367</span>    }</div>
-<div class="line"><span class="lineno">  368</span>    sent += n;</div>
-<div class="line"><span class="lineno">  369</span>  }</div>
-<div class="line"><span class="lineno">  370</span>}</div>
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8cpp_source.html#l00377">377</a> of file <a class="el" href="SocketNWChemPot_8cpp_source.html">SocketNWChemPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  377</span>                                                                   {</div>
+<div class="line"><span class="lineno">  378</span>  <span class="keywordtype">size_t</span> sent = 0;</div>
+<div class="line"><span class="lineno">  379</span>  <span class="keywordflow">while</span> (sent &lt; n_bytes) {</div>
+<div class="line"><span class="lineno">  380</span>    ssize_t n = ::send(<a class="code hl_variable" href="#a996912da8b9c93ff9d7780b8e2fefd0a">conn_fd</a>, <span class="keyword">static_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(buffer) + sent,</div>
+<div class="line"><span class="lineno">  381</span>                       n_bytes - sent, 0);</div>
+<div class="line"><span class="lineno">  382</span>    <span class="keywordflow">if</span> (n &lt;= 0) {</div>
+<div class="line"><span class="lineno">  383</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  384</span>          <span class="stringliteral">&quot;send_exact failed: connection closed or error.&quot;</span>);</div>
+<div class="line"><span class="lineno">  385</span>    }</div>
+<div class="line"><span class="lineno">  386</span>    sent += n;</div>
+<div class="line"><span class="lineno">  387</span>  }</div>
+<div class="line"><span class="lineno">  388</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1060,13 +1154,13 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8cpp_source.html#l00342">342</a> of file <a class="el" href="SocketNWChemPot_8cpp_source.html">SocketNWChemPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  342</span>                                                 {</div>
-<div class="line"><span class="lineno">  343</span>  std::array&lt;char, MSG_LEN&gt; buffer{};</div>
-<div class="line"><span class="lineno">  344</span>  <span class="keyword">const</span> std::size_t n = std::min(std::strlen(msg), buffer.size());</div>
-<div class="line"><span class="lineno">  345</span>  std::copy_n(msg, n, buffer.begin());</div>
-<div class="line"><span class="lineno">  346</span>  <a class="code hl_function" href="#a4726d403fca9b6450ebe6710c7a8591d">send_exact</a>(buffer.data(), buffer.size());</div>
-<div class="line"><span class="lineno">  347</span>}</div>
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8cpp_source.html#l00360">360</a> of file <a class="el" href="SocketNWChemPot_8cpp_source.html">SocketNWChemPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  360</span>                                                 {</div>
+<div class="line"><span class="lineno">  361</span>  std::array&lt;char, MSG_LEN&gt; buffer{};</div>
+<div class="line"><span class="lineno">  362</span>  <span class="keyword">const</span> std::size_t n = std::min(std::strlen(msg), buffer.size());</div>
+<div class="line"><span class="lineno">  363</span>  std::copy_n(msg, n, buffer.begin());</div>
+<div class="line"><span class="lineno">  364</span>  <a class="code hl_function" href="#a4726d403fca9b6450ebe6710c7a8591d">send_exact</a>(buffer.data(), buffer.size());</div>
+<div class="line"><span class="lineno">  365</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1093,65 +1187,65 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8cpp_source.html#l00266">266</a> of file <a class="el" href="SocketNWChemPot_8cpp_source.html">SocketNWChemPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  266</span>                                   {</div>
-<div class="line"><span class="lineno">  267</span>  <span class="keywordtype">int</span> domain = <a class="code hl_variable" href="#ac8cce3d488b95fd9e928f644f1291914">unix_socket_mode</a> ? AF_UNIX : AF_INET;</div>
-<div class="line"><span class="lineno">  268</span>  <a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a> = socket(domain, SOCK_STREAM, 0);</div>
-<div class="line"><span class="lineno">  269</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a> &lt; 0) {</div>
-<div class="line"><span class="lineno">  270</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  271</span>        std::format(<span class="stringliteral">&quot;Failed to create socket: {}&quot;</span>, std::strerror(errno)));</div>
-<div class="line"><span class="lineno">  272</span>  }</div>
-<div class="line"><span class="lineno">  273</span> </div>
-<div class="line"><span class="lineno">  274</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ac8cce3d488b95fd9e928f644f1291914">unix_socket_mode</a>) {</div>
-<div class="line"><span class="lineno">  275</span>    ::unlink(<a class="code hl_variable" href="#a618578cfee4b63a3aa54d5d341224c6f">server_address</a>.c_str()); <span class="comment">// Remove stale socket file if it exists</span></div>
-<div class="line"><span class="lineno">  276</span>    sockaddr_un sock_addr{};</div>
-<div class="line"><span class="lineno">  277</span>    sock_addr.sun_family = AF_UNIX;</div>
-<div class="line"><span class="lineno">  278</span>    std::strncpy(sock_addr.sun_path, <a class="code hl_variable" href="#a618578cfee4b63a3aa54d5d341224c6f">server_address</a>.c_str(),</div>
-<div class="line"><span class="lineno">  279</span>                 <span class="keyword">sizeof</span>(sock_addr.sun_path) - 1);</div>
-<div class="line"><span class="lineno">  280</span> </div>
-<div class="line"><span class="lineno">  281</span>    socklen_t addr_len = <span class="keyword">static_cast&lt;</span>socklen_t<span class="keyword">&gt;</span>(</div>
-<div class="line"><span class="lineno">  282</span>        <span class="keyword">sizeof</span>(sock_addr.sun_family) + std::strlen(sock_addr.sun_path));</div>
-<div class="line"><span class="lineno">  283</span>    <span class="keywordflow">if</span> (::bind(<a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a>, <span class="keyword">reinterpret_cast&lt;</span>sockaddr *<span class="keyword">&gt;</span>(&amp;sock_addr), addr_len) &lt;</div>
-<div class="line"><span class="lineno">  284</span>        0) {</div>
-<div class="line"><span class="lineno">  285</span>      <span class="keyword">const</span> <span class="keywordtype">int</span> fd = <a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a>;</div>
-<div class="line"><span class="lineno">  286</span>      <a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a> = -1;</div>
-<div class="line"><span class="lineno">  287</span>      socket_fail(fd, <span class="stringliteral">&quot;Failed to bind UNIX socket&quot;</span>);</div>
-<div class="line"><span class="lineno">  288</span>    }</div>
-<div class="line"><span class="lineno">  289</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  290</span>    <span class="keywordtype">int</span> opt = 1;</div>
-<div class="line"><span class="lineno">  291</span>    <span class="keywordflow">if</span> (setsockopt(<a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a>, SOL_SOCKET, SO_REUSEADDR, &amp;opt, <span class="keyword">sizeof</span>(opt)) &lt;</div>
-<div class="line"><span class="lineno">  292</span>        0) {</div>
-<div class="line"><span class="lineno">  293</span>      <span class="keyword">const</span> <span class="keywordtype">int</span> fd = <a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a>;</div>
-<div class="line"><span class="lineno">  294</span>      <a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a> = -1;</div>
-<div class="line"><span class="lineno">  295</span>      socket_fail(fd, <span class="stringliteral">&quot;Failed to set SO_REUSEADDR&quot;</span>);</div>
-<div class="line"><span class="lineno">  296</span>    }</div>
-<div class="line"><span class="lineno">  297</span>    sockaddr_in sock_addr{};</div>
-<div class="line"><span class="lineno">  298</span>    sock_addr.sin_family = AF_INET;</div>
-<div class="line"><span class="lineno">  299</span>    sock_addr.sin_addr.s_addr = inet_addr(<a class="code hl_variable" href="#a618578cfee4b63a3aa54d5d341224c6f">server_address</a>.c_str());</div>
-<div class="line"><span class="lineno">  300</span>    <span class="comment">// inet_addr accepts only a dotted IPv4 address. A name fails here instead</span></div>
-<div class="line"><span class="lineno">  301</span>    <span class="comment">// of being bound as INADDR_NONE.</span></div>
-<div class="line"><span class="lineno">  302</span>    <span class="keywordflow">if</span> (sock_addr.sin_addr.s_addr == INADDR_NONE) {</div>
-<div class="line"><span class="lineno">  303</span>      ::close(<a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a>);</div>
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8cpp_source.html#l00284">284</a> of file <a class="el" href="SocketNWChemPot_8cpp_source.html">SocketNWChemPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  284</span>                                   {</div>
+<div class="line"><span class="lineno">  285</span>  <span class="keywordtype">int</span> domain = <a class="code hl_variable" href="#ac8cce3d488b95fd9e928f644f1291914">unix_socket_mode</a> ? AF_UNIX : AF_INET;</div>
+<div class="line"><span class="lineno">  286</span>  <a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a> = socket(domain, SOCK_STREAM, 0);</div>
+<div class="line"><span class="lineno">  287</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a> &lt; 0) {</div>
+<div class="line"><span class="lineno">  288</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  289</span>        std::format(<span class="stringliteral">&quot;Failed to create socket: {}&quot;</span>, std::strerror(errno)));</div>
+<div class="line"><span class="lineno">  290</span>  }</div>
+<div class="line"><span class="lineno">  291</span> </div>
+<div class="line"><span class="lineno">  292</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ac8cce3d488b95fd9e928f644f1291914">unix_socket_mode</a>) {</div>
+<div class="line"><span class="lineno">  293</span>    ::unlink(<a class="code hl_variable" href="#a618578cfee4b63a3aa54d5d341224c6f">server_address</a>.c_str()); <span class="comment">// Remove stale socket file if it exists</span></div>
+<div class="line"><span class="lineno">  294</span>    sockaddr_un sock_addr{};</div>
+<div class="line"><span class="lineno">  295</span>    sock_addr.sun_family = AF_UNIX;</div>
+<div class="line"><span class="lineno">  296</span>    std::strncpy(sock_addr.sun_path, <a class="code hl_variable" href="#a618578cfee4b63a3aa54d5d341224c6f">server_address</a>.c_str(),</div>
+<div class="line"><span class="lineno">  297</span>                 <span class="keyword">sizeof</span>(sock_addr.sun_path) - 1);</div>
+<div class="line"><span class="lineno">  298</span> </div>
+<div class="line"><span class="lineno">  299</span>    socklen_t addr_len = <span class="keyword">static_cast&lt;</span>socklen_t<span class="keyword">&gt;</span>(</div>
+<div class="line"><span class="lineno">  300</span>        <span class="keyword">sizeof</span>(sock_addr.sun_family) + std::strlen(sock_addr.sun_path));</div>
+<div class="line"><span class="lineno">  301</span>    <span class="keywordflow">if</span> (::bind(<a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a>, <span class="keyword">reinterpret_cast&lt;</span>sockaddr *<span class="keyword">&gt;</span>(&amp;sock_addr), addr_len) &lt;</div>
+<div class="line"><span class="lineno">  302</span>        0) {</div>
+<div class="line"><span class="lineno">  303</span>      <span class="keyword">const</span> <span class="keywordtype">int</span> fd = <a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a>;</div>
 <div class="line"><span class="lineno">  304</span>      <a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a> = -1;</div>
-<div class="line"><span class="lineno">  305</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  306</span>          <span class="stringliteral">&quot;Failed to parse the TCP host as an IPv4 address&quot;</span>);</div>
-<div class="line"><span class="lineno">  307</span>    }</div>
-<div class="line"><span class="lineno">  308</span>    sock_addr.sin_port = htons(<span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a34a3aac8f7efda2afbaeb53e2a065d5d">port</a>));</div>
-<div class="line"><span class="lineno">  309</span> </div>
-<div class="line"><span class="lineno">  310</span>    <span class="keywordflow">if</span> (::bind(<a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a>, <span class="keyword">reinterpret_cast&lt;</span>sockaddr *<span class="keyword">&gt;</span>(&amp;sock_addr),</div>
-<div class="line"><span class="lineno">  311</span>               <span class="keyword">sizeof</span>(sock_addr)) &lt; 0) {</div>
-<div class="line"><span class="lineno">  312</span>      <span class="keyword">const</span> <span class="keywordtype">int</span> fd = <a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a>;</div>
-<div class="line"><span class="lineno">  313</span>      <a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a> = -1;</div>
-<div class="line"><span class="lineno">  314</span>      socket_fail(fd, <span class="stringliteral">&quot;Failed to bind TCP socket&quot;</span>);</div>
-<div class="line"><span class="lineno">  315</span>    }</div>
-<div class="line"><span class="lineno">  316</span>  }</div>
-<div class="line"><span class="lineno">  317</span> </div>
-<div class="line"><span class="lineno">  318</span>  <span class="keywordflow">if</span> (::listen(<a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a>, 1) &lt; 0) {</div>
-<div class="line"><span class="lineno">  319</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> fd = <a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a>;</div>
-<div class="line"><span class="lineno">  320</span>    <a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a> = -1;</div>
-<div class="line"><span class="lineno">  321</span>    socket_fail(fd, <span class="stringliteral">&quot;Socket listen() failed&quot;</span>);</div>
-<div class="line"><span class="lineno">  322</span>  }</div>
-<div class="line"><span class="lineno">  323</span>}</div>
+<div class="line"><span class="lineno">  305</span>      socket_fail(fd, <span class="stringliteral">&quot;Failed to bind UNIX socket&quot;</span>);</div>
+<div class="line"><span class="lineno">  306</span>    }</div>
+<div class="line"><span class="lineno">  307</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  308</span>    <span class="keywordtype">int</span> opt = 1;</div>
+<div class="line"><span class="lineno">  309</span>    <span class="keywordflow">if</span> (setsockopt(<a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a>, SOL_SOCKET, SO_REUSEADDR, &amp;opt, <span class="keyword">sizeof</span>(opt)) &lt;</div>
+<div class="line"><span class="lineno">  310</span>        0) {</div>
+<div class="line"><span class="lineno">  311</span>      <span class="keyword">const</span> <span class="keywordtype">int</span> fd = <a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a>;</div>
+<div class="line"><span class="lineno">  312</span>      <a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a> = -1;</div>
+<div class="line"><span class="lineno">  313</span>      socket_fail(fd, <span class="stringliteral">&quot;Failed to set SO_REUSEADDR&quot;</span>);</div>
+<div class="line"><span class="lineno">  314</span>    }</div>
+<div class="line"><span class="lineno">  315</span>    sockaddr_in sock_addr{};</div>
+<div class="line"><span class="lineno">  316</span>    sock_addr.sin_family = AF_INET;</div>
+<div class="line"><span class="lineno">  317</span>    sock_addr.sin_addr.s_addr = inet_addr(<a class="code hl_variable" href="#a618578cfee4b63a3aa54d5d341224c6f">server_address</a>.c_str());</div>
+<div class="line"><span class="lineno">  318</span>    <span class="comment">// inet_addr accepts only a dotted IPv4 address. A name fails here instead</span></div>
+<div class="line"><span class="lineno">  319</span>    <span class="comment">// of being bound as INADDR_NONE.</span></div>
+<div class="line"><span class="lineno">  320</span>    <span class="keywordflow">if</span> (sock_addr.sin_addr.s_addr == INADDR_NONE) {</div>
+<div class="line"><span class="lineno">  321</span>      ::close(<a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a>);</div>
+<div class="line"><span class="lineno">  322</span>      <a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a> = -1;</div>
+<div class="line"><span class="lineno">  323</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  324</span>          <span class="stringliteral">&quot;Failed to parse the TCP host as an IPv4 address&quot;</span>);</div>
+<div class="line"><span class="lineno">  325</span>    }</div>
+<div class="line"><span class="lineno">  326</span>    sock_addr.sin_port = htons(<span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a34a3aac8f7efda2afbaeb53e2a065d5d">port</a>));</div>
+<div class="line"><span class="lineno">  327</span> </div>
+<div class="line"><span class="lineno">  328</span>    <span class="keywordflow">if</span> (::bind(<a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a>, <span class="keyword">reinterpret_cast&lt;</span>sockaddr *<span class="keyword">&gt;</span>(&amp;sock_addr),</div>
+<div class="line"><span class="lineno">  329</span>               <span class="keyword">sizeof</span>(sock_addr)) &lt; 0) {</div>
+<div class="line"><span class="lineno">  330</span>      <span class="keyword">const</span> <span class="keywordtype">int</span> fd = <a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a>;</div>
+<div class="line"><span class="lineno">  331</span>      <a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a> = -1;</div>
+<div class="line"><span class="lineno">  332</span>      socket_fail(fd, <span class="stringliteral">&quot;Failed to bind TCP socket&quot;</span>);</div>
+<div class="line"><span class="lineno">  333</span>    }</div>
+<div class="line"><span class="lineno">  334</span>  }</div>
+<div class="line"><span class="lineno">  335</span> </div>
+<div class="line"><span class="lineno">  336</span>  <span class="keywordflow">if</span> (::listen(<a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a>, 1) &lt; 0) {</div>
+<div class="line"><span class="lineno">  337</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> fd = <a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a>;</div>
+<div class="line"><span class="lineno">  338</span>    <a class="code hl_variable" href="#ac929c876cd575b94deadd57d03643bb2">listen_fd</a> = -1;</div>
+<div class="line"><span class="lineno">  339</span>    socket_fail(fd, <span class="stringliteral">&quot;Socket listen() failed&quot;</span>);</div>
+<div class="line"><span class="lineno">  340</span>  }</div>
+<div class="line"><span class="lineno">  341</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1246,7 +1340,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00106">106</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00112">112</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
 
 </div>
 </div>
@@ -1270,8 +1364,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00100">100</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  100</span>{-1};</div>
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00106">106</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  106</span>{-1};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1295,8 +1389,33 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00107">107</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00113">113</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
 
+</div>
+</div>
+<a id="a7fc6b689f1c7b6e9cb280131b36f64f2" name="a7fc6b689f1c7b6e9cb280131b36f64f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fc6b689f1c7b6e9cb280131b36f64f2">&#9670;&#160;</a></span>haveStress_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool SocketNWChemPot::haveStress_ {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00116">116</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  116</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a3c4adc6cb487b8db1b8946f947516632" name="a3c4adc6cb487b8db1b8946f947516632"></a>
@@ -1319,8 +1438,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00101">101</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  101</span>{<span class="keyword">false</span>};</div>
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00107">107</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  107</span>{<span class="keyword">false</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1344,8 +1463,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00099">99</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   99</span>{-1};</div>
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00105">105</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  105</span>{-1};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1369,7 +1488,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00096">96</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00102">102</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
 
 </div>
 </div>
@@ -1393,7 +1512,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00094">94</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00100">100</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
 
 </div>
 </div>
@@ -1417,7 +1536,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00104">104</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00110">110</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
 
 </div>
 </div>
@@ -1441,7 +1560,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00093">93</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00099">99</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
 
 </div>
 </div>
@@ -1465,7 +1584,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00094">94</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00100">100</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
 
 </div>
 </div>
@@ -1489,8 +1608,33 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00089">89</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00095">95</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
 
+</div>
+</div>
+<a id="a971d1197e7f4468055f433e2f3517f19" name="a971d1197e7f4468055f433e2f3517f19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a971d1197e7f4468055f433e2f3517f19">&#9670;&#160;</a></span>stress_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> SocketNWChemPot::stress_ {Matrix3d::Zero()}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00115">115</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  115</span>{Matrix3d::Zero()};</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a0e5882a48a022834731b35b6e58242f3" name="a0e5882a48a022834731b35b6e58242f3"></a>
@@ -1513,7 +1657,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00091">91</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00097">97</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
 
 </div>
 </div>
@@ -1537,7 +1681,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00087">87</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SocketNWChemPot_8h_source.html#l00093">93</a> of file <a class="el" href="SocketNWChemPot_8h_source.html">SocketNWChemPot.h</a>.</p>
 
 </div>
 </div>

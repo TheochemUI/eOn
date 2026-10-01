@@ -15,11 +15,14 @@ var searchData=
   ['jobs_12',['Jobs',['../group__Jobs.html',1,'']]],
   ['jobtable_13',['jobTable',['../namespaceeonc.html#a08808d4d6168f0d86aab7ebd9f0aee82',1,'eonc']]],
   ['jobtype_14',['JobType',['../namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379',1,'eonc']]],
-  ['joule_15',['JOULE',['../namespaceforcefields_1_1unit__system.html#a9d9aa2eb894d98a38261315fb4af0d8e',1,'forcefields::unit_system']]],
-  ['json_16',['json',['../ParametersJSON_8cpp.html#ab701e3ac61a85b337ec5c1abaad6742d',1,'ParametersJSON.cpp']]],
-  ['json_5fopt_17',['JSON_OPT',['../ParametersJSON_8cpp.html#a011d0cbc2609131882678c441271c5a0',1,'ParametersJSON.cpp']]],
-  ['jtype_18',['jtype',['../classeonc_1_1Job.html#a90e97e92096c7c2ea7dec3d9c49f485f',1,'eonc::Job']]],
-  ['jump_5fcount_19',['jump_count',['../classeonc_1_1BasinHoppingJob.html#a31eb21055c9cc5604596b17ceaf016a7',1,'eonc::BasinHoppingJob']]],
-  ['jump_5fmax_20',['jump_max',['../structeonc_1_1basin__hopping__options__t.html#ab9719673bc78ea60e277f83cb3025378',1,'eonc::basin_hopping_options_t']]],
-  ['jump_5fsteps_21',['jump_steps',['../structeonc_1_1basin__hopping__options__t.html#a5bf45dadd996e72f2f29741bff723187',1,'eonc::basin_hopping_options_t']]]
+  ['jointblock_15',['JointBlock',['../structeonc_1_1neb_1_1JointBlock.html',1,'eonc::neb']]],
+  ['jointdisplacement_16',['jointDisplacement',['../namespaceeonc_1_1neb.html#a878bd9e04ba095d1b6a33b57d81ac6a9',1,'eonc::neb']]],
+  ['jointnorm_17',['jointNorm',['../namespaceeonc_1_1neb.html#a56f330ea1a8ea5dacb011eb0746f1990',1,'eonc::neb']]],
+  ['joule_18',['JOULE',['../namespaceforcefields_1_1unit__system.html#a9d9aa2eb894d98a38261315fb4af0d8e',1,'forcefields::unit_system']]],
+  ['json_19',['json',['../ParametersJSON_8cpp.html#ab701e3ac61a85b337ec5c1abaad6742d',1,'ParametersJSON.cpp']]],
+  ['json_5fopt_20',['JSON_OPT',['../ParametersJSON_8cpp.html#a011d0cbc2609131882678c441271c5a0',1,'ParametersJSON.cpp']]],
+  ['jtype_21',['jtype',['../classeonc_1_1Job.html#a90e97e92096c7c2ea7dec3d9c49f485f',1,'eonc::Job']]],
+  ['jump_5fcount_22',['jump_count',['../classeonc_1_1BasinHoppingJob.html#a31eb21055c9cc5604596b17ceaf016a7',1,'eonc::BasinHoppingJob']]],
+  ['jump_5fmax_23',['jump_max',['../structeonc_1_1basin__hopping__options__t.html#ab9719673bc78ea60e277f83cb3025378',1,'eonc::basin_hopping_options_t']]],
+  ['jump_5fsteps_24',['jump_steps',['../structeonc_1_1basin__hopping__options__t.html#a5bf45dadd996e72f2f29741bff723187',1,'eonc::basin_hopping_options_t']]]
 ];

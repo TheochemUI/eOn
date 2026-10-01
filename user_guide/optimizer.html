@@ -130,6 +130,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="lanczos.html">Lanczos</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="akmc.html">Adaptive kinetic Monte Carlo</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="saddle_search.html">Saddle search</a></li>
@@ -198,7 +199,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
@@ -216,6 +216,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.process_catalog.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_catalog</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 </ul>
@@ -224,6 +225,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.5.0/index.html">[v3.5.0] - 2026-10-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.5.0/release-notes.html">eOn 3.5.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
 </ul>
@@ -322,43 +327,43 @@ data-aria-dark="Switch to auto color mode">
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#configuration">Configuration</a><ul>
 <li><a class="reference internal" href="#eon.schema.OptimizerConfig"><code class="docutils literal notranslate"><span class="pre">OptimizerConfig</span></code></a><ul>
-<li><a class="reference internal" href="#eon.schema.OptimizerConfig.converged_force"><code class="docutils literal notranslate">converged_force</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.OptimizerConfig.convergence_metric"><code class="docutils literal notranslate">convergence_metric</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.OptimizerConfig.max_iterations"><code class="docutils literal notranslate">max_iterations</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.OptimizerConfig.max_move"><code class="docutils literal notranslate">max_move</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.OptimizerConfig.opt_method"><code class="docutils literal notranslate">opt_method</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.OptimizerConfig.convergence_metric"><code class="docutils literal notranslate">convergence_metric</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.OptimizerConfig.converged_force"><code class="docutils literal notranslate">converged_force</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.OptimizerConfig.max_move"><code class="docutils literal notranslate">max_move</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.OptimizerConfig.time_step"><code class="docutils literal notranslate">time_step</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.OptimizerConfig.max_iterations"><code class="docutils literal notranslate">max_iterations</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#lbfgs">LBFGS</a><ul>
 <li><a class="reference internal" href="#eon.schema.LBFGSConfig"><code class="docutils literal notranslate"><span class="pre">LBFGSConfig</span></code></a><ul>
-<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_accept"><code class="docutils literal notranslate">lbfgs_accept</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_angle_reset"><code class="docutils literal notranslate">lbfgs_angle_reset</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_auto_scale"><code class="docutils literal notranslate">lbfgs_auto_scale</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_cautious_alpha"><code class="docutils literal notranslate">lbfgs_cautious_alpha</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_cautious_eps"><code class="docutils literal notranslate">lbfgs_cautious_eps</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_curvature"><code class="docutils literal notranslate">lbfgs_curvature</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_distance_reset"><code class="docutils literal notranslate">lbfgs_distance_reset</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_extra_updates"><code class="docutils literal notranslate">lbfgs_extra_updates</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_h0"><code class="docutils literal notranslate">lbfgs_h0</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_memory"><code class="docutils literal notranslate">lbfgs_memory</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_inverse_curvature"><code class="docutils literal notranslate">lbfgs_inverse_curvature</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_max_inverse_curvature"><code class="docutils literal notranslate">lbfgs_max_inverse_curvature</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_memory"><code class="docutils literal notranslate">lbfgs_memory</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_auto_scale"><code class="docutils literal notranslate">lbfgs_auto_scale</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_angle_reset"><code class="docutils literal notranslate">lbfgs_angle_reset</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_distance_reset"><code class="docutils literal notranslate">lbfgs_distance_reset</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_curvature"><code class="docutils literal notranslate">lbfgs_curvature</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_project_rigid"><code class="docutils literal notranslate">lbfgs_project_rigid</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_secant"><code class="docutils literal notranslate">lbfgs_secant</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_precon"><code class="docutils literal notranslate">lbfgs_precon</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_step"><code class="docutils literal notranslate">lbfgs_step</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_h0"><code class="docutils literal notranslate">lbfgs_h0</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_accept"><code class="docutils literal notranslate">lbfgs_accept</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_extra_updates"><code class="docutils literal notranslate">lbfgs_extra_updates</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_cautious_eps"><code class="docutils literal notranslate">lbfgs_cautious_eps</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_cautious_alpha"><code class="docutils literal notranslate">lbfgs_cautious_alpha</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_precon_A"><code class="docutils literal notranslate">lbfgs_precon_A</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_precon_mu"><code class="docutils literal notranslate">lbfgs_precon_mu</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_precon_rcut"><code class="docutils literal notranslate">lbfgs_precon_rcut</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_project_rigid"><code class="docutils literal notranslate">lbfgs_project_rigid</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_secant"><code class="docutils literal notranslate">lbfgs_secant</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.LBFGSConfig.lbfgs_step"><code class="docutils literal notranslate">lbfgs_step</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li><a class="reference internal" href="#quickmin">QuickMin</a><ul>
 <li><a class="reference internal" href="#eon.schema.QuickMinConfig"><code class="docutils literal notranslate"><span class="pre">QuickMinConfig</span></code></a><ul>
-<li><a class="reference internal" href="#eon.schema.QuickMinConfig.qm_steepest_descent"><code class="docutils literal notranslate">qm_steepest_descent</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.QuickMinConfig.time_step"><code class="docutils literal notranslate">time_step</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.QuickMinConfig.qm_steepest_descent"><code class="docutils literal notranslate">qm_steepest_descent</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -373,12 +378,12 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li><a class="reference internal" href="#cg">CG</a><ul>
 <li><a class="reference internal" href="#eon.schema.CGConfig"><code class="docutils literal notranslate"><span class="pre">CGConfig</span></code></a><ul>
+<li><a class="reference internal" href="#eon.schema.CGConfig.cg_no_overshooting"><code class="docutils literal notranslate">cg_no_overshooting</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.CGConfig.cg_knock_out_max_move"><code class="docutils literal notranslate">cg_knock_out_max_move</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.CGConfig.cg_line_converged"><code class="docutils literal notranslate">cg_line_converged</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.CGConfig.cg_line_search"><code class="docutils literal notranslate">cg_line_search</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.CGConfig.cg_line_converged"><code class="docutils literal notranslate">cg_line_converged</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.CGConfig.cg_max_iter_before_reset"><code class="docutils literal notranslate">cg_max_iter_before_reset</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.CGConfig.cg_max_iter_line_search"><code class="docutils literal notranslate">cg_max_iter_line_search</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.CGConfig.cg_no_overshooting"><code class="docutils literal notranslate">cg_no_overshooting</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -393,12 +398,12 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li><a class="reference internal" href="#xtsci">Xtsci</a><ul>
 <li><a class="reference internal" href="#eon.schema.XtsciConfig"><code class="docutils literal notranslate"><span class="pre">XtsciConfig</span></code></a><ul>
+<li><a class="reference internal" href="#eon.schema.XtsciConfig.method"><code class="docutils literal notranslate">method</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.XtsciConfig.qn_step"><code class="docutils literal notranslate">qn_step</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.XtsciConfig.precon"><code class="docutils literal notranslate">precon</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.XtsciConfig.accept"><code class="docutils literal notranslate">accept</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.XtsciConfig.highs"><code class="docutils literal notranslate">highs</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.XtsciConfig.manifold"><code class="docutils literal notranslate">manifold</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.XtsciConfig.method"><code class="docutils literal notranslate">method</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.XtsciConfig.precon"><code class="docutils literal notranslate">precon</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.XtsciConfig.qn_step"><code class="docutils literal notranslate">qn_step</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -505,7 +510,7 @@ data-aria-dark="Switch to auto color mode">
 <p>The eOn optimizers skip a line search when taking the steepest-descent step.</p>
 </div>
 <p>There are several other ways in which the <code class="docutils literal notranslate"><span class="pre">eOn</span></code> implementations differ from a
-standard optimizer software suite<a class="footnote-reference brackets" href="#id100" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> . Some prominent reasons are:</p>
+standard optimizer software suite<a class="footnote-reference brackets" href="#id108" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> . Some prominent reasons are:</p>
 <ul class="simple">
 <li><p>They are written for the <a class="reference internal" href="neb.html"><span class="std std-doc">Nudged elastic band</span></a>, whose energy surface has no
 closed form</p>
@@ -525,116 +530,18 @@ before being passed to the optimizer</p></li>
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="eon.schema.OptimizerConfig">
 <span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">OptimizerConfig</span></span><a class="reference internal" href="../_modules/eon_schema/config/models.html#OptimizerConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.OptimizerConfig" title="Link to this definition">¶</a></dt>
-<dd><p><details  class="autodoc_pydantic_collapsable_json">
-<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
-</span><span data-line="2"><span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OptimizerConfig&quot;</span><span class="p">,</span>
-</span><span data-line="3"><span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
-</span><span data-line="4"><span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="5"><span class="w">      </span><span class="nt">&quot;opt_method&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="6"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cg&quot;</span><span class="p">,</span>
-</span><span data-line="7"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The optimization method to use.&quot;</span><span class="p">,</span>
-</span><span data-line="8"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span data-line="9"><span class="w">            </span><span class="s2">&quot;box&quot;</span><span class="p">,</span>
-</span><span data-line="10"><span class="w">            </span><span class="s2">&quot;cg&quot;</span><span class="p">,</span>
-</span><span data-line="11"><span class="w">            </span><span class="s2">&quot;qm&quot;</span><span class="p">,</span>
-</span><span data-line="12"><span class="w">            </span><span class="s2">&quot;lbfgs&quot;</span><span class="p">,</span>
-</span><span data-line="13"><span class="w">            </span><span class="s2">&quot;fire&quot;</span><span class="p">,</span>
-</span><span data-line="14"><span class="w">            </span><span class="s2">&quot;sd&quot;</span><span class="p">,</span>
-</span><span data-line="15"><span class="w">            </span><span class="s2">&quot;xtsci&quot;</span>
-</span><span data-line="16"><span class="w">         </span><span class="p">],</span>
-</span><span data-line="17"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Opt Method&quot;</span><span class="p">,</span>
-</span><span data-line="18"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="19"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="20"><span class="w">      </span><span class="nt">&quot;convergence_metric&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="21"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;norm&quot;</span><span class="p">,</span>
-</span><span data-line="22"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The metric to use to determine when an optimization is complete.&quot;</span><span class="p">,</span>
-</span><span data-line="23"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span data-line="24"><span class="w">            </span><span class="s2">&quot;norm&quot;</span><span class="p">,</span>
-</span><span data-line="25"><span class="w">            </span><span class="s2">&quot;rms&quot;</span><span class="p">,</span>
-</span><span data-line="26"><span class="w">            </span><span class="s2">&quot;max_atom&quot;</span><span class="p">,</span>
-</span><span data-line="27"><span class="w">            </span><span class="s2">&quot;max_component&quot;</span>
-</span><span data-line="28"><span class="w">         </span><span class="p">],</span>
-</span><span data-line="29"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Convergence Metric&quot;</span><span class="p">,</span>
-</span><span data-line="30"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="31"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="32"><span class="w">      </span><span class="nt">&quot;converged_force&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="33"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.01</span><span class="p">,</span>
-</span><span data-line="34"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;When the convergence_metric is smaller than this value (eV/A), the structure is considered minimized.&quot;</span><span class="p">,</span>
-</span><span data-line="35"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Converged Force&quot;</span><span class="p">,</span>
-</span><span data-line="36"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="37"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="38"><span class="w">      </span><span class="nt">&quot;max_move&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="39"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.2</span><span class="p">,</span>
-</span><span data-line="40"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Maximum distance that an atom may be moved in a single optimization step (Angstroms).&quot;</span><span class="p">,</span>
-</span><span data-line="41"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max Move&quot;</span><span class="p">,</span>
-</span><span data-line="42"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="43"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="44"><span class="w">      </span><span class="nt">&quot;time_step&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="45"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
-</span><span data-line="46"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The dynamical timestep for the quickmin algorithm (fs).&quot;</span><span class="p">,</span>
-</span><span data-line="47"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Time Step&quot;</span><span class="p">,</span>
-</span><span data-line="48"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="49"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="50"><span class="w">      </span><span class="nt">&quot;max_iterations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="51"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span><span class="p">,</span>
-</span><span data-line="52"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The maximum number of optimization iterations that will be performed.&quot;</span><span class="p">,</span>
-</span><span data-line="53"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max Iterations&quot;</span><span class="p">,</span>
-</span><span data-line="54"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
-</span><span data-line="55"><span class="w">      </span><span class="p">}</span>
-</span><span data-line="56"><span class="w">   </span><span class="p">}</span>
-</span><span data-line="57"><span class="p">}</span>
-</span></pre></div>
-</div>
-</details></p><dl class="field-list simple">
-<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
-</ul>
-</dd>
-<dt class="field-even">Fields<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">converged_force</span> <span class="pre">(float)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">convergence_metric</span> <span class="pre">(Literal['norm',</span> <span class="pre">'rms',</span> <span class="pre">'max_atom',</span> <span class="pre">'max_component'])</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_iterations</span> <span class="pre">(int)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_move</span> <span class="pre">(float)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">opt_method</span> <span class="pre">(Literal['box',</span> <span class="pre">'cg',</span> <span class="pre">'qm',</span> <span class="pre">'lbfgs',</span> <span class="pre">'fire',</span> <span class="pre">'sd',</span> <span class="pre">'xtsci'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">convergence_metric</span> <span class="pre">(Literal['norm',</span> <span class="pre">'rms',</span> <span class="pre">'max_atom',</span> <span class="pre">'max_component'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">converged_force</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_move</span> <span class="pre">(float)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_step</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_iterations</span> <span class="pre">(int)</span></code></p></li>
 </ul>
 </dd>
 </dl>
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.OptimizerConfig.converged_force">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">converged_force</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.01</span></span><a class="headerlink" href="#eon.schema.OptimizerConfig.converged_force" title="Link to this definition">¶</a></dt>
-<dd><p>When the convergence_metric is smaller than this value (eV/A), the structure is considered minimized.</p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.OptimizerConfig.convergence_metric">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">convergence_metric</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'norm'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rms'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'max_atom'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'max_component'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'norm'</span></span><a class="headerlink" href="#eon.schema.OptimizerConfig.convergence_metric" title="Link to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Options:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">norm</span></code>: Euclidean <code class="docutils literal notranslate"><span class="pre">||F||_2</span></code> of the free-atom force vector (default)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">rms</span></code>: <code class="docutils literal notranslate"><span class="pre">||F||_2</span> <span class="pre">/</span> <span class="pre">sqrt(3</span> <span class="pre">N_free)</span></code>, OPTIM MYLBFGS RMS. Opt-in.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">max_atom</span></code>: The maximum force on any non-frozen atom</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">max_component</span></code>: The maximum force on any non-frozen degree of freedom</p></li>
-</ul>
-</dd>
-</dl>
-<p>The metric to use to determine when an optimization is complete.</p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.OptimizerConfig.max_iterations">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">max_iterations</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1000</span></span><a class="headerlink" href="#eon.schema.OptimizerConfig.max_iterations" title="Link to this definition">¶</a></dt>
-<dd><p>The maximum number of optimization iterations that will be performed.</p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.OptimizerConfig.max_move">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">max_move</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.2</span></span><a class="headerlink" href="#eon.schema.OptimizerConfig.max_move" title="Link to this definition">¶</a></dt>
-<dd><p>Maximum distance that an atom may be moved in a single optimization step (Angstroms).</p>
-</dd></dl>
-
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.OptimizerConfig.opt_method">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">opt_method</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'box'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'cg'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'qm'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lbfgs'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fire'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sd'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'xtsci'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cg'</span></span><a class="headerlink" href="#eon.schema.OptimizerConfig.opt_method" title="Link to this definition">¶</a></dt>
@@ -654,9 +561,42 @@ before being passed to the optimizer</p></li>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.OptimizerConfig.convergence_metric">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">convergence_metric</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'norm'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rms'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'max_atom'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'max_component'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'norm'</span></span><a class="headerlink" href="#eon.schema.OptimizerConfig.convergence_metric" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Options:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">norm</span></code>: Euclidean <code class="docutils literal notranslate"><span class="pre">||F||_2</span></code> of the free-atom force vector (default)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rms</span></code>: <code class="docutils literal notranslate"><span class="pre">||F||_2</span> <span class="pre">/</span> <span class="pre">sqrt(3</span> <span class="pre">N_free)</span></code>, OPTIM MYLBFGS RMS. Opt-in.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_atom</span></code>: The maximum force on any non-frozen atom</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_component</span></code>: The maximum force on any non-frozen degree of freedom</p></li>
+</ul>
+</dd>
+</dl>
+<p>The metric to use to determine when an optimization is complete.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.OptimizerConfig.converged_force">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">converged_force</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.01</span></span><a class="headerlink" href="#eon.schema.OptimizerConfig.converged_force" title="Link to this definition">¶</a></dt>
+<dd><p>When the convergence_metric is smaller than this value (eV/A), the structure is considered minimized.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.OptimizerConfig.max_move">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">max_move</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.2</span></span><a class="headerlink" href="#eon.schema.OptimizerConfig.max_move" title="Link to this definition">¶</a></dt>
+<dd><p>Maximum distance that an atom may be moved in a single optimization step (Angstroms).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.OptimizerConfig.time_step">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">time_step</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></span><a class="headerlink" href="#eon.schema.OptimizerConfig.time_step" title="Link to this definition">¶</a></dt>
 <dd><p>The dynamical timestep for the quickmin algorithm (fs).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.OptimizerConfig.max_iterations">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">max_iterations</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1000</span></span><a class="headerlink" href="#eon.schema.OptimizerConfig.max_iterations" title="Link to this definition">¶</a></dt>
+<dd><p>The maximum number of optimization iterations that will be performed.</p>
 </dd></dl>
 
 </dd></dl>
@@ -670,207 +610,47 @@ before being passed to the optimizer</p></li>
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="eon.schema.LBFGSConfig">
 <span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">LBFGSConfig</span></span><a class="reference internal" href="../_modules/eon_schema/config/models.html#LBFGSConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.LBFGSConfig" title="Link to this definition">¶</a></dt>
-<dd><p><details  class="autodoc_pydantic_collapsable_json">
-<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
-</span><span data-line="2"><span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LBFGSConfig&quot;</span><span class="p">,</span>
-</span><span data-line="3"><span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
-</span><span data-line="4"><span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="5"><span class="w">      </span><span class="nt">&quot;lbfgs_memory&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="6"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span>
-</span><span data-line="7"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Number of previous gradients and positions to store for the LBFGS method.&quot;</span><span class="p">,</span>
-</span><span data-line="8"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lbfgs Memory&quot;</span><span class="p">,</span>
-</span><span data-line="9"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
-</span><span data-line="10"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="11"><span class="w">      </span><span class="nt">&quot;lbfgs_inverse_curvature&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="12"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.01</span><span class="p">,</span>
-</span><span data-line="13"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Initial inverse curvature value for LBFGS.&quot;</span><span class="p">,</span>
-</span><span data-line="14"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lbfgs Inverse Curvature&quot;</span><span class="p">,</span>
-</span><span data-line="15"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="16"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="17"><span class="w">      </span><span class="nt">&quot;lbfgs_max_inverse_curvature&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="18"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-</span><span data-line="19"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Maximum inverse curvature value for LBFGS.&quot;</span><span class="p">,</span>
-</span><span data-line="20"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lbfgs Max Inverse Curvature&quot;</span><span class="p">,</span>
-</span><span data-line="21"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="22"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="23"><span class="w">      </span><span class="nt">&quot;lbfgs_auto_scale&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="24"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-</span><span data-line="25"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If true, auto-scale the inverse curvature in LBFGS.&quot;</span><span class="p">,</span>
-</span><span data-line="26"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lbfgs Auto Scale&quot;</span><span class="p">,</span>
-</span><span data-line="27"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="28"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="29"><span class="w">      </span><span class="nt">&quot;lbfgs_angle_reset&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="30"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-</span><span data-line="31"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If true, reset the LBFGS angle.&quot;</span><span class="p">,</span>
-</span><span data-line="32"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lbfgs Angle Reset&quot;</span><span class="p">,</span>
-</span><span data-line="33"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="34"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="35"><span class="w">      </span><span class="nt">&quot;lbfgs_distance_reset&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="36"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-</span><span data-line="37"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If true, reset the LBFGS distance.&quot;</span><span class="p">,</span>
-</span><span data-line="38"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lbfgs Distance Reset&quot;</span><span class="p">,</span>
-</span><span data-line="39"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="40"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="41"><span class="w">      </span><span class="nt">&quot;lbfgs_curvature&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="42"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;reset&quot;</span><span class="p">,</span>
-</span><span data-line="43"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;How to treat a pair with insufficient curvature.&quot;</span><span class="p">,</span>
-</span><span data-line="44"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span data-line="45"><span class="w">            </span><span class="s2">&quot;reset&quot;</span><span class="p">,</span>
-</span><span data-line="46"><span class="w">            </span><span class="s2">&quot;skip&quot;</span><span class="p">,</span>
-</span><span data-line="47"><span class="w">            </span><span class="s2">&quot;damped&quot;</span><span class="p">,</span>
-</span><span data-line="48"><span class="w">            </span><span class="s2">&quot;cautious&quot;</span>
-</span><span data-line="49"><span class="w">         </span><span class="p">],</span>
-</span><span data-line="50"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lbfgs Curvature&quot;</span><span class="p">,</span>
-</span><span data-line="51"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="52"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="53"><span class="w">      </span><span class="nt">&quot;lbfgs_project_rigid&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="54"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-</span><span data-line="55"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Project translation and rotation out of the L-BFGS force and step. Isolated clusters only.&quot;</span><span class="p">,</span>
-</span><span data-line="56"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lbfgs Project Rigid&quot;</span><span class="p">,</span>
-</span><span data-line="57"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="58"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="59"><span class="w">      </span><span class="nt">&quot;lbfgs_secant&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="60"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;standard&quot;</span><span class="p">,</span>
-</span><span data-line="61"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Secant pair: standard y = g_{k+1}-g_k, or Zhang-Xu modified secant using the two energies.&quot;</span><span class="p">,</span>
-</span><span data-line="62"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span data-line="63"><span class="w">            </span><span class="s2">&quot;standard&quot;</span><span class="p">,</span>
-</span><span data-line="64"><span class="w">            </span><span class="s2">&quot;zhangxu&quot;</span>
-</span><span data-line="65"><span class="w">         </span><span class="p">],</span>
-</span><span data-line="66"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lbfgs Secant&quot;</span><span class="p">,</span>
-</span><span data-line="67"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="68"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="69"><span class="w">      </span><span class="nt">&quot;lbfgs_precon&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="70"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
-</span><span data-line="71"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Two-loop H0 metric. none is H0 I. exp/c1 is Packwood-Kermode (JCP 2016). lindh is the Lindh 1995 stretch model. pair is the Mones 2018 positive-definite pair Hessian of LJ or Morse. pair_full is the signed pair Hessian for Newton/RFO.&quot;</span><span class="p">,</span>
-</span><span data-line="72"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span data-line="73"><span class="w">            </span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
-</span><span data-line="74"><span class="w">            </span><span class="s2">&quot;exp&quot;</span><span class="p">,</span>
-</span><span data-line="75"><span class="w">            </span><span class="s2">&quot;c1&quot;</span><span class="p">,</span>
-</span><span data-line="76"><span class="w">            </span><span class="s2">&quot;lindh&quot;</span><span class="p">,</span>
-</span><span data-line="77"><span class="w">            </span><span class="s2">&quot;lindh_full&quot;</span><span class="p">,</span>
-</span><span data-line="78"><span class="w">            </span><span class="s2">&quot;pair&quot;</span><span class="p">,</span>
-</span><span data-line="79"><span class="w">            </span><span class="s2">&quot;pair_abs&quot;</span><span class="p">,</span>
-</span><span data-line="80"><span class="w">            </span><span class="s2">&quot;pair_full&quot;</span><span class="p">,</span>
-</span><span data-line="81"><span class="w">            </span><span class="s2">&quot;fischer&quot;</span><span class="p">,</span>
-</span><span data-line="82"><span class="w">            </span><span class="s2">&quot;schlegel&quot;</span><span class="p">,</span>
-</span><span data-line="83"><span class="w">            </span><span class="s2">&quot;swart&quot;</span>
-</span><span data-line="84"><span class="w">         </span><span class="p">],</span>
-</span><span data-line="85"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lbfgs Precon&quot;</span><span class="p">,</span>
-</span><span data-line="86"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="87"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="88"><span class="w">      </span><span class="nt">&quot;lbfgs_step&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="89"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lbfgs&quot;</span><span class="p">,</span>
-</span><span data-line="90"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lbfgs is the two-loop direction. newton is Levenberg-shifted H^{-1} g. rfo is Banerjee/Baker rational function optimization.&quot;</span><span class="p">,</span>
-</span><span data-line="91"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span data-line="92"><span class="w">            </span><span class="s2">&quot;lbfgs&quot;</span><span class="p">,</span>
-</span><span data-line="93"><span class="w">            </span><span class="s2">&quot;newton&quot;</span><span class="p">,</span>
-</span><span data-line="94"><span class="w">            </span><span class="s2">&quot;rfo&quot;</span>
-</span><span data-line="95"><span class="w">         </span><span class="p">],</span>
-</span><span data-line="96"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lbfgs Step&quot;</span><span class="p">,</span>
-</span><span data-line="97"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="98"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="99"><span class="w">      </span><span class="nt">&quot;lbfgs_h0&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="100"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sy_yy&quot;</span><span class="p">,</span>
-</span><span data-line="101"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Initial inverse-Hessian scale: Nocedal-Wright 7.20, Barzilai-Borwein-2, or the smaller of the two.&quot;</span><span class="p">,</span>
-</span><span data-line="102"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span data-line="103"><span class="w">            </span><span class="s2">&quot;sy_yy&quot;</span><span class="p">,</span>
-</span><span data-line="104"><span class="w">            </span><span class="s2">&quot;ss_sy&quot;</span><span class="p">,</span>
-</span><span data-line="105"><span class="w">            </span><span class="s2">&quot;adaptive&quot;</span>
-</span><span data-line="106"><span class="w">         </span><span class="p">],</span>
-</span><span data-line="107"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lbfgs H0&quot;</span><span class="p">,</span>
-</span><span data-line="108"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="109"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="110"><span class="w">      </span><span class="nt">&quot;lbfgs_accept&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="111"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
-</span><span data-line="112"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;none takes the two-loop step (ASE / historical eOn). energy refuses a rise. nonmonotone is a Grippo window of the last five values.&quot;</span><span class="p">,</span>
-</span><span data-line="113"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span data-line="114"><span class="w">            </span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
-</span><span data-line="115"><span class="w">            </span><span class="s2">&quot;energy&quot;</span><span class="p">,</span>
-</span><span data-line="116"><span class="w">            </span><span class="s2">&quot;nonmonotone&quot;</span>
-</span><span data-line="117"><span class="w">         </span><span class="p">],</span>
-</span><span data-line="118"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lbfgs Accept&quot;</span><span class="p">,</span>
-</span><span data-line="119"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="120"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="121"><span class="w">      </span><span class="nt">&quot;lbfgs_extra_updates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="122"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
-</span><span data-line="123"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Al-Baali extra-updates: reuse the newest pair this many extra times in the two-loop recursion.&quot;</span><span class="p">,</span>
-</span><span data-line="124"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lbfgs Extra Updates&quot;</span><span class="p">,</span>
-</span><span data-line="125"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
-</span><span data-line="126"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="127"><span class="w">      </span><span class="nt">&quot;lbfgs_cautious_eps&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="128"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1e-06</span><span class="p">,</span>
-</span><span data-line="129"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Li-Fukushima \u03b5 in s\u00b7y &gt;= \u03b5 ||s||\u00b2 ||g||^\u03b1.&quot;</span><span class="p">,</span>
-</span><span data-line="130"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lbfgs Cautious Eps&quot;</span><span class="p">,</span>
-</span><span data-line="131"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="132"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="133"><span class="w">      </span><span class="nt">&quot;lbfgs_cautious_alpha&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="134"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.01</span><span class="p">,</span>
-</span><span data-line="135"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Li-Fukushima \u03b1 in s\u00b7y &gt;= \u03b5 ||s||\u00b2 ||g||^\u03b1.&quot;</span><span class="p">,</span>
-</span><span data-line="136"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lbfgs Cautious Alpha&quot;</span><span class="p">,</span>
-</span><span data-line="137"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="138"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="139"><span class="w">      </span><span class="nt">&quot;lbfgs_precon_A&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="140"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">3.0</span><span class="p">,</span>
-</span><span data-line="141"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Packwood Exp stiffness A in \u03bc exp(-A (r/r_nn - 1)).&quot;</span><span class="p">,</span>
-</span><span data-line="142"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lbfgs Precon A&quot;</span><span class="p">,</span>
-</span><span data-line="143"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="144"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="145"><span class="w">      </span><span class="nt">&quot;lbfgs_precon_mu&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="146"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
-</span><span data-line="147"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Packwood pair-preconditioner scale \u03bc.&quot;</span><span class="p">,</span>
-</span><span data-line="148"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lbfgs Precon Mu&quot;</span><span class="p">,</span>
-</span><span data-line="149"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="150"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="151"><span class="w">      </span><span class="nt">&quot;lbfgs_precon_rcut&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="152"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-</span><span data-line="153"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Pair-preconditioner cutoff. 0 means 2 r_nn.&quot;</span><span class="p">,</span>
-</span><span data-line="154"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lbfgs Precon Rcut&quot;</span><span class="p">,</span>
-</span><span data-line="155"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="156"><span class="w">      </span><span class="p">}</span>
-</span><span data-line="157"><span class="w">   </span><span class="p">}</span>
-</span><span data-line="158"><span class="p">}</span>
-</span></pre></div>
-</div>
-</details></p><dl class="field-list simple">
-<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
-</ul>
-</dd>
-<dt class="field-even">Fields<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_accept</span> <span class="pre">(Literal['none',</span> <span class="pre">'energy',</span> <span class="pre">'nonmonotone'])</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_angle_reset</span> <span class="pre">(bool)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_auto_scale</span> <span class="pre">(bool)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_cautious_alpha</span> <span class="pre">(float)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_cautious_eps</span> <span class="pre">(float)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_curvature</span> <span class="pre">(Literal['reset',</span> <span class="pre">'skip',</span> <span class="pre">'damped',</span> <span class="pre">'cautious'])</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_distance_reset</span> <span class="pre">(bool)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_extra_updates</span> <span class="pre">(int)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_h0</span> <span class="pre">(Literal['sy_yy',</span> <span class="pre">'ss_sy',</span> <span class="pre">'adaptive'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_memory</span> <span class="pre">(int)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_inverse_curvature</span> <span class="pre">(float)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_max_inverse_curvature</span> <span class="pre">(float)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_memory</span> <span class="pre">(int)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_auto_scale</span> <span class="pre">(bool)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_angle_reset</span> <span class="pre">(bool)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_distance_reset</span> <span class="pre">(bool)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_curvature</span> <span class="pre">(Literal['reset',</span> <span class="pre">'skip',</span> <span class="pre">'damped',</span> <span class="pre">'cautious'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_project_rigid</span> <span class="pre">(bool)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_secant</span> <span class="pre">(Literal['standard',</span> <span class="pre">'zhangxu'])</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_precon</span> <span class="pre">(Literal['none',</span> <span class="pre">'exp',</span> <span class="pre">'c1',</span> <span class="pre">'lindh',</span> <span class="pre">'lindh_full',</span> <span class="pre">'pair',</span> <span class="pre">'pair_abs',</span> <span class="pre">'pair_full',</span> <span class="pre">'fischer',</span> <span class="pre">'schlegel',</span> <span class="pre">'swart'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_step</span> <span class="pre">(Literal['lbfgs',</span> <span class="pre">'newton',</span> <span class="pre">'rfo'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_h0</span> <span class="pre">(Literal['sy_yy',</span> <span class="pre">'ss_sy',</span> <span class="pre">'adaptive'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_accept</span> <span class="pre">(Literal['none',</span> <span class="pre">'energy',</span> <span class="pre">'nonmonotone'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_extra_updates</span> <span class="pre">(int)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_cautious_eps</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_cautious_alpha</span> <span class="pre">(float)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_precon_A</span> <span class="pre">(float)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_precon_mu</span> <span class="pre">(float)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_precon_rcut</span> <span class="pre">(float)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_project_rigid</span> <span class="pre">(bool)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_secant</span> <span class="pre">(Literal['standard',</span> <span class="pre">'zhangxu'])</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbfgs_step</span> <span class="pre">(Literal['lbfgs',</span> <span class="pre">'newton',</span> <span class="pre">'rfo'])</span></code></p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_accept">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_accept</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'energy'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'nonmonotone'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'none'</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_accept" title="Link to this definition">¶</a></dt>
-<dd><p>none takes the two-loop step (ASE / historical eOn). energy refuses a rise. nonmonotone is a Grippo window of the last five values.</p>
+<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_memory">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_memory</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_memory" title="Link to this definition">¶</a></dt>
+<dd><p>Number of previous gradients and positions to store for the LBFGS method.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_angle_reset">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_angle_reset</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_angle_reset" title="Link to this definition">¶</a></dt>
-<dd><p>If true, reset the LBFGS angle.</p>
+<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_inverse_curvature">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_inverse_curvature</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.01</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_inverse_curvature" title="Link to this definition">¶</a></dt>
+<dd><p>Initial inverse curvature value for LBFGS.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_max_inverse_curvature">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_max_inverse_curvature</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_max_inverse_curvature" title="Link to this definition">¶</a></dt>
+<dd><p>Maximum inverse curvature value for LBFGS.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -880,15 +660,15 @@ before being passed to the optimizer</p></li>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_cautious_alpha">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_cautious_alpha</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.01</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_cautious_alpha" title="Link to this definition">¶</a></dt>
-<dd><p>Li-Fukushima α in s·y &gt;= ε ||s||² ||g||^α.</p>
+<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_angle_reset">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_angle_reset</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_angle_reset" title="Link to this definition">¶</a></dt>
+<dd><p>If true, reset the LBFGS angle.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_cautious_eps">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_cautious_eps</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1e-06</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_cautious_eps" title="Link to this definition">¶</a></dt>
-<dd><p>Li-Fukushima ε in s·y &gt;= ε ||s||² ||g||^α.</p>
+<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_distance_reset">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_distance_reset</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_distance_reset" title="Link to this definition">¶</a></dt>
+<dd><p>If true, reset the LBFGS distance.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -908,15 +688,27 @@ before being passed to the optimizer</p></li>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_distance_reset">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_distance_reset</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_distance_reset" title="Link to this definition">¶</a></dt>
-<dd><p>If true, reset the LBFGS distance.</p>
+<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_project_rigid">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_project_rigid</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_project_rigid" title="Link to this definition">¶</a></dt>
+<dd><p>Project translation and rotation out of the L-BFGS force and step. Isolated clusters only.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_extra_updates">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_extra_updates</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_extra_updates" title="Link to this definition">¶</a></dt>
-<dd><p>Al-Baali extra-updates: reuse the newest pair this many extra times in the two-loop recursion.</p>
+<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_secant">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_secant</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'standard'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'zhangxu'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'standard'</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_secant" title="Link to this definition">¶</a></dt>
+<dd><p>Secant pair: standard y = g_{k+1}-g_k, or Zhang-Xu modified secant using the two energies.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_precon">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_precon</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'exp'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'c1'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lindh'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lindh_full'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pair'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pair_abs'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pair_full'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fischer'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'schlegel'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'swart'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'none'</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_precon" title="Link to this definition">¶</a></dt>
+<dd><p>Two-loop H0 metric. none is H0 I. exp/c1 is Packwood-Kermode (JCP 2016). lindh is the Lindh 1995 stretch model. pair is the Mones 2018 positive-definite pair Hessian of LJ or Morse. pair_full is the signed pair Hessian for Newton/RFO.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_step">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_step</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'lbfgs'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'newton'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rfo'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'lbfgs'</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_step" title="Link to this definition">¶</a></dt>
+<dd><p>lbfgs is the two-loop direction. newton is Levenberg-shifted H^{-1} g. rfo is Banerjee/Baker rational function optimization.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -926,27 +718,27 @@ before being passed to the optimizer</p></li>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_inverse_curvature">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_inverse_curvature</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.01</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_inverse_curvature" title="Link to this definition">¶</a></dt>
-<dd><p>Initial inverse curvature value for LBFGS.</p>
+<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_accept">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_accept</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'energy'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'nonmonotone'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'none'</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_accept" title="Link to this definition">¶</a></dt>
+<dd><p>none takes the two-loop step (ASE / historical eOn). energy refuses a rise. nonmonotone is a Grippo window of the last five values.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_max_inverse_curvature">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_max_inverse_curvature</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_max_inverse_curvature" title="Link to this definition">¶</a></dt>
-<dd><p>Maximum inverse curvature value for LBFGS.</p>
+<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_extra_updates">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_extra_updates</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_extra_updates" title="Link to this definition">¶</a></dt>
+<dd><p>Al-Baali extra-updates: reuse the newest pair this many extra times in the two-loop recursion.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_memory">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_memory</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_memory" title="Link to this definition">¶</a></dt>
-<dd><p>Number of previous gradients and positions to store for the LBFGS method.</p>
+<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_cautious_eps">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_cautious_eps</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1e-06</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_cautious_eps" title="Link to this definition">¶</a></dt>
+<dd><p>Li-Fukushima ε in s·y &gt;= ε ||s||² ||g||^α.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_precon">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_precon</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'exp'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'c1'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lindh'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lindh_full'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pair'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pair_abs'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pair_full'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fischer'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'schlegel'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'swart'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'none'</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_precon" title="Link to this definition">¶</a></dt>
-<dd><p>Two-loop H0 metric. none is H0 I. exp/c1 is Packwood-Kermode (JCP 2016). lindh is the Lindh 1995 stretch model. pair is the Mones 2018 positive-definite pair Hessian of LJ or Morse. pair_full is the signed pair Hessian for Newton/RFO.</p>
+<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_cautious_alpha">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_cautious_alpha</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.01</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_cautious_alpha" title="Link to this definition">¶</a></dt>
+<dd><p>Li-Fukushima α in s·y &gt;= ε ||s||² ||g||^α.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -967,24 +759,6 @@ before being passed to the optimizer</p></li>
 <dd><p>Pair-preconditioner cutoff. 0 means 2 r_nn.</p>
 </dd></dl>
 
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_project_rigid">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_project_rigid</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_project_rigid" title="Link to this definition">¶</a></dt>
-<dd><p>Project translation and rotation out of the L-BFGS force and step. Isolated clusters only.</p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_secant">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_secant</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'standard'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'zhangxu'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'standard'</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_secant" title="Link to this definition">¶</a></dt>
-<dd><p>Secant pair: standard y = g_{k+1}-g_k, or Zhang-Xu modified secant using the two energies.</p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.LBFGSConfig.lbfgs_step">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lbfgs_step</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'lbfgs'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'newton'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rfo'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'lbfgs'</span></span><a class="headerlink" href="#eon.schema.LBFGSConfig.lbfgs_step" title="Link to this definition">¶</a></dt>
-<dd><p>lbfgs is the two-loop direction. newton is Levenberg-shifted H^{-1} g. rfo is Banerjee/Baker rational function optimization.</p>
-</dd></dl>
-
 </dd></dl>
 
 </section>
@@ -996,50 +770,24 @@ before being passed to the optimizer</p></li>
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="eon.schema.QuickMinConfig">
 <span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">QuickMinConfig</span></span><a class="reference internal" href="../_modules/eon_schema/config/models.html#QuickMinConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.QuickMinConfig" title="Link to this definition">¶</a></dt>
-<dd><p><details  class="autodoc_pydantic_collapsable_json">
-<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
-</span><span data-line="2"><span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;QuickMinConfig&quot;</span><span class="p">,</span>
-</span><span data-line="3"><span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
-</span><span data-line="4"><span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="5"><span class="w">      </span><span class="nt">&quot;time_step&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="6"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
-</span><span data-line="7"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Time step for QuickMin, in femtoseconds.&quot;</span><span class="p">,</span>
-</span><span data-line="8"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Time Step&quot;</span><span class="p">,</span>
-</span><span data-line="9"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="10"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="11"><span class="w">      </span><span class="nt">&quot;qm_steepest_descent&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="12"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-</span><span data-line="13"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If true, use the steepest descent method for QuickMin.&quot;</span><span class="p">,</span>
-</span><span data-line="14"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Qm Steepest Descent&quot;</span><span class="p">,</span>
-</span><span data-line="15"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="16"><span class="w">      </span><span class="p">}</span>
-</span><span data-line="17"><span class="w">   </span><span class="p">}</span>
-</span><span data-line="18"><span class="p">}</span>
-</span></pre></div>
-</div>
-</details></p><dl class="field-list simple">
-<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
-</ul>
-</dd>
-<dt class="field-even">Fields<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">qm_steepest_descent</span> <span class="pre">(bool)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_step</span> <span class="pre">(float)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">qm_steepest_descent</span> <span class="pre">(bool)</span></code></p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.QuickMinConfig.qm_steepest_descent">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">qm_steepest_descent</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.QuickMinConfig.qm_steepest_descent" title="Link to this definition">¶</a></dt>
-<dd><p>If true, use the steepest descent method for QuickMin.</p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.QuickMinConfig.time_step">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">time_step</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></span><a class="headerlink" href="#eon.schema.QuickMinConfig.time_step" title="Link to this definition">¶</a></dt>
 <dd><p>Time step for QuickMin, in femtoseconds.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.QuickMinConfig.qm_steepest_descent">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">qm_steepest_descent</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.QuickMinConfig.qm_steepest_descent" title="Link to this definition">¶</a></dt>
+<dd><p>If true, use the steepest descent method for QuickMin.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1053,35 +801,9 @@ before being passed to the optimizer</p></li>
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="eon.schema.FIREConfig">
 <span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">FIREConfig</span></span><a class="reference internal" href="../_modules/eon_schema/config/models.html#FIREConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.FIREConfig" title="Link to this definition">¶</a></dt>
-<dd><p><details  class="autodoc_pydantic_collapsable_json">
-<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
-</span><span data-line="2"><span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;FIREConfig&quot;</span><span class="p">,</span>
-</span><span data-line="3"><span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
-</span><span data-line="4"><span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="5"><span class="w">      </span><span class="nt">&quot;time_step&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="6"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
-</span><span data-line="7"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Time step for FIRE, in femtoseconds.&quot;</span><span class="p">,</span>
-</span><span data-line="8"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Time Step&quot;</span><span class="p">,</span>
-</span><span data-line="9"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="10"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="11"><span class="w">      </span><span class="nt">&quot;time_step_max&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="12"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
-</span><span data-line="13"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Maximum time step for FIRE, in femtoseconds.&quot;</span><span class="p">,</span>
-</span><span data-line="14"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Time Step Max&quot;</span><span class="p">,</span>
-</span><span data-line="15"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="16"><span class="w">      </span><span class="p">}</span>
-</span><span data-line="17"><span class="w">   </span><span class="p">}</span>
-</span><span data-line="18"><span class="p">}</span>
-</span></pre></div>
-</div>
-</details></p><dl class="field-list simple">
-<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
-</ul>
-</dd>
-<dt class="field-even">Fields<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_step</span> <span class="pre">(float)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_step_max</span> <span class="pre">(float)</span></code></p></li>
 </ul>
@@ -1110,68 +832,24 @@ before being passed to the optimizer</p></li>
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="eon.schema.CGConfig">
 <span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">CGConfig</span></span><a class="reference internal" href="../_modules/eon_schema/config/models.html#CGConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.CGConfig" title="Link to this definition">¶</a></dt>
-<dd><p><details  class="autodoc_pydantic_collapsable_json">
-<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
-</span><span data-line="2"><span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CGConfig&quot;</span><span class="p">,</span>
-</span><span data-line="3"><span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
-</span><span data-line="4"><span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="5"><span class="w">      </span><span class="nt">&quot;cg_no_overshooting&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="6"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-</span><span data-line="7"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If true, prevent overshooting in CG.&quot;</span><span class="p">,</span>
-</span><span data-line="8"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cg No Overshooting&quot;</span><span class="p">,</span>
-</span><span data-line="9"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="10"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="11"><span class="w">      </span><span class="nt">&quot;cg_knock_out_max_move&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="12"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-</span><span data-line="13"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If true, limit the maximum move in CG.&quot;</span><span class="p">,</span>
-</span><span data-line="14"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cg Knock Out Max Move&quot;</span><span class="p">,</span>
-</span><span data-line="15"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="16"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="17"><span class="w">      </span><span class="nt">&quot;cg_line_search&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="18"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-</span><span data-line="19"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If true, perform a line search in CG.&quot;</span><span class="p">,</span>
-</span><span data-line="20"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cg Line Search&quot;</span><span class="p">,</span>
-</span><span data-line="21"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="22"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="23"><span class="w">      </span><span class="nt">&quot;cg_line_converged&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="24"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
-</span><span data-line="25"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Convergence criterion for the line search in CG.&quot;</span><span class="p">,</span>
-</span><span data-line="26"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cg Line Converged&quot;</span><span class="p">,</span>
-</span><span data-line="27"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="28"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="29"><span class="w">      </span><span class="nt">&quot;cg_max_iter_before_reset&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="30"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
-</span><span data-line="31"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Maximum number of iterations before reset in CG.&quot;</span><span class="p">,</span>
-</span><span data-line="32"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cg Max Iter Before Reset&quot;</span><span class="p">,</span>
-</span><span data-line="33"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
-</span><span data-line="34"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="35"><span class="w">      </span><span class="nt">&quot;cg_max_iter_line_search&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="36"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
-</span><span data-line="37"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Maximum number of iterations for the line search in CG.&quot;</span><span class="p">,</span>
-</span><span data-line="38"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cg Max Iter Line Search&quot;</span><span class="p">,</span>
-</span><span data-line="39"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
-</span><span data-line="40"><span class="w">      </span><span class="p">}</span>
-</span><span data-line="41"><span class="w">   </span><span class="p">}</span>
-</span><span data-line="42"><span class="p">}</span>
-</span></pre></div>
-</div>
-</details></p><dl class="field-list simple">
-<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
-</ul>
-</dd>
-<dt class="field-even">Fields<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cg_no_overshooting</span> <span class="pre">(bool)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cg_knock_out_max_move</span> <span class="pre">(bool)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cg_line_converged</span> <span class="pre">(float)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cg_line_search</span> <span class="pre">(bool)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cg_line_converged</span> <span class="pre">(float)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cg_max_iter_before_reset</span> <span class="pre">(int)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cg_max_iter_line_search</span> <span class="pre">(int)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cg_no_overshooting</span> <span class="pre">(bool)</span></code></p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.CGConfig.cg_no_overshooting">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cg_no_overshooting</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.CGConfig.cg_no_overshooting" title="Link to this definition">¶</a></dt>
+<dd><p>If true, prevent overshooting in CG.</p>
+</dd></dl>
+
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.CGConfig.cg_knock_out_max_move">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cg_knock_out_max_move</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.CGConfig.cg_knock_out_max_move" title="Link to this definition">¶</a></dt>
@@ -1179,15 +857,15 @@ before being passed to the optimizer</p></li>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.CGConfig.cg_line_converged">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cg_line_converged</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.1</span></span><a class="headerlink" href="#eon.schema.CGConfig.cg_line_converged" title="Link to this definition">¶</a></dt>
-<dd><p>Convergence criterion for the line search in CG.</p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.CGConfig.cg_line_search">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cg_line_search</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.CGConfig.cg_line_search" title="Link to this definition">¶</a></dt>
 <dd><p>If true, perform a line search in CG.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.CGConfig.cg_line_converged">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cg_line_converged</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.1</span></span><a class="headerlink" href="#eon.schema.CGConfig.cg_line_converged" title="Link to this definition">¶</a></dt>
+<dd><p>Convergence criterion for the line search in CG.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -1202,12 +880,6 @@ before being passed to the optimizer</p></li>
 <dd><p>Maximum number of iterations for the line search in CG.</p>
 </dd></dl>
 
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.CGConfig.cg_no_overshooting">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cg_no_overshooting</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.CGConfig.cg_no_overshooting" title="Link to this definition">¶</a></dt>
-<dd><p>If true, prevent overshooting in CG.</p>
-</dd></dl>
-
 </dd></dl>
 
 </section>
@@ -1219,35 +891,9 @@ before being passed to the optimizer</p></li>
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="eon.schema.SDConfig">
 <span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">SDConfig</span></span><a class="reference internal" href="../_modules/eon_schema/config/models.html#SDConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.SDConfig" title="Link to this definition">¶</a></dt>
-<dd><p><details  class="autodoc_pydantic_collapsable_json">
-<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
-</span><span data-line="2"><span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SDConfig&quot;</span><span class="p">,</span>
-</span><span data-line="3"><span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
-</span><span data-line="4"><span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="5"><span class="w">      </span><span class="nt">&quot;sd_alpha&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="6"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
-</span><span data-line="7"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Alpha value for SD.&quot;</span><span class="p">,</span>
-</span><span data-line="8"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Sd Alpha&quot;</span><span class="p">,</span>
-</span><span data-line="9"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="10"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="11"><span class="w">      </span><span class="nt">&quot;sd_two_point&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="12"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-</span><span data-line="13"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If true, use the two-point method in SD.&quot;</span><span class="p">,</span>
-</span><span data-line="14"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Sd Two Point&quot;</span><span class="p">,</span>
-</span><span data-line="15"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="16"><span class="w">      </span><span class="p">}</span>
-</span><span data-line="17"><span class="w">   </span><span class="p">}</span>
-</span><span data-line="18"><span class="p">}</span>
-</span></pre></div>
-</div>
-</details></p><dl class="field-list simple">
-<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
-</ul>
-</dd>
-<dt class="field-even">Fields<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sd_alpha</span> <span class="pre">(float)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sd_two_point</span> <span class="pre">(bool)</span></code></p></li>
 </ul>
@@ -1309,152 +955,18 @@ left at their defaults.</p>
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="eon.schema.XtsciConfig">
 <span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">XtsciConfig</span></span><a class="reference internal" href="../_modules/eon_schema/config/models.html#XtsciConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.XtsciConfig" title="Link to this definition">¶</a></dt>
-<dd><p><details  class="autodoc_pydantic_collapsable_json">
-<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
-</span><span data-line="2"><span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;XtsciConfig&quot;</span><span class="p">,</span>
-</span><span data-line="3"><span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
-</span><span data-line="4"><span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="5"><span class="w">      </span><span class="nt">&quot;method&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="6"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lbfgs&quot;</span><span class="p">,</span>
-</span><span data-line="7"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Solver inside the xtsci-optimize engine (opt_method = xtsci).&quot;</span><span class="p">,</span>
-</span><span data-line="8"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span data-line="9"><span class="w">            </span><span class="s2">&quot;lbfgs&quot;</span><span class="p">,</span>
-</span><span data-line="10"><span class="w">            </span><span class="s2">&quot;bfgs&quot;</span><span class="p">,</span>
-</span><span data-line="11"><span class="w">            </span><span class="s2">&quot;sr1&quot;</span><span class="p">,</span>
-</span><span data-line="12"><span class="w">            </span><span class="s2">&quot;sr2&quot;</span><span class="p">,</span>
-</span><span data-line="13"><span class="w">            </span><span class="s2">&quot;newton&quot;</span><span class="p">,</span>
-</span><span data-line="14"><span class="w">            </span><span class="s2">&quot;rfo&quot;</span><span class="p">,</span>
-</span><span data-line="15"><span class="w">            </span><span class="s2">&quot;steepest&quot;</span><span class="p">,</span>
-</span><span data-line="16"><span class="w">            </span><span class="s2">&quot;adam&quot;</span><span class="p">,</span>
-</span><span data-line="17"><span class="w">            </span><span class="s2">&quot;pso&quot;</span><span class="p">,</span>
-</span><span data-line="18"><span class="w">            </span><span class="s2">&quot;polak_ribiere&quot;</span><span class="p">,</span>
-</span><span data-line="19"><span class="w">            </span><span class="s2">&quot;fletcher_reeves&quot;</span><span class="p">,</span>
-</span><span data-line="20"><span class="w">            </span><span class="s2">&quot;hestenes_stiefel&quot;</span><span class="p">,</span>
-</span><span data-line="21"><span class="w">            </span><span class="s2">&quot;dai_yuan&quot;</span><span class="p">,</span>
-</span><span data-line="22"><span class="w">            </span><span class="s2">&quot;conjugate_descent&quot;</span><span class="p">,</span>
-</span><span data-line="23"><span class="w">            </span><span class="s2">&quot;hager_zhang&quot;</span><span class="p">,</span>
-</span><span data-line="24"><span class="w">            </span><span class="s2">&quot;liu_storey&quot;</span><span class="p">,</span>
-</span><span data-line="25"><span class="w">            </span><span class="s2">&quot;fr_pr&quot;</span><span class="p">,</span>
-</span><span data-line="26"><span class="w">            </span><span class="s2">&quot;fire&quot;</span><span class="p">,</span>
-</span><span data-line="27"><span class="w">            </span><span class="s2">&quot;bb&quot;</span><span class="p">,</span>
-</span><span data-line="28"><span class="w">            </span><span class="s2">&quot;dogleg&quot;</span><span class="p">,</span>
-</span><span data-line="29"><span class="w">            </span><span class="s2">&quot;fire2&quot;</span>
-</span><span data-line="30"><span class="w">         </span><span class="p">],</span>
-</span><span data-line="31"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Method&quot;</span><span class="p">,</span>
-</span><span data-line="32"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="33"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="34"><span class="w">      </span><span class="nt">&quot;qn_step&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="35"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lbfgs&quot;</span><span class="p">,</span>
-</span><span data-line="36"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;How an L-BFGS session uses a host Hessian (xts_qn_step_t).&quot;</span><span class="p">,</span>
-</span><span data-line="37"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span data-line="38"><span class="w">            </span><span class="s2">&quot;lbfgs&quot;</span><span class="p">,</span>
-</span><span data-line="39"><span class="w">            </span><span class="s2">&quot;newton&quot;</span><span class="p">,</span>
-</span><span data-line="40"><span class="w">            </span><span class="s2">&quot;rfo&quot;</span>
-</span><span data-line="41"><span class="w">         </span><span class="p">],</span>
-</span><span data-line="42"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Qn Step&quot;</span><span class="p">,</span>
-</span><span data-line="43"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="44"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="45"><span class="w">      </span><span class="nt">&quot;precon&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="46"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
-</span><span data-line="47"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Host pair / model Hessian kind. Built in eOn, not in xtsci.&quot;</span><span class="p">,</span>
-</span><span data-line="48"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span data-line="49"><span class="w">            </span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
-</span><span data-line="50"><span class="w">            </span><span class="s2">&quot;pair&quot;</span><span class="p">,</span>
-</span><span data-line="51"><span class="w">            </span><span class="s2">&quot;pair_abs&quot;</span><span class="p">,</span>
-</span><span data-line="52"><span class="w">            </span><span class="s2">&quot;pair_full&quot;</span><span class="p">,</span>
-</span><span data-line="53"><span class="w">            </span><span class="s2">&quot;exp&quot;</span><span class="p">,</span>
-</span><span data-line="54"><span class="w">            </span><span class="s2">&quot;c1&quot;</span><span class="p">,</span>
-</span><span data-line="55"><span class="w">            </span><span class="s2">&quot;lindh&quot;</span><span class="p">,</span>
-</span><span data-line="56"><span class="w">            </span><span class="s2">&quot;lindh_full&quot;</span><span class="p">,</span>
-</span><span data-line="57"><span class="w">            </span><span class="s2">&quot;fischer&quot;</span><span class="p">,</span>
-</span><span data-line="58"><span class="w">            </span><span class="s2">&quot;schlegel&quot;</span><span class="p">,</span>
-</span><span data-line="59"><span class="w">            </span><span class="s2">&quot;swart&quot;</span>
-</span><span data-line="60"><span class="w">         </span><span class="p">],</span>
-</span><span data-line="61"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Precon&quot;</span><span class="p">,</span>
-</span><span data-line="62"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="63"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="64"><span class="w">      </span><span class="nt">&quot;accept&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="65"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
-</span><span data-line="66"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;How the session takes a proposed step (xts_accept_t).&quot;</span><span class="p">,</span>
-</span><span data-line="67"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span data-line="68"><span class="w">            </span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
-</span><span data-line="69"><span class="w">            </span><span class="s2">&quot;energy&quot;</span><span class="p">,</span>
-</span><span data-line="70"><span class="w">            </span><span class="s2">&quot;nonmonotone&quot;</span>
-</span><span data-line="71"><span class="w">         </span><span class="p">],</span>
-</span><span data-line="72"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Accept&quot;</span><span class="p">,</span>
-</span><span data-line="73"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="74"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="75"><span class="w">      </span><span class="nt">&quot;highs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="76"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-</span><span data-line="77"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;HiGHS feasible-set step (xts_solver_set_highs).&quot;</span><span class="p">,</span>
-</span><span data-line="78"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Highs&quot;</span><span class="p">,</span>
-</span><span data-line="79"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="80"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="81"><span class="w">      </span><span class="nt">&quot;manifold&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="82"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
-</span><span data-line="83"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Embedded manifold (xts_manifold_t).&quot;</span><span class="p">,</span>
-</span><span data-line="84"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span data-line="85"><span class="w">            </span><span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
-</span><span data-line="86"><span class="w">            </span><span class="s2">&quot;rigid_quotient&quot;</span><span class="p">,</span>
-</span><span data-line="87"><span class="w">            </span><span class="s2">&quot;mw_rigid&quot;</span><span class="p">,</span>
-</span><span data-line="88"><span class="w">            </span><span class="s2">&quot;sphere&quot;</span><span class="p">,</span>
-</span><span data-line="89"><span class="w">            </span><span class="s2">&quot;so3&quot;</span><span class="p">,</span>
-</span><span data-line="90"><span class="w">            </span><span class="s2">&quot;stiefel&quot;</span><span class="p">,</span>
-</span><span data-line="91"><span class="w">            </span><span class="s2">&quot;se3&quot;</span>
-</span><span data-line="92"><span class="w">         </span><span class="p">],</span>
-</span><span data-line="93"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Manifold&quot;</span><span class="p">,</span>
-</span><span data-line="94"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="95"><span class="w">      </span><span class="p">}</span>
-</span><span data-line="96"><span class="w">   </span><span class="p">}</span>
-</span><span data-line="97"><span class="p">}</span>
-</span></pre></div>
-</div>
-</details></p><dl class="field-list simple">
-<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
-</ul>
-</dd>
-<dt class="field-even">Fields<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">method</span> <span class="pre">(Literal['lbfgs',</span> <span class="pre">'bfgs',</span> <span class="pre">'sr1',</span> <span class="pre">'sr2',</span> <span class="pre">'newton',</span> <span class="pre">'rfo',</span> <span class="pre">'steepest',</span> <span class="pre">'adam',</span> <span class="pre">'pso',</span> <span class="pre">'polak_ribiere',</span> <span class="pre">'fletcher_reeves',</span> <span class="pre">'hestenes_stiefel',</span> <span class="pre">'dai_yuan',</span> <span class="pre">'conjugate_descent',</span> <span class="pre">'hager_zhang',</span> <span class="pre">'liu_storey',</span> <span class="pre">'fr_pr',</span> <span class="pre">'fire',</span> <span class="pre">'bb',</span> <span class="pre">'dogleg',</span> <span class="pre">'fire2'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">qn_step</span> <span class="pre">(Literal['lbfgs',</span> <span class="pre">'newton',</span> <span class="pre">'rfo'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">precon</span> <span class="pre">(Literal['none',</span> <span class="pre">'pair',</span> <span class="pre">'pair_abs',</span> <span class="pre">'pair_full',</span> <span class="pre">'exp',</span> <span class="pre">'c1',</span> <span class="pre">'lindh',</span> <span class="pre">'lindh_full',</span> <span class="pre">'fischer',</span> <span class="pre">'schlegel',</span> <span class="pre">'swart'])</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">accept</span> <span class="pre">(Literal['none',</span> <span class="pre">'energy',</span> <span class="pre">'nonmonotone'])</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">highs</span> <span class="pre">(bool)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">manifold</span> <span class="pre">(Literal['euclidean',</span> <span class="pre">'rigid_quotient',</span> <span class="pre">'mw_rigid',</span> <span class="pre">'sphere',</span> <span class="pre">'so3',</span> <span class="pre">'stiefel',</span> <span class="pre">'se3'])</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">method</span> <span class="pre">(Literal['lbfgs',</span> <span class="pre">'bfgs',</span> <span class="pre">'sr1',</span> <span class="pre">'sr2',</span> <span class="pre">'newton',</span> <span class="pre">'rfo',</span> <span class="pre">'steepest',</span> <span class="pre">'adam',</span> <span class="pre">'pso',</span> <span class="pre">'polak_ribiere',</span> <span class="pre">'fletcher_reeves',</span> <span class="pre">'hestenes_stiefel',</span> <span class="pre">'dai_yuan',</span> <span class="pre">'conjugate_descent',</span> <span class="pre">'hager_zhang',</span> <span class="pre">'liu_storey',</span> <span class="pre">'fr_pr',</span> <span class="pre">'fire',</span> <span class="pre">'bb',</span> <span class="pre">'dogleg',</span> <span class="pre">'fire2'])</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">precon</span> <span class="pre">(Literal['none',</span> <span class="pre">'pair',</span> <span class="pre">'pair_abs',</span> <span class="pre">'pair_full',</span> <span class="pre">'exp',</span> <span class="pre">'c1',</span> <span class="pre">'lindh',</span> <span class="pre">'lindh_full',</span> <span class="pre">'fischer',</span> <span class="pre">'schlegel',</span> <span class="pre">'swart'])</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">qn_step</span> <span class="pre">(Literal['lbfgs',</span> <span class="pre">'newton',</span> <span class="pre">'rfo'])</span></code></p></li>
 </ul>
 </dd>
 </dl>
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.XtsciConfig.accept">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">accept</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'energy'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'nonmonotone'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'none'</span></span><a class="headerlink" href="#eon.schema.XtsciConfig.accept" title="Link to this definition">¶</a></dt>
-<dd><p><code class="docutils literal notranslate"><span class="pre">none</span></code> takes the maxmove-clipped step (one oracle). <code class="docutils literal notranslate"><span class="pre">energy</span></code>
-refuses a rise. <code class="docutils literal notranslate"><span class="pre">nonmonotone</span></code> is the Grippo window of five.</p>
-<p>How the session takes a proposed step (xts_accept_t).</p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.XtsciConfig.highs">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">highs</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.XtsciConfig.highs" title="Link to this definition">¶</a></dt>
-<dd><p>When true, xtsci asks HiGHS for the step: Newton QP on the host
-pair Hessian if one is passed, otherwise two-loop plus boxes.
-Needs <code class="docutils literal notranslate"><span class="pre">--features</span> <span class="pre">highs</span></code> on the xtsci-optimize build.</p>
-<p>HiGHS feasible-set step (xts_solver_set_highs).</p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.XtsciConfig.manifold">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">manifold</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'euclidean'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rigid_quotient'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'mw_rigid'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sphere'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'so3'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'stiefel'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'se3'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'euclidean'</span></span><a class="headerlink" href="#eon.schema.XtsciConfig.manifold" title="Link to this definition">¶</a></dt>
-<dd><p>Euclidean is the default. Isolated molecules use
-<code class="docutils literal notranslate"><span class="pre">rigid_quotient</span></code> (Sella Cartesian (R^{3N}/SE(3))) or
-<code class="docutils literal notranslate"><span class="pre">mw_rigid</span></code> (Page-McIver / Sella IRC Eckart). <code class="docutils literal notranslate"><span class="pre">sphere</span></code> is
-(S^{n-1}), <code class="docutils literal notranslate"><span class="pre">so3</span></code> a row-major 9-vector, <code class="docutils literal notranslate"><span class="pre">stiefel</span></code> is
-(mathrm{St}(n,1)), <code class="docutils literal notranslate"><span class="pre">se3</span></code> is rotation then translation
-(length 12).</p>
-<p>Embedded manifold (xts_manifold_t).</p>
-</dd></dl>
-
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.XtsciConfig.method">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">method</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'lbfgs'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bfgs'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sr1'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sr2'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'newton'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rfo'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'steepest'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'adam'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pso'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'polak_ribiere'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fletcher_reeves'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'hestenes_stiefel'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'dai_yuan'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'conjugate_descent'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'hager_zhang'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'liu_storey'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fr_pr'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fire'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bb'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'dogleg'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fire2'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'lbfgs'</span></span><a class="headerlink" href="#eon.schema.XtsciConfig.method" title="Link to this definition">¶</a></dt>
@@ -1497,6 +1009,15 @@ method the engine runs. Tokens match <code class="docutils literal notranslate">
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.XtsciConfig.qn_step">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">qn_step</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'lbfgs'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'newton'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rfo'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'lbfgs'</span></span><a class="headerlink" href="#eon.schema.XtsciConfig.qn_step" title="Link to this definition">¶</a></dt>
+<dd><p>Only used when <code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">lbfgs</span></code>. <code class="docutils literal notranslate"><span class="pre">lbfgs</span></code> is two-loop with
+optional <code class="docutils literal notranslate"><span class="pre">precon</span></code> as (H_0 = P^{-1}). <code class="docutils literal notranslate"><span class="pre">newton</span></code> / <code class="docutils literal notranslate"><span class="pre">rfo</span></code> take
+that same host matrix as the step (eOn rematch).</p>
+<p>How an L-BFGS session uses a host Hessian (xts_qn_step_t).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.XtsciConfig.precon">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">precon</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pair'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pair_abs'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pair_full'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'exp'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'c1'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lindh'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lindh_full'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fischer'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'schlegel'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'swart'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'none'</span></span><a class="headerlink" href="#eon.schema.XtsciConfig.precon" title="Link to this definition">¶</a></dt>
 <dd><p><code class="docutils literal notranslate"><span class="pre">pair</span></code> is the Mones PSD clip. <code class="docutils literal notranslate"><span class="pre">pair_full</span></code> keeps signed
@@ -1507,12 +1028,32 @@ in eOn and passed through <code class="docutils literal notranslate"><span class
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.XtsciConfig.qn_step">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">qn_step</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'lbfgs'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'newton'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rfo'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'lbfgs'</span></span><a class="headerlink" href="#eon.schema.XtsciConfig.qn_step" title="Link to this definition">¶</a></dt>
-<dd><p>Only used when <code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">lbfgs</span></code>. <code class="docutils literal notranslate"><span class="pre">lbfgs</span></code> is two-loop with
-optional <code class="docutils literal notranslate"><span class="pre">precon</span></code> as (H_0 = P^{-1}). <code class="docutils literal notranslate"><span class="pre">newton</span></code> / <code class="docutils literal notranslate"><span class="pre">rfo</span></code> take
-that same host matrix as the step (eOn rematch).</p>
-<p>How an L-BFGS session uses a host Hessian (xts_qn_step_t).</p>
+<dt class="sig sig-object py" id="eon.schema.XtsciConfig.accept">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">accept</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'energy'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'nonmonotone'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'none'</span></span><a class="headerlink" href="#eon.schema.XtsciConfig.accept" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">none</span></code> takes the maxmove-clipped step (one oracle). <code class="docutils literal notranslate"><span class="pre">energy</span></code>
+refuses a rise. <code class="docutils literal notranslate"><span class="pre">nonmonotone</span></code> is the Grippo window of five.</p>
+<p>How the session takes a proposed step (xts_accept_t).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.XtsciConfig.highs">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">highs</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.XtsciConfig.highs" title="Link to this definition">¶</a></dt>
+<dd><p>When true, xtsci asks HiGHS for the step: Newton QP on the host
+pair Hessian if one is passed, otherwise two-loop plus boxes.
+Needs <code class="docutils literal notranslate"><span class="pre">--features</span> <span class="pre">highs</span></code> on the xtsci-optimize build.</p>
+<p>HiGHS feasible-set step (xts_solver_set_highs).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.XtsciConfig.manifold">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">manifold</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'euclidean'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rigid_quotient'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'mw_rigid'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sphere'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'so3'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'stiefel'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'se3'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'euclidean'</span></span><a class="headerlink" href="#eon.schema.XtsciConfig.manifold" title="Link to this definition">¶</a></dt>
+<dd><p>Euclidean is the default. Isolated molecules use
+<code class="docutils literal notranslate"><span class="pre">rigid_quotient</span></code> (Sella Cartesian (R^{3N}/SE(3))) or
+<code class="docutils literal notranslate"><span class="pre">mw_rigid</span></code> (Page-McIver / Sella IRC Eckart). <code class="docutils literal notranslate"><span class="pre">sphere</span></code> is
+(S^{n-1}), <code class="docutils literal notranslate"><span class="pre">so3</span></code> a row-major 9-vector, <code class="docutils literal notranslate"><span class="pre">stiefel</span></code> is
+(mathrm{St}(n,1)), <code class="docutils literal notranslate"><span class="pre">se3</span></code> is rotation then translation
+(length 12).</p>
+<p>Embedded manifold (xts_manifold_t).</p>
 </dd></dl>
 
 </dd></dl>
@@ -1533,7 +1074,7 @@ that same host matrix as the step (eOn rematch).</p>
 </section>
 <hr class="footnotes docutils" />
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id100" role="doc-footnote">
+<aside class="footnote brackets" id="id108" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>e.g. as may be found in <code class="docutils literal notranslate"><span class="pre">scipy</span></code> or <code class="docutils literal notranslate"><span class="pre">ceres</span></code> for instance</p>
 </aside>

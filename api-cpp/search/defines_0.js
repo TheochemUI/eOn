@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['debug_5flevel_5freturn_0',['DEBUG_LEVEL_RETURN',['../zhu__philpott_8cpp.html#a51c01b51034d4f9275ed2ee22ebae99f',1,'zhu_philpott.cpp']]]
+  ['_5fgnu_5fsource_0',['_GNU_SOURCE',['../RGPotEngine_8cpp.html#a369266c24eacffb87046522897a570d5',1,'RGPotEngine.cpp']]]
 ];

@@ -1,0 +1,522 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: /home/runner/work/eOn/eOn/include/eon/PathIntegral.h Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn 3.2.0</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('PathIntegral_8h_source.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">PathIntegral.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PathIntegral_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">/*</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">** This file is part of eOn.</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">**</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">** i-PI Copyright (C) 2014-2015 i-PI developers</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">**</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">** Permission is hereby granted, free of charge, to any person obtaining</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">** a copy of this software and associated documentation files (the</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">** &quot;Software&quot;), to deal in the Software without restriction, including</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">** without limitation the rights to use, copy, modify, merge, publish,</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">** distribute, sublicense, and/or sell copies of the Software, and to</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">** permit persons to whom the Software is furnished to do so, subject to</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment">** the following conditions:</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment">**</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment">** The above copyright notice and this permission notice shall be</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment">** included in all copies or substantial portions of the Software.</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">**</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment">** THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment">** EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment">** MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment">** NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment">** BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment">** ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment">** CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment">** SOFTWARE.</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment">**</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment">** SPDX-License-Identifier: MIT</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="comment">*/</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">#include &quot;<a class="code" href="Eigen_8h.html">eon/Eigen.h</a>&quot;</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#include &quot;<a class="code" href="Potential_8h.html">eon/Potential.h</a>&quot;</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc_1_1pathintegral.html">eonc::pathintegral</a> {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="namespaceeonc_1_1pathintegral.html#abe31f237ac5f5aff8dce43642078966ea91efa9e46e4c6cbb78d9fd0a773cc6d5">   42</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeonc_1_1pathintegral.html#abe31f237ac5f5aff8dce43642078966e">Springs</a> { <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#abe31f237ac5f5aff8dce43642078966eab830e5e056ff2368bbf3b74d3b0fbc02">Trotter</a>, <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#abe31f237ac5f5aff8dce43642078966ea91efa9e46e4c6cbb78d9fd0a773cc6d5">Eco</a> };</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8a8c09ee8e1496710919dcbd718ff285dd">   46</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8">Thermostat</a> { <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8adac4e478206552d57f74e6a5f9fc80bc">Pile</a>, <a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8a8c09ee8e1496710919dcbd718ff285dd">Piglet</a> };</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="};">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeonc_1_1pathintegral_1_1Options.html">   48</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeonc_1_1pathintegral_1_1Options.html">Options</a> {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeonc_1_1pathintegral_1_1Options.html#aa5e127abb4c261a67c9edd4f7bc1d40b">   49</a></span>  <span class="keywordtype">long</span> <a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Options.html#aa5e127abb4c261a67c9edd4f7bc1d40b">beads</a>{8};</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeonc_1_1pathintegral_1_1Options.html#ace7cb6ca4dcd5e5133aae0fd79e39398">   50</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Options.html#ace7cb6ca4dcd5e5133aae0fd79e39398">temperature</a>{1.0};</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeonc_1_1pathintegral_1_1Options.html#ae035e2066df9e4f9c4f93b5f30f8515e">   51</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Options.html#ae035e2066df9e4f9c4f93b5f30f8515e">kB</a>{1.0};</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeonc_1_1pathintegral_1_1Options.html#abfc70ee4f6ee8a424c931392f10c7de3">   52</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Options.html#abfc70ee4f6ee8a424c931392f10c7de3">hbar</a>{1.0};</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeonc_1_1pathintegral_1_1Options.html#a32cfa3c4fafcb0e4467d2d1c1a1b307d">   53</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Options.html#a32cfa3c4fafcb0e4467d2d1c1a1b307d">dt</a>{0.005};</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeonc_1_1pathintegral_1_1Options.html#add8c1123b9abd205b968804bd345951b">   54</a></span>  <a class="code hl_enumeration" href="namespaceeonc_1_1pathintegral.html#abe31f237ac5f5aff8dce43642078966e">Springs</a> <a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Options.html#add8c1123b9abd205b968804bd345951b">springs</a>{<a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#abe31f237ac5f5aff8dce43642078966eab830e5e056ff2368bbf3b74d3b0fbc02">Springs::Trotter</a>};</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeonc_1_1pathintegral_1_1Options.html#a1c166accd9ac8ae595dcba9587fd631e">   55</a></span>  <a class="code hl_enumeration" href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8">Thermostat</a> <a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Options.html#a1c166accd9ac8ae595dcba9587fd631e">thermostat</a>{<a class="code hl_enumvalue" href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8adac4e478206552d57f74e6a5f9fc80bc">Thermostat::Pile</a>};</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeonc_1_1pathintegral_1_1Options.html#ab1c5c800fe075a1e6ad0bf9431cddea1">   57</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Options.html#ab1c5c800fe075a1e6ad0bf9431cddea1">pileTau</a>{0.2};</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeonc_1_1pathintegral_1_1Options.html#a7232df2aa06c310842292fd1a7ba8d9f">   59</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Options.html#a7232df2aa06c310842292fd1a7ba8d9f">pileScale</a>{1.0};</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeonc_1_1pathintegral_1_1Options.html#a1f6545406e7c659239c00556e7672f98">   61</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Options.html#a1f6545406e7c659239c00556e7672f98">ecoOmegaMax</a>{0.0};</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeonc_1_1pathintegral_1_1Options.html#a462451eb9b3d400d3803107ea8ec1ed1">   64</a></span>  std::string <a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Options.html#a462451eb9b3d400d3803107ea8ec1ed1">gleFile</a>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeonc_1_1pathintegral_1_1Options.html#a700dab2116cd740f25511468409d688a">   65</a></span>  std::uint64_t <a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Options.html#a700dab2116cd740f25511468409d688a">seed</a>{1};</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>};</div>
+</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="foldopen" id="foldopen00068" data-start="{" data-end="};">
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structeonc_1_1pathintegral_1_1Sample.html">   68</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeonc_1_1pathintegral_1_1Sample.html">Sample</a> {</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeonc_1_1pathintegral_1_1Sample.html#a62c575006042da7e8f641a0211af4429">   69</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Sample.html#a62c575006042da7e8f641a0211af4429">kineticCv</a>{0.0};</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structeonc_1_1pathintegral_1_1Sample.html#a9b5d2175e9cefb3ef89a788a7a834c05">   72</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Sample.html#a9b5d2175e9cefb3ef89a788a7a834c05">meanForce</a>{0.0};</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="structeonc_1_1pathintegral_1_1Sample.html#ac122b3e5170358918e0ed2ae121a074e">   73</a></span>  <span class="keywordtype">long</span> <a class="code hl_variable" href="structeonc_1_1pathintegral_1_1Sample.html#ac122b3e5170358918e0ed2ae121a074e">batches</a>{0};</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>};</div>
+</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeonc_1_1pathintegral.html#ab31c49e76d72cce0ead85959bcc2fa62">requireTrotterSprings</a>(<span class="keyword">const</span> std::string &amp;springs, <span class="keyword">const</span> <span class="keywordtype">char</span> *use);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>VectorXd <a class="code hl_function" href="namespaceeonc_1_1pathintegral.html#a7cd723e7974a04d9e90f5943274f54ed">trotterEigenvalues</a>(<span class="keywordtype">long</span> nBeads);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>VectorXd <a class="code hl_function" href="namespaceeonc_1_1pathintegral.html#adc263a73db61ab235b834a5785881fd2">ecoEigenvalues</a>(<span class="keywordtype">long</span> nBeads, <span class="keywordtype">double</span> xmax);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> <a class="code hl_function" href="namespaceeonc_1_1pathintegral.html#a3b4d87da5fff9d69f06779f9aca9a5f7">normalModeMatrix</a>(<span class="keywordtype">long</span> nBeads);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span></div>
+<div class="foldopen" id="foldopen00092" data-start="{" data-end="};">
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html">   92</a></span><span class="keyword">class </span><a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a5f39bedd78d0b03c544e86c5caf030c3">RingPolymer</a> {</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>  <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a5f39bedd78d0b03c544e86c5caf030c3">RingPolymer</a>(<span class="keywordtype">long</span> nAtoms, std::vector&lt;double&gt; masses,</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>              std::vector&lt;int&gt; atomicNumbers, std::vector&lt;char&gt; free,</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>              <a class="code hl_struct" href="structeonc_1_1pathintegral_1_1Options.html">Options</a> opt);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a257c03784d54a48ebdde592bf499e7fe">setAllBeads</a>(<span class="keyword">const</span> <span class="keywordtype">double</span> *q);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a6d788e1e1f6342e281e24b576da84335">setBeads</a>(<span class="keyword">const</span> std::vector&lt;VectorXd&gt; &amp;<a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#ad19c1cbe81c8e40da670c896fea921a3">beads</a>);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#ad19c1cbe81c8e40da670c896fea921a3">  102</a></span>  [[nodiscard]] <span class="keyword">const</span> std::vector&lt;VectorXd&gt; &amp;<a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#ad19c1cbe81c8e40da670c896fea921a3">beads</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a86ae137609da6c7360545f5b233a2d4a">q_</a>; }</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#ab22cf783d4320a7d59a6bb706f097c37">  103</a></span>  [[nodiscard]] <span class="keyword">const</span> std::vector&lt;VectorXd&gt; &amp;<a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#ab22cf783d4320a7d59a6bb706f097c37">momenta</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a812baa781db7e930beb20fd40c5b3529">p_</a>; }</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a570afcf856dfd6ca1ec3e743188c3525">setMomenta</a>(<span class="keyword">const</span> std::vector&lt;VectorXd&gt; &amp;<a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#ab22cf783d4320a7d59a6bb706f097c37">momenta</a>);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#aa89b5252e25555c96689c0e748d098ae">thermalMomenta</a>();</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span></div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a8474affd7229bce54ff2cfd3b4e19942">setHyperplane</a>(<span class="keyword">const</span> VectorXd &amp;normal, <span class="keyword">const</span> VectorXd &amp;origin);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#aa4295a7cdcb5b7d25060fcc9e7b02abf">step</a>(<a class="code hl_class" href="classeonc_1_1Potential.html">Potential</a> &amp;<a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a>, <span class="keyword">const</span> <span class="keywordtype">double</span> *box, <span class="keywordtype">bool</span> record);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a5985197c3201b5a6b6057740254cfa3c">nveStep</a>(<a class="code hl_class" href="classeonc_1_1Potential.html">Potential</a> &amp;<a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a>, <span class="keyword">const</span> <span class="keywordtype">double</span> *box);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>  [[nodiscard]] <span class="keywordtype">double</span> <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#ac0b3343a4e7217eb65ce5f3c7ed0145d">kineticCv</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>  [[nodiscard]] <span class="keywordtype">double</span> <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a5f42f8550d18e315d852666067aea433">meanForce</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a7ef3b0018176677a304e7d03f52491c4">  120</a></span>  [[nodiscard]] <span class="keywordtype">long</span> <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a7ef3b0018176677a304e7d03f52491c4">batches</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a8f6b0d76604d0a69dc9843c5566448a6">batches_</a>; }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>  [[nodiscard]] VectorXd <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a6dda56bc33bb780f9a4c3d495c5b1719">centroid</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>  [[nodiscard]] VectorXd <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a07e32a3f53179f0163291834556a5229">centroidVelocity</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#ae2b2f31afa60e99fd0122e0c95eaa3b5">resetAverages</a>();</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>  <a class="code hl_struct" href="structeonc_1_1pathintegral_1_1Sample.html">Sample</a> <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a619add2791458803ea4cb231dd2bdfd0">sample</a>(<a class="code hl_class" href="classeonc_1_1Potential.html">Potential</a> &amp;<a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a>, <span class="keyword">const</span> <span class="keywordtype">double</span> *box, <span class="keywordtype">long</span> equilibration,</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                <span class="keywordtype">long</span> production);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a823245abfa7bf2b6663e5c885a3dd5f3">forces</a>(<a class="code hl_class" href="classeonc_1_1Potential.html">Potential</a> &amp;<a class="code hl_namespace" href="namespaceeonc_1_1pot.html">pot</a>, <span class="keyword">const</span> <span class="keywordtype">double</span> *box);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a2bd8ddc3c753deb5849285f4b63cbe69">thermostat</a>(<span class="keywordtype">double</span> h);</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a8e42ee83d6d89aeabb5ea7b137620f43">kick</a>(<span class="keywordtype">double</span> h, <span class="keywordtype">bool</span> dropParallel);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#ac9f124d4dfc61ad76a2cbd50901501c1">propagate</a>(<span class="keywordtype">double</span> h);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a851525481e8495caae1353928a7a96ae">projectPosition</a>();</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a39b4ebf1418938bde242b275c92b27a7">projectMomentum</a>();</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a64f6ba13db5dd7e837e2419078100724">toNormal</a>(<span class="keyword">const</span> std::vector&lt;VectorXd&gt; &amp;src,</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>                std::vector&lt;VectorXd&gt; &amp;dst) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#ac1bd407a02ac0616338581a948a7313a">fromNormal</a>(<span class="keyword">const</span> std::vector&lt;VectorXd&gt; &amp;src,</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>                  std::vector&lt;VectorXd&gt; &amp;dst) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>  <span class="keywordtype">double</span> <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#aa6f301f2f488231906c324b1a0588f23">gauss</a>();</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a2765c1fd31dd85f7f9a0cf7a6179306d">initGle</a>();</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#aa651609fb79365a0a9045c30c5be1403">  143</a></span>  <a class="code hl_struct" href="structeonc_1_1pathintegral_1_1Options.html">Options</a> <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#aa651609fb79365a0a9045c30c5be1403">opt_</a>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#afaa2ba0ef1f6ffd55dce06f8b3bcc2cb">  144</a></span>  <span class="keywordtype">long</span> <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#afaa2ba0ef1f6ffd55dce06f8b3bcc2cb">nAtoms_</a>{0};</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#aa614089c7eee8d50a26ec2ebafb39365">  145</a></span>  <span class="keywordtype">long</span> <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#aa614089c7eee8d50a26ec2ebafb39365">nDof_</a>{0};</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#ae76dd5a639d68e579905bc2906548428">  146</a></span>  <span class="keywordtype">long</span> <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#ae76dd5a639d68e579905bc2906548428">nBeads_</a>{0};</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a725407172321f089637ecdfbe7c11e74">  147</a></span>  <span class="keywordtype">long</span> <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a725407172321f089637ecdfbe7c11e74">nFree_</a>{0};</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a432fcfe2be2bf7d01117b7c2b0a8fd6c">  148</a></span>  std::vector&lt;double&gt; <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a432fcfe2be2bf7d01117b7c2b0a8fd6c">mass_</a>;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a253a88d9f3957bc4205b2e0dd4b92e15">  149</a></span>  std::vector&lt;int&gt; <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a253a88d9f3957bc4205b2e0dd4b92e15">atomicNumbers_</a>;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a8398c4a0003611ecbbc26c146caadd87">  150</a></span>  std::vector&lt;char&gt; <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a8398c4a0003611ecbbc26c146caadd87">free_</a>;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a29ad6aa078ee7c0bbf4d7dec249191d1">  151</a></span>  std::vector&lt;long&gt; <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a29ad6aa078ee7c0bbf4d7dec249191d1">freeIndex_</a>;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a66b1b0a6fc4c1b5d830d20d5a290e074">  152</a></span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a66b1b0a6fc4c1b5d830d20d5a290e074">modes_</a>;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a99b4920e29bfebb9ff2f9763afea17b5">  153</a></span>  VectorXd <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a99b4920e29bfebb9ff2f9763afea17b5">omegaK_</a>;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a86ae137609da6c7360545f5b233a2d4a">  154</a></span>  std::vector&lt;VectorXd&gt; <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a86ae137609da6c7360545f5b233a2d4a">q_</a>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a812baa781db7e930beb20fd40c5b3529">  155</a></span>  std::vector&lt;VectorXd&gt; <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a812baa781db7e930beb20fd40c5b3529">p_</a>;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a544fc3ef09d8b2765e292411fc8e10be">  156</a></span>  std::vector&lt;VectorXd&gt; <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a544fc3ef09d8b2765e292411fc8e10be">f_</a>;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#adc71fcb35c3aa1c816a4378f549f1734">  157</a></span>  std::vector&lt;VectorXd&gt; <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#adc71fcb35c3aa1c816a4378f549f1734">qnm_</a>;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a2b49bf3a864bbb22c5dcd5dc2138aab5">  158</a></span>  std::vector&lt;VectorXd&gt; <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a2b49bf3a864bbb22c5dcd5dc2138aab5">pnm_</a>;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a3f2bb67b9763c0b85c5aee75415c2427">  159</a></span>  VectorXd <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a3f2bb67b9763c0b85c5aee75415c2427">planeNormal_</a>;</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a3a3352a65b470de7df68451ed33a90df">  160</a></span>  VectorXd <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a3a3352a65b470de7df68451ed33a90df">planeOrigin_</a>;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#aa5030ded646e143204a717f327a536a4">  161</a></span>  <span class="keywordtype">bool</span> <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#aa5030ded646e143204a717f327a536a4">constrain_</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a1da753e22f7e9979ffc1d192f43c28d1">  162</a></span>  <span class="keywordtype">bool</span> <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a1da753e22f7e9979ffc1d192f43c28d1">haveForces_</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span> </div>
+<div class="foldopen" id="foldopen00164" data-start="{" data-end="};">
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno"><a class="line" href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html">  164</a></span>  <span class="keyword">struct </span><a class="code hl_struct" href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html">ModeGle</a> {</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno"><a class="line" href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html#a673d3c09500cf58f2927fb3809e2fe05">  165</a></span>    <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> <a class="code hl_variable" href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html#a673d3c09500cf58f2927fb3809e2fe05">drift</a>;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno"><a class="line" href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html#ac0300502fee6873941d90ad7683082da">  166</a></span>    <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> <a class="code hl_variable" href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html#ac0300502fee6873941d90ad7683082da">covariance</a>;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html#af0946bfcda4a6ed36ef6b2b61f02a5de">  167</a></span>    <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> <a class="code hl_variable" href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html#af0946bfcda4a6ed36ef6b2b61f02a5de">propagate</a>;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno"><a class="line" href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html#a90c6e49200119344c42c8f2bff742d4b">  168</a></span>    <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> <a class="code hl_variable" href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html#a90c6e49200119344c42c8f2bff742d4b">noise</a>;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno"><a class="line" href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html#a5ca837eb7cec1dd2e9e8293c27dc89ed">  169</a></span>    <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> <a class="code hl_variable" href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html#a5ca837eb7cec1dd2e9e8293c27dc89ed">extended</a>;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>  };</div>
+</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a3713acb61dad24fe24f5cb82f8ce29bb">  171</a></span>  std::vector&lt;ModeGle&gt; <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a3713acb61dad24fe24f5cb82f8ce29bb">gle_</a>;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#af4c43466849e9f1ad4f52f5a52f15f32">  173</a></span>  std::uint64_t <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#af4c43466849e9f1ad4f52f5a52f15f32">rng_</a>;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a8f6b0d76604d0a69dc9843c5566448a6">  174</a></span>  <span class="keywordtype">long</span> <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a8f6b0d76604d0a69dc9843c5566448a6">batches_</a>{0};</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a2110c5d5a587e42710697ab1cf40903e">  175</a></span>  <span class="keywordtype">long</span> <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a2110c5d5a587e42710697ab1cf40903e">recorded_</a>{0};</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a62aa9ca01651cc3c9648a2537e597ca9">  176</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#a62aa9ca01651cc3c9648a2537e597ca9">kineticSum_</a>{0.0};</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno"><a class="line" href="classeonc_1_1pathintegral_1_1RingPolymer.html#aa68da0564a92541fb75b68b10b416a82">  177</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="classeonc_1_1pathintegral_1_1RingPolymer.html#aa68da0564a92541fb75b68b10b416a82">forceSum_</a>{0.0};</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>};</div>
+</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>} <span class="comment">// namespace eonc::pathintegral</span></div>
+<div class="ttc" id="aEigen_8h_html"><div class="ttname"><a href="Eigen_8h.html">Eigen.h</a></div></div>
+<div class="ttc" id="aEigen_8h_html_a45bb4cbce093fca4dfb193d3f649da30"><div class="ttname"><a href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, eOnStorageOrder &gt; MatrixXd</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00033">Eigen.h:33</a></div></div>
+<div class="ttc" id="aPotential_8h_html"><div class="ttname"><a href="Potential_8h.html">Potential.h</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Potential_html"><div class="ttname"><a href="classeonc_1_1Potential.html">eonc::Potential</a></div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00042">Potential.h:42</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a07e32a3f53179f0163291834556a5229"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a07e32a3f53179f0163291834556a5229">eonc::pathintegral::RingPolymer::centroidVelocity</a></div><div class="ttdeci">VectorXd centroidVelocity() const</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00594">PathIntegral.cpp:594</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a1da753e22f7e9979ffc1d192f43c28d1"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a1da753e22f7e9979ffc1d192f43c28d1">eonc::pathintegral::RingPolymer::haveForces_</a></div><div class="ttdeci">bool haveForces_</div><div class="ttdef"><b>Definition</b> <a href="#l00162">PathIntegral.h:162</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a2110c5d5a587e42710697ab1cf40903e"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a2110c5d5a587e42710697ab1cf40903e">eonc::pathintegral::RingPolymer::recorded_</a></div><div class="ttdeci">long recorded_</div><div class="ttdef"><b>Definition</b> <a href="#l00175">PathIntegral.h:175</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a253a88d9f3957bc4205b2e0dd4b92e15"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a253a88d9f3957bc4205b2e0dd4b92e15">eonc::pathintegral::RingPolymer::atomicNumbers_</a></div><div class="ttdeci">std::vector&lt; int &gt; atomicNumbers_</div><div class="ttdef"><b>Definition</b> <a href="#l00149">PathIntegral.h:149</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a257c03784d54a48ebdde592bf499e7fe"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a257c03784d54a48ebdde592bf499e7fe">eonc::pathintegral::RingPolymer::setAllBeads</a></div><div class="ttdeci">void setAllBeads(const double *q)</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00418">PathIntegral.cpp:418</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a2765c1fd31dd85f7f9a0cf7a6179306d"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a2765c1fd31dd85f7f9a0cf7a6179306d">eonc::pathintegral::RingPolymer::initGle</a></div><div class="ttdeci">void initGle()</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00386">PathIntegral.cpp:386</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a29ad6aa078ee7c0bbf4d7dec249191d1"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a29ad6aa078ee7c0bbf4d7dec249191d1">eonc::pathintegral::RingPolymer::freeIndex_</a></div><div class="ttdeci">std::vector&lt; long &gt; freeIndex_</div><div class="ttdef"><b>Definition</b> <a href="#l00151">PathIntegral.h:151</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a2b49bf3a864bbb22c5dcd5dc2138aab5"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a2b49bf3a864bbb22c5dcd5dc2138aab5">eonc::pathintegral::RingPolymer::pnm_</a></div><div class="ttdeci">std::vector&lt; VectorXd &gt; pnm_</div><div class="ttdef"><b>Definition</b> <a href="#l00158">PathIntegral.h:158</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a2bd8ddc3c753deb5849285f4b63cbe69"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a2bd8ddc3c753deb5849285f4b63cbe69">eonc::pathintegral::RingPolymer::thermostat</a></div><div class="ttdeci">void thermostat(double h)</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00639">PathIntegral.cpp:639</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a3713acb61dad24fe24f5cb82f8ce29bb"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a3713acb61dad24fe24f5cb82f8ce29bb">eonc::pathintegral::RingPolymer::gle_</a></div><div class="ttdeci">std::vector&lt; ModeGle &gt; gle_</div><div class="ttdef"><b>Definition</b> <a href="#l00171">PathIntegral.h:171</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a39b4ebf1418938bde242b275c92b27a7"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a39b4ebf1418938bde242b275c92b27a7">eonc::pathintegral::RingPolymer::projectMomentum</a></div><div class="ttdeci">void projectMomentum()</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00741">PathIntegral.cpp:741</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a3a3352a65b470de7df68451ed33a90df"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a3a3352a65b470de7df68451ed33a90df">eonc::pathintegral::RingPolymer::planeOrigin_</a></div><div class="ttdeci">VectorXd planeOrigin_</div><div class="ttdef"><b>Definition</b> <a href="#l00160">PathIntegral.h:160</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a3f2bb67b9763c0b85c5aee75415c2427"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a3f2bb67b9763c0b85c5aee75415c2427">eonc::pathintegral::RingPolymer::planeNormal_</a></div><div class="ttdeci">VectorXd planeNormal_</div><div class="ttdef"><b>Definition</b> <a href="#l00159">PathIntegral.h:159</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a432fcfe2be2bf7d01117b7c2b0a8fd6c"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a432fcfe2be2bf7d01117b7c2b0a8fd6c">eonc::pathintegral::RingPolymer::mass_</a></div><div class="ttdeci">std::vector&lt; double &gt; mass_</div><div class="ttdef"><b>Definition</b> <a href="#l00148">PathIntegral.h:148</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a544fc3ef09d8b2765e292411fc8e10be"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a544fc3ef09d8b2765e292411fc8e10be">eonc::pathintegral::RingPolymer::f_</a></div><div class="ttdeci">std::vector&lt; VectorXd &gt; f_</div><div class="ttdef"><b>Definition</b> <a href="#l00156">PathIntegral.h:156</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a570afcf856dfd6ca1ec3e743188c3525"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a570afcf856dfd6ca1ec3e743188c3525">eonc::pathintegral::RingPolymer::setMomenta</a></div><div class="ttdeci">void setMomenta(const std::vector&lt; VectorXd &gt; &amp;momenta)</div><div class="ttdoc">One momentum vector of length 3 * nAtoms per bead; fixed coordinates are zeroed.</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00449">PathIntegral.cpp:449</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a5985197c3201b5a6b6057740254cfa3c"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a5985197c3201b5a6b6057740254cfa3c">eonc::pathintegral::RingPolymer::nveStep</a></div><div class="ttdeci">void nveStep(Potential &amp;pot, const double *box)</div><div class="ttdoc">Thermostat-free RPMD step: velocity Verlet with the free ring propagated exactly in normal modes.</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00801">PathIntegral.cpp:801</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a5f39bedd78d0b03c544e86c5caf030c3"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a5f39bedd78d0b03c544e86c5caf030c3">eonc::pathintegral::RingPolymer::RingPolymer</a></div><div class="ttdeci">RingPolymer(long nAtoms, std::vector&lt; double &gt; masses, std::vector&lt; int &gt; atomicNumbers, std::vector&lt; char &gt; free, Options opt)</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00320">PathIntegral.cpp:320</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a5f42f8550d18e315d852666067aea433"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a5f42f8550d18e315d852666067aea433">eonc::pathintegral::RingPolymer::meanForce</a></div><div class="ttdeci">double meanForce() const</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00626">PathIntegral.cpp:626</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a619add2791458803ea4cb231dd2bdfd0"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a619add2791458803ea4cb231dd2bdfd0">eonc::pathintegral::RingPolymer::sample</a></div><div class="ttdeci">Sample sample(Potential &amp;pot, const double *box, long equilibration, long production)</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00815">PathIntegral.cpp:815</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a62aa9ca01651cc3c9648a2537e597ca9"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a62aa9ca01651cc3c9648a2537e597ca9">eonc::pathintegral::RingPolymer::kineticSum_</a></div><div class="ttdeci">double kineticSum_</div><div class="ttdef"><b>Definition</b> <a href="#l00176">PathIntegral.h:176</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a64f6ba13db5dd7e837e2419078100724"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a64f6ba13db5dd7e837e2419078100724">eonc::pathintegral::RingPolymer::toNormal</a></div><div class="ttdeci">void toNormal(const std::vector&lt; VectorXd &gt; &amp;src, std::vector&lt; VectorXd &gt; &amp;dst) const</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00534">PathIntegral.cpp:534</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a66b1b0a6fc4c1b5d830d20d5a290e074"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a66b1b0a6fc4c1b5d830d20d5a290e074">eonc::pathintegral::RingPolymer::modes_</a></div><div class="ttdeci">MatrixXd modes_</div><div class="ttdef"><b>Definition</b> <a href="#l00152">PathIntegral.h:152</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a6d788e1e1f6342e281e24b576da84335"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a6d788e1e1f6342e281e24b576da84335">eonc::pathintegral::RingPolymer::setBeads</a></div><div class="ttdeci">void setBeads(const std::vector&lt; VectorXd &gt; &amp;beads)</div><div class="ttdoc">One position vector of length 3 * nAtoms per bead.</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00433">PathIntegral.cpp:433</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a6dda56bc33bb780f9a4c3d495c5b1719"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a6dda56bc33bb780f9a4c3d495c5b1719">eonc::pathintegral::RingPolymer::centroid</a></div><div class="ttdeci">VectorXd centroid() const</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00585">PathIntegral.cpp:585</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a725407172321f089637ecdfbe7c11e74"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a725407172321f089637ecdfbe7c11e74">eonc::pathintegral::RingPolymer::nFree_</a></div><div class="ttdeci">long nFree_</div><div class="ttdef"><b>Definition</b> <a href="#l00147">PathIntegral.h:147</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a7ef3b0018176677a304e7d03f52491c4"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a7ef3b0018176677a304e7d03f52491c4">eonc::pathintegral::RingPolymer::batches</a></div><div class="ttdeci">long batches() const</div><div class="ttdef"><b>Definition</b> <a href="#l00120">PathIntegral.h:120</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a812baa781db7e930beb20fd40c5b3529"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a812baa781db7e930beb20fd40c5b3529">eonc::pathintegral::RingPolymer::p_</a></div><div class="ttdeci">std::vector&lt; VectorXd &gt; p_</div><div class="ttdef"><b>Definition</b> <a href="#l00155">PathIntegral.h:155</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a823245abfa7bf2b6663e5c885a3dd5f3"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a823245abfa7bf2b6663e5c885a3dd5f3">eonc::pathintegral::RingPolymer::forces</a></div><div class="ttdeci">void forces(Potential &amp;pot, const double *box)</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00558">PathIntegral.cpp:558</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a8398c4a0003611ecbbc26c146caadd87"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a8398c4a0003611ecbbc26c146caadd87">eonc::pathintegral::RingPolymer::free_</a></div><div class="ttdeci">std::vector&lt; char &gt; free_</div><div class="ttdef"><b>Definition</b> <a href="#l00150">PathIntegral.h:150</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a8474affd7229bce54ff2cfd3b4e19942"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a8474affd7229bce54ff2cfd3b4e19942">eonc::pathintegral::RingPolymer::setHyperplane</a></div><div class="ttdeci">void setHyperplane(const VectorXd &amp;normal, const VectorXd &amp;origin)</div><div class="ttdoc">Hold n · (q_centroid - origin) = 0.</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00466">PathIntegral.cpp:466</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a851525481e8495caae1353928a7a96ae"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a851525481e8495caae1353928a7a96ae">eonc::pathintegral::RingPolymer::projectPosition</a></div><div class="ttdeci">void projectPosition()</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00725">PathIntegral.cpp:725</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a86ae137609da6c7360545f5b233a2d4a"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a86ae137609da6c7360545f5b233a2d4a">eonc::pathintegral::RingPolymer::q_</a></div><div class="ttdeci">std::vector&lt; VectorXd &gt; q_</div><div class="ttdef"><b>Definition</b> <a href="#l00154">PathIntegral.h:154</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a8e42ee83d6d89aeabb5ea7b137620f43"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a8e42ee83d6d89aeabb5ea7b137620f43">eonc::pathintegral::RingPolymer::kick</a></div><div class="ttdeci">void kick(double h, bool dropParallel)</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00681">PathIntegral.cpp:681</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a8f6b0d76604d0a69dc9843c5566448a6"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a8f6b0d76604d0a69dc9843c5566448a6">eonc::pathintegral::RingPolymer::batches_</a></div><div class="ttdeci">long batches_</div><div class="ttdef"><b>Definition</b> <a href="#l00174">PathIntegral.h:174</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_a99b4920e29bfebb9ff2f9763afea17b5"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#a99b4920e29bfebb9ff2f9763afea17b5">eonc::pathintegral::RingPolymer::omegaK_</a></div><div class="ttdeci">VectorXd omegaK_</div><div class="ttdef"><b>Definition</b> <a href="#l00153">PathIntegral.h:153</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_aa4295a7cdcb5b7d25060fcc9e7b02abf"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#aa4295a7cdcb5b7d25060fcc9e7b02abf">eonc::pathintegral::RingPolymer::step</a></div><div class="ttdeci">void step(Potential &amp;pot, const double *box, bool record)</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00768">PathIntegral.cpp:768</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_aa5030ded646e143204a717f327a536a4"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#aa5030ded646e143204a717f327a536a4">eonc::pathintegral::RingPolymer::constrain_</a></div><div class="ttdeci">bool constrain_</div><div class="ttdef"><b>Definition</b> <a href="#l00161">PathIntegral.h:161</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_aa614089c7eee8d50a26ec2ebafb39365"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#aa614089c7eee8d50a26ec2ebafb39365">eonc::pathintegral::RingPolymer::nDof_</a></div><div class="ttdeci">long nDof_</div><div class="ttdef"><b>Definition</b> <a href="#l00145">PathIntegral.h:145</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_aa651609fb79365a0a9045c30c5be1403"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#aa651609fb79365a0a9045c30c5be1403">eonc::pathintegral::RingPolymer::opt_</a></div><div class="ttdeci">Options opt_</div><div class="ttdef"><b>Definition</b> <a href="#l00143">PathIntegral.h:143</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_aa68da0564a92541fb75b68b10b416a82"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#aa68da0564a92541fb75b68b10b416a82">eonc::pathintegral::RingPolymer::forceSum_</a></div><div class="ttdeci">double forceSum_</div><div class="ttdef"><b>Definition</b> <a href="#l00177">PathIntegral.h:177</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_aa6f301f2f488231906c324b1a0588f23"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#aa6f301f2f488231906c324b1a0588f23">eonc::pathintegral::RingPolymer::gauss</a></div><div class="ttdeci">double gauss()</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00487">PathIntegral.cpp:487</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_aa89b5252e25555c96689c0e748d098ae"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#aa89b5252e25555c96689c0e748d098ae">eonc::pathintegral::RingPolymer::thermalMomenta</a></div><div class="ttdeci">void thermalMomenta()</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00496">PathIntegral.cpp:496</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_ab22cf783d4320a7d59a6bb706f097c37"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#ab22cf783d4320a7d59a6bb706f097c37">eonc::pathintegral::RingPolymer::momenta</a></div><div class="ttdeci">const std::vector&lt; VectorXd &gt; &amp; momenta() const</div><div class="ttdef"><b>Definition</b> <a href="#l00103">PathIntegral.h:103</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_ac0b3343a4e7217eb65ce5f3c7ed0145d"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#ac0b3343a4e7217eb65ce5f3c7ed0145d">eonc::pathintegral::RingPolymer::kineticCv</a></div><div class="ttdeci">double kineticCv() const</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00609">PathIntegral.cpp:609</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_ac1bd407a02ac0616338581a948a7313a"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#ac1bd407a02ac0616338581a948a7313a">eonc::pathintegral::RingPolymer::fromNormal</a></div><div class="ttdeci">void fromNormal(const std::vector&lt; VectorXd &gt; &amp;src, std::vector&lt; VectorXd &gt; &amp;dst) const</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00546">PathIntegral.cpp:546</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_ac9f124d4dfc61ad76a2cbd50901501c1"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#ac9f124d4dfc61ad76a2cbd50901501c1">eonc::pathintegral::RingPolymer::propagate</a></div><div class="ttdeci">void propagate(double h)</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00703">PathIntegral.cpp:703</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_ad19c1cbe81c8e40da670c896fea921a3"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#ad19c1cbe81c8e40da670c896fea921a3">eonc::pathintegral::RingPolymer::beads</a></div><div class="ttdeci">const std::vector&lt; VectorXd &gt; &amp; beads() const</div><div class="ttdef"><b>Definition</b> <a href="#l00102">PathIntegral.h:102</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_adc71fcb35c3aa1c816a4378f549f1734"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#adc71fcb35c3aa1c816a4378f549f1734">eonc::pathintegral::RingPolymer::qnm_</a></div><div class="ttdeci">std::vector&lt; VectorXd &gt; qnm_</div><div class="ttdef"><b>Definition</b> <a href="#l00157">PathIntegral.h:157</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_ae2b2f31afa60e99fd0122e0c95eaa3b5"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#ae2b2f31afa60e99fd0122e0c95eaa3b5">eonc::pathintegral::RingPolymer::resetAverages</a></div><div class="ttdeci">void resetAverages()</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00633">PathIntegral.cpp:633</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_ae76dd5a639d68e579905bc2906548428"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#ae76dd5a639d68e579905bc2906548428">eonc::pathintegral::RingPolymer::nBeads_</a></div><div class="ttdeci">long nBeads_</div><div class="ttdef"><b>Definition</b> <a href="#l00146">PathIntegral.h:146</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_af4c43466849e9f1ad4f52f5a52f15f32"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#af4c43466849e9f1ad4f52f5a52f15f32">eonc::pathintegral::RingPolymer::rng_</a></div><div class="ttdeci">std::uint64_t rng_</div><div class="ttdef"><b>Definition</b> <a href="#l00173">PathIntegral.h:173</a></div></div>
+<div class="ttc" id="aclasseonc_1_1pathintegral_1_1RingPolymer_html_afaa2ba0ef1f6ffd55dce06f8b3bcc2cb"><div class="ttname"><a href="classeonc_1_1pathintegral_1_1RingPolymer.html#afaa2ba0ef1f6ffd55dce06f8b3bcc2cb">eonc::pathintegral::RingPolymer::nAtoms_</a></div><div class="ttdeci">long nAtoms_</div><div class="ttdef"><b>Definition</b> <a href="#l00144">PathIntegral.h:144</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pathintegral_html"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html">eonc::pathintegral</a></div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00042">PathIntegral.cpp:42</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pathintegral_html_a3b4d87da5fff9d69f06779f9aca9a5f7"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#a3b4d87da5fff9d69f06779f9aca9a5f7">eonc::pathintegral::normalModeMatrix</a></div><div class="ttdeci">MatrixXd normalModeMatrix(long nBeads)</div><div class="ttdoc">Orthogonal bead-to-normal-mode matrix. Row k is mode k.</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00293">PathIntegral.cpp:293</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pathintegral_html_a7cd723e7974a04d9e90f5943274f54ed"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#a7cd723e7974a04d9e90f5943274f54ed">eonc::pathintegral::trotterEigenvalues</a></div><div class="ttdeci">VectorXd trotterEigenvalues(long nBeads)</div><div class="ttdoc">Dimensionless free-ring eigenvalues, mode 0 equal to 0.</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00261">PathIntegral.cpp:261</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pathintegral_html_ab31c49e76d72cce0ead85959bcc2fa62"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#ab31c49e76d72cce0ead85959bcc2fa62">eonc::pathintegral::requireTrotterSprings</a></div><div class="ttdeci">void requireTrotterSprings(const std::string &amp;springs, const char *use)</div><div class="ttdoc">Economised springs and a normal-mode GLE are refused.</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00252">PathIntegral.cpp:252</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pathintegral_html_abe31f237ac5f5aff8dce43642078966e"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#abe31f237ac5f5aff8dce43642078966e">eonc::pathintegral::Springs</a></div><div class="ttdeci">Springs</div><div class="ttdoc">Trotter springs, or economised springs fitted to harmonic radii of gyration up to a maximum frequency...</div><div class="ttdef"><b>Definition</b> <a href="#l00042">PathIntegral.h:42</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pathintegral_html_abe31f237ac5f5aff8dce43642078966ea91efa9e46e4c6cbb78d9fd0a773cc6d5"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#abe31f237ac5f5aff8dce43642078966ea91efa9e46e4c6cbb78d9fd0a773cc6d5">eonc::pathintegral::Springs::Eco</a></div><div class="ttdeci">@ Eco</div><div class="ttdef"><b>Definition</b> <a href="#l00042">PathIntegral.h:42</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pathintegral_html_abe31f237ac5f5aff8dce43642078966eab830e5e056ff2368bbf3b74d3b0fbc02"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#abe31f237ac5f5aff8dce43642078966eab830e5e056ff2368bbf3b74d3b0fbc02">eonc::pathintegral::Springs::Trotter</a></div><div class="ttdeci">@ Trotter</div><div class="ttdef"><b>Definition</b> <a href="#l00042">PathIntegral.h:42</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pathintegral_html_adc263a73db61ab235b834a5785881fd2"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#adc263a73db61ab235b834a5785881fd2">eonc::pathintegral::ecoEigenvalues</a></div><div class="ttdeci">VectorXd ecoEigenvalues(long nBeads, double xmax)</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00273">PathIntegral.cpp:273</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pathintegral_html_ae25079e6f1ebbf96835a7214c8d42ce8"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8">eonc::pathintegral::Thermostat</a></div><div class="ttdeci">Thermostat</div><div class="ttdoc">PILE-L, or a normal-mode GLE on the internal modes with a separate Langevin thermostat on the centroi...</div><div class="ttdef"><b>Definition</b> <a href="#l00046">PathIntegral.h:46</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pathintegral_html_ae25079e6f1ebbf96835a7214c8d42ce8a8c09ee8e1496710919dcbd718ff285dd"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8a8c09ee8e1496710919dcbd718ff285dd">eonc::pathintegral::Thermostat::Piglet</a></div><div class="ttdeci">@ Piglet</div><div class="ttdef"><b>Definition</b> <a href="#l00046">PathIntegral.h:46</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pathintegral_html_ae25079e6f1ebbf96835a7214c8d42ce8adac4e478206552d57f74e6a5f9fc80bc"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#ae25079e6f1ebbf96835a7214c8d42ce8adac4e478206552d57f74e6a5f9fc80bc">eonc::pathintegral::Thermostat::Pile</a></div><div class="ttdeci">@ Pile</div><div class="ttdef"><b>Definition</b> <a href="#l00046">PathIntegral.h:46</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pot_html"><div class="ttname"><a href="namespaceeonc_1_1pot.html">eonc::pot</a></div><div class="ttdef"><b>Definition</b> <a href="ExternalCommand_8h_source.html#l00022">ExternalCommand.h:22</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Options_html"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Options.html">eonc::pathintegral::Options</a></div><div class="ttdef"><b>Definition</b> <a href="#l00048">PathIntegral.h:48</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Options_html_a1c166accd9ac8ae595dcba9587fd631e"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Options.html#a1c166accd9ac8ae595dcba9587fd631e">eonc::pathintegral::Options::thermostat</a></div><div class="ttdeci">Thermostat thermostat</div><div class="ttdef"><b>Definition</b> <a href="#l00055">PathIntegral.h:55</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Options_html_a1f6545406e7c659239c00556e7672f98"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Options.html#a1f6545406e7c659239c00556e7672f98">eonc::pathintegral::Options::ecoOmegaMax</a></div><div class="ttdeci">double ecoOmegaMax</div><div class="ttdoc">Highest physical frequency the economised springs reproduce.</div><div class="ttdef"><b>Definition</b> <a href="#l00061">PathIntegral.h:61</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Options_html_a32cfa3c4fafcb0e4467d2d1c1a1b307d"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Options.html#a32cfa3c4fafcb0e4467d2d1c1a1b307d">eonc::pathintegral::Options::dt</a></div><div class="ttdeci">double dt</div><div class="ttdef"><b>Definition</b> <a href="#l00053">PathIntegral.h:53</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Options_html_a462451eb9b3d400d3803107ea8ec1ed1"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Options.html#a462451eb9b3d400d3803107ea8ec1ed1">eonc::pathintegral::Options::gleFile</a></div><div class="ttdeci">std::string gleFile</div><div class="ttdoc">Normal-mode GLE matrices.</div><div class="ttdef"><b>Definition</b> <a href="#l00064">PathIntegral.h:64</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Options_html_a700dab2116cd740f25511468409d688a"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Options.html#a700dab2116cd740f25511468409d688a">eonc::pathintegral::Options::seed</a></div><div class="ttdeci">std::uint64_t seed</div><div class="ttdef"><b>Definition</b> <a href="#l00065">PathIntegral.h:65</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Options_html_a7232df2aa06c310842292fd1a7ba8d9f"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Options.html#a7232df2aa06c310842292fd1a7ba8d9f">eonc::pathintegral::Options::pileScale</a></div><div class="ttdeci">double pileScale</div><div class="ttdoc">Scales the critical PILE damping of the internal modes.</div><div class="ttdef"><b>Definition</b> <a href="#l00059">PathIntegral.h:59</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Options_html_aa5e127abb4c261a67c9edd4f7bc1d40b"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Options.html#aa5e127abb4c261a67c9edd4f7bc1d40b">eonc::pathintegral::Options::beads</a></div><div class="ttdeci">long beads</div><div class="ttdef"><b>Definition</b> <a href="#l00049">PathIntegral.h:49</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Options_html_ab1c5c800fe075a1e6ad0bf9431cddea1"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Options.html#ab1c5c800fe075a1e6ad0bf9431cddea1">eonc::pathintegral::Options::pileTau</a></div><div class="ttdeci">double pileTau</div><div class="ttdoc">Centroid Langevin time, in the same time unit as dt.</div><div class="ttdef"><b>Definition</b> <a href="#l00057">PathIntegral.h:57</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Options_html_abfc70ee4f6ee8a424c931392f10c7de3"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Options.html#abfc70ee4f6ee8a424c931392f10c7de3">eonc::pathintegral::Options::hbar</a></div><div class="ttdeci">double hbar</div><div class="ttdef"><b>Definition</b> <a href="#l00052">PathIntegral.h:52</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Options_html_ace7cb6ca4dcd5e5133aae0fd79e39398"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Options.html#ace7cb6ca4dcd5e5133aae0fd79e39398">eonc::pathintegral::Options::temperature</a></div><div class="ttdeci">double temperature</div><div class="ttdef"><b>Definition</b> <a href="#l00050">PathIntegral.h:50</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Options_html_add8c1123b9abd205b968804bd345951b"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Options.html#add8c1123b9abd205b968804bd345951b">eonc::pathintegral::Options::springs</a></div><div class="ttdeci">Springs springs</div><div class="ttdef"><b>Definition</b> <a href="#l00054">PathIntegral.h:54</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Options_html_ae035e2066df9e4f9c4f93b5f30f8515e"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Options.html#ae035e2066df9e4f9c4f93b5f30f8515e">eonc::pathintegral::Options::kB</a></div><div class="ttdeci">double kB</div><div class="ttdef"><b>Definition</b> <a href="#l00051">PathIntegral.h:51</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle_html"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html">eonc::pathintegral::RingPolymer::ModeGle</a></div><div class="ttdef"><b>Definition</b> <a href="#l00164">PathIntegral.h:164</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle_html_a5ca837eb7cec1dd2e9e8293c27dc89ed"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html#a5ca837eb7cec1dd2e9e8293c27dc89ed">eonc::pathintegral::RingPolymer::ModeGle::extended</a></div><div class="ttdeci">MatrixXd extended</div><div class="ttdef"><b>Definition</b> <a href="#l00169">PathIntegral.h:169</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle_html_a673d3c09500cf58f2927fb3809e2fe05"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html#a673d3c09500cf58f2927fb3809e2fe05">eonc::pathintegral::RingPolymer::ModeGle::drift</a></div><div class="ttdeci">MatrixXd drift</div><div class="ttdef"><b>Definition</b> <a href="#l00165">PathIntegral.h:165</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle_html_a90c6e49200119344c42c8f2bff742d4b"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html#a90c6e49200119344c42c8f2bff742d4b">eonc::pathintegral::RingPolymer::ModeGle::noise</a></div><div class="ttdeci">MatrixXd noise</div><div class="ttdef"><b>Definition</b> <a href="#l00168">PathIntegral.h:168</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle_html_ac0300502fee6873941d90ad7683082da"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html#ac0300502fee6873941d90ad7683082da">eonc::pathintegral::RingPolymer::ModeGle::covariance</a></div><div class="ttdeci">MatrixXd covariance</div><div class="ttdef"><b>Definition</b> <a href="#l00166">PathIntegral.h:166</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle_html_af0946bfcda4a6ed36ef6b2b61f02a5de"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html#af0946bfcda4a6ed36ef6b2b61f02a5de">eonc::pathintegral::RingPolymer::ModeGle::propagate</a></div><div class="ttdeci">MatrixXd propagate</div><div class="ttdef"><b>Definition</b> <a href="#l00167">PathIntegral.h:167</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Sample_html"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Sample.html">eonc::pathintegral::Sample</a></div><div class="ttdef"><b>Definition</b> <a href="#l00068">PathIntegral.h:68</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Sample_html_a62c575006042da7e8f641a0211af4429"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Sample.html#a62c575006042da7e8f641a0211af4429">eonc::pathintegral::Sample::kineticCv</a></div><div class="ttdeci">double kineticCv</div><div class="ttdef"><b>Definition</b> <a href="#l00069">PathIntegral.h:69</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Sample_html_a9b5d2175e9cefb3ef89a788a7a834c05"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Sample.html#a9b5d2175e9cefb3ef89a788a7a834c05">eonc::pathintegral::Sample::meanForce</a></div><div class="ttdeci">double meanForce</div><div class="ttdoc">Average of n · f_centroid.</div><div class="ttdef"><b>Definition</b> <a href="#l00072">PathIntegral.h:72</a></div></div>
+<div class="ttc" id="astructeonc_1_1pathintegral_1_1Sample_html_ac122b3e5170358918e0ed2ae121a074e"><div class="ttname"><a href="structeonc_1_1pathintegral_1_1Sample.html#ac122b3e5170358918e0ed2ae121a074e">eonc::pathintegral::Sample::batches</a></div><div class="ttdeci">long batches</div><div class="ttdef"><b>Definition</b> <a href="#l00073">PathIntegral.h:73</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a href="dir_2527c5cc2e6dc8ce970a4d420439d1d9.html">eon</a></li><li class="navelem"><a href="PathIntegral_8h.html">PathIntegral.h</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

@@ -130,6 +130,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="lanczos.html">Lanczos</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="akmc.html">Adaptive kinetic Monte Carlo</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="saddle_search.html">Saddle search</a></li>
@@ -198,7 +199,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
@@ -216,6 +216,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.process_catalog.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_catalog</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 </ul>
@@ -224,6 +225,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.5.0/index.html">[v3.5.0] - 2026-10-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.5.0/release-notes.html">eOn 3.5.0</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.4.0/index.html">[v3.4.0] - 2026-09-29</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v3.4.0/release-notes.html">eOn 3.4.0</a></li>
 </ul>
@@ -422,8 +427,8 @@ data-aria-dark="Switch to auto color mode">
 That last flag is a QMCPACK CMake option. It is not an eOn meson option.</p>
 <section id="what-eon-offloads">
 <h2>What eOn offloads<a class="headerlink" href="#what-eon-offloads" title="Link to this heading">¶</a></h2>
-<p>The NEB image-force loop is already <code class="docutils literal notranslate"><span class="pre">std::for_each(std::execution::par,</span> <span class="pre">…)</span></code>
-behind <code class="docutils literal notranslate"><span class="pre">-DEON_PARALLEL_NEB</span></code>. Two ways to turn that on:</p>
+<p>With nvc++, the NEB image-force loop is <code class="docutils literal notranslate"><span class="pre">std::for_each(std::execution::par,</span> <span class="pre">…)</span></code>
+behind <code class="docutils literal notranslate"><span class="pre">-DEON_PARALLEL_NEB</span></code>:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -433,15 +438,11 @@ behind <code class="docutils literal notranslate"><span class="pre">-DEON_PARALL
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-Dwith_parallel_neb=true</span></code></p></td>
-<td><p>GCC / Clang</p></td>
-<td><p>TBB (<code class="docutils literal notranslate"><span class="pre">libstdc++</span></code>)</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-Dstdpar=cpu</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-Dstdpar=cpu</span></code></p></td>
 <td><p>nvc++</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">-stdpar=multicore</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-Dstdpar=gpu</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-Dstdpar=gpu</span></code></p></td>
 <td><p>nvc++</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">-stdpar=gpu</span></code> plus <code class="docutils literal notranslate"><span class="pre">-gpu=</span></code></p></td>
 </tr>
@@ -468,8 +469,9 @@ Meson then refuses <code class="docutils literal notranslate"><span class="pre">
 pair). Override with <code class="docutils literal notranslate"><span class="pre">-Dstdpar_gpu_cc=cc90</span></code> or <code class="docutils literal notranslate"><span class="pre">-Dstdpar_gpu_cc=native</span></code> to
 omit <code class="docutils literal notranslate"><span class="pre">-gpu=</span></code>. That is the same lesson as QMCPACK <code class="docutils literal notranslate"><span class="pre">QMC_GPU_ARCHS=sm_80;sm_90</span></code>,
 written in nvc++’s flag language.</p>
-<p><code class="docutils literal notranslate"><span class="pre">parallel</span> <span class="pre">=</span> <span class="pre">true</span></code> in <code class="docutils literal notranslate"><span class="pre">config.ini</span></code> still fans out with one <code class="docutils literal notranslate"><span class="pre">std::thread</span></code> per
-image when <code class="docutils literal notranslate"><span class="pre">EON_PARALLEL_NEB</span></code> is off. Set <code class="docutils literal notranslate"><span class="pre">[Potential]</span> <span class="pre">thread_safe</span> <span class="pre">=</span> <span class="pre">false</span></code>
+<p>GCC and Clang builds run the images on a bounded <code class="docutils literal notranslate"><span class="pre">std::thread</span></code> pool when
+<code class="docutils literal notranslate"><span class="pre">parallel</span> <span class="pre">=</span> <span class="pre">true</span></code> in <code class="docutils literal notranslate"><span class="pre">config.ini</span></code>; <code class="docutils literal notranslate"><span class="pre">-Dwith_parallel_neb</span></code> is deprecated and
+has no effect. Set <code class="docutils literal notranslate"><span class="pre">[Potential]</span> <span class="pre">thread_safe</span> <span class="pre">=</span> <span class="pre">false</span></code>
 to keep one shared Potential serial (EAM cell lists, EMT ASAP objects,
 Metatomic, ExtPot, SocketNWChem, and XTB already refuse shared-instance
 threading).</p>
