@@ -432,6 +432,92 @@ the bead count. A run at more than one temperature also writes
 Cost: `pi_planes` times (`pi_equilibration_steps` plus `pi_sampling_steps`)
 steps per temperature, each step two force batches of `pi_beads` beads.
 
+### Recrossing and the RPMD rate
+
+PI-QTST counts every centroid that reaches {math}`s^*` moving forward as
+reactive. Some of those trajectories turn back. With
+`pi_recrossing_parents` above 0 the job measures that fraction, the
+Bennett-Chandler transmission factor of ring-polymer molecular dynamics
+(RPMD, {cite:t}`inst-craigChemicalReactionRates2005`; the two-step scheme
+of {cite:t}`inst-suleimanovRPMDrateBimolecularChemical2013`), and reports
+
+```{math}
+k_\mathrm{RPMD} = \kappa\, k_\mathrm{PI\text{-}QTST} .
+```
+
+```ini
+[Instanton]
+pi_recrossing_parents = 100
+pi_recrossing_children = 20
+pi_recrossing_time = 100
+pi_recrossing_spacing = 50
+```
+
+The parents. A ring with its centroid held on the top plane {math}`s^*`,
+the dividing surface of the scan, is thermostatted as in the scan for
+`pi_equilibration_steps`. Every `pi_recrossing_spacing` steps after that its
+beads are one parent, `pi_recrossing_parents` in all.
+
+The children. Each parent launches `pi_recrossing_children` momentum draws.
+A draw takes every ring normal mode from the Maxwell-Boltzmann distribution
+at {math}`\beta_P = \beta / P` with the plane constraint removed, and runs
+twice, with {math}`p` and with {math}`-p`, which halves the variance. Each
+child runs `pi_recrossing_time` fs of thermostat-free RPMD in steps of
+`pi_time_step`: velocity Verlet on the physical forces with the free ring
+propagated exactly in normal modes. Along the way the job records the
+centroid coordinate {math}`s(t)`. The centroid velocity along the coordinate is
+{math}`\dot s = \hat n \cdot M^{1/2} v_c`, and
+
+```{math}
+\kappa(t) = \frac{\langle \dot s(0)\, h(s(t) - s^*) \rangle}
+                  {\langle \dot s(0)\, h(\dot s(0)) \rangle} ,
+```
+
+with {math}`h` the step function. At {math}`t = 0` the side is that of
+{math}`\dot s(0)`, the limit {math}`t \to 0^+`, so {math}`\kappa(0) = 1`.
+{math}`\kappa(t)` falls as children recross and levels off once they have
+committed to a side. The reported {math}`\kappa` is the mean of
+{math}`\kappa(t)` over the last quarter of `pi_recrossing_time`. Its
+standard error is the jackknife over parents. Lengthen
+`pi_recrossing_time` when `kappa_piqtst.dat` has not levelled off by the last
+quarter.
+
+What {math}`\kappa` means. {math}`\kappa` lies between 0 and 1. A value
+of 1 means no trajectory that crosses {math}`s^*` forward returns, and
+PI-QTST is the RPMD rate. A value below 1 means the plane is not the
+dynamical bottleneck: either it is tilted from the barrier's own dividing
+surface, or a bath coupling turns trajectories back. One bead gives the
+classical transmission through the plane. On a harmonic saddle whose plane
+normal makes an angle {math}`\theta` with the unstable mode it is
+{math}`\sqrt{\cos^2\theta - \sin^2\theta\,\omega_b^2/\omega_\perp^2}`.
+The RPMD rate is independent of the choice of {math}`s^*` in the
+long-time limit. The PI-QTST rate is not.
+
+Output. `kappa_piqtst.dat` has the coldest temperature's curve, columns
+`t_fs` and `kappa`. A run at more than one temperature also writes
+`kappa_piqtst_<T>K.dat`. `rate_piqtst.dat` gains the columns `kappa`,
+`kappa_error`, `ln_k_rpmd_s` and `ln_k_rpmd_s_error`, the same on every
+plane of a temperature. `results.dat` gains:
+
+| Key | Meaning |
+|---|---|
+| `piqtst_kappa`, `piqtst_kappa_error` | {math}`\kappa` and its standard error |
+| `rate_rpmd` | {math}`k_\mathrm{RPMD}`, s^{-1} |
+| `rate_rpmd_log` | {math}`\ln(k_\mathrm{RPMD}\,/\,\mathrm{s}^{-1})` |
+| `rate_rpmd_log_error` | its standard error, both errors in quadrature |
+
+| Option | Default | Meaning |
+|---|---|---|
+| `pi_recrossing_parents` | 0 | parent configurations; 0 is off, otherwise at least 2 |
+| `pi_recrossing_children` | 20 | momentum draws per parent, each run forward and reversed |
+| `pi_recrossing_time` | 100 | fs per child, at least four `pi_time_step` |
+| `pi_recrossing_spacing` | 50 | thermostatted steps between parents |
+
+Cost: `pi_equilibration_steps` plus `pi_recrossing_parents` times
+`pi_recrossing_spacing` constrained steps (two force batches each), and
+`2 * pi_recrossing_parents * pi_recrossing_children * pi_recrossing_time /
+pi_time_step` child steps (one force batch each) per temperature.
+
 ## Centroid and spread
 
 Both modes also write `instanton_centroid.con` (and
