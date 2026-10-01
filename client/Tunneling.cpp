@@ -1920,6 +1920,9 @@ struct NewtonOut {
   double bN = 0.0;
   long iterations = 0;
   bool converged = false;
+  // Half ring, stationary, and not index 1. The odd-mode probe decides
+  // whether the search continues on the whole ring.
+  bool stalledHalf = false;
 };
 
 // Index-1 Newton on one ring. `x` holds N beads. A half ring optimises beads
@@ -2336,6 +2339,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   double trust = options.maxStep;
   long entries = 0;
   bool converged = false;
+  bool stalledHalf = false;
   const double trustFloor = std::min(1e-4, options.maxStep);
   // Finite-difference rebuilds of the bead blocks when the search stalls.
   constexpr int kMaxHessianRefreshes = 3;
@@ -2455,6 +2459,14 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
         }
       }
     }
+    // A half ring that is stationary at the wrong index cannot see a mode
+    // odd under the mirror. Leave it for the odd-mode probe instead of
+    // spending the remaining iterations on this point.
+    if (half && options.checkOddSector && exactAtX && v.ok &&
+        v.gmax < options.forceTolerance && v.climb.negative != 1) {
+      stalledHalf = true;
+      break;
+    }
     const VectorXd step = chainIndexOneStep(v.ritz, v.climb, v.diag, c, !half,
                                             cur.grad, v.tau, nullRing);
     bool moved = false;
@@ -2494,6 +2506,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   NewtonOut out;
   out.iterations = entries;
   out.converged = converged;
+  out.stalledHalf = stalledHalf;
   if (half) {
     const long m = static_cast<long>(x.size()) - 1;
     const long n = 2 * m;
@@ -2610,12 +2623,13 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
   const double spring = 1.0 / (bnh * bnh);
   NewtonOut got =
       newtonInstanton(std::move(guess), spring, hessSaddle, options, potential);
-  // A half ring cannot see modes odd under j -> N-j, so it can converge on
-  // two copies of the instanton on one ring. An unstable odd mode there
-  // sends the search onto the whole ring from a kick along that mode.
+  // A half ring cannot see modes odd under j -> N-j, so two copies of the
+  // instanton are a stationary point it can accept or sit on. An unstable
+  // odd mode there sends the search onto the whole ring from a kick along
+  // that mode.
   const long nGot = static_cast<long>(got.beads.size());
-  bool mirrored = got.converged && options.halfRing && options.checkOddSector &&
-                  nGot == nBeads && nGot % 2 == 0;
+  bool mirrored = (got.converged || got.stalledHalf) && options.halfRing &&
+                  options.checkOddSector && nGot == nBeads && nGot % 2 == 0;
   for (long j = 1; mirrored && j < nGot / 2; ++j) {
     mirrored = (got.beads[static_cast<size_t>(j)] -
                 got.beads[static_cast<size_t>(nGot - j)])

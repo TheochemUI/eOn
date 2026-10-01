@@ -21,9 +21,10 @@ temperature (Richardson and Althorpe, doi:10.1063/1.3267318).
   pair, cooling a cosine ring from the crossover slides onto a
   neighbouring saddle that leads to a different minimum.
 - An even ring runs on one half, from one turning point to the other. A
-  converged half ring is checked for an unstable mode odd under the
-  mirror, two copies of the instanton on one ring, and then finishes on
-  the whole ring.
+  half ring that has converged, or stopped stationary at the wrong index,
+  is checked for an unstable mode odd under the mirror. That mode is two
+  copies of the instanton on one ring, and the search finishes on the
+  whole ring.
 - The rigid motions of the whole ring are rebuilt from the current beads
   at every step and kept out of the step and the classification.
 - Above the crossover, the parabolic-barrier factor multiplies quantum
