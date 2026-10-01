@@ -745,6 +745,16 @@ void from_json(const json &j, Parameters &p) {
       o.temperatures = temperaturesFromJson(s.at("temperatures"));
     }
     JSON_OPT(s, "half_ring", o.half_ring);
+    if (s.contains("initial_hessians")) {
+      o.initial_hessians = s.at("initial_hessians").get<std::string>();
+    }
+    if (o.initial_hessians != "saddle" &&
+        o.initial_hessians != "finite_difference") {
+      throw std::invalid_argument(
+          "[Instanton] initial_hessians must be saddle or "
+          "finite_difference, not " +
+          o.initial_hessians);
+    }
     JSON_OPT(s, "energy_shift", o.energy_shift);
     JSON_OPT(s, "bead_ladder", o.bead_ladder);
     JSON_OPT(s, "hessian_final", o.hessian_final);

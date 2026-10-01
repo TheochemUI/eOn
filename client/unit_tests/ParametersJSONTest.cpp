@@ -338,11 +338,14 @@ TEST_CASE("JSON reads path-integral keys from Dynamics and Thermostat",
        {{"springs", "Trotter"},
         {"beads", 32},
         {"mode", "rate"},
+        {"initial_hessians", "finite_difference"},
         {"temperatures", "10, 20"}}},
   };
   Parameters fromInstanton;
   eonc::config::from_json(instanton, fromInstanton);
   REQUIRE(fromInstanton.instanton_options().springs == "trotter");
+  REQUIRE(fromInstanton.instanton_options().initial_hessians ==
+          "finite_difference");
   REQUIRE(fromInstanton.instanton_options().beads == 32);
   REQUIRE(fromInstanton.instanton_options().mode == "rate");
   REQUIRE(fromInstanton.instanton_options().temperatures.size() == 2);
