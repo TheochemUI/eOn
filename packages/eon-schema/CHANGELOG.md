@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.2.3] — 2026-10-01
 
 ### Added
 
@@ -8,12 +8,6 @@
   manifest with exact geometry and frame digests and an ``eon.rgpot.v1``
   potential identity. ``landfold_consume`` verifies the digests and returns
   embedding coordinates and FES energies. ``results.dat`` text is rejected.
-
-
-## [0.2.3] — 2026-07-24
-
-### Added
-
 - ``eon_schema.jobs``: Cap'n Proto ``JobRequest`` / ``JobResult`` / ``Geometry``
   schema path helper (vendored from monorepo ``schema/eon_job_result.capnp``)
   and ``results.dat`` parse/serialize adapters for the kill-file-IPC control plane.
