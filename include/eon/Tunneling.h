@@ -265,6 +265,11 @@ struct RateInstantonOptions {
   /// the potential from one turning point to the other and copy it.
   /// An odd N, or a guess without that symmetry, evaluates every bead.
   bool halfRing = true;
+  /// A converged half ring is probed for an unstable mode odd under
+  /// j -> N - j (two copies of the instanton on one ring), at about
+  /// lanczosFirst * N gradient calls; the search then finishes on the whole
+  /// ring. A cooling schedule probes only its last temperature.
+  bool checkOddSector = true;
   double energyShift = 0.0; ///< subtracted from every bead potential, eV
   /// Active coordinates at or below this take the Newton step. Zero keeps
   /// minimum-mode following. The step solves through the block chain, so

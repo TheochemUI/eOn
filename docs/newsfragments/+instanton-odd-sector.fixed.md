@@ -1,0 +1,1 @@
+A converged half-ring instanton is probed for an unstable mode odd under the ring mirror, which marks two copies of the instanton on one ring. Such a ring finishes the search on the whole ring. A cooling schedule probes only its last temperature, at about 30 N gradient calls.
