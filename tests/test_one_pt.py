@@ -135,14 +135,23 @@ def test_morse_pt_gprdimer_matches_dimer_fewer_calls(
     gpr, gpr_err = _run_eonclient(eonclient, gpr_dir)
     assert dimer is not None, dimer_err[-2000:]
     if gpr is None and "with_gprd" in gpr_err:
-        if sys.platform != "linux":
+        # gpr_optim is private: the GP dimer is built only where a checkout
+        # sits in subprojects/gpr_optim.
+        checkout = (
+            Path(__file__).resolve().parents[1]
+            / "subprojects"
+            / "gpr_optim"
+            / "meson.build"
+        )
+        if sys.platform != "linux" or not checkout.is_file():
             pytest.skip(
-                "GP dimer is the default Linux build (-Dwith_gprd=auto)"
+                "GP dimer needs a Linux build with the private gpr_optim "
+                "checkout in subprojects/gpr_optim (-Dwith_gprd=auto)"
             )
         pytest.fail(
-            "linux eonclient refused min_mode_method=gprdimer. "
-            "-Dwith_gprd=auto should link subprojects/gpr_optim. "
-            + gpr_err[-2000:]
+            "linux eonclient refused min_mode_method=gprdimer although "
+            "subprojects/gpr_optim is checked out. -Dwith_gprd=auto should "
+            "link it. " + gpr_err[-2000:]
         )
     assert gpr is not None, gpr_err[-2000:]
     assert dimer["termination_reason"] == "0", dimer
