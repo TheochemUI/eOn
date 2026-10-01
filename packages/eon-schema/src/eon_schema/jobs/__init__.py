@@ -68,6 +68,85 @@ def dict_to_results_dat(data: Mapping[str, Any]) -> str:
     return "\n".join(lines) + ("\n" if lines else "")
 
 
+def job_result_legacy_dict(data: Mapping[str, Any]) -> Dict[str, Any]:
+    """Historical results.dat keys for a JobResult mapping.
+
+    Geometries (ConFrame / Geometry) are not serialized. Cluster and HPC
+    adapters call :func:`job_result_to_results_dat`; in-process callers use
+    this dict and never build a ``results.dat`` buffer.
+    """
+    fc = data.get("force_calls") or {}
+    if not isinstance(fc, Mapping):
+        fc = {}
+    out: Dict[str, Any] = {}
+
+    def put(src: str, dest: str) -> None:
+        if src in data and data[src] is not None:
+            out[dest] = data[src]
+
+    put("status_code", "termination_reason")
+    put("status_text", "termination_reason_text")
+    put("job_type", "job_type")
+    put("potential_type", "potential_type")
+    if data.get("random_seed", -1) not in (None, -1):
+        out["random_seed"] = data["random_seed"]
+    if "total" in fc:
+        out["total_force_calls"] = fc["total"]
+    elif "force_calls" in data and not isinstance(data["force_calls"], Mapping):
+        out["total_force_calls"] = data["force_calls"]
+    for src, dest in (
+        ("minimization", "force_calls_minimization"),
+        ("saddle", "force_calls_saddle"),
+        ("prefactors", "force_calls_prefactors"),
+        ("neb", "force_calls_neb"),
+        ("dephase", "force_calls_dephase"),
+        ("dynamics", "force_calls_dynamics"),
+        ("refine", "force_calls_refine"),
+        ("sampling", "force_calls_sampling"),
+    ):
+        if src in fc:
+            out[dest] = fc[src]
+    for src, dest in (
+        ("potential_energy", "potential_energy"),
+        ("potential_energy_saddle", "potential_energy_saddle"),
+        ("potential_energy_reactant", "potential_energy_reactant"),
+        ("potential_energy_product", "potential_energy_product"),
+        ("barrier_reactant_to_product", "barrier_reactant_to_product"),
+        ("barrier_product_to_reactant", "barrier_product_to_reactant"),
+        ("prefactor_reactant_to_product", "prefactor_reactant_to_product"),
+        ("prefactor_product_to_reactant", "prefactor_product_to_reactant"),
+        ("displacement_saddle_distance", "displacement_saddle_distance"),
+        ("wall_time_seconds", "time_seconds"),
+        ("user_time_seconds", "user_time"),
+        ("system_time_seconds", "system_time"),
+    ):
+        if src in data and data[src] is not None:
+            out[dest] = data[src]
+    if data.get("has_dynamics"):
+        put("simulation_time", "simulation_time")
+        put("md_temperature", "md_temperature")
+    extras = data.get("extras") or []
+    if isinstance(extras, Mapping):
+        for key, val in extras.items():
+            out[str(key)] = val
+    else:
+        for item in extras:
+            if isinstance(item, Mapping) and "key" in item:
+                out[str(item["key"])] = item.get("value")
+    return out
+
+
+def job_result_to_results_dat(data: Mapping[str, Any]) -> str:
+    """Serialize a JobResult to classic ``results.dat`` text.
+
+    For cluster and HPC adapters only. The in-process path keeps the
+    JobResult object and does not call this.
+    """
+    return dict_to_results_dat(job_result_legacy_dict(data))
+
+
+
+
 
 _ENGINE_STAMP_FIELDS = (
     "compatibility_schema",
@@ -503,6 +582,8 @@ __all__ = [
     "job_result_capnp_path",
     "results_dat_to_dict",
     "dict_to_results_dat",
+    "job_result_legacy_dict",
+    "job_result_to_results_dat",
     "job_result_scalars_from_results_dat",
     "job_result_to_wire",
     "job_result_from_wire",
