@@ -96,6 +96,10 @@ public:
               Options opt);
 
   void setAllBeads(const double *q);
+  /// One position vector of length 3 * nAtoms per bead. The centroid is
+  /// projected onto the hyperplane when one is set.
+  void setBeads(const std::vector<VectorXd> &beads);
+  [[nodiscard]] const std::vector<VectorXd> &beads() const { return q_; }
   void thermalMomenta();
 
   /// Hold n · (q_centroid - origin) = 0. n is normalised on the free

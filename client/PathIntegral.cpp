@@ -431,6 +431,22 @@ void RingPolymer::setAllBeads(const double *q) {
   haveForces_ = false;
 }
 
+void RingPolymer::setBeads(const std::vector<VectorXd> &beads) {
+  if (static_cast<long>(beads.size()) != nBeads_) {
+    throw std::invalid_argument("path integral bead count mismatch");
+  }
+  for (long bead = 0; bead < nBeads_; ++bead) {
+    if (beads[static_cast<size_t>(bead)].size() != nDof_) {
+      throw std::invalid_argument("path integral bead has the wrong length");
+    }
+    q_[static_cast<size_t>(bead)] = beads[static_cast<size_t>(bead)];
+  }
+  if (constrain_) {
+    projectPosition();
+  }
+  haveForces_ = false;
+}
+
 void RingPolymer::setHyperplane(const VectorXd &normal,
                                 const VectorXd &origin) {
   if (normal.size() != nDof_ || origin.size() != nDof_) {
