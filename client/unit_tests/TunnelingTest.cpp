@@ -1080,3 +1080,32 @@ TEST_CASE("A flat coordinate cancels in the instanton rate",
   REQUIRE(std::abs(line.logRate - flat.logRate) < 1e-6);
   REQUIRE(std::abs(line.classicalLogRate - flat.classicalLogRate) < 1e-6);
 }
+
+// Quantum harmonic TST against its closed form, and its classical limit:
+// one bound mode of curvature 4 at the reactant, one bound mode of
+// curvature 1 and the barrier mode at the saddle.
+TEST_CASE("Quantum harmonic TST has its closed form and the classical limit",
+          "[Tunneling][Instanton]") {
+  MatrixXd hr = MatrixXd::Zero(2, 2);
+  hr(0, 0) = 4.0;
+  hr(1, 1) = 9.0;
+  MatrixXd hs = MatrixXd::Zero(2, 2);
+  hs(0, 0) = -2.0;
+  hs(1, 1) = 1.0;
+  const double barrier = 0.3;
+  for (const double beta : {5.0, 40.0}) {
+    const double bh = beta * kHbar;
+    auto twoSinh = [&](double w) { return 2.0 * std::sinh(0.5 * bh * w); };
+    const double expected =
+        std::log(twoSinh(2.0) * twoSinh(3.0) / twoSinh(1.0)) -
+        std::log(2.0 * std::numbers::pi * bh) - beta * barrier;
+    REQUIRE_THAT(quantumHarmonicTstLogRate(hr, hs, beta, barrier, 0),
+                 WithinRel(expected, 1e-12));
+  }
+  // At high temperature every 2 sinh(x / 2) -> x and the classical rate
+  // follows.
+  const double hot = 1e-4;
+  REQUIRE_THAT(quantumHarmonicTstLogRate(hr, hs, hot, barrier, 0) -
+                   harmonicTstLogRate(hr, hs, hot, barrier, 0),
+               Catch::Matchers::WithinAbs(0.0, 1e-6));
+}

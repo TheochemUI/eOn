@@ -473,6 +473,10 @@ namespace {
 /// and a dense solve; beyond, the block chain and Lanczos.
 constexpr long kDenseRing = 4096;
 
+/// Lanczos steps a large ring's Newton view grows to at most; the basis
+/// holds that many ring vectors.
+constexpr long kRitzCap = 400;
+
 using ColMajorXd =
     Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
 
@@ -2121,10 +2125,11 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
           }
         }
         v.ritz = lowestRingModes(apply, std::move(start), steps);
-        if (steps >= dim || resolvedNegatives(v.ritz) >= negatives) {
+        if (steps >= std::min(dim, kRitzCap) ||
+            resolvedNegatives(v.ritz) >= negatives) {
           break;
         }
-        steps = std::min(dim, 2 * steps);
+        steps = std::min(std::min(dim, kRitzCap), 2 * steps);
       }
       // Only resolved pairs enter the classification and the flips.
       v.ritz.erase(std::remove_if(v.ritz.begin(), v.ritz.end(),
@@ -2231,8 +2236,12 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
         ratioOk = std::isfinite(ratio) && ratio >= 0.1 && ratio <= 3.0;
         // Near the saddle the predicted change sits at the round-off of
         // U_N and the ratio is noise; there the step stands on the residual.
-        const double roundoff = 1e-11 * std::max(1.0, std::abs(cur.u)) *
-                                static_cast<double>(x.size());
+        double magnitude = std::abs(cur.u);
+        for (const double vj : cur.energies) {
+          magnitude += std::abs(vj);
+        }
+        const double roundoff =
+            1e3 * std::numeric_limits<double>::epsilon() * magnitude;
         if (!ratioOk && std::abs(pred) < roundoff &&
             closedGmax(next) <= closedGmax(cur)) {
           ratioOk = true;
@@ -2258,6 +2267,13 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
         chainIndexOneStep(v.ritz, v.climb, v.diag, c, !half, cur.grad, v.tau);
     bool moved = false;
     VectorXd dir = step;
+    // Clip to the trust radius first, so each halving is a new trial point.
+    if (dir.size() > 0) {
+      const double big0 = packedBeadNorm(dir, f);
+      if (big0 > trust) {
+        dir *= trust / big0;
+      }
+    }
     for (int bt = 0; bt < 4 && !moved; ++bt) {
       moved = accept(dir);
       dir *= 0.5;
@@ -2912,6 +2928,50 @@ double harmonicTstLogRate(const MatrixXd &hessReactant,
     }
   }
   return logRatio - std::log(2.0 * std::numbers::pi) - beta * barrier;
+}
+
+double quantumHarmonicTstLogRate(const MatrixXd &hessReactant,
+                                 const MatrixXd &hessSaddle, double beta,
+                                 double barrier, long rigidModes) {
+  if (!(beta > 0.0) || hessReactant.size() == 0 || hessSaddle.size() == 0 ||
+      hessReactant.rows() != hessReactant.cols() ||
+      hessSaddle.rows() != hessSaddle.cols() ||
+      hessReactant.rows() != hessSaddle.rows() || rigidModes < 0) {
+    throw std::invalid_argument(
+        "quantumHarmonicTstLogRate: need beta > 0, matching square Hessians "
+        "and a non-negative rigid-mode count");
+  }
+  const ColMajorXd hr = 0.5 * (hessReactant + hessReactant.transpose());
+  const ColMajorXd hsd = 0.5 * (hessSaddle + hessSaddle.transpose());
+  const Eigen::SelfAdjointEigenSolver<ColMajorXd> er(hr,
+                                                     Eigen::EigenvaluesOnly);
+  const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(hsd,
+                                                     Eigen::EigenvaluesOnly);
+  const VectorXd lr = er.eigenvalues();
+  const VectorXd ls = es.eigenvalues();
+  if (!(ls(0) < 0.0)) {
+    throw std::invalid_argument("quantumHarmonicTstLogRate: the saddle "
+                                "Hessian has no negative eigenvalue");
+  }
+  const std::vector<bool> rigidR = nearestZero(lr, rigidModes);
+  const std::vector<bool> rigidS = nearestZero(ls, rigidModes);
+  const double bh = beta * kHbar;
+  // ln(2 sinh(x / 2)) without overflow for large x.
+  auto logTwoSinhHalf = [](double x) {
+    return 0.5 * x + std::log1p(-std::exp(-x));
+  };
+  double logRatio = 0.0;
+  for (long m = 0; m < lr.size(); ++m) {
+    if (!rigidR[static_cast<size_t>(m)]) {
+      logRatio += logTwoSinhHalf(bh * std::sqrt(lr(m)));
+    }
+  }
+  for (long m = 1; m < ls.size(); ++m) {
+    if (!rigidS[static_cast<size_t>(m)]) {
+      logRatio -= logTwoSinhHalf(bh * std::sqrt(std::abs(ls(m))));
+    }
+  }
+  return logRatio - std::log(2.0 * std::numbers::pi * bh) - beta * barrier;
 }
 
 } // namespace eonc::tunneling

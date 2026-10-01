@@ -237,6 +237,18 @@ double harmonicTstLogRate(const MatrixXd &hessReactant,
                           const MatrixXd &hessSaddle, double beta,
                           double barrier, long rigidModes);
 
+/// ln(k) for quantum harmonic transition-state theory, k in 1/time:
+/// (1 / (2 pi beta hbar)) prod_r 2 sinh(beta hbar omega_r / 2) /
+/// prod'_s 2 sinh(beta hbar omega_s / 2) exp(-beta barrier), the
+/// zero-point and quantised partition functions of every bound mode; the
+/// saddle's unstable mode leaves the product. Times the parabolic factor it
+/// is the N -> infinity ring-polymer rate above T_c, so it joins the
+/// instanton rate at the crossover; its high-temperature limit is
+/// harmonicTstLogRate.
+double quantumHarmonicTstLogRate(const MatrixXd &hessReactant,
+                                 const MatrixXd &hessSaddle, double beta,
+                                 double barrier, long rigidModes);
+
 struct RateInstantonOptions {
   long beads = 32;              ///< N, beads on the ring
   long maxIterations = 1000;    ///< translation steps

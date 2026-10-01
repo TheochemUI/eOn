@@ -457,14 +457,18 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     const double wkbLog = wkbAt(beta);
     if (!(temperature < tc)) {
       // The ring collapses onto the saddle. Above T_c the rate is the
-      // parabolic factor times harmonic TST. At T_c the factor diverges.
+      // parabolic factor times quantum harmonic TST, the N -> infinity ring
+      // at the saddle, so it joins the instanton rate at T_c, where the
+      // factor diverges.
       bool wrote = false;
       if (temperature > tc) {
         try {
           const double factor = tunneling::parabolicFactor(temperature, tc);
           const double logHtst = tunneling::harmonicTstLogRate(
               hReactant, hSaddle, beta, vSaddle - vReactant, rigidModes);
-          const double logPar = logHtst + std::log(factor);
+          const double logQhtst = tunneling::quantumHarmonicTstLogRate(
+              hReactant, hSaddle, beta, vSaddle - vReactant, rigidModes);
+          const double logPar = logQhtst + std::log(factor);
           const double kPar = std::exp(logPar) / tunneling::kTimeUnitSeconds;
           const double kHtst = std::exp(logHtst) / tunneling::kTimeUnitSeconds;
           EONC_LOG_INFO("[Instanton] {:.4g} K is above the crossover {:.4g} "
@@ -587,7 +591,15 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       const long stride = std::max<long>(1, o.hessian_stride);
       const long nBeads = o.beads;
       std::map<long, MatrixXd> anchors;
+      // Bead N - j mirrors bead j on an out-and-back ring and shares its
+      // Hessian.
       auto anchor = [&](long j) -> const MatrixXd & {
+        const long n = static_cast<long>(inst.beads.size());
+        if (j > n / 2 && (inst.beads[static_cast<size_t>(j)] -
+                          inst.beads[static_cast<size_t>(n - j)])
+                                 .norm() <= 1e-10) {
+          j = n - j;
+        }
         auto it = anchors.find(j);
         if (it == anchors.end()) {
           it = anchors.emplace(j, hessianAt(inst.beads[static_cast<size_t>(j)]))
