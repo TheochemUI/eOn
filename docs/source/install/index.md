@@ -95,12 +95,11 @@ meson test -C bbdir --suite eon
 meson install -C bbdir
 ```
 
-`min_mode_method = gprdimer` is the GP dimer. It builds on
-[gpr_optim](https://github.com/TheochemUI/gpr_optim), which is a private
-repository for now, so eOn does not ship it. With access, check it out in
-`subprojects/gpr_optim`. `-Dwith_gprd=auto` is the default, and on Linux it
-links that checkout when one is there. Without a checkout the dimer stays
-off. `-Dwith_gprd=enabled` stops configuration instead.
+`min_mode_method = gprdimer` links the GP dimer from a checkout of
+[gpr_optim](https://github.com/TheochemUI/gpr_optim) in
+`subprojects/gpr_optim`. `-Dwith_gprd=auto` is the default. On Linux
+that checkout is linked when it is present. `-Dwith_gprd=enabled`
+stops configuration when the checkout is absent.
 A build directory that stored `with_gprd` as `true` or `false` rejects
 `meson setup --reconfigure` (`Option "with_gprd" value auto is not boolean`).
 Run `python scripts/migrate_with_gprd_option.py <builddir>` once: `true`
