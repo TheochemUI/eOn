@@ -54,6 +54,7 @@ def _bh_config(tmp_path):
         comp_neighbor_cutoff=3.0,
         comp_check_rotation=False,
         comp_use_identical=False,
+        comp_remove_translation=False,
         bh_initial_state_pool_size=1,
         comm_job_buffer_size=2,
     )
