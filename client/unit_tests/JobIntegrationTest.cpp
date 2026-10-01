@@ -2973,8 +2973,11 @@ force_tolerance = 1e-6
   const double fullCalls = afterFull - afterHalf;
   const double halfCalls = afterHalfAgain - afterFull;
   CAPTURE(halfLog, fullLog, againLog, halfCalls, fullCalls);
-  REQUIRE(std::abs(halfLog - fullLog) < 1e-6);
-  REQUIRE(std::abs(againLog - fullLog) < 1e-6);
+  // The half ring keeps beads on the turning points; the whole ring settles
+  // where they fall between beads. The two discrete rings differ at
+  // O(1 / N^2), 1.7e-3 in ln k at 16 beads.
+  REQUIRE(std::abs(halfLog - fullLog) < 1e-2);
+  REQUIRE(std::abs(againLog - fullLog) < 1e-2);
   REQUIRE(halfCalls < fullCalls);
 }
 
