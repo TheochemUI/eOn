@@ -1,1 +1,0 @@
-`[RgpotPot] input_block` reaches the cpmdc backend as CPMD `&SECTION` text ahead of the generated sections, so an in-process CPMD run can be periodic instead of the isolated cold deck. A new `permanent_dir` key sets the CPMD `FILEPATH` for `RESTART` files.

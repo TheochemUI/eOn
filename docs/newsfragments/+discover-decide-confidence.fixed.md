@@ -1,1 +1,0 @@
-With `[amsel] discover_decide` on, a kinetic Monte Carlo step no longer waits for the old repeat-count confidence. A lone barrier at or above `e_min_init` leaves through the mean-rate method or first-passage-time analysis, and a faster edge stays in the basin. A missing amsel package logs `status=unavailable` and does not step early.

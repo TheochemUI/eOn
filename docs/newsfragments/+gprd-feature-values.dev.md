@@ -1,1 +1,0 @@
-The metatomic `setupeon` pixi task and `scripts/run_coverage_cpp.sh` pass `-Dwith_gprd=enabled` and `-Dwith_gprd=disabled`. `with_gprd` is a feature option, and meson rejects `True` and `false` for it at `meson setup`.

@@ -1,1 +1,0 @@
-A failed evaluation in one `[RgpotPot] ranks_per_image` calculator raises on every rank after all results are shared. Other ranks no longer wait in a broadcast the failed calculator never joins, and workers keep serving the driver.

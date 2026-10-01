@@ -1,1 +1,0 @@
-Path-integral trajectories on the dynamics job, with normal-mode PILE, a normal-mode GLE read from a matrix file and a separate centroid Langevin thermostat, and economised ring-polymer springs. Bead forces are one batch. A centroid hyperplane reports its mean force. Economised springs are refused with the normal-mode GLE and with the instanton.

@@ -1,1 +1,0 @@
-NEB image forces with `[Main] parallel = true` run on at most `std::thread::hardware_concurrency()` threads, each taking the next image, instead of one thread per image. An exception from one image's potential is rethrown after every thread joins; it used to reach `std::terminate`. GCC and Clang builds no longer need TBB; nvc++ keeps `-Dstdpar=cpu|gpu`.

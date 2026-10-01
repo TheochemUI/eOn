@@ -2,6 +2,113 @@
 
 <!-- towncrier release notes start -->
 
+## [3.5.0](https://github.com/TheochemUI/eOn/tree/3.5.0) - 2026-10-01
+
+### Removed
+
+- The tsase `kdb` path for aKMC (`eon/eon_kdb.py` and its import of the PyPI `kdb` package) is removed. `use_kdb = true` stores and suggests processes through `amsel.KdbStore` and the run's readcon-db corpus.
+
+### Deprecated
+
+- `-Dwith_parallel_neb` is deprecated and has no effect. The NEB image pool uses `std::thread`, so `[Main] parallel = true` needs no TBB.
+
+### Added
+
+- Above the crossover, `mode = rate` writes `parabolic_factor` and `rate_parabolic`, the factor `(pi*T_c/T)/sin(pi*T_c/T)` times the harmonic TST rate from the reactant and saddle Hessians. The ring search still runs only below the crossover. At the crossover the factor diverges and that temperature records no rate.
+- An even bead count evaluates the rate-instanton potential from one turning point to the other and copies that half onto the closed ring. The rate is the same as a full evaluation, and each bead still contributes its Hessian.
+- Path-integral quantum transition-state theory after the rate instanton: `[Instanton] pi_planes` samples a ring polymer with its centroid held on parallel planes from behind the reactant to the saddle, integrates the centroid mean force to a free-energy profile with block-average errors, and writes the quantum free-energy barrier and the PI-QTST rate beside the classical and instanton barriers, with `rate_piqtst.dat` and one centroid-plus-spread frame per plane.
+- Path-integral trajectories on the dynamics job, with normal-mode PILE, a normal-mode GLE read from a matrix file and a separate centroid Langevin thermostat, and economised ring-polymer springs. Bead forces are one batch. A centroid hyperplane reports its mean force. Economised springs are refused with the normal-mode GLE and with the instanton.
+- Ring-polymer MD transmission factor for PI-QTST. `[Instanton] pi_recrossing_parents` samples parent rings on the top plane and launches momentum-reversed pairs of thermostat-free RPMD children from each. The job reports the Bennett-Chandler plateau kappa with a jackknife error and `k_RPMD = kappa k_PI-QTST` in `results.dat` and `rate_piqtst.dat`. `kappa_piqtst.dat` holds the kappa(t) curve.
+- Rings of at most 4096 active coordinates take an index-1 Newton step with a Bofill update. Below three quarters of the crossover that search starts at 0.85 of the crossover. An even ring runs from one turning point to the other. Larger rings follow the minimum mode and copy one half of an even ring. The rate uses the bead Hessians.
+- Setting `[amsel] discover_decide = true` runs on the current state's process table while `use_mcamc` stays off. A barrier below `e_min_init` stays in the basin (0.20 eV on Si6N8 isomer 1, against a 0.30 eV flip out). The exit time and channel come from the mean-rate method or first-passage-time analysis. The `[amsel]` keys are `AmselConfig`.
+- Solid-state NEB relaxes the lower-triangular cell of each interior image together with the atoms. The tangent and spring use the Jacobian of doi:10.1063/1.3684549. A potential without a stress tensor is differentiated on the cell. OCINEB, zoom, and the action-based springs stay off when `solid_state` is set.
+- The Hessian job writes `modes.con`: one frame per normal mode, with the unit Cartesian mode as a readcon `displacements` section and `mode_eigenvalue`, `hbar_omega` and `wavenumber` in the frame metadata. `[Hessian] write_modes = false` turns it off.
+- The finite-difference Hessian evaluates its displaced structures through `forceBatch` when the potential batches, so under `[RgpotPot] ranks_per_image` its columns spread over the CPMD calculator groups. Prefactor and instanton Hessians gain the same. A column checkpoint keeps the one-column path.
+- The instanton rate on a long ring comes from the cyclic block fluctuation product. A small ring still uses the dense product, and the two have to agree.
+- The rate instanton's Newton step, ring determinant and inertia count run through a block LU of the open bead chain plus a low-rank Woodbury correction (closure, cycle, rigid modes, eigenvector-following flips), O(N f^3) with no dense ring matrix; bead curvature blocks start from the saddle Hessian and take Bofill updates (`[Instanton] initial_hessians`), and the Eckart flux is checked against the exact transmission.
+- The search accepts a list of temperatures and starts at the highest. Each temperature writes one row of rate_instanton.dat. A supplied band seeds the ring and reports a one-dimensional semiclassical rate.
+- `[RgpotPot] params_path` loads a CPMDParams file, and `ranks_per_image` splits the launch into calculator groups. The user guide renders the model and a 7-image band on 28 ranks.
+- `[RgpotPot] ranks_per_image` splits the MPI world into cpmdc calculator groups, one CPMD session per group, and a NEB spreads its images over the groups through `forceBatch`. Each rank receives every image's energy and forces, so all ranks keep the same band; single force calls run on group 0 and are shared the same way. Needs rgpot built with `-Drgpot:with_mpi=enabled` and libcpmdc with `cpmdc_bind_calculator`.
+- `job = instanton` computes the ring-polymer instanton between two minima and its tunnelling splitting, beyond one-dimensional WKB along a band. It writes the beads to `instanton.con` and the splitting, action and diagnostics to `results.dat`. The beads are evaluated in one batch per iteration, so CPMD calculator groups run them in parallel.
+- `job = instanton` with `mode = rate` computes the thermal rate through a saddle below the crossover temperature, from the closed ring-polymer instanton of Richardson and Althorpe (doi:10.1063/1.3267318). It reads the reactant and `saddle.con`, takes `temperature` in kelvin, and writes `rate_instanton` to `results.dat`. Above the crossover it writes the parabolic barrier factor times the harmonic TST rate. At the crossover the factor diverges and the job stops. The reactant Hessian shows which rotations to omit for a cluster inside a periodic cell. The cubic-well check is the decay of Caldeira and Leggett (doi:10.1016/0003-4916(83)90202-6).
+- `job = instanton` writes `instanton_centroid.con`: the beads' centroid with the readcon `spreads` section (per-atom root-mean-square spread in Å), the delocalised configuration as centroid plus spread in both the splitting and the rate mode.
+- `neb.con` frames carry `reaction_coordinate_mw`, the mass-weighted arc
+  length along the band, and the first frame carries the band's
+  one-dimensional tunnelling estimate: `hbar_omega_reactant`,
+  `hbar_omega_product`, `tunnel_action`, `tunnel_splitting` (WKB,
+  Landau and Lifshitz prefactor), `tls_energy` and `tunnel_deep_wells`, the
+  inputs a two-level-system screen of glass minima needs. On a quartic double
+  well sampled by 21 images the splitting is within 5 percent of the exact
+  two-level gap once the barrier stands three quanta high.
+
+### Developer
+
+- The metatomic `setupeon` pixi task and `scripts/run_coverage_cpp.sh` pass `-Dwith_gprd=enabled` and `-Dwith_gprd=disabled`. `with_gprd` is a feature option, and meson rejects `True` and `false` for it at `meson setup`.
+
+### Changed
+
+- A library force call writes no RESTART.1, LATEST, GEOMETRY, or GEOMETRY.xyz. The orbitals for the next call stay in memory.
+- Configuration models render as a field list. The PDF title page carries the logo, and chapters open on the next page.
+- On a potential that batches (CPMD calculator groups), the NEB evaluates its two endpoints in one call, the improved dimer evaluates its two ends together, a band update routes image `i` to the same calculator whether or not the images before it moved, and an OCI restore puts the saved forces back instead of asking the potential again. L-BFGS seeds its first step from the min-mode curvature when the objective knows one, so the MMF dimer inside OCI-NEB spends no force call on the finite-difference probe. `NEBObjectiveFunction::getEnergy` goes through the batched band update.
+- Ring-polymer dynamics transforms the beads to normal modes as one matrix product and holds a centroid hyperplane without transforming the ring, about eight times faster per step at 32 beads.
+- The build requires readcon-core 0.16.0 or newer, from pkg-config or the subproject, and the wrap pins v0.16.0. `ConFileIO` writes spreads with `set_spreads_from_flat`, which 0.15.x does not have, so a 0.15 host package used to pass configure and fail to compile. Packagers raise the host readcon-core floor to `>=0.16`.
+- The rgpot subproject pins the 3.4.0 release (calculator groups, MPI finalised at exit, CPMD session reuse and the abort after a failed engine call).
+- `-Dwith_mpi=enabled` requires an embedded Python (`python3-embed`): the server rank of the MPI client runs `EON_SERVER_PATH` through `Py_Main`. Configure stops when the embed dependency is not found.
+- `[cpmd]` holds the scalar CPMD message when `[RgpotPot] params_path` is empty. `cutOffRy` there overrides `cutoff_ry`. A loaded CPMDParams file keeps its sections, and `input_block` is appended to that file's blocks.
+- `python -m eon.server --reset` also removes the `[Paths] kdb` catalog directory, wherever it points. A shared or curated catalog needs a copy outside the run. The readcon-db corpus `readcon.db` is not removed. The kinetic database guide describes both.
+- `with_mpi` is a feature option and stays disabled unless set to `enabled`. `auto` does not link MPI. `-Dwith_mpi=enabled` builds the client/server program; calculator groups stay `-Drgpot:with_mpi=enabled`.
+- aKMC with `use_kdb = true` writes each good process into `amsel.KdbStore` when it is registered: the barrier in eV, the prefactor, the mode, and the readcon-db frame keys. The reactant, saddle, and product frames go into the run's `readcon.db`. The next search of a matching state refines from the stored saddle, then uses a random displacement when no suggestion remains. The `kdb` module is not imported. `kdb_nf` (fraction, default 0.2), `kdb_dc` (angstroms, default 0.3), and `kdb_mac` (minimum mode cosine, default 0.7) are read from the ini. `Paths.kdb` is the catalog directory.
+
+### Fixed
+
+- A calculator-group run whose rgpot engine call failed (rgpot requested `MPI_Abort` at exit) now aborts the MPI world on exit. The driver skips the stop broadcast and eOn's exit handler calls `MPI_Abort` instead of `MPI_Finalize`, so ranks left inside a CPMD collective no longer hold the job until the walltime kill.
+- A calculator-group run with the rgpot wrap (`-Drgpot:with_mpi=enabled`) constructs its groups again. rgpot 3.4.0 reports MPI only after `MPI_Init`, and the construction agreement that calls `MPI_Init` was gated on that report, so every `ranks_per_image` greater than 0 stopped with "ranks_per_image needs rgpot built with MPI". The agreement runs whenever the process was started as one of several ranks.
+- A cpmdc job under mpirun calls cpmdc_finalize on every rank, then MPI_Finalize, then _Exit, so CPMD and MPI library destructors do not run on a finalized world. Rank 0 prints the engine error from another calculator and exits non-zero. A rank that cannot read params_path stops every rank before MPI_Comm_split. eOn's -Dwith_mpi build is the client/server program; calculator groups are mpirun -np N eonclient with -Drgpot:with_mpi=enabled.
+- A failed evaluation in one `[RgpotPot] ranks_per_image` calculator raises on every rank after all results are shared. Other ranks no longer wait in a broadcast the failed calculator never joins, and workers keep serving the driver.
+- A half-ring instanton that has converged, or that is stationary at the wrong index, is probed for an unstable mode odd under the ring mirror. That mode marks two copies of the instanton on one ring, and the search finishes on the whole ring. A cooling schedule probes only its last temperature.
+- A process whose product column is -1 is an amsel exit when its barrier is at or above `e_min_init`. The absorbing label is a 32-bit id. The hop creates the product state from the process id.
+- In the MPI communicator a client whose job fails (a potential error, a bad `config.ini`, an unknown job, a missing job directory) logs the error, stages its logs into the job directory and hands the directory back without `results.dat`. The server skips that result and the rank takes the next job, so one failed CPMD call no longer ends the allocation.
+- JSON configuration (the Python binding and serve mode) reads every `[Hessian]` key that `to_json` writes, including `write_modes`, with `atom_list` accepted for `phva_atoms` as in the ini. JSON loading also derives the internal `path_pile_tau` and Andersen collision period from the femtosecond inputs when the keys are absent, so a `pile` or `piglet` run loaded from JSON uses the same damping time as one loaded from config.ini instead of stopping on a zero time.
+- NEB image forces with `[Main] parallel = true` run on at most `std::thread::hardware_concurrency()` threads, each taking the next image, instead of one thread per image. An exception from one image's potential is rethrown after every thread joins; it used to reach `std::terminate`. GCC and Clang builds no longer need TBB; nvc++ keeps `-Dstdpar=cpu|gpu`.
+- On the Morse Pt cell, `gprdimer` and `dimer` both stop at -1462.008706 eV. `gprdimer` uses 17 force calls and `dimer` uses 38. A Linux build links that method under `-Dwith_gprd=auto` when a checkout of the private gpr_optim repository at `b55c89e2` sits in `subprojects/gpr_optim`.
+- The Hessian accepts the trivial-mode count the structure's symmetries give:
+  6 for a free cluster, 5 for a linear one, 3 for a periodic cell and none once
+  any atom is fixed. It used to report every periodic bulk cell as an error
+  for having 3 instead of 6.
+- The MPI communicator reads the job path a client returns with `ndarray.tobytes`. `tostring` is gone in NumPy 2, so the server stopped with an `AttributeError` at the first returned job.
+- The Python server accepts a potential name in any case. An exact listed spelling wins.
+- The Python server accepts the CPMD cutoff and functional spellings the client reads: `cutOffRy`, `cutoff_ry` and `cpmd_cut_off_ry`, and `cpmd_functional`, on `[cpmd]` and on `[RgpotPot]`. A config.ini with `[cpmd] cutoff_ry` or `[RgpotPot] cutOffRy` used to stop `python -m eon` with "unknown option". The eon-schema `Cpmd` and `RgpotPot` models accept the aliases and leave them out of `model_dump`, so a written file carries one cutoff key.
+- The amsel superbasin gate returns its configured fallback when an amsel call fails, instead of raising `NameError` on an unbound `config`; the policy is `[amsel] on_error` (`fallback_single`, `unavailable_mcamc` or `raise`). Processes whose product is not yet linked to a state (-1) are left out of the graph handed to amsel, and the discover cutoff stays at `[amsel] e_min_init` instead of being lifted above every known barrier, which left the basin without an absorbing border.
+- The calculator-group safety code in the RGPOT potential (the agreement before `MPI_Comm_split` when a rank cannot read `params_path`, and the cpmdc_finalize, MPI_Finalize, _Exit sequence at exit) compiles whenever rgpot links MPI: `-Drgpot:with_mpi=enabled` with eOn's `with_mpi` off, the documented calculator-group build, or an installed rgpot whose `rgpot.pc` defines `RGPOT_HAS_MPI`. It used to compile only with eOn's `-Dwith_mpi=enabled`.
+- The economised ring-polymer spring fit iterates to the least-squares minimum, with the 10000-iteration cap of Zeng and Manolopoulos, and raises an error when it does not converge. The fit stopped after 500 Newton steps, partway along a flat valley of the objective, and returned frequencies that differed between compilers and platforms by up to 5% on the high-frequency modes (48 beads at a maximum reduced frequency of 20).
+- The installed `eon` server package ships `cancel.py` and `process_id.py`.
+  An installed AKMC server no longer stops with `ModuleNotFoundError: No module
+  named 'eon.process_id'` on the first registered saddle.
+- The installed `eonclient` finds `libeonclib` with a multiarch or other non-default `libdir`. Its run path is `$ORIGIN` plus the relative path from `bindir` to `libdir`, and the installed libraries carry `$ORIGIN`, where the potential modules are installed. Meson's own libdir entry is not added once `install_rpath` is set, so such an install used to exit 127.
+- The minimum-mode rate-instanton search on half of an even ring checks a converged ring for an unstable mode odd under the mirror and, when it finds one, finishes on the whole ring. The half-ring search no longer returns two copies of the instanton on one ring with two negative modes.
+- The rgpot potential links the Message Passing Interface (MPI) when `with_mpi` is enabled. A system `mpic++` on the default path no longer adds its include directory to a build that left MPI off.
+- The server catalog lists the path-integral keys on `[Dynamics]` and `springs` on `[Instanton]`, with the same names and defaults as the client. JSON load reads those keys, including an instanton section.
+- The solid-state band keeps the Cauchy stress a calculator already computed. xTB, the i-PI virial, and LAMMPS pressure are read on the force call. A cell difference is used only when that tensor is absent.
+- With `[amsel] discover_decide` on, a kinetic Monte Carlo step no longer waits for the old repeat-count confidence. A lone barrier at or above `e_min_init` leaves through the mean-rate method or first-passage-time analysis, and a faster edge stays in the basin. A missing amsel package logs `status=unavailable` and does not step early.
+- Without `initial_path`, the rate instanton seeds its ring from a steepest-descent path out of the saddle. A ring that converged onto another saddle is refused. The climb follows the last climb by overlap. A converged ring is classified with finite-difference bead Hessians. The rigid motions of the whole ring come from the current beads.
+- `[RgpotPot] input_block` reaches the cpmdc backend as CPMD `&SECTION` text ahead of the generated sections, so an in-process CPMD run can be periodic instead of the isolated cold deck. A new `permanent_dir` key sets the CPMD `FILEPATH` for `RESTART` files.
+- `eon.atoms` loads without minimage again. The `Cell.wrap_many` binding for
+  readcon-ops ran at import time, so the aKMC server stopped with
+  `ModuleNotFoundError: No module named 'minimage'` wherever minimage, which
+  is not on PyPI or conda-forge, was not installed by hand. The binding now
+  runs just before the readcon-ops calls that need it, and is skipped when
+  minimage is absent.
+- `pip install eon` declares PyYAML, which `eon.config` imports at start-up.
+  Without it `python -m eon` failed with `ModuleNotFoundError: No module named
+  'yaml'` in any environment other than the pixi and conda ones, which already
+  listed it.
+- `with_gprd=auto` leaves the GP dimer off when the `gpr_optim` fetch fails. `with_gprd=enabled` still stops configuration.
+
+  A build directory that stored `with_gprd` as `true` or `false` rejects `meson setup --reconfigure` (`Option "with_gprd" value auto is not boolean`). `python scripts/migrate_with_gprd_option.py <builddir>` maps `true` to `enabled` and `false` to `disabled`, and the reconfigure then runs.
+- pyeonclient 0.4.1 carries the eOn 3.4.0 client. PyPI already held a 0.4.0 built from July sources, and the 0.4.0 publish of the 3.4.0 client left those files in place; the wheel publish now refuses a version the index already has.
+- pyeonclient builds with the default GP dimer: the min-mode bindings include `AtomicGPDimer.h` when `WITH_GPRD` is set.
+
+
 ## [3.4.0](https://github.com/TheochemUI/eOn/tree/3.4.0) - 2026-09-29
 
 ### Added

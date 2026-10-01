@@ -1,1 +1,0 @@
-`with_mpi` is a feature option and stays disabled unless set to `enabled`. `auto` does not link MPI. `-Dwith_mpi=enabled` builds the client/server program; calculator groups stay `-Drgpot:with_mpi=enabled`.

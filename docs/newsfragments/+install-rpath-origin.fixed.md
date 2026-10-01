@@ -1,1 +1,0 @@
-The installed `eonclient` finds `libeonclib` with a multiarch or other non-default `libdir`. Its run path is `$ORIGIN` plus the relative path from `bindir` to `libdir`, and the installed libraries carry `$ORIGIN`, where the potential modules are installed. Meson's own libdir entry is not added once `install_rpath` is set, so such an install used to exit 127.

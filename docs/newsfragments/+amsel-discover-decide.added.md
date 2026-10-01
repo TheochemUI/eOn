@@ -1,1 +1,0 @@
-Setting `[amsel] discover_decide = true` runs on the current state's process table while `use_mcamc` stays off. A barrier below `e_min_init` stays in the basin (0.20 eV on Si6N8 isomer 1, against a 0.30 eV flip out). The exit time and channel come from the mean-rate method or first-passage-time analysis. The `[amsel]` keys are `AmselConfig`.

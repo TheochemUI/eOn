@@ -1,1 +1,0 @@
-An even bead count evaluates the rate-instanton potential from one turning point to the other and copies that half onto the closed ring. The rate is the same as a full evaluation, and each bead still contributes its Hessian.

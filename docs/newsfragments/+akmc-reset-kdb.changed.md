@@ -1,1 +1,0 @@
-`python -m eon.server --reset` also removes the `[Paths] kdb` catalog directory, wherever it points. A shared or curated catalog needs a copy outside the run. The readcon-db corpus `readcon.db` is not removed. The kinetic database guide describes both.

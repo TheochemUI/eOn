@@ -1,1 +1,0 @@
-The build requires readcon-core 0.16.0 or newer, from pkg-config or the subproject, and the wrap pins v0.16.0. `ConFileIO` writes spreads with `set_spreads_from_flat`, which 0.15.x does not have, so a 0.15 host package used to pass configure and fail to compile. Packagers raise the host readcon-core floor to `>=0.16`.

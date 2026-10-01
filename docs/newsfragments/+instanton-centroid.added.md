@@ -1,1 +1,0 @@
-`job = instanton` writes `instanton_centroid.con`: the beads' centroid with the readcon `spreads` section (per-atom root-mean-square spread in Å), the delocalised configuration as centroid plus spread in both the splitting and the rate mode.

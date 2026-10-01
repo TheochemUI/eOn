@@ -1,1 +1,0 @@
-The minimum-mode rate-instanton search on half of an even ring checks a converged ring for an unstable mode odd under the mirror and, when it finds one, finishes on the whole ring. The half-ring search no longer returns two copies of the instanton on one ring with two negative modes.

@@ -1,1 +1,0 @@
-Rings of at most 4096 active coordinates take an index-1 Newton step with a Bofill update. Below three quarters of the crossover that search starts at 0.85 of the crossover. An even ring runs from one turning point to the other. Larger rings follow the minimum mode and copy one half of an even ring. The rate uses the bead Hessians.

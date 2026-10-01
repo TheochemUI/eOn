@@ -1,1 +1,0 @@
-The Hessian job writes `modes.con`: one frame per normal mode, with the unit Cartesian mode as a readcon `displacements` section and `mode_eigenvalue`, `hbar_omega` and `wavenumber` in the frame metadata. `[Hessian] write_modes = false` turns it off.

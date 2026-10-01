@@ -1,1 +1,0 @@
-A calculator-group run whose rgpot engine call failed (rgpot requested `MPI_Abort` at exit) now aborts the MPI world on exit. The driver skips the stop broadcast and eOn's exit handler calls `MPI_Abort` instead of `MPI_Finalize`, so ranks left inside a CPMD collective no longer hold the job until the walltime kill.

@@ -1,1 +1,0 @@
-`job = instanton` computes the ring-polymer instanton between two minima and its tunnelling splitting, beyond one-dimensional WKB along a band. It writes the beads to `instanton.con` and the splitting, action and diagnostics to `results.dat`. The beads are evaluated in one batch per iteration, so CPMD calculator groups run them in parallel.

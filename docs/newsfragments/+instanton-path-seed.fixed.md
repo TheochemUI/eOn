@@ -1,1 +1,0 @@
-Without `initial_path`, the rate instanton seeds its ring from a steepest-descent path out of the saddle. A ring that converged onto another saddle is refused. The climb follows the last climb by overlap. A converged ring is classified with finite-difference bead Hessians. The rigid motions of the whole ring come from the current beads.

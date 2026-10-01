@@ -1,1 +1,0 @@
-The tsase `kdb` path for aKMC (`eon/eon_kdb.py` and its import of the PyPI `kdb` package) is removed. `use_kdb = true` stores and suggests processes through `amsel.KdbStore` and the run's readcon-db corpus.
