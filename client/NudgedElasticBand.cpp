@@ -31,7 +31,9 @@
 #include "ForEachImage.h"
 #include "eon/EonLogger.h"
 #include <cmath>
+#include <exception>
 #include <format>
+#include <mutex>
 #include <stdexcept>
 #include <thread>
 #ifdef EON_PARALLEL_NEB
@@ -308,6 +310,9 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
   long zoomAt{-1};
 
   while (this->status != NEBStatus::GOOD) {
+    if (!path.empty()) {
+      path.front()->pollCancel("neb");
+    }
     if (params.debug_options().write_movies &&
         (iteration % params.debug_options().write_movies_interval == 0)) {
       bool append = (iteration != 0);
@@ -643,6 +648,9 @@ void NudgedElasticBand::updateForces(bool ci_active) {
     }
 
     if (!dirty.empty()) {
+      if (!path.empty()) {
+        path.front()->pollCancel("neb");
+      }
       auto nDirty = static_cast<long>(dirty.size());
       std::vector<VectorXi> nrsStore;
       std::vector<Matrix3d> boxStore;
@@ -695,8 +703,22 @@ void NudgedElasticBand::updateForces(bool ci_active) {
       // nvc++ -stdpar=multicore|gpu (meson -Dstdpar=cpu|gpu).
       std::vector<long> beads(static_cast<size_t>(numImages));
       std::iota(beads.begin(), beads.end(), 1);
+      std::exception_ptr neb_cancel;
+      std::mutex neb_cancel_mu;
       std::for_each(std::execution::par, beads.begin(), beads.end(),
-                    [this](long i) { path[i]->getForcesRaw(); });
+                    [this, &neb_cancel, &neb_cancel_mu](long i) {
+                      try {
+                        path[i]->getForcesRaw();
+                      } catch (const JobCancelled &) {
+                        std::lock_guard<std::mutex> lock(neb_cancel_mu);
+                        if (!neb_cancel) {
+                          neb_cancel = std::current_exception();
+                        }
+                      }
+                    });
+      if (neb_cancel) {
+        std::rethrow_exception(neb_cancel);
+      }
 #else
       eonc::forEachImage(numImages,
                          [this](long i) { path[i]->getForcesRaw(); });

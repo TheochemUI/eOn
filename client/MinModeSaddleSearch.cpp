@@ -366,6 +366,7 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
         objf, params.optimizer_options().method, params);
 
     while (!objf->isConverged() || iteration == 0) {
+      matter->pollCancel("saddle");
 
       if (!firstIteration) {
 

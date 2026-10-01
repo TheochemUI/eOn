@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "CancelToken.h"
 #include "ConFileIO.h"
 #include "Eigen.h"
 #include "EonLogger.h"
@@ -318,6 +319,10 @@ public:
     recomputePotential = true;
     recomputeMaskedForces = true;
   }
+
+  void setCancelToken(CancelToken token) { cancel_token_ = std::move(token); }
+  [[nodiscard]] const CancelToken &cancelToken() const { return cancel_token_; }
+  void pollCancel(const char *site) const { cancel_token_.poll(site); }
   /// Apply MIC wrap when periodic boundaries are enabled (I/O path).
   void applyPeriodicBoundaryIfEnabled() {
     if (usePeriodicBoundaries) {
@@ -374,6 +379,7 @@ private:
   mutable double energyVariance;
   std::vector<readcon::ConFrame> movie_frames_;
   mutable double potentialEnergy;
+  CancelToken cancel_token_;
 };
 
 /// Evaluates every system that needs a force update. With a potential

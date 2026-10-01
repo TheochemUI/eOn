@@ -127,6 +127,7 @@ const Matter &Matter::operator=(const Matter &matter) {
   biasPotential = nullptr;
 
   headerCon = matter.headerCon;
+  cancel_token_ = matter.cancel_token_;
   // ConFrame is move-only; copy does not retain movie trajectory.
   movie_frames_.clear();
 
@@ -173,6 +174,7 @@ Matter &Matter::operator=(Matter &&other) noexcept {
   energyVariance = other.energyVariance;
   movie_frames_ = std::move(other.movie_frames_);
   potentialEnergy = other.potentialEnergy;
+  cancel_token_ = std::move(other.cancel_token_);
 
   other.nAtoms = 0;
   other.recomputePotential = true;
@@ -604,6 +606,7 @@ void Matter::assertIsolatedMoleculeLayoutSafe() const {
 }
 
 void Matter::computePotential() const {
+  cancel_token_.poll("force");
   if (recomputePotential) {
     if (!potential) {
       throw std::runtime_error(

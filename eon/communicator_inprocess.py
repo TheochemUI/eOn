@@ -323,19 +323,41 @@ def _run_inprocess_job(pc, job_kind, matter, pot, params, job: dict, token=None)
     )
 
 
-def _job_result(status: int, energy: float, force_calls: int, job_type: str) -> dict:
+def _job_result(
+    status: int,
+    energy: float,
+    force_calls: int,
+    job_type: str,
+    *,
+    cancelled: bool = False,
+) -> dict:
     """Typed in-process result. ``results.dat`` is derived from this dict."""
+    if cancelled:
+        reason = "cancelled"
+    elif status == 0:
+        reason = "GOOD"
+    else:
+        reason = "FAIL"
     return {
         "termination_reason": status,
-        "termination_reason_text": "GOOD" if status == 0 else "FAIL",
+        "termination_reason_text": reason,
         "job_type": job_type,
         "potential_energy": energy,
         "total_force_calls": force_calls,
     }
 
 
-def _results_dat(status: int, energy: float, force_calls: int, job_type: str) -> str:
-    data = _job_result(status, energy, force_calls, job_type)
+def _results_dat(
+    status: int,
+    energy: float,
+    force_calls: int,
+    job_type: str,
+    *,
+    cancelled: bool = False,
+) -> str:
+    data = _job_result(
+        status, energy, force_calls, job_type, cancelled=cancelled
+    )
     lines = []
     for key, val in data.items():
         if isinstance(val, float):
@@ -356,6 +378,7 @@ class LocalInProcess(Communicator):
         self._finished: list[dict] = []
         self.token = CancelToken()
         self._in_submit = False
+        self._cpp_token = None
 
     def get_queue_size(self):
         return 0
@@ -364,11 +387,18 @@ class LocalInProcess(Communicator):
         return 0
 
     def cancel_state(self, state):
-        # In-process work is synchronous. An idle cancel has no queued
-        # workunit, and the communicator is reused for the next state.
+        """Ask the running batch to stop. Idle calls return 0.
+
+        The Python token stops the next dispatch. The C++ token is what
+        Matter polls inside a compiled relax, NEB, or saddle search.
+        """
+        del state
         if not self._in_submit:
             return 0
         self.token.cancel()
+        cpp = self._cpp_token
+        if cpp is not None and not cpp.requested():
+            cpp.request()
         return 1
 
     def submit_jobs(self, data, invariants):
@@ -409,9 +439,30 @@ class LocalInProcess(Communicator):
                 raise CommunicatorError(str(e)) from e
 
             matter = structure_to_matter(structure, pot, params)
-            payload = _run_inprocess_job(
-                pc, job_kind, matter, pot, params, job, token=self.token
-            )
+            if hasattr(pc, "CancelToken") and hasattr(matter, "set_cancel_token"):
+                self._cpp_token = pc.CancelToken()
+                matter.set_cancel_token(self._cpp_token)
+                if self.token.cancelled:
+                    self._cpp_token.request()
+            cancelled_exc = getattr(pc, "JobCancelled", None)
+            try:
+                payload = _run_inprocess_job(
+                    pc, job_kind, matter, pot, params, job, token=self.token
+                )
+            except Exception as exc:
+                if cancelled_exc is None or not isinstance(exc, cancelled_exc):
+                    raise
+                payload = {
+                    "matter": matter,
+                    "energy": 0.0,
+                    "force_calls": int(getattr(matter, "force_calls", 0) or 0),
+                    "status": 1,
+                    "job_type": str(getattr(job_kind, "name", job_kind)),
+                    "converged": False,
+                    "cancelled": True,
+                }
+            finally:
+                self._cpp_token = None
             matter = payload["matter"]
             out = matter_to_structure(matter)
 
@@ -419,8 +470,15 @@ class LocalInProcess(Communicator):
             fcalls = int(payload["force_calls"])
             status = int(payload["status"])
             jname = str(payload["job_type"])
-            job_result = _job_result(status, energy, fcalls, jname)
-            results = StringIO(_results_dat(status, energy, fcalls, jname))
+            cancelled = bool(payload.get("cancelled"))
+            job_result = _job_result(
+                status, energy, fcalls, jname, cancelled=cancelled
+            )
+            results = StringIO(
+                _results_dat(
+                    status, energy, fcalls, jname, cancelled=cancelled
+                )
+            )
 
             rec = {
                 "id": jid,

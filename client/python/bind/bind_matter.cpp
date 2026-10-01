@@ -1,5 +1,6 @@
 #include "bind_helpers.hpp"
 #include "eigen_numpy.hpp"
+#include "eon/CancelToken.h"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
@@ -19,9 +20,21 @@ namespace eonc::pybind {
 namespace nb = nanobind;
 
 void bind_matter(nb::module_ &m) {
+  using eonc::CancelToken;
+  using eonc::JobCancelled;
   using eonc::Matter;
   using eonc::Parameters;
   using eonc::Potential;
+
+  nb::exception<JobCancelled>(m, "JobCancelled", PyExc_RuntimeError);
+
+  nb::class_<CancelToken>(m, "CancelToken",
+                          "Shared cooperative cancel flag. request() is "
+                          "observed at the next force or optimizer step.")
+      .def(nb::init<>())
+      .def("request", &CancelToken::request, "Ask running loops to stop.")
+      .def("reset", &CancelToken::reset, "Clear a previous request.")
+      .def("requested", &CancelToken::requested);
 
   nb::class_<Matter>(m, "Matter",
                      "Atomic structure + potential (eOn C++ client core)")
@@ -35,6 +48,11 @@ void bind_matter(nb::module_ &m) {
       .def(nb::init<const Matter &>(), nb::arg("other"), nb::keep_alive<1, 2>(),
            "Copy construct")
       .def("resize", &Matter::resize, nb::arg("n_atoms"))
+      .def("set_cancel_token", &Matter::setCancelToken, nb::arg("token"),
+           "Share a CancelToken. Copies see the same request.")
+      .def("cancel_token", &Matter::cancelToken,
+           nb::rv_policy::copy,
+           "Copy of the token currently attached to this Matter.")
       .def_prop_ro("n_atoms", &Matter::numberOfAtoms)
       .def_prop_ro("n_free", &Matter::numberOfFreeAtoms)
       .def_prop_ro("n_fixed", &Matter::numberOfFixedAtoms)

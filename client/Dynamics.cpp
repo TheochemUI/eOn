@@ -189,6 +189,7 @@ void Dynamics::run() {
                   "step", "KE", "PE", "TE", "kinT");
 
   for (long step = 0; step < m_config.steps; step++) {
+    matter->pollCancel("dynamics");
     oneStep();
 
     double kinE = matter->getKineticEnergy();
