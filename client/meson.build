@@ -634,6 +634,12 @@ _rgpot_from_pkg = false
 if _rgpot_pkg.found()
     message('rgpot: using pkg-config (installed), not subproject wrap')
     _rgpot_from_pkg = true
+    # Calculator groups need rgpot's MPI, not eOn's with_mpi (the AKMC
+    # client/server switch). An rgpot.pc that defines RGPOT_HAS_MPI says so.
+    _rgpot_mpi_dep = dependency('', required: false)
+    if cppc.get_define('RGPOT_HAS_MPI', dependencies: _rgpot_pkg) != ''
+        _rgpot_mpi_dep = dependency('mpi', language: 'cpp', required: true)
+    endif
     rgpot_dep = _rgpot_pkg
     nwchempot_dep = _rgpot_pkg
     cpmdpot_dep = _rgpot_pkg
@@ -655,6 +661,12 @@ else
     # above; here it only takes on its eOn roles.
     message('rgpot: pkg-config not found; falling back to subproject wrap')
     rgpot_dep = _rgpot_proj.get_variable('rgpot_dep')
+    # The subproject links MPI when -Drgpot:with_mpi=enabled; calculator
+    # groups run with that and eOn's with_mpi off.
+    _rgpot_mpi_dep = _rgpot_proj.get_variable(
+        '_mpi_dep',
+        dependency('', required: false),
+    )
     # meson applies subproject default_options only on the first configure
     # of a build directory, so a directory configured before this profile
     # changed silently keeps the old values and drops potentials. Fail
