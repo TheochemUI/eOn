@@ -93,13 +93,14 @@ server:
 
 ## Gaussian process dimer
 
-`min_mode_method = gprdimer` runs the Gaussian process dimer. The option
-is `-Dwith_gprd=auto` (the default): on Linux it links `subprojects/gpr_optim`
-when that subproject configures. A failed fetch leaves the dimer off.
-`-Dwith_gprd=enabled` stops configuration instead. The pin is the `revision` in
-`subprojects/gpr_optim.wrap`. A sibling checkout replaces the tree with
-`rsync -a ../gpr_optim/ subprojects/gpr_optim/`. `-Dwith_gprd=disabled`
-omits the method. The install page has the same `rsync` next to the
+`min_mode_method = gprdimer` runs the Gaussian process dimer. It needs
+gpr_optim, a private repository for now, checked out in
+`subprojects/gpr_optim`, for example with
+`rsync -a ../gpr_optim/ subprojects/gpr_optim/`. Under `-Dwith_gprd=auto`
+(the default) a Linux build links that checkout when it is there and leaves
+the dimer off when it is not. `-Dwith_gprd=enabled` stops configuration
+instead. The pin is the `revision` in `subprojects/gpr_optim.wrap`.
+`-Dwith_gprd=disabled` omits the method. The install page has the same `rsync` next to the
 default `meson setup`.
 
 ## Output

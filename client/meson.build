@@ -835,15 +835,15 @@ eonclib_sources += [
 # those plugins link with --no-undefined and would inherit HDF5/zlib (and
 # rgpot) link flags they do not need. Attach only to eonclib / executables.
 #
-# -Dwith_gprd=auto is the default. On Linux the shipped
-# subprojects/gpr_optim tree turns the GP dimer on, so
-# `meson setup` with no extra feature flag links min_mode_method=gprdimer.
-# A sibling checkout replaces that tree with:
+# gpr_optim is a private repository, so eOn does not ship it. With access,
+# a local checkout at subprojects/gpr_optim turns the GP dimer on under
+# -Dwith_gprd=auto (the default) on Linux:
 #   rsync -a ../gpr_optim/ subprojects/gpr_optim/
+# Without one the build leaves min_mode_method=gprdimer off.
 _gprd_opt = get_option('with_gprd')
 _gprd_tree = fs.exists(meson.project_source_root() / 'subprojects' / 'gpr_optim' / 'meson.build')
 if _gprd_opt.enabled() and not _gprd_tree
-    error('with_gprd=enabled needs subprojects/gpr_optim. rsync -a ../gpr_optim/ subprojects/gpr_optim/ and reconfigure. The pin is the revision in subprojects/gpr_optim.wrap.')
+    error('with_gprd=enabled needs a checkout of the private gpr_optim repository in subprojects/gpr_optim (rsync -a ../gpr_optim/ subprojects/gpr_optim/). The pin is the revision in subprojects/gpr_optim.wrap.')
 endif
 # auto: try the subproject and leave the dimer off when it cannot be
 # fetched. enabled: the same failure stops configuration.

@@ -15,7 +15,6 @@ on:
       - "client/meson.build"
       - "meson_options.txt"
       - "subprojects/gpr_optim.wrap"
-      - "subprojects/gpr_optim/**"
       - "tests/test_one_pt.py"
       - "tests/test_gpr_optim_pin.py"
   pull_request:
@@ -27,7 +26,6 @@ on:
       - "client/meson.build"
       - "meson_options.txt"
       - "subprojects/gpr_optim.wrap"
-      - "subprojects/gpr_optim/**"
       - "tests/test_one_pt.py"
       - "tests/test_gpr_optim_pin.py"
 permissions:
@@ -38,18 +36,36 @@ env:
 jobs:
   gprd-integration:
     runs-on: ubuntu-latest
+    env:
+      # gpr_optim is private: the GP dimer job needs a read token for it, and
+      # a run without one (a fork, say) builds nothing here.
+      HAVE_GPR_OPTIM: ${{ secrets.GPR_OPTIM_TOKEN != '' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
-      - name: GP dimer pin is in the tree
+      - name: No gpr_optim access
+        if: env.HAVE_GPR_OPTIM != 'true'
+        run: echo "GPR_OPTIM_TOKEN is not set; the private gpr_optim pin is not checked out and the GP dimer is not built."
+      - name: Check out the private gpr_optim pin
+        if: env.HAVE_GPR_OPTIM == 'true'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: TheochemUI/gpr_optim
+          ref: ${{ env.GPR_OPTIM_REV }}
+          path: subprojects/gpr_optim
+          token: ${{ secrets.GPR_OPTIM_TOKEN }}
+          persist-credentials: false
+      - name: GP dimer pin is the wrap revision
+        if: env.HAVE_GPR_OPTIM == 'true'
         run: |
           set -euo pipefail
           rev=$(sed -n 's/^revision = //p' subprojects/gpr_optim.wrap)
           test "$rev" = "$GPR_OPTIM_REV"
-          test "$(tr -d '[:space:]' < subprojects/gpr_optim/REVISION)" = "$GPR_OPTIM_REV"
+          test "$(git -C subprojects/gpr_optim rev-parse HEAD)" = "$GPR_OPTIM_REV"
           test -f subprojects/gpr_optim/gpr/AtomicDimer.h
       - uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e # v0.9.4
+        if: env.HAVE_GPR_OPTIM == 'true'
         with:
           cache: true
           cache-write: true
@@ -57,12 +73,14 @@ jobs:
           environments: >-
             dev
       - name: Install cbindgen
+        if: env.HAVE_GPR_OPTIM == 'true'
         shell: bash
         run: command -v cbindgen || cargo install cbindgen
       - name: Install eon
+        if: env.HAVE_GPR_OPTIM == 'true'
         shell: pixi run bash -e {0}
         run: |
-          # Default options. -Dwith_gprd=auto links the shipped tree on Linux.
+          # Default options. -Dwith_gprd=auto links the checkout on Linux.
           meson setup --reconfigure bbdir  \
           --prefix=$CONDA_PREFIX           \
           --buildtype release              \
@@ -70,6 +88,7 @@ jobs:
           -Dwith_tests=true
           meson install --skip-subprojects -C bbdir
       - name: Morse Pt GP dimer
+        if: env.HAVE_GPR_OPTIM == 'true'
         shell: pixi run bash -e {0}
         run: |
           python -m pip install -q 'pytest>=8' 'pytest-datadir>=1.5' 'sh>=2'
