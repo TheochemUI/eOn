@@ -1786,8 +1786,20 @@ VectorXd chainIndexOneStep(const std::vector<RingMode> &ritz,
     for (size_t j = 0; j < grad.size(); ++j) {
       tauRing[j] = tau.segment(static_cast<long>(j) * f, f);
     }
-    extras.push_back(tauRing);
-    kappas.push_back(spring);
+    // On a discrete ring the time shift has a small curvature of its own,
+    // and the stationary ring is where Newton on that curvature leads; the
+    // lift is only for a cycle too flat to solve with.
+    double cycleCurvature = 0.0;
+    for (const auto &m : ritz) {
+      if (std::abs(dot(m.vector, tauRing)) > 0.5) {
+        cycleCurvature = m.theta;
+        break;
+      }
+    }
+    if (std::abs(cycleCurvature) <= 1e-6 * std::max(1.0, spring)) {
+      extras.push_back(tauRing);
+      kappas.push_back(spring);
+    }
   }
   // The rigid ring motions are lifted like the cycle.
   auto onNull = [&](const std::vector<VectorXd> &m) {
@@ -1887,10 +1899,8 @@ VectorXd chainIndexOneStep(const std::vector<RingMode> &ritz,
   if (!solved && stepRing.empty()) {
     return VectorXd();
   }
+  // The cycle component stays: a gradient along it has to be stepped out.
   VectorXd step = packBeads(stepRing);
-  if (tau.size() == step.size()) {
-    step -= step.dot(tau) * tau;
-  }
   for (const auto &r : nullRing) {
     const VectorXd rf = packBeads(r);
     if (rf.size() == step.size()) {
