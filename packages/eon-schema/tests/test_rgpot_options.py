@@ -44,3 +44,20 @@ def test_rgpot_pot_keys_match_config_yaml() -> None:
     for key in sorted(yaml_keys):
         info = RgpotPot.model_fields[key]
         assert _normalize(options[key]["default"]) == _normalize(info.default), key
+
+
+def test_cpmd_aliases_load_and_are_not_written() -> None:
+    """A dump carries one cutoff and one functional key per section."""
+    from eon_schema.config import Cpmd
+
+    rg = RgpotPot(cutOffRy=60.0, cpmd_functional="PBE")
+    assert rg.cutOffRy == 60.0
+    dumped = rg.model_dump()
+    assert "cutoff_ry" in dumped and "functional" in dumped
+    assert not {"cutOffRy", "cpmd_cut_off_ry", "cpmd_functional"} & set(dumped)
+
+    cpmd = Cpmd(cutoff_ry=60.0)
+    assert cpmd.cutoff_ry == 60.0
+    dumped = cpmd.model_dump()
+    assert "cutOffRy" in dumped and "functional" in dumped
+    assert not {"cutoff_ry", "cpmd_cut_off_ry", "cpmd_functional"} & set(dumped)

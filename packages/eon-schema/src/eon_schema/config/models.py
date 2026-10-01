@@ -735,8 +735,11 @@ class Cpmd(BaseModel):
     """Scalar CPMD message used when ``[RgpotPot] params_path`` is empty.
 
     ``cutOffRy`` is the cutoff key. The C++ reader also accepts ``cutoff_ry``
-    and ``cpmd_cut_off_ry``. A ``params_path`` file owns these fields, and
-    ``input_block`` is still appended to that file's blocks.
+    and ``cpmd_cut_off_ry``, and ``cpmd_functional`` for ``functional``.
+    The aliases are accepted on input and never written by ``model_dump``,
+    so a written file carries one cutoff key. A ``params_path`` file owns
+    these fields, and ``input_block`` is still appended to that file's
+    blocks.
     """
 
     model_config = ConfigDict(use_attribute_docstrings=True)
@@ -745,9 +748,24 @@ class Cpmd(BaseModel):
         default="BLYP",
         description="XC functional. Overrides [RgpotPot] functional.",
     )
+    cpmd_functional: str = Field(
+        default="BLYP",
+        exclude=True,
+        description="Alias of functional, read when functional is absent.",
+    )
     cutOffRy: float = Field(
         default=70.0,
         description="Plane-wave cutoff in Rydberg. Overrides [RgpotPot] cutoff_ry.",
+    )
+    cutoff_ry: float = Field(
+        default=70.0,
+        exclude=True,
+        description="Alias of cutOffRy, read when cutOffRy is absent.",
+    )
+    cpmd_cut_off_ry: float = Field(
+        default=70.0,
+        exclude=True,
+        description="Alias of cutOffRy, read when cutOffRy and cutoff_ry are absent.",
     )
     charge: int = Field(default=0, description="Total charge.")
     multiplicity: int = Field(default=1, description="Spin multiplicity (2S+1).")
@@ -790,12 +808,27 @@ class RgpotPot(BaseModel):
             " this key when params_path is empty."
         ),
     )
+    cpmd_functional: str = Field(
+        default="BLYP",
+        exclude=True,
+        description="Alias of functional, read when functional is absent.",
+    )
     cutoff_ry: float = Field(
         default=70.0,
         description=(
             "Plane-wave cutoff (Ry) for the CPMD backend. [cpmd] cutOffRy"
             " overrides this key when params_path is empty."
         ),
+    )
+    cutOffRy: float = Field(
+        default=70.0,
+        exclude=True,
+        description="Alias of cutoff_ry that wins over it when both are set.",
+    )
+    cpmd_cut_off_ry: float = Field(
+        default=70.0,
+        exclude=True,
+        description="Alias of cutoff_ry, read when cutOffRy and cutoff_ry are absent.",
     )
     charge: int = Field(default=0, description="Total charge.")
     multiplicity: int = Field(default=1, description="Spin multiplicity.")

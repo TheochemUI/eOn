@@ -46,3 +46,21 @@ def test_server_rejects_unknown_potential(tmp_path, monkeypatch):
     cfg = ConfigClass()
     with pytest.raises(SystemExit):
         cfg.init(str(cfgfile))
+
+
+def test_server_accepts_cpmd_cutoff_and_functional_aliases(tmp_path, monkeypatch):
+    """Every cutoff and functional spelling the client reads loads here."""
+    monkeypatch.chdir(tmp_path)
+    for section in ("cpmd", "RgpotPot"):
+        for key in ("cutOffRy", "cutoff_ry", "cpmd_cut_off_ry"):
+            cfgfile = tmp_path / f"{section}-{key}.ini"
+            aliases = f"{key} = 60.0\ncpmd_functional = PBE\n"
+            rgpot = "backend = cpmdc\n" + (aliases if section == "RgpotPot" else "")
+            cpmd = f"[cpmd]\n{aliases}" if section == "cpmd" else ""
+            cfgfile.write_text(
+                "[Main]\njob = point\n[Potential]\npotential = rgpot\n"
+                f"[RgpotPot]\n{rgpot}{cpmd}"
+            )
+            cfg = ConfigClass()
+            cfg.init(str(cfgfile))
+            assert cfg.init_done

@@ -2225,7 +2225,21 @@ RgpotPot:
             kind: string
             default: "BLYP"
 
+        # Read by the client when functional is absent.
+        cpmd_functional:
+            kind: string
+            default: "BLYP"
+
         cutoff_ry:
+            kind: float
+            default: 70.0
+
+        # cutOffRy wins over cutoff_ry, then cpmd_cut_off_ry, as in [cpmd].
+        cutOffRy:
+            kind: float
+            default: 70.0
+
+        cpmd_cut_off_ry:
             kind: float
             default: 70.0
 
@@ -2342,7 +2356,21 @@ cpmd:
             kind: string
             default: "BLYP"
 
+        # Read by the client when functional is absent.
+        cpmd_functional:
+            kind: string
+            default: "BLYP"
+
+        # cutOffRy wins over cutoff_ry, then cpmd_cut_off_ry.
         cutOffRy:
+            kind: float
+            default: 70.0
+
+        cutoff_ry:
+            kind: float
+            default: 70.0
+
+        cpmd_cut_off_ry:
             kind: float
             default: 70.0
 
