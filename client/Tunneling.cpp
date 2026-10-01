@@ -1684,14 +1684,67 @@ VectorXd chainIndexOneStep(const std::vector<RingMode> &ritz,
   }
   std::vector<VectorXd> rhs = grad;
   scale(rhs, -1.0);
+  // The operator the step solves with: the ring plus every rank-one term.
+  auto applyShifted = [&](const std::vector<VectorXd> &x) {
+    std::vector<VectorXd> out = applyDiagonal(diag, spring, closed, x);
+    for (size_t i = 0; i < extras.size(); ++i) {
+      const double w = kappas[i] * dot(extras[i], x);
+      for (size_t j = 0; j < out.size(); ++j) {
+        out[j] += w * extras[i][j];
+      }
+    }
+    return out;
+  };
+  const double rhsNorm = std::sqrt(dot(rhs, rhs));
   std::vector<VectorXd> stepRing;
+  bool solved = false;
   try {
     const WoodburyRing ring(spring, diag, closed, extras, kappas, false);
-    if (!ring.ok()) {
-      return VectorXd();
+    if (ring.ok()) {
+      stepRing = ring.solve(rhs);
+      // Cutting the ring open can leave a Schur pivot near zero next to
+      // the barrier, and the Woodbury solve then loses digits; iterative
+      // refinement against the exact operator recovers them.
+      for (int pass = 0; pass < 4; ++pass) {
+        std::vector<VectorXd> r = applyShifted(stepRing);
+        for (size_t j = 0; j < r.size(); ++j) {
+          r[j] = rhs[j] - r[j];
+        }
+        const double rn = std::sqrt(dot(r, r));
+        if (!std::isfinite(rn)) {
+          break;
+        }
+        if (rn <= 1e-10 * std::max(1.0, rhsNorm)) {
+          solved = true;
+          break;
+        }
+        const std::vector<VectorXd> dx = ring.solve(r);
+        for (size_t j = 0; j < stepRing.size(); ++j) {
+          stepRing[j] += dx[j];
+        }
+      }
     }
-    stepRing = ring.solve(rhs);
   } catch (const std::runtime_error &) {
+    solved = false;
+  }
+  if (!solved && dim <= 4096) {
+    // A small ring is cheap to solve densely when the chain cannot.
+    const long n = static_cast<long>(grad.size());
+    ColMajorXd jt = ColMajorXd::Zero(dim, dim);
+    for (long col = 0; col < dim; ++col) {
+      std::vector<VectorXd> e(static_cast<size_t>(n), VectorXd::Zero(f));
+      e[static_cast<size_t>(col / f)](col % f) = 1.0;
+      jt.col(col) = packBeads(applyShifted(e));
+    }
+    const Eigen::PartialPivLU<ColMajorXd> lu(jt);
+    const VectorXd x = lu.solve(packBeads(rhs));
+    stepRing.assign(static_cast<size_t>(n), VectorXd::Zero(f));
+    for (long j = 0; j < n; ++j) {
+      stepRing[static_cast<size_t>(j)] = x.segment(j * f, f);
+    }
+    solved = x.array().isFinite().all();
+  }
+  if (!solved && stepRing.empty()) {
     return VectorXd();
   }
   VectorXd step = packBeads(stepRing);
@@ -2570,8 +2623,47 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
     }
   }
   const long nDrop = 1 + nullBasis.cols();
-  const double logDetPrime =
+  double logDetPrime =
       ring.logAbsDet() - static_cast<double>(nDrop) * std::log(c);
+  if (N * f <= 2048) {
+    // A small ring takes the product and the inertia from a dense
+    // eigendecomposition, which a near-zero Schur pivot of the open chain
+    // cannot disturb. The omitted modes are the 1 + rigid eigenvalues
+    // nearest zero.
+    ColMajorXd big = ColMajorXd::Zero(N * f, N * f);
+    for (long j = 0; j < N; ++j) {
+      std::vector<VectorXd> e(static_cast<size_t>(N), VectorXd::Zero(f));
+      for (long a2 = 0; a2 < f; ++a2) {
+        e[static_cast<size_t>(j)].setZero();
+        e[static_cast<size_t>(j)](a2) = 1.0;
+        big.col(j * f + a2) = packBeads(applyDiagonal(diag, c, true, e));
+      }
+    }
+    const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(big,
+                                                       Eigen::EigenvaluesOnly);
+    const VectorXd lam = es.eigenvalues();
+    std::vector<long> order(static_cast<size_t>(lam.size()));
+    std::iota(order.begin(), order.end(), 0L);
+    std::sort(order.begin(), order.end(), [&](long p, long q) {
+      return std::abs(lam(p)) < std::abs(lam(q));
+    });
+    logDetPrime = 0.0;
+    double lowest = 0.0;
+    for (long k = nDrop; k < lam.size(); ++k) {
+      const double l = lam(order[static_cast<size_t>(k)]);
+      logDetPrime += std::log(std::abs(l));
+      lowest = std::min(lowest, l);
+    }
+    long negative = 0;
+    for (long k = nDrop; k < lam.size(); ++k) {
+      const double l = lam(order[static_cast<size_t>(k)]);
+      if (l < 0.0 && l <= 1e-3 * lowest) {
+        ++negative;
+      }
+    }
+    inst.negativeModes = negative;
+    inst.negativeEigenvalue = lowest;
+  }
   const double logProd =
       static_cast<double>(N * f - nDrop) * std::log(bnh) + 0.5 * logDetPrime;
 

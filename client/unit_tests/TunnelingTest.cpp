@@ -643,12 +643,12 @@ TEST_CASE("The Eckart rate instanton matches the exact flux to its "
     RateInstanton seeded =
         optimizeRateInstanton(saddle, hs, beta, seed, pes.batch(), opt);
     REQUIRE(seeded.converged);
-    REQUIRE(seeded.iterations <= iterations[1]);
+    REQUIRE(seeded.iterations <= iterations[0]);
     instantonRate(
         seeded, [&](long, const VectorXd &q) { return pes.hessian_at(q); },
         MatrixXd::Identity(1, 1), 0.0);
     REQUIRE_THAT(seeded.logRateTimesZr,
-                 Catch::Matchers::WithinAbs(logs[1], 1e-6));
+                 Catch::Matchers::WithinAbs(logs[0], 1e-6));
   }
 }
 
