@@ -70,9 +70,12 @@ public:
   /// more than one rank.
   void finalizeMpiAtExit() const;
   /// After MPI_Finalize, _Exit. Library destructors do not run on a
-  /// finalized MPI world. No-op unless this process was started as one
-  /// of several ranks.
+  /// finalized MPI world. When rgpot requested an abort at exit (a failed
+  /// engine call), MPI_Abort replaces MPI_Finalize. No-op unless this
+  /// process was started as one of several ranks.
   void armGroupedExit() const;
+  /// True once rgpot asked for MPI_Abort at exit in this process.
+  [[nodiscard]] static bool mpiAbortRequested() noexcept;
   /// Calls cpmdc_finalize while the engine is still mapped. MPI stays up.
   void shutdownModule() noexcept;
   /// Collective on MPI_COMM_WORLD: every rank leaves with the energy and

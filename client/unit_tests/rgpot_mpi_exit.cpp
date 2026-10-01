@@ -3,14 +3,19 @@
 **
 ** SPDX-License-Identifier: BSD-3-Clause
 */
-// Two mpirun launches of one binary.
+// Three mpirun launches of one binary.
 //   params: rank 1 cannot read params_path. Both ranks must throw that
 //           error. A rank left in MPI_Comm_split never prints rank=0.
 //   fault:  rank 1's engine throws engine-rank1. Rank 0 must print it
 //           and exit non-zero. Workers stop with status 0.
+//   abort:  rank 0 requests rgpot's abort-at-exit, as a failed engine
+//           call does, and exits while rank 1 waits in the worker
+//           broadcast. The exit handler must abort the world; an
+//           MPI_Finalize there waits for rank 1 until the timeout.
 
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
+#include "rgpot/CalculatorGroup.hpp"
 
 #include <cstdlib>
 #include <iostream>
@@ -38,7 +43,7 @@ int main(int argc, char **argv) {
   if (argc != 2)
     return 2;
   const std::string mode = argv[1];
-  if (mode != "params" && mode != "fault")
+  if (mode != "params" && mode != "fault" && mode != "abort")
     return 2;
   if (!(env_nonempty("CPMDC_LIBRARY") || env_nonempty("RGPOT_CPMDC_ENGINE") ||
         env_nonempty("RGPOT_CPMD_ENGINE"))) {
@@ -55,7 +60,7 @@ int main(int argc, char **argv) {
       setenv("RGPOT_PARAMS_PATH", "missing-params.bin", 1);
     else
       unsetenv("RGPOT_PARAMS_PATH");
-  } else if (rank == 1) {
+  } else if (mode == "fault" && rank == 1) {
     setenv("RGPOT_FORCE_FAIL", "engine-rank1", 1);
   } else {
     unsetenv("RGPOT_FORCE_FAIL");
@@ -74,10 +79,17 @@ int main(int argc, char **argv) {
         std::getenv("CPMDC_LIBRARY");
   // Two ranks, one rank per calculator, so the fault sits on group 1.
   eonc::ParametersLoadAccess::rgpot_options(params).ranks_per_image =
-      mode == "fault" ? 1 : 0;
+      mode == "params" ? 0 : 1;
 
   try {
     auto pot = eonc::helpers::makePotential(eonc::PotType::RGPOT, params);
+    if (mode == "abort") {
+      // Only the driver returns from the grouped constructor. std::exit
+      // keeps pot alive, so no stop message reaches rank 1.
+      ::rgpot::abortMpiAtExit();
+      std::cerr << "rank=" << rank << " abort requested\n";
+      std::exit(3);
+    }
     if (mode != "fault") {
       std::cerr << "rank=" << rank << " params constructed\n";
       return 1;

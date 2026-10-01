@@ -43,13 +43,22 @@
 using rgpot::types::AtomMatrix;
 
 #if defined(__linux__) && defined(EON_RGPOT_MPI)
+// Runs before rgpot's atexit handler and ends in _Exit, so rgpot's handler
+// never runs. It honours rgpot's abort request itself: after a failed
+// engine call the peers can sit in a collective, and MPI_Finalize would
+// wait for them until the walltime kill.
 extern "C" void eon_rgpot_hard_exit(int status, void *) {
   int inited = 0;
   int finalized = 0;
   MPI_Initialized(&inited);
   MPI_Finalized(&finalized);
-  if (inited && !finalized)
+  if (inited && !finalized) {
+    if (::rgpot::mpiAbortRequested()) {
+      std::fflush(nullptr);
+      MPI_Abort(MPI_COMM_WORLD, status != 0 ? status : 1);
+    }
     MPI_Finalize();
+  }
   std::fflush(nullptr);
   std::_Exit(status);
 }
@@ -421,6 +430,10 @@ int RGPotEngine::worldRank() const noexcept {
 void RGPotEngine::finalizeMpiAtExit() const {
   if (impl_ && impl_->world > 1)
     ::rgpot::finalizeMpiAtExit();
+}
+
+bool RGPotEngine::mpiAbortRequested() noexcept {
+  return ::rgpot::mpiAbortRequested();
 }
 
 void RGPotEngine::armGroupedExit() const {

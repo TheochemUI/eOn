@@ -1921,6 +1921,15 @@ if get_option('with_tests')
                 env: _rgpot_test_env,
             )
             test(
+                'test_rgpot_mpi_abort',
+                _rgpot_bash,
+                args: [_rgpot_mpi_script, rgpot_mpi_exit.full_path(), 'abort'],
+                timeout: 90,
+                suite: ['eon', 'rgpot'],
+                is_parallel: false,
+                env: _rgpot_test_env,
+            )
+            test(
                 'test_rgpot_mpi_params',
                 _rgpot_bash,
                 args: [_rgpot_mpi_script, rgpot_mpi_exit.full_path(), 'params'],

@@ -176,9 +176,12 @@ void RgpotPot::releaseWorkersAtExit() {
   if (g_driver || !impl_ || impl_->calculatorWorld() <= 1)
     return;
   // Runs before the MPI_Finalize handler registered in the constructor.
+  // After a failed engine call the workers can sit in a collective that
+  // the stop broadcast never meets; the grouped exit handler aborts the
+  // world instead.
   g_driver = this;
   std::atexit([] {
-    if (g_driver)
+    if (g_driver && !RGPotEngine::mpiAbortRequested())
       g_driver->stopAndDrop();
   });
 }
