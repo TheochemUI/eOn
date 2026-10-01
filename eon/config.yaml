@@ -1664,6 +1664,7 @@ Saddle Search:
                 - davidson
                 - gprdimer
                 - artn
+                - xtsci
 
         displace_random_weight:
             kind: float
