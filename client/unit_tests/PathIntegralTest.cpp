@@ -155,6 +155,7 @@ TEST_CASE("Economised eigenvalues match the fit", "[path-integral]") {
   }
   const Eigen::VectorXd wide = eonc::pathintegral::ecoEigenvalues(48, 20.0);
   REQUIRE(wide[1] == Catch::Approx(0.130893053639).epsilon(1e-5));
+  // Stationary Nyquist sample of the fit at 48 beads and xmax 20.
   REQUIRE(wide[24] == Catch::Approx(1.268436246082).epsilon(1e-5));
   REQUIRE(wide[47] == Catch::Approx(wide[1]).margin(1e-12));
 }

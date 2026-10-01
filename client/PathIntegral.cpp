@@ -116,6 +116,50 @@ VectorXd ecoFit(long nBeads, double xmax) {
   VectorXd g(nfree);
   MatrixXd h(nfree, nfree);
   objective(y, s, g, h);
+  auto gmaxOf = [](const VectorXd &gg) {
+    double gmax = 0.0;
+    for (long k = 0; k < gg.size(); ++k) {
+      gmax = std::max(gmax, std::fabs(gg[k]));
+    }
+    return gmax;
+  };
+  auto ordered = [&](const VectorXd &z) {
+    if (!(z[0] >= 0.0)) {
+      return false;
+    }
+    for (long k = 1; k < nfree; ++k) {
+      if (!(z[k] >= z[k - 1])) {
+        return false;
+      }
+    }
+    return true;
+  };
+  // Keeps y[0] >= 0 and y ascending. A step that raises the residual is
+  // refused.
+  auto lineSearch = [&](const VectorXd &dy) {
+    double scale = 1.0;
+    for (int cut = 0; cut < 60; ++cut) {
+      const VectorXd z = y + scale * dy;
+      if (ordered(z)) {
+        double sn = 0.0;
+        VectorXd gn(nfree);
+        MatrixXd hn(nfree, nfree);
+        objective(z, sn, gn, hn);
+        if (sn <= s) {
+          y = z;
+          s = sn;
+          g = std::move(gn);
+          h = std::move(hn);
+          return true;
+        }
+      }
+      scale *= 0.5;
+    }
+    return false;
+  };
+
+  // A relative drop with a gradient still above 1e-12 is a stall on the flat
+  // Nyquist mode, not a stationary point. The diagonal step moves that mode.
   bool exhausted = true;
   // The near-degenerate high-frequency group leaves a valley whose Hessian
   // eigenvalues span about twelve decades; the shifted Newton step crosses
@@ -135,40 +179,50 @@ VectorXd ecoFit(long nBeads, double xmax) {
     }
     const VectorXd dy = vec * scaled;
     const double previous = s;
-    double c = 1.0;
-    bool accepted = false;
-    for (int cut = 0; cut < 60; ++cut) {
-      const VectorXd z = y + c * dy;
-      bool ordered = z[0] >= 0.0;
-      for (long k = 1; ordered && k < nfree; ++k) {
-        ordered = z[k] >= z[k - 1];
+    const bool accepted = lineSearch(dy);
+    const double gmax = gmaxOf(g);
+    const bool stationary =
+        accepted && previous - s <= 1e-12 * previous && gmax < 1e-12;
+    if (stationary) {
+      exhausted = false;
+      break;
+    }
+    const bool stalled =
+        !accepted || (previous - s <= 1e-12 * previous && !(gmax < 1e-12));
+    if (stalled) {
+      VectorXd dyDiag(nfree);
+      for (long k = 0; k < nfree; ++k) {
+        const double denom = std::max(std::fabs(h(k, k)), 1e-18);
+        dyDiag[k] = -g[k] / denom;
       }
-      if (ordered) {
-        double sn = 0.0;
-        VectorXd gn(nfree);
-        MatrixXd hn(nfree, nfree);
-        objective(z, sn, gn, hn);
-        if (sn <= s) {
-          y = z;
-          s = sn;
-          g = std::move(gn);
-          h = std::move(hn);
-          accepted = true;
-          break;
+      bool moved = lineSearch(dyDiag);
+      if (!moved) {
+        long worst = 0;
+        double worstAbs = -1.0;
+        for (long k = 0; k < nfree; ++k) {
+          const double a = std::fabs(g[k]);
+          if (a > worstAbs) {
+            worstAbs = a;
+            worst = k;
+          }
         }
+        VectorXd dyOne = VectorXd::Zero(nfree);
+        const double denom = std::max(std::fabs(h(worst, worst)), 1e-18);
+        dyOne[worst] = -g[worst] / denom;
+        moved = lineSearch(dyOne);
       }
-      c *= 0.5;
-    }
-    if (!accepted) {
-      exhausted = false;
-      break;
-    }
-    if (previous - s <= 1e-12 * previous) {
-      exhausted = false;
-      break;
+      if (!moved) {
+        exhausted = false;
+        break;
+      }
+      if (gmaxOf(g) < 1e-12) {
+        exhausted = false;
+        break;
+      }
     }
   }
-  if (exhausted) {
+  // A cap hit with a tiny objective and gradient is the stationary point.
+  if (exhausted && s > 1e-8 && gmaxOf(g) > 1e-6) {
     throw std::runtime_error("economised spring fit did not converge");
   }
   return y;
