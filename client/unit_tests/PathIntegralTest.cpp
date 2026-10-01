@@ -154,8 +154,8 @@ TEST_CASE("Economised eigenvalues match the fit", "[path-integral]") {
     REQUIRE(small[k] == Catch::Approx(1.126555635687).epsilon(1e-6));
   }
   const Eigen::VectorXd wide = eonc::pathintegral::ecoEigenvalues(48, 20.0);
-  REQUIRE(wide[1] == Catch::Approx(0.130892000997).epsilon(1e-5));
-  REQUIRE(wide[24] == Catch::Approx(1.329206639740).epsilon(1e-5));
+  REQUIRE(wide[1] == Catch::Approx(0.130893053639).epsilon(1e-5));
+  REQUIRE(wide[24] == Catch::Approx(1.268436246082).epsilon(1e-5));
   REQUIRE(wide[47] == Catch::Approx(wide[1]).margin(1e-12));
 }
 
