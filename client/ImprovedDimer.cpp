@@ -105,6 +105,13 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   double delta = params.main_options().finiteDifference;
   x1->setPositionsV(x0_r + delta * tau);
 
+  // x0 and x1 in one call when both need one, so two calculator groups
+  // take one each; a cached x0 costs nothing.
+  {
+    Matter *const ends[] = {x0.get(), x1.get()};
+    eonc::evaluateTogether(*pot, ends);
+  }
+
   // If we stepped into a high-energy wall, flip the tangent immediately
   if (x1->getPotentialEnergy() - x0->getPotentialEnergy() > 10.0 * delta) {
     tau = -tau;

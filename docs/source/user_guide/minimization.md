@@ -181,6 +181,13 @@ Set `write_deprecated_outs = true` in `[Debug]` to also emit the legacy
 
 ## Configuration
 
+The minimization job reads `[Optimizer]`.
+An optional `[Refine]` block switches method once the maximum force drops below its threshold.
+
 ```{eval-rst}
-.. autopydantic_model:: eon.schema.MinimizationConfig
+.. autopydantic_model:: eon.schema.OptimizerConfig
+```
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.RefineConfig
 ```

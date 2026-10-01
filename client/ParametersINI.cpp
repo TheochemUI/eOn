@@ -21,12 +21,14 @@
 
 #include <cerrno>
 #include <cmath>
+#include <cstdint>
 #include <ctime>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 
 #include "eon/EonLogger.h"
+#include "eon/PIQTST.h"
 
 namespace {
 std::string toLowerCase(std::string s) {
@@ -307,10 +309,14 @@ int load_ini(INIReader &ini, Parameters &params) {
         sec, "functional",
         ini.Get(sec, "cpmd_functional",
                 ParametersLoadAccess::rgpot_options(params).functional));
+    // cutOffRy is the schema name. cutoff_ry and cpmd_cut_off_ry still load.
     ParametersLoadAccess::rgpot_options(params).cutoff_ry = ini.GetReal(
-        sec, "cutoff_ry",
-        ini.GetReal(sec, "cpmd_cut_off_ry",
-                    ParametersLoadAccess::rgpot_options(params).cutoff_ry));
+        sec, "cutOffRy",
+        ini.GetReal(
+            sec, "cutoff_ry",
+            ini.GetReal(
+                sec, "cpmd_cut_off_ry",
+                ParametersLoadAccess::rgpot_options(params).cutoff_ry)));
     ParametersLoadAccess::rgpot_options(params).charge = ini.GetInteger(
         sec, "charge",
         ini.GetInteger(sec, "nwchem_charge",
@@ -340,6 +346,16 @@ int load_ini(INIReader &ini, Parameters &params) {
     ParametersLoadAccess::rgpot_options(params).input_block =
         ini.Get(sec, "input_block",
                 ParametersLoadAccess::rgpot_options(params).input_block);
+    ParametersLoadAccess::rgpot_options(params).permanent_dir =
+        ini.Get(sec, "permanent_dir",
+                ParametersLoadAccess::rgpot_options(params).permanent_dir);
+    ParametersLoadAccess::rgpot_options(params).params_path =
+        ini.Get(sec, "params_path",
+                ParametersLoadAccess::rgpot_options(params).params_path);
+    ParametersLoadAccess::rgpot_options(params).ranks_per_image =
+        ini.GetInteger(
+            sec, "ranks_per_image",
+            ParametersLoadAccess::rgpot_options(params).ranks_per_image);
     ParametersLoadAccess::rgpot_options(params).model_path =
         ini.Get(sec, "model_path",
                 ParametersLoadAccess::rgpot_options(params).model_path);
@@ -416,6 +432,25 @@ int load_ini(INIReader &ini, Parameters &params) {
       ParametersLoadAccess::rgpot_options(params).xtb_charge =
           ini.GetReal("XTBPot", "charge",
                       ParametersLoadAccess::rgpot_options(params).xtb_charge);
+    }
+    // [RgpotPot] is the backend switch. [cpmd] is the scalar CPMD message
+    // and overrides that section when the backend is CPMD. A params_path
+    // file, applied later, owns the same fields and is not overwritten
+    // by either section. input_block from here is appended to the file.
+    if (be == "cpmd" || be == "cpmdc" || be == "cpmdpot") {
+      auto &rg = ParametersLoadAccess::rgpot_options(params);
+      rg.functional =
+          ini.Get("cpmd", "functional",
+                  ini.Get("cpmd", "cpmd_functional", rg.functional));
+      rg.cutoff_ry = ini.GetReal(
+          "cpmd", "cutOffRy",
+          ini.GetReal("cpmd", "cutoff_ry",
+                      ini.GetReal("cpmd", "cpmd_cut_off_ry", rg.cutoff_ry)));
+      rg.charge = ini.GetInteger("cpmd", "charge", rg.charge);
+      rg.multiplicity = ini.GetInteger("cpmd", "multiplicity", rg.multiplicity);
+      rg.title = ini.Get("cpmd", "title", rg.title);
+      rg.memory_mb = ini.GetInteger("cpmd", "memory_mb", rg.memory_mb);
+      rg.input_block = ini.Get("cpmd", "input_block", rg.input_block);
     }
   }
 
@@ -1142,6 +1177,9 @@ int load_ini(INIReader &ini, Parameters &params) {
   ParametersLoadAccess::hessian_options(params).checkpoint_path =
       ini.Get("Hessian", "checkpoint_path",
               ParametersLoadAccess::hessian_options(params).checkpoint_path);
+  ParametersLoadAccess::hessian_options(params).write_modes =
+      ini.GetBoolean("Hessian", "write_modes",
+                     ParametersLoadAccess::hessian_options(params).write_modes);
 
   // [Nudged Elastic Band] //
   const std::string neb_section = "Nudged Elastic Band";
@@ -1149,6 +1187,16 @@ int load_ini(INIReader &ini, Parameters &params) {
   ParametersLoadAccess::neb_options(params).image_count =
       ini.GetInteger(neb_section, "images",
                      ParametersLoadAccess::neb_options(params).image_count);
+  ParametersLoadAccess::neb_options(params).solid_state.enabled =
+      ini.GetBoolean(
+          neb_section, "solid_state",
+          ParametersLoadAccess::neb_options(params).solid_state.enabled);
+  ParametersLoadAccess::neb_options(params).solid_state.weight =
+      ini.GetReal(neb_section, "solid_state_weight",
+                  ParametersLoadAccess::neb_options(params).solid_state.weight);
+  ParametersLoadAccess::neb_options(params).solid_state.pressure = ini.GetReal(
+      neb_section, "solid_state_pressure",
+      ParametersLoadAccess::neb_options(params).solid_state.pressure);
   ParametersLoadAccess::neb_options(params).max_iterations = ini.GetInteger(
       neb_section, "max_iterations",
       ParametersLoadAccess::optimizer_options(params).max_iterations);
@@ -1372,6 +1420,32 @@ int load_ini(INIReader &ini, Parameters &params) {
   ParametersLoadAccess::thermostat_options(params).langevin_friction =
       ParametersLoadAccess::thermostat_options(params).langevin_friction_input *
       ParametersLoadAccess::constants(params).timeUnit;
+  {
+    auto &th = ParametersLoadAccess::thermostat_options(params);
+    th.path_beads = ini.GetInteger("Dynamics", "path_beads", th.path_beads);
+    th.path_springs =
+        toLowerCase(ini.Get("Dynamics", "path_springs", th.path_springs));
+    th.path_eco_omega_max =
+        ini.GetReal("Dynamics", "path_eco_omega_max", th.path_eco_omega_max);
+    th.path_gle_file = ini.Get("Dynamics", "path_gle_file", th.path_gle_file);
+    th.path_pile_tau_input =
+        ini.GetReal("Dynamics", "path_pile_tau", th.path_pile_tau_input);
+    const double timeUnit = ParametersLoadAccess::constants(params).timeUnit;
+    th.path_pile_tau = timeUnit > 0.0 ? th.path_pile_tau_input / timeUnit : 0.0;
+    th.path_pile_scale =
+        ini.GetReal("Dynamics", "path_pile_scale", th.path_pile_scale);
+    const long seed = ini.GetInteger("Dynamics", "path_seed",
+                                     static_cast<long>(th.path_seed));
+    if (seed < 0) {
+      throw std::invalid_argument("[Dynamics] path_seed must be non-negative");
+    }
+    th.path_seed = static_cast<std::uint64_t>(seed);
+    if (th.path_springs != "trotter" && th.path_springs != "eco") {
+      throw std::invalid_argument(
+          "[Dynamics] path_springs must be trotter or eco, not " +
+          th.path_springs);
+    }
+  }
 
   // [Parallel Replica]
 
@@ -1822,6 +1896,100 @@ int load_ini(INIReader &ini, Parameters &params) {
   ParametersLoadAccess::monte_carlo_options(params).steps = static_cast<int>(
       ini.GetInteger("Monte Carlo", "steps",
                      ParametersLoadAccess::monte_carlo_options(params).steps));
+
+  // [Instanton] //
+  {
+    auto &o = ParametersLoadAccess::instanton_options(params);
+    o.mode = ini.Get("Instanton", "mode", o.mode);
+    o.reactant_filename =
+        ini.Get("Instanton", "reactant_filename", o.reactant_filename);
+    o.product_filename =
+        ini.Get("Instanton", "product_filename", o.product_filename);
+    o.initial_path = ini.Get("Instanton", "initial_path", o.initial_path);
+    o.beads = ini.GetInteger("Instanton", "beads", o.beads);
+    o.beta_hbar_omega =
+        ini.GetReal("Instanton", "beta_hbar_omega", o.beta_hbar_omega);
+    o.max_iterations =
+        ini.GetInteger("Instanton", "max_iterations", o.max_iterations);
+    o.force_tolerance =
+        ini.GetReal("Instanton", "force_tolerance", o.force_tolerance);
+    o.hessian_stride =
+        ini.GetInteger("Instanton", "hessian_stride", o.hessian_stride);
+    o.saddle_filename =
+        ini.Get("Instanton", "saddle_filename", o.saddle_filename);
+    o.temperature = ini.GetReal("Instanton", "temperature", o.temperature);
+    o.temperatures.clear();
+    {
+      const std::string list = ini.Get("Instanton", "temperatures", "");
+      std::stringstream ss(list);
+      std::string token;
+      while (std::getline(ss, token, ',')) {
+        const size_t start = token.find_first_not_of(" \t");
+        const size_t end = token.find_last_not_of(" \t");
+        if (start == std::string::npos) {
+          continue;
+        }
+        try {
+          o.temperatures.push_back(
+              std::stod(token.substr(start, end - start + 1)));
+        } catch (const std::exception &) {
+          throw std::invalid_argument(
+              "[Instanton] temperatures must be comma-separated kelvin "
+              "values, not " +
+              token);
+        }
+      }
+    }
+    o.half_ring = ini.GetBoolean("Instanton", "half_ring", o.half_ring);
+    o.initial_hessians =
+        ini.Get("Instanton", "initial_hessians", o.initial_hessians);
+    if (o.initial_hessians != "saddle" &&
+        o.initial_hessians != "finite_difference") {
+      throw std::invalid_argument("[Instanton] initial_hessians must be saddle "
+                                  "or finite_difference, not " +
+                                  o.initial_hessians);
+    }
+    o.energy_shift = ini.GetReal("Instanton", "energy_shift", o.energy_shift);
+    o.bead_ladder = ini.GetBoolean("Instanton", "bead_ladder", o.bead_ladder);
+    o.hessian_final = ini.Get("Instanton", "hessian_final", o.hessian_final);
+    o.springs = toLowerCase(ini.Get("Instanton", "springs", o.springs));
+    if (o.springs != "trotter" && o.springs != "eco") {
+      throw std::invalid_argument(
+          "[Instanton] springs must be trotter or eco, not " + o.springs);
+    }
+    if (o.mode != "splitting" && o.mode != "rate") {
+      throw std::invalid_argument("[Instanton] mode must be splitting or rate, "
+                                  "not " +
+                                  o.mode);
+    }
+    o.pi_planes = ini.GetInteger("Instanton", "pi_planes", o.pi_planes);
+    o.pi_beads = ini.GetInteger("Instanton", "pi_beads", o.pi_beads);
+    o.pi_equilibration_steps = ini.GetInteger(
+        "Instanton", "pi_equilibration_steps", o.pi_equilibration_steps);
+    o.pi_sampling_steps =
+        ini.GetInteger("Instanton", "pi_sampling_steps", o.pi_sampling_steps);
+    o.pi_time_step = ini.GetReal("Instanton", "pi_time_step", o.pi_time_step);
+    o.pi_thermostat =
+        toLowerCase(ini.Get("Instanton", "pi_thermostat", o.pi_thermostat));
+    o.pi_gle_file = ini.Get("Instanton", "pi_gle_file", o.pi_gle_file);
+    o.pi_pile_tau = ini.GetReal("Instanton", "pi_pile_tau", o.pi_pile_tau);
+    o.pi_pile_scale =
+        ini.GetReal("Instanton", "pi_pile_scale", o.pi_pile_scale);
+    o.pi_seed = ini.GetInteger("Instanton", "pi_seed", o.pi_seed);
+    o.pi_direction =
+        toLowerCase(ini.Get("Instanton", "pi_direction", o.pi_direction));
+    o.pi_reactant_extent =
+        ini.GetReal("Instanton", "pi_reactant_extent", o.pi_reactant_extent);
+    o.pi_recrossing_parents = ini.GetInteger(
+        "Instanton", "pi_recrossing_parents", o.pi_recrossing_parents);
+    o.pi_recrossing_children = ini.GetInteger(
+        "Instanton", "pi_recrossing_children", o.pi_recrossing_children);
+    o.pi_recrossing_time =
+        ini.GetReal("Instanton", "pi_recrossing_time", o.pi_recrossing_time);
+    o.pi_recrossing_spacing = ini.GetInteger(
+        "Instanton", "pi_recrossing_spacing", o.pi_recrossing_spacing);
+    eonc::piqtst::validateOptions(o);
+  }
 
   // [OH_TST] //
 

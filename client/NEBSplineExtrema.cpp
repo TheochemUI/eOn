@@ -11,6 +11,7 @@
 */
 #include "eon/NEBSplineExtrema.h"
 #include "eon/ConFileIO.h"
+#include "eon/Tunneling.h"
 #include <cmath>
 #include <format>
 #include <fstream>
@@ -321,13 +322,48 @@ std::vector<readcon::ConFrame> pathToConFrames(
   std::vector<eonc::io::ConFrameMetadata> metas;
   metas.reserve(nframes);
 
+  // The mass-weighted arc length rides beside the Cartesian one: it is the
+  // coordinate a tunnelling integral along the band runs over. A structure
+  // without masses leaves it out rather than failing the write.
+  double distMw = 0.0;
+  bool haveMw = true;
   for (long i = 0; i <= numImages + 1; i++) {
     if (i > 0) {
       distTotal += path[i]->distanceTo(*path[i - 1]);
+      if (haveMw) {
+        try {
+          distMw +=
+              eonc::tunneling::massWeightedDistance(*path[i - 1], *path[i]);
+        } catch (const std::invalid_argument &) {
+          haveMw = false;
+        }
+      }
     }
     metas.push_back(neb_frame_metadata(path, tangent, eigenmode_solvers,
                                        numImages, estimateEigenvalues, i,
                                        distTotal, bandIndex, referenceEnergy));
+    if (haveMw) {
+      metas.back().scalars.push_back({"reaction_coordinate_mw", distMw});
+    }
+  }
+  // The band's one-dimensional tunnelling estimate goes on its first frame:
+  // the well frequencies, the WKB action and the splitting a two-level-system
+  // screen reads. Left out when an image has no mass or an end well is flat.
+  if (haveMw && !metas.empty()) {
+    try {
+      std::vector<std::shared_ptr<Matter>> ends(
+          path.begin(), path.begin() + static_cast<std::ptrdiff_t>(nframes));
+      const auto split = eonc::tunneling::bandSplitting(
+          ends, referenceOrFirst(path, referenceEnergy));
+      auto &head = metas.front().scalars;
+      head.push_back({"hbar_omega_reactant", split.hwReactant});
+      head.push_back({"hbar_omega_product", split.hwProduct});
+      head.push_back({"tunnel_action", split.action});
+      head.push_back({"tunnel_splitting", split.delta0});
+      head.push_back({"tls_energy", split.tlsEnergy()});
+      head.push_back({"tunnel_deep_wells", split.deepWells ? 1.0 : 0.0});
+    } catch (const std::invalid_argument &) {
+    }
   }
 
   std::vector<std::shared_ptr<Matter>> band(

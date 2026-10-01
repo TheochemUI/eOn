@@ -12,7 +12,7 @@ Parity is enforced by tests/test_params_ssot.py.
 import math
 import random
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, get_args
 
 from pydantic import (
     BaseModel,
@@ -37,6 +37,7 @@ class MainConfig(BaseModel):
         "global_optimization",
         "gp_surrogate",
         "hessian",
+        "instanton",
         "minimization",
         "monte_carlo",
         "molecular_dynamics",
@@ -593,7 +594,10 @@ class PotentialConfig(BaseModel):
         "zbl",
     ] = Field(
         default="lj",
-        description="Type of potential to execute.",
+        description=(
+            "Type of potential to execute. A known name matches in any "
+            "case. An exact listed spelling wins."
+        ),
     )
     """
     Options:
@@ -643,6 +647,19 @@ class PotentialConfig(BaseModel):
         default=None,
         description="If true, write timing information about each force call to client.log.",
     )
+
+    @validator("potential", pre=True)
+    def canonicalize_potential(cls, value):
+        if not isinstance(value, str):
+            return value
+        allowed = get_args(cls.__annotations__["potential"])
+        if value in allowed:
+            return value
+        folded = value.casefold()
+        for token in allowed:
+            if token.casefold() == folded:
+                return token
+        return value
 
     @validator("log_potential", always=True)
     def set_log_potential(cls, v, values):
@@ -714,6 +731,58 @@ class SocketNWChemPot(BaseModel):
     )
 
 
+class Cpmd(BaseModel):
+    """Scalar CPMD message used when ``[RgpotPot] params_path`` is empty.
+
+    ``cutOffRy`` is the cutoff key. The C++ reader also accepts ``cutoff_ry``
+    and ``cpmd_cut_off_ry``, and ``cpmd_functional`` for ``functional``.
+    The aliases are accepted on input and never written by ``model_dump``,
+    so a written file carries one cutoff key. A ``params_path`` file owns
+    these fields, and ``input_block`` is still appended to that file's
+    blocks.
+    """
+
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    functional: str = Field(
+        default="BLYP",
+        description="XC functional. Overrides [RgpotPot] functional.",
+    )
+    cpmd_functional: str = Field(
+        default="BLYP",
+        exclude=True,
+        description="Alias of functional, read when functional is absent.",
+    )
+    cutOffRy: float = Field(
+        default=70.0,
+        description="Plane-wave cutoff in Rydberg. Overrides [RgpotPot] cutoff_ry.",
+    )
+    cutoff_ry: float = Field(
+        default=70.0,
+        exclude=True,
+        description="Alias of cutOffRy, read when cutOffRy is absent.",
+    )
+    cpmd_cut_off_ry: float = Field(
+        default=70.0,
+        exclude=True,
+        description="Alias of cutOffRy, read when cutOffRy and cutoff_ry are absent.",
+    )
+    charge: int = Field(default=0, description="Total charge.")
+    multiplicity: int = Field(default=1, description="Spin multiplicity (2S+1).")
+    title: str = Field(default="", description="Comment header in the rendered deck.")
+    memory_mb: int = Field(
+        default=0,
+        description="Engine memory limit in MB. 0 uses the engine default.",
+    )
+    input_block: str = Field(
+        default="",
+        description=(
+            "CPMD &SECTION text appended to inputBlocks. Sections loaded"
+            " from params_path stay."
+        ),
+    )
+
+
 class RgpotPot(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
@@ -733,10 +802,33 @@ class RgpotPot(BaseModel):
     )
     scf_type: str = Field(default="rhf", description="SCF type for the NWChem backend.")
     functional: str = Field(
-        default="BLYP", description="XC functional for the CPMD backend."
+        default="BLYP",
+        description=(
+            "XC functional for the CPMD backend. [cpmd] functional overrides"
+            " this key when params_path is empty."
+        ),
+    )
+    cpmd_functional: str = Field(
+        default="BLYP",
+        exclude=True,
+        description="Alias of functional, read when functional is absent.",
     )
     cutoff_ry: float = Field(
-        default=70.0, description="Plane-wave cutoff (Ry) for the CPMD backend."
+        default=70.0,
+        description=(
+            "Plane-wave cutoff (Ry) for the CPMD backend. [cpmd] cutOffRy"
+            " overrides this key when params_path is empty."
+        ),
+    )
+    cutOffRy: float = Field(
+        default=70.0,
+        exclude=True,
+        description="Alias of cutoff_ry that wins over it when both are set.",
+    )
+    cpmd_cut_off_ry: float = Field(
+        default=70.0,
+        exclude=True,
+        description="Alias of cutoff_ry, read when cutOffRy and cutoff_ry are absent.",
     )
     charge: int = Field(default=0, description="Total charge.")
     multiplicity: int = Field(default=1, description="Spin multiplicity.")
@@ -790,6 +882,10 @@ class RgpotPot(BaseModel):
         default=250, description="XTB max iterations when backend=xtb."
     )
     uhf: int = Field(default=0, description="XTB unpaired electrons when backend=xtb.")
+    xtb_charge: float = Field(
+        default=0.0,
+        description=("XTB total charge when backend=xtb. An omitted key uses charge."),
+    )
     engine_root: str = Field(
         default="", description="Engine installation root (NWCHEM_ROOT / CPMD_ROOT)."
     )
@@ -800,7 +896,34 @@ class RgpotPot(BaseModel):
     scratch_dir: str = Field(default="", description="Engine scratch directory.")
     input_block: str = Field(
         default="",
-        description="Verbatim input block appended to the generated engine input.",
+        description=(
+            "Verbatim input block. For NWChem this is inputBlocks. For CPMD,"
+            " [cpmd] input_block overrides this key and the text is appended"
+            " to the message inputBlocks."
+        ),
+    )
+    permanent_dir: str = Field(
+        default="",
+        description="CPMD FILEPATH directory for RESTART files (backend=cpmdc).",
+    )
+    params_path: str = Field(
+        default="",
+        description=(
+            "Path to a Cap'n Proto CPMDParams message. The file owns the"
+            " CPMD method, including inputSections and inputBlocks, and the"
+            " scalar keys are not written over it. input_block is appended"
+            " to inputBlocks. engine_path, engine_root, scratch_dir, and"
+            " permanent_dir still place the run."
+        ),
+    )
+    ranks_per_image: int = Field(
+        default=0,
+        description=(
+            "Ranks per CPMD calculator group. The MPI world is split into"
+            " groups of this size, with one CPMD session per group. Rank 0"
+            " drives eOn and the other ranks serve force requests. 0 is one"
+            " group of all ranks."
+        ),
     )
 
 
@@ -1019,7 +1142,7 @@ class SaddleSearchConfig(BaseModel):
      - ``dimer``: Use the dimer min-mode method from :cite:t:`ss-henkelmanDimerMethodFinding1999`
      - ``lanczos``: Use the Lanczos min-mode method from :cite:t:`ss-malekDynamicsLennardJonesClusters2000`
      - ``davidson``: Davidson Ritz subspace with FD Hessian-vector products (alternative to dimer rotation).
-     - ``gprdimer``: Use the GP accelerated dimer method.
+     - ``gprdimer``: GP dimer. The Linux default is ``-Dwith_gprd=auto``, which links ``subprojects/gpr_optim`` when that subproject configures. A failed fetch leaves the dimer off.
      - ``artn``: Use ARTn as a drop-in for min-mode search. eOn's displacement
        seeds the initial mode; ARTn takes over from the displaced structure.
      """
@@ -1284,11 +1407,37 @@ class KDBConfig(BaseModel):
         default=False,
         description="KDB will not make duplicate suggestions. This can slow KDB querying, so it may be best to use this only for slow potentials (DFT, etc.).",
     )
-    kdb_name: str = "kdb.db"
-    # TODO(rg): These are in config.yaml, not sure what they do..
-    kdb_nf: float = 0.2
-    kdb_dc: float = 0.3
-    kdb_mac: float = 0.7
+    kdb_name: str = Field(
+        default="kdb.db",
+        description=(
+            "Unused name kept so old ini files still parse. "
+            "The catalog directory is Paths.kdb."
+        ),
+    )
+    kdb_nf: float = Field(
+        default=0.2,
+        description=(
+            "Neighbor fudge, a fraction. The match tolerance is "
+            "kdb_dc * (1 + kdb_nf) angstroms."
+        ),
+    )
+    kdb_dc: float = Field(
+        default=0.3,
+        description=(
+            "Distance cutoff in angstroms. A stored reactant whose atoms "
+            "sit farther than kdb_dc * (1 + kdb_nf) from the current state "
+            "is not a match."
+        ),
+    )
+    kdb_mac: float = Field(
+        default=0.7,
+        description=(
+            "Minimum absolute cosine between the stored mode and the "
+            "reactant-to-saddle displacement. At or above this value the "
+            "refine uses the stored mode. Below it, the refine uses the "
+            "reactant-to-saddle vector."
+        ),
+    )
 
 
 class RecyclingConfig(BaseModel):
@@ -1324,6 +1473,59 @@ class RecyclingConfig(BaseModel):
     use_sb_recycling: bool = Field(
         default=False, description="Turn superbasin recycling on and off."
     )
+
+
+class AmselConfig(BaseModel):
+    """``[amsel]`` keys. Field names and defaults match ``eon/config.yaml``."""
+
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    discover_decide: bool = Field(
+        default=False,
+        description="Call amsel discover_decide on the current state's process table at each KMC step, without waiting for the repeat-count confidence.",
+    )
+    """
+    Independent of :any:`eon.schema.CoarseGrainingConfig.use_mcamc`.
+    The repeat-count confidence scheme does not hold this step. A barrier
+    strictly below ``e_min_init`` is an in-basin edge. A barrier at or
+    above ``e_min_init`` is an exit. A table with no faster edge still
+    leaves: the transient set is the entry state. The exit time and the
+    exit channel come from the mean-rate method (MRM) or from
+    first-passage-time analysis (FPTA). Those kernels are the ``amsel``
+    package. When that package is absent the log line is
+    ``amsel discover_decide status=unavailable`` and no step is taken
+    until the confidence threshold is met. A product column of -1 is still
+    an exit: the absorbing label is a 32-bit id, and the hop creates the
+    product state from the process id.
+    """
+    e_min_init: float = Field(
+        default=0.5,
+        description="Initial transition-state cutoff in eV. A barrier strictly below this cutoff stays inside the basin.",
+    )
+    e_min_step: float = Field(
+        default=0.05,
+        description="Step, in eV, by which discover_decide lowers the cutoff when it retightens the basin.",
+    )
+    e_min_floor: float = Field(
+        default=0.05,
+        description="Lowest transition-state cutoff, in eV, that discover_decide will use.",
+    )
+    cv_threshold: float = Field(
+        default=10.0,
+        description="Largest coefficient of variation for which a basin is accepted.",
+    )
+    on_error: Literal["fallback_single", "unavailable_mcamc", "raise"] = Field(
+        default="fallback_single",
+        description="Result of a failed amsel call.",
+    )
+    """
+    ``fallback_single`` returns status ``fallback_single`` with
+    ``available`` true, and the step is ordinary KMC.
+    ``unavailable_mcamc`` returns status ``unavailable`` with
+    ``available`` false. ``raise`` re-raises the exception.
+    ``unavailable`` with ``available`` true is not a status this model
+    names.
+    """
 
 
 class CoarseGrainingConfig(BaseModel):
@@ -1942,6 +2144,36 @@ class NudgedElasticBandConfig(BaseModel):
     spring: float = Field(
         default=5.0, description="The spring constant, in eV/Ang^2 between the images."
     )
+    solid_state: bool = Field(
+        default=False,
+        description="Relax the lattice vectors of each interior image with the atoms.",
+    )
+    """
+    The cell of each interior image moves with the atoms. The cell stays
+    lower triangular: the first lattice vector lies on x and the second lies
+    in the xy plane, so the band cannot rotate as a rigid body. Atomic
+    displacements and cell strain share one Jacobian
+    (doi:10.1063/1.3684549). Periodic boundaries are required. A potential
+    that does not report the stress tensor is differentiated on the cell.
+    ``ci_mmf``, ``zoom_neb``, ``onsager_machlup``, ``neb_doubly_nudged``,
+    and ``neb_elastic_band`` are refused, and ``initializer`` must be
+    ``linear`` or ``file``.
+    """
+    solid_state_weight: float = Field(
+        default=1.0,
+        description=(
+            "Multiplier on the cell block of the solid-state Jacobian "
+            "(doi:10.1063/1.3684549). 1 weights a cell strain like an atomic move."
+        ),
+    )
+    solid_state_pressure: float = Field(
+        default=0.0,
+        description=(
+            "External hydrostatic pressure in eV/Angstrom^3 on the solid-state "
+            "band. Positive pressure favors a smaller cell. 0 keeps the "
+            "potential-energy band."
+        ),
+    )
     climbing_image_method: bool = Field(
         default=True, description="Indicates if the climbing image method is used."
     )
@@ -2303,6 +2535,229 @@ class HessianConfig(BaseModel):
     zero_freq_value: float = Field(
         default=1e-6, description="The value assigned to zero frequencies."
     )
+    write_modes: bool = Field(
+        default=True,
+        description=(
+            "Write every normal mode to modes.con: the Cartesian mode as a"
+            " displacements section, with its eigenvalue, hbar omega and"
+            " wavenumber as frame metadata."
+        ),
+    )
+
+
+class InstantonConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    mode: Literal["splitting", "rate"] = Field(
+        default="splitting",
+        description=(
+            "splitting: the tunnelling splitting between two minima. rate:"
+            " the thermal rate out of the reactant through the saddle: the"
+            " ring below the crossover temperature, and the parabolic"
+            " barrier factor above it."
+        ),
+    )
+    reactant_filename: str = Field(
+        default="reactant.con", description="The first minimum."
+    )
+    product_filename: str = Field(
+        default="product.con", description="The second minimum."
+    )
+    initial_path: str = Field(
+        default="",
+        description=(
+            "A multi-frame con file (neb.con) to start the path from; empty"
+            " starts from the straight line between the minima."
+        ),
+    )
+    beads: int = Field(
+        default=256,
+        ge=4,
+        description=(
+            "Beads on the path. The splitting uses this many segments between"
+            " the minima; the rate uses this many on the closed ring."
+        ),
+    )
+    beta_hbar_omega: float = Field(
+        default=30.0,
+        gt=0.0,
+        description=(
+            "Imaginary time the path spans, in units of 1 / omega of the"
+            " stiffer minimum along the line between them."
+        ),
+    )
+    max_iterations: int = Field(
+        default=5000, description="Steps of the ring search."
+    )
+    force_tolerance: float = Field(
+        default=1e-3,
+        description="Largest bead residual at convergence, eV / (amu^0.5 Angstrom).",
+    )
+    hessian_stride: int = Field(
+        default=1,
+        ge=1,
+        description=(
+            "Finite-difference Hessians on every stride-th bead, linear in"
+            " between; 1 takes one on every bead."
+        ),
+    )
+    saddle_filename: str = Field(
+        default="saddle.con",
+        description="Mode rate: the first-order saddle out of the reactant.",
+    )
+    temperature: float = Field(
+        default=0.0,
+        ge=0.0,
+        description=(
+            "Mode rate: T in K. Below the crossover the job optimises the"
+            " ring. Above it the job writes the parabolic barrier factor."
+            " 0 leaves it unset, and mode rate then refuses to run unless"
+            " temperatures is set."
+        ),
+    )
+    temperatures: str = Field(
+        default="",
+        description=(
+            "Mode rate: comma-separated temperatures in K. The highest is"
+            " searched first and each ring starts the next. Empty uses"
+            " temperature."
+        ),
+    )
+    half_ring: bool = Field(
+        default=True,
+        description=(
+            "Mode rate: an even bead count evaluates the potential from"
+            " one turning point to the other and copies it onto the other"
+            " half. An odd count evaluates every bead."
+        ),
+    )
+    initial_hessians: Literal["saddle", "finite_difference"] = Field(
+        default="saddle",
+        description=(
+            "Mode rate: where the bead Hessian blocks start. saddle copies the"
+            " saddle Hessian to every bead at no force calls; finite_difference"
+            " takes 2 f gradient calls per bead first."
+        ),
+    )
+    energy_shift: float = Field(
+        default=0.0,
+        description="Subtracted from every bead potential, in eV.",
+    )
+    bead_ladder: bool = Field(
+        default=False,
+        description=(
+            "Mode rate: start at a quarter of the beads and double up to"
+            " the requested count. Off searches that count directly."
+        ),
+    )
+    hessian_final: str = Field(
+        default="recomputed",
+        description=(
+            "Mode rate: recomputed takes a Hessian on every stride-th bead."
+        ),
+    )
+    springs: Literal["trotter", "eco"] = Field(
+        default="trotter",
+        description=(
+            "Ring-polymer springs. eco is refused: the instanton uses"
+            " Trotter springs."
+        ),
+    )
+    pi_planes: int = Field(
+        default=0,
+        ge=0,
+        description=(
+            "Mode rate: planes for path-integral quantum TST after the"
+            " instanton, from behind the reactant to the saddle. 0 leaves it"
+            " off; otherwise at least 2."
+        ),
+    )
+    pi_beads: int = Field(
+        default=16, ge=1, description="Beads of each plane's ring."
+    )
+    pi_equilibration_steps: int = Field(
+        default=500, ge=0, description="Equilibration steps per plane."
+    )
+    pi_sampling_steps: int = Field(
+        default=2000,
+        ge=20,
+        description=(
+            "Production steps per plane, split into ten blocks for the"
+            " standard error."
+        ),
+    )
+    pi_time_step: float = Field(
+        default=0.5, gt=0.0, description="Ring time step, in femtoseconds."
+    )
+    pi_thermostat: Literal["pile", "piglet"] = Field(
+        default="pile",
+        description=(
+            "pile, or piglet with the normal-mode GLE matrices in"
+            " pi_gle_file."
+        ),
+    )
+    pi_gle_file: str = Field(
+        default="",
+        description="GLE matrices for piglet, in the [Dynamics] path_gle_file format.",
+    )
+    pi_pile_tau: float = Field(
+        default=100.0,
+        gt=0.0,
+        description="Centroid Langevin damping time, in femtoseconds.",
+    )
+    pi_pile_scale: float = Field(
+        default=1.0,
+        gt=0.0,
+        description=(
+            "Scales the critical PILE damping of the internal modes; below"
+            " the crossover 0.5 samples the soft modes at the barrier faster."
+        ),
+    )
+    pi_seed: int = Field(
+        default=1, ge=0, description="Seed for the plane sampling."
+    )
+    pi_direction: Literal["mode", "line"] = Field(
+        default="mode",
+        description=(
+            "Plane normal: the saddle's unstable mode, or the mass-weighted"
+            " reactant-to-saddle line. mode falls back to line when the mode"
+            " is more than 60 degrees off the line."
+        ),
+    )
+    pi_reactant_extent: float = Field(
+        default=0.5,
+        ge=0.0,
+        description=(
+            "The first plane sits this fraction of the reactant-to-saddle"
+            " distance behind the reactant."
+        ),
+    )
+    pi_recrossing_parents: int = Field(
+        default=0,
+        ge=0,
+        description=(
+            "Parent configurations on the top plane for the ring-polymer MD"
+            " transmission factor kappa. 0 leaves it off; otherwise at"
+            " least 2."
+        ),
+    )
+    pi_recrossing_children: int = Field(
+        default=20,
+        ge=1,
+        description=(
+            "Momentum draws per parent, each run forward and reversed."
+        ),
+    )
+    pi_recrossing_time: float = Field(
+        default=100.0,
+        gt=0.0,
+        description="Length of each child trajectory, in femtoseconds.",
+    )
+    pi_recrossing_spacing: int = Field(
+        default=50,
+        ge=1,
+        description="Thermostatted plane steps between parents.",
+    )
 
 
 class DynamicsConfig(BaseModel):
@@ -2315,7 +2770,9 @@ class DynamicsConfig(BaseModel):
         default=1000.0,
         description="Total MD time, in femtoseconds.",
     )
-    thermostat: Literal["none", "andersen", "langevin", "nose_hoover"] = Field(
+    thermostat: Literal[
+        "none", "andersen", "langevin", "nose_hoover", "pile", "piglet"
+    ] = Field(
         default="none", description="Thermostat to use for the dynamics simulation."
     )
     """
@@ -2324,7 +2781,52 @@ class DynamicsConfig(BaseModel):
     - ``andersen``: Andersen thermostat with the Verlet algorithm.
     - ``langevin``: Langevin thermostat with the Verlet algorithm.
     - ``nose_hoover``: Nosé-Hoover thermostat with the Verlet algorithm.
+    - ``pile``: path-integral Langevin equation on the ring-polymer normal modes.
+    - ``piglet``: normal-mode GLE on the internal modes, Langevin on the centroid.
     """
+    path_beads: int = Field(
+        default=8,
+        ge=1,
+        description="Beads in a pile or piglet trajectory.",
+    )
+    path_springs: Literal["trotter", "eco"] = Field(
+        default="trotter",
+        description=(
+            "Trotter ring-polymer springs, or economised springs."
+            " eco is refused with piglet."
+        ),
+    )
+    path_eco_omega_max: float = Field(
+        default=0.0,
+        ge=0.0,
+        description=(
+            "Highest physical frequency, in internal frequency units,"
+            " reproduced by economised springs."
+        ),
+    )
+    path_gle_file: str = Field(
+        default="",
+        description=(
+            "Normal-mode GLE matrices for piglet. The file starts with"
+            " the mode count and the matrix dimension, then each mode's"
+            " drift matrix and covariance."
+        ),
+    )
+    path_pile_tau: float = Field(
+        default=100.0,
+        gt=0.0,
+        description="Centroid Langevin damping time, in femtoseconds.",
+    )
+    path_pile_scale: float = Field(
+        default=1.0,
+        gt=0.0,
+        description="Scales the critical damping of the internal PILE modes.",
+    )
+    path_seed: int = Field(
+        default=1,
+        ge=0,
+        description="Seed for the path-integral random numbers.",
+    )
     andersen_collision_period: float = Field(
         default=100.0,
         description="The collision period (in fs) for the Andersen thermostat.",
@@ -2502,6 +3004,7 @@ class Config(BaseModel):
     lanczos: LanczosConfig
     davidson: DavidsonConfig
     hessian: HessianConfig
+    instanton: InstantonConfig = Field(default_factory=InstantonConfig)
     communicator: CommunicatorConfig
     process_search: ProcessSearchConfig
     prefactor: PrefactorConfig
@@ -2514,6 +3017,7 @@ class Config(BaseModel):
     hyperdyn: HyperdynamicsConfig
     recycling: RecyclingConfig
     coarse_graining: CoarseGrainingConfig
+    amsel: AmselConfig = Field(default_factory=AmselConfig)
     optimizer: OptimizerConfig
     distributed_replica: DistributedReplicaConfig
     gprdimer: GPRDimerConfig

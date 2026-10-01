@@ -70,6 +70,12 @@ public:
     return false;
   }
 
+  [[nodiscard]] bool computesStress() const noexcept override {
+    return haveStress_;
+  }
+
+  [[nodiscard]] Matrix3d cauchyStress() const override { return stress_; }
+
 private:
   // --- Private Methods ---
   void setup_server();
@@ -105,4 +111,7 @@ private:
   // From ASE units, values for eV and Angstrom
   static constexpr double BOHR_IN_ANGSTROM = 0.529177210903;
   static constexpr double HARTREE_IN_EV = 27.211386245988;
+
+  Matrix3d stress_{Matrix3d::Zero()};
+  bool haveStress_{false};
 };

@@ -1,0 +1,1 @@
+A half-ring instanton that has converged, or that is stationary at the wrong index, is probed for an unstable mode odd under the ring mirror. That mode marks two copies of the instanton on one ring, and the search finishes on the whole ring. A cooling schedule probes only its last temperature.

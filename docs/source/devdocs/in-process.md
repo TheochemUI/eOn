@@ -29,4 +29,5 @@ setting cwd first.
 ## What still writes files
 
 `saveData` / `results.dat` still exist so the classic server can parse
-them. Filling a JobResult envelope from memory is `eOn-4mrf`.
+them. `JobResultEnvelope` (`include/eon/JobResult.h`) holds the in-memory
+scalars; geometries stay on `Matter` until capnp codegen lands.

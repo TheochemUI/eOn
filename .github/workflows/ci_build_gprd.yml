@@ -6,59 +6,66 @@ on:
   push:
     branches:
       - main
+      - develop
+    paths:
+      - ".github/workflows/ci_build_gprd.yml"
+      - "client/AtomicGPDimer.*"
+      - "client/GPRHelpers.*"
+      - "client/EigenmodeStrategy.cpp"
+      - "client/meson.build"
+      - "meson_options.txt"
+      - "subprojects/gpr_optim.wrap"
+      - "tests/test_one_pt.py"
+      - "tests/test_gpr_optim_pin.py"
   pull_request:
     paths:
       - ".github/workflows/ci_build_gprd.yml"
       - "client/AtomicGPDimer.*"
       - "client/GPRHelpers.*"
+      - "client/EigenmodeStrategy.cpp"
       - "client/meson.build"
       - "meson_options.txt"
+      - "subprojects/gpr_optim.wrap"
+      - "tests/test_one_pt.py"
+      - "tests/test_gpr_optim_pin.py"
 permissions:
   contents: read
+env:
+  # gpr_optim develop. Same hash as subprojects/gpr_optim.wrap.
+  GPR_OPTIM_REV: b55c89e2115388f901839aba2a5808bfcef06f68
 jobs:
-  # Fork PRs do not receive SUBMODULE_PRIVATE. A single job that exits 0
-  # after skip reports Success. Split so the integration job is Skipped
-  # (not a fake pass) when the secret is missing (eOn-234v).
-  gprd-gate:
-    runs-on: ubuntu-latest
-    outputs:
-      available: ${{ steps.gate.outputs.available }}
-    steps:
-      - name: Check submodule SSH secret
-        id: gate
-        env:
-          SUBMODULE_PRIVATE: ${{ secrets.SUBMODULE_PRIVATE }}
-        run: |
-          if [ -z "$SUBMODULE_PRIVATE" ]; then
-            echo "available=false" >> "$GITHUB_OUTPUT"
-            echo "GPRD integration skipped: SUBMODULE_PRIVATE unavailable"
-          else
-            echo "available=true" >> "$GITHUB_OUTPUT"
-          fi
-
   gprd-integration:
-    needs: gprd-gate
-    if: needs.gprd-gate.outputs.available == 'true'
     runs-on: ubuntu-latest
+    env:
+      # gpr_optim is private: the GP dimer job needs a read token for it, and
+      # a run without one (a fork, say) builds nothing here.
+      HAVE_GPR_OPTIM: ${{ secrets.GPR_OPTIM_TOKEN != '' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
-      - name: Setup SSH for private submodule
-        uses: webfactory/ssh-agent@a6f90b1f127823b31d4d4a8d96047790581349bd # v0.9.1
+      - name: No gpr_optim access
+        if: env.HAVE_GPR_OPTIM != 'true'
+        run: echo "GPR_OPTIM_TOKEN is not set; the private gpr_optim pin is not checked out and the GP dimer is not built."
+      - name: Check out the private gpr_optim pin
+        if: env.HAVE_GPR_OPTIM == 'true'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          ssh-private-key: ${{ secrets.SUBMODULE_PRIVATE }}
-      - name: Pull GPRD submodule
-        if: steps.gate.outputs.available == 'true'
+          repository: TheochemUI/gpr_optim
+          ref: ${{ env.GPR_OPTIM_REV }}
+          path: subprojects/gpr_optim
+          token: ${{ secrets.GPR_OPTIM_TOKEN }}
+          persist-credentials: false
+      - name: GP dimer pin is the wrap revision
+        if: env.HAVE_GPR_OPTIM == 'true'
         run: |
-          # develop tip: 26242c8 is not on any branch after gpr_optim history rewrite
-          # (git clone then checkout fails with "unable to read tree").
-          git clone --branch develop --single-branch \
-            git@github.com:TheochemUI/gpr_optim.git subprojects/gpr_optim
-          cd subprojects/gpr_optim
-          git checkout 365b78bdf4042f75915e1113396e1b4aa50edaa2
-          git rev-parse --short HEAD
+          set -euo pipefail
+          rev=$(sed -n 's/^revision = //p' subprojects/gpr_optim.wrap)
+          test "$rev" = "$GPR_OPTIM_REV"
+          test "$(git -C subprojects/gpr_optim rev-parse HEAD)" = "$GPR_OPTIM_REV"
+          test -f subprojects/gpr_optim/gpr/AtomicDimer.h
       - uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e # v0.9.4
+        if: env.HAVE_GPR_OPTIM == 'true'
         with:
           cache: true
           cache-write: true
@@ -66,23 +73,26 @@ jobs:
           environments: >-
             dev
       - name: Install cbindgen
-        if: steps.gate.outputs.available == 'true'
+        if: env.HAVE_GPR_OPTIM == 'true'
         shell: bash
         run: command -v cbindgen || cargo install cbindgen
-      - name: Install eon with GPRD
-        if: steps.gate.outputs.available == 'true'
+      - name: Install eon
+        if: env.HAVE_GPR_OPTIM == 'true'
         shell: pixi run bash -e {0}
         run: |
+          # Default options. -Dwith_gprd=auto links the checkout on Linux.
           meson setup --reconfigure bbdir  \
           --prefix=$CONDA_PREFIX           \
           --buildtype release              \
           --libdir=lib                     \
-          -Dwith_gprd=true                 \
           -Dwith_tests=true
           meson install --skip-subprojects -C bbdir
-      - name: Integration Tests
-        if: steps.gate.outputs.available == 'true'
+      - name: Morse Pt GP dimer
+        if: env.HAVE_GPR_OPTIM == 'true'
         shell: pixi run bash -e {0}
         run: |
-          cd client/unit_tests/data/systems/saddle_search/
-          eonclient
+          python -m pip install -q 'pytest>=8' 'pytest-datadir>=1.5' 'sh>=2'
+          python -m pytest \
+            tests/test_gpr_optim_pin.py \
+            tests/test_one_pt.py::test_morse_pt_gprdimer_matches_dimer_fewer_calls \
+            -q

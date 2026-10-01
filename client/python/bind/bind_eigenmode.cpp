@@ -15,6 +15,9 @@
 #include "eon/MobileAtoms.h"
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
+#ifdef WITH_GPRD
+#include "eon/AtomicGPDimer.h"
+#endif
 
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/optional.h>
@@ -65,8 +68,9 @@ eonc::Parameters route_minmode_params(eonc::Parameters params,
   if (want_gp) {
 #ifndef WITH_GPRD
     throw std::runtime_error(
-        "Dimer(accelerant=\"gp\") requires build with -Dwith_gprd=true "
-        "(WITH_GPRD); this extension has built_with_gprd()==False");
+        "Dimer(accelerant=\"gp\") requires -Dwith_gprd=enabled "
+        "(rsync -a ../gpr_optim/ subprojects/gpr_optim/); "
+        "this extension has built_with_gprd()==False");
 #else
     // GP accelerant is always the improved-dimer + GP stack (AtomicGPDimer).
     if (method != "improved" && method != "dimer" && !method.empty()) {
@@ -217,7 +221,8 @@ void bind_eigenmode(nb::module_ &m) {
         return false;
 #endif
       },
-      "True if compiled with -Dwith_gprd=true (AtomicGPDimer / GP accelerant)");
+      "True if compiled with the GP dimer (-Dwith_gprd=enabled, or auto when "
+      "gpr_optim configures; AtomicGPDimer / GP accelerant)");
 
   // --- Chemist entry: Dimer(method="improved", accelerant=None|"gp") ---
   nb::class_<PyDimer>(

@@ -64,6 +64,7 @@ struct Parameters::Impl {
   ira_options_t ira_options_{};
   debug_options_t debug_options_{};
   oh_tst_options_t oh_tst_options_{};
+  instanton_options_t instanton_options_{};
 };
 
 } // namespace eonc

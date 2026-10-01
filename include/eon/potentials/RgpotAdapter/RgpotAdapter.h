@@ -82,6 +82,20 @@ public:
     if (variance != nullptr) {
       *variance = out.variance;
     }
+    storeStress(out);
+  }
+
+  [[nodiscard]] bool computesStress() const noexcept override {
+    return haveStress_;
+  }
+
+  /// Cauchy stress from the last force() that reported one.
+  /// sigma = (1/V) dE/dε, eV/Angstrom^3.
+  [[nodiscard]] Matrix3d cauchyStress() const override {
+    if (!haveStress_) {
+      throw std::logic_error("rgpot kernel did not return a stress tensor");
+    }
+    return stress_;
   }
 
   /// Reports whether the kernel serves a batch natively. rgpot answers
@@ -118,10 +132,14 @@ public:
     pot_.forceBatchImpl(
         rgpot::ForceBatch{.nSystems = n, .in = in.data(), .out = out.data()});
 
+    haveStress_ = false;
     for (size_t i = 0; i < n; ++i) {
       energies[i] = out[i].energy;
       if (variances != nullptr) {
         variances[i] = out[i].variance;
+      }
+      if (out[i].has_stress) {
+        storeStress(out[i]);
       }
       forceCallCounter++;
       eonc::PotRegistry::get().on_force_call(ptype);
@@ -130,6 +148,13 @@ public:
 
   [[nodiscard]] bool isThreadSafe() const noexcept override {
     return pot_.caps().reentrancy == rgpot::Reentrancy::SharedInstance;
+  }
+
+  /// Kernels that do not implement periodic boundaries must not have their
+  /// coordinates wrapped. A free cluster with an atom on the cell face is
+  /// torn by that wrap on the first optimizer step.
+  [[nodiscard]] bool requiresIsolatedMoleculeLayout() const noexcept override {
+    return !pot_.caps().periodic;
   }
 
   [[nodiscard]] bool needsPerImageInstance() const noexcept override {
@@ -166,8 +191,22 @@ private:
     }
   }
 
+  void storeStress(const rgpot::ForceOut &out) {
+    haveStress_ = out.has_stress != 0;
+    if (!haveStress_) {
+      return;
+    }
+    for (int row = 0; row < 3; ++row) {
+      for (int col = 0; col < 3; ++col) {
+        stress_(row, col) = out.stress[row * 3 + col];
+      }
+    }
+  }
+
   RPot pot_;
   eonc::IPluginLoader &loader_;
+  Matrix3d stress_{Matrix3d::Zero()};
+  bool haveStress_{false};
 };
 
 /// Factory arm helper for kernels whose parameters are fixed tabulated

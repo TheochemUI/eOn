@@ -34,6 +34,23 @@ public:
              double *U, double *variance, const double *box) override;
 
   [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
+
+  /// With cpmdc calculator groups ([RgpotPot] ranks_per_image), a batch is
+  /// spread over the groups: system j runs on group j mod G, then every
+  /// rank receives every result, so all ranks keep the same band.
+  [[nodiscard]] bool supportsBatchEvaluation() const noexcept override;
+  void forceBatch(long nSystems, long nAtoms, const double *const *positions,
+                  const int *const *atomicNrs, double *const *forces,
+                  double *energies, double *variances,
+                  const double *const *boxes) override;
+  /// System j runs on group owners[j] mod G when owners is given (an
+  /// owner below zero falls back to j), so a NEB image keeps its group
+  /// across partial band updates.
+  void forceBatchOwned(long nSystems, long nAtoms,
+                       const double *const *positions,
+                       const int *const *atomicNrs, double *const *forces,
+                       double *energies, double *variances,
+                       const double *const *boxes, const long *owners) override;
   /// NWChem molecular SCF does not support PBC; CPMD may be periodic.
   [[nodiscard]] bool requiresIsolatedMoleculeLayout() const noexcept override {
     return backend_ == "nwchemc";
@@ -42,6 +59,24 @@ public:
   [[nodiscard]] bool engineAvailable() const;
 
 private:
+  // Under mpirun (an MPI build of rgpot with cpmdc) only world rank 0 runs
+  // eOn. It broadcasts each force request; the other ranks serve requests
+  // from the constructor until the driver sends a stop, then exit.
+  [[noreturn]] void serveWorker();
+  void computeSingle(long N, const double *R, const int *atomicNrs, double *F,
+                     double *U, const double *box);
+  void computeBatch(long nSystems, long nAtoms, const double *const *positions,
+                    const int *const *atomicNrs, double *const *forces,
+                    double *energies, const double *const *boxes,
+                    const std::int64_t *owners);
+  void sendStop();
+  void stopAndDrop();
+  void releaseWorkersAtExit();
+
   std::unique_ptr<RGPotEngine> impl_;
   std::string backend_;
+  bool driver_{true};
+  bool stopped_{false};
+  bool dropped_{false};
+  bool acked_{false};
 };

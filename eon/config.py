@@ -8,6 +8,21 @@ import numpy as np
 import yaml
 
 
+def canonical_listed_value(raw, values):
+    """Return the listed spelling.
+
+    An exact entry wins. Otherwise the first entry with the same casefold
+    matches. None when nothing matches.
+    """
+    if raw in values:
+        return raw
+    folded = raw.casefold()
+    for token in values:
+        if token.casefold() == folded:
+            return token
+    return None
+
+
 class ConfigSection:
     def __init__(self, name):
         self.name = name
@@ -129,10 +144,17 @@ class ConfigClass:
                                         sys.stderr.write('option "%s" of section "%s" should be boolean\n' %(o,psection))
                                 elif k.kind == "string" and len(k.values) !=0:
                                     values = k.values
-                                    if parser.get(psection,k.name) not in values:
+                                    raw = parser.get(psection, k.name)
+                                    if k.name == "potential":
+                                        chosen = canonical_listed_value(raw, values)
+                                    else:
+                                        chosen = raw if raw in values else None
+                                    if chosen is None:
                                         Vnames = ", ".join(k.values)
                                         config_error = True
-                                        sys.stderr.write('option "%s" should be one of: %s\n' %(parser.get(psection,k.name),Vnames))
+                                        sys.stderr.write('option "%s" should be one of: %s\n' %(raw, Vnames))
+                                    elif chosen != raw:
+                                        parser.set(psection, k.name, chosen)
 
         if config_error:
             sys.stderr.write("aborting: could not parse config.ini\n")
@@ -282,9 +304,9 @@ class ConfigClass:
         self.kdb_path = parser.get('Paths', 'kdb')
         self.kdb_nodupes = parser.getboolean('KDB', 'remove_duplicates')
         self.kdb_name = parser.get('KDB', 'kdb_name')
-        self.kdb_nf = parser.get('KDB', 'kdb_nf')
-        self.kdb_dc = parser.get('KDB', 'kdb_dc')
-        self.kdb_mac = parser.get('KDB', 'kdb_mac')
+        self.kdb_nf = float(parser.get('KDB', 'kdb_nf'))
+        self.kdb_dc = float(parser.get('KDB', 'kdb_dc'))
+        self.kdb_mac = float(parser.get('KDB', 'kdb_mac'))
 
         # Recycling
         self.recycling_on = parser.getboolean('Recycling', 'use_recycling')
@@ -337,6 +359,10 @@ class ConfigClass:
             self.amsel_cv_threshold = parser.getfloat('amsel', 'cv_threshold')
         except Exception:
             self.amsel_cv_threshold = 10.0
+        try:
+            self.amsel_on_error = parser.get('amsel', 'on_error')
+        except Exception:
+            self.amsel_on_error = "fallback_single"
         # Back-compat aliases used by Superbasin.step getattr
         self.sb_amsel_discover_decide = self.amsel_discover_decide
         self.sb_amsel_e_min_init = self.amsel_e_min_init
@@ -390,6 +416,6 @@ class ConfigClass:
             self.init()
 
 # Process-edge default instance for CLI / ``python -m eon`` only.
-# Library code must take ConfigClass via parameter injection (see epic eOn-gmhl).
+# Library code must take ConfigClass via parameter injection.
 # Prefer: cfg = ConfigClass(); cfg.init(path); runner(cfg)
 config = ConfigClass()

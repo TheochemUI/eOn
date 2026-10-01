@@ -57,6 +57,11 @@ public:
 
   NudgedElasticBand::NEBStatus compute(void);
   NudgedElasticBand::NEBStatus getStatus() { return this->status; };
+  [[nodiscard]] bool solidState() const noexcept { return solidState_; }
+  [[nodiscard]] double solidJacobian() const noexcept { return solidJacobian_; }
+  [[nodiscard]] const Matrix3d &cellForce(long image) const {
+    return projectedCellForce.at(static_cast<size_t>(image));
+  }
   void updateForces(bool ci_active);
   void updateForces(void) { updateForces(ci_enabled_); }
   void setCIEnabled(bool enabled) { ci_enabled_ = enabled; }
@@ -104,6 +109,11 @@ private:
   // Cached strategies (constant across iterations)
   neb::TangentStrategy tangentStrat_;
   neb::ProjectionStrategy projectionStrat_;
+  bool solidState_{false};
+  double solidJacobian_{1.0};
+  std::vector<Matrix3d> projectedCellForce;
+  void prepareSolidState();
+  void projectSolidState(bool ci_active);
 };
 
 class NEBObjectiveFunction : public ObjectiveFunction {

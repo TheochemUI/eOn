@@ -1,8 +1,19 @@
 # Booleans
 option('with_water', type : 'boolean', value : false)
 option('with_ams', type : 'boolean', value : false)
-option('with_mpi', type : 'boolean', value : false)
-option('with_gprd', type : 'boolean', value : false)
+option('with_mpi', type : 'feature', value : 'disabled',
+       description : 'Link MPI and build the MPI potential')
+# auto: Linux links min_mode_method=gprdimer when subprojects/gpr_optim
+# is present and the subproject configures. A failed fetch leaves the
+# dimer off. enabled stops configuration instead.
+# The checkout carries that tree. Refresh it with
+#   rsync -a ../gpr_optim/ subprojects/gpr_optim/
+# The revision line in subprojects/gpr_optim.wrap is the pin.
+# A build directory that still stores true or false rejects the feature
+# default auto. Map it once with
+#   python scripts/migrate_with_gprd_option.py <builddir>
+option('with_gprd', type : 'feature', value : 'auto',
+       description : 'GP dimer (gprdimer). auto enables on Linux when subprojects/gpr_optim configures')
 option('with_vasp', type : 'boolean', value : false)
 option('with_fortran', type : 'boolean', value : true)
 option('with_cuh2', type : 'boolean', value : true)
@@ -28,7 +39,7 @@ option('with_rgpot', type : 'boolean', value : true, deprecated : true,
 option('with_serve', type : 'boolean', value : false,
        description : 'eOn as rgpot-compatible Cap\'n Proto RPC *server* (eonclient --serve); clients connect TO eOn (NOT RGPOT pot, NOT potserv client)')
 # (RPC *client* to potserv is not an eOn pot type; use rgpot potserv + external client.)
-option('with_parallel_neb', type : 'boolean', value : false, description : 'Enable parallel NEB bead force evaluations (TBB on GCC/Clang; nvc++ uses -Dstdpar instead)')
+option('with_parallel_neb', type : 'boolean', value : false, description : 'Deprecated, no effect: NEB images use a bounded std::thread pool; nvc++ uses -Dstdpar')
 option('stdpar', type : 'combo', choices : ['none', 'cpu', 'gpu'], value : 'none',
        description : 'nvc++ std::execution offload for NEB image forces. cpu=-stdpar=multicore, gpu=-stdpar=gpu. Morse and other host potentials stay on the CPU. Not QMCPACK QMC_GPU.')
 option('stdpar_gpu_cc', type : 'string', value : 'cc80,cc90',

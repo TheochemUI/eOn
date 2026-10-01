@@ -29,6 +29,7 @@ TEST_CASE("Adapter LJ matches the pinned reference", "[pot][rgpot-adapter]") {
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));
 
+  REQUIRE(matter->getPeriodic());
   REQUIRE(matter->getPotentialEnergy() ==
           Catch::Approx(-39.965351).epsilon(1e-4));
   REQUIRE(matter->getForces().rowwise().norm().maxCoeff() ==
@@ -44,8 +45,13 @@ TEST_CASE("Adapter LJCluster matches the pinned reference",
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));
 
+  REQUIRE_FALSE(matter->getPeriodic());
   REQUIRE(matter->getPotentialEnergy() ==
           Catch::Approx(-39.965379).epsilon(1e-4));
+  AtomMatrix pos = matter->getPositionsCopy();
+  pos(0, 2) = -1.0e-6;
+  matter->setPositions(pos);
+  REQUIRE(matter->getPositions()(0, 2) == Catch::Approx(-1.0e-6).margin(1e-12));
 }
 
 TEST_CASE("Adapter Morse evaluates and reports shared-safe",

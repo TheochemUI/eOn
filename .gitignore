@@ -612,6 +612,8 @@ Temporary Items
 !/subprojects/*.wrap
 !/subprojects/packagefiles/
 !/subprojects/packagefiles/**
+# gpr_optim is private: a local checkout in subprojects/gpr_optim builds
+# the GP dimer and stays untracked like every other extracted subproject.
 
 # Meson Directories
 meson-logs

@@ -25,9 +25,12 @@
 #include "eon/Optimizer.h"
 #include "eon/PotCapabilities.h"
 #include "eon/SafeMath.h"
+#include "eon/SolidStateNEB.h"
 #include "magic_enum/magic_enum.hpp"
 
+#include "ForEachImage.h"
 #include "eon/EonLogger.h"
+#include <cmath>
 #include <format>
 #include <stdexcept>
 #include <thread>
@@ -53,6 +56,12 @@ NudgedElasticBand::NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
             auto &init_opt = parametersPassed.neb_options().initialization;
             const size_t base_count =
                 parametersPassed.neb_options().image_count;
+            if (parametersPassed.neb_options().solid_state.enabled &&
+                init_opt.method != NEBInit::LINEAR &&
+                init_opt.method != NEBInit::FILE) {
+              throw std::invalid_argument(
+                  "solid_state accepts initializer linear or file");
+            }
             if (parametersPassed.neb_options().match_endpoints) {
               auto aligned = eonc::IRACompare::alignReactantToProduct(
                   *initialPassed, *finalPassed, 1.0);
@@ -149,6 +158,22 @@ NudgedElasticBand::NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
                   parametersPassed.neb_options().initialization.max_iterations,
                   parametersPassed.neb_options().initialization.max_move);
             }
+            if (parametersPassed.neb_options().solid_state.enabled &&
+                init_opt.method == NEBInit::LINEAR) {
+              if (init_opt.oversampling) {
+                throw std::invalid_argument(
+                    "solid_state NEB does not oversample the initial path");
+              }
+              for (Matter &image : path) {
+                eonc::neb::orientSolidStateMatter(image);
+              }
+              eonc::neb::interpolateSolidStateLinear(path);
+            } else if (parametersPassed.neb_options().solid_state.enabled &&
+                       init_opt.method == NEBInit::FILE) {
+              for (Matter &image : path) {
+                eonc::neb::orientSolidStateMatter(image);
+              }
+            }
             return path;
           }(),
           parametersPassed, potPassed) {}
@@ -220,8 +245,13 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
 
   // Common final setup
   movedAfterForceCall = true;
+  prepareSolidState();
+  // Both endpoints in one call, so two calculator groups take one each.
+  {
+    Matter *const ends[] = {path[0].get(), path[numImages + 1].get()};
+    eonc::evaluateTogether(*pot, ends);
+  }
   reactantEnergy = path[0]->getPotentialEnergy();
-  path[numImages + 1]->getPotentialEnergy();
   climbingImage = 0;
 
   // Setup springs
@@ -502,8 +532,18 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
     iteration++;
 
     double dE = path[maxEnergyImage]->getPotentialEnergy() - reactantEnergy;
-    double stepSize = eonc::geometry::maxAtomMotionV(
-        path[0]->pbcV(objf->getPositions() - pos));
+    double stepSize = 0.0;
+    if (solidState_) {
+      const VectorXd delta = objf->difference(objf->getPositions(), pos);
+      const long seg = 3L * atoms + 9L;
+      for (long image = 0; image < numImages; ++image) {
+        stepSize = std::max(
+            stepSize, delta.segment(image * seg, seg).cwiseAbs().maxCoeff());
+      }
+    } else {
+      stepSize = eonc::geometry::maxAtomMotionV(
+          path[0]->pbcV(objf->getPositions() - pos));
+    }
     QUILL_LOG_DEBUG(log, "{:>10} {:>12.4e} {:>14.4e} {:>11} {:>12.4}",
                     iteration, stepSize, convergenceForce(), maxEnergyImage,
                     dE);
@@ -535,15 +575,23 @@ double NudgedElasticBand::convergenceForce() {
     updateForces();
 
   auto imageForce = [&](long i) -> double {
+    const double cellNorm =
+        solidState_ ? projectedCellForce[static_cast<size_t>(i)].norm() : 0.0;
     if (params.optimizer_options().convergence_metric == "norm") {
-      return projectedForce[i]->norm();
+      return std::hypot(projectedForce[i]->norm(), cellNorm);
     }
     if (params.optimizer_options().convergence_metric == "max_atom") {
       // Every image shares the reactant constraint mask.
-      return path[0]->maxFreeAtomForce(*projectedForce[i]);
+      return std::max(path[0]->maxFreeAtomForce(*projectedForce[i]), cellNorm);
     }
     if (params.optimizer_options().convergence_metric == "max_component") {
-      return projectedForce[i]->cwiseAbs().maxCoeff();
+      double component = projectedForce[i]->cwiseAbs().maxCoeff();
+      if (solidState_) {
+        component = std::max(
+            component,
+            projectedCellForce[static_cast<size_t>(i)].cwiseAbs().maxCoeff());
+      }
+      return component;
     }
     log = eonc::log::traceback();
     QUILL_LOG_CRITICAL(
@@ -625,9 +673,15 @@ void NudgedElasticBand::updateForces(bool ci_active) {
       }
 
       std::vector<double> energies(nDirty), variances(nDirty);
-      pot->forceBatch(nDirty, atoms, posVec.data(), nrsVec.data(),
-                      frcVec.data(), energies.data(), variances.data(),
-                      boxVec.data());
+      // Image i is system i - 1 to the potential's router, whether or not
+      // the images before it are dirty.
+      std::vector<long> owners(static_cast<size_t>(nDirty));
+      for (long j = 0; j < nDirty; j++) {
+        owners[static_cast<size_t>(j)] = dirty[static_cast<size_t>(j)] - 1;
+      }
+      pot->forceBatchOwned(nDirty, atoms, posVec.data(), nrsVec.data(),
+                           frcVec.data(), energies.data(), variances.data(),
+                           boxVec.data(), owners.data());
       for (long j = 0; j < nDirty; j++) {
         path[dirty[j]]->setComputedPotential(energies[j], variances[j]);
       }
@@ -638,37 +692,26 @@ void NudgedElasticBand::updateForces(bool ci_active) {
         eonc::potAllowsSharedInstance(*pot) || perImagePotentials_;
     if (numImages > 1 && params.main_options().parallel && canParallel) {
 #ifdef EON_PARALLEL_NEB
-      // TBB-backed std::execution::par (meson -Dwith_parallel_neb=true).
-      // One thread per image oversubscribes a 20-bead band on 8 cores.
+      // nvc++ -stdpar=multicore|gpu (meson -Dstdpar=cpu|gpu).
       std::vector<long> beads(static_cast<size_t>(numImages));
       std::iota(beads.begin(), beads.end(), 1);
       std::for_each(std::execution::par, beads.begin(), beads.end(),
                     [this](long i) { path[i]->getForcesRaw(); });
 #else
-      // std::thread rather than std::jthread -- Apple Clang libc++ lacks the
-      // latter. Wrap launch + join so a throw from any lambda still joins the
-      // remaining threads before we rethrow; otherwise the unjoined std::thread
-      // destructors call std::terminate().
-      std::vector<std::thread> threads;
-      threads.reserve(static_cast<size_t>(numImages));
-      try {
-        for (long i = 1; i <= numImages; i++) {
-          threads.emplace_back([this, i] { path[i]->getForcesRaw(); });
-        }
-        for (auto &t : threads)
-          t.join();
-      } catch (...) {
-        for (auto &t : threads)
-          if (t.joinable())
-            t.join();
-        throw;
-      }
+      eonc::forEachImage(numImages,
+                         [this](long i) { path[i]->getForcesRaw(); });
 #endif
     } else {
       for (long i = 1; i <= numImages; i++) {
         path[i]->getForcesRaw();
       }
     }
+  }
+
+  if (solidState_) {
+    projectSolidState(ci_active);
+    movedAfterForceCall = false;
+    return;
   }
 
   // Find the highest energy non-endpoint image
@@ -806,6 +849,183 @@ NudgedElasticBand::pathFrames(std::optional<size_t> bandIndex) {
       path, tangent, eigenmode_solvers, numImages,
       params.debug_options().estimate_neb_eigenvalues, bandIndex,
       reactantEnergy);
+}
+
+namespace {
+
+void refuseSolidStateCombination(const Parameters &params) {
+  const auto &neb = params.neb_options();
+  if (!neb.solid_state.enabled) {
+    return;
+  }
+  if (neb.climbing_image.ocineb.use_mmf) {
+    throw std::invalid_argument(
+        "solid_state is set and ci_mmf is true. The min-mode walk does not "
+        "move the cell");
+  }
+  if (neb.zoom.enabled) {
+    throw std::invalid_argument(
+        "solid_state is set and zoom_neb is true. Zoom does not move the cell");
+  }
+  if (neb.spring.om.enabled) {
+    throw std::invalid_argument(
+        "solid_state is set and onsager_machlup is true");
+  }
+  if (neb.spring.doubly_nudged) {
+    throw std::invalid_argument(
+        "solid_state is set and neb_doubly_nudged is true");
+  }
+  if (neb.spring.use_elastic_band) {
+    throw std::invalid_argument(
+        "solid_state is set and neb_elastic_band is true");
+  }
+  const auto method = neb.initialization.method;
+  if (method != NEBInit::LINEAR && method != NEBInit::FILE) {
+    throw std::invalid_argument(
+        "solid_state accepts initializer linear or file");
+  }
+  if (!(neb.solid_state.weight > 0.0)) {
+    throw std::invalid_argument("solid_state_weight must be positive");
+  }
+}
+
+AtomMatrix packJoint(const AtomMatrix &atomic, const Matrix3d &cell) {
+  AtomMatrix packed(atomic.rows() + 3, 3);
+  packed.topRows(atomic.rows()) = atomic;
+  packed.bottomRows(3) = cell;
+  return packed;
+}
+
+double springScale(const eonc::neb::SpringStrategy &spring, long image,
+                   double distNext, double distPrev) {
+  if (const auto *uniform = std::get_if<eonc::neb::UniformSpring>(&spring)) {
+    return uniform->ksp * (distNext - distPrev);
+  }
+  if (const auto *weighted = std::get_if<eonc::neb::WeightedSpring>(&spring)) {
+    return weighted->springConstants[static_cast<size_t>(image)] * distNext -
+           weighted->springConstants[static_cast<size_t>(image - 1)] * distPrev;
+  }
+  throw std::invalid_argument(
+      "solid_state NEB does not use this spring strategy");
+}
+
+} // namespace
+
+void NudgedElasticBand::prepareSolidState() {
+  if (!params.neb_options().solid_state.enabled) {
+    return;
+  }
+  refuseSolidStateCombination(params);
+  for (const auto &image : path) {
+    if (!image->getPeriodic()) {
+      throw std::invalid_argument(
+          "solid_state NEB requires periodic boundaries on every image");
+    }
+    eonc::neb::orientSolidStateMatter(*image);
+  }
+  const double volume0 = std::abs(path.front()->getCell().determinant());
+  const double volume1 = std::abs(path.back()->getCell().determinant());
+  solidJacobian_ =
+      eonc::neb::solidStateJacobian(0.5 * (volume0 + volume1), atoms,
+                                    params.neb_options().solid_state.weight);
+  projectedCellForce.assign(static_cast<size_t>(numImages + 2),
+                            Matrix3d::Zero());
+  solidState_ = true;
+  QUILL_LOG_INFO(log, "Solid-state NEB Jacobian {:.6f} Angstrom",
+                 solidJacobian_);
+}
+
+void NudgedElasticBand::projectSolidState(bool ci_active) {
+  const double pressure = params.neb_options().solid_state.pressure;
+  const Matrix3d external = Matrix3d::Identity() * pressure;
+  std::vector<double> enthalpy(static_cast<size_t>(numImages + 2));
+  for (long i = 0; i <= numImages + 1; ++i) {
+    enthalpy[static_cast<size_t>(i)] =
+        eonc::neb::solidStateEnthalpy(*path[i], *path[0], pressure);
+  }
+
+  long highest = 1;
+  for (long i = 2; i <= numImages; ++i) {
+    if (enthalpy[static_cast<size_t>(i)] >
+        enthalpy[static_cast<size_t>(highest)]) {
+      highest = i;
+    }
+  }
+  maxEnergyImage = static_cast<size_t>(highest);
+  const double endpointEnthalpy = std::max(enthalpy.front(), enthalpy.back());
+  const bool climb =
+      ci_active && enthalpy[static_cast<size_t>(highest)] > endpointEnthalpy;
+  climbingImage = 0;
+
+  if (params.neb_options().spring.weighting.enabled) {
+    E_ref = std::max(path[0]->getPotentialEnergy(),
+                     path[numImages + 1]->getPotentialEnergy());
+  }
+  const double maxEnergy = path[highest]->getPotentialEnergy();
+  auto spring = eonc::neb::buildSpringStrategy(params, path, numImages, atoms,
+                                               maxEnergy, E_ref);
+  if (const auto *uniform = std::get_if<eonc::neb::UniformSpring>(&spring)) {
+    ksp = uniform->ksp;
+  }
+
+  for (long i = 1; i <= numImages; ++i) {
+    const double volume = std::abs(path[i]->getCell().determinant());
+    Matrix3d stress =
+        pot->computesStress()
+            ? path[i]->cauchyStress()
+            : eonc::neb::finiteDifferenceCauchyStress(*path[i], 1e-5);
+    Matrix3d cellTrue =
+        eonc::neb::cellNebForce(stress, volume, solidJacobian_, external);
+    AtomMatrix atomicTrue = path[i]->getForces();
+    for (long atom = 0; atom < atoms; ++atom) {
+      if (path[i]->getFixed(atom)) {
+        atomicTrue.row(atom).setZero();
+      }
+    }
+
+    const eonc::neb::JointBlock toNext =
+        eonc::neb::jointDisplacement(*path[i], *path[i + 1], solidJacobian_);
+    const eonc::neb::JointBlock toPrev =
+        eonc::neb::jointDisplacement(*path[i - 1], *path[i], solidJacobian_);
+    const AtomMatrix packedNext = packJoint(toNext.atomic, toNext.cell);
+    const AtomMatrix packedPrev = packJoint(toPrev.atomic, toPrev.cell);
+    const double energy = enthalpy[static_cast<size_t>(i)];
+    const double energyPrev = enthalpy[static_cast<size_t>(i - 1)];
+    const double energyNext = enthalpy[static_cast<size_t>(i + 1)];
+    const AtomMatrix packedTangent = std::visit(
+        [&](auto &tangentStrategy) {
+          return tangentStrategy.compute(packedNext, packedPrev, energy,
+                                         energyPrev, energyNext);
+        },
+        tangentStrat_);
+    *tangent[i] = packedTangent.topRows(atoms);
+
+    AtomMatrix packedForce = packJoint(atomicTrue, cellTrue);
+    AtomMatrix total;
+    if (climb && i == highest) {
+      climbingImage = static_cast<size_t>(highest);
+      const double parallel = matDot(packedForce, packedTangent);
+      total = packedForce - 2.0 * parallel * packedTangent;
+    } else {
+      const double parallel = matDot(packedForce, packedTangent);
+      const AtomMatrix perpendicular = packedForce - parallel * packedTangent;
+      const double scale = springScale(spring, i, eonc::neb::jointNorm(toNext),
+                                       eonc::neb::jointNorm(toPrev));
+      total = perpendicular + scale * packedTangent;
+    }
+    *projectedForce[i] = total.topRows(atoms);
+    projectedCellForce[static_cast<size_t>(i)] = total.bottomRows(3);
+    projectedCellForce[static_cast<size_t>(i)](0, 1) = 0.0;
+    projectedCellForce[static_cast<size_t>(i)](0, 2) = 0.0;
+    projectedCellForce[static_cast<size_t>(i)](1, 2) = 0.0;
+    for (long atom = 0; atom < atoms; ++atom) {
+      if (path[i]->getFixed(atom)) {
+        projectedForce[i]->row(atom).setZero();
+      }
+    }
+    eonc::neb::zeroTranslation(*projectedForce[i], path[i]->numberOfFreeAtoms(),
+                               path[i]->numberOfAtoms());
+  }
 }
 
 } // namespace eonc

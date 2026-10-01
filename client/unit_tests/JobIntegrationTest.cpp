@@ -20,6 +20,7 @@
 #include "eon/BaseStructures.h"
 #include "eon/BasinHoppingJob.h"
 #include "eon/Bundling.h"
+#include "eon/ConFileIO.h"
 #include "eon/Job.h"
 #include "eon/Matter.h"
 #include "eon/OHTSTJob.h"
@@ -1494,6 +1495,176 @@ bb_boost_atomlist = all
   std::filesystem::current_path(oldDir);
 }
 
+struct ReplicaTransitionRun {
+  AtomMatrix positions;
+  long transitionStep{0};
+};
+
+// Mirrors ParallelReplicaJob::runFromMatter with refine_transition off and
+// zero post_transition_time: the seeded dephase loop, the production steps
+// with one state check per state_check_interval, and the trajectory copy at
+// the detected transition. The copy either keeps the bond boost, as the job
+// does, or drops it through plain copy assignment.
+static ReplicaTransitionRun replicaTransitionRun(const Parameters &spec,
+                                                 bool keepBiasAfterTransition) {
+  eonc::rng::random(spec.main_options().randomSeed);
+  auto pot = eonc::helpers::makePotential(PotType::LJ, spec);
+  auto reactant = std::make_shared<Matter>(pot, spec);
+  reactant->con2matter(std::string("pos.con"));
+  reactant->relax();
+  // runFromMatter writes the reactant before copying, which wraps PBC.
+  (void)reactant->matter2con("reactant.con");
+
+  auto trajectory = std::make_shared<Matter>(pot, spec);
+  *trajectory = *reactant;
+  Dynamics dynamics(trajectory.get(), spec);
+  BondBoost bondBoost(trajectory.get(), spec);
+  bondBoost.initialize();
+  trajectory->setBiasPotential(&bondBoost);
+
+  const double dt = spec.dynamics_options().time_step;
+  {
+    Dynamics dephase(trajectory.get(), spec);
+    int dephaseSteps = static_cast<int>(
+        std::floor(spec.parallel_replica_options().dephase_time / dt + 0.5));
+    if (dephaseSteps < 1) {
+      dephaseSteps = 1;
+    }
+    const long maxLoops =
+        std::max(1L, spec.parallel_replica_options().dephase_loop_max);
+    Matter initial(pot, spec);
+    initial = *trajectory;
+    for (long loop = 0; loop < maxLoops; ++loop) {
+      trajectory->assignKeepingBias(initial);
+      dephase.setThermalVelocity();
+      for (int step = 1; step <= dephaseSteps; ++step) {
+        dephase.oneStep(step);
+      }
+      Matter minimized(pot, spec);
+      minimized = *trajectory;
+      minimized.relax();
+      if (minimized.compare(*reactant)) {
+        break;
+      }
+    }
+  }
+
+  int stateCheckInterval = static_cast<int>(std::floor(
+      spec.parallel_replica_options().state_check_interval / dt + 0.5));
+  if (stateCheckInterval < 1) {
+    stateCheckInterval = 1;
+  }
+  const long steps = spec.dynamics_options().steps;
+  ReplicaTransitionRun out;
+  Matter transitionStructure(pot, spec);
+  for (long step = 1; step <= steps; ++step) {
+    bondBoost.advance();
+    dynamics.oneStep();
+    (void)bondBoost.boost();
+    if (out.transitionStep != 0 ||
+        (step % stateCheckInterval != 0 && step != steps)) {
+      continue;
+    }
+    Matter minimized(pot, spec);
+    minimized = *trajectory;
+    minimized.relax();
+    if (!minimized.compare(*reactant)) {
+      out.transitionStep = step;
+      transitionStructure = *trajectory;
+      if (keepBiasAfterTransition) {
+        trajectory->assignKeepingBias(transitionStructure);
+      } else {
+        *trajectory = transitionStructure;
+      }
+    }
+  }
+  out.positions = trajectory->getPositionsCopy();
+  return out;
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "ParallelReplicaJob keeps bond-boost forces past a "
+                 "transition when stop_after_transition is false",
+                 "[job][parallel_replica][bond_boost]") {
+  EON_REQUIRE_TEST_DATA(".");
+  // Seed, temperature, and budget match the stop_after_transition budget
+  // test, which sees a transition on this LJ13 cluster within the run.
+  writeConfig(R"(
+[Main]
+job = parallel_replica
+temperature = 10000
+random_seed = 42
+
+[Potential]
+potential = lj
+
+[Dynamics]
+time_step = 1.0
+time = 1000.0
+thermostat = andersen
+andersen_collision_steps = 10
+andersen_alpha = 1.0
+
+[Optimizer]
+opt_method = lbfgs
+converged_force = 0.001
+max_iterations = 200
+
+[Parallel Replica]
+dephase_time = 20.0
+dephase_loop_max = 2
+state_check_interval = 40.0
+refine_transition = false
+post_transition_time = 0.0
+stop_after_transition = false
+
+[Hyperdynamics]
+bias_potential = bond_boost
+bb_rmd_time = 2.0
+bb_dvmax = 0.4
+bb_boost_atomlist = all
+)");
+
+  std::filesystem::copy_file(workdir / "reactant.con", workdir / "pos.con",
+                             std::filesystem::copy_options::overwrite_existing);
+
+  auto oldDir = std::filesystem::current_path();
+  std::filesystem::current_path(workdir);
+  auto loaded = std::make_unique<Parameters>();
+  loaded->load("config.ini");
+  const Parameters spec = *loaded;
+  REQUIRE(spec.parallel_replica_options().auto_stop == false);
+  REQUIRE(spec.parallel_replica_options().refine_transition == false);
+  REQUIRE(spec.parallel_replica_options().corr_time == 0.0);
+  REQUIRE(spec.hyperdynamics_options().bias_potential ==
+          Hyperdynamics::BOND_BOOST);
+
+  // The mirror keeps the bias through the transition copy, the way the job
+  // does. Steps have to remain after the transition for the bias to act.
+  const ReplicaTransitionRun kept = replicaTransitionRun(spec, true);
+  REQUIRE(kept.transitionStep > 0);
+  REQUIRE(kept.transitionStep < spec.dynamics_options().steps);
+
+  eonc::rng::random(spec.main_options().randomSeed);
+  auto pot = eonc::helpers::makePotential(PotType::LJ, spec);
+  auto matter = std::make_shared<Matter>(pot, spec);
+  matter->con2matter(std::string("pos.con"));
+  ParallelReplicaJob job(pot, spec);
+  auto result = job.runFromMatter(matter);
+
+  auto results = parseResultsDat("results.dat");
+  REQUIRE(results.count("transition_found") > 0);
+  REQUIRE(std::stoi(results["transition_found"]) == 1);
+  // The job follows the mirror that keeps the boost through the copy at the
+  // transition, and not the one that loses it.
+  REQUIRE(result->getPositions().isApprox(kept.positions, 1e-8));
+  // bondBoost is a stack local of runFromMatter; the returned trajectory
+  // must not point at it.
+  REQUIRE(result->getBiasPotential() == nullptr);
+
+  std::filesystem::current_path(oldDir);
+}
+
 TEST_CASE_METHOD(JobIntegrationFixture, "ReplicaExchangeJob runs on LJ cluster",
                  "[job][replica_exchange][integration]") {
   EON_REQUIRE_TEST_DATA(".");
@@ -2694,6 +2865,166 @@ TEST_CASE("OH-TST symmetry distance uses the half-line endpoint",
   REQUIRE_FALSE(OHTSTSymmetryTest::reflect(job, anchor, x, v, previous));
   REQUIRE(x[0] == Catch::Approx(2.0).margin(1e-12));
   REQUIRE(v[1] == Catch::Approx(1.0).margin(1e-12));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "InstantonJob writes the path and flags an asymmetric pair",
+                 "[job][instanton][integration]") {
+  if (!copyTestData("neb_lj13")) {
+    SKIP("neb_lj13 test system not found");
+  }
+  // The two LJ13 minima differ by 0.86 eV: the path converges, and the
+  // splitting is withheld because beta |delta| is far above 0.1.
+  writeConfig(R"(
+[Main]
+job = instanton
+
+[Potential]
+potential = lj
+
+[Instanton]
+beads = 64
+beta_hbar_omega = 30
+max_iterations = 4000
+force_tolerance = 1e-3
+)");
+  auto results = runJob();
+  REQUIRE(results.at("termination_reason") == "0");
+  REQUIRE(std::filesystem::exists(workdir / "instanton.con"));
+  const auto frames =
+      readcon::read_all_frames((workdir / "instanton.con").string());
+  REQUIRE(frames.size() == 65);
+  REQUIRE(std::isfinite(std::stod(results.at("instanton_action"))));
+  REQUIRE_THAT(std::stod(results.at("tunnel_asymmetry")),
+               Catch::Matchers::WithinAbs(0.8634, 1e-3));
+  REQUIRE(std::stod(results.at("instanton_symmetric")) == 0.0);
+  REQUIRE(std::stod(results.at("instanton_beta_asymmetry")) > 0.1);
+  REQUIRE(results.count("tunnel_splitting_instanton") == 0);
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "InstantonJob rate through the LJ13 saddle beats HTST",
+                 "[job][instanton][integration]") {
+  if (!copyTestData("neb_lj13")) {
+    SKIP("neb_lj13 test system not found");
+  }
+  // saddle.con is the climbing image of this pair (barrier 1.0017 eV).
+  // 198 K is 0.6 of the 330 K crossover. The con file carries a 101 A
+  // box, so the cluster is periodic and its rotations are zero modes
+  // only by the reactant Hessian.
+  writeConfig(R"(
+[Main]
+job = instanton
+
+[Potential]
+potential = lj
+
+[Instanton]
+mode = rate
+temperature = 198
+beads = 16
+max_iterations = 3000
+force_tolerance = 1e-6
+)");
+  auto half = runJob();
+  REQUIRE(half.at("termination_reason") == "0");
+  REQUIRE(std::stod(half.at("instanton_negative_modes")) == 1.0);
+  REQUIRE(std::stod(half.at("rate_instanton_log")) >
+          std::stod(half.at("rate_htst_log")));
+  const double afterHalf = std::stod(half.at("force_calls"));
+  writeConfig(R"(
+[Main]
+job = instanton
+
+[Potential]
+potential = lj
+
+[Instanton]
+mode = rate
+temperature = 198
+beads = 16
+max_iterations = 3000
+force_tolerance = 1e-6
+half_ring = false
+)");
+  auto full = runJob();
+  REQUIRE(full.at("termination_reason") == "0");
+  const double afterFull = std::stod(full.at("force_calls"));
+  writeConfig(R"(
+[Main]
+job = instanton
+
+[Potential]
+potential = lj
+
+[Instanton]
+mode = rate
+temperature = 198
+beads = 16
+max_iterations = 3000
+force_tolerance = 1e-6
+)");
+  auto halfAgain = runJob();
+  REQUIRE(halfAgain.at("termination_reason") == "0");
+  const double afterHalfAgain = std::stod(halfAgain.at("force_calls"));
+  const double halfLog = std::stod(half.at("rate_instanton_log"));
+  const double fullLog = std::stod(full.at("rate_instanton_log"));
+  const double againLog = std::stod(halfAgain.at("rate_instanton_log"));
+  const double fullCalls = afterFull - afterHalf;
+  const double halfCalls = afterHalfAgain - afterFull;
+  CAPTURE(halfLog, fullLog, againLog, halfCalls, fullCalls);
+  // The half ring keeps beads on the turning points; the whole ring settles
+  // where they fall between beads. The two discrete rings differ at
+  // O(1 / N^2), 1.7e-3 in ln k at 16 beads.
+  REQUIRE(std::abs(halfLog - fullLog) < 1e-2);
+  REQUIRE(std::abs(againLog - fullLog) < 1e-2);
+  REQUIRE(halfCalls < fullCalls);
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "InstantonJob rate writes PI-QTST planes after the ring",
+                 "[job][instanton][piqtst][integration]") {
+  if (!copyTestData("neb_lj13")) {
+    SKIP("neb_lj13 test system not found");
+  }
+  // A short run: the plumbing, the files and the keys, not converged
+  // numbers. 400 K is above the 330 K crossover, so the rate step is the
+  // parabolic factor and no ring is searched.
+  writeConfig(R"(
+[Main]
+job = instanton
+
+[Potential]
+potential = lj
+
+[Instanton]
+mode = rate
+temperature = 400
+pi_planes = 4
+pi_beads = 4
+pi_equilibration_steps = 10
+pi_sampling_steps = 40
+pi_time_step = 1.0
+)");
+  auto results = runJob();
+  REQUIRE(results.at("termination_reason") == "0");
+  for (const char *key :
+       {"barrier_piqtst", "barrier_piqtst_error", "rate_piqtst_log",
+        "rate_piqtst_log_error", "piqtst_s_star", "barrier_classical",
+        "rate_parabolic_log"}) {
+    CAPTURE(key);
+    REQUIRE(results.count(key) == 1);
+    REQUIRE(std::isfinite(std::stod(results.at(key))));
+  }
+  REQUIRE(std::stod(results.at("piqtst_planes")) == 4.0);
+  REQUIRE(std::stod(results.at("barrier_piqtst")) >= 0.0);
+  REQUIRE(std::filesystem::exists(workdir / "rate_piqtst.dat"));
+  const auto frames =
+      readcon::read_all_frames((workdir / "piqtst_planes.con").string());
+  REQUIRE(frames.size() == 4);
+  for (const auto &frame : frames) {
+    REQUIRE(frame.has_spreads());
+  }
 }
 
 } /* namespace tests */

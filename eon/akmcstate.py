@@ -197,6 +197,16 @@ class AKMCState(state.State):
         if result['type'] == "random" or result['type'] == "dynamics":
             self.inc_proc_random_count(id)
 
+        # Store the process as soon as it is registered. Confidence stays
+        # at 0 until a repeat, and the next search of this reactant needs
+        # the row before that.
+        if getattr(self.config, "kdb_on", False):
+            from eon import process_catalog
+            try:
+                process_catalog.insert(self, id, self.config)
+            except Exception:
+                logger.exception("process catalog insert failed for process %s", id)
+
         # This was a unique process, so return the id.
         return id
 

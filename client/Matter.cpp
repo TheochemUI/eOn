@@ -649,8 +649,8 @@ void Matter::computePotential() const {
     forceCalls = forceCalls + 1;
     recomputePotential = false;
 
-    // One free atom: subtracting the mean force is identically zero
-    // (eOn-zjri). NEB would then report immediate GOOD.
+    // One free atom: subtracting the mean force is identically zero,
+    // and NEB would then report immediate GOOD.
     if (impl_->isFixed.maxCoeff() < 0.5 && removeNetForce && nAtoms > 1) {
       Vector3d tempForce = impl_->forces.colwise().sum() / nAtoms;
       for (long int i = 0; i < nAtoms; i++) {
@@ -791,6 +791,20 @@ size_t Matter::getPotentialCalls() const {
 
 double Matter::getEnergyVariance() const { return this->energyVariance; }
 
+Matrix3d Matter::cauchyStress() {
+  if (!potential || !potential->computesStress()) {
+    throw std::logic_error(
+        "Matter::cauchyStress requires a potential that reports stress");
+  }
+  recomputePotential = true;
+  computePotential();
+  Matrix3d sigma = potential->cauchyStress();
+  if (!sigma.allFinite()) {
+    throw std::runtime_error("Potential returned a non-finite stress tensor");
+  }
+  return sigma;
+}
+
 std::shared_ptr<Potential> Matter::getPotential() { return this->potential; }
 
 AtomMatrix Matter::pbc(const AtomMatrix &diff) const {
@@ -827,6 +841,54 @@ void Matter::restoreFileForces(const AtomMatrix &fileForces, bool trustEnergy,
     recomputePotential = false;
   } else {
     recomputePotential = true;
+  }
+}
+
+void evaluateTogether(Potential &pot, std::span<Matter *const> systems) {
+  std::vector<Matter *> dirty;
+  for (Matter *m : systems) {
+    if (m != nullptr && m->needsForceUpdate()) {
+      dirty.push_back(m);
+    }
+  }
+  if (dirty.empty()) {
+    return;
+  }
+  if (dirty.size() == 1 || !pot.supportsBatchEvaluation()) {
+    for (Matter *m : dirty) {
+      m->getForcesRaw();
+    }
+    return;
+  }
+  const long n = dirty.size();
+  const long atoms = dirty.front()->numberOfAtoms();
+  std::vector<VectorXi> nrs(n);
+  std::vector<Matrix3d> boxes(n);
+  std::vector<const double *> posPtr, boxPtr;
+  std::vector<const int *> nrsPtr;
+  std::vector<double *> frcPtr;
+  for (long j = 0; j < n; ++j) {
+    Matter *m = dirty[j];
+    if (m->numberOfAtoms() != atoms) {
+      throw std::invalid_argument(
+          "evaluateTogether: systems differ in atom count");
+    }
+    nrs[j] = m->getAtomicNrs();
+    // A non-periodic system hands the potential a zero box, as
+    // computePotential does.
+    boxes[j] = m->getPeriodic() ? m->getCell() : Matrix3d::Zero().eval();
+  }
+  for (long j = 0; j < n; ++j) {
+    posPtr.push_back(dirty[j]->getPositions().data());
+    nrsPtr.push_back(nrs[j].data());
+    frcPtr.push_back(dirty[j]->forcesData());
+    boxPtr.push_back(boxes[j].data());
+  }
+  std::vector<double> energies(n), variances(n);
+  pot.forceBatch(n, atoms, posPtr.data(), nrsPtr.data(), frcPtr.data(),
+                 energies.data(), variances.data(), boxPtr.data());
+  for (long j = 0; j < n; ++j) {
+    dirty[j]->setComputedPotential(energies[j], variances[j]);
   }
 }
 

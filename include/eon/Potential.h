@@ -125,7 +125,7 @@ public:
   /// separate instances would enable true parallelism.
   [[nodiscard]] virtual bool isThreadSafe() const noexcept { return true; }
 
-  /// How the pot is executed (eOn-12x7). Combine with bitwise or.
+  /// How the pot is executed. Combine with bitwise or.
   enum class PotLayout : unsigned {
     InProcess = 1u << 0,
     NeedsWorkingDirectory = 1u << 1,
@@ -167,9 +167,34 @@ public:
     return false;
   }
 
+  /// True when force() leaves a Cauchy stress that cauchyStress() can read
+  /// until the next force() on this instance.
+  [[nodiscard]] virtual bool computesStress() const noexcept { return false; }
+
+  /// Cauchy stress in eV/Angstrom^3. sigma = (1/V) dE/dε for the right
+  /// strain h <- h (I+ε) at fixed fractional coordinates.
+  [[nodiscard]] virtual Matrix3d cauchyStress() const {
+    throw std::logic_error("Potential::cauchyStress is not implemented");
+  }
+
   /// Evaluate forces for N systems in a single call. Default: loops over
   /// force(). Override in potentials that support native batching (e.g.
   /// MetatomicPotential uses a single model.forward() for all N systems).
+  /// forceBatch with an owner hint per system: a stable identity (a NEB
+  /// image index) a potential that spreads a batch over calculators can
+  /// route by, so the same calculator keeps seeing the same image and its
+  /// stored state stays close to it. Default: the hint is ignored.
+  virtual void forceBatchOwned(long nSystems, long nAtoms,
+                               const double *const *positions,
+                               const int *const *atomicNrs,
+                               double *const *forces, double *energies,
+                               double *variances, const double *const *boxes,
+                               const long *owners) {
+    (void)owners;
+    forceBatch(nSystems, nAtoms, positions, atomicNrs, forces, energies,
+               variances, boxes);
+  }
+
   virtual void forceBatch(long nSystems, long nAtoms,
                           const double *const *positions,
                           const int *const *atomicNrs, double *const *forces,

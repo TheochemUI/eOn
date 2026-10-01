@@ -49,6 +49,20 @@ public:
 
   ~MinModeObjectiveFunction() override = default;
 
+  // The lowest mode's curvature, once the mode is known and negative: the
+  // saddle direction's own scale, so the optimizer's first step needs no
+  // finite-difference probe.
+  std::optional<double> knownCurvature() const override {
+    if (iteration == 0 || !minModeMethod) {
+      return std::nullopt;
+    }
+    const double c = eonc::eigenmodeGetEigenvalue(*minModeMethod);
+    if (!std::isfinite(c) || c >= 0.0) {
+      return std::nullopt;
+    }
+    return -c;
+  }
+
   VectorXd getGradient(bool fdstep = false) {
     AtomMatrix force = matter->getForces();
 

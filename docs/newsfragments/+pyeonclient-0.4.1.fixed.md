@@ -1,0 +1,1 @@
+pyeonclient 0.4.1 carries the eOn 3.4.0 client. PyPI already held a 0.4.0 built from July sources, and the 0.4.0 publish of the 3.4.0 client left those files in place; the wheel publish now refuses a version the index already has.

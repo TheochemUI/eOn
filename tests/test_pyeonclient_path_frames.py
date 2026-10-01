@@ -1,4 +1,4 @@
-"""In-memory ConFrame export: NEB path_frames (eOn-pxxt) and min/saddle frames (eOn-1li3)."""
+"""In-memory ConFrame export: NEB path_frames and min/saddle frames."""
 
 from __future__ import annotations
 

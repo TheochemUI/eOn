@@ -15,6 +15,8 @@
 #include "Matter.h"
 #include "Parameters.h"
 
+#include <cstdint>
+
 #include "Eigen.h"
 #include "EonLogger.h"
 
@@ -34,6 +36,13 @@ struct DynamicsConfig {
   double temperature{300.0};
   bool write_movies{false};
   long write_movies_interval{1};
+  long path_beads{8};
+  std::string path_springs{"trotter"};
+  double path_eco_omega_max{0.0};
+  std::string path_gle_file;
+  double path_pile_tau{0.0};
+  double path_pile_scale{1.0};
+  std::uint64_t path_seed{1};
 
   static DynamicsConfig fromParams(const Parameters &p) {
     return {p.dynamics_options().time_step,
@@ -47,7 +56,14 @@ struct DynamicsConfig {
             p.constants().timeUnit,
             p.main_options().temperature,
             p.debug_options().write_movies,
-            p.debug_options().write_movies_interval};
+            p.debug_options().write_movies_interval,
+            p.thermostat_options().path_beads,
+            p.thermostat_options().path_springs,
+            p.thermostat_options().path_eco_omega_max,
+            p.thermostat_options().path_gle_file,
+            p.thermostat_options().path_pile_tau,
+            p.thermostat_options().path_pile_scale,
+            p.thermostat_options().path_seed};
   }
 };
 
@@ -58,6 +74,8 @@ public:
   static const char NOSE_HOOVER[];
   static const char LANGEVIN[];
   static const char NONE[];
+  static const char PILE[];
+  static const char PIGLET[];
 
   Dynamics(Matter *matter, const DynamicsConfig &config);
 
@@ -81,6 +99,8 @@ private:
   /// One Martyna-Klein-Tuckerman chain half-step. G2 is always
   /// (Q1 vxi1^2 - kT) / Q2.
   void nhcChainHalfStep(AtomMatrix &vel, double &kinE);
+  /// Ring-polymer trajectory. Beads do not enter velocityVerlet.
+  void runPathIntegral();
 
   long nAtoms{0}, nFreeCoords{0};
 

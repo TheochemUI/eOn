@@ -1,7 +1,7 @@
 """Process ids must be content-addressed (xxh64), not len(procs) / max+1.
 
 Duplicate processtable rows collapse in a dict keyed by id. A counter based
-on len(procs) freezes and reuses ids (eOn-cj3o); max(id)+1 still couples
+on len(procs) freezes and reuses ids; max(id)+1 still couples
 identity to registration order. xxh64 of the process payload does not.
 """
 

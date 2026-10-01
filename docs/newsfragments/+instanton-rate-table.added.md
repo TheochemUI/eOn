@@ -1,0 +1,1 @@
+The search accepts a list of temperatures and starts at the highest. Each temperature writes one row of rate_instanton.dat. A supplied band seeds the ring and reports a one-dimensional semiclassical rate.

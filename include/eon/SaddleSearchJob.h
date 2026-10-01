@@ -55,7 +55,7 @@ public:
   ~SaddleSearchJob(void) = default;
   //! Kicks off the Saddle Search
   std::vector<std::string> run(void) override;
-  /// In-process entry: seed reactant Matter, no pos.con (eOn-gbkb).
+  /// In-process entry: seed reactant Matter, no pos.con.
   std::shared_ptr<Matter> runFromMatter(std::shared_ptr<Matter> seed);
 
 private:

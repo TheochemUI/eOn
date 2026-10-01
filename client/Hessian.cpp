@@ -13,6 +13,7 @@
 #include "eon/EonLogger.h"
 #include "eon/HelperFunctions.h"
 #include "eon/SafeMath.h"
+#include "eon/Tunneling.h"
 #include "eon/VesinNeighbors.h"
 
 #include <algorithm>
@@ -323,7 +324,104 @@ bool Hessian::calculate() {
     }
     hessian.setZero();
   }
+  // A potential that evaluates batches (calculator groups, GPU models)
+  // takes the displaced structures together; the column checkpoint stays
+  // on the one-column-at-a-time path.
+  if (ckptPath.empty() && matter->getPotential() &&
+      matter->getPotential()->supportsBatchEvaluation() && size > 1) {
+    return calculateBatched(dr, scheme);
+  }
   return calculateSerial(dr, scheme);
+}
+
+bool Hessian::calculateBatched(double dr, FdScheme scheme) {
+  const int size = static_cast<int>(atoms.rows()) * 3;
+  const AtomMatrix pos = matter->getPositions();
+  auto pot = matter->getPotential();
+
+  Matter base(*matter);
+  const AtomMatrix force0 = base.getForces();
+  if (!force0.allFinite()) {
+    QUILL_LOG_ERROR(log, "[Hessian] non-finite forces at undisplaced geometry; "
+                         "aborting FD Hessian");
+    return false;
+  }
+
+  // Stencil points per column, in the order fdForceDerivative takes them.
+  std::vector<double> steps{1.0};
+  if (scheme != FdScheme::OneSided) {
+    steps.push_back(-1.0);
+  }
+  if (scheme == FdScheme::Fourth) {
+    steps.push_back(2.0);
+    steps.push_back(-2.0);
+  }
+  const int perColumn = static_cast<int>(steps.size());
+  const long nAtoms = matter->numberOfAtoms();
+  const VectorXi nrs = matter->getAtomicNrs();
+  const Matrix3d box =
+      matter->getPeriodic() ? matter->getCell() : Matrix3d::Zero().eval();
+
+  // Columns in chunks, so memory stays bounded for large mobile sets.
+  constexpr int kChunkColumns = 32;
+  std::vector<Matter> displaced;
+  for (int c0 = 0; c0 < size; c0 += kChunkColumns) {
+    const int c1 = std::min(size, c0 + kChunkColumns);
+    const long n = static_cast<long>(c1 - c0) * perColumn;
+    displaced.assign(static_cast<size_t>(n), base);
+    std::vector<const double *> posPtr, boxPtr;
+    std::vector<const int *> nrsPtr;
+    std::vector<double *> frcPtr;
+    for (int i = c0; i < c1; ++i) {
+      for (int k = 0; k < perColumn; ++k) {
+        Matter &m = displaced[static_cast<size_t>((i - c0) * perColumn + k)];
+        AtomMatrix p = pos;
+        p(atoms(i / 3), i % 3) += steps[static_cast<size_t>(k)] * dr;
+        m.setPositions(p);
+      }
+    }
+    for (auto &m : displaced) {
+      posPtr.push_back(m.getPositions().data());
+      nrsPtr.push_back(nrs.data());
+      frcPtr.push_back(m.forcesData());
+      boxPtr.push_back(box.data());
+    }
+    std::vector<double> energies(static_cast<size_t>(n)),
+        variances(static_cast<size_t>(n));
+    pot->forceBatch(n, nAtoms, posPtr.data(), nrsPtr.data(), frcPtr.data(),
+                    energies.data(), variances.data(), boxPtr.data());
+    for (long j = 0; j < n; ++j) {
+      displaced[static_cast<size_t>(j)].setComputedPotential(
+          energies[static_cast<size_t>(j)], variances[static_cast<size_t>(j)]);
+    }
+    for (int i = c0; i < c1; ++i) {
+      auto forces = [&](int k) -> const AtomMatrix & {
+        return displaced[static_cast<size_t>((i - c0) * perColumn + k)]
+            .getForces();
+      };
+      const AtomMatrix &fPlus = forces(0);
+      const AtomMatrix &fMinus = perColumn > 1 ? forces(1) : force0;
+      const AtomMatrix &fPlus2 = perColumn > 2 ? forces(2) : force0;
+      const AtomMatrix &fMinus2 = perColumn > 3 ? forces(3) : force0;
+      if (!fPlus.allFinite() || !fMinus.allFinite() || !fPlus2.allFinite() ||
+          !fMinus2.allFinite()) {
+        QUILL_LOG_ERROR(log,
+                        "[Hessian] non-finite forces for FD column {}; "
+                        "aborting FD Hessian",
+                        i);
+        return false;
+      }
+      const AtomMatrix slope =
+          fdForceDerivative(scheme, dr, force0, fPlus, fMinus, fPlus2, fMinus2);
+      for (int j = 0; j < size; j++) {
+        const double effMass = std::sqrt(matter->getMass(atoms(j / 3)) *
+                                         matter->getMass(atoms(i / 3)));
+        hessian(i, j) =
+            eonc::safemath::safe_div(-slope(atoms(j / 3), j % 3), effMass, 0.0);
+      }
+    }
+  }
+  return finalizeHessian(size);
 }
 
 bool Hessian::calculateColored(double cutoff, double dr, FdScheme scheme) {
@@ -559,7 +657,7 @@ bool Hessian::finalizeHessian(int size) {
   if (!parameters.main_options().quiet) {
     QUILL_LOG_DEBUG(log, "[Hessian] writing hessian\n");
   }
-  {
+  if (writeFile) {
     // A previous case in the same process can still hold hessian.dat on
     // Windows. Replace it, and try once more after removing the old file.
     std::ofstream hessfile("hessian.dat", std::ios::out | std::ios::trunc);
@@ -592,8 +690,10 @@ bool Hessian::finalizeHessian(int size) {
   using ColMajorXd =
       Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
   ColMajorXd hessianCol = hessian;
-  Eigen::SelfAdjointEigenSolver<ColMajorXd> es(hessianCol,
-                                               Eigen::EigenvaluesOnly);
+  const bool withModes = parameters.hessian_options().write_modes;
+  Eigen::SelfAdjointEigenSolver<ColMajorXd> es(
+      hessianCol,
+      withModes ? Eigen::ComputeEigenvectors : Eigen::EigenvaluesOnly);
   eonc::helpers::getTime(&t1, nullptr, nullptr);
   QUILL_LOG_DEBUG(log, "[Hessian] eigenvalue problem took {:.4e} seconds\n",
                   t1 - t0);
@@ -608,6 +708,11 @@ bool Hessian::finalizeHessian(int size) {
   if (!freqs.allFinite()) {
     QUILL_LOG_ERROR(log, "[Hessian] non-finite eigenvalues; aborting");
     return false;
+  }
+  if (withModes) {
+    modes = es.eigenvectors();
+  } else {
+    modes.resize(0, 0);
   }
 
   return true;
@@ -630,12 +735,71 @@ VectorXd Hessian::removeZeroFreqs(const VectorXd &freqs) {
     }
   }
 
-  if (nremoved != 6) {
-    QUILL_LOG_ERROR(
-        log, "[Hessian] [error] Found {} trivial eigenmodes instead of 6",
-        nremoved);
+  if (!trivialModeCountIsPhysical(nremoved, matter->numberOfFixedAtoms())) {
+    QUILL_LOG_WARNING(log,
+                      "[Hessian] found {} trivial eigenmodes; a free cluster "
+                      "has 6 (5 if linear), a periodic cell 3, and a "
+                      "structure with fixed atoms none",
+                      nremoved);
   }
   return newfreqs.head(size - nremoved);
+}
+
+std::vector<double> cartesianMode(const Matter &matter, const VectorXi &atoms,
+                                  const Eigen::Ref<const VectorXd> &mode) {
+  const long n = matter.numberOfAtoms();
+  std::vector<double> out(static_cast<size_t>(3 * n), 0.0);
+  if (mode.size() != 3 * atoms.size()) {
+    throw std::invalid_argument("cartesianMode: mode length is not 3 x atoms");
+  }
+  double norm2 = 0.0;
+  for (long j = 0; j < mode.size(); ++j) {
+    const long atom = atoms(j / 3);
+    const double mass = matter.getMass(atom);
+    if (!(mass > 0.0)) {
+      throw std::invalid_argument("cartesianMode: atom without a mass");
+    }
+    const double x = mode(j) / std::sqrt(mass);
+    out[static_cast<size_t>(3 * atom + j % 3)] = x;
+    norm2 += x * x;
+  }
+  if (norm2 > 0.0) {
+    const double scale = 1.0 / std::sqrt(norm2);
+    for (double &x : out) {
+      x *= scale;
+    }
+  }
+  return out;
+}
+
+bool writeNormalModes(Matter &matter, const VectorXi &atoms,
+                      const VectorXd &eigenvalues, const MatrixXd &modes,
+                      const std::string &path) {
+  if (modes.cols() != eigenvalues.size() || modes.rows() != 3 * atoms.size()) {
+    return false;
+  }
+  for (long k = 0; k < eigenvalues.size(); ++k) {
+    const double lambda = eigenvalues(k);
+    const double hw =
+        std::copysign(tunneling::kHbar * std::sqrt(std::abs(lambda)), lambda);
+    io::ConFrameMetadata meta;
+    meta.frame_index = static_cast<uint64_t>(k);
+    meta.scalars = {{"mode_eigenvalue", lambda},
+                    {"hbar_omega", hw},
+                    {"wavenumber", hw * kEvToWavenumber}};
+    meta.displacements = cartesianMode(matter, atoms, modes.col(k));
+    if (!io::io_ok(matter.matter2con(path, k > 0, &meta))) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool trivialModeCountIsPhysical(long removed, long fixedAtoms) {
+  if (fixedAtoms > 0) {
+    return removed == 0;
+  }
+  return removed == 3 || removed == 5 || removed == 6;
 }
 
 } // namespace eonc

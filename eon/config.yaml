@@ -24,6 +24,7 @@ Main:
                 - global_optimization
                 - gp_surrogate
                 - hessian
+                - instanton
                 - minimization
                 - molecular_dynamics
                 - monte_carlo
@@ -212,6 +213,18 @@ Nudged Elastic Band:
         spring:
             kind: float
             default: 5.0
+
+        solid_state:
+            kind: boolean
+            default: false
+
+        solid_state_weight:
+            kind: float
+            default: 1.0
+
+        solid_state_pressure:
+            kind: float
+            default: 0.0
 
         climbing_image_method:
             kind: boolean
@@ -532,6 +545,47 @@ Dynamics:
         thermostat:
             kind: string
             default: none
+            values:
+                - andersen
+                - langevin
+                - none
+                - nose_hoover
+                - pile
+                - piglet
+
+        # Beads on a pile or piglet trajectory.
+        path_beads:
+            kind: int
+            default: 8
+
+        path_springs:
+            kind: string
+            default: trotter
+            values:
+                - eco
+                - trotter
+
+        # Highest frequency, in internal units, that economised springs match.
+        path_eco_omega_max:
+            kind: float
+            default: 0.0
+
+        path_gle_file:
+            kind: string
+            default: ""
+
+        # Centroid Langevin damping time, in femtoseconds.
+        path_pile_tau:
+            kind: float
+            default: 100.0
+
+        path_pile_scale:
+            kind: float
+            default: 1.0
+
+        path_seed:
+            kind: int
+            default: 1
 
         andersen_alpha:
             kind: float
@@ -1112,6 +1166,200 @@ Hessian:
             kind: string
             default: ""
 
+        write_modes:
+            kind: bool
+            default: true
+
+################################################################################
+
+Instanton:
+    options:
+        # splitting: two minima; rate: a minimum and the saddle out of it.
+        mode:
+            kind: string
+            default: splitting
+            values:
+                - splitting
+                - rate
+
+        reactant_filename:
+            kind: string
+            default: reactant.con
+
+        product_filename:
+            kind: string
+            default: product.con
+
+        # A band (neb.con) to start from; empty is a straight line.
+        initial_path:
+            kind: string
+            default: ""
+
+        beads:
+            kind: int
+            default: 256
+
+        beta_hbar_omega:
+            kind: float
+            default: 30.0
+
+        max_iterations:
+            kind: int
+            default: 5000
+
+        force_tolerance:
+            kind: float
+            default: 1e-3
+
+        hessian_stride:
+            kind: int
+            default: 1
+
+        saddle_filename:
+            kind: string
+            default: saddle.con
+
+        # K. 0 means unset. Below the crossover the job optimises the
+        # ring. Above it the job writes the parabolic barrier factor.
+        temperature:
+            kind: float
+            default: 0.0
+
+        # Comma-separated kelvin values. The highest is searched first
+        # and each ring starts the next. Empty uses temperature.
+        temperatures:
+            kind: string
+            default: ""
+
+        # Even bead count: search one turning point to the other and
+        # mirror the closed ring. An odd count keeps every bead.
+        half_ring:
+            kind: bool
+            default: true
+
+        # Mode rate: where the bead Hessian blocks start. saddle copies the
+        # saddle Hessian to every bead at no force calls; finite_difference
+        # takes 2 f gradient calls per bead first.
+        initial_hessians:
+            kind: string
+            default: saddle
+            values:
+                - saddle
+                - finite_difference
+
+        energy_shift:
+            kind: float
+            default: 0.0
+
+        # Start at a quarter of the beads and double up to the requested
+        # count. Off searches the requested count directly.
+        bead_ladder:
+            kind: bool
+            default: false
+
+        # The rate uses a Hessian on every stride-th bead.
+        hessian_final:
+            kind: string
+            default: recomputed
+
+        # eco is refused. The instanton uses Trotter springs.
+        springs:
+            kind: string
+            default: trotter
+            values:
+                - eco
+                - trotter
+
+        # Mode rate: path-integral quantum TST after the instanton. Planes
+        # from behind the reactant to the saddle hold the centroid of a
+        # sampled ring; 0 leaves it off, otherwise at least 2.
+        pi_planes:
+            kind: int
+            default: 0
+
+        pi_beads:
+            kind: int
+            default: 16
+
+        pi_equilibration_steps:
+            kind: int
+            default: 500
+
+        # Production steps per plane, split into ten blocks for the error.
+        pi_sampling_steps:
+            kind: int
+            default: 2000
+
+        # fs
+        pi_time_step:
+            kind: float
+            default: 0.5
+
+        # piglet reads pi_gle_file, the [Dynamics] path_gle_file format.
+        pi_thermostat:
+            kind: string
+            default: pile
+            values:
+                - pile
+                - piglet
+
+        pi_gle_file:
+            kind: string
+            default: ""
+
+        # fs, the centroid Langevin time.
+        pi_pile_tau:
+            kind: float
+            default: 100.0
+
+        # Scales the critical PILE damping of the internal modes. Below the
+        # crossover the lowest modes are soft at the barrier and 0.5
+        # samples them faster.
+        pi_pile_scale:
+            kind: float
+            default: 1.0
+
+        pi_seed:
+            kind: int
+            default: 1
+
+        # Plane normal: the saddle's unstable mode, or the mass-weighted
+        # reactant-to-saddle line.
+        pi_direction:
+            kind: string
+            default: mode
+            values:
+                - mode
+                - line
+
+        # The first plane sits this fraction of the reactant-to-saddle
+        # distance behind the reactant.
+        pi_reactant_extent:
+            kind: float
+            default: 0.5
+
+        # Ring-polymer MD transmission factor on the top plane: parent
+        # configurations sampled on the plane. 0 leaves it off; otherwise
+        # at least 2.
+        pi_recrossing_parents:
+            kind: int
+            default: 0
+
+        # Momentum draws per parent, each run forward and reversed.
+        pi_recrossing_children:
+            kind: int
+            default: 20
+
+        # fs, the length of each child trajectory.
+        pi_recrossing_time:
+            kind: float
+            default: 100.0
+
+        # Thermostatted steps between parents.
+        pi_recrossing_spacing:
+            kind: int
+            default: 50
+
 ################################################################################
 
 Lanczos:
@@ -1662,6 +1910,14 @@ amsel:
             kind: float
             default: 10.0
 
+        on_error:
+            kind: string
+            default: fallback_single
+            values:
+                - fallback_single
+                - unavailable_mcamc
+                - raise
+
 
 Optimizer:
 
@@ -2059,7 +2315,21 @@ RgpotPot:
             kind: string
             default: "BLYP"
 
+        # Read by the client when functional is absent.
+        cpmd_functional:
+            kind: string
+            default: "BLYP"
+
         cutoff_ry:
+            kind: float
+            default: 70.0
+
+        # cutOffRy wins over cutoff_ry, then cpmd_cut_off_ry, as in [cpmd].
+        cutOffRy:
+            kind: float
+            default: 70.0
+
+        cpmd_cut_off_ry:
             kind: float
             default: 70.0
 
@@ -2094,6 +2364,121 @@ RgpotPot:
         scratch_dir:
             kind: string
             default: ""
+
+        input_block:
+            kind: string
+            default: ""
+
+        permanent_dir:
+            kind: string
+            default: ""
+
+        params_path:
+            kind: string
+            default: ""
+
+        ranks_per_image:
+            kind: int
+            default: 0
+
+        model_path:
+            kind: string
+            default: ""
+
+        device:
+            kind: string
+            default: "cpu"
+
+        length_unit:
+            kind: string
+            default: "angstrom"
+
+        extensions_directory:
+            kind: string
+            default: ""
+
+        check_consistency:
+            kind: boolean
+            default: false
+
+        uncertainty_threshold:
+            kind: float
+            default: -1.0
+
+        torch_determinism_strict:
+            kind: boolean
+            default: false
+
+        paramset:
+            kind: string
+            default: "GFN2xTB"
+            values:
+                - GFNFF
+                - GFN0xTB
+                - GFN1xTB
+                - GFN2xTB
+
+        accuracy:
+            kind: float
+            default: 1.0
+
+        electronic_temperature:
+            kind: float
+            default: 300.0
+
+        max_iterations:
+            kind: int
+            default: 250
+
+        uhf:
+            kind: int
+            default: 0
+
+        xtb_charge:
+            kind: float
+            default: 0.0
+
+################################################################################
+
+cpmd:
+    options:
+        functional:
+            kind: string
+            default: "BLYP"
+
+        # Read by the client when functional is absent.
+        cpmd_functional:
+            kind: string
+            default: "BLYP"
+
+        # cutOffRy wins over cutoff_ry, then cpmd_cut_off_ry.
+        cutOffRy:
+            kind: float
+            default: 70.0
+
+        cutoff_ry:
+            kind: float
+            default: 70.0
+
+        cpmd_cut_off_ry:
+            kind: float
+            default: 70.0
+
+        charge:
+            kind: int
+            default: 0
+
+        multiplicity:
+            kind: int
+            default: 1
+
+        title:
+            kind: string
+            default: ""
+
+        memory_mb:
+            kind: int
+            default: 0
 
         input_block:
             kind: string

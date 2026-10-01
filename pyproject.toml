@@ -12,6 +12,7 @@ dependencies = [
     "vesin>=0.6.1",
     "eon-schema>=0.2.0",
     "xxhash>=3.4.0",
+    "pyyaml>=6.0",
 ]
 requires-python = ">=3.11"
 # Org readme is not a meson-python/packaging content-type; keep long form in repo only.

@@ -44,7 +44,7 @@ write_eon_config(config, Path("config.ini"))
 
 ## Thermostats
 
-Four thermostat options are available:
+Six thermostat options are available:
 
 | Thermostat | Key | Description |
 |---|---|---|
@@ -52,6 +52,8 @@ Four thermostat options are available:
 | **Nose-Hoover** | `nose_hoover` | Deterministic extended-system thermostat (chains of length 2) |
 | **Langevin** | `langevin` | Stochastic friction + random force, good for non-equilibrium |
 | **None** | `none` | NVE ensemble (constant energy, no temperature control) |
+| **PILE** | `pile` | Ring-polymer Langevin equation on the normal modes |
+| **PIGLET** | `piglet` | Normal-mode GLE on the internal modes, Langevin on the centroid |
 
 ### Andersen thermostat
 
@@ -75,6 +77,43 @@ coupling strength to the heat bath:
 thermostat = langevin
 langevin_friction = 0.01
 ```
+
+## Path-integral sampling
+
+`pile` and `piglet` integrate a ring polymer. The velocity Verlet step
+above stays the classical update and does not move the beads. Each step
+evaluates every bead in one force batch, so calculator groups carry the
+beads together.
+
+`path_beads` is the bead count. `path_springs = trotter` uses the
+primitive ring-polymer frequencies. `path_springs = eco` uses economised
+springs fitted to harmonic radii of gyration up to `path_eco_omega_max`.
+Economised springs are refused with `piglet`. The instanton refuses them
+as well, because that discretisation assumes Trotter springs.
+
+`path_eco_omega_max` is an angular frequency in inverse internal time
+units. One internal time unit is 10.18 fs, so 1.0 is 9.82e13 rad/s and
+hbar omega = 0.0647 eV.
+
+`piglet` reads one drift matrix and one covariance per internal mode from
+`path_gle_file`. The file holds the mode count and the matrix size, then
+for each mode the drift matrix and the covariance, row by row. The drift
+matrix is in inverse internal time units. The covariance is in kelvin:
+kB times it is the covariance of the mass-scaled extended momenta in eV,
+so a canonical GLE at the ring temperature has N T on the diagonal, with
+N = `path_beads` and T the `[Main]` temperature. A file with one matrix
+pair fewer than the bead count covers the internal modes; one with a pair
+per bead skips the first, centroid, pair. The centroid keeps a separate
+Langevin thermostat.
+`path_pile_tau` is that damping time in femtoseconds, and
+`path_pile_scale` multiplies the critical damping of the internal modes
+when the thermostat is `pile`. `path_seed` seeds the path-integral
+random numbers.
+
+The sampler can hold the centroid on a hyperplane and average the
+Cartesian force along the normal. That average is the mean force for
+thermodynamic integration along a band. Its negative is the derivative
+of the potential of mean force.
 
 ## Time parameters
 

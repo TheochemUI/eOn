@@ -41,12 +41,20 @@ modextravars = {
 # cargo ignores CURL_CA_BUNDLE, which EESSI's init sets on systems whose CA
 # bundle is not at the Debian path; readcon-core's cargo build needs it.
 #
-# EESSI builds rpath the GCCcore runtime and keep LD_LIBRARY_PATH out of their
-# modules, so a hand build finds the compat layer's libstdc++ instead. That one
-# is GCC 14's (up to GLIBCXX_3.4.33) while the compiler is GCC 15.2
-# (GLIBCXX_3.4.34). Put the GCCcore runtime on the rpath of what meson links.
-# EESSI's own answer for manual builds is a buildenv/default-foss-<gen> module
-# with RPATH compiler wrappers; 2026.06 has none yet, so this sets LDFLAGS.
+# EESSI 2026.06 leaves LD_LIBRARY_PATH unset. The compat libstdc++ is GCC 14
+# (up to GLIBCXX_3.4.33). This compiler is GCC 15.2 (GLIBCXX_3.4.34). The
+# footer puts software/GCCcore/15.2.0/lib64 on the rpath so the link finds
+# that libstdc++.
+# A program that needs libfftw3.so.3 and has only that rpath exits 127
+# (libfftw3.so.3: cannot open shared object file). Adding
+# software/FFTW/3.3.10-GCC-15.2.0/lib to RUNPATH makes the same program
+# exit 0 and print "fftw fftw-3.3.10-sse2-avx-avx2-avx2_128". Each further
+# module library needs its own -Wl,-rpath.
+# buildenv/default-foss-2026.1 ships in this release. It depends on
+# foss/2026.1, adds rpath_wrappers entries for gcc, g++, gfortran, ld and
+# ld.bfd to PATH, and pushenv's LDFLAGS to -L directories (ScaLAPACK,
+# FFTW, FlexiBLAS, OpenMPI, GCCcore). The setenv below replaces that
+# LDFLAGS. The exit codes above are from -Wl,-rpath on the link line.
 modluafooter = """
 local ca = os.getenv("CURL_CA_BUNDLE")
 if ca and ca ~= "" then

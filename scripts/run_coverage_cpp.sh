@@ -22,10 +22,10 @@ meson setup "$BUILD" \
   -Dwith_tests=true \
   -Dwith_fortran=true \
   -Dwith_cuh2=true \
-  -Dwith_mpi=false \
+  -Dwith_mpi=disabled \
   -Dwith_xtb=false \
   -Dwith_metatomic=false \
-  -Dwith_gprd=false \
+  -Dwith_gprd=disabled \
   -Dwith_serve=false \
   -Db_coverage=true \
   --buildtype=debug

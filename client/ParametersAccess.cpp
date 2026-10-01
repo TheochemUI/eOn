@@ -247,6 +247,10 @@ const Parameters::oh_tst_options_t &Parameters::oh_tst_options() const {
   return impl_->oh_tst_options_;
 }
 
+const Parameters::instanton_options_t &Parameters::instanton_options() const {
+  return impl_->instanton_options_;
+}
+
 void Parameters::set_mpi_client_comm(std::uintptr_t raw) {
   ensure_impl().potential_options_.MPIClientComm = raw;
 }
@@ -634,6 +638,15 @@ oh_tst_options_t &ParametersLoadAccess::oh_tst_options(Parameters &p) {
 const oh_tst_options_t &
 ParametersLoadAccess::oh_tst_options(const Parameters &p) {
   return p.impl_->oh_tst_options_;
+}
+
+instanton_options_t &ParametersLoadAccess::instanton_options(Parameters &p) {
+  return p.ensure_impl().instanton_options_;
+}
+
+const instanton_options_t &
+ParametersLoadAccess::instanton_options(const Parameters &p) {
+  return p.impl_->instanton_options_;
 }
 
 } // namespace eonc

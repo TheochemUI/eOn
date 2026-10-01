@@ -396,7 +396,7 @@ _deps += nlohmann_json_dep
 # Highway SIMD (optional, for vectorized potentials)
 hwy_dep = dependency('libhwy', required: false)
 # cmake.subproject imports hwy_list_targets. Meson PGICompiler (nvc++)
-# has no get_pie_args, so that exe dies ninja-write (eOn-jqgs).
+# has no get_pie_args, so that exe dies ninja-write.
 _cxx_id = cppc.get_id()
 if (
     not hwy_dep.found()
@@ -562,12 +562,12 @@ _linkto += eoncbase
 # later _deps += readcon_dep does not reach libsocket_nwchem.so.
 # Prefer cargo-c / pkg-config install (conda-forge host package); fall back
 # to the meson subproject when the system package is not available.
-# ConFileIO needs 0.13+ (clone, bulk set_*_from_flat, compression_from_extension).
-# Wrap tag v0.14.10 still ships Cargo.toml 0.14.9 (eOn-aqmi / feedstock #31).
-# Accept the crate version so cargo-c pkg-config does not fail the check.
+# ConFileIO needs 0.16 for set_spreads_from_flat, on top of 0.15's
+# displacements section (Hessian modes.con) and 0.13's clone, bulk
+# set_*_from_flat and compression_from_extension.
 readcon_dep = dependency(
     'readcon-core',
-    version: '>=0.14.9',
+    version: '>=0.16.0',
     method: 'pkg-config',
     required: false,
 )
@@ -575,7 +575,7 @@ readcon_order_srcs = []
 if not readcon_dep.found()
     readcon_proj = subproject(
         'readcon-core',
-        version: '>=0.14.9',
+        version: '>=0.16.0',
         default_options: {
             'with_tests': false,
             'with_examples': false,
@@ -634,6 +634,12 @@ _rgpot_from_pkg = false
 if _rgpot_pkg.found()
     message('rgpot: using pkg-config (installed), not subproject wrap')
     _rgpot_from_pkg = true
+    # Calculator groups need rgpot's MPI, not eOn's with_mpi (the AKMC
+    # client/server switch). An rgpot.pc that defines RGPOT_HAS_MPI says so.
+    _rgpot_mpi_dep = dependency('', required: false)
+    if cppc.get_define('RGPOT_HAS_MPI', dependencies: _rgpot_pkg) != ''
+        _rgpot_mpi_dep = dependency('mpi', language: 'cpp', required: true)
+    endif
     rgpot_dep = _rgpot_pkg
     nwchempot_dep = _rgpot_pkg
     cpmdpot_dep = _rgpot_pkg
@@ -655,6 +661,12 @@ else
     # above; here it only takes on its eOn roles.
     message('rgpot: pkg-config not found; falling back to subproject wrap')
     rgpot_dep = _rgpot_proj.get_variable('rgpot_dep')
+    # The subproject links MPI when -Drgpot:with_mpi=enabled; calculator
+    # groups run with that and eOn's with_mpi off.
+    _rgpot_mpi_dep = _rgpot_proj.get_variable(
+        '_mpi_dep',
+        dependency('', required: false),
+    )
     # meson applies subproject default_options only on the first configure
     # of a build directory, so a directory configured before this profile
     # changed silently keeps the old values and drops potentials. Fail
@@ -748,6 +760,7 @@ eonclib_sources = [
     'Davidson.cpp',
     'MobileAtoms.cpp',
     'HessianJob.cpp',
+    'InstantonJob.cpp',
     'ReplicaDynamicsJob.cpp',
     'TADJob.cpp',
     'ProcessSearchJob.cpp',
@@ -758,7 +771,9 @@ eonclib_sources = [
     'NEBProjection.cpp',
     'NEBOcinebController.cpp',
     'NEBSplineExtrema.cpp',
+    'Tunneling.cpp',
     'NEBSpringForce.cpp',
+    'SolidStateNEB.cpp',
     'NEBTangent.cpp',
     'NEBZoom.cpp',
     'NudgedElasticBand.cpp',
@@ -774,6 +789,9 @@ eonclib_sources = [
     # MatrixHelpers.hpp is header-only under include/eon/ (via -I include).
     'Dimer.cpp',
     'Dynamics.cpp',
+    'PathIntegral.cpp',
+    'PIQTST.cpp',
+    'PIQTSTJob.cpp',
     'GlobalOptimizationJob.cpp',
     'BiasedGradientSquaredDescent.cpp',
     'SafeHyperJob.cpp',
@@ -816,26 +834,57 @@ eonclib_sources += [
 # gpr_optim (+ nested rgpot) must not land in the shared pot-plugin dep set:
 # those plugins link with --no-undefined and would inherit HDF5/zlib (and
 # rgpot) link flags they do not need. Attach only to eonclib / executables.
+#
+# gpr_optim is a private repository, so eOn does not ship it. With access,
+# a local checkout at subprojects/gpr_optim turns the GP dimer on under
+# -Dwith_gprd=auto (the default) on Linux:
+#   rsync -a ../gpr_optim/ subprojects/gpr_optim/
+# Without one the build leaves min_mode_method=gprdimer off.
+_gprd_opt = get_option('with_gprd')
+_gprd_tree = fs.exists(meson.project_source_root() / 'subprojects' / 'gpr_optim' / 'meson.build')
+if _gprd_opt.enabled() and not _gprd_tree
+    error('with_gprd=enabled needs a checkout of the private gpr_optim repository in subprojects/gpr_optim (rsync -a ../gpr_optim/ subprojects/gpr_optim/). The pin is the revision in subprojects/gpr_optim.wrap.')
+endif
+# auto: try the subproject and leave the dimer off when it cannot be
+# fetched. enabled: the same failure stops configuration.
+_gprd_try = _gprd_opt.enabled() or (
+    _gprd_opt.auto() and host_system == 'linux' and _gprd_tree
+)
 _gprd_extra_deps = []
-if get_option('with_gprd')
+with_gprd = false
+if _gprd_try
     gprd_opts = {
         'default_library': 'static',
         'use_mkl': get_option('use_mkl'),
         # AtomicGPDimer does not use gpr_optim HDF5 logs; keep HDF5 off so
         # gpr_optim_deps do not require -lz in lean CI envs.
         'use_hdf5': false,
+        # The gpr_optim default looks up an installed rgmin and stops when
+        # that package is absent. Disabled keeps the C++ solvers.
+        'use_rgmin': 'disabled',
         'do_install': true,
         'buildtype': 'release',
         'linalg_backend': get_option('gprd_linalg_backend'),
     }
-    libgprd_proj = subproject('gpr_optim', default_options: gprd_opts)
-    libgprd = libgprd_proj.get_variable('gpr_optim_dep')
-    gprd_deps = libgprd_proj.get_variable('gpr_optim_deps')
-    # subdir('potentials/GPRPotential')
-    # potentials += [ gprpot ]
-    _args += ['-DWITH_GPRD']
-    eonclib_sources += ['AtomicGPDimer.cpp', 'GPRHelpers.cpp']
-    _gprd_extra_deps = [libgprd, gprd_deps]
+    libgprd_proj = subproject(
+        'gpr_optim',
+        default_options: gprd_opts,
+        required: _gprd_opt,
+    )
+    if libgprd_proj.found()
+        with_gprd = true
+        libgprd = libgprd_proj.get_variable('gpr_optim_dep')
+        gprd_deps = libgprd_proj.get_variable('gpr_optim_deps')
+        # subdir('potentials/GPRPotential')
+        # potentials += [ gprpot ]
+        _args += ['-DWITH_GPRD']
+        eonclib_sources += ['AtomicGPDimer.cpp', 'GPRHelpers.cpp']
+        _gprd_extra_deps = [libgprd, gprd_deps]
+    elif _gprd_opt.enabled()
+        error('with_gprd=enabled: subproject gpr_optim did not configure.')
+    else
+        message('with_gprd=auto: subproject gpr_optim did not configure. GP dimer disabled.')
+    endif
 endif
 
 if get_option('with_gp_surrogate')
@@ -973,11 +1022,13 @@ if py_embed
     endif
 endif
 
-if get_option('with_mpi')
+if get_option('with_mpi').enabled()
     # library() in the MPIPot subdir snapshots _deps. mpi has to be on
     # that list first or libmpipot is linked without libmpi.
     mpi_dep = dependency('mpi')
-    _deps += [mpi_dep]
+    # The server rank runs EON_SERVER_PATH through Py_Main (ClientEON.cpp),
+    # so the MPI client embeds the interpreter.
+    _deps += [mpi_dep, py.dependency(embed: true, required: true)]
     _args += ['-DEONMPI']
     subdir('potentials/MPIPot')
     potentials += [mpipot]
@@ -1237,9 +1288,8 @@ for name in ("metatensor", "metatensor_torch", "metatomic", "vesin"):
     potentials += [metatomic_pot]
 endif
 
-# NEB image-force std::execution::par.
-# GCC/Clang: -Dwith_parallel_neb=true pulls TBB (libstdc++ backend).
-# nvc++: -Dstdpar=cpu|gpu adds -stdpar=multicore|gpu and does not need TBB.
+# NEB image forces. GCC/Clang: a bounded std::thread pool, no dependency.
+# nvc++: -Dstdpar=cpu|gpu adds -stdpar=multicore|gpu and std::execution::par.
 # The potential is the cost. Do not wrap Morse / LJ atom loops in
 # std::for_each(std::execution::par); that is cargo-cult vs the surf-notes
 # nvc++ / -mp=gpu / QMC_GPU=openmp;cuda path (QMCPACK, not eOn).
@@ -1267,14 +1317,10 @@ if stdpar != 'none'
     _args += ['-DEON_PARALLEL_NEB']
 endif
 
-if get_option('with_parallel_neb')
-    if stdpar == 'none'
-        tbb_dep = dependency('tbb', required : true)
-        _deps += [tbb_dep]
-    endif
-    if '-DEON_PARALLEL_NEB' not in _args
-        _args += ['-DEON_PARALLEL_NEB']
-    endif
+if get_option('with_parallel_neb') and stdpar == 'none'
+    warning('with_parallel_neb no longer needs TBB and changes nothing: ' +
+            'NEB images run on a bounded std::thread pool whenever ' +
+            '[Main] parallel = true. Use -Dstdpar=cpu|gpu for nvc++.')
 endif
 
 if get_option('with_artn')
@@ -1433,6 +1479,22 @@ configure_file(
 
 # --------------------- Library
 
+# install_rpath is the whole installed run path. Meson does not add libdir
+# beside it. The client is in bindir and libeonclib is in libdir. Potential
+# modules are installed into that same directory, so a library finds them
+# at $ORIGIN.
+_libdir = get_option('libdir')
+_bindir = get_option('bindir')
+if not fs.is_absolute(_libdir)
+    _libdir = get_option('prefix') / _libdir
+endif
+if not fs.is_absolute(_bindir)
+    _bindir = get_option('prefix') / _bindir
+endif
+_bin_to_lib = '$ORIGIN/' + fs.relative_to(_libdir, _bindir)
+_lib_install_rpath = ':'.join(['$ORIGIN'] + _runtime_rpath)
+_exe_install_rpath = ':'.join([_bin_to_lib] + _runtime_rpath)
+
 eclib = library(
     'eonclib',
     sources: eonclib_sources + readcon_order_srcs,
@@ -1442,7 +1504,7 @@ eclib = library(
     cpp_args: _args,
     link_args: _linkargs,
     build_rpath: ':'.join(_runtime_rpath),
-    install_rpath: ':'.join(_runtime_rpath),
+    install_rpath: _lib_install_rpath,
     install: true,
 )
 
@@ -1464,7 +1526,7 @@ if get_option('with_metatomic')
         link_with: [eclib, eoncbase],
         include_directories: _incdirs,
         build_rpath: ':'.join(_runtime_rpath),
-        install_rpath: ':'.join(_runtime_rpath),
+        install_rpath: _lib_install_rpath,
         install: true,
         gnu_symbol_visibility: 'default',
     )
@@ -1531,7 +1593,7 @@ ec = executable(
     cpp_args: [_args, '-w'],
     link_args: _linkargs,
     build_rpath: ':'.join(_runtime_rpath),
-    install_rpath: ':'.join(_runtime_rpath),
+    install_rpath: _exe_install_rpath,
     pie: false,
     # Standalone pyeonclient wheels only need the extension + shared libs.
     install: get_option('install_eon_server'),
@@ -1570,8 +1632,13 @@ if get_option('with_tests')
     )
     test_array = [  #
         ['test_impldim', 'ImpDimerTest.cpp', 'saddle_search'],
+        ['test_path_integral', 'PathIntegralTest.cpp', '', 300],
+        ['test_piqtst', 'PIQTSTTest.cpp', '', 120],
         ['strparse_run', 'StringHelpersTest.cpp', ''],
         ['test_matter', 'MatterTest.cpp', 'neb_morse'],
+        # The cubic rate at 600 beads, and its half-ring comparison, run
+        # past the default 30s.
+        ['test_tunneling', 'TunnelingTest.cpp', '', 1200],
         ['test_pot', 'PotTest.cpp', 'neb_morse'],
         ['test_rgpot_adapter', 'RgpotAdapterTest.cpp', 'neb_morse'],
         # ['approve_params', 'ApproveParams.cpp', ''], # needs to handle additional parameters
@@ -1580,6 +1647,7 @@ if get_option('with_tests')
         ['test_proj_rot_trans', 'ProjectOutRotTransTest.cpp', ''],
         ['test_epicenters', 'EpiCentersTest.cpp', 'Pt_Heptamer_FrozenLayers'],
         ['test_storage_order', 'StorageOrderTest.cpp', ''],
+        ['test_for_each_image', 'ForEachImageTest.cpp', ''],
         # neb_morse workdir: displacement synth test needs reactant.con (#189)
         ['test_helpers', 'HelperFunctionsTest.cpp', 'neb_morse'],
         ['test_bundling', 'BundlingTest.cpp', ''],
@@ -1592,6 +1660,7 @@ if get_option('with_tests')
         ['test_runtime', 'RuntimeTest.cpp', ''],
         ['test_metatomic_loader', 'MetatomicLoaderTest.cpp', ''],
         ['test_neb_lj', 'NEBMorseTest.cpp', 'neb_morse'],
+        ['test_solid_state_neb', 'SolidStateNEBTest.cpp', ''],
         ['test_neb_regression', 'NEBRegressionTest.cpp', 'neb_lj13'],
         ['test_dimer', 'DimerTest.cpp', 'neb_morse'],
         ['test_saddle', 'SaddleSearchTest.cpp', 'neb_morse'],
@@ -1601,7 +1670,8 @@ if get_option('with_tests')
         ['test_optimizer', 'OptimizerTest.cpp', ''],
         ['test_fpe_handler', 'FPEHandlerTest.cpp', ''],
         ['test_dynamics', 'DynamicsTest.cpp', 'neb_morse'],
-        ['test_jobs', 'JobIntegrationTest.cpp', 'neb_morse'],
+        # The LJ13 rate is three cooled ring searches.
+        ['test_jobs', 'JobIntegrationTest.cpp', 'neb_morse', 1200],
         ['test_ohtst_scan', 'OHTSTScanTest.cpp', ''],
         ['test_hessian', 'HessianTest.cpp', 'neb_morse'],
         ['test_geom', 'GeometryAnalysisTest.cpp', 'neb_morse'],
@@ -1645,7 +1715,7 @@ if get_option('with_tests')
     if get_option('with_ira')
         test_array += [['test_ira', 'IRATest.cpp', 'saddle_search']]
     endif
-    if get_option('with_gprd')
+    if with_gprd
         test_array += [['test_gpr_helpers', 'GPRHelpersTest.cpp', '']]
     endif
     # Build the Fortran potential library search path for tests.
@@ -1793,6 +1863,7 @@ if get_option('with_tests')
             'test_rgpot_pot',
             sources: [
                 'unit_tests/RgpotPotTest.cpp',
+                'unit_tests/CpmdMessageTest.cpp',
                 'thirdparty/catch2/catch_amalgamated.cpp',
             ],
             dependencies: test_deps,
@@ -1824,6 +1895,53 @@ if get_option('with_tests')
             workdir: meson.project_source_root() +
                      '/client/unit_tests/data/systems/rgpot_nwchem_test',
         )
+        _rgpot_mpirun = find_program('mpirun', 'mpiexec', required: false)
+        _rgpot_bash = find_program('bash', required: false)
+        if _rgpot_mpirun.found() and _rgpot_bash.found()
+            rgpot_mpi_exit = executable(
+                'rgpot_mpi_exit',
+                sources: ['unit_tests/rgpot_mpi_exit.cpp'],
+                dependencies: test_deps,
+                include_directories: _incdirs,
+                cpp_args: test_args,
+                link_args: _linkargs,
+                link_with: test_link,
+                build_rpath: ':'.join(_runtime_rpath),
+            )
+            _rgpot_mpi_script = (
+                meson.project_source_root()
+                / 'client'
+                / 'unit_tests'
+                / 'run_rgpot_mpi.sh'
+            )
+            test(
+                'test_rgpot_mpi_fault',
+                _rgpot_bash,
+                args: [_rgpot_mpi_script, rgpot_mpi_exit.full_path(), 'fault'],
+                timeout: 90,
+                suite: ['eon', 'rgpot'],
+                is_parallel: false,
+                env: _rgpot_test_env,
+            )
+            test(
+                'test_rgpot_mpi_abort',
+                _rgpot_bash,
+                args: [_rgpot_mpi_script, rgpot_mpi_exit.full_path(), 'abort'],
+                timeout: 90,
+                suite: ['eon', 'rgpot'],
+                is_parallel: false,
+                env: _rgpot_test_env,
+            )
+            test(
+                'test_rgpot_mpi_params',
+                _rgpot_bash,
+                args: [_rgpot_mpi_script, rgpot_mpi_exit.full_path(), 'params'],
+                timeout: 90,
+                suite: ['eon', 'rgpot'],
+                is_parallel: false,
+                env: _rgpot_test_env,
+            )
+        endif
     endif
 
     # Benchmarks (not in default test suite -- run via: meson test --benchmark)

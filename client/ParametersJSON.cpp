@@ -11,14 +11,18 @@
 */
 #include "eon/ParametersJSON.h"
 #include "eon/HelperFunctions.h"
+#include "eon/PIQTST.h"
 #include "eon/Parameters.h"
 #include "eon/ParametersINI.h"
 #include "magic_enum/magic_enum.hpp"
 
 #include <cctype>
+#include <cstdint>
 #include <format>
 #include <nlohmann/json.hpp>
+#include <sstream>
 #include <stdexcept>
+#include <vector>
 
 using json = nlohmann::json;
 
@@ -174,6 +178,18 @@ json to_json(const Parameters &p) {
       {"nose_mass", ParametersLoadAccess::thermostat_options(p).nose_mass},
       {"langevin_friction",
        ParametersLoadAccess::thermostat_options(p).langevin_friction_input},
+      {"path_beads", ParametersLoadAccess::thermostat_options(p).path_beads},
+      {"path_springs",
+       ParametersLoadAccess::thermostat_options(p).path_springs},
+      {"path_eco_omega_max",
+       ParametersLoadAccess::thermostat_options(p).path_eco_omega_max},
+      {"path_gle_file",
+       ParametersLoadAccess::thermostat_options(p).path_gle_file},
+      {"path_pile_tau",
+       ParametersLoadAccess::thermostat_options(p).path_pile_tau_input},
+      {"path_pile_scale",
+       ParametersLoadAccess::thermostat_options(p).path_pile_scale},
+      {"path_seed", ParametersLoadAccess::thermostat_options(p).path_seed},
   };
 
   // [Nudged Elastic Band]
@@ -183,6 +199,11 @@ json to_json(const Parameters &p) {
       {"opt_method",
        enum_to_json(ParametersLoadAccess::neb_options(p).opt_method)},
       {"converged_force", ParametersLoadAccess::neb_options(p).force_tolerance},
+      {"solid_state", ParametersLoadAccess::neb_options(p).solid_state.enabled},
+      {"solid_state_weight",
+       ParametersLoadAccess::neb_options(p).solid_state.weight},
+      {"solid_state_pressure",
+       ParametersLoadAccess::neb_options(p).solid_state.pressure},
   };
   j["Nudged Elastic Band"]["spring"] = {
       {"constant", ParametersLoadAccess::neb_options(p).spring.constant},
@@ -277,7 +298,49 @@ json to_json(const Parameters &p) {
       {"resume", ParametersLoadAccess::hessian_options(p).resume},
       {"checkpoint_path",
        ParametersLoadAccess::hessian_options(p).checkpoint_path},
+      {"write_modes", ParametersLoadAccess::hessian_options(p).write_modes},
   };
+
+  // [Instanton]
+  {
+    const auto &o = ParametersLoadAccess::instanton_options(p);
+    j["Instanton"] = {
+        {"mode", o.mode},
+        {"reactant_filename", o.reactant_filename},
+        {"product_filename", o.product_filename},
+        {"initial_path", o.initial_path},
+        {"beads", o.beads},
+        {"beta_hbar_omega", o.beta_hbar_omega},
+        {"max_iterations", o.max_iterations},
+        {"force_tolerance", o.force_tolerance},
+        {"hessian_stride", o.hessian_stride},
+        {"saddle_filename", o.saddle_filename},
+        {"temperature", o.temperature},
+        {"temperatures", o.temperatures},
+        {"half_ring", o.half_ring},
+        {"initial_hessians", o.initial_hessians},
+        {"energy_shift", o.energy_shift},
+        {"bead_ladder", o.bead_ladder},
+        {"hessian_final", o.hessian_final},
+        {"springs", o.springs},
+        {"pi_planes", o.pi_planes},
+        {"pi_beads", o.pi_beads},
+        {"pi_equilibration_steps", o.pi_equilibration_steps},
+        {"pi_sampling_steps", o.pi_sampling_steps},
+        {"pi_time_step", o.pi_time_step},
+        {"pi_thermostat", o.pi_thermostat},
+        {"pi_gle_file", o.pi_gle_file},
+        {"pi_pile_tau", o.pi_pile_tau},
+        {"pi_pile_scale", o.pi_pile_scale},
+        {"pi_seed", o.pi_seed},
+        {"pi_direction", o.pi_direction},
+        {"pi_reactant_extent", o.pi_reactant_extent},
+        {"pi_recrossing_parents", o.pi_recrossing_parents},
+        {"pi_recrossing_children", o.pi_recrossing_children},
+        {"pi_recrossing_time", o.pi_recrossing_time},
+        {"pi_recrossing_spacing", o.pi_recrossing_spacing},
+    };
+  }
 
   // [Debug]
   j["Debug"] = {
@@ -298,6 +361,85 @@ json to_json(const Parameters &p) {
   };
 
   return j;
+}
+
+static std::string lowerCopy(std::string value) {
+  for (char &ch : value) {
+    ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+  }
+  return value;
+}
+
+static std::vector<double> temperaturesFromJson(const json &value) {
+  if (value.is_array()) {
+    return value.get<std::vector<double>>();
+  }
+  if (!value.is_string()) {
+    throw std::invalid_argument(
+        "[Instanton] temperatures must be a list or a comma-separated "
+        "string");
+  }
+  std::vector<double> out;
+  std::stringstream ss(value.get<std::string>());
+  std::string token;
+  while (std::getline(ss, token, ',')) {
+    const size_t start = token.find_first_not_of(" \t");
+    const size_t end = token.find_last_not_of(" \t");
+    if (start == std::string::npos) {
+      continue;
+    }
+    try {
+      out.push_back(std::stod(token.substr(start, end - start + 1)));
+    } catch (const std::exception &) {
+      throw std::invalid_argument(
+          "[Instanton] temperatures must be comma-separated kelvin "
+          "values, not " +
+          token);
+    }
+  }
+  return out;
+}
+
+// Path-integral keys live on [Dynamics] in an ini file and under Thermostat
+// in the JSON writer. Either object may carry them. The damping time is
+// stored in femtoseconds; from_json converts it once every object is read.
+static void readPathIntegralKeys(const json &s, Parameters &p) {
+  auto &th = ParametersLoadAccess::thermostat_options(p);
+  JSON_OPT(s, "path_beads", th.path_beads);
+  if (s.contains("path_springs")) {
+    th.path_springs = lowerCopy(s.at("path_springs").get<std::string>());
+    if (th.path_springs != "trotter" && th.path_springs != "eco") {
+      throw std::invalid_argument(
+          "[Dynamics] path_springs must be trotter or eco, not " +
+          th.path_springs);
+    }
+  }
+  JSON_OPT(s, "path_eco_omega_max", th.path_eco_omega_max);
+  JSON_OPT(s, "path_gle_file", th.path_gle_file);
+  JSON_OPT(s, "path_pile_tau", th.path_pile_tau_input);
+  JSON_OPT(s, "path_pile_scale", th.path_pile_scale);
+  if (s.contains("path_seed")) {
+    const long seed = s.at("path_seed").get<long>();
+    if (seed < 0) {
+      throw std::invalid_argument("[Dynamics] path_seed must be non-negative");
+    }
+    th.path_seed = static_cast<std::uint64_t>(seed);
+  }
+}
+
+static void readBathKeys(const json &s, Parameters &p) {
+  auto &th = ParametersLoadAccess::thermostat_options(p);
+  if (s.contains("thermostat")) {
+    th.kind = lowerCopy(s.at("thermostat").get<std::string>());
+  }
+  if (s.contains("kind")) {
+    th.kind = lowerCopy(s.at("kind").get<std::string>());
+  }
+  JSON_OPT(s, "andersen_alpha", th.andersen_alpha);
+  JSON_OPT(s, "andersen_collision_period", th.andersen_tcol_input);
+  JSON_OPT(s, "nose_mass", th.nose_mass);
+  JSON_OPT(s, "langevin_friction", th.langevin_friction_input);
+  readPathIntegralKeys(s, p);
 }
 
 void from_json(const json &j, Parameters &p) {
@@ -457,27 +599,19 @@ void from_json(const json &j, Parameters &p) {
              ParametersLoadAccess::optimizer_options(p).xtsci.method);
   }
 
-  // [Dynamics]
+  // [Dynamics] Thermostat names on this object match the ini file.
+  // A later Thermostat object overrides the same keys.
   if (j.contains("Dynamics")) {
     auto &s = j.at("Dynamics");
     JSON_OPT(s, "time_step",
              ParametersLoadAccess::dynamics_options(p).time_step_input);
     JSON_OPT(s, "time", ParametersLoadAccess::dynamics_options(p).time_input);
+    readBathKeys(s, p);
   }
 
   // [Thermostat]
   if (j.contains("Thermostat")) {
-    auto &s = j.at("Thermostat");
-    JSON_OPT(s, "kind", ParametersLoadAccess::thermostat_options(p).kind);
-    JSON_OPT(s, "andersen_alpha",
-             ParametersLoadAccess::thermostat_options(p).andersen_alpha);
-    JSON_OPT(s, "andersen_collision_period",
-             ParametersLoadAccess::thermostat_options(p).andersen_tcol_input);
-    JSON_OPT(s, "nose_mass",
-             ParametersLoadAccess::thermostat_options(p).nose_mass);
-    JSON_OPT(
-        s, "langevin_friction",
-        ParametersLoadAccess::thermostat_options(p).langevin_friction_input);
+    readBathKeys(j.at("Thermostat"), p);
   }
 
   // [Nudged Elastic Band]
@@ -491,6 +625,12 @@ void from_json(const json &j, Parameters &p) {
           s.at("opt_method"), ParametersLoadAccess::neb_options(p).opt_method);
     JSON_OPT(s, "converged_force",
              ParametersLoadAccess::neb_options(p).force_tolerance);
+    JSON_OPT(s, "solid_state",
+             ParametersLoadAccess::neb_options(p).solid_state.enabled);
+    JSON_OPT(s, "solid_state_weight",
+             ParametersLoadAccess::neb_options(p).solid_state.weight);
+    JSON_OPT(s, "solid_state_pressure",
+             ParametersLoadAccess::neb_options(p).solid_state.pressure);
     if (s.contains("spring")) {
       auto &sp = s.at("spring");
       JSON_OPT(sp, "constant",
@@ -593,6 +733,100 @@ void from_json(const json &j, Parameters &p) {
              ParametersLoadAccess::debug_options(p).write_movies_interval);
     JSON_OPT(s, "write_deprecated_outs",
              ParametersLoadAccess::debug_options(p).write_deprecated_outs);
+  }
+
+  // [Hessian] phva_atoms wins over the legacy atom_list, as in the ini.
+  if (j.contains("Hessian")) {
+    auto &s = j.at("Hessian");
+    auto &h = ParametersLoadAccess::hessian_options(p);
+    if (s.contains("phva_atoms")) {
+      h.phva_atoms = lowerCopy(s.at("phva_atoms").get<std::string>());
+    } else if (s.contains("atom_list")) {
+      h.phva_atoms = lowerCopy(s.at("atom_list").get<std::string>());
+    }
+    JSON_OPT(s, "zero_freq_value", h.zero_freq_value);
+    if (s.contains("fd_scheme")) {
+      h.fd_scheme = lowerCopy(s.at("fd_scheme").get<std::string>());
+    }
+    JSON_OPT(s, "resume", h.resume);
+    JSON_OPT(s, "checkpoint_path", h.checkpoint_path);
+    JSON_OPT(s, "write_modes", h.write_modes);
+  }
+
+  // [Instanton]
+  if (j.contains("Instanton")) {
+    auto &s = j.at("Instanton");
+    auto &o = ParametersLoadAccess::instanton_options(p);
+    JSON_OPT(s, "mode", o.mode);
+    JSON_OPT(s, "reactant_filename", o.reactant_filename);
+    JSON_OPT(s, "product_filename", o.product_filename);
+    JSON_OPT(s, "initial_path", o.initial_path);
+    JSON_OPT(s, "beads", o.beads);
+    JSON_OPT(s, "beta_hbar_omega", o.beta_hbar_omega);
+    JSON_OPT(s, "max_iterations", o.max_iterations);
+    JSON_OPT(s, "force_tolerance", o.force_tolerance);
+    JSON_OPT(s, "hessian_stride", o.hessian_stride);
+    JSON_OPT(s, "saddle_filename", o.saddle_filename);
+    JSON_OPT(s, "temperature", o.temperature);
+    if (s.contains("temperatures")) {
+      o.temperatures = temperaturesFromJson(s.at("temperatures"));
+    }
+    JSON_OPT(s, "half_ring", o.half_ring);
+    if (s.contains("initial_hessians")) {
+      o.initial_hessians = s.at("initial_hessians").get<std::string>();
+    }
+    if (o.initial_hessians != "saddle" &&
+        o.initial_hessians != "finite_difference") {
+      throw std::invalid_argument(
+          "[Instanton] initial_hessians must be saddle or "
+          "finite_difference, not " +
+          o.initial_hessians);
+    }
+    JSON_OPT(s, "energy_shift", o.energy_shift);
+    JSON_OPT(s, "bead_ladder", o.bead_ladder);
+    JSON_OPT(s, "hessian_final", o.hessian_final);
+    if (s.contains("springs")) {
+      o.springs = lowerCopy(s.at("springs").get<std::string>());
+    }
+    if (o.springs != "trotter" && o.springs != "eco") {
+      throw std::invalid_argument(
+          "[Instanton] springs must be trotter or eco, not " + o.springs);
+    }
+    if (o.mode != "splitting" && o.mode != "rate") {
+      throw std::invalid_argument("[Instanton] mode must be splitting or "
+                                  "rate, not " +
+                                  o.mode);
+    }
+    JSON_OPT(s, "pi_planes", o.pi_planes);
+    JSON_OPT(s, "pi_beads", o.pi_beads);
+    JSON_OPT(s, "pi_equilibration_steps", o.pi_equilibration_steps);
+    JSON_OPT(s, "pi_sampling_steps", o.pi_sampling_steps);
+    JSON_OPT(s, "pi_time_step", o.pi_time_step);
+    if (s.contains("pi_thermostat")) {
+      o.pi_thermostat = lowerCopy(s.at("pi_thermostat").get<std::string>());
+    }
+    JSON_OPT(s, "pi_gle_file", o.pi_gle_file);
+    JSON_OPT(s, "pi_pile_tau", o.pi_pile_tau);
+    JSON_OPT(s, "pi_pile_scale", o.pi_pile_scale);
+    JSON_OPT(s, "pi_seed", o.pi_seed);
+    if (s.contains("pi_direction")) {
+      o.pi_direction = lowerCopy(s.at("pi_direction").get<std::string>());
+    }
+    JSON_OPT(s, "pi_reactant_extent", o.pi_reactant_extent);
+    JSON_OPT(s, "pi_recrossing_parents", o.pi_recrossing_parents);
+    JSON_OPT(s, "pi_recrossing_children", o.pi_recrossing_children);
+    JSON_OPT(s, "pi_recrossing_time", o.pi_recrossing_time);
+    JSON_OPT(s, "pi_recrossing_spacing", o.pi_recrossing_spacing);
+    eonc::piqtst::validateOptions(o);
+  }
+
+  // The ini loader derives these from the femtosecond inputs whether or
+  // not the keys are present; validate_and_link does not.
+  {
+    auto &th = ParametersLoadAccess::thermostat_options(p);
+    const double timeUnit = ParametersLoadAccess::constants(p).timeUnit;
+    th.andersen_tcol = timeUnit > 0.0 ? th.andersen_tcol_input / timeUnit : 0.0;
+    th.path_pile_tau = timeUnit > 0.0 ? th.path_pile_tau_input / timeUnit : 0.0;
   }
 
   // Resolve computed fields

@@ -94,8 +94,9 @@ From a clean tree (builds fat + ASE-safe pyeonclient, runs the three-way
 compare, writes the JSON and regenerates the figure):
 
 ```{code-block} bash
-# PET-MAD + d016_pos.con live under subprojects/gpr_optim/bench_data/petmad/
-# (rsynced from ../gpr_optim when missing). Override with EON_PET_MAD_*.
+# PET-MAD + d016_pos.con come from bench_data/petmad/ in a checkout of the
+# private gpr_optim repository at subprojects/gpr_optim. Without access,
+# point EON_PET_MAD_* at your own model and geometry.
 pixi run -e mta-bench mta-backend-bench
 ```
 

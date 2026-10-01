@@ -12,14 +12,15 @@
 #pragma once
 #include "ConFileIO.h"
 #include "Eigen.h"
-#include "PbcSimd.h"
 #include "EonLogger.h"
+#include "PbcSimd.h"
 #include "Potential.h"
 #include "StructureComparisonOptions.h"
 #include "SurrogatePotential.h"
 #include <array>
 #include <cstdint>
 #include <memory>
+#include <span>
 #include <string>
 #include <vector>
 
@@ -42,8 +43,8 @@ namespace pbc {
 // Minimum-image on a difference vector (fractional in [-0.5, 0.5)).
 inline AtomMatrix apply(const AtomMatrix &diff, const Matrix3d &cell,
                         const Matrix3d &cellInverse) {
-  // Fractional coordinates, minimum-image wrap to [-0.5, 0.5), back to Cartesian.
-  // x - floor(x + 0.5), Highway when the build has it.
+  // Fractional coordinates, minimum-image wrap to [-0.5, 0.5), back to
+  // Cartesian. x - floor(x + 0.5), Highway when the build has it.
   AtomMatrix frac = diff * cellInverse;
   wrapMinimumImage(frac.data(), static_cast<size_t>(frac.size()));
   return frac * cell;
@@ -202,6 +203,9 @@ public:
   void setFixedMask(long int atom, std::array<bool, 3> mask);
   double getEnergyVariance() const;
   double getPotentialEnergy() const;
+  /// Cauchy stress in eV/Angstrom^3. Recomputes the potential so the tensor
+  /// belongs to this image. The potential must report stress.
+  Matrix3d cauchyStress();
 
   /// Whether forces need recomputation (positions changed since last eval).
   [[nodiscard]] bool needsForceUpdate() const { return recomputePotential; }
@@ -209,6 +213,12 @@ public:
   /// Mutable access to force storage for batched potential evaluation.
   /// Caller must also call setComputedPotential() after writing forces.
   double *forcesData();
+  /// Puts a known evaluation back after a position reset: the forces and
+  /// energy of a geometry this object held before, so no potential call
+  /// follows. Fixed-atom masking applies on read as for any evaluation.
+  void setEvaluation(const AtomMatrix &forces, double energy) {
+    restoreFileForces(forces, true, energy);
+  }
 
   /// Set energy/variance from external batched evaluation and mark forces
   /// as up-to-date (recomputePotential = false).
@@ -365,5 +375,11 @@ private:
   std::vector<readcon::ConFrame> movie_frames_;
   mutable double potentialEnergy;
 };
+
+/// Evaluates every system that needs a force update. With a potential
+/// that batches, the dirty systems go through forceBatch in one call, so
+/// calculator groups take them together; otherwise each computes on its
+/// own. Systems that are current are left alone.
+void evaluateTogether(Potential &pot, std::span<Matter *const> systems);
 
 } // namespace eonc

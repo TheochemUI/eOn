@@ -425,6 +425,19 @@ void apply_geometry(readcon::ConFrameBuilder &builder, Matter &m,
     builder.set_forces_from_flat(flat_row_major(m.getForcesRaw()));
   }
 
+  if (metadata != nullptr && !metadata->displacements.empty()) {
+    if (metadata->displacements.size() != static_cast<size_t>(3 * n)) {
+      throw std::invalid_argument("displacements size is not 3 x atoms");
+    }
+    builder.set_displacements_from_flat(metadata->displacements);
+  }
+  if (metadata != nullptr && !metadata->spreads.empty()) {
+    if (metadata->spreads.size() != static_cast<size_t>(3 * n)) {
+      throw std::invalid_argument("spreads size is not 3 x atoms");
+    }
+    builder.set_spreads_from_flat(metadata->spreads);
+  }
+
   if (with_velocities) {
     const AtomMatrix vel = m.getVelocities();
     for (long i = 0; i < n; ++i) {

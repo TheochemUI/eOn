@@ -1,0 +1,1 @@
+In the MPI communicator a client whose job fails (a potential error, a bad `config.ini`, an unknown job, a missing job directory) logs the error, stages its logs into the job directory and hands the directory back without `results.dat`. The server skips that result and the rank takes the next job, so one failed CPMD call no longer ends the allocation.

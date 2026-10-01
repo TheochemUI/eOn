@@ -1,0 +1,1 @@
+Solid-state NEB relaxes the lower-triangular cell of each interior image together with the atoms. The tangent and spring use the Jacobian of doi:10.1063/1.3684549. A potential without a stress tensor is differentiated on the cell. OCINEB, zoom, and the action-based springs stay off when `solid_state` is set.

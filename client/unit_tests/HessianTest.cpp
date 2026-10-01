@@ -13,14 +13,17 @@
 #include "eon/Hessian.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/ConFileIO.h"
 #include "eon/Davidson.h"
 #include "eon/FiniteDifference.h"
 #include "eon/Lanczos.h"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
 #include "eon/SafeMath.h"
+#include "eon/Tunneling.h"
 #include "eon/potentials/RgpotAdapter/RgpotAdapter.h"
 #include "rgpot/LennardJones/LJPot.hpp"
+#include <nlohmann/json.hpp>
 
 #include <algorithm>
 #include <complex>
@@ -283,6 +286,40 @@ TEST_CASE_METHOD(HessianScratch,
   }
 }
 
+TEST_CASE("Trivial modes are counted from the structure's symmetries",
+          "[hessian]") {
+  REQUIRE(trivialModeCountIsPhysical(6, 0)); // free cluster
+  REQUIRE(trivialModeCountIsPhysical(5, 0)); // linear molecule
+  REQUIRE(trivialModeCountIsPhysical(3, 0)); // periodic cell
+  REQUIRE(trivialModeCountIsPhysical(0, 4)); // fixed atoms pin everything
+  REQUIRE_FALSE(trivialModeCountIsPhysical(4, 0));
+  REQUIRE_FALSE(trivialModeCountIsPhysical(3, 4));
+}
+
+TEST_CASE_METHOD(HessianScratch,
+                 "removeZeroFreqs drops the modes under the zero threshold",
+                 "[hessian]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto matter = std::make_shared<Matter>(pot, params);
+  matter->con2matter(std::string("reactant.con"));
+  const long n = 3 * matter->numberOfAtoms();
+  const double zero = params.hessian_options().zero_freq_value;
+  // A free cluster's spectrum: six modes under the threshold, the rest above.
+  VectorXd freqs = VectorXd::LinSpaced(n, 1.0, 2.0);
+  for (int i = 0; i < 6; ++i) {
+    freqs(5 * i) = 0.1 * zero * (i % 2 == 0 ? 1.0 : -1.0);
+  }
+  Hessian hess(params, matter.get());
+  const VectorXd kept = hess.removeZeroFreqs(freqs);
+  REQUIRE(kept.size() == n - 6);
+  REQUIRE((kept.array().abs() > zero).all());
+  // A spectrum that is not 3N long is not the whole structure's; it is left
+  // alone.
+  REQUIRE(hess.removeZeroFreqs(freqs.head(n - 1)).size() == n - 1);
+}
+
 TEST_CASE("Colored FD Hessian matches serial central difference",
           "[hessian][color]") {
   Parameters params;
@@ -499,6 +536,173 @@ TEST_CASE("Colored fourth-order FD matches the serial stencil",
   Davidson davidson(matter, params, pot);
   davidson.compute(matter, direction);
   REQUIRE(std::isfinite(davidson.getEigenvalue()));
+}
+
+TEST_CASE_METHOD(HessianScratch,
+                 "modes.con carries each mode as a displacements section",
+                 "[hessian]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter matter(pot, params);
+  matter.con2matter(std::string("reactant.con"));
+  const long n = matter.numberOfAtoms();
+
+  // Two mobile atoms and the unit mass-weighted modes: mode k moves one
+  // coordinate, so its Cartesian mode is that coordinate with norm 1.
+  VectorXi mobile(2);
+  mobile << 1, 4;
+  VectorXd eigenvalues(6);
+  eigenvalues << -0.5, 1e-9, 0.25, 1.0, 2.0, 4.0;
+  const MatrixXd modes = MatrixXd::Identity(6, 6);
+  REQUIRE(writeNormalModes(matter, mobile, eigenvalues, modes, "modes.con"));
+
+  const auto frames = readcon::read_all_frames("modes.con");
+  REQUIRE(frames.size() == 6);
+  for (size_t k = 0; k < frames.size(); ++k) {
+    REQUIRE(frames[k].has_displacements());
+    std::vector<double> d(static_cast<size_t>(3 * n));
+    REQUIRE(frames[k].copy_displacements(d.data(), d.size()) ==
+            readcon::RKR_STATUS_SUCCESS);
+    const long atom = mobile(static_cast<long>(k) / 3);
+    for (long i = 0; i < 3 * n; ++i) {
+      const double want =
+          (i == 3 * atom + static_cast<long>(k) % 3) ? 1.0 : 0.0;
+      REQUIRE_THAT(d[static_cast<size_t>(i)],
+                   Catch::Matchers::WithinAbs(want, 1e-12));
+    }
+    const auto md = nlohmann::json::parse(frames[k].metadata_json());
+    const double lambda = eigenvalues(static_cast<long>(k));
+    const double hw =
+        std::copysign(tunneling::kHbar * std::sqrt(std::abs(lambda)), lambda);
+    REQUIRE_THAT(md.at("mode_eigenvalue").get<double>(),
+                 Catch::Matchers::WithinRel(lambda, 1e-12));
+    REQUIRE_THAT(md.at("hbar_omega").get<double>(),
+                 Catch::Matchers::WithinRel(hw, 1e-12));
+    REQUIRE_THAT(md.at("wavenumber").get<double>(),
+                 Catch::Matchers::WithinRel(hw * kEvToWavenumber, 1e-12));
+  }
+  // The imaginary mode reads negative.
+  REQUIRE(nlohmann::json::parse(frames[0].metadata_json())
+              .at("wavenumber")
+              .get<double>() < 0.0);
+}
+
+TEST_CASE("cartesianMode divides by sqrt(mass) and normalizes", "[hessian]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter matter(pot, params);
+  matter.resize(2);
+  matter.setMass(0, 1.0);
+  matter.setMass(1, 4.0);
+  VectorXi atoms(2);
+  atoms << 0, 1;
+  VectorXd q = VectorXd::Zero(6);
+  q(0) = 1.0; // atom 0, x
+  q(3) = 1.0; // atom 1, x
+  const auto x = cartesianMode(matter, atoms, q);
+  // x = (1/1, 1/2) along x, then unit norm.
+  const double norm = std::sqrt(1.0 + 0.25);
+  REQUIRE_THAT(x[0], Catch::Matchers::WithinAbs(1.0 / norm, 1e-12));
+  REQUIRE_THAT(x[3], Catch::Matchers::WithinAbs(0.5 / norm, 1e-12));
+  REQUIRE_THROWS_AS(cartesianMode(matter, atoms, VectorXd::Zero(3)),
+                    std::invalid_argument);
+}
+
+namespace {
+// LJ without a reported cutoff, so neither side takes the colored path;
+// Batched reports batch support and takes the batched path through the
+// default forceBatch loop.
+template <bool Batched> class WrappedLJ final : public eonc::Potential {
+public:
+  WrappedLJ(std::shared_ptr<eonc::Potential> inner, const Parameters &p)
+      : eonc::Potential(PotType::LJ, p),
+        inner_(std::move(inner)) {}
+  void force(long n, const double *r, const int *z, double *f, double *u,
+             double *var, const double *box) override {
+    inner_->force(n, r, z, f, u, var, box);
+  }
+  [[nodiscard]] bool supportsBatchEvaluation() const noexcept override {
+    return Batched;
+  }
+
+private:
+  std::shared_ptr<eonc::Potential> inner_;
+};
+} // namespace
+
+TEST_CASE_METHOD(HessianScratch,
+                 "Batched FD Hessian matches the serial one on LJ",
+                 "[hessian]") {
+  for (const char *scheme : {"one_sided", "central", "fourth"}) {
+    CAPTURE(scheme);
+    Parameters params;
+    ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+    ParametersLoadAccess::hessian_options(params).fd_scheme = scheme;
+    auto lj = eonc::helpers::makePotential(PotType::LJ, params);
+    auto serial = std::make_shared<WrappedLJ<false>>(lj, params);
+    auto batched = std::make_shared<WrappedLJ<true>>(lj, params);
+    Matter serialM(serial, params), batchedM(batched, params);
+    serialM.con2matter(std::string("reactant.con"));
+    batchedM.con2matter(std::string("reactant.con"));
+    VectorXi sub(3);
+    sub << 0, 4, 7;
+    Hessian hs(params, &serialM), hb(params, &batchedM);
+    hs.writeHessianFile(false);
+    hb.writeHessianFile(false);
+    const MatrixXd a = hs.getHessian(&serialM, sub);
+    const MatrixXd b = hb.getHessian(&batchedM, sub);
+    REQUIRE(a.rows() == 9);
+    REQUIRE(b.rows() == 9);
+    for (long i = 0; i < 9; ++i) {
+      for (long j = 0; j < 9; ++j) {
+        REQUIRE_THAT(b(i, j), Catch::Matchers::WithinAbs(a(i, j), 1e-12));
+      }
+    }
+  }
+}
+
+TEST_CASE_METHOD(HessianScratch,
+                 "evaluateTogether batches the dirty systems and matches "
+                 "single evaluations",
+                 "[matter][batch]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto lj = eonc::helpers::makePotential(PotType::LJ, params);
+  auto batched = std::make_shared<WrappedLJ<true>>(lj, params);
+  Matter a(batched, params), b(batched, params), ref(lj, params);
+  a.con2matter(std::string("reactant.con"));
+  ref.con2matter(std::string("reactant.con"));
+  b = a;
+  AtomMatrix shifted = b.getPositions();
+  shifted(3, 0) += 0.05;
+  b.setPositions(shifted);
+  REQUIRE(a.needsForceUpdate());
+  REQUIRE(b.needsForceUpdate());
+  const size_t before = batched->forceCallCounter;
+  Matter *const both[] = {&a, &b};
+  eonc::evaluateTogether(*batched, both);
+  REQUIRE_FALSE(a.needsForceUpdate());
+  REQUIRE_FALSE(b.needsForceUpdate());
+  // One batch, two systems: the counter advances by the batch size.
+  REQUIRE(batched->forceCallCounter == before + 2);
+  REQUIRE_THAT(a.getPotentialEnergy(),
+               Catch::Matchers::WithinRel(ref.getPotentialEnergy(), 1e-12));
+  Matter refB(lj, params);
+  refB.con2matter(std::string("reactant.con"));
+  refB.setPositions(shifted);
+  REQUIRE_THAT(b.getPotentialEnergy(),
+               Catch::Matchers::WithinRel(refB.getPotentialEnergy(), 1e-12));
+  for (long i = 0; i < b.numberOfAtoms(); ++i) {
+    for (int c = 0; c < 3; ++c) {
+      REQUIRE_THAT(b.getForces()(i, c),
+                   Catch::Matchers::WithinAbs(refB.getForces()(i, c), 1e-10));
+    }
+  }
+  // A clean set costs nothing.
+  eonc::evaluateTogether(*batched, both);
+  REQUIRE(batched->forceCallCounter == before + 2);
 }
 
 } /* namespace tests */

@@ -1,0 +1,1 @@
+Above the crossover, `mode = rate` writes `parabolic_factor` and `rate_parabolic`, the factor `(pi*T_c/T)/sin(pi*T_c/T)` times the harmonic TST rate from the reactant and saddle Hessians. The ring search still runs only below the crossover. At the crossover the factor diverges and that temperature records no rate.

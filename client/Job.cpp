@@ -15,6 +15,7 @@
 #include "eon/FiniteDifferenceJob.h"
 #include "eon/GlobalOptimizationJob.h"
 #include "eon/HessianJob.h"
+#include "eon/InstantonJob.h"
 #include "eon/JobRegistry.h"
 #include "eon/MinimizationJob.h"
 #include "eon/MonteCarloJob.h"
@@ -77,6 +78,7 @@ EON_REG_JOB(Monte_Carlo, MonteCarloJob);
 EON_REG_JOB(GP_Surrogate, GPSurrogateJob);
 #endif
 EON_REG_JOB(OH_TST, OHTSTJob);
+EON_REG_JOB(Instanton, InstantonJob);
 EON_REG_JOB(Test, TestJob);
 
 #undef EON_REG_JOB

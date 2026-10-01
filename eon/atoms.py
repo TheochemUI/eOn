@@ -84,9 +84,13 @@ def _bind_minimage_wrap_many():
     The pinned minimage build exposes displacement and not wrap_many.
     One row uses the same origin displacement the geometry kernel uses
     when wrap_many is absent. A Cell that already defines the method
-    keeps it.
+    keeps it. minimage is optional: without it there is nothing to bind,
+    and the readcon_ops callers below are the only users of the method.
     """
-    import minimage
+    try:
+        import minimage
+    except ImportError:
+        return
 
     if hasattr(minimage.Cell, "wrap_many"):
         return
@@ -98,8 +102,6 @@ def _bind_minimage_wrap_many():
 
     minimage.Cell.wrap_many = wrap_many
 
-
-_bind_minimage_wrap_many()
 
 # --- structure comparison / CNA (unchanged algorithms) ---
 
@@ -258,6 +260,7 @@ def crystal_spacegroup(structure, symprec=1e-5):
     the setting. This is not the cluster match. Iterative Rotations and
     Assignments answers that question.
     """
+    _bind_minimage_wrap_many()
     from readcon_ops import spacegroup
 
     return spacegroup(structure, atomic_number, symprec=symprec)
@@ -268,6 +271,7 @@ def rot_match(a, b, eps_r):
         logger.warning("Comparing structures with frozen atoms with rotational matching; check_rotation may be set incorrectly")
     if len(a) == 0:
         return len(b) == 0
+    _bind_minimage_wrap_many()
     from readcon_ops import rotational_match
 
     judged = rotational_match(a, b, eps_r, atomic_number=atomic_number)

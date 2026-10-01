@@ -1,0 +1,1 @@
+`[cpmd]` holds the scalar CPMD message when `[RgpotPot] params_path` is empty. `cutOffRy` there overrides `cutoff_ry`. A loaded CPMDParams file keeps its sections, and `input_block` is appended to that file's blocks.

@@ -16,7 +16,7 @@ myst:
 
 # LJ cluster minimization (built-in potential)
 
-Minimize a small **Lennard-Jones cluster** (`ljcluster`) from
+Minimize the **Lennard-Jones cluster** (`ljcluster`) from
 `benchmarks/data/min_lj_cluster/`. Movies are required for the modern plot
 stack.
 
@@ -26,6 +26,10 @@ Plotting conventions:
 - a **single** 2D landscape for this job (one endpoint → one RMSD frame), with
   title from `--label` and **initial** / **minimized** captions
 - relative energy on the landscape colorbar for readable ticks
+
+The benchmark geometry is under the force tolerance, so the client would write one frame.
+The setup cell moves the first atom by 0.001 angstroms along x, and the minimizer then takes a real step.
+The landscape cell passes `--ira-kmax 1.8`.
 
 ## Setup and run
 
@@ -52,6 +56,21 @@ work = Path(tempfile.mkdtemp(prefix="eon_lj_min_"))
 plot_dir = work / "plots"
 plot_dir.mkdir()
 shutil.copy(DATA / "pos.con", work / "pos.con")
+
+
+def shift_first_atom(path: Path, dx: float = 0.001) -> None:
+    lines = path.read_text().splitlines()
+    start = lines.index("Coordinates of Component 1") + 1
+    parts = lines[start].split()
+    x = float(parts[0]) + dx
+    y = float(parts[1])
+    z = float(parts[2])
+    tail = " ".join(parts[3:])
+    lines[start] = f"{x:12.6f} {y:12.6f} {z:12.6f} {tail}"
+    path.write_text("\n".join(lines) + "\n")
+
+
+shift_first_atom(work / "pos.con")
 
 cfg = {
     "Main": {"job": "minimization", "random_seed": 42},
@@ -139,6 +158,8 @@ run_rgpycrumbs(
     str(work),
     "--label",
     "lj cluster",
+    "--ira-kmax",
+    "1.8",
     "--plot-type",
     "landscape",
     "--project-path",

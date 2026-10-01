@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <memory>
 #include <string>
 
@@ -18,7 +19,12 @@ struct RGPotEngineOptions {
   std::string title;
   int memory_mb{0};
   std::string scratch_dir;
-  std::string input_block; // optional NWChem inputBlocks text
+  // NWChem inputBlocks, or CPMD text appended to inputBlocks.
+  std::string input_block;
+  std::string permanent_dir; // CPMD FILEPATH for RESTART files (cpmdc)
+  // CPMDParams file. When set, scalar method keys are not written over it.
+  std::string params_path;
+  int ranks_per_image{0};    // cpmdc: ranks per calculator group, 0 = off
   // Metatomic (backend=metatomic): dlopen libmetatomic_engine.so
   std::string model_path;
   std::string device{"cpu"};
@@ -48,6 +54,38 @@ public:
   [[nodiscard]] bool available() const;
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, const double *box) const;
+
+  /// Number of calculator groups the MPI world is split into (1 when
+  /// ranks_per_image is off) and the group this rank belongs to.
+  [[nodiscard]] int calculatorGroups() const noexcept;
+  [[nodiscard]] int calculatorIndex() const noexcept;
+  /// Ranks in the MPI world the groups were bound on (1 without MPI).
+  [[nodiscard]] int calculatorWorld() const noexcept;
+  /// This process's rank in that world (0 without MPI).
+  [[nodiscard]] int worldRank() const noexcept;
+  /// Collective on MPI_COMM_WORLD: every rank leaves with world rank 0's
+  /// bytes. A no-op on one rank.
+  void broadcastFromDriver(void *data, std::size_t bytes) const;
+  /// Registers MPI_Finalize at exit (once per process) when the world has
+  /// more than one rank.
+  void finalizeMpiAtExit() const;
+  /// After MPI_Finalize, _Exit. Library destructors do not run on a
+  /// finalized MPI world. When rgpot requested an abort at exit (a failed
+  /// engine call), MPI_Abort replaces MPI_Finalize. No-op unless this
+  /// process was started as one of several ranks.
+  void armGroupedExit() const;
+  /// True once rgpot asked for MPI_Abort at exit in this process.
+  [[nodiscard]] static bool mpiAbortRequested() noexcept;
+  /// Calls cpmdc_finalize while the engine is still mapped. MPI stays up.
+  void shutdownModule() noexcept;
+  /// Collective on MPI_COMM_WORLD: every rank leaves with the energy and
+  /// the 3N forces computed by the first rank of group `owner`. Only
+  /// CPMD's parent rank holds the true forces, so this also keeps the
+  /// ranks of one group on the same step. `ok` is the owner's status;
+  /// the return value is the owner's status on every rank. `error` is
+  /// the owner's engine message on every rank.
+  bool shareResult(int owner, long N, double *F, double *U, bool ok,
+                   std::string &error) const;
 
 private:
   struct Impl;

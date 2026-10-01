@@ -141,6 +141,8 @@ struct rgpot_options_t {
   std::string theory{"scf"};
   std::string scf_type{"rhf"};
   std::string functional{"BLYP"};
+  // [cpmd] cutOffRy wins when params_path is empty. cutoff_ry and
+  // cpmd_cut_off_ry on [cpmd] or [RgpotPot] still load.
   double cutoff_ry{70.0};
   int charge{0};
   int multiplicity{1};
@@ -150,7 +152,18 @@ struct rgpot_options_t {
   std::string title{};
   int memory_mb{0};
   std::string scratch_dir{};
+  // [cpmd] input_block wins over this [RgpotPot] key for a CPMD backend.
+  // The text is appended to inputBlocks and does not replace inputSections.
   std::string input_block{};
+  std::string permanent_dir{};
+  // Serialized Cap'n Proto CPMDParams. When set, it is the method and the
+  // scalar keys above are not written over it. [cpmd] supplies those
+  // scalars when this path is empty.
+  std::string params_path{};
+  // cpmdc: split the MPI world into groups of this many ranks, one CPMD
+  // session per group, and spread NEB images over the groups. 0 keeps one
+  // session on every rank.
+  int ranks_per_image{0};
   // Metatomic dlopen (backend=metatomic)
   std::string model_path{};
   std::string device{"cpu"};
@@ -494,6 +507,10 @@ struct hessian_options_t {
   bool resume{false};
   // Column checkpoint file (e.g. hessian.ckpt). Cleared on successful finish.
   std::string checkpoint_path{""};
+  // Write every normal mode to modes.con: the Cartesian mode as a
+  // readcon displacements section, its eigenvalue and hbar omega as
+  // frame metadata.
+  bool write_modes{true};
 };
 
 // [Nudged Elastic Band] //
@@ -537,7 +554,7 @@ struct neb_options_t {
     bool converged_only{true};
     /// When converged_only is on, the rest of the band may still be
     /// this many times the force tolerance. Larger than that, the
-    /// job is not converged (SIDPP degenerate CI, eOn-bghy).
+    /// job is not converged (SIDPP degenerate CI).
     double band_slack{10.0};
     bool use_old_tangent{false};
     double trigger_force{std::numeric_limits<double>::infinity()};
@@ -593,6 +610,16 @@ struct neb_options_t {
     bool minimize{false};
     bool use_path_file{false};
   } endpoints;
+
+  /// Interior images relax a lower-triangular cell with the atoms.
+  /// doi:10.1063/1.3684549
+  struct solid_state_options_t {
+    bool enabled{false};
+    double weight{1.0};
+    /// Hydrostatic pressure in eV/Angstrom^3. Positive pressure favors a
+    /// smaller cell. Zero keeps the potential-energy band.
+    double pressure{0.0};
+  } solid_state;
 };
 
 // [Molecular Dynamics] //
@@ -636,6 +663,14 @@ struct thermostat_options_t {
   double nose_mass{1.0};
   double langevin_friction_input{0.01};
   double langevin_friction{0.0}; // computed: input * timeUnit
+  long path_beads{8};
+  std::string path_springs{"trotter"};
+  double path_eco_omega_max{0.0};
+  std::string path_gle_file;
+  double path_pile_tau_input{100.0}; // fs
+  double path_pile_tau{0.0};         // input / timeUnit
+  double path_pile_scale{1.0};
+  std::uint64_t path_seed{1};
 };
 
 // [Replica Exchange] //
@@ -763,6 +798,77 @@ struct debug_options_t {
   bool write_deprecated_outs{false};
   bool estimate_neb_eigenvalues{false};
   std::string neb_mmf{"dimer"};
+};
+
+// [Instanton] //
+// Ring-polymer instanton: the tunnelling splitting between two minima
+// (mode "splitting", eonc::tunneling::optimizeInstanton) or the thermal rate
+// out of a minimum through a saddle (mode "rate"): the ring below the
+// crossover temperature, and the parabolic barrier factor above it.
+struct instanton_options_t {
+  std::string mode{"splitting"};
+  std::string reactant_filename{"reactant.con"};
+  std::string product_filename{"product.con"};
+  // Optional band to start from (neb.con or any multi-frame con file whose
+  // first and last frames are the two minima); empty is a straight line.
+  std::string initial_path{""};
+  long beads{256};              // P, segments from one minimum to the other
+  double beta_hbar_omega{30.0}; // imaginary time, in units of 1 / omega
+  long max_iterations{5000};    // L-BFGS iterations on the action
+  double force_tolerance{1e-3}; // eV / (amu^0.5 A), largest bead residual
+  // FD Hessians on every stride-th bead, linear in between; 1 is every bead.
+  long hessian_stride{1};
+  // Mode "rate": the first-order saddle out of the reactant, and T in K.
+  std::string saddle_filename{"saddle.con"};
+  double temperature{0.0};
+  // Mode rate: kelvin values, searched from the highest down. Empty uses
+  // temperature.
+  std::vector<double> temperatures{};
+  // Mode rate: even bead count evaluates one half of a symmetric ring
+  // and copies it. An odd count evaluates every bead.
+  bool half_ring{true};
+  double energy_shift{0.0}; // eV, subtracted from each bead potential
+  // Mode rate: where the bead Hessian blocks start. "saddle" copies the
+  // saddle Hessian to every bead (no force calls); "finite_difference"
+  // takes 2 f gradient calls per bead first.
+  std::string initial_hessians{"saddle"};
+  // Mode rate: start at a quarter of the beads and double. Off leaves the
+  // requested count alone.
+  bool bead_ladder{false};
+  // Mode rate: the rate uses a Hessian on every stride-th bead.
+  std::string hessian_final{"recomputed"};
+  // "trotter" or "eco". Economised springs are refused: the instanton
+  // is a Trotter discretisation.
+  std::string springs{"trotter"};
+  // Mode rate: path-integral quantum TST after the instanton. Planes
+  // from behind the reactant to the saddle, each holding the centroid of
+  // a sampled ring; 0 leaves it off.
+  long pi_planes{0};
+  long pi_beads{16};
+  long pi_equilibration_steps{500};
+  long pi_sampling_steps{2000};
+  double pi_time_step{0.5}; // fs
+  // "pile", or "piglet" with pi_gle_file (the [Dynamics] path_gle_file
+  // format).
+  std::string pi_thermostat{"pile"};
+  std::string pi_gle_file{""};
+  double pi_pile_tau{100.0}; // fs, centroid Langevin time
+  double pi_pile_scale{1.0}; // scales the internal-mode PILE damping
+  long pi_seed{1};
+  // Plane normal: "mode" is the saddle's unstable mode, "line" the
+  // mass-weighted reactant-to-saddle line.
+  std::string pi_direction{"mode"};
+  // The first plane sits this fraction of the reactant-to-saddle distance
+  // behind the reactant.
+  double pi_reactant_extent{0.5};
+  // Ring-polymer MD transmission factor on the top plane: parents sampled
+  // on the plane every pi_recrossing_spacing steps, each launching
+  // pi_recrossing_children momentum pairs for pi_recrossing_time fs.
+  // 0 parents leaves it off.
+  long pi_recrossing_parents{0};
+  long pi_recrossing_children{20};
+  double pi_recrossing_time{100.0}; // fs
+  long pi_recrossing_spacing{50};
 };
 
 // [OH_TST] //

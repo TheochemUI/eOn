@@ -330,6 +330,21 @@ jobs:
             ls upload | sort | uniq -d
             exit 1
           fi
+      # skip-existing below lets a re-run pass over files it already uploaded,
+      # which also turns a missed version bump into a silent no-op that leaves
+      # the old wheels in place. A version the index already has is refused.
+      - name: Refuse a version the index already has
+        env:
+          INDEX_JSON: ${{ (github.event_name == 'workflow_dispatch' && inputs.target == 'testpypi') && 'https://test.pypi.org/pypi' || 'https://pypi.org/pypi' }}
+        run: |
+          set -euo pipefail
+          version=$(ls upload/*.tar.gz | sed -E 's#.*/pyeonclient-(.*)\.tar\.gz#\1#')
+          echo "publishing pyeonclient ${version} to ${INDEX_JSON}"
+          code=$(curl -s -o /dev/null -w '%{http_code}' "${INDEX_JSON}/pyeonclient/${version}/json")
+          if [[ "$code" == "200" ]]; then
+            echo "pyeonclient ${version} is already on the index; bump pyproject-pyeonclient.toml" >&2
+            exit 1
+          fi
       # A tag publishes to PyPI; a manual run defaults to TestPyPI so the
       # upload can be rehearsed before the irreversible one.
       - name: Publish
