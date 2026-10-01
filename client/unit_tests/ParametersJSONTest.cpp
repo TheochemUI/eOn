@@ -20,6 +20,7 @@
 #include <nlohmann/json.hpp>
 #include <stdexcept>
 #include <string_view>
+#include <vector>
 
 namespace tests {
 
@@ -371,6 +372,90 @@ TEST_CASE("JSON reads path-integral keys from Dynamics and Thermostat",
   eonc::config::from_json(roundTrip, loaded);
   REQUIRE(loaded.thermostat_options().path_beads == 12);
   REQUIRE(loaded.instanton_options().springs == "trotter");
+}
+
+TEST_CASE("JSON round-trips every Instanton and Hessian key",
+          "[params][json]") {
+  Parameters written;
+  auto &o = ParametersLoadAccess::instanton_options(written);
+  o.mode = "rate";
+  o.reactant_filename = "r.con";
+  o.product_filename = "p.con";
+  o.initial_path = "band.con";
+  o.beads = 48;
+  o.beta_hbar_omega = 12.5;
+  o.max_iterations = 77;
+  o.force_tolerance = 2e-4;
+  o.hessian_stride = 3;
+  o.saddle_filename = "s.con";
+  o.temperature = 150.0;
+  o.temperatures = {200.0, 100.0};
+  o.half_ring = false;
+  o.initial_hessians = "finite_difference";
+  o.energy_shift = -1.25;
+  o.bead_ladder = true;
+  o.hessian_final = "interpolated";
+  o.springs = "trotter";
+  auto &h = ParametersLoadAccess::hessian_options(written);
+  h.phva_atoms = "0,1,2";
+  h.zero_freq_value = 2e-3;
+  h.fd_scheme = "central";
+  h.resume = true;
+  h.checkpoint_path = "hessian.ckpt";
+  h.write_modes = false;
+
+  Parameters loaded;
+  eonc::config::from_json(eonc::config::to_json(written), loaded);
+
+  const auto &l = loaded.instanton_options();
+  REQUIRE(l.mode == "rate");
+  REQUIRE(l.reactant_filename == "r.con");
+  REQUIRE(l.product_filename == "p.con");
+  REQUIRE(l.initial_path == "band.con");
+  REQUIRE(l.beads == 48);
+  REQUIRE(l.beta_hbar_omega == Catch::Approx(12.5));
+  REQUIRE(l.max_iterations == 77);
+  REQUIRE(l.force_tolerance == Catch::Approx(2e-4));
+  REQUIRE(l.hessian_stride == 3);
+  REQUIRE(l.saddle_filename == "s.con");
+  REQUIRE(l.temperature == Catch::Approx(150.0));
+  REQUIRE(l.temperatures == std::vector<double>{200.0, 100.0});
+  REQUIRE_FALSE(l.half_ring);
+  REQUIRE(l.initial_hessians == "finite_difference");
+  REQUIRE(l.energy_shift == Catch::Approx(-1.25));
+  REQUIRE(l.bead_ladder);
+  REQUIRE(l.hessian_final == "interpolated");
+  REQUIRE(l.springs == "trotter");
+  const auto &lh = loaded.hessian_options();
+  REQUIRE(lh.phva_atoms == "0,1,2");
+  REQUIRE(lh.zero_freq_value == Catch::Approx(2e-3));
+  REQUIRE(lh.fd_scheme == "central");
+  REQUIRE(lh.resume);
+  REQUIRE(lh.checkpoint_path == "hessian.ckpt");
+  REQUIRE_FALSE(lh.write_modes);
+}
+
+TEST_CASE("JSON derives the thermostat times the way the ini does",
+          "[params][json]") {
+  // No path_pile_tau or andersen_collision_period: both loaders convert
+  // the femtosecond defaults to internal time.
+  Parameters fromIni;
+  REQUIRE(fromIni.load_ini_text("[Dynamics]\nthermostat = pile\n") == 0);
+  Parameters fromJson;
+  REQUIRE(fromJson.load_json(R"({"Dynamics":{"thermostat":"pile"}})") == 0);
+  REQUIRE(fromIni.thermostat_options().path_pile_tau > 0.0);
+  REQUIRE(fromJson.thermostat_options().path_pile_tau ==
+          Catch::Approx(fromIni.thermostat_options().path_pile_tau));
+  REQUIRE(fromJson.thermostat_options().andersen_tcol ==
+          Catch::Approx(fromIni.thermostat_options().andersen_tcol));
+
+  // A written file loads back with the same internal values.
+  Parameters roundTrip;
+  eonc::config::from_json(eonc::config::to_json(fromIni), roundTrip);
+  REQUIRE(roundTrip.thermostat_options().path_pile_tau ==
+          Catch::Approx(fromIni.thermostat_options().path_pile_tau));
+  REQUIRE(roundTrip.thermostat_options().andersen_tcol ==
+          Catch::Approx(fromIni.thermostat_options().andersen_tcol));
 }
 
 } /* namespace tests */

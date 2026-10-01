@@ -385,7 +385,7 @@ static std::vector<double> temperaturesFromJson(const json &value) {
 
 // Path-integral keys live on [Dynamics] in an ini file and under Thermostat
 // in the JSON writer. Either object may carry them. The damping time is
-// stored in femtoseconds and converted only when the key is present.
+// stored in femtoseconds; from_json converts it once every object is read.
 static void readPathIntegralKeys(const json &s, Parameters &p) {
   auto &th = ParametersLoadAccess::thermostat_options(p);
   JSON_OPT(s, "path_beads", th.path_beads);
@@ -399,11 +399,7 @@ static void readPathIntegralKeys(const json &s, Parameters &p) {
   }
   JSON_OPT(s, "path_eco_omega_max", th.path_eco_omega_max);
   JSON_OPT(s, "path_gle_file", th.path_gle_file);
-  if (s.contains("path_pile_tau")) {
-    th.path_pile_tau_input = s.at("path_pile_tau").get<double>();
-    const double timeUnit = ParametersLoadAccess::constants(p).timeUnit;
-    th.path_pile_tau = timeUnit > 0.0 ? th.path_pile_tau_input / timeUnit : 0.0;
-  }
+  JSON_OPT(s, "path_pile_tau", th.path_pile_tau_input);
   JSON_OPT(s, "path_pile_scale", th.path_pile_scale);
   if (s.contains("path_seed")) {
     const long seed = s.at("path_seed").get<long>();
@@ -423,11 +419,7 @@ static void readBathKeys(const json &s, Parameters &p) {
     th.kind = lowerCopy(s.at("kind").get<std::string>());
   }
   JSON_OPT(s, "andersen_alpha", th.andersen_alpha);
-  if (s.contains("andersen_collision_period")) {
-    th.andersen_tcol_input = s.at("andersen_collision_period").get<double>();
-    const double timeUnit = ParametersLoadAccess::constants(p).timeUnit;
-    th.andersen_tcol = timeUnit > 0.0 ? th.andersen_tcol_input / timeUnit : 0.0;
-  }
+  JSON_OPT(s, "andersen_collision_period", th.andersen_tcol_input);
   JSON_OPT(s, "nose_mass", th.nose_mass);
   JSON_OPT(s, "langevin_friction", th.langevin_friction_input);
   readPathIntegralKeys(s, p);
@@ -726,6 +718,24 @@ void from_json(const json &j, Parameters &p) {
              ParametersLoadAccess::debug_options(p).write_deprecated_outs);
   }
 
+  // [Hessian] phva_atoms wins over the legacy atom_list, as in the ini.
+  if (j.contains("Hessian")) {
+    auto &s = j.at("Hessian");
+    auto &h = ParametersLoadAccess::hessian_options(p);
+    if (s.contains("phva_atoms")) {
+      h.phva_atoms = lowerCopy(s.at("phva_atoms").get<std::string>());
+    } else if (s.contains("atom_list")) {
+      h.phva_atoms = lowerCopy(s.at("atom_list").get<std::string>());
+    }
+    JSON_OPT(s, "zero_freq_value", h.zero_freq_value);
+    if (s.contains("fd_scheme")) {
+      h.fd_scheme = lowerCopy(s.at("fd_scheme").get<std::string>());
+    }
+    JSON_OPT(s, "resume", h.resume);
+    JSON_OPT(s, "checkpoint_path", h.checkpoint_path);
+    JSON_OPT(s, "write_modes", h.write_modes);
+  }
+
   // [Instanton]
   if (j.contains("Instanton")) {
     auto &s = j.at("Instanton");
@@ -770,6 +780,15 @@ void from_json(const json &j, Parameters &p) {
                                   "rate, not " +
                                   o.mode);
     }
+  }
+
+  // The ini loader derives these from the femtosecond inputs whether or
+  // not the keys are present; validate_and_link does not.
+  {
+    auto &th = ParametersLoadAccess::thermostat_options(p);
+    const double timeUnit = ParametersLoadAccess::constants(p).timeUnit;
+    th.andersen_tcol = timeUnit > 0.0 ? th.andersen_tcol_input / timeUnit : 0.0;
+    th.path_pile_tau = timeUnit > 0.0 ? th.path_pile_tau_input / timeUnit : 0.0;
   }
 
   // Resolve computed fields
