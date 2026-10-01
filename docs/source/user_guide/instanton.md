@@ -215,6 +215,8 @@ formula uses the Hessian of every bead.
 
 `half_ring` defaults to enabled. On an even bead count the potential is
 evaluated from one turning point to the other and copied onto the mirror.
+The reaction coordinate on that half stays monotone, so the search cannot
+settle on an out-and-back bounce.
 An odd count keeps every bead. `energy_shift` (default 0, in eV) is
 subtracted from every bead potential and from the reactant and saddle
 energies in the rate.

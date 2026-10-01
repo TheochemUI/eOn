@@ -1913,6 +1913,71 @@ VectorXd chainIndexOneStep(const std::vector<RingMode> &ritz,
   return step;
 }
 
+// Non-increasing isotonic regression (pool adjacent violators).
+std::vector<double> pavaNonIncreasing(const std::vector<double> &values) {
+  const long n = static_cast<long>(values.size());
+  struct Block {
+    long start;
+    long end;
+    double average;
+    double weight;
+  };
+  std::vector<Block> blocks;
+  blocks.reserve(static_cast<size_t>(n));
+  for (long i = 0; i < n; ++i) {
+    blocks.push_back(Block{i, i, -values[static_cast<size_t>(i)], 1.0});
+    while (blocks.size() >= 2 &&
+           blocks[blocks.size() - 2].average > blocks.back().average) {
+      const Block b = blocks.back();
+      blocks.pop_back();
+      Block &a = blocks.back();
+      const double w = a.weight + b.weight;
+      a.average = (a.average * a.weight + b.average * b.weight) / w;
+      a.end = b.end;
+      a.weight = w;
+    }
+  }
+  std::vector<double> out(static_cast<size_t>(n));
+  for (const Block &b : blocks) {
+    for (long i = b.start; i <= b.end; ++i) {
+      out[static_cast<size_t>(i)] = -b.average;
+    }
+  }
+  return out;
+}
+
+// Beads 0..last move along the unit vector dir until that coordinate is
+// monotone.
+// The sense follows the two ends, so an arbitrary eigenvector sign is harmless.
+void projectMonotonePrefix(std::vector<VectorXd> &q, long last,
+                           const VectorXd &dir) {
+  if (last < 1 || q.empty() || dir.size() != q.front().size()) {
+    return;
+  }
+  const long m = last;
+  std::vector<double> s(static_cast<size_t>(m + 1));
+  for (long j = 0; j <= m; ++j) {
+    s[static_cast<size_t>(j)] = dir.dot(q[static_cast<size_t>(j)]);
+  }
+  std::vector<double> target;
+  if (s.front() >= s.back()) {
+    target = pavaNonIncreasing(s);
+  } else {
+    std::vector<double> flipped(s.size());
+    for (size_t j = 0; j < s.size(); ++j) {
+      flipped[j] = -s[j];
+    }
+    target = pavaNonIncreasing(flipped);
+    for (double &v : target) {
+      v = -v;
+    }
+  }
+  for (long j = 0; j <= m; ++j) {
+    q[static_cast<size_t>(j)] +=
+        (target[static_cast<size_t>(j)] - s[static_cast<size_t>(j)]) * dir;
+  }
+}
+
 struct NewtonOut {
   std::vector<VectorXd> beads;
   std::vector<double> energies;
@@ -2142,11 +2207,13 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   // Lowest modes of the ring Hessian from matrix-vector products alone,
   // started along the saddle's unstable direction on every bead.
   std::vector<VectorXd> ritzStart(x.size(), VectorXd::Zero(f));
+  VectorXd climbDir(f);
   {
     const ColMajorXd hs0 = hS;
     const Eigen::SelfAdjointEigenSolver<ColMajorXd> es0(hs0);
+    climbDir = es0.eigenvectors().col(0);
     for (auto &v : ritzStart) {
-      v = es0.eigenvectors().col(0);
+      v = climbDir;
     }
   }
   // The climb follows the mode that overlaps the last one, as in dimer and
@@ -2158,6 +2225,11 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     if (n0 > 0.0) {
       scale(track, 1.0 / n0);
     }
+  }
+  // A half chain that folds back is a second bounce. The single instanton
+  // is monotone in the saddle's unstable direction.
+  if (half) {
+    projectMonotonePrefix(x, static_cast<long>(x.size()) - 1, climbDir);
   }
   auto viewOf = [&](const Obj &ev) {
     nullRing = ringRigid(x);
@@ -2362,14 +2434,25 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       if (!(big > 0.0)) {
         return false;
       }
-      if (big > trust) {
-        dir *= trust / big;
-      }
       std::vector<VectorXd> trial = x;
       addPacked(trial, dir);
+      if (half) {
+        projectMonotonePrefix(trial, static_cast<long>(trial.size()) - 1,
+                              climbDir);
+      }
       if (!finiteBeads(trial)) {
         return false;
       }
+      VectorXd taken(dir.size());
+      for (size_t k = 0; k < x.size(); ++k) {
+        taken.segment(static_cast<long>(k) * f, f) =
+            trial[k] - x[static_cast<size_t>(k)];
+      }
+      if (!(packedBeadNorm(taken, f) > 0.0) ||
+          !taken.array().isFinite().all()) {
+        return false;
+      }
+      dir = taken;
       Obj next = objective(trial);
       if (!finiteBeads(next.grad) || !std::isfinite(next.u)) {
         return false;
@@ -2471,7 +2554,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
                                             cur.grad, v.tau, nullRing);
     bool moved = false;
     VectorXd dir = step;
-    // Clip to the trust radius first, so each halving is a new trial point.
+    // Clip to the trust radius once, then halve that capped step.
     if (dir.size() > 0) {
       const double big0 = packedBeadNorm(dir, f);
       if (big0 > trust) {
@@ -2814,7 +2897,20 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
       q[b] = mid;
     }
   };
+  // The mirror of an out-and-back bounce is symmetric too. A monotone
+  // reaction coordinate on beads 0..N/2 leaves that bounce out of the step.
+  auto projectFold = [&](std::vector<VectorXd> &q) {
+    if (!fold) {
+      return;
+    }
+    projectMonotonePrefix(q, N / 2, dir);
+    const long m = N / 2;
+    for (long j = 1; j < m; ++j) {
+      q[static_cast<size_t>(N - j)] = q[static_cast<size_t>(j)];
+    }
+  };
   symmetrize(x);
+  projectFold(x);
 
   RingEval cur = evaluateRing(x, c, evalPot, options.energyShift);
   // The unstable mode of the ring starts as every bead moving along the
@@ -2903,6 +2999,7 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
       trial[k] = x[k] - d[k];
     }
     symmetrize(trial);
+    projectFold(trial);
     RingEval next = evaluateRing(trial, c, evalPot, options.energyShift);
     const double prevCurv = curvature;
     const long restart = options.lanczosRestart;
