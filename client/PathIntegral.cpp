@@ -117,7 +117,10 @@ VectorXd ecoFit(long nBeads, double xmax) {
   MatrixXd h(nfree, nfree);
   objective(y, s, g, h);
   bool exhausted = true;
-  for (int iter = 0; iter < 500; ++iter) {
+  // The near-degenerate high-frequency group leaves a valley whose Hessian
+  // eigenvalues span about twelve decades; the shifted Newton step crosses
+  // it in several hundred iterations, so the cap follows the paper's 10000.
+  for (int iter = 0; iter < 10000; ++iter) {
     Eigen::SelfAdjointEigenSolver<MatrixXd> es(h);
     if (es.info() != Eigen::Success) {
       throw std::runtime_error("economised spring fit: Hessian eigensolve");
@@ -165,11 +168,7 @@ VectorXd ecoFit(long nBeads, double xmax) {
       break;
     }
   }
-  double gmax = 0.0;
-  for (long k = 0; k < nfree; ++k) {
-    gmax = std::max(gmax, std::fabs(g[k]));
-  }
-  if (exhausted && s > 1e-8 && gmax > 1e-6) {
+  if (exhausted) {
     throw std::runtime_error("economised spring fit did not converge");
   }
   return y;
