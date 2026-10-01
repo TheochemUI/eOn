@@ -6,9 +6,8 @@ option('with_mpi', type : 'feature', value : 'disabled',
 # auto: Linux links min_mode_method=gprdimer when subprojects/gpr_optim
 # is present and the subproject configures. A failed fetch leaves the
 # dimer off. enabled stops configuration instead.
-# The checkout carries that tree. Refresh it with
+# Place the checkout with
 #   rsync -a ../gpr_optim/ subprojects/gpr_optim/
-# The revision line in subprojects/gpr_optim.wrap is the pin.
 # A build directory that still stores true or false rejects the feature
 # default auto. Map it once with
 #   python scripts/migrate_with_gprd_option.py <builddir>

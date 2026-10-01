@@ -1,12 +1,9 @@
-"""The GP dimer pin is one commit, named in the wrap and the workflow, and
-the private gpr_optim tree never enters the eOn repository."""
+"""The GP dimer checkout stays untracked, and eOn does not carry its wrap."""
 
-import re
 import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-REV = "b55c89e2115388f901839aba2a5808bfcef06f68"
 
 
 def _git(*args):
@@ -15,23 +12,30 @@ def _git(*args):
     )
 
 
-def test_wrap_and_workflow_pin_gpr_optim_develop():
-    wrap = (ROOT / "subprojects" / "gpr_optim.wrap").read_text()
-    workflow = (ROOT / ".github" / "workflows" / "ci_build_gprd.yml").read_text()
-    found = re.search(r"^revision = ([0-9a-f]{40})$", wrap, re.M)
-    assert found is not None
-    assert found.group(1) == REV
-    assert REV in workflow
-
-
-def test_private_gpr_optim_checkout_stays_untracked():
-    # A local checkout of the private repository is ignored, and nothing
-    # under subprojects/gpr_optim is tracked by eOn.
-    ignored = _git("check-ignore", "-q", "subprojects/gpr_optim/meson.build")
-    assert ignored.returncode == 0
-    tracked = _git("ls-files", "--", "subprojects/gpr_optim")
+def test_gpr_optim_wrap_is_not_in_the_tree():
+    assert not (ROOT / "subprojects" / "gpr_optim.wrap").exists()
+    tracked = _git(
+        "ls-files",
+        "--",
+        "subprojects/gpr_optim.wrap",
+        "subprojects/rgmin.wrap",
+        "subprojects/anneal.wrap",
+        "subprojects/gpr_optim",
+    )
     assert tracked.returncode == 0
     assert tracked.stdout.strip() == ""
+    for path in (
+        "subprojects/gpr_optim.wrap",
+        "subprojects/rgmin.wrap",
+        "subprojects/anneal.wrap",
+        "subprojects/gpr_optim/meson.build",
+    ):
+        ignored = _git("check-ignore", "-q", path)
+        assert ignored.returncode == 0, path
+    workflow = (ROOT / ".github" / "workflows" / "ci_build_gprd.yml").read_text()
+    assert "gpr_optim.wrap" not in workflow.replace(
+        "test ! -e subprojects/gpr_optim.wrap", ""
+    )
 
 
 def test_gp_dimer_workflow_does_not_use_a_private_key():

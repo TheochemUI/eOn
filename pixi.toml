@@ -271,13 +271,9 @@ meson install -C bbdir
 # For exact reproducibility -Dwith_ase_nwchem should be used but it shouldn't matter
 # For debugging set
 # --buildtype debug -Db_sanitize=address
-# The rsync refreshes the tracked subprojects/gpr_optim tree from a sibling
-# checkout; commit the result when the pin in subprojects/gpr_optim.wrap moves
-#
 # -Dwith_metatomic=True -Dpip_metatomic=True \
 # -Dtorch_version=2.7 \
 cmd = """
-rsync -vaz ../gpr_optim subprojects && \
 meson setup bbdir --reconfigure \
       --prefix=$CONDA_PREFIX \
       --libdir=lib --buildtype {{ buildtype }} \

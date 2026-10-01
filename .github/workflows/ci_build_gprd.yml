@@ -14,7 +14,6 @@ on:
       - "client/EigenmodeStrategy.cpp"
       - "client/meson.build"
       - "meson_options.txt"
-      - "subprojects/gpr_optim.wrap"
       - "tests/test_one_pt.py"
       - "tests/test_gpr_optim_pin.py"
   pull_request:
@@ -25,13 +24,11 @@ on:
       - "client/EigenmodeStrategy.cpp"
       - "client/meson.build"
       - "meson_options.txt"
-      - "subprojects/gpr_optim.wrap"
       - "tests/test_one_pt.py"
       - "tests/test_gpr_optim_pin.py"
 permissions:
   contents: read
 env:
-  # gpr_optim develop. Same hash as subprojects/gpr_optim.wrap.
   GPR_OPTIM_REV: b55c89e2115388f901839aba2a5808bfcef06f68
 jobs:
   gprd-integration:
@@ -56,12 +53,11 @@ jobs:
           path: subprojects/gpr_optim
           token: ${{ secrets.GPR_OPTIM_TOKEN }}
           persist-credentials: false
-      - name: GP dimer pin is the wrap revision
+      - name: GP dimer checkout matches the pin
         if: env.HAVE_GPR_OPTIM == 'true'
         run: |
           set -euo pipefail
-          rev=$(sed -n 's/^revision = //p' subprojects/gpr_optim.wrap)
-          test "$rev" = "$GPR_OPTIM_REV"
+          test ! -e subprojects/gpr_optim.wrap
           test "$(git -C subprojects/gpr_optim rev-parse HEAD)" = "$GPR_OPTIM_REV"
           test -f subprojects/gpr_optim/gpr/AtomicDimer.h
       - uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e # v0.9.4

@@ -47,15 +47,13 @@ need_cmd ninja
 need_cmd python
 
 ensure_gpr_optim() {
-  if [[ -d "$ROOT/subprojects/gpr_optim/bench_data/petmad" ]]; then
+  if [[ -n "${EON_PET_MAD_MODEL:-}" && -f "${EON_PET_MAD_MODEL}" ]]; then
     return 0
   fi
-  if [[ -d "$ROOT/../gpr_optim" ]]; then
-    log "rsync gpr_optim → subprojects/ (bench data + headers)"
-    rsync -a --delete --exclude .git "$ROOT/../gpr_optim/" "$ROOT/subprojects/gpr_optim/"
+  if [[ -d "$ROOT/subprojects/gpr_optim/bench_data/petmad" || -d "$ROOT/../gpr_optim/bench_data/petmad" ]]; then
     return 0
   fi
-  echo "error: need subprojects/gpr_optim/bench_data/petmad (rsync gpr_optim or set EON_PET_MAD_MODEL)" >&2
+  echo "error: need PET-MAD bench data (set EON_PET_MAD_MODEL, or a gpr_optim checkout beside this repo)" >&2
   exit 2
 }
 
