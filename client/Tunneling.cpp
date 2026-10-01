@@ -2101,9 +2101,24 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     physical.assign(x.size(), hS);
   } else {
     const double eps = options.lanczosStep > 0.0 ? options.lanczosStep : 1e-4;
-    physical.resize(x.size());
     for (size_t j = 0; j < x.size(); ++j) {
       physical[j] = fdPhysicalHessian(x[j], potential, eps);
+    }
+  }
+  // Exact zeros of the saddle Hessian are rigid displacements. The same
+  // vector on every bead is a null vector of the chain, and the block LU
+  // then returns an arbitrary step. Hold those directions at a
+  // spring-sized curvature for the solve only.
+  std::vector<VectorXd> rigid;
+  {
+    const Eigen::SelfAdjointEigenSolver<ColMajorXd> esRigid(hS);
+    const auto ev = esRigid.eigenvalues();
+    const double span = std::max(std::abs(ev(0)), std::abs(ev(ev.size() - 1)));
+    const double lim = 1e-6 * std::max(1.0, span);
+    for (long i = 0; i < ev.size(); ++i) {
+      if (std::abs(ev(i)) <= lim) {
+        rigid.push_back(VectorXd(esRigid.eigenvectors().col(i)));
+      }
     }
   }
 
@@ -2235,7 +2250,16 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     nullRing = ringRigid(x);
     View v;
     v.tau = half ? VectorXd() : timeTranslation(x);
-    v.diag = ringDiagonal(physical, c, half);
+    std::vector<MatrixXd> pinned = physical;
+    if (!rigid.empty()) {
+      const double pin = std::max(1.0, c);
+      for (auto &block : pinned) {
+        for (const auto &r : rigid) {
+          block.noalias() += pin * (r * r.transpose());
+        }
+      }
+    }
+    v.diag = ringDiagonal(pinned, c, half);
     auto apply = [&](const std::vector<VectorXd> &vec) {
       return applyDiagonal(v.diag, c, !half, vec);
     };
@@ -2419,6 +2443,12 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   bool exactAtX = false;
   for (long it = 0; it < options.maxIterations; ++it) {
     ++entries;
+    if (f == 1) {
+      const double eps = options.lanczosStep > 0.0 ? options.lanczosStep : 1e-4;
+      for (size_t j = 0; j < x.size(); ++j) {
+        physical[j] = fdPhysicalHessian(x[j], potential, eps);
+      }
+    }
     const View v = viewOf(cur);
     if (done(v)) {
       converged = true;
@@ -2467,7 +2497,18 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
         }
         const VectorXd jd = packBeads(applyDiagonal(v.diag, c, !half, dirRing));
         const double pred = gflat.dot(dir) + 0.5 * dir.dot(jd);
-        ratio = std::abs(pred) > 1e-30 ? (next.u - cur.u) / pred : 1.0;
+        const double actual = next.u - cur.u;
+        // Predicted and actual changes below the energy resolution are
+        // roundoff. Their ratio is not a disagreement with the model,
+        // and rejecting it repeats one micro-step until the budget ends.
+        const double unresolved = 1e-12 * std::max(1.0, std::abs(cur.u));
+        if (std::abs(pred) <= unresolved) {
+          const bool quiet = std::abs(actual) <= unresolved &&
+                             packedBeadNorm(dir, f) <= trustFloor;
+          ratio = quiet ? 1.0 : 0.0;
+        } else {
+          ratio = actual / pred;
+        }
         ratioOk = std::isfinite(ratio) && ratio >= 0.1 && ratio <= 3.0;
         // Near the saddle the predicted change sits at the round-off of
         // U_N and the ratio is noise; there the step stands on the residual.
@@ -2619,8 +2660,9 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   return out;
 }
 
-// Below 0.75 Tc an empty guess walks down from 0.85 Tc. Each stage passes a
-// full-length ring onward, so the walk is not repeated on the way back in.
+// A one-dimensional bead carries its own curvature, so the requested
+// temperature is solved first. Below 0.75 Tc an empty guess that does not
+// converge walks down from 0.85 Tc, and that walk replaces the first try.
 RateInstanton optimizeRateByNewton(const VectorXd &saddle,
                                    const MatrixXd &hessSaddle, double beta,
                                    std::vector<VectorXd> guess,
@@ -2647,6 +2689,30 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
 
   const bool cool = static_cast<long>(guess.size()) != nBeads &&
                     inst.temperature < 0.75 * inst.crossover;
+  // One dimension solves the requested temperature before any walk. A
+  // higher-dimensional empty guess below 0.75 Tc keeps the walk, which
+  // starts from a curvature copied off the saddle.
+  if (saddle.size() == 1 || !cool) {
+    if (static_cast<long>(guess.size()) != nBeads) {
+      const ColMajorXd hS = 0.5 * (hessSaddle + hessSaddle.transpose());
+      const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(hS);
+      guess = cosineSeed(saddle, es.eigenvectors().col(0), es.eigenvalues()(0),
+                         inst.temperature, inst.crossover, nBeads, potential);
+    }
+    const double bnh = inst.betaN * kHbar;
+    const double spring = 1.0 / (bnh * bnh);
+    const NewtonOut got = newtonInstanton(std::move(guess), spring, hessSaddle,
+                                          options, potential);
+    inst.beads = got.beads;
+    inst.energies = got.energies;
+    inst.ringPotential = got.ringPotential;
+    inst.bN = got.bN;
+    inst.iterations = got.iterations;
+    inst.converged = got.converged;
+    if (inst.converged || !cool) {
+      return inst;
+    }
+  }
   if (cool) {
     std::vector<double> temps;
     for (double t = 0.85 * inst.crossover; t > inst.temperature * 1.05;

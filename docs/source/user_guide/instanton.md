@@ -248,8 +248,10 @@ modes come from Lanczos on matrix-vector products. The bead curvature
 blocks start from the saddle Hessian (`initial_hessians = saddle`, no force
 calls) and follow accepted moves with a Bofill update, rebuilt from
 finite differences up to three times when the trust radius reaches its
-floor;
-`initial_hessians = finite_difference` takes {math}`2f` gradient calls per
+floor. Near-zero eigenvectors of the saddle Hessian are held at a
+spring-sized curvature in the Newton step, so a rigid displacement does
+not singularize the chain. `initial_hessians = finite_difference` takes
+{math}`2f` gradient calls per
 bead first. The rate uses the bead Hessians chosen by `hessian_final`, not
 that update. On the one-dimensional Eckart barrier the search converges
 in 4 to 7 steps from either seed.
