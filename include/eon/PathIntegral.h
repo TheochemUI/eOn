@@ -100,6 +100,10 @@ public:
   /// projected onto the hyperplane when one is set.
   void setBeads(const std::vector<VectorXd> &beads);
   [[nodiscard]] const std::vector<VectorXd> &beads() const { return q_; }
+  [[nodiscard]] const std::vector<VectorXd> &momenta() const { return p_; }
+  /// One momentum vector of length 3 * nAtoms per bead; fixed coordinates
+  /// are zeroed.
+  void setMomenta(const std::vector<VectorXd> &momenta);
   void thermalMomenta();
 
   /// Hold n · (q_centroid - origin) = 0. n is normalised on the free
@@ -107,6 +111,9 @@ public:
   void setHyperplane(const VectorXd &normal, const VectorXd &origin);
 
   void step(Potential &pot, const double *box, bool record);
+  /// Thermostat-free RPMD step: velocity Verlet with the free ring
+  /// propagated exactly in normal modes. Refused while a hyperplane is set.
+  void nveStep(Potential &pot, const double *box);
 
   [[nodiscard]] double kineticCv() const;
   [[nodiscard]] double meanForce() const;

@@ -446,6 +446,23 @@ void RingPolymer::setBeads(const std::vector<VectorXd> &beads) {
   haveForces_ = false;
 }
 
+void RingPolymer::setMomenta(const std::vector<VectorXd> &momenta) {
+  if (static_cast<long>(momenta.size()) != nBeads_) {
+    throw std::invalid_argument("path integral bead count mismatch");
+  }
+  for (long bead = 0; bead < nBeads_; ++bead) {
+    if (momenta[static_cast<size_t>(bead)].size() != nDof_) {
+      throw std::invalid_argument(
+          "path integral momentum has the wrong length");
+    }
+    for (long a = 0; a < nDof_; ++a) {
+      p_[static_cast<size_t>(bead)][a] =
+          free_[static_cast<size_t>(a)] ? momenta[static_cast<size_t>(bead)][a]
+                                        : 0.0;
+    }
+  }
+}
+
 void RingPolymer::setHyperplane(const VectorXd &normal,
                                 const VectorXd &origin) {
   if (normal.size() != nDof_ || origin.size() != nDof_) {
@@ -779,6 +796,20 @@ void RingPolymer::step(Potential &pot, const double *box, bool record) {
   projectMomentum();
   thermostat(half);
   projectMomentum();
+}
+
+void RingPolymer::nveStep(Potential &pot, const double *box) {
+  if (constrain_) {
+    throw std::logic_error("path integral NVE step with a hyperplane set");
+  }
+  const double half = 0.5 * opt_.dt;
+  if (!haveForces_) {
+    forces(pot, box);
+  }
+  kick(half, false);
+  propagate(opt_.dt);
+  forces(pot, box);
+  kick(half, false);
 }
 
 Sample RingPolymer::sample(Potential &pot, const double *box,
