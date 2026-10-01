@@ -25,7 +25,7 @@ meson setup "$BUILD" \
   -Dwith_mpi=disabled \
   -Dwith_xtb=false \
   -Dwith_metatomic=false \
-  -Dwith_gprd=false \
+  -Dwith_gprd=disabled \
   -Dwith_serve=false \
   -Db_coverage=true \
   --buildtype=debug

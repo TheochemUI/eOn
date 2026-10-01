@@ -221,7 +221,8 @@ void bind_eigenmode(nb::module_ &m) {
         return false;
 #endif
       },
-      "True if compiled with -Dwith_gprd=true (AtomicGPDimer / GP accelerant)");
+      "True if compiled with the GP dimer (-Dwith_gprd=enabled, or auto when "
+      "gpr_optim configures; AtomicGPDimer / GP accelerant)");
 
   // --- Chemist entry: Dimer(method="improved", accelerant=None|"gp") ---
   nb::class_<PyDimer>(
