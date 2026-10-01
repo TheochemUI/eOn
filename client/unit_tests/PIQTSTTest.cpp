@@ -513,7 +513,10 @@ TEST_CASE("One-bead RPMD recrossing matches classical trajectories on a "
   EckartPot pot;
   pot.k0 = 4.0 * omegaB2;
   pot.theta = theta;
-  const auto o = recrossingAtTop(t, 1, 100, 20);
+  // Parents 40 steps apart, past the transverse period of 2.5 time units,
+  // so the jackknife over parents sees nearly independent samples.
+  auto o = recrossingAtTop(t, 1, 800, 20);
+  o.spacing = 40;
   const auto k = piqtst::recrossing(pot, line(true), o);
   const Estimate md = classicalTransmission(pot, beta, 20000, 50, o.steps, 0.1);
   const double harmonic =
@@ -522,7 +525,7 @@ TEST_CASE("One-bead RPMD recrossing matches classical trajectories on a "
   const double combined = std::hypot(k.plateauError, md.error);
   CAPTURE(k.plateau, k.plateauError, md.kappa, md.error, harmonic);
   REQUIRE(k.plateauError > 0.0);
-  REQUIRE(k.plateauError < 0.02);
+  REQUIRE(k.plateauError < 0.01);
   REQUIRE(k.plateau + 5.0 * k.plateauError < 0.9);
   REQUIRE(std::abs(k.plateau - md.kappa) < 3.0 * combined);
   REQUIRE(std::abs(k.plateau - harmonic) < 3.0 * k.plateauError + 0.005);
