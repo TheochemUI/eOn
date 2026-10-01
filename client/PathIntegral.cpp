@@ -517,21 +517,25 @@ void RingPolymer::thermalMomenta() {
 
 void RingPolymer::toNormal(const std::vector<VectorXd> &src,
                            std::vector<VectorXd> &dst) const {
+  MatrixXd packed(nDof_, nBeads_);
+  for (long j = 0; j < nBeads_; ++j) {
+    packed.col(j) = src[static_cast<size_t>(j)];
+  }
+  const MatrixXd out = packed * modes_.transpose();
   for (long k = 0; k < nBeads_; ++k) {
-    dst[static_cast<size_t>(k)].setZero();
-    for (long j = 0; j < nBeads_; ++j) {
-      dst[static_cast<size_t>(k)] += modes_(k, j) * src[static_cast<size_t>(j)];
-    }
+    dst[static_cast<size_t>(k)] = out.col(k);
   }
 }
 
 void RingPolymer::fromNormal(const std::vector<VectorXd> &src,
                              std::vector<VectorXd> &dst) const {
+  MatrixXd packed(nDof_, nBeads_);
+  for (long k = 0; k < nBeads_; ++k) {
+    packed.col(k) = src[static_cast<size_t>(k)];
+  }
+  const MatrixXd out = packed * modes_;
   for (long j = 0; j < nBeads_; ++j) {
-    dst[static_cast<size_t>(j)].setZero();
-    for (long k = 0; k < nBeads_; ++k) {
-      dst[static_cast<size_t>(j)] += modes_(k, j) * src[static_cast<size_t>(k)];
-    }
+    dst[static_cast<size_t>(j)] = out.col(j);
   }
 }
 
@@ -700,41 +704,49 @@ void RingPolymer::propagate(double h) {
   fromNormal(pnm_, p_);
 }
 
+// The centroid mode is the bead sum over sqrt(P), so a change d of that
+// mode moves every bead by d / sqrt(P) and leaves the other modes alone.
 void RingPolymer::projectPosition() {
   if (!constrain_) {
     return;
   }
-  toNormal(q_, qnm_);
-  const double scale = std::sqrt(static_cast<double>(nBeads_));
+  const VectorXd c = centroid();
   double sigma = 0.0;
   for (long a : freeIndex_) {
-    sigma += planeNormal_[a] * (qnm_[0][a] / scale - planeOrigin_[a]);
+    sigma += planeNormal_[a] * (c[a] - planeOrigin_[a]);
   }
-  for (long a : freeIndex_) {
-    qnm_[0][a] -= sigma * planeNormal_[a] * scale;
+  for (long bead = 0; bead < nBeads_; ++bead) {
+    for (long a : freeIndex_) {
+      q_[static_cast<size_t>(bead)][a] -= sigma * planeNormal_[a];
+    }
   }
-  fromNormal(qnm_, q_);
 }
 
 void RingPolymer::projectMomentum() {
   if (!constrain_) {
     return;
   }
-  toNormal(p_, pnm_);
+  VectorXd sum = VectorXd::Zero(nDof_);
+  for (long bead = 0; bead < nBeads_; ++bead) {
+    sum += p_[static_cast<size_t>(bead)];
+  }
+  // p_0 = sum / sqrt(P); remove lambda n from p_0.
+  const double scale = std::sqrt(static_cast<double>(nBeads_));
   double num = 0.0;
   double den = 0.0;
   for (long a : freeIndex_) {
     const double m = mass_[static_cast<size_t>(a)];
-    num += planeNormal_[a] * pnm_[0][a] / m;
+    num += planeNormal_[a] * (sum[a] / scale) / m;
     den += planeNormal_[a] * planeNormal_[a] / m;
   }
   if (den > 0.0) {
-    const double lambda = num / den;
-    for (long a : freeIndex_) {
-      pnm_[0][a] -= lambda * planeNormal_[a];
+    const double shift = num / den / scale;
+    for (long bead = 0; bead < nBeads_; ++bead) {
+      for (long a : freeIndex_) {
+        p_[static_cast<size_t>(bead)][a] -= shift * planeNormal_[a];
+      }
     }
   }
-  fromNormal(pnm_, p_);
 }
 
 void RingPolymer::step(Potential &pot, const double *box, bool record) {
