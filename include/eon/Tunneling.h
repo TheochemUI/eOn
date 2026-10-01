@@ -22,6 +22,7 @@
 
 #include "Matter.h"
 
+#include <array>
 #include <functional>
 #include <memory>
 #include <string>
@@ -273,6 +274,17 @@ struct RateInstantonOptions {
   /// Hessian to every bead and lets the Bofill update carry it, at no force
   /// calls; "finite_difference" takes 2 f gradient calls per bead first.
   std::string initialHessians = "saddle";
+  /// Rigid motions of the ring: a translation, or one rotation about the
+  /// ring's centre of mass, applied to every bead alike leaves U_N
+  /// unchanged. The search rebuilds those directions from the current beads
+  /// at every step (the rigid quotient) and keeps them out of the step and
+  /// out of the classification, as it does the imaginary-time cycle. Empty
+  /// masses switch it off (atoms fixed). rigidSqrtMasses holds sqrt(m) per
+  /// atom, rigidReference the Cartesian positions q is measured from (3 per
+  /// atom), rigidRotations which rotations are free (a free cluster).
+  std::vector<double> rigidSqrtMasses;
+  VectorXd rigidReference;
+  std::array<bool, 3> rigidRotations{{false, false, false}};
 };
 
 /// Spectrum of a closed ring's Hessian without forming it.

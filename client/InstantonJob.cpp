@@ -201,6 +201,18 @@ public:
     }
     return qr.householderQ() * MatrixXd::Identity(n, rank);
   }
+  const std::vector<double> &sqrtMasses() const { return sqrtMass_; }
+  /// Cartesian positions of the free atoms of the reference, 3 per atom.
+  VectorXd referenceFree() const {
+    const AtomMatrix r = ref_.getPositions();
+    VectorXd out(dimension());
+    for (size_t k = 0; k < free_.size(); ++k) {
+      for (int c = 0; c < 3; ++c) {
+        out(static_cast<long>(3 * k) + c) = r(free_[k], c);
+      }
+    }
+    return out;
+  }
   VectorXd gradient(const AtomMatrix &forces) const {
     VectorXd g(dimension());
     for (size_t k = 0; k < free_.size(); ++k) {
@@ -293,6 +305,124 @@ std::vector<VectorXd> doubledRing(const std::vector<VectorXd> &ring) {
 } // namespace
 
 namespace {
+
+/// Steepest-descent path in mass-weighted coordinates out of the saddle
+/// along both signs of its unstable mode, ordered from one end through the
+/// saddle to the other, reactant end first. Each step is q - alpha g with alpha
+/// from backtracking, starting at the inverse of the stiffest saddle curvature,
+/// and no atom moves more than `cartStep` Angstrom. A side ends where the
+/// gradient falls below `gradTol` or no step lowers the energy. It stands in
+/// for a band when none is given.
+void steepestDescentPath(const VectorXd &qSaddle, double vSaddle,
+                         const MatrixXd &hSaddle,
+                         const std::vector<double> &sqrtMass,
+                         const tunneling::BatchPotential &evaluate,
+                         std::vector<VectorXd> &pathQ,
+                         std::vector<double> &pathV) {
+  constexpr double cartStep = 0.01;
+  constexpr double gradTol = 1e-3;
+  constexpr long maxSteps = 4000;
+  const long n = qSaddle.size();
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> es(
+      0.5 * (hSaddle + hSaddle.transpose()));
+  const VectorXd mode = es.eigenvectors().col(0);
+  const double stiff = es.eigenvalues().cwiseAbs().maxCoeff();
+  // The largest Cartesian move of a mass-weighted displacement.
+  auto cartesian = [&](const VectorXd &dq) {
+    double big = 0.0;
+    for (long i = 0; i < n; ++i) {
+      const size_t a = static_cast<size_t>(i / 3);
+      const double m = a < sqrtMass.size() ? sqrtMass[a] : 1.0;
+      big = std::max(big, std::abs(dq(i)) / m);
+    }
+    return big;
+  };
+  auto capped = [&](VectorXd dq) {
+    const double big = cartesian(dq);
+    if (big > cartStep) {
+      dq *= cartStep / big;
+    }
+    return dq;
+  };
+  auto at = [&](const VectorXd &q, double &v, VectorXd &g) {
+    std::vector<VectorXd> one{q};
+    std::vector<double> vs;
+    std::vector<VectorXd> gs;
+    evaluate(one, vs, gs);
+    if (vs.empty() || gs.empty() || !std::isfinite(vs[0]) ||
+        !gs[0].array().isFinite().all()) {
+      return false;
+    }
+    v = vs[0];
+    g = gs[0];
+    return true;
+  };
+  std::vector<std::vector<VectorXd>> sideQ(2);
+  std::vector<std::vector<double>> sideV(2);
+  for (int side = 0; side < 2; ++side) {
+    const double big0 = cartesian(mode);
+    VectorXd q = qSaddle + (side == 0 ? -1.0 : 1.0) * (cartStep / big0) * mode;
+    double v = 0.0;
+    VectorXd g;
+    if (!at(q, v, g) || !(v < vSaddle)) {
+      continue;
+    }
+    sideQ[side].push_back(q);
+    sideV[side].push_back(v);
+    double alpha = stiff > 0.0 ? 1.0 / stiff : 1.0;
+    for (long k = 0; k < maxSteps && g.norm() > gradTol; ++k) {
+      bool lowered = false;
+      for (int halving = 0; halving < 30 && !lowered; ++halving) {
+        const VectorXd trial = q + capped(-alpha * g);
+        double vt = 0.0;
+        VectorXd gt;
+        if (at(trial, vt, gt) && vt < v) {
+          q = trial;
+          v = vt;
+          g = gt;
+          lowered = true;
+          alpha *= 1.2;
+        } else {
+          alpha *= 0.5;
+        }
+      }
+      if (!lowered) {
+        break;
+      }
+      sideQ[side].push_back(q);
+      sideV[side].push_back(v);
+    }
+  }
+  pathQ.assign(sideQ[0].rbegin(), sideQ[0].rend());
+  pathV.assign(sideV[0].rbegin(), sideV[0].rend());
+  pathQ.push_back(qSaddle);
+  pathV.push_back(vSaddle);
+  pathQ.insert(pathQ.end(), sideQ[1].begin(), sideQ[1].end());
+  pathV.insert(pathV.end(), sideV[1].begin(), sideV[1].end());
+  // The reactant sits at q = 0, and a path starts at the reactant end.
+  if (pathQ.back().norm() < pathQ.front().norm()) {
+    std::reverse(pathQ.begin(), pathQ.end());
+    std::reverse(pathV.begin(), pathV.end());
+  }
+}
+
+/// Whether the ring has beads on both sides of the saddle's dividing plane,
+/// the plane through the saddle normal to its unstable mode. A ring that
+/// converged off that plane belongs to another saddle.
+bool straddlesSaddle(const std::vector<VectorXd> &beads,
+                     const VectorXd &qSaddle, const MatrixXd &hSaddle) {
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> es(
+      0.5 * (hSaddle + hSaddle.transpose()));
+  const VectorXd mode = es.eigenvectors().col(0);
+  double lo = std::numeric_limits<double>::infinity();
+  double hi = -lo;
+  for (const auto &b : beads) {
+    const double s = (b - qSaddle).dot(mode);
+    lo = std::min(lo, s);
+    hi = std::max(hi, s);
+  }
+  return lo < 0.0 && hi > 0.0;
+}
 
 /// Mode rate: the ring-polymer instanton through the saddle out of the
 /// reactant, and its thermal rate.
@@ -423,6 +553,37 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       }
     }
   }
+  // No band: the steepest-descent path out of the saddle carries the ring
+  // seed by the period condition. Cooling a cosine from the crossover finds
+  // the ring only where it grows continuously out of the saddle; where it
+  // does not, the search walks to a neighbouring saddle.
+  if (!profile) {
+    pathQ.clear();
+    pathV.clear();
+    const long before = PotRegistry::get().total_force_calls();
+    steepestDescentPath(qSaddle, vSaddle, hSaddle, mw.sqrtMasses(), evaluate,
+                        pathQ, pathV);
+    std::vector<double> arc(pathQ.size(), 0.0);
+    for (size_t k = 1; k < pathQ.size(); ++k) {
+      arc[k] = arc[k - 1] + (pathQ[k] - pathQ[k - 1]).norm();
+    }
+    try {
+      profile = std::make_unique<tunneling::Profile>(std::move(arc), pathV);
+      hwPath = tunneling::hbarOmega(tunneling::wellCurvature(*profile, true));
+      EONC_LOG_INFO("[Instanton] steepest-descent path of {} points, {} "
+                    "force calls",
+                    pathQ.size(),
+                    PotRegistry::get().total_force_calls() - before);
+    } catch (const std::exception &ex) {
+      EONC_LOG_WARNING("[Instanton] steepest-descent path unusable: {}; "
+                       "seeding from the saddle mode",
+                       ex.what());
+      if (!profile) {
+        pathQ.clear();
+        pathV.clear();
+      }
+    }
+  }
 
   const std::string tableFile = "rate_instanton.dat";
   std::ofstream table(tableFile);
@@ -528,13 +689,19 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     ro.halfRing = o.half_ring;
     ro.initialHessians = o.initial_hessians;
     ro.energyShift = o.energy_shift;
+    if (static_cast<long>(mw.sqrtMasses().size()) == reactant.numberOfAtoms()) {
+      ro.rigidSqrtMasses = mw.sqrtMasses();
+      ro.rigidReference = mw.referenceFree();
+      ro.rigidRotations = rotationZero;
+    }
     std::vector<VectorXd> guess = ring;
     if (guess.empty() && profile) {
       try {
         guess = tunneling::ringFromPath(pathQ, pathV, beta * tunneling::kHbar,
                                         o.beads);
         EONC_LOG_INFO("[Instanton] ring seeded from {} by the period condition",
-                      o.initial_path);
+                      o.initial_path.empty() ? "the steepest-descent path"
+                                             : o.initial_path);
       } catch (const std::invalid_argument &ex) {
         EONC_LOG_WARNING("[Instanton] {}; seeding from the saddle mode instead",
                          ex.what());
@@ -585,6 +752,12 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
                   temperature, inst.ringPotential, inst.iterations,
                   inst.converged ? "" : " (not converged)");
 
+    if (inst.converged && !straddlesSaddle(inst.beads, qSaddle, hSaddle)) {
+      EONC_LOG_ERROR("[Instanton] {:.4g} K: the ring converged off the "
+                     "saddle's dividing plane, onto another saddle; no rate",
+                     temperature);
+      inst.converged = false;
+    }
     bool rateOk = false;
     if (inst.converged) {
       // Bead Hessians on every stride-th bead of the ring, linear in

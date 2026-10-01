@@ -475,6 +475,8 @@ constexpr long kDenseRing = 4096;
 
 /// Lanczos steps a large ring's Newton view grows to at most; the basis
 /// holds that many ring vectors.
+// Overlap with the last climb below which the lowest mode takes over.
+constexpr double kTrackOverlap = 0.3;
 constexpr long kRitzCap = 400;
 
 using ColMajorXd =
@@ -1766,7 +1768,8 @@ VectorXd chainIndexOneStep(const std::vector<RingMode> &ritz,
                            const Climb &climb,
                            const std::vector<MatrixXd> &diag, double spring,
                            bool closed, const std::vector<VectorXd> &grad,
-                           const VectorXd &tau) {
+                           const VectorXd &tau,
+                           const std::vector<std::vector<VectorXd>> &nullRing) {
   if (climb.index < 0 || ritz.empty() || grad.empty()) {
     return VectorXd();
   }
@@ -1786,8 +1789,24 @@ VectorXd chainIndexOneStep(const std::vector<RingMode> &ritz,
     extras.push_back(tauRing);
     kappas.push_back(spring);
   }
+  // The rigid ring motions are lifted like the cycle.
+  auto onNull = [&](const std::vector<VectorXd> &m) {
+    for (const auto &r : nullRing) {
+      if (std::abs(dot(m, r)) > 0.5) {
+        return true;
+      }
+    }
+    return false;
+  };
+  for (const auto &r : nullRing) {
+    extras.push_back(r);
+    kappas.push_back(spring);
+  }
   for (size_t i = 0; i < ritz.size(); ++i) {
     if (!tauRing.empty() && std::abs(dot(ritz[i].vector, tauRing)) > 0.5) {
+      continue;
+    }
+    if (onNull(ritz[i].vector)) {
       continue;
     }
     const double li = ritz[i].theta;
@@ -1872,6 +1891,12 @@ VectorXd chainIndexOneStep(const std::vector<RingMode> &ritz,
   if (tau.size() == step.size()) {
     step -= step.dot(tau) * tau;
   }
+  for (const auto &r : nullRing) {
+    const VectorXd rf = packBeads(r);
+    if (rf.size() == step.size()) {
+      step -= step.dot(rf) * rf;
+    }
+  }
   if (!step.array().isFinite().all()) {
     return VectorXd();
   }
@@ -1921,6 +1946,75 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   }
   const long f = x.front().size();
   const MatrixXd hS = (0.5 * (hessSaddle + hessSaddle.transpose())).eval();
+  // The rigid quotient: translations and free rotations of the whole ring
+  // about its centre of mass, from the current beads, orthonormalised.
+  const long nAtoms = static_cast<long>(options.rigidSqrtMasses.size());
+  const bool quotient = nAtoms > 0 && 3 * nAtoms == hS.rows() &&
+                        options.rigidReference.size() == 3 * nAtoms;
+  auto ringRigid = [&](const std::vector<VectorXd> &q) {
+    std::vector<std::vector<VectorXd>> out;
+    if (!quotient) {
+      return out;
+    }
+    const long nb = static_cast<long>(q.size());
+    // Cartesian positions and the ring's centre of mass.
+    Eigen::Vector3d centre = Eigen::Vector3d::Zero();
+    double total = 0.0;
+    for (long j = 0; j < nb; ++j) {
+      for (long k = 0; k < nAtoms; ++k) {
+        const double sm = options.rigidSqrtMasses[static_cast<size_t>(k)];
+        const Eigen::Vector3d r =
+            options.rigidReference.segment<3>(3 * k) +
+            q[static_cast<size_t>(j)].segment<3>(3 * k) / sm;
+        centre += sm * sm * r;
+        total += sm * sm;
+      }
+    }
+    centre /= total;
+    std::vector<int> kinds{0, 1, 2};
+    for (int c = 0; c < 3; ++c) {
+      if (options.rigidRotations[static_cast<size_t>(c)]) {
+        kinds.push_back(3 + c);
+      }
+    }
+    const long dim = nb * 3 * nAtoms;
+    MatrixXd g = MatrixXd::Zero(dim, static_cast<long>(kinds.size()));
+    for (size_t col = 0; col < kinds.size(); ++col) {
+      const int kind = kinds[col];
+      for (long j = 0; j < nb; ++j) {
+        for (long k = 0; k < nAtoms; ++k) {
+          const double sm = options.rigidSqrtMasses[static_cast<size_t>(k)];
+          Eigen::Vector3d d = Eigen::Vector3d::Zero();
+          if (kind < 3) {
+            d(kind) = sm;
+          } else {
+            const Eigen::Vector3d r =
+                options.rigidReference.segment<3>(3 * k) +
+                q[static_cast<size_t>(j)].segment<3>(3 * k) / sm;
+            Eigen::Vector3d e = Eigen::Vector3d::Zero();
+            e(kind - 3) = 1.0;
+            d = sm * e.cross(r - centre);
+          }
+          g.block(j * 3 * nAtoms + 3 * k, static_cast<long>(col), 3, 1) = d;
+        }
+      }
+    }
+    const ColMajorXd gc = g;
+    const Eigen::ColPivHouseholderQR<ColMajorXd> qr(gc);
+    const long rank = qr.rank();
+    const ColMajorXd basis =
+        qr.householderQ() * ColMajorXd::Identity(dim, rank);
+    for (long r = 0; r < rank; ++r) {
+      std::vector<VectorXd> u(static_cast<size_t>(nb));
+      for (long j = 0; j < nb; ++j) {
+        u[static_cast<size_t>(j)] =
+            basis.col(r).segment(j * 3 * nAtoms, 3 * nAtoms);
+      }
+      out.push_back(std::move(u));
+    }
+    return out;
+  };
+  std::vector<std::vector<VectorXd>> nullRing;
   // A one-dimensional well is already the saddle curvature. In more
   // dimensions the turning points are not the saddle, so each bead starts
   // from its own curvature and the Bofill update carries it.
@@ -2042,7 +2136,18 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       v = es0.eigenvectors().col(0);
     }
   }
+  // The climb follows the mode that overlaps the last one, as in dimer and
+  // minimum-mode following: the lowest curvature can switch to another
+  // channel, and climbing it walks the ring to a neighbouring saddle.
+  std::vector<VectorXd> track = ritzStart;
+  {
+    const double n0 = std::sqrt(dot(track, track));
+    if (n0 > 0.0) {
+      scale(track, 1.0 / n0);
+    }
+  }
   auto viewOf = [&](const Obj &ev) {
+    nullRing = ringRigid(x);
     View v;
     v.tau = half ? VectorXd() : timeTranslation(x);
     v.diag = ringDiagonal(physical, c, half);
@@ -2154,16 +2259,39 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
         }
       }
       auto onCycle = [&](const std::vector<VectorXd> &m) {
-        return !tauRing.empty() && std::abs(dot(m, tauRing)) > 0.5;
+        if (!tauRing.empty() && std::abs(dot(m, tauRing)) > 0.5) {
+          return true;
+        }
+        for (const auto &r : nullRing) {
+          if (std::abs(dot(m, r)) > 0.5) {
+            return true;
+          }
+        }
+        return false;
       };
+      double best = 0.0;
+      long lowest = -1;
       for (size_t i = 0; i < v.ritz.size(); ++i) {
         if (onCycle(v.ritz[i].vector)) {
           continue;
         }
-        if (v.climb.index < 0 || v.ritz[i].theta < v.climb.curvature) {
-          v.climb.index = static_cast<long>(i);
-          v.climb.curvature = v.ritz[i].theta;
+        if (lowest < 0 ||
+            v.ritz[i].theta < v.ritz[static_cast<size_t>(lowest)].theta) {
+          lowest = static_cast<long>(i);
         }
+        if (v.ritz[i].theta < 0.0 && track.size() == v.ritz[i].vector.size()) {
+          const double o = std::abs(dot(v.ritz[i].vector, track));
+          if (o > best) {
+            best = o;
+            v.climb.index = static_cast<long>(i);
+          }
+        }
+      }
+      if (v.climb.index < 0 || best < kTrackOverlap) {
+        v.climb.index = lowest;
+      }
+      if (v.climb.index >= 0) {
+        v.climb.curvature = v.ritz[static_cast<size_t>(v.climb.index)].theta;
       }
       if (v.climb.curvature < 0.0) {
         for (size_t i = 0; i < v.ritz.size(); ++i) {
@@ -2179,6 +2307,12 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       v.gmax = closedGmax(ev);
       if (v.climb.index >= 0) {
         ritzStart = v.ritz[static_cast<size_t>(v.climb.index)].vector;
+        if (v.climb.curvature < 0.0) {
+          track = ritzStart;
+          if (track.size() == ritzStart.size() && dot(track, track) > 0.0) {
+            scale(track, 1.0 / std::sqrt(dot(track, track)));
+          }
+        }
       }
     }
     return v;
@@ -2193,6 +2327,10 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   long entries = 0;
   bool converged = false;
   const double trustFloor = std::min(1e-4, options.maxStep);
+  // Finite-difference rebuilds of the bead blocks when the search stalls.
+  constexpr int kMaxHessianRefreshes = 3;
+  int refreshes = 0;
+  bool exactAtX = false;
   for (long it = 0; it < options.maxIterations; ++it) {
     ++entries;
     const View v = viewOf(cur);
@@ -2257,14 +2395,58 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       }
       x = std::move(trial);
       cur = std::move(next);
+      exactAtX = false;
       if (ratioOk && ratio > 0.75 && ratio < 1.25 &&
           packedBeadNorm(dir, f) >= 0.99 * trust) {
         trust = std::min(2.0 * trust, options.maxStep);
       }
       return true;
     };
-    const VectorXd step =
-        chainIndexOneStep(v.ritz, v.climb, v.diag, c, !half, cur.grad, v.tau);
+    // A converged gradient is classified with exact bead Hessians, as
+    // i-PI's hessian_final does: the Bofill blocks can carry negative
+    // curvatures the surface does not have. A second negative curvature
+    // that survives the rebuild is a higher-index stationary ring, where
+    // the flipped Newton step vanishes; a trust-sized displacement down
+    // that mode leaves it.
+    if (v.ok && v.gmax < options.forceTolerance && v.climb.negative != 1 &&
+        !exactAtX) {
+      const double eps = options.lanczosStep > 0.0 ? options.lanczosStep : 1e-4;
+      for (size_t j = 0; j < x.size(); ++j) {
+        physical[j] = fdPhysicalHessian(x[j], potential, eps);
+      }
+      exactAtX = true;
+      continue;
+    }
+    if (v.ok && v.gmax < options.forceTolerance && v.climb.negative > 1) {
+      long down = -1;
+      for (size_t i = 0; i < v.ritz.size(); ++i) {
+        const auto &m = v.ritz[i];
+        if (static_cast<long>(i) == v.climb.index || !(m.theta < 0.0)) {
+          continue;
+        }
+        bool held = false;
+        if (v.tau.size() == static_cast<long>(x.size()) * f) {
+          held = std::abs(packBeads(m.vector).dot(v.tau)) > 0.5;
+        }
+        for (const auto &r : nullRing) {
+          held = held || std::abs(dot(m.vector, r)) > 0.5;
+        }
+        if (!held &&
+            (down < 0 || m.theta < v.ritz[static_cast<size_t>(down)].theta)) {
+          down = static_cast<long>(i);
+        }
+      }
+      if (down >= 0) {
+        trust = options.maxStep;
+        const VectorXd mode =
+            packBeads(v.ritz[static_cast<size_t>(down)].vector);
+        if (accept(mode) || accept(-mode)) {
+          continue;
+        }
+      }
+    }
+    const VectorXd step = chainIndexOneStep(v.ritz, v.climb, v.diag, c, !half,
+                                            cur.grad, v.tau, nullRing);
     bool moved = false;
     VectorXd dir = step;
     // Clip to the trust radius first, so each halving is a new trial point.
@@ -2280,6 +2462,19 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     }
     if (!moved) {
       trust = std::max(0.5 * trust, trustFloor);
+      // At the trust floor the Bofill blocks no longer model the ring and
+      // every step is refused; rebuild them from finite differences, 2 f
+      // gradient calls per bead, a few times at most, and start the trust
+      // region again.
+      if (trust <= trustFloor && refreshes < kMaxHessianRefreshes) {
+        ++refreshes;
+        const double eps =
+            options.lanczosStep > 0.0 ? options.lanczosStep : 1e-4;
+        for (size_t j = 0; j < x.size(); ++j) {
+          physical[j] = fdPhysicalHessian(x[j], potential, eps);
+        }
+        trust = options.maxStep;
+      }
     }
   }
   if (!converged && done(viewOf(cur))) {

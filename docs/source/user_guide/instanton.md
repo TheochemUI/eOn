@@ -219,11 +219,23 @@ An odd count keeps every bead. `energy_shift` (default 0, in eV) is
 subtracted from every bead potential and from the reactant and saddle
 energies in the rate.
 
-The search is an index-1 Newton step on the ring Hessian. Below three
-quarters of the crossover an empty start cools from 0.85 of the crossover,
-each warmer ring starting the next. The step climbs one mode and turns
-every other negative curvature downhill; the imaginary-time cycle is held
-in place and left out of the step. The ring Hessian is block cyclic
+The search is an index-1 Newton step on the ring Hessian. Without an
+`initial_path`, the rate job traces a steepest-descent path out of the
+saddle along both signs of its unstable mode and seeds the ring from it by
+the period condition below. On LJ13 that path costs 586 gradient calls. Cooling a cosine
+ring from 0.85 of the crossover is the fallback when no path can be
+built; it finds the ring only where the ring grows continuously out of
+the saddle as the temperature drops. Where it does not, the search walks
+to a neighbouring saddle, so a converged ring with no bead on either side
+of the saddle's dividing plane (the plane normal to its unstable mode) is
+refused and no rate is written. The step climbs the mode that overlaps
+the last climb and turns every other negative curvature downhill; the
+imaginary-time cycle and the rigid motions of the whole ring, rebuilt
+from the current beads, are held in place and left out of the step. A
+converged gradient is classified with finite-difference bead Hessians,
+since the Bofill blocks can carry negative curvatures the surface does
+not have; a second negative curvature that survives is a higher-index
+stationary ring, and the search steps down that mode. The ring Hessian is block cyclic
 tridiagonal in the beads, and every solve, determinant and inertia count
 goes through a block LU of the open chain plus a low-rank Woodbury
 correction for the closure, the cycle, the rigid modes and each
@@ -232,7 +244,9 @@ freedom, and the {math}`Nf \times Nf` matrix is never formed, so the same
 step serves a seven-atom cluster and a 254-atom cell. The lowest ring
 modes come from Lanczos on matrix-vector products. The bead curvature
 blocks start from the saddle Hessian (`initial_hessians = saddle`, no force
-calls) and follow accepted moves with a Bofill update;
+calls) and follow accepted moves with a Bofill update, rebuilt from
+finite differences up to three times when the trust radius reaches its
+floor;
 `initial_hessians = finite_difference` takes {math}`2f` gradient calls per
 bead first. The rate uses the bead Hessians chosen by `hessian_final`, not
 that update. On the one-dimensional Eckart barrier the search converges
