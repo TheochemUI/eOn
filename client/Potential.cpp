@@ -108,7 +108,7 @@
 // Should respect Fortran availability
 
 #ifdef WITH_XTB
-#include "eon/potentials/XTBPot/XTBPot.h"
+#include "rgpot/XTBPot/XTBPot.hpp"
 #endif
 
 #include <cmath>
@@ -381,7 +381,31 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
 // TODO: Handle Fortran interaction
 #ifdef WITH_XTB
   case PotType::XTB: {
-    return (std::make_shared<XTBPot>(params));
+    const auto &o = params.xtb_options();
+    rgpot::GFNMethod method = rgpot::GFNMethod::GFN2xTB;
+    if (o.paramset == "GFNFF") {
+      method = rgpot::GFNMethod::GFNFF;
+    } else if (o.paramset == "GFN0xTB") {
+      method = rgpot::GFNMethod::GFN0xTB;
+    } else if (o.paramset == "GFN1xTB") {
+      method = rgpot::GFNMethod::GFN1xTB;
+    } else if (o.paramset == "GFN2xTB") {
+      method = rgpot::GFNMethod::GFN2xTB;
+    } else {
+      throw std::runtime_error(
+          "Parameter set for XTB must be one of GFNFF, GFN0xTB, GFN1xTB or "
+          "GFN2xTB.\n");
+    }
+    return makeRgpot<rgpot::XTBPot>(
+        PotType::XTB, params,
+        rgpot::XTBConfig{
+            .method = method,
+            .accuracy = o.acc,
+            .electronic_temperature = o.elec_temperature,
+            .max_iterations = static_cast<int>(o.maxiter),
+            .charge = o.charge,
+            .uhf = o.uhf,
+        });
     break;
   }
 #endif

@@ -111,7 +111,7 @@ RgpotPot::RgpotPot(const eonc::Parameters &p)
   driver_ = impl_->worldRank() == 0;
   std::cout
       << "RgpotPot: in-process rgpot backend=" << backend_
-      << " (dlopen: libnwchemc/libcpmdc/libmetatomic_engine/libxtb_engine)"
+      << " (dlopen: libnwchemc/libcpmdc/librgpot_metatomic_engine/librgpot_xtb_engine)"
       << std::endl;
   // Finalize is registered first. The grouped-exit handler is next, and
   // the stop handler is last, so exit runs stop, then Finalize, then _Exit.

@@ -41,6 +41,7 @@ MetatomicEngineLoader::MetatomicEngineLoader(
   if (const char *e = std::getenv("METATOMIC_ENGINE"))
     if (e && *e)
       paths.emplace_back(e);
+  paths.emplace_back("librgpot_metatomic_engine.so");
   paths.emplace_back("libmetatomic_engine.so");
   auto add_dirs = [&](const char *env) {
     if (!env)
@@ -55,6 +56,7 @@ MetatomicEngineLoader::MetatomicEngineLoader(
         std::string d = s.substr(i, j - i);
         if (!d.empty() && d.back() != '/')
           d += '/';
+        paths.push_back(d + "librgpot_metatomic_engine.so");
         paths.push_back(d + "libmetatomic_engine.so");
       }
       i = j + 1;
@@ -74,7 +76,7 @@ MetatomicEngineLoader::MetatomicEngineLoader(
 #endif
   }
   if (!m_lib) {
-    std::string msg = "RGPOT(metatomic): libmetatomic_engine.so not found "
+    std::string msg = "RGPOT(metatomic): librgpot_metatomic_engine.so not found "
                       "(set RGPOT_METATOMIC_ENGINE or EON_POTENTIALS_PATH)";
     if (!last_dlerr.empty())
       msg += std::string("; last dlerror: ") + last_dlerr;

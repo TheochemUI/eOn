@@ -468,8 +468,9 @@ if not _rgpot_pkg.found()
         'pure_lib': true,
         'with_tests': false,
         'with_examples': false,
-        # engines stay runtime dlopen; do not force fat metatomic/xtb link
-        'with_xtb': false,
+        # engines stay runtime dlopen. Linked XTBPot is on only when eOn
+        # itself asked for -Dwith_xtb=true (the factory arm is rgpot::XTBPot).
+        'with_xtb': get_option('with_xtb'),
         'with_metatomic': false,
         # ExprPot is a separate option. The basic build must compile it
         # or PotType.EXPR falls through to the generic terminating error.
@@ -959,9 +960,10 @@ if get_option('with_ams')
 endif
 
 if get_option('with_xtb')
-    # Try finding system 'xtb' via pkg-config or cmake.
-    # Users who need to build xtb from source can place it in subprojects/
-    # and Meson's implicit fallback will find it.
+    # Headers for rgpot/XTBPot/XTBPot.hpp. The kernel itself is inside
+    # librgpot (rgpot -Dwith_xtb=true); eOn does not compile a second one.
+    # conda-forge win-64 xtb is MinGW and ships no xtb.lib. MSVC still
+    # needs an import library written from the DLL.
     if host_machine.system() == 'windows' and cppc.get_id() == 'msvc'
         # conda-forge win-64 xtb is MinGW: libxtb-6.dll and libxtb.dll.a.
         # dependency('xtb') asks link.exe for xtb.lib, which that package
@@ -1015,8 +1017,22 @@ if get_option('with_xtb')
     endif
 
     _deps += [xtb_dep]
-    subdir('potentials/XTBPot')
-    potentials += xtb_eon
+    if _rgpot_pkg.found()
+        if cppc.get_define('RGPOT_HAS_XTB_POT', dependencies: _rgpot_pkg) == ''
+            error(
+                'installed rgpot was built without XTBPot '
+                + '(rgpot.pc does not define RGPOT_HAS_XTB_POT). '
+                + 'Rebuild rgpot with -Dwith_xtb=true, or point '
+                + 'PKG_CONFIG_PATH at one that has it.',
+            )
+        endif
+    elif not _rgpot_proj.get_variable('has_xtb')
+        error(
+            'rgpot subproject built without XTBPot. '
+            + 'Reconfigure with -Drgpot:with_xtb=true, '
+            + 'or wipe the build directory.',
+        )
+    endif
     _args += ['-DWITH_XTB']
 endif
 
@@ -1524,13 +1540,13 @@ eclib = library(
 )
 
 # MSVC scans static libraries once, left to right. eonclib references
-# XTBPot and the other potentials, so it has to precede them.
+# the potential archives, so it has to precede them.
 _linkto = [eclib] + _linkto
 
 # RGPOT-metatomic engine (slow path); fat pot already in potentials above.
 if get_option('with_metatomic')
     metatomic_engine = library(
-        'metatomic_engine',
+        'rgpot_metatomic_engine',
         [
             'potentials/Metatomic/MetatomicPotential.cpp',
             'potentials/Metatomic/MetatomicEngineAbi.cpp',
@@ -1545,6 +1561,31 @@ if get_option('with_metatomic')
         install: true,
         gnu_symbol_visibility: 'default',
     )
+
+    # One-release compat: callers and older wheels still open the previous soname.
+    _engine_real = fs.name(metatomic_engine.full_path())
+    _engine_compat = ['libmetatomic_engine.so']
+    if host_system == 'darwin'
+        _engine_compat = ['libmetatomic_engine.dylib']
+    elif host_system == 'windows'
+        _engine_compat = ['metatomic_engine.dll', 'libmetatomic_engine.dll']
+    endif
+    if host_system != 'windows'
+        foreach compat : _engine_compat
+            install_symlink(
+                compat,
+                install_dir: get_option('libdir'),
+                pointing_to: _engine_real,
+            )
+            custom_target(
+                'metatomic_engine_compat_' + compat,
+                output: compat,
+                command: ['ln', '-sfn', _engine_real, '@OUTPUT@'],
+                depends: metatomic_engine,
+                build_by_default: true,
+            )
+        endforeach
+    endif
 endif
 
 # Full deps including readcon link_args (for executables and tests only)

@@ -209,11 +209,17 @@ def _resolve_paths(args: argparse.Namespace):
     engine = Path(args.engine) if args.engine else None
     if not engine or not engine.is_file():
         for cand in (
+            repo / "bbdir-mta-bench/client/librgpot_metatomic_engine.so",
             repo / "bbdir-mta-bench/client/libmetatomic_engine.so",
+            repo / "bbdir/client/librgpot_metatomic_engine.so",
             repo / "bbdir/client/libmetatomic_engine.so",
+            Path("bbdir-mta-bench/client/librgpot_metatomic_engine.so"),
             Path("bbdir-mta-bench/client/libmetatomic_engine.so"),
+            Path("build-pyeon-mta-rgpot/client/librgpot_metatomic_engine.so"),
             Path("build-pyeon-mta-rgpot/client/libmetatomic_engine.so"),
+            Path("build-mta-compare/client/librgpot_metatomic_engine.so"),
             Path("build-mta-compare/client/libmetatomic_engine.so"),
+            Path("build-pyeon-mta/client/librgpot_metatomic_engine.so"),
             Path("build-pyeon-mta/client/libmetatomic_engine.so"),
         ):
             if cand.is_file():

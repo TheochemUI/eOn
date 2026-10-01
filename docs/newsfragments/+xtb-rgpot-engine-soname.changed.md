@@ -1,0 +1,1 @@
+`-Dwith_xtb=true` builds `potential = xtb` on rgpot `XTBPot` (`[XTBPot]` maps onto `XTBConfig`). The in-tree XTB kernel is gone. The metatomic engine installs as `librgpot_metatomic_engine`; `libmetatomic_engine` remains a compat symlink for this release, and the xtb/metatomic loaders try `librgpot_*` then the previous soname.

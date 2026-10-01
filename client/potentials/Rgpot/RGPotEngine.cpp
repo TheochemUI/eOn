@@ -382,7 +382,7 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
     if (!impl_->metatomic->available())
       throw std::runtime_error(
           "RGPOT(metatomic): engine not available (set RGPOT_METATOMIC_ENGINE "
-          "or [RgpotPot] engine_path to libmetatomic_engine.so)");
+          "or [RgpotPot] engine_path to librgpot_metatomic_engine.so)");
   } else if (backend_ == "xtb" || backend_ == "xtbpot" || backend_ == "gfn" ||
              backend_ == "gfnxtb") {
     backend_ = "xtb";
@@ -400,7 +400,7 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
     if (!impl_->xtb->available())
       throw std::runtime_error(
           "RGPOT(xtb): engine not available (set RGPOT_XTB_ENGINE or "
-          "[RgpotPot] engine_path to libxtb_engine.so)");
+          "[RgpotPot] engine_path to librgpot_xtb_engine.so)");
   } else {
     throw std::runtime_error("RGPOT: unknown backend '" + opt.backend +
                              "' (expected nwchemc, cpmdc, metatomic, or xtb)");

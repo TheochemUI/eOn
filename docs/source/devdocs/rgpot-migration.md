@@ -5,7 +5,7 @@ claim that the move is finished.
 
 ## Already in rgpot (used via headers / FortranPots)
 
-LJ, LJ cluster, Morse, ZBL, D3, D4, Expr, MOPAC, and the Fortran
+LJ, LJ cluster, Morse, ZBL, D3, D4, Expr, MOPAC, XTB (`-Dwith_xtb=true`), and the Fortran
 kernels (SW, EDIP, Tersoff, Lenosky, EAM-Al, FeHe, CuH2, TIP4P-H)
 when `with_fortran_pots` is on.
 
@@ -17,7 +17,7 @@ Highway SIMD for Morse/LJ belongs in **rgpot**, not `client/potentials`.
 |---|---|
 | ASE / ASE_NWCHEM / ASE_ORCA | Python calculator adapters |
 | AMS / AMS_IO / VASP / LAMMPS / MPIPot / ExtPot / SocketNWChem | subprocess / file engines |
-| Metatomic / XTBPot | optional heavy engines (also have rgpot engine .so loaders) |
+| Metatomic | optional heavy engine (also has an rgpot engine .so loader) |
 | EMT / EAM / Water / Water_Pt / GPR / CatLearn | not yet in rgpot |
 
 Adding a new empirical kernel should go to rgpot first.
