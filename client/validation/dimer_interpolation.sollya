@@ -1,0 +1,28 @@
+/* Rounding amplification of the improved-dimer gradient interpolation
+   (ImprovedDimer::compute, "Interpolate g1 at phi_min"):
+     g1(phi) = a g1 + b g1' + c g0,
+     a = sin(phi' - phi) / sin(phi'),  b = sin(phi) / sin(phi'),
+     c = 1 - cos(phi) - sin(phi) tan(phi' / 2).
+   dimer_rotation.py shows the formula is exact on a quadratic surface. In
+   floating point each gradient carries a relative error u = 2^-53, so the
+   interpolated g1 has an absolute error of at most K u max|g| with
+   K = |a| + |b| + |c|. A trial rotation runs only when |phi'| exceeds the
+   converged angle (default 5 degrees), and phi stays in [-pi/2, pi/2].
+   This prints a certified enclosure of K over that region, on the slice
+   where it is largest (the smallest trial angle), and the same for a
+   converged_angle of 1 degree.
+   Run: sollya dimer_interpolation.sollya */
+prec = 165!;
+verbosity = 0!;
+display = decimal!;
+procedure amplification(degrees) {
+  var pp, k;
+  pp = degrees * pi / 180;
+  k = abs(sin(pp - x)) / sin(pp) + abs(sin(x)) / sin(pp)
+      + abs(1 - cos(x) - sin(x) * tan(pp / 2));
+  print("converged_angle", degrees, "deg: K on [-pi/2, pi/2] <=",
+        sup(infnorm(k, [-pi/2; pi/2])));
+};
+amplification(5);
+amplification(1);
+quit;
