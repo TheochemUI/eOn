@@ -40,6 +40,9 @@ then minimizes from the saddle to identify the product.
 | **Hyperdynamics** | Bias potential | Barriers are localized (bond-boost) | <project:hyperdynamics.md> |
 | **AKMC** | Kinetic Monte Carlo | Long timescale evolution with rare events | <project:akmc.md> |
 
+The client job for hyperdynamics is `safe_hyperdynamics`. The server job for
+adaptive kinetic Monte Carlo is `akmc`.
+
 ## Optimization
 
 | Optimizer | Convergence | Failure mode | Memory |

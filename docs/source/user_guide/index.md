@@ -61,6 +61,21 @@ configuration file would include the lines:
 job = process_search
 ```
 
+In the configuration, the server runs `akmc`, `parallel_replica`,
+`unbiased_parallel_replica`, `basin_hopping`, and `escape_rate` itself. The
+server accepts those names as written. Any other `job` the server accepts is
+one client job. The client matches that `job` to `JobType` without regard to
+case. A name outside the enumeration stops the client with `No known job could
+be constructed`.
+
+Spellings that do not match a client job are `finite_differences` (use
+`finite_difference`), `molecular_dynamics` (use `dynamics`),
+`displacement_sampling`, `akmc`, and `hyperdynamics` (use
+`safe_hyperdynamics`). `escape_rate` runs on the server, and the schema marks
+that entry TODO. `oh_tst` is a client job and is absent from the schema list.
+`global_optimization` is minima hopping, not basin hopping. These method
+options share the `job` key.
+
 There are specific options for each method, and a set of general options which
 are shared between methods. Examples of these general options include
 specification of the interatomic potential and the parameters for doing structural
@@ -73,7 +88,7 @@ See {doc}`/devdocs/design/client/parameters` for the JSON schema.
 
 ```{note}
 From 2.0 on, prefer a workflow manager over eOn-generated submit
-scripts. AiiDA: {doc}`aiida`. Snakemake and FireWorks also work.
+scripts. AiiDA: {doc}`aiida`.
 ```
 
 eOn is designed to run in serial on one computer or in parallel using a

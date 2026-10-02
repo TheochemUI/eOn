@@ -22,8 +22,11 @@ bond length in the system. This is a good bias potential for systems in which
 the dynamics is governed by bond breaking and forming events.
 
 You can run a hyperdynamics job by:
-- Setting the {any}`bias_potential` option.
+- Setting the {any}`bias_potential` option to `bond_boost`.
 - Within a ``parallel_replica`` {any}`job`.
+
+The client job token is `safe_hyperdynamics`. `hyperdynamics` does not name a
+client job.
 
 ## Configuration
 

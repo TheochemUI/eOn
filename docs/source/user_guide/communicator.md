@@ -18,8 +18,6 @@ locally on the server, via MPI,  or using a job queuing system such as
 ```{note}
 From 2.0 on, prefer a workflow manager over eOn-generated submit
 scripts. For AiiDA the plugin is {doc}`aiida` (`pip install aiida-eon`).
-Snakemake and [FireWorks](https://materialsproject.github.io/fireworks)
-remain valid alternatives.
 ```
 
 ## Configuration
@@ -121,13 +119,13 @@ Not tested on 2.0
 ```
 
 An example communicator section for the cluster communicator using the provided
-`sge6.2` scripts and a name prefix of `al_diffusion_`:
+`sge` scripts and a name prefix of `al_diffusion_`:
 
 ```{code-block} ini
 [Communicator]
 type = "cluster"
 name_prefix = "al_diffusion_"
-script_path = "/home/user/eon/tools/clusters/sge6.2"
+script_path = "/home/user/eon/tools/clusters/sge"
 ```
 
 The Slurm scripts in `tools/clusters/slurm` take their site options from
@@ -138,7 +136,7 @@ the command each job runs, `eonclient` by default:
 ```{code-block} bash
 export EON_SBATCH_ARGS="-A myaccount -p cpu -N 1 --ntasks=48 -t 01:00:00"
 export EON_CLIENT=eonclient
-eon
+eon-server
 ```
 
 ```{code-block} ini
