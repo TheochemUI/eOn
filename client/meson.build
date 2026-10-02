@@ -520,6 +520,7 @@ _deps += dl_dep
 # with *default* options before eOn can pass its own; get_variable() then
 # fails for anything the default profile skipped. Force pkg-config-only.
 _rgpot_proj = []
+_have_rgpot_wrap = false
 _rgpot_pkg = dependency(
     'rgpot',
     version: '>=3.2.0',
@@ -559,6 +560,99 @@ if not _rgpot_pkg.found()
         find_program(meson.project_source_root() / 'scripts' / 'install_wrap_rgpot.py'),
         _rgpot_proj.get_variable('rgpot').full_path(),
         get_option('libdir'),
+    )
+    _have_rgpot_wrap = true
+endif
+
+# The compiler records the prefix libdir as DT_RPATH ahead of the $ORIGIN
+# entries Meson adds for each target. DT_RPATH is searched in flag order,
+# and ahead of LD_LIBRARY_PATH, so a library installed into that prefix is
+# the one a later build loads. Project link arguments are emitted before
+# those external flags. The entries are the client build layout at every
+# directory depth a client target is linked from: each potential directory,
+# the client directory itself, and a wrap-built librgpot. They are $ORIGIN
+# relative, so install does not keep a build directory. A path that is not
+# present is an extra lookup.
+if host_system == 'linux'
+    _pot_out = run_command(
+        find_program('find'),
+        meson.current_source_dir() / 'potentials',
+        '-name',
+        'meson.build',
+        '-printf',
+        '%P\\n',
+        check: true,
+    )
+    _pot_rels = []
+    foreach _pot_line : _pot_out.stdout().splitlines()
+        if _pot_line.endswith('/meson.build')
+            _pot_rels += 'potentials' / _pot_line.replace('/meson.build', '')
+        endif
+    endforeach
+    _pot_sorted = []
+    foreach _pot_rel : _pot_rels
+        _pot_placed = false
+        _pot_next = []
+        foreach _pot_old : _pot_sorted
+            if not _pot_placed and _pot_rel < _pot_old
+                _pot_next += _pot_rel
+                _pot_placed = true
+            endif
+            _pot_next += _pot_old
+        endforeach
+        if not _pot_placed
+            _pot_next += _pot_rel
+        endif
+        _pot_sorted = _pot_next
+    endforeach
+    # '.' is the client build directory (libeonclib and the executables).
+    # python/ is one level under it. Nested potentials set the deeper levels.
+    _origin_deps = ['.'] + _pot_sorted
+    _origin_depth = 1
+    foreach _pot_rel : _pot_sorted
+        _pot_n = _pot_rel.split('/').length()
+        if _pot_n > _origin_depth
+            _origin_depth = _pot_n
+        endif
+    endforeach
+    if _have_rgpot_wrap
+        _rgpot_libdir = fs.parent(_rgpot_proj.get_variable('rgpot').full_path())
+        _rgpot_rel = fs.relative_to(_rgpot_libdir, meson.current_build_dir())
+        if not _rgpot_rel.startswith('/')
+            _origin_deps += _rgpot_rel
+        endif
+    endif
+    _origin_entries = []
+    foreach _origin_level : range(_origin_depth + 1)
+        _origin_ups = ''
+        foreach _origin_step : range(_origin_level)
+            _origin_ups += '../'
+        endforeach
+        foreach _origin_dep : _origin_deps
+            if _origin_dep == '.'
+                _origin_rel = _origin_ups
+            else
+                _origin_rel = _origin_ups + _origin_dep
+            endif
+            if _origin_rel.endswith('/')
+                _origin_rel = _origin_rel.substring(0, -1)
+            endif
+            if _origin_rel == ''
+                _origin_entries += '$ORIGIN'
+            else
+                # String join, not the / operator: path join collapses
+                # '$ORIGIN/..' and drops the token.
+                _origin_entries += '$ORIGIN/' + _origin_rel
+            endif
+        endforeach
+    endforeach
+    add_project_link_arguments(
+        '-Wl,-rpath,' + ':'.join(_origin_entries),
+        language: ['c', 'cpp'],
+    )
+    message(
+        'build-tree rpath entries before the prefix libdir:',
+        _origin_entries.length(),
     )
 endif
 
