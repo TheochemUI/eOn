@@ -26,9 +26,9 @@ class BondBoost {
 
 public:
   /** Constructor to be used when a structure is minimized.
-  @param[in]   *matter        Pointer to the Matter object to be relaxed.
-  @param[in]   parameters     Reference to the Parameter object containing the
-  runtime parameters.*/
+  @param matt Pointer to the Matter object to be relaxed.
+  @param params Reference to the Parameter object containing the runtime
+  parameters.*/
   BondBoost(Matter *matt, const Parameters &params);
   ~BondBoost(); ///< Destructor.
 

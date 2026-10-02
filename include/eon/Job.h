@@ -21,7 +21,7 @@
 
 namespace eonc {
 
-/** @defgroup Jobs
+/** @defgroup Jobs Client procedures
  *
  * \brief ClientEON main procedures
  *

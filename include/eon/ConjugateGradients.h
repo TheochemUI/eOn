@@ -39,9 +39,8 @@ class ConjugateGradients final : public Optimizer {
 public:
   //! Conjugate Gradients optimizer constructor
   /*!
-   * \param std::shared_ptr<ObjectiveFunction> m_objf that tells the optimizer
-   * how to run \param const Parameters& m_params defined by the config.init
-   * file
+   * \param a_objf objective that tells the optimizer how to run
+   * \param a_params parameters defined by the config file
    */
   ConjugateGradients(std::shared_ptr<ObjectiveFunction> a_objf,
                      const Parameters &a_params)

@@ -19,7 +19,7 @@
 
 namespace eonc {
 
-/** @defgroup Optimizers
+/** @defgroup Optimizers Structure optimizers
  *
  * \brief ClientEON methods for optimizing atomic structures
  *

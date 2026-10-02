@@ -46,7 +46,8 @@ class ProcessSearchJob : public Job {
 public:
   //! Process Search job Constructor
   /*!
-   * \param *params defined by the config.init file
+   * \param parameters defined by the config.init file
+   * \param rt process runtime
    */
   ProcessSearchJob(std::unique_ptr<Parameters> parameters, Runtime &rt)
       : Job(std::move(parameters), rt),

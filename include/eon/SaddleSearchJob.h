@@ -46,7 +46,8 @@ class SaddleSearchJob : public Job {
 public:
   //! Saddle Search job constructor
   /*!
-   * \param *params defined by the config.init file
+   * \param parameters defined by the config.init file
+   * \param rt process runtime
    */
   SaddleSearchJob(std::unique_ptr<Parameters> parameters, Runtime &rt)
       : Job(std::move(parameters), rt),

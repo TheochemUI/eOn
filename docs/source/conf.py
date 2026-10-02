@@ -210,11 +210,17 @@ autodoc2_render_plugin = "myst"
 autodoc2_packages = [
     {
         "path": f"../../{project.lower()}",
+        # `eon.version` is the version string on the package. The generated
+        # module uses that same full name, so a second record is a collision.
+        # Test scripts are not the Python API.
         "exclude_dirs": [
             "__pycache__",
+            "tests",
         ],
         "exclude_files": [
             "*schema*",
+            "version.py",
+            "test.py",
         ],
     }
 ]

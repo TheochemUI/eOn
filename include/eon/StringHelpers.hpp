@@ -23,7 +23,8 @@ namespace helpers {
 /**
  * \brief Parse a string into values
  *
- * @param line A thing to be parsed
+ * @param line text to parse
+ * @param nelements expected count, when set
  */
 template <typename T>
 std::vector<T>
