@@ -155,35 +155,63 @@ Matrix3d cellNebForce(const Matrix3d &cauchy, double volume, double jacobian,
 }
 
 Matrix3d finiteDifferenceCauchyStress(const Matter &image, double strainStep) {
+  const Matter *const one[] = {&image};
+  return finiteDifferenceCauchyStresses(one, strainStep).front();
+}
+
+std::vector<Matrix3d>
+finiteDifferenceCauchyStresses(std::span<const Matter *const> images,
+                               double strainStep) {
   if (!(strainStep > 0.0)) {
     throw std::invalid_argument(
         "stress finite difference needs a positive step");
   }
-  const Matrix3d cell = image.getCell();
-  const AtomMatrix positions = image.getPositions();
-  const double volume = std::abs(cell.determinant());
-  if (!(volume > 0.0)) {
-    throw std::invalid_argument(
-        "stress finite difference needs a nonzero cell");
-  }
-  Matrix3d sigma = Matrix3d::Zero();
   const int rows[6] = {0, 1, 1, 2, 2, 2};
   const int cols[6] = {0, 0, 1, 0, 1, 2};
-  for (int comp = 0; comp < 6; ++comp) {
-    Matrix3d strain = Matrix3d::Zero();
-    strain(rows[comp], cols[comp]) = strainStep;
-    const Matrix3d plus = Matrix3d::Identity() + strain;
-    const Matrix3d minus = Matrix3d::Identity() - strain;
-    Matter raised(image);
-    raised.setCell(cell * plus);
-    raised.setPositions(positions * plus);
-    Matter lowered(image);
-    lowered.setCell(cell * minus);
-    lowered.setPositions(positions * minus);
-    const double derivative =
-        (raised.getPotentialEnergy() - lowered.getPotentialEnergy()) /
-        (2.0 * strainStep);
-    sigma(rows[comp], cols[comp]) = derivative / volume;
+  // Per image: raised then lowered copy for each of the six components.
+  std::vector<Matter> strained;
+  strained.reserve(12 * images.size());
+  std::vector<double> volumes;
+  volumes.reserve(images.size());
+  for (const Matter *image : images) {
+    const Matrix3d cell = image->getCell();
+    const AtomMatrix positions = image->getPositions();
+    const double volume = std::abs(cell.determinant());
+    if (!(volume > 0.0)) {
+      throw std::invalid_argument(
+          "stress finite difference needs a nonzero cell");
+    }
+    volumes.push_back(volume);
+    for (int comp = 0; comp < 6; ++comp) {
+      Matrix3d strain = Matrix3d::Zero();
+      strain(rows[comp], cols[comp]) = strainStep;
+      for (const Matrix3d &deformation :
+           {Matrix3d(Matrix3d::Identity() + strain),
+            Matrix3d(Matrix3d::Identity() - strain)}) {
+        Matter &copy = strained.emplace_back(*image);
+        copy.setCell(cell * deformation);
+        copy.setPositions(positions * deformation);
+      }
+    }
+  }
+  std::vector<Matter *> batch;
+  batch.reserve(strained.size());
+  for (Matter &m : strained) {
+    batch.push_back(&m);
+  }
+  if (!batch.empty()) {
+    eonc::evaluateTogether(*batch.front()->getPotential(), batch);
+  }
+  std::vector<Matrix3d> sigma(images.size(), Matrix3d::Zero());
+  for (size_t k = 0; k < images.size(); ++k) {
+    for (int comp = 0; comp < 6; ++comp) {
+      const Matter &raised = strained[12 * k + 2 * comp];
+      const Matter &lowered = strained[12 * k + 2 * comp + 1];
+      const double derivative =
+          (raised.getPotentialEnergy() - lowered.getPotentialEnergy()) /
+          (2.0 * strainStep);
+      sigma[k](rows[comp], cols[comp]) = derivative / volumes[k];
+    }
   }
   return sigma;
 }

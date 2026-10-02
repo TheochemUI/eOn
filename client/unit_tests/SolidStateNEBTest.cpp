@@ -196,6 +196,87 @@ TEST_CASE("finite-difference stress matches the analytic Cauchy stress",
   REQUIRE(stress(0, 1) == Catch::Approx(0.0).margin(1e-10));
 }
 
+namespace {
+
+// BreathPot energies through the batch interface, counting the rounds.
+struct BatchedBreath final : eonc::Potential {
+  BreathPot inner;
+  long rounds{0};
+  long systems{0};
+
+  BatchedBreath()
+      : Potential(eonc::PotType::LJ) {}
+
+  using Potential::force;
+  void force(long nAtoms, const double *positions, const int *atomicNrs,
+             double *forces, double *energy, double *variance,
+             const double *box) override {
+    rounds++;
+    systems++;
+    inner.force(nAtoms, positions, atomicNrs, forces, energy, variance, box);
+  }
+
+  [[nodiscard]] bool supportsBatchEvaluation() const noexcept override {
+    return true;
+  }
+
+  void forceBatch(long nSystems, long nAtoms, const double *const *positions,
+                  const int *const *atomicNrs, double *const *forces,
+                  double *energies, double *variances,
+                  const double *const *boxes) override {
+    rounds++;
+    systems += nSystems;
+    for (long s = 0; s < nSystems; ++s) {
+      double var = 0.0;
+      inner.force(nAtoms, positions[s], atomicNrs[s], forces[s], &energies[s],
+                  &var, boxes[s]);
+      if (variances != nullptr) {
+        variances[s] = var;
+      }
+    }
+  }
+};
+
+} // namespace
+
+TEST_CASE("finite-difference stress strains a whole band in one batch",
+          "[neb][solid_state][batch]") {
+  auto batched = std::make_shared<BatchedBreath>();
+  batched->inner.gamma = 0.4;
+  auto serial = std::make_shared<BreathPot>();
+  serial->gamma = 0.4;
+  Parameters params;
+  std::vector<eonc::Matter> images;
+  for (double sx : {0.35, 0.5, 0.65}) {
+    eonc::Matter &image = images.emplace_back(batched, params);
+    image.resize(1);
+    image.setAtomicNr(0, 1);
+    Matrix3d cell = Matrix3d::Zero();
+    cell(0, 0) = 5.0 + sx;
+    cell(1, 1) = 4.0;
+    cell(2, 2) = 4.0;
+    image.setCell(cell);
+    image.setPeriodic(true);
+    AtomMatrix positions(1, 3);
+    positions << sx * cell(0, 0), 2.0, 2.0;
+    image.setPositions(positions);
+  }
+  std::vector<const eonc::Matter *> band;
+  for (const auto &image : images) {
+    band.push_back(&image);
+  }
+  const auto stresses = eonc::neb::finiteDifferenceCauchyStresses(band, 1e-6);
+  REQUIRE(batched->rounds == 1);
+  REQUIRE(batched->systems == 36);
+  REQUIRE(stresses.size() == 3);
+  for (size_t k = 0; k < images.size(); ++k) {
+    eonc::Matter alone(images[k]);
+    alone.setPotential(serial);
+    const Matrix3d one = eonc::neb::finiteDifferenceCauchyStress(alone, 1e-6);
+    REQUIRE((stresses[k] - one).cwiseAbs().maxCoeff() < 1e-12);
+  }
+}
+
 TEST_CASE("an unchanged cell leaves the solid-state atomic force unchanged",
           "[neb][solid_state]") {
   Band plain(false);

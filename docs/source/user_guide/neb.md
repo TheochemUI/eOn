@@ -196,8 +196,13 @@ potential-energy surface.
 
 The cell force is the stress tensor. A potential that implements the Cauchy
 stress, with the sign `sigma = (1/V) dE/dε` for the right strain
-`h <- h (I+ε)` at fixed fractional coordinates, is used directly. Any other
-potential is differentiated on the six lower strain components.
+`h <- h (I+ε)` at fixed fractional coordinates, is used directly: the band
+reads the stress the potential returned with each image's force call, so an
+iteration costs one call per moved image. Any other potential is
+differentiated on the six lower strain components with a central difference
+of step 1e-5. That costs 12 extra energy calls per image and iteration; they
+go to the potential as one batch over the band, which calculator groups or a
+batched model evaluate together.
 
 `ci_mmf`, `zoom_neb`, `onsager_machlup`, `neb_doubly_nudged`, and
 `neb_elastic_band` are refused. The climbing image itself is the joint-space

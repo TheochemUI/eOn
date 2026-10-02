@@ -1,0 +1,1 @@
+The finite-difference cell stress of a solid-state band sends the 12 strained copies of every image to the potential as one batch, so calculator groups or a batched model evaluate them together instead of 12 serial calls per image.

@@ -1021,12 +1021,21 @@ void NudgedElasticBand::projectSolidState(bool ci_active) {
     ksp = uniform->ksp;
   }
 
+  // Without a native stress every image's strained copies go out as one
+  // batch instead of 12 serial calls per image.
+  std::vector<Matrix3d> fdStress;
+  if (!pot->computesStress()) {
+    std::vector<const Matter *> interior;
+    for (long i = 1; i <= numImages; ++i) {
+      interior.push_back(path[i].get());
+    }
+    fdStress = eonc::neb::finiteDifferenceCauchyStresses(interior, 1e-5);
+  }
+
   for (long i = 1; i <= numImages; ++i) {
     const double volume = std::abs(path[i]->getCell().determinant());
-    Matrix3d stress =
-        pot->computesStress()
-            ? path[i]->cauchyStress()
-            : eonc::neb::finiteDifferenceCauchyStress(*path[i], 1e-5);
+    Matrix3d stress = fdStress.empty() ? path[i]->cauchyStress()
+                                       : fdStress[static_cast<size_t>(i - 1)];
     Matrix3d cellTrue =
         eonc::neb::cellNebForce(stress, volume, solidJacobian_, external);
     AtomMatrix atomicTrue = path[i]->getForces();

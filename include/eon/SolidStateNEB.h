@@ -11,6 +11,9 @@
 */
 #pragma once
 
+#include <span>
+#include <vector>
+
 #include "Eigen.h"
 #include "Matter.h"
 
@@ -58,6 +61,13 @@ Matrix3d cellNebForce(const Matrix3d &cauchy, double volume, double jacobian,
 /// Central difference of the potential energy on the six lower strain
 /// components. Upper-triangle components stay zero.
 Matrix3d finiteDifferenceCauchyStress(const Matter &image, double strainStep);
+
+/// The same central difference for several images at once. The 12 strained
+/// copies of every image go to the potential as one batch, so calculator
+/// groups or a batched model take them together.
+std::vector<Matrix3d>
+finiteDifferenceCauchyStresses(std::span<const Matter *const> images,
+                               double strainStep);
 
 /// Potential energy plus P : (h0^{-1} (h-h0)) * V0. Pressure is hydrostatic,
 /// in eV/Angstrom^3. A zero pressure returns the potential energy.
