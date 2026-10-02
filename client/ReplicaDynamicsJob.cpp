@@ -175,7 +175,9 @@ void ReplicaDynamicsJob::dephase() {
           "Dephasing warning: in a new state, inverse the momentum and restart "
           "from step {}",
           step + ts);
-      *current = *dephaseBuffer[ts];
+      // A bond boost attached before dephase names current. The restarted
+      // steps read it through that pointer; copy assignment would clear it.
+      current->assignKeepingBias(*dephaseBuffer[ts]);
       AtomMatrix velocity = current->getVelocities();
       velocity = velocity * (-1);
       current->setVelocities(velocity);

@@ -13,6 +13,7 @@
 #include "eon/BondBoost.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/Dynamics.h"
 #include "eon/DynamicsSaddleSearch.h"
 #include "eon/Matter.h"
 #include "eon/RandomNumbers.h"
@@ -20,6 +21,7 @@
 #include <cmath>
 #include <memory>
 #include <stdexcept>
+#include <utility>
 
 namespace tests {
 
@@ -366,6 +368,56 @@ TEST_CASE("Dynamics saddle search applies bond-boost forces",
   REQUIRE(boosted.allFinite());
   REQUIRE((plain - plainAgain).norm() < 1e-10);
   REQUIRE((plain - boosted).norm() > 1e-4);
+}
+
+TEST_CASE("a dropped bond boost leaves the next Verlet step on stale bias",
+          "[bondboost][dynamics]") {
+  // Velocity Verlet evaluates the bias at the start of the step and
+  // again after the move. A cleared pointer leaves the second
+  // evaluation on the forces from before the move.
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::hyperdynamics_options(params).rmd_time = 0.0;
+  ParametersLoadAccess::hyperdynamics_options(params).dvmax = 5.0;
+  ParametersLoadAccess::hyperdynamics_options(params).qrr = 0.2;
+  ParametersLoadAccess::hyperdynamics_options(params).prr = 0.95;
+  ParametersLoadAccess::hyperdynamics_options(params).qcut = 3.0;
+  ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list = "All";
+  REQUIRE(params.dynamics_options().time_step > 0.0);
+
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+
+  auto afterMove = [&](bool keep) {
+    Matter matter(pot, params);
+    matter.con2matter(std::string("reactant.con"));
+    AtomMatrix velocity = AtomMatrix::Zero(matter.numberOfAtoms(), 3);
+    velocity(0, 0) = 1.0;
+    matter.setVelocities(velocity);
+    BondBoost bb(&matter, params);
+    bb.initialize();
+    bb.advance();
+    matter.setPosition(0, 0, matter.getPosition(0, 0) + 0.05);
+    matter.setBiasPotential(&bb);
+    const double bias = bb.boost();
+    REQUIRE(std::isfinite(bias));
+    const AtomMatrix before = matter.getBiasForces();
+    REQUIRE(before.squaredNorm() > 0.0);
+    if (!keep) {
+      matter.setBiasPotential(nullptr);
+    }
+    Dynamics dyn(&matter, DynamicsConfig::fromParams(params));
+    dyn.oneStep(1);
+    // getBiasForces recomputes only while the pointer is set. A cleared
+    // pointer returns the forces from before this step.
+    return std::pair<AtomMatrix, AtomMatrix>{before, matter.getBiasForces()};
+  };
+
+  const auto kept = afterMove(true);
+  const auto dropped = afterMove(false);
+  REQUIRE(kept.first.isApprox(dropped.first, 1e-12));
+  REQUIRE((kept.second - kept.first).norm() > 1e-4);
+  REQUIRE(dropped.second.isApprox(dropped.first, 1e-12));
 }
 
 TEST_CASE("BondBoost rejects a null Matter", "[bondboost]") {
