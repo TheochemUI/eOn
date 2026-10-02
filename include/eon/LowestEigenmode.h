@@ -47,6 +47,18 @@ public:
                        AtomMatrix initialDirection) = 0;
   virtual double getEigenvalue() = 0;
   virtual AtomMatrix getEigenvector() = 0;
+
+  /// Evaluates a dirty `centre` together with the first displaced image
+  /// the next compute(centre, direction) needs, as one batch, when the
+  /// potential batches (calculator groups, a batched model). compute()
+  /// takes that image when its coordinates match bit for bit, so a
+  /// min-mode step costs one batch instead of two serial calls. The
+  /// default and every case that cannot predict the image do nothing.
+  virtual void evaluateWithProbe(const std::shared_ptr<Matter> &centre,
+                                 const AtomMatrix &direction) {
+    (void)centre;
+    (void)direction;
+  }
 };
 
 } // namespace eonc

@@ -17,6 +17,8 @@
 #include "Matter.h"
 #include "Parameters.h"
 
+#include <memory>
+
 namespace eonc {
 
 // Lanczos method to find the lowest curvature mode.
@@ -37,8 +39,15 @@ public:
                const VectorXi &mobileAtoms);
   double getEigenvalue() override;
   AtomMatrix getEigenvector() override;
+  /// The probe is the first Krylov product's displaced image, for the
+  /// one-sided product only.
+  void evaluateWithProbe(const std::shared_ptr<Matter> &centre,
+                         const AtomMatrix &direction) override;
 
 private:
+  // Displaced image evaluated together with its centre by
+  // evaluateWithProbe(); the first product of compute() takes it.
+  std::unique_ptr<Matter> probe_;
   AtomMatrix lowestEv;
   double lowestEw{0.0};
   eonc::log::Scoped log;

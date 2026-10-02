@@ -303,7 +303,9 @@ leaves the others on those groups.
 With `ci_mmf = true` the climbing image takes improved-dimer steps on its
 own. Each step evaluates the moved centre and its forward image as one
 batch, on groups 0 and 1. A rotation trial depends on the previous one
-and runs alone on group 0.
+and runs alone on group 0. A saddle search does the same, and with
+`min_mode_method = lanczos` the second system of that batch is the first
+Krylov product's displaced image.
 
 A Hessian or a prefactor with an empty `checkpoint_path` sends its
 displaced structures through these groups the same way. Structure `j`

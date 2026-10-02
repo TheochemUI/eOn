@@ -63,16 +63,14 @@ public:
     return -c;
   }
 
-  // A new centre and the dimer's forward image along the current mode are
-  // independent evaluations; a batching potential takes them together.
-  // compute() then finds x1 evaluated. Finite-difference gradient probes
-  // never call compute(), so they evaluate the centre alone.
+  // A new centre and the mode solver's first displaced image along the
+  // current mode are independent evaluations; a batching potential takes
+  // them together, and compute() then finds the image evaluated.
+  // Finite-difference gradient probes never call compute(), so they
+  // evaluate the centre alone.
   void evaluateCentre() {
-    if (!matter->needsForceUpdate()) {
-      return;
-    }
-    if (auto *dimer = eonc::asImprovedDimer(*minModeMethod)) {
-      dimer->evaluateWithForward(matter, eigenvector);
+    if (matter->needsForceUpdate()) {
+      minModeMethod->evaluateWithProbe(matter, eigenvector);
     }
   }
 

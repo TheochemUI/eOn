@@ -29,7 +29,7 @@ private:
   VectorXd fixedReferenceMode;
   bool hasFixedReference = false;
   // Forward image evaluated together with its centre by
-  // evaluateWithForward(); compute() takes it when the coordinates match.
+  // evaluateWithProbe(); compute() takes it when the coordinates match.
   std::unique_ptr<Matter> forward_;
   // The unit dimer direction compute() builds from an initial direction.
   VectorXd dimerDirection(const Matter &matter,
@@ -51,13 +51,9 @@ public:
   VectorXd theta;             // Dimer rotation direction
   VectorXd F_R;               // Dimer rotational force
   double C_tau{0.0};          // Curvature along tau
-  /// Evaluates the centre `matter` and the forward image along `direction`
-  /// in one batch when the potential batches (calculator groups, a batched
-  /// model) and the centre needs an evaluation. The next compute() on the
-  /// same centre and direction reuses the forward image, so a min-mode step
-  /// costs one batch instead of two serial calls. Any other case is a no-op.
-  void evaluateWithForward(const std::shared_ptr<Matter> &matter,
-                           const AtomMatrix &direction);
+  /// The probe is the forward image x0 + delta tau.
+  void evaluateWithProbe(const std::shared_ptr<Matter> &matter,
+                         const AtomMatrix &direction) override;
   // For use when called as part of the NEB-MMF
   void setReferenceMode(const VectorXd &ref);
   void clearReferenceMode();

@@ -81,8 +81,8 @@ VectorXd ImprovedDimer::dimerDirection(const Matter &matter,
   return t;
 }
 
-void ImprovedDimer::evaluateWithForward(const std::shared_ptr<Matter> &matter,
-                                        const AtomMatrix &direction) {
+void ImprovedDimer::evaluateWithProbe(const std::shared_ptr<Matter> &matter,
+                                      const AtomMatrix &direction) {
   forward_.reset();
   if (!matter->needsForceUpdate() || !pot->supportsBatchEvaluation() ||
       usesAlternativeRotation(params.dimer_options().rotation_backend) ||
@@ -112,7 +112,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   tau = initialDirection.array() * matter->getFreeV().array();
   rotationDidConverge = true;
   foundNegativeCurvature = false;
-  // A forward image from evaluateWithForward() serves this call only.
+  // A forward image from evaluateWithProbe() serves this call only.
   const std::unique_ptr<Matter> forward = std::move(forward_);
   if (tau.norm() > 1e-10) {
     eonc::safemath::safe_normalize_inplace(tau);

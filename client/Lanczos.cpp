@@ -30,6 +30,7 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
+#include <optional>
 
 namespace eonc {
 
@@ -47,10 +48,59 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
   compute(std::move(matter), std::move(direction), mobile);
 }
 
+namespace {
+// The one-sided product's scheme, as compute() picks it.
+bool oneSidedProduct(const Parameters &params) {
+  return parseFdScheme(params.hessian_options().fd_scheme) != FdScheme::Fourth;
+}
+
+// Coordinates of the displaced image for the first Krylov vector, built
+// with the same expressions compute() uses, so the two agree bit for bit.
+std::optional<AtomMatrix> firstProbe(const Matter &centre,
+                                     const AtomMatrix &direction,
+                                     const VectorXi &mobile, double dr) {
+  const VectorXd r = packMobileRows(direction, mobile);
+  const double beta = r.norm();
+  if (mobile.size() == 0 || beta < eonc::safemath::eps) {
+    return std::nullopt;
+  }
+  const VectorXd v = r / beta;
+  const AtomMatrix pos0 = centre.getPositions();
+  AtomMatrix pos = pos0;
+  unpackMobileRows(packMobileRows(pos0, mobile) + (1.0 * dr) * v, mobile, pos);
+  return pos;
+}
+} // namespace
+
+void Lanczos::evaluateWithProbe(const std::shared_ptr<Matter> &centre,
+                                const AtomMatrix &direction) {
+  probe_.reset();
+  if (!centre->needsForceUpdate() || !pot->supportsBatchEvaluation() ||
+      !oneSidedProduct(params)) {
+    return;
+  }
+  const VectorXi mobile = resolveMobileAtoms(
+      centre.get(),
+      resolveMobileAtoms(centre.get(), params.lanczos_options().phva_atoms));
+  const auto pos = firstProbe(*centre, direction, mobile,
+                              params.main_options().finiteDifference);
+  if (!pos) {
+    return;
+  }
+  auto probe = std::make_unique<Matter>(*centre);
+  probe->setPositions(*pos);
+  Matter *const both[] = {centre.get(), probe.get()};
+  eonc::evaluateTogether(*pot, both);
+  probe_ = std::move(probe);
+}
+
 void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
                       const VectorXi &mobileIn) {
   totalForceCalls = 0;
   statsRotations = 0;
+  // A probe from evaluateWithProbe() serves this call's first product only.
+  std::unique_ptr<Matter> probe = std::move(probe_);
+  long probeCalls = 0;
   lowestEv.resize(matter->numberOfAtoms(), 3);
   lowestEv.setZero();
 
@@ -91,6 +141,16 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
       unpackMobileRows(packMobileRows(pos0, mobile) + (scale * dr) * v, mobile,
                        pos);
       tmpMatter->setPositions(pos);
+      // Compared after setPositions, which wraps into the cell as the
+      // probe's own setPositions did.
+      if (probe && !probe->needsForceUpdate() &&
+          probe->getPositions() == tmpMatter->getPositions()) {
+        const VectorXd f = mobileForces(probe.get(), mobile);
+        probe.reset();
+        probeCalls++;
+        return f;
+      }
+      probe.reset();
       return mobileForces(tmpMatter.get(), mobile);
     };
     return fdHessianVector(hvpScheme, dr, force0, at);
@@ -180,7 +240,7 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
   }
 
   lowestEw = ew;
-  totalForceCalls = tmpMatter->getForceCalls() - forceCallsStart;
+  totalForceCalls = tmpMatter->getForceCalls() - forceCallsStart + probeCalls;
 
   lowestEv.setZero();
   if (evEst.size() == size) {

@@ -995,8 +995,13 @@ struct CountingBatchLJ final : Potential {
 
 TEST_CASE_METHOD(DimerFixture,
                  "a batching potential takes a min-mode centre with its "
-                 "forward image",
-                 "[dimer][minmode][batch]") {
+                 "first displaced image",
+                 "[dimer][lanczos][minmode][batch]") {
+  const auto method =
+      GENERATE(as<std::string>{}, LowestEigenmode::MINMODE_DIMER,
+               LowestEigenmode::MINMODE_LANCZOS);
+  CAPTURE(method);
+  ParametersLoadAccess::saddle_search_options(params).minmode_method = method;
   ParametersLoadAccess::dimer_options(params).improved = true;
   ParametersLoadAccess::dimer_options(params).rotations_max = 4;
   ParametersLoadAccess::optimizer_options(params).max_move = 0.05;
@@ -1027,9 +1032,8 @@ TEST_CASE_METHOD(DimerFixture,
                                                1e-12));
   REQUIRE(batched.getEigenvalue() ==
           Catch::Approx(serial.getEigenvalue()).margin(1e-10));
-  // Centre and forward image share a batch once per step, so there are
-  // fewer rounds than serial calls; at most the last forward image is
-  // spare.
+  // Centre and first displaced image share a batch once per step, so there
+  // are fewer rounds than serial calls; at most the last image is spare.
   REQUIRE(batchPot->largestBatch == 2);
   REQUIRE(batchPot->rounds < serialCalls);
   REQUIRE(batchPot->systems <= serialCalls + 1);
