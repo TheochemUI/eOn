@@ -31,7 +31,7 @@ pixi add eon
 micromamba install -c conda-forge eon
 ```
 
-Those commands install the conda-forge release package. They do not check out `develop`. A source build of `develop` is the section below. The examples in this book run against the release package. `pixi.toml` on `develop` records version 3.4.0, and the conda-forge package can be an older release.
+Those commands install the conda-forge release package. They do not check out `develop`. A source build of `develop` is the section below. The examples in this book run against the release package. `pixi.toml` on `develop` records version 3.5.0, and the conda-forge package can be an older release.
 
 The conda package is a maximalist build with the following potentials and
 features enabled:

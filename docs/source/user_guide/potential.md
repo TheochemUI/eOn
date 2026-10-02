@@ -14,7 +14,9 @@ libraries and others via interfaces.
 Some of these require compile-time flags, detailed in the [installation instructions](project:../install/index.md).
 The `conda-forge` package (`conda install -c conda-forge eon`) includes
 **Metatomic**, **XTB**, **EXT_POT**, and the vendored potentials.
-LAMMPS, ASE, VASP, AMS, and MPI potentials require building from source with
+The client always compiles the LAMMPS interface and loads `liblammps` with `dlopen`.
+The option `-Dwith_lammps` does not exist.
+ASE, VASP, AMS, and MPI potentials require building from source with
 the corresponding `-Dwith_*` flags.
 ```
 
@@ -23,10 +25,10 @@ the corresponding `-Dwith_*` flags.
 ### External
 
 VASP {cite:p}`pot-kresseEfficientIterativeSchemes1996`
-: Vienna Ab-Initio Simulation Program (VASP) I/O interface. {bdg-warning}`source build`
+: Vienna Ab-Initio Simulation Program (VASP) I/O interface. `-Dwith_vasp` defaults false. {bdg-warning}`source build`
 
 LAMMPS {cite:p}`pot-plimptonFastParallelAlgorithms1995,pot-thompsonLAMMPSFlexibleSimulation2022`
-: Library interface, detailed [documentation here](project:../user_guide/lammps_pot.md). {bdg-warning}`source build`
+: Library interface, detailed [documentation here](project:../user_guide/lammps_pot.md). `in.lammps` must be in the working directory, or the potential raises an error. {bdg-success}`conda-forge`
 
 EXT_POT
 : File-based interface to any external calculator. Detailed [documentation here](project:ext_pot.md). {bdg-success}`conda-forge`
@@ -39,9 +41,9 @@ ASE_ORCA
 ASE_NWChem
 : Atomic simulation environment {cite:p}`pot-larsenAtomicSimulationEnvironment2017` interface to NWChem {cite:p}`pot-apraNWChemPresentFuture2020`. {bdg-warning}`source build`
 XTB
-: Extended Tight binding models via native Fortran-C interfce {cite:p}`pot-bannwarthExtendedTightbindingQuantum2021`. {bdg-success}`conda-forge`
+: Extended Tight binding models via native Fortran-C interfce {cite:p}`pot-bannwarthExtendedTightbindingQuantum2021`. `-Dwith_xtb` defaults false. Prefer `potential = rgpot` in `[Potential]` and `backend = xtb` in `[RgpotPot]`. {bdg-success}`conda-forge`
 Metatomic
-: Common interface to atomistic machine learning models. {bdg-success}`conda-forge`
+: Common interface to atomistic machine learning models. `-Dwith_metatomic` defaults false. {bdg-success}`conda-forge`
 SocketNWChem
 : Socket oriented communicator for efficient integration with NWChem {cite:p}`pot-apraNWChemPresentFuture2020`. {bdg-success}`conda-forge`
 ```
@@ -79,8 +81,8 @@ ZBL
 ```{versionadded} 3.2.1
 DFTD3 / DFTD4
 : Grimme DFT-D via rgpot 3.2 (`potential = dftd3` / `dftd4`,
-  `[D3Pot]` / `[D4Pot]`). Enable the wraps at meson configure time
-  (`-Dwith_dftd3=true`).
+  `[D3Pot]` / `[D4Pot]`). The option `-Dwith_dftd3` does not exist.
+  The client compiles these pots when `RGPOT_HAS_DFTD3` or `RGPOT_HAS_DFTD4` is defined.
 
 EXPR
 : rgpot ExprPot. `potential = expr` with `[ExprPot]` `expression` and
@@ -105,10 +107,10 @@ EDIP {cite:p}`pot-justoInteratomicPotentialSilicon1998`
 : Environment-Dependent Interatomic Potential, for carbon.
 
 TIP4P {cite:p}`pot-jorgensenComparisonSimplePotential1983`
-: Point charge model for water, also for water-hydrogen and water on platinum.
+: Point charge model for water, also for water-hydrogen and water on platinum. Source builds need `-Dwith_water=true` because `with_water` defaults false.
 
 SPCE {cite:p}`pot-berendsenMissingTermEffective1987`
-: Extended simple point charge model for water
+: Extended simple point charge model for water. Source builds need `-Dwith_water=true` because `with_water` defaults false.
 
 ## Configuration
 

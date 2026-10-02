@@ -56,7 +56,7 @@ island forms after `65720` transitions in a time scale of a `ms` at `300K`.
 
 There are a variety of empirical potentials included with `eOn`. You can also
 use the potentials built into the LAMMPS library. `eOn` also provides an
-interace to the VASP and GPAW density functional theory codes.
+interface to the VASP density functional theory code.
 
 ```{versionadded} 2.0
 `eOn` now supports additional potentials
@@ -72,15 +72,14 @@ interace to the VASP and GPAW density functional theory codes.
 see [the Python API guide](user_guide/pyeonclient.md).
 
 ```{code-block} bash
-pip install pyeonclient 'rgpot>=2.5.2' 'pyeonclient[ase,metatomic]'
+pip install pyeonclient 'rgpot>=3.2.0' 'pyeonclient[ase,metatomic]'
 ```
 
 **Full eOn (conda):** server + `eonclient` binary — see [installation](install/index.md).
 
 ```{code-block} bash
 micromamba install -c conda-forge eon
-# single point calculation, Lennard-Jones
-eonclient -s molecule.con -p lj
+# The working directory needs pos.con.
 # or with a config.ini and pos.con file
 eonclient # reads config.ini and runs
 # or for akmc, needs config.ini and pos.con
