@@ -69,12 +69,12 @@ case. A name outside the enumeration stops the client with `No known job could
 be constructed`.
 
 Spellings that do not match a client job are `finite_differences` (use
-`finite_difference`), `molecular_dynamics` (use `dynamics`),
+<project:finite_difference.md>), `molecular_dynamics` (use `dynamics`),
 `displacement_sampling`, `akmc`, and `hyperdynamics` (use
 `safe_hyperdynamics`). `escape_rate` runs on the server, and the schema marks
-that entry TODO. `oh_tst` is a client job and is absent from the schema list.
-`global_optimization` is minima hopping, not basin hopping. These method
-options share the `job` key.
+that entry TODO. <project:oh_tst.md> is a client job and is absent from the
+schema list. <project:global_optimization.md> is minima hopping, not basin
+hopping. These method options share the `job` key.
 
 There are specific options for each method, and a set of general options which
 are shared between methods. Examples of these general options include
@@ -147,6 +147,7 @@ dimer
 lanczos
 artn
 hessian
+finite_difference
 instanton
 prefactor
 ```
@@ -158,6 +159,9 @@ prefactor
 akmc
 saddle_search
 basin_hopping
+global_optimization
+monte_carlo
+replica_exchange
 process_search
 recycling
 coarse_graining
@@ -170,6 +174,8 @@ coarse_graining
 dynamics
 parallel_replica
 hyperdynamics
+tad
+oh_tst
 ```
 
 ```{toctree}
