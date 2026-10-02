@@ -11,6 +11,7 @@ myst:
 :hidden:
 
 eessi
+lammps
 ```
 
 eOn is divided up into two separate programs: a server and a client. The client
@@ -62,13 +63,10 @@ git clone -b develop https://github.com/TheochemUI/eOn.git
 cd eOn
 ```
 
-````{margin}
 ```{note}
-
 * Authentication is easier with the [command line tool](https://cli.github.com/).
 * [Pixi](https://pixi.sh/) is now recommended
 ```
-````
 
 ## Building from source
 

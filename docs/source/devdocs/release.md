@@ -148,7 +148,7 @@ Schema/package layout may be cleaned up over time. The release rule is:
 | `pyeonclient` | `pyproject-pyeonclient.toml` | Wheel CI; optional `[models]` |
 | `eon-schema` | `packages/eon-schema/` | Independent `0.y.z`; vendored SSoT; see package `PUBLISHING.md` |
 
-Detail: [`packages/eon-schema/PUBLISHING.md`](../../../packages/eon-schema/PUBLISHING.md).
+Detail: [`packages/eon-schema/PUBLISHING.md`](https://github.com/TheochemUI/eOn/blob/develop/packages/eon-schema/PUBLISHING.md).
 
 Monorepo developer docs (package map, CI matrix) can expand later under
 `docs/source/devdocs/` without changing this fat/split release contract.
@@ -207,7 +207,7 @@ Before invoking `cog bump`, verify:
 - [ ] PyPI dry-run considered: `python3 -m build && twine check dist/*` on a
   clean tree (optional but recommended before first-ever PyPI cut).
 - [ ] **Incomplete prior release reconciled** — see
-  [§ Incomplete / stuck releases](#incomplete--stuck-releases). Reconcile
+  {ref}`§ Incomplete / stuck releases <incomplete-stuck-releases>`. Reconcile
   `vN.M.P` (finalize or supersede) before a new semver if the GH asset, PyPI,
   or feedstock is still unfinished.
 - [ ] **Downstream integration test passes** (blocking for metatomic consumers).
@@ -272,6 +272,7 @@ Defined in `cog.toml`:
 `cog.toml` sets `disable_changelog = true` (towncrier owns `CHANGELOG.md`) and
 `branch_whitelist = ["main"]` so `cog bump` refuses non-main branches.
 
+(post-bump-actions)=
 ## 3. Post-bump actions
 
 1. Inspect the release commit:
@@ -320,8 +321,9 @@ Defined in `cog.toml`:
    - [ ] PyPI shows `eon-akmc==X.Y.Z` (stable only; check
      `https://pypi.org/project/eon-akmc/X.Y.Z/`) **or** document intentional skip
      for this cut
-   - [ ] Then proceed to [§4 conda-forge](#4-conda-forge-feedstock-bump)
+   - [ ] Then proceed to {ref}`§4 conda-forge <conda-forge-feedstock-bump>`
 
+(conda-forge-feedstock-bump)=
 ## 4. conda-forge feedstock bump
 
 Once the GitHub release is published (asset URL resolves), update
@@ -365,6 +367,7 @@ Checklist:
 - [ ] CI matrix green
 ```
 
+(incomplete-stuck-releases)=
 ## 5. Incomplete / stuck releases
 
 eOn has had cuts where **version / tag / CHANGELOG / release-notes exist** but
@@ -429,7 +432,7 @@ Feedstock: open/update PR only for the version you want conda-forge to publish
    lacked fragments at `N.M.P` time if they still lack a changelog voice).
 3. Add `docs/source/releases/v<NEW>/` pages; link from `releases/index.md`.
 4. On `main`: `cog bump --version <NEW>` (or `--auto` / `--patch` / `--minor`).
-5. Complete [§3](#3-post-bump-actions) and [§4](#4-conda-forge-feedstock-bump)
+5. Complete {ref}`§3 <post-bump-actions>` and {ref}`§4 <conda-forge-feedstock-bump>`
    for **NEW** only.
 6. Optionally still attach `eon-vN.M.P.tar.xz` to the old GH release for
    reproducibility; do not double-publish conflicting PyPI/conda builds.
@@ -474,7 +477,7 @@ git tag -s -a v<X.Y.Z> -m "Release v<X.Y.Z>
 git archive --format=tar v<X.Y.Z> | xz -9 > eon-v<X.Y.Z>.tar.xz
 ```
 
-Then [§3](#3-post-bump-actions) push and channel completion.
+Then {ref}`§3 <post-bump-actions>` push and channel completion.
 
 ## 8. API / Doxygen documentation check
 

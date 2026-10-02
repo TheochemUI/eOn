@@ -277,6 +277,7 @@ later. The `[Refine]` section does that switch.
 
 ```{eval-rst}
 .. autopydantic_model:: eon.schema.RefineConfig
+   :no-index:
 ```
 
 ## References

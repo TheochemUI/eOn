@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn v3.2.1, IDPP constraints, opt_method, DFT-D3, ExprPot, ASE PBC"
 ---
 
-## [v3.2.1] - 2026-09-13
+# [v3.2.1] - 2026-09-13
 
 Patch on `v3.2.0`. IDPP path init keeps frozen atoms fixed
 (TheochemUI/eOn#410). pyeonclient can set `opt_method`,

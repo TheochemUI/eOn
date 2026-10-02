@@ -82,7 +82,10 @@ intersphinx_mapping = {
 }
 
 templates_path = ["_templates"]
-exclude_patterns = []
+exclude_patterns = [
+    ".jupyter_cache",
+    ".jupyter_cache/**",
+]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
@@ -130,10 +133,9 @@ html_theme_options = {
             ],
         },
     ],
-    "logo": {
-        "light": "_static/logo/eon_v3_light.svg",
-        "dark": "_static/logo/eon_v3_dark.svg",
-    },
+    # Paths are relative to html_static_path. A nested "logo" dict is not a theme option.
+    "light_logo": "logo/eon_v3_light.svg",
+    "dark_logo": "logo/eon_v3_dark.svg",
 }
 
 # Each configuration model is a field list, in class order, with its default.

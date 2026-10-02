@@ -5,14 +5,14 @@ myst:
     "keywords": "eOn v2.8.0, release, RO-NEB-CI, metatomic, GPR-Dimer, Meson build"
 ---
 
-## [v2.8.0] - 2025-09-04
+# [v2.8.0] - 2025-09-04
 
 First release in a decade.
 
 Five years of work: new transition-state methods, more potential
 interfaces, and a Meson build that runs on Linux, macOS, and Windows.
 
-### Highlights
+## Highlights
 
 * **RO-NEB-CI**: climbing-image NEB with a rotating-orbit refinement for
   locating complex transition states.

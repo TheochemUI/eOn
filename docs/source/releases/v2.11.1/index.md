@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn v2.11.1, release, ext_pot, external potential, conda-forge"
 ---
 
-## [v2.11.1] - 2026-03-01
+# [v2.11.1] - 2026-03-01
 
 A patch release that fixes the `ext_pot` potential type so it can be selected
 from configuration files, adds documentation and protocol specification for the

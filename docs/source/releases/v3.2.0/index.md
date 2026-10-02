@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn v3.2.0, readcon 0.14.5, CON spec 3, per-axis constraints, ExtPot, VASP, rgpot forceBatch, pytest CI"
 ---
 
-## [v3.2.0] - 2026-08-16
+# [v3.2.0] - 2026-08-16
 
 Post-`v3.1.0` work on `main`, cut with the standard release flow
 ({doc}`/devdocs/release`). This page is authored **before** the version chore so

@@ -24,7 +24,7 @@ pyeonclient
 neighbor_lists
 ```
 
-See also the [API reference](../apidocs/pyeonclient.md) and the
+See also the {doc}`API reference <pyeonclient>` and the
 [atomistic-cookbook PET-MAD NEB example](https://atomistic-cookbook.org/examples/eon-pet-neb/eon-pet-neb.html).
 
 ## AiiDA (`aiida-eon`)
@@ -71,12 +71,10 @@ Parameters can also be loaded from JSON strings for programmatic usage.
 See {doc}`/devdocs/design/client/parameters` for the JSON schema.
 ```
 
-````{margin}
 ```{note}
 From 2.0 on, prefer a workflow manager over eOn-generated submit
 scripts. AiiDA: {doc}`aiida`. Snakemake and FireWorks also work.
 ```
-````
 
 eOn is designed to run in serial on one computer or in parallel using a
 communicator to send jobs from a server to clients and receive the results back.

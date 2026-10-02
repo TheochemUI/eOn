@@ -164,13 +164,9 @@ If the configuration specifies a `variant_base` or `variant_energy_uncertainty`,
 eOn will automatically target the corresponding variant key (e.g.,
 `energy_uncertainty/ensemble`).
 
-````{margin}
 ```{note}
-
 * Force uncertainties are separate; these scalars need not track accuracy.
-
 ```
-````
 
 ## Variants
 
