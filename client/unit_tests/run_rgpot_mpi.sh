@@ -29,12 +29,26 @@ export PMIX_MCA_psec=none
 export OMPI_ALLOW_RUN_AS_ROOT=1
 export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 export OMPI_MCA_rmaps_base_oversubscribe=1
+# The compiler records the prefix libdir ahead of $ORIGIN, and that
+# directory is also the install prefix. Preload the librgpot_pot.so
+# next to this executable so the ranks run the build just linked.
+exe_dir=$(CDPATH= cd -- "$(dirname "$EXE")" && pwd)
+preload_arg=()
+potso="$exe_dir/potentials/Rgpot/librgpot_pot.so"
+if [ -f "$potso" ]; then
+  if [ -n "${LD_PRELOAD:-}" ]; then
+    preload_arg=(-x "LD_PRELOAD=${potso}:${LD_PRELOAD}")
+  else
+    preload_arg=(-x "LD_PRELOAD=${potso}")
+  fi
+fi
 cd "$tmp"
 set +e
 timeout 25 mpirun -np 2 --bind-to none --map-by :OVERSUBSCRIBE \
   -x TMPDIR -x PMIX_MCA_psec -x OMPI_ALLOW_RUN_AS_ROOT \
   -x OMPI_ALLOW_RUN_AS_ROOT_CONFIRM -x CPMDC_LIBRARY \
   -x RGPOT_CPMDC_ENGINE -x RGPOT_CPMD_ENGINE -x LD_LIBRARY_PATH -x PATH \
+  "${preload_arg[@]}" \
   "$EXE" "$MODE" >stdout 2>stderr
 rc=$?
 set -e

@@ -1957,9 +1957,12 @@ if get_option('with_tests')
             workdir: meson.project_source_root() +
                      '/client/unit_tests/data/systems/rgpot_nwchem_test',
         )
+        # The three cases call the calculator-group agreement. That code
+        # is compiled only when rgpot links MPI. mpirun on PATH is not
+        # that build, and the cases then fail closed.
         _rgpot_mpirun = find_program('mpirun', 'mpiexec', required: false)
         _rgpot_bash = find_program('bash', required: false)
-        if _rgpot_mpirun.found() and _rgpot_bash.found()
+        if _rgpot_mpi_dep.found() and _rgpot_mpirun.found() and _rgpot_bash.found()
             rgpot_mpi_exit = executable(
                 'rgpot_mpi_exit',
                 sources: ['unit_tests/rgpot_mpi_exit.cpp'],
