@@ -640,8 +640,8 @@ if host_system == 'linux'
             if _origin_rel == ''
                 _origin_entries += '$ORIGIN'
             else
-                # String join, not the / operator: path join collapses
-                # '$ORIGIN/..' and drops the token.
+                # os.path.normpath drops a leading $ORIGIN when the next
+                # component is '..'. Concatenate so the token stays literal.
                 _origin_entries += '$ORIGIN/' + _origin_rel
             endif
         endforeach
