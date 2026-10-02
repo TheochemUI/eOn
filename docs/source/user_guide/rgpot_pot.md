@@ -338,7 +338,27 @@ mpirun -np 28 eonclient
 ```
 
 Rank 0 runs the job and writes the files. The other ranks serve force
-requests. At exit, rank 0 sends a stop. Every rank calls `cpmdc_finalize`
+requests. When rank 0 stops them it prints how the job used the groups:
+the systems each group evaluated, its seconds inside engine calls, and
+its idle share of the driver's wall time in grouped requests. The last
+line gives the POP ratios. Load balance is the mean busy time over the
+largest. Communication efficiency is the largest busy time over that
+wall time, so a wait for the slowest image of a batch, a serial request
+on group 0, or a result broadcast lowers it. Parallel efficiency is the
+product of the two.
+
+For the Si3N4 band of this page started from a nearly converged path,
+on 8 ranks as 2 groups of 4:
+
+```{code-block} text
+RgpotPot: calculator groups: 2 groups, 10 batches and 6 single requests, 1216.8 s grouped wall (109.3 s single)
+ group  systems     busy_s   idle
+     0       34    1187.44   2.4%
+     1       22     889.36  26.9%
+load balance 0.874, communication efficiency 0.976, parallel efficiency 0.853
+```
+
+At exit, rank 0 sends a stop. Every rank calls `cpmdc_finalize`
 while MPI is still up, then `MPI_Finalize`, then `_Exit`. `_Exit` returns
 to the kernel, and the dynamic linker does not run the CPMD or MPI
 library destructors on a finalized world. Worker ranks use status 0.

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <chrono>
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
@@ -111,7 +112,8 @@ RgpotPot::RgpotPot(const eonc::Parameters &p)
   driver_ = impl_->worldRank() == 0;
   std::cout
       << "RgpotPot: in-process rgpot backend=" << backend_
-      << " (dlopen: libnwchemc/libcpmdc/librgpot_metatomic_engine/librgpot_xtb_engine)"
+      << " (dlopen: "
+         "libnwchemc/libcpmdc/librgpot_metatomic_engine/librgpot_xtb_engine)"
       << std::endl;
   // Finalize is registered first. The grouped-exit handler is next, and
   // the stop handler is last, so exit runs stop, then Finalize, then _Exit.
@@ -155,12 +157,34 @@ void RgpotPot::sendStop() {
     g_driver = nullptr;
 }
 
+void RgpotPot::exchangeGroupUse() {
+  const int groups = impl_->calculatorGroups();
+  use_.busy.assign(static_cast<size_t>(groups), 0.0);
+  use_.systems.assign(static_cast<size_t>(groups), 0.0);
+  for (int g = 0; g < groups; g++) {
+    double tally[3] = {busy_, systemsDone_, 0.0};
+    double unused = 0.0;
+    std::string error;
+    (void)impl_->shareResult(g, 1, tally, &unused, true, error);
+    use_.busy[static_cast<size_t>(g)] = tally[0];
+    use_.systems[static_cast<size_t>(g)] = tally[1];
+  }
+}
+
 void RgpotPot::stopAndDrop() {
   if (!impl_)
     return;
   const bool grouped = driver_ && impl_->calculatorWorld() > 1;
-  if (grouped && !stopped_)
+  if (grouped && !stopped_) {
     sendStop();
+    try {
+      exchangeGroupUse();
+      std::cout << "RgpotPot: " << use_.table() << std::flush;
+    } catch (const std::exception &ex) {
+      std::cerr << "RgpotPot: no calculator-group summary: " << ex.what()
+                << std::endl;
+    }
+  }
   if (!dropped_) {
     impl_->shutdownModule();
     dropped_ = true;
@@ -211,13 +235,24 @@ bool try_force(const RGPotEngine &engine, long N, const double *R,
 }
 } // namespace
 
+bool RgpotPot::evaluate(long N, const double *R, const int *atomicNrs,
+                        double *F, double *U, const double *box,
+                        std::string &error) {
+  const auto t0 = std::chrono::steady_clock::now();
+  const bool ok = try_force(*impl_, N, R, atomicNrs, F, U, box, error);
+  busy_ += std::chrono::duration<double>(std::chrono::steady_clock::now() - t0)
+               .count();
+  systemsDone_ += 1.0;
+  return ok;
+}
+
 void RgpotPot::computeSingle(long N, const double *R, const int *atomicNrs,
                              double *F, double *U, const double *box) {
   // Group 0 computes; its first rank's result reaches every rank.
   std::string error;
   bool ok = true;
   if (impl_->calculatorIndex() == 0)
-    ok = try_force(*impl_, N, R, atomicNrs, F, U, box, error);
+    ok = evaluate(N, R, atomicNrs, F, U, box, error);
   if (!impl_->shareResult(0, N, F, U, ok, error))
     raise_failure(0, 0, error);
 }
@@ -244,8 +279,8 @@ void RgpotPot::computeBatch(long nSystems, long nAtoms,
   for (long j = 0; j < nSystems; j++) {
     if (ownerOf(j) == mine)
       ok[static_cast<size_t>(j)] =
-          try_force(*impl_, nAtoms, positions[j], atomicNrs[j], forces[j],
-                    &energies[j], boxes[j], errors[static_cast<size_t>(j)]);
+          evaluate(nAtoms, positions[j], atomicNrs[j], forces[j], &energies[j],
+                   boxes[j], errors[static_cast<size_t>(j)]);
   }
   // Every share runs before any rank raises, so all ranks leave together.
   long failed = -1;
@@ -268,6 +303,10 @@ void RgpotPot::serveWorker() {
     if (hdr[0] == kStop) {
       // Drop CPMD, wait until the driver has dropped it too, then exit 0.
       // MPI_Finalize is collective and runs from the exit handler.
+      try {
+        exchangeGroupUse();
+      } catch (const std::exception &) {
+      }
       if (!dropped_) {
         impl_->shutdownModule();
         dropped_ = true;
@@ -322,6 +361,7 @@ void RgpotPot::force(long N, const double *R, const int *atomicNrs, double *F,
     impl_->force(N, R, atomicNrs, F, U, box);
     return;
   }
+  const auto t0 = std::chrono::steady_clock::now();
   std::int64_t hdr[3] = {kSingle, N, 1};
   impl_->broadcastFromDriver(hdr, sizeof(hdr));
   impl_->broadcastFromDriver(const_cast<double *>(R), 3 * N * sizeof(double));
@@ -331,6 +371,12 @@ void RgpotPot::force(long N, const double *R, const int *atomicNrs, double *F,
   // the workers.
   releaseWorkersAtExit();
   computeSingle(N, R, atomicNrs, F, U, box);
+  const double dt =
+      std::chrono::duration<double>(std::chrono::steady_clock::now() - t0)
+          .count();
+  use_.wall += dt;
+  use_.singleWall += dt;
+  use_.singles++;
 }
 
 bool RgpotPot::supportsBatchEvaluation() const noexcept {
@@ -357,7 +403,9 @@ void RgpotPot::forceBatchOwned(long nSystems, long nAtoms,
     for (long j = 0; j < nSystems; j++)
       ids[static_cast<size_t>(j)] = owners[j];
   }
-  if (impl_->calculatorWorld() > 1) {
+  const bool grouped = impl_->calculatorWorld() > 1;
+  const auto t0 = std::chrono::steady_clock::now();
+  if (grouped) {
     std::int64_t hdr[3] = {kBatch, nAtoms, nSystems};
     impl_->broadcastFromDriver(hdr, sizeof(hdr));
     std::vector<double> R(static_cast<size_t>(3 * nAtoms * nSystems));
@@ -377,6 +425,12 @@ void RgpotPot::forceBatchOwned(long nSystems, long nAtoms,
   releaseWorkersAtExit();
   computeBatch(nSystems, nAtoms, positions, atomicNrs, forces, energies, boxes,
                ids.data());
+  if (grouped) {
+    use_.wall +=
+        std::chrono::duration<double>(std::chrono::steady_clock::now() - t0)
+            .count();
+    use_.batches++;
+  }
   for (long j = 0; j < nSystems; j++) {
     if (variances)
       variances[j] = 0.0;

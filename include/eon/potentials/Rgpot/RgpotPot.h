@@ -11,6 +11,7 @@
 */
 #pragma once
 
+#include "eon/CalculatorGroupUse.h"
 #include "eon/Potential.h"
 #include <memory>
 #include <string>
@@ -57,6 +58,11 @@ public:
   }
   [[nodiscard]] const std::string &backend() const noexcept { return backend_; }
   [[nodiscard]] bool engineAvailable() const;
+  /// Calculator-group accounting on the driver. The per-group columns are
+  /// filled when the driver stops the workers; the driver prints them then.
+  [[nodiscard]] const eonc::CalculatorGroupUse &groupUse() const noexcept {
+    return use_;
+  }
 
 private:
   // Under mpirun (an MPI build of rgpot with cpmdc) only world rank 0 runs
@@ -72,6 +78,11 @@ private:
   void sendStop();
   void stopAndDrop();
   void releaseWorkersAtExit();
+  // Collective over every rank: each group's first rank shares its busy
+  // seconds and system count.
+  void exchangeGroupUse();
+  bool evaluate(long N, const double *R, const int *atomicNrs, double *F,
+                double *U, const double *box, std::string &error);
 
   std::unique_ptr<RGPotEngine> impl_;
   std::string backend_;
@@ -79,4 +90,8 @@ private:
   bool stopped_{false};
   bool dropped_{false};
   bool acked_{false};
+  // This rank's seconds inside engine calls and the systems it evaluated.
+  double busy_{0.0};
+  double systemsDone_{0.0};
+  eonc::CalculatorGroupUse use_;
 };

@@ -1,4 +1,5 @@
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/CalculatorGroupUse.h"
 #include "eon/MatrixHelpers.hpp"
 #include "eon/Matter.h"
 #include "eonc_test_aliases.hpp"
@@ -29,6 +30,34 @@ void clear_env(const char *name) {
 }
 
 } // namespace
+
+TEST_CASE("Calculator-group use reports POP efficiencies", "[RGPOT][groups]") {
+  eonc::CalculatorGroupUse use;
+  // Four groups inside 100 s of driver wall: 80, 60, 60, 40 s busy.
+  use.busy = {80.0, 60.0, 60.0, 40.0};
+  use.systems = {10.0, 8.0, 8.0, 6.0};
+  use.wall = 100.0;
+  use.singleWall = 12.0;
+  use.batches = 6;
+  use.singles = 2;
+  REQUIRE(use.groups() == 4);
+  REQUIRE(use.meanBusy() == Catch::Approx(60.0));
+  REQUIRE(use.loadBalance() == Catch::Approx(0.75));
+  REQUIRE(use.communicationEfficiency() == Catch::Approx(0.8));
+  REQUIRE(use.parallelEfficiency() == Catch::Approx(0.6));
+  REQUIRE(use.idleFraction(0) == Catch::Approx(0.2));
+  REQUIRE(use.idleFraction(3) == Catch::Approx(0.6));
+  const std::string t = use.table();
+  REQUIRE_THAT(t, ContainsSubstring("4 groups, 6 batches and 2 single"));
+  REQUIRE_THAT(t, ContainsSubstring("load balance 0.750"));
+  REQUIRE_THAT(t, ContainsSubstring("parallel efficiency 0.600"));
+
+  // No grouped work: every ratio is the neutral 1.
+  eonc::CalculatorGroupUse idle;
+  REQUIRE(idle.loadBalance() == 1.0);
+  REQUIRE(idle.communicationEfficiency() == 1.0);
+  REQUIRE(idle.idleFraction(0) == 0.0);
+}
 
 TEST_CASE("RgpotPot in-process nwchemc force (no potserv)",
           "[PotTest][RGPOT][nwchemc]") {

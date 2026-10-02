@@ -1,0 +1,1 @@
+An RgpotPot run on calculator groups prints, when the driver stops the workers, each group's evaluated systems, busy seconds and idle share, with the POP load balance, communication efficiency and parallel efficiency of the run.
