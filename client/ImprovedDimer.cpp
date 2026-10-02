@@ -68,6 +68,42 @@ void ImprovedDimer::setReferenceMode(const VectorXd &ref) {
 
 void ImprovedDimer::clearReferenceMode() { hasFixedReference = false; }
 
+VectorXd ImprovedDimer::dimerDirection(const Matter &matter,
+                                       const AtomMatrix &direction) const {
+  VectorXd t =
+      VectorXd::Map(direction.data(), 3 * matter.numberOfAtoms()).array() *
+      matter.getFreeV().array();
+  if (t.norm() > 1e-10) {
+    eonc::safemath::safe_normalize_inplace(t);
+  } else {
+    t.resize(0);
+  }
+  return t;
+}
+
+void ImprovedDimer::evaluateWithForward(const std::shared_ptr<Matter> &matter,
+                                        const AtomMatrix &direction) {
+  forward_.reset();
+  if (!matter->needsForceUpdate() || !pot->supportsBatchEvaluation() ||
+      usesAlternativeRotation(params.dimer_options().rotation_backend) ||
+      params.dimer_options().remove_rotation) {
+    return;
+  }
+  const VectorXd t = dimerDirection(*matter, direction);
+  if (t.size() == 0) {
+    return;
+  }
+  // The same expression compute() uses for x1, so the positions agree
+  // bit for bit when compute() runs on this centre and direction.
+  auto fwd = std::make_unique<Matter>(*matter);
+  fwd->setPotential(x1->getPotential());
+  fwd->setPositionsV(matter->getPositionsV() +
+                     params.main_options().finiteDifference * t);
+  Matter *const both[] = {matter.get(), fwd.get()};
+  eonc::evaluateTogether(*pot, both);
+  forward_ = std::move(fwd);
+}
+
 void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
                             AtomMatrix initialDirectionAtomMatrix) {
 
@@ -76,6 +112,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   tau = initialDirection.array() * matter->getFreeV().array();
   rotationDidConverge = true;
   foundNegativeCurvature = false;
+  // A forward image from evaluateWithForward() serves this call only.
+  const std::unique_ptr<Matter> forward = std::move(forward_);
   if (tau.norm() > 1e-10) {
     eonc::safemath::safe_normalize_inplace(tau);
   } else {
@@ -106,6 +144,10 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
 
   double delta = params.main_options().finiteDifference;
   x1->setPositionsV(x0_r + delta * tau);
+  if (forward && !forward->needsForceUpdate() &&
+      forward->getPositions() == x1->getPositions()) {
+    x1->setEvaluation(forward->getForcesRaw(), forward->getPotentialEnergy());
+  }
 
   // x0 and x1 in one call when both need one, so two calculator groups
   // take one each; a cached x0 costs nothing.

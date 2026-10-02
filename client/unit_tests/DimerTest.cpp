@@ -943,6 +943,98 @@ TEST_CASE("Lanczos keeps the closed Krylov Ritz pair", "[lanczos][eigenmode]") {
   REQUIRE(std::fabs(ev(0, 2)) == Catch::Approx(0.0).margin(1e-6));
 }
 
+namespace {
+
+// LJ through the batch interface, counting how many potential rounds
+// (single calls or batches) and how many systems a search asks for.
+struct CountingBatchLJ final : Potential {
+  std::shared_ptr<Potential> inner;
+  long rounds{0};
+  long systems{0};
+  long largestBatch{0};
+
+  explicit CountingBatchLJ(const Parameters &p)
+      : Potential(PotType::LJ),
+        inner{eonc::helpers::sharePotential(
+            eonc::helpers::makePotential(PotType::LJ, p))} {}
+
+  using Potential::force;
+  void force(long nAtoms, const double *positions, const int *atomicNrs,
+             double *forces, double *energy, double *variance,
+             const double *box) override {
+    rounds++;
+    systems++;
+    largestBatch = std::max(largestBatch, 1L);
+    inner->force(nAtoms, positions, atomicNrs, forces, energy, variance, box);
+  }
+
+  [[nodiscard]] bool supportsBatchEvaluation() const noexcept override {
+    return true;
+  }
+
+  void forceBatch(long nSystems, long nAtoms, const double *const *positions,
+                  const int *const *atomicNrs, double *const *forces,
+                  double *energies, double *variances,
+                  const double *const *boxes) override {
+    rounds++;
+    systems += nSystems;
+    largestBatch = std::max(largestBatch, nSystems);
+    for (long s = 0; s < nSystems; ++s) {
+      double var = 0.0;
+      inner->force(nAtoms, positions[s], atomicNrs[s], forces[s], &energies[s],
+                   &var, boxes[s]);
+      if (variances != nullptr) {
+        variances[s] = var;
+      }
+      forceCallCounter++;
+    }
+  }
+};
+
+} // namespace
+
+TEST_CASE_METHOD(DimerFixture,
+                 "a batching potential takes a min-mode centre with its "
+                 "forward image",
+                 "[dimer][minmode][batch]") {
+  ParametersLoadAccess::dimer_options(params).improved = true;
+  ParametersLoadAccess::dimer_options(params).rotations_max = 4;
+  ParametersLoadAccess::optimizer_options(params).max_move = 0.05;
+  const long steps = 6;
+  const AtomMatrix seed = softModeSeed(matter->numberOfAtoms());
+
+  // Lazy reference: every evaluation is its own potential call.
+  auto serialMatter = std::make_shared<Matter>(*matter);
+  const double serialE0 = serialMatter->getPotentialEnergy();
+  const size_t serialBefore = pot->forceCallCounter;
+  MinModeSaddleSearch serial(serialMatter, seed, serialE0, params, pot);
+  serial.run(steps);
+  const long serialCalls =
+      static_cast<long>(pot->forceCallCounter - serialBefore);
+
+  auto batchPot = std::make_shared<CountingBatchLJ>(params);
+  auto batchMatter = std::make_shared<Matter>(*matter);
+  batchMatter->setPotential(batchPot);
+  const double e0 = batchMatter->getPotentialEnergy();
+  batchPot->rounds = 0;
+  batchPot->systems = 0;
+  MinModeSaddleSearch batched(batchMatter, seed, e0, params, batchPot);
+  batched.run(steps);
+
+  // The same search: identical evaluations in a different grouping.
+  REQUIRE(batched.iteration == serial.iteration);
+  REQUIRE(batchMatter->getPositions().isApprox(serialMatter->getPositions(),
+                                               1e-12));
+  REQUIRE(batched.getEigenvalue() ==
+          Catch::Approx(serial.getEigenvalue()).margin(1e-10));
+  // Centre and forward image share a batch once per step, so there are
+  // fewer rounds than serial calls; at most the last forward image is
+  // spare.
+  REQUIRE(batchPot->largestBatch == 2);
+  REQUIRE(batchPot->rounds < serialCalls);
+  REQUIRE(batchPot->systems <= serialCalls + 1);
+}
+
 #ifdef WITH_RGSADDLE
 TEST_CASE_METHOD(DimerFixture, "XtsciMinMode returns a finite curvature",
                  "[dimer][eigenmode][rgsaddle]") {
