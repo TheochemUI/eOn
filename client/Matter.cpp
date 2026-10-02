@@ -42,6 +42,9 @@ struct Matter::Impl {
   mutable AtomMatrix maskedForces; // forces with fixed atoms zeroed
   Matrix3d cell{Matrix3d::Zero()};
   Matrix3d cellInverse{Matrix3d::Zero()};
+  // Cauchy stress the potential reported with the cached evaluation.
+  Matrix3d stress{Matrix3d::Zero()};
+  bool haveStress{false};
 };
 
 Matter::~Matter() = default;
@@ -99,6 +102,8 @@ const Matter &Matter::operator=(const Matter &matter) {
   fileToMatter = matter.fileToMatter;
   impl_->cell = matter.impl_->cell;
   impl_->cellInverse = matter.impl_->cellInverse;
+  impl_->stress = matter.impl_->stress;
+  impl_->haveStress = matter.impl_->haveStress;
   impl_->velocities = matter.impl_->velocities;
 
   removeNetForce = matter.removeNetForce;
@@ -171,6 +176,8 @@ Matter &Matter::operator=(Matter &&other) noexcept {
   recomputeMaskedForces = other.recomputeMaskedForces;
   impl_->cell = std::move(other.impl_->cell);
   impl_->cellInverse = std::move(other.impl_->cellInverse);
+  impl_->stress = other.impl_->stress;
+  impl_->haveStress = other.impl_->haveStress;
   energyVariance = other.energyVariance;
   movie_frames_ = std::move(other.movie_frames_);
   potentialEnergy = other.potentialEnergy;
@@ -621,6 +628,7 @@ void Matter::computePotential() const {
           this->getPositionsFree(), this->getAtomicNrsFree(), impl_->cell);
       this->potentialEnergy = freePE;
       this->energyVariance = vari;
+      impl_->haveStress = false;
       for (long idx{0}, jdx{0}; idx < nAtoms; idx++) {
         if (!getFixed(idx)) {
           impl_->forces.row(idx) = freeForces.row(jdx);
@@ -644,6 +652,7 @@ void Matter::computePotential() const {
                        std::span<const double>(force_cell.data(), 9));
       potential->forceCallCounter++;
       PotRegistry::get().on_force_call(potential->getType());
+      captureStress();
     }
     if (!std::isfinite(potentialEnergy) || !impl_->forces.allFinite()) {
       throw std::runtime_error(
@@ -735,6 +744,7 @@ void Matter::setVelocities(const AtomMatrix &v) {
 void Matter::setForces(const AtomMatrix &f) {
   impl_->forces = f.array() * getFree().array();
   impl_->maskedForces = impl_->forces;
+  impl_->haveStress = false;
   recomputeMaskedForces = false;
   recomputePotential = false;
 }
@@ -775,6 +785,8 @@ void Matter::setPotential(std::shared_ptr<Potential> pot) {
 void Matter::setComputedPotential(double energy, double variance) {
   potentialEnergy = energy;
   energyVariance = variance;
+  // A batch leaves at most the last system's stress on the potential.
+  impl_->haveStress = false;
   recomputePotential = false;
   recomputeMaskedForces = true;
   forceCalls++;
@@ -794,10 +806,35 @@ size_t Matter::getPotentialCalls() const {
 
 double Matter::getEnergyVariance() const { return this->energyVariance; }
 
+void Matter::captureStress() const {
+  impl_->haveStress = false;
+  if (!potential->computesStress()) {
+    return;
+  }
+  // A potential instance holds the stress of its own last call. With
+  // [Main] parallel on, a thread-safe shared instance can serve another
+  // image between that call and this read, so it is not read here.
+  const bool threads = parameters && parameters->main_options().parallel;
+  if (threads && potential->isSharedInstanceThreadSafe() &&
+      !potential->needsPerImageInstance()) {
+    return;
+  }
+  try {
+    impl_->stress = potential->cauchyStress();
+    impl_->haveStress = impl_->stress.allFinite();
+  } catch (const std::logic_error &) {
+    impl_->haveStress = false;
+  }
+}
+
 Matrix3d Matter::cauchyStress() {
   if (!potential || !potential->computesStress()) {
     throw std::logic_error(
         "Matter::cauchyStress requires a potential that reports stress");
+  }
+  // The stress that came with the cached evaluation describes this image.
+  if (!recomputePotential && impl_->haveStress) {
+    return impl_->stress;
   }
   recomputePotential = true;
   computePotential();
@@ -837,6 +874,7 @@ void Matter::setAtomIndex(long int atom, std::int64_t index) {
 void Matter::restoreFileForces(const AtomMatrix &fileForces, bool trustEnergy,
                                double energy) {
   impl_->forces = fileForces;
+  impl_->haveStress = false;
   recomputeMaskedForces = true;
   if (trustEnergy) {
     potentialEnergy = energy;

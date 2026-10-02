@@ -359,6 +359,7 @@ private:
   std::array<std::string, 5> headerCon;
 
   void computePotential() const;
+  void captureStress() const;
   void applyPeriodicBoundary();
   void applyPeriodicBoundary(double &component, int axis);
   void applyPeriodicBoundary(AtomMatrix &diff);

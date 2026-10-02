@@ -1,0 +1,1 @@
+A solid-state band on a potential that reports stress (LAMMPS, SocketNWChem, xTB through rgpot, RgpotAdapter) reads the stress that came with each image's force call instead of evaluating every image a second time.

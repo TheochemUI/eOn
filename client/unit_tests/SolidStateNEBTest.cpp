@@ -217,6 +217,36 @@ TEST_CASE("an unchanged cell leaves the solid-state atomic force unchanged",
   }
 }
 
+TEST_CASE("a native stress comes with the band's own force call",
+          "[neb][solid_state]") {
+  Band analytic(true, 0.4);
+  analytic.pot->native = true;
+  Band difference(true, 0.4);
+  auto nativeNeb = analytic.neb();
+  auto fdNeb = difference.neb();
+  size_t dirty = 0;
+  for (long i = 1; i <= nativeNeb->numImages; ++i) {
+    dirty += nativeNeb->path[static_cast<size_t>(i)]->needsForceUpdate();
+  }
+  REQUIRE(dirty > 0);
+  const size_t before = analytic.pot->forceCallCounter;
+  nativeNeb->updateForces();
+  // One call per moved image: the stress the potential reported with it
+  // is the one the cell force uses.
+  REQUIRE(analytic.pot->forceCallCounter - before == dirty);
+  fdNeb->updateForces();
+  for (long i = 1; i <= nativeNeb->numImages; ++i) {
+    REQUIRE(nativeNeb->cellForce(i)(0, 0) ==
+            Catch::Approx(fdNeb->cellForce(i)(0, 0)).margin(1e-6));
+  }
+  // A moved image drops the cached stress with its forces.
+  AtomMatrix moved = nativeNeb->path[2]->getPositions();
+  moved(0, 0) += 0.05;
+  nativeNeb->path[2]->setPositions(moved);
+  const Matrix3d fresh = nativeNeb->path[2]->cauchyStress();
+  REQUIRE(fresh(0, 0) == Catch::Approx(analytic.pot->last(0, 0)));
+}
+
 TEST_CASE("positive pressure pushes the cell inward", "[neb][solid_state]") {
   Band solid(true, 0.0, 0.02);
   auto neb = solid.neb();
