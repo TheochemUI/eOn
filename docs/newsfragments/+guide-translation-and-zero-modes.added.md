@@ -1,0 +1,1 @@
+Structure comparison removes a rigid minimum-image shift when remove_translation is on and check_rotation is off. No atom may be fully fixed. A Hessian drops eigenvalues at or below zero_freq_value. It warns when the dropped count is not 6, 5, 3, or 0.

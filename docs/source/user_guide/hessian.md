@@ -113,6 +113,12 @@ mass-weighted matrix. `[Main] quiet = true` suppresses the write log line only.
 Eigenvalues (squared frequencies) are obtained by diagonalizing the symmetrized
 matrix (ColMajor eigen solve in the client).
 
+The job drops each eigenvalue at or below `zero_freq_value` (default
+`1e-6`). A free cluster has 6 of those eigenvalues, a linear cluster has
+5, a periodic cell has 3, and a structure with any fully fixed atom has
+none. The job still drops a different count, and it logs a warning. It
+does not stop for that warning.
+
 With `[Hessian] write_modes = true` (the default), `modes.con` holds one frame
 per eigenvalue, lowest first. Each frame is the input structure with the mode
 in its `displacements` section: the Cartesian displacement \(x = q/\sqrt{m}\)

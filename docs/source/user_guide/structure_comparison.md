@@ -20,6 +20,14 @@ and the client removes the centroids. It then rotates with its Kabsch
 routine and compares atoms in file order. Set both flags and the client
 compares sorted neighbor-distance lists.
 
+`remove_translation` defaults to true. Leave `check_rotation` off. Leave
+no atom fixed on all three Cartesian components. The client then shifts
+the first structure onto the second. The shift equals the mean
+minimum-image displacement. A periodic cell that drifted as a whole still
+matches. `check_rotation` skips the shift. A fully fixed atom skips it
+too. The adaptive kinetic Monte Carlo server uses the same test for a
+repeated saddle and for a state it already stores.
+
 `eon.atoms.rot_match` is a separate helper. It calls iterative rotations
 and assignments through `pyeonclient` when that routine is present. A
 missing routine selects the helper's own Kabsch test. An error from the
