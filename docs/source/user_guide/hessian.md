@@ -78,6 +78,13 @@ built one column at a time when the potential is not finite-range, when
 `[Main] remove_net_force` couples every atom, or when a column checkpoint is
 in use.
 
+When `checkpoint_path` is empty and the potential evaluates batches, the
+displaced structures go out together, at most 32 columns per call.
+`RgpotPot` takes that path once `[RgpotPot] ranks_per_image` has more than
+one calculator group. Structure `j` runs on group `j` modulo the group
+count, and every rank receives every result. A prefactor Hessian uses the
+same call.
+
 ### Column resume
 
 Long partial Hessians can checkpoint FD columns to `checkpoint_path` (e.g.

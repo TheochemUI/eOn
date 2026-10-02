@@ -217,6 +217,12 @@ formula uses the Hessian of every bead.
 evaluated from one turning point to the other and copied onto the mirror.
 The reaction coordinate on that half stays monotone, so the search cannot
 settle on an out-and-back bounce.
+A half ring that has converged, or that has stopped with the gradient
+under the force tolerance while the negative-mode count is not 1, is
+checked for an unstable mode that is odd under the mirror when the
+interior beads still match their mirrors. Two copies of the instanton
+on one ring are that mode. The search steps along it and continues on
+the whole ring.
 An odd count keeps every bead. `energy_shift` (default 0, in eV) is
 subtracted from every bead potential and from the reactant and saddle
 energies in the rate.

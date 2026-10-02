@@ -300,6 +300,10 @@ Seven groups of 4 ranks need 28 ranks. Intermediate image 1 runs on
 group 0, and image 7 runs on group 6. An update that skips an image
 leaves the others on those groups.
 
+A Hessian or a prefactor with an empty `checkpoint_path` sends its
+displaced structures through these groups the same way. Structure `j`
+runs on group `j` modulo the group count.
+
 The run reads `reactant.con` and `product.con`.
 
 ```{code-block} ini

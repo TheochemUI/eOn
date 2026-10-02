@@ -71,6 +71,17 @@ refused. The result dict returns `product` and, when a saddle exists,
 numpy working set. `results.dat` is still synthesized as text so the classic
 explorer can parse scalars.
 
+The same record is the dict `job_result`. Its fields are
+`termination_reason` (the status integer), `termination_reason_text`
+(`GOOD`, `FAIL`, or `cancelled`), `job_type`, `potential_energy`, and
+`total_force_calls`.
+
+`cancel_state` returns 1 only while `submit_jobs` is inside a batch. That
+call sets a token the next job sees, and a second token that a compiled
+relax, band, or saddle search polls during the current call. A call while
+no batch is running returns 0. The token is cleared when `submit_jobs`
+returns.
+
 ## Additional topics
 
 ```{versionchanged} 2.0

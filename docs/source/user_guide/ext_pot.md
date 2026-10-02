@@ -44,6 +44,16 @@ what keeps two clients started in one directory from reading each other's
 numbers; the client removes it once the exchange files are consumed, and
 leaves it in place when a call fails so its contents can be inspected.
 
+## One directory per image
+
+`[Main] parallel` defaults to true. A dimer, and the two product
+minimizations in a process search, then build a second potential when the
+potential asks for one instance per image. `ext_pot` does. Each instance
+takes the next `extpot_<pid>_<n>`, so the two calls do not share
+`from_eon_to_extpot`. An error on the second thread is stored, the first
+thread is joined, and the stored error is raised. `parallel = false` runs
+both images on the one instance, one after the other.
+
 ```{important}
 `ext_pot_path` is resolved against the directory eOn runs in when it names an
 existing file, so `./ext_pot` and an absolute path both work. A command line

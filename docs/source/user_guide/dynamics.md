@@ -78,12 +78,19 @@ thermostat = langevin
 langevin_friction = 0.01
 ```
 
+Langevin and Nose-Hoover treat each Cartesian component on its own. A
+fixed component is stored with zero velocity, so the Nose-Hoover step
+leaves it in place, and the chain counts only the free components.
+Langevin draws no random force on a fixed component and writes no step
+there.
+
 ## Path-integral sampling
 
 `pile` and `piglet` integrate a ring polymer. The velocity Verlet step
 above stays the classical update and does not move the beads. Each step
 evaluates every bead in one force batch, so calculator groups carry the
-beads together.
+beads together. A fixed component is left out of that update: its force
+and its momentum stay zero, and the bead step skips it.
 
 `path_beads` is the bead count. `path_springs = trotter` uses the
 primitive ring-polymer frequencies. `path_springs = eco` uses economised
