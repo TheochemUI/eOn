@@ -63,7 +63,7 @@ private:
     double fn{0.0};   //!< <F.n>
     VectorXd rotNorm; //!< <(n.F) R / (alpha |R|^2)>, drives rotation
     VectorXd rotRaw;  //!< <(n.F) R>, integrand of Eq 19
-    VectorXd pos;     //!< <r>, anchors Eq 18 and the Eq 12 restart
+    VectorXd pos;     //!< \f$\langle r\rangle\f$, anchors Eq 18 and the Eq 12 restart
   };
 
   // x is the unwrapped free configuration. It is not read back from

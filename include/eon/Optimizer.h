@@ -61,6 +61,7 @@ struct OptimizerConfig {
   }
 };
 
+/** Abstract base of the structure optimizers. */
 class Optimizer {
 private:
   const OptType m_otype;

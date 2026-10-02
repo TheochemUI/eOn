@@ -23,7 +23,7 @@
 namespace eonc {
 
 gpr::InputParameters
-eonc::helpers::eon_parameters_to_gpr(const Parameters &parameters) {
+helpers::eon_parameters_to_gpr(const Parameters &parameters) {
   gpr::InputParameters p;
   // Problem parameters
   p.actdist_fro.value = parameters.gpr_dimer_options().active_radius;
@@ -109,7 +109,7 @@ void copyAtomMatrixToCoord(const AtomMatrix &src, gpr::Coord &dst) {
 
 // gpr_optim pairtype is an n_species × n_species matrix indexed 0..n-1.
 // Matter stores real Z; remap here rather than changing the GPR kernel.
-gpr::AtomsConfiguration eonc::helpers::eon_matter_to_atmconf(Matter *matter) {
+gpr::AtomsConfiguration helpers::eon_matter_to_atmconf(Matter *matter) {
   if (!matter) {
     throw std::invalid_argument("eon_matter_to_atmconf: null Matter");
   }
@@ -239,7 +239,7 @@ gpr::AtomsConfiguration eonc::helpers::eon_matter_to_atmconf(Matter *matter) {
   return atoms_config;
 }
 
-gpr::Observation eonc::helpers::eon_matter_to_init_obs(Matter *matter) {
+gpr::Observation helpers::eon_matter_to_init_obs(Matter *matter) {
   gpr::Observation o;
   o.clear();
   copyAtomMatrixToCoord(matter->getPositions(), o.R);

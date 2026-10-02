@@ -73,7 +73,7 @@ inline bool isModelHess(const std::string &kind) {
          kind == "schlegel";
 }
 
-/// Rank-1 update \(k\,(\nabla q)(\nabla q)^\top\) for a scalar internal.
+/// Rank-1 update \f$k\,(\nabla q)(\nabla q)^\top\f$ for a scalar internal.
 inline void addScalarInternal(Eigen::MatrixXd &P, const int *atoms,
                               const Eigen::Vector3d *g, int n_atoms,
                               double k) {
