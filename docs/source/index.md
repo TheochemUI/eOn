@@ -125,6 +125,7 @@ user_guide/index
 devdocs/index
 apidocs/index
 releases/index
+glossary
 ```
 
 ## Indices and tables

@@ -54,8 +54,8 @@ figures (full history, 1:1 reaction-valley panel, structure strip), see
 
 ## Dimer seeds from every band peak
 
-After the band is written, eOn walks **all** spline maxima (not only the
-climbing image). Each interior maximum more than `mmf_peak_tolerance` above
+After the band is written, eOn walks every spline maximum. Each interior
+maximum more than `mmf_peak_tolerance` above
 the reactant is written as `peakNN_pos.con` plus `peakNN_mode.dat` (the
 interpolated tangent). That is the native gen-dimer seed: run a
 `saddle_search` from each pair. `setup_mmf_peaks` defaults to true; set it
