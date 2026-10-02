@@ -29,7 +29,7 @@ namespace eonc {
  * energy surface
  *
  * The saddle seach job implements a ref MinModeSaddleSearch, as well as an \ref
- * Optimizer "optimizer". A saddle search is initiated by making a local
+ * eonc::Optimizer "optimizer". A saddle search is initiated by making a local
  * displacement of atoms from their position at the minimum of the current
  * state. It can either be run using the ref Dimer or the ref Lanczos min-mode
  * method.

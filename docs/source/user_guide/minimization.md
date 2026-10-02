@@ -186,6 +186,7 @@ An optional `[Refine]` block switches method once the maximum force drops below 
 
 ```{eval-rst}
 .. autopydantic_model:: eon.schema.OptimizerConfig
+   :no-index:
 ```
 
 ```{eval-rst}

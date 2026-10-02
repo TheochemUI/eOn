@@ -26,7 +26,7 @@ namespace eonc {
  * \brief Finds possible escape mecahnisms from a state.
  *
  * The process search job implements one of the following types of saddle
- * searches, as well as an \ref Optimizer "optimizer", as defined by the
+ * searches, as well as an \ref eonc::Optimizer "optimizer", as defined by the
  * config.init file.
  *
  * <ul>
