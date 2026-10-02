@@ -45,8 +45,8 @@ A displacement script must satisfy these rules:
   `state.info` and reused for all saddle searches launched from that state.
 - The path in `displace_atom_kmc_state_script` can be **relative** (resolved
   against the eOn root directory) or **absolute**.
-- Scripts can use [PEP 723](https://peps.python.org/pep-0723/) inline metadata
-  so they are runnable with `uvx` without a separate virtual environment.
+- The server runs the script with Python and passes the `.con` path as its
+  only argument.
 
 ## Example 1: Vacancy Diffusion in Cu
 
@@ -105,10 +105,10 @@ Its core logic:
 You can run it standalone to inspect the output:
 
 ```{code-block} bash
-uvx ptmdisp.py pos.con
+python ptmdisp.py pos.con
 # Output: 42, 43, 51, 67, ...
 
-uvx ptmdisp.py pos.con --verbose
+python ptmdisp.py pos.con --verbose
 # Prints logging info to stderr, indices to stdout
 ```
 
@@ -150,7 +150,7 @@ The file `examples/akmc-cu-vacancy/adsorbate_region.py` implements this
 approach using only ASE (no OVITO dependency):
 
 ```{code-block} bash
-uvx adsorbate_region.py pos.con --adsorbate-elements C O --cutoff 4.0
+python adsorbate_region.py pos.con --adsorbate-elements C O --cutoff 4.0
 # Output: 0, 1, 23, 24, 31, ...
 ```
 
