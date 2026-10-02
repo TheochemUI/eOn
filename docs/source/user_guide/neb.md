@@ -72,6 +72,8 @@ interpolation with `match_endpoints = true` (default off). The `ira`
 method rigid-rotates and permutes the reactant onto the product via
 IRACompare. Hungarian assignment is not in-tree; `match_method =
 hungarian` currently uses IRA.
+`match_endpoints` and `match_method` are client keys.
+Neither key is in `eon/config.yaml`, and the server exits on the unknown option.
 
 ```{note}
 `eOn`, like many other codes after {cite:t}`neb-sheppardOptimizationMethodsFinding2008` uses one optimizer instance for moving the whole band of images.
@@ -84,7 +86,7 @@ Via the surrogate potential interface, a native C++ implementation of the Gaussi
 ```{versionadded} 2.12
 - Onsager-Machlup action-based NEB for minimum action paths.
 - OCINEB (Off-Path Climbing Image NEB) {cite:t}`neb-goswamiEnhancedClimbingImage2026`: hybrid CI-NEB + Min-Mode Following with hessian eigenmode alignment for automated saddle point refinement.
-- Parallel image force evaluation (`[Main] parallel = true`). In 2.12 it required TBB and `-Dwith_parallel_neb=true`; see the note under Parallel evaluation.
+- Parallel image force evaluation (`[Main] parallel` on the client). In 2.12 it required TBB and `-Dwith_parallel_neb=true`; see the note under Parallel evaluation.
 - IDPP (Image Dependent Pair Potential) path initialization.
 - Modular strategy pattern for tangent, projection, and spring force components.
 ```
@@ -122,13 +124,26 @@ stationary artifact while the rest of the band is still at 2 eV/Å.
 `climbing_image_band_slack` (default 10) refuses that report. The job is
 not converged while any image exceeds slack times the tolerance. SIDPP
 itself throws if adjacent images collapse below \(10^{-6}\) Å.
+That key is not in `eon/config.yaml`.
+The client reads it.
+A file the server loads that sets the key exits on the unknown option.
 
 ```{code-block} ini
 [Nudged Elastic Band]
 climbing_image_method = true
 climbing_image_converged_only = true
-climbing_image_band_slack = 10.0
 ```
+
+The client sets the climb flag only when climbing is active and the highest
+interior image is strictly above the higher endpoint.
+A fixed-cell band compares potential energy.
+A solid-state band compares enthalpy.
+A monotonic band keeps the spring on every interior image.
+With `climbing_image_method` on, either force test activates climbing.
+One test requires the band force to be under the initial force times `ci_after_rel`.
+The other requires it to be under `ci_after`.
+`ci_after` is a server option.
+`ci_after_rel` is not in `eon/config.yaml`, so the server rejects a file that sets it.
 
 ### Zoom-NEB
 
@@ -202,6 +217,9 @@ The image pool is plain `std::thread`, so GCC and Clang builds need no TBB.
 `-Dwith_parallel_neb` is deprecated and has no effect.
 ```
 
+`[Main] parallel` is a client key and defaults to true.
+`eon/config.yaml` has no `parallel` key in `[Main]`.
+Setting that key makes the server exit before the client runs.
 With `parallel = true`, dirty-image force calls run on at most
 `std::thread::hardware_concurrency()` threads, each taking the next image,
 so a 20-image band on 8 cores keeps 8 threads busy. An error in one image is

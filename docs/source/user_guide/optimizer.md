@@ -152,6 +152,5 @@ loop still owns climbing policy, resampling, and the spline.
 
 ``min_mode_method = xtsci`` rotates the lowest mode in that session
 with a zero translation cap. The min-mode saddle search still climbs
-with the selected optimizer. ``[Xtsci] method = lanczos`` selects the
-Krylov estimate; any other method is the dimer rotation.
+with the selected optimizer.
 
