@@ -91,8 +91,8 @@ Potentials which can be run in parallel, like those accessed through ASE (e.g. O
 ### MPI
 
 ```{note}
-Only AKMC runs on the MPI communicator. It was checked on 3.4 with Open MPI
-5 and an AKMC run of one server and two client ranks.
+Open MPI 5 on 3.4 ran an adaptive kinetic Monte Carlo check with one
+server rank and two client ranks.
 ```
 
 The MPI communicator runs the server and the clients as one MPI job. The
@@ -103,7 +103,9 @@ Build the client with `-Dwith_mpi=enabled`; the resulting `eonclient` only runs
 under MPI. Two environment variables set the layout. `EON_NUMBER_OF_CLIENTS`
 is how many ranks become clients, and `EON_SERVER_PATH` is a Python script
 that starts the server. Launch the clients, not the server: one extra rank
-turns into the server and runs that script. Only AKMC is supported.
+turns into the server and runs that script. With `[Communicator] type = mpi`,
+adaptive kinetic Monte Carlo, parallel replica, and basin hopping wait on
+that communicator. `examples/prd_mpi` and `examples/bh_mpi` use this launch.
 
 ```{code-block} python
 # server.py

@@ -171,6 +171,15 @@ is useful when the adsorbate and surface share the same element. Pass
 
 ### Configuration
 
+The configuration value is a path. The server runs that file as
+`python <script> <confile>` and passes no flags. A value that also contains
+`--adsorbate-elements` is not a file, so the search stores an empty list.
+`adsorbate_region.py` exits when neither `--adsorbate-elements` nor
+`--z-above` is set, and that exit stops the server.
+
+`examples/akmc-cu-vacancy/co_on_pt.py` calls the adsorbate script with the
+element choice fixed. The key names `co_on_pt.py`.
+
 ```{code-block} ini
 :caption: config.ini (excerpt)
 
@@ -178,7 +187,7 @@ is useful when the adsorbate and surface share the same element. Pass
 displace_listed_atom_weight = 1.0
 displace_radius = 3.0
 displace_magnitude = 0.01
-displace_atom_kmc_state_script = adsorbate_region.py --adsorbate-elements C O --cutoff 4.0
+displace_atom_kmc_state_script = co_on_pt.py
 displace_all_listed = true
 ```
 
