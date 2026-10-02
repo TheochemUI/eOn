@@ -571,6 +571,27 @@ TEST_CASE_METHOD(DimerFixture,
   REQUIRE(dav.totalForceCalls > 0);
 }
 
+TEST_CASE_METHOD(DimerFixture,
+                 "an alternative rotation keeps the centre's evaluation",
+                 "[dimer][lor][force_calls]") {
+  ParametersLoadAccess::dimer_options(params).improved = true;
+  ParametersLoadAccess::dimer_options(params).rotations_max = 20;
+  for (auto backend :
+       {DimerRotationBackend::Lanczos, DimerRotationBackend::Davidson,
+        DimerRotationBackend::LOR}) {
+    ParametersLoadAccess::dimer_options(params).rotation_backend = backend;
+    (void)matter->getForces();
+    REQUIRE_FALSE(matter->needsForceUpdate());
+    const double e0 = matter->getPotentialEnergy();
+    ImprovedDimer dimer(matter, params, pot);
+    dimer.compute(matter, mode);
+    // The rotation moves only its displaced images; the centre keeps its
+    // forces, so the optimizer's next read is no potential call.
+    REQUIRE_FALSE(matter->needsForceUpdate());
+    REQUIRE(matter->getPotentialEnergy() == e0);
+  }
+}
+
 TEST_CASE_METHOD(DimerFixture, "LOR residual convergence flag via dispatch",
                  "[dimer][lor][convergence]") {
   ParametersLoadAccess::dimer_options(params).improved = true;

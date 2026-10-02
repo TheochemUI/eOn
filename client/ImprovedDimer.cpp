@@ -133,10 +133,10 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     statsRotations = alt->rotations;
     tau = tau.array() * matter->getFreeV().array();
     eonc::safemath::safe_normalize_inplace(tau);
+    // The rotation moves neither matter nor its copy x0, so both keep
+    // the centre's evaluation; only the forward image follows the mode.
     x0_r = matter->getPositionsV();
-    x0->setPositionsV(x0_r);
     x1->setPositionsV(x0_r + delta * tau);
-    *matter = *x0;
     rotationDidConverge = alt->converged;
     foundNegativeCurvature = (C_tau < 0.0);
     return;
@@ -453,9 +453,13 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
         // Restore the best negative curvature state
         C_tau = bestNegativeCurvature;
         tau = bestTau;
-        x0->setPositionsV(bestX0Positions);
+        // The rotation never moves the centre; reassigning it only when it
+        // differs keeps the evaluation the caller already paid for.
+        if (x0->getPositionsV() != bestX0Positions) {
+          x0->setPositionsV(bestX0Positions);
+          *matter = *x0;
+        }
         x1->setPositionsV(bestX0Positions + delta * bestTau);
-        *matter = *x0;
         QUILL_LOG_DEBUG(
             log, "Restored best negative curvature state: C_tau={:.4f}", C_tau);
         throw eonc::DimerModeRestoredException();
