@@ -21,14 +21,17 @@ namespace eonc {
 namespace {
 
 struct MinModeUser {
+  // The host centre. It keeps its evaluation: a request at its own
+  // coordinates reads the cache, and displaced probes go to `probe`.
   Matter *matter;
+  Matter *probe;
   const AtomMatrix *fixed;
 };
 
 rgsaddle_status_t surfaceCallback(void *user, rgsaddle_surface_request_t *req) {
   auto *ctx = static_cast<MinModeUser *>(user);
-  if (ctx == nullptr || ctx->matter == nullptr || req == nullptr ||
-      req->positions == nullptr || req->energies == nullptr ||
+  if (ctx == nullptr || ctx->matter == nullptr || ctx->probe == nullptr ||
+      req == nullptr || req->positions == nullptr || req->energies == nullptr ||
       req->gradients == nullptr || req->n_images != 1) {
     return RGSADDLE_SURFACE_FAILED;
   }
@@ -45,9 +48,15 @@ rgsaddle_status_t surfaceCallback(void *user, rgsaddle_surface_request_t *req) {
         }
       }
     }
-    ctx->matter->setPositions(pos);
-    req->energies[0] = ctx->matter->getPotentialEnergy();
-    const AtomMatrix &force = ctx->matter->getForces();
+    Matter *at = ctx->matter;
+    if (at->getPositions() != pos) {
+      at = ctx->probe;
+      if (at->getPositions() != pos) {
+        at->setPositions(pos);
+      }
+    }
+    req->energies[0] = at->getPotentialEnergy();
+    const AtomMatrix &force = at->getForces();
     const auto dof = static_cast<Eigen::Index>(force.size());
     for (Eigen::Index k = 0; k < dof; ++k) {
       req->gradients[k] = -force.data()[k];
@@ -118,13 +127,14 @@ void XtsciMinMode::compute(std::shared_ptr<Matter> matter,
   if (session == nullptr) {
     throw std::runtime_error("rgsaddle_minmode_create failed");
   }
-  MinModeUser ctx{matter.get(), &m_fixed};
+  Matter probe(*matter);
+  MinModeUser ctx{matter.get(), &probe, &m_fixed};
+  const size_t callsBefore = matter->getPotentialCalls();
   rgsaddle_report_t report{};
   const int rc = rgsaddle_minmode_step(session, surfaceCallback, &ctx, &report);
   std::vector<double> mode(static_cast<size_t>(3 * nAtoms), 0.0);
   const int modeRc = rgsaddle_minmode_mode(session, mode.data());
   rgsaddle_minmode_free(session);
-  matter->setPositions(saved);
   checkStatus(rc, "rgsaddle_minmode_step");
   checkStatus(modeRc, "rgsaddle_minmode_mode");
   m_eigenvector = AtomMatrix::Map(mode.data(), nAtoms, 3);
@@ -132,7 +142,8 @@ void XtsciMinMode::compute(std::shared_ptr<Matter> matter,
   statsCurvature = report.curvature;
   statsRotations = report.rotations;
   totalIterations += 1;
-  totalForceCalls += 1 + report.rotations;
+  totalForceCalls +=
+      static_cast<long>(matter->getPotentialCalls() - callsBefore);
 }
 
 double XtsciMinMode::getEigenvalue() { return m_eigenvalue; }

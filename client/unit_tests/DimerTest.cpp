@@ -1053,6 +1053,23 @@ TEST_CASE_METHOD(DimerFixture, "XtsciMinMode returns a finite curvature",
   // Rotation does not climb. The host saddle search owns the step.
   REQUIRE(before.isApprox(matter->getPositions(), 0.0));
 }
+
+TEST_CASE_METHOD(DimerFixture, "XtsciMinMode keeps the centre's evaluation",
+                 "[dimer][eigenmode][rgsaddle][force_calls]") {
+  ParametersLoadAccess::saddle_search_options(params).minmode_method =
+      LowestEigenmode::MINMODE_XTSCI;
+  ParametersLoadAccess::optimizer_options(params).xtsci.method = "fire";
+  const double e0 = matter->getPotentialEnergy();
+  const size_t before = pot->forceCallCounter;
+  XtsciMinMode modeSolver(matter, params, pot);
+  modeSolver.compute(matter, mode);
+  // The centre is read from its cache and the probes run on a copy, so
+  // the host centre is still evaluated and no call went to it.
+  REQUIRE_FALSE(matter->needsForceUpdate());
+  REQUIRE(matter->getPotentialEnergy() == e0);
+  REQUIRE(modeSolver.totalForceCalls ==
+          static_cast<long>(pot->forceCallCounter - before));
+}
 #endif
 
 } /* namespace tests */
