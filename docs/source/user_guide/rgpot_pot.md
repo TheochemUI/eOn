@@ -127,13 +127,18 @@ meson compile -C bbdir
 The flag configures the wrap. A `pkg-config` rgpot must already be an MPI
 build. If it is not, `ranks_per_image` greater than 0 raises.
 
-The construction agreement and the grouped exit handler below compile
-when rgpot links MPI: the wrap with `-Drgpot:with_mpi=enabled`, or an
-installed rgpot whose `rgpot.pc` defines `RGPOT_HAS_MPI`. Against an
-installed rgpot without that define, eOn's `-Dwith_mpi=enabled` turns
-them on. After a failed engine call rgpot asks for `MPI_Abort` at exit,
-and the exit handler aborts the world instead of waiting in
-`MPI_Finalize` for ranks left inside a CPMD collective.
+Neither `librgpot` nor eOn's `librgpot_pot` links MPI, so an `eonclient`
+started without `mpirun` loads no MPI library and pays no MPI start-up
+cost. The MPI side is loaded on demand: rgpot's `librgpot_mpi`, and
+eOn's `librgpot_pot_mpi`, which holds the construction agreement and the
+grouped exit handler below. eOn loads it only under an MPI launcher,
+from `EON_RGPOT_MPI_LIBRARY`, the directory of `librgpot_pot`, or the
+linker path. It builds when rgpot has MPI: the wrap with
+`-Drgpot:with_mpi=enabled`, or an installed rgpot whose `rgpot.pc`
+defines `RGPOT_HAS_MPI`; eOn's `-Dwith_mpi=enabled` also builds it.
+After a failed engine call rgpot asks for `MPI_Abort` at exit, and the
+exit handler aborts the world instead of waiting in `MPI_Finalize` for
+ranks left inside a CPMD collective.
 
 eOn's `-Dwith_mpi=enabled` option builds the client/server program. Calculator
 groups are this page's launch, `mpirun -np N eonclient`, with rgpot built

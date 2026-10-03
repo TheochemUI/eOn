@@ -25,10 +25,7 @@
 #if !defined(_WIN32)
 #include <dlfcn.h>
 #endif
-#if defined(__linux__) && defined(EON_RGPOT_MPI)
-#include <mpi.h>
-#include <stdlib.h>
-#endif
+#include "eon/potentials/Rgpot/RgpotGroupMpi.h"
 
 #include <capnp/message.h>
 #include <capnp/serialize.h>
@@ -41,28 +38,6 @@
 #include "rgpot/rpc/Potentials.capnp.h"
 
 using rgpot::types::AtomMatrix;
-
-#if defined(__linux__) && defined(EON_RGPOT_MPI)
-// Runs before rgpot's atexit handler and ends in _Exit, so rgpot's handler
-// never runs. It honours rgpot's abort request itself: after a failed
-// engine call the peers can sit in a collective, and MPI_Finalize would
-// wait for them until the walltime kill.
-extern "C" void eon_rgpot_hard_exit(int status, void *) {
-  int inited = 0;
-  int finalized = 0;
-  MPI_Initialized(&inited);
-  MPI_Finalized(&finalized);
-  if (inited && !finalized) {
-    if (::rgpot::mpiAbortRequested()) {
-      std::fflush(nullptr);
-      MPI_Abort(MPI_COMM_WORLD, status != 0 ? status : 1);
-    }
-    MPI_Finalize();
-  }
-  std::fflush(nullptr);
-  std::_Exit(status);
-}
-#endif
 
 namespace {
 
@@ -151,42 +126,55 @@ void pin_cpmd_library(const std::string &path) {
 #endif
 }
 
-#if defined(__linux__) && defined(EON_RGPOT_MPI)
-// Every rank calls this. A rank that failed locally still enters, so nobody
-// is left in MPI_Comm_split. The shared message is the lowest failing rank's
-// text. Returns false when any rank failed.
+// librgpot_pot_mpi, the MPI half of the calculator groups, or nullptr.
+// Loaded on first use only, so a process started without an MPI launcher
+// never maps libmpi. Search: EON_RGPOT_MPI_LIBRARY, the file next to this
+// library, then the linker path.
+const EonRgpotGroupMpi *group_mpi() {
+#if defined(__linux__)
+  static const EonRgpotGroupMpi *api = [] {
+    std::vector<std::string> candidates;
+    if (const char *e = std::getenv("EON_RGPOT_MPI_LIBRARY"); e && *e)
+      candidates.emplace_back(e);
+    Dl_info info{};
+    if (dladdr(reinterpret_cast<void *>(&group_mpi), &info) != 0 &&
+        info.dli_fname != nullptr) {
+      std::string self(info.dli_fname);
+      const auto slash = self.rfind('/');
+      if (slash != std::string::npos)
+        candidates.push_back(self.substr(0, slash + 1) + "librgpot_pot_mpi.so");
+    }
+    candidates.emplace_back("librgpot_pot_mpi.so");
+    for (const auto &path : candidates) {
+      void *h = dlopen(path.c_str(), RTLD_NOW | RTLD_GLOBAL);
+      if (h == nullptr)
+        continue;
+      using Entry = const EonRgpotGroupMpi *(*)();
+      auto entry = reinterpret_cast<Entry>(dlsym(h, "eon_rgpot_group_mpi_v1"));
+      const EonRgpotGroupMpi *table = entry ? entry() : nullptr;
+      if (table != nullptr && table->version == EON_RGPOT_GROUP_MPI_VERSION)
+        return table;
+    }
+    return static_cast<const EonRgpotGroupMpi *>(nullptr);
+  }();
+  return api;
+#else
+  return nullptr;
+#endif
+}
+
+// Every rank calls this when started under an MPI launcher. False when any
+// rank failed; message is then the lowest failing rank's text.
 bool agree_construction(std::string &message) {
-  int inited = 0;
-  MPI_Initialized(&inited);
-  if (!inited)
-    MPI_Init(nullptr, nullptr);
-  ::rgpot::finalizeMpiAtExit();
-  const int ok = message.empty() ? 1 : 0;
-  int all_ok = 0;
-  MPI_Allreduce(&ok, &all_ok, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
-  if (all_ok)
+  const EonRgpotGroupMpi *api = group_mpi();
+  if (api == nullptr)
+    return message.empty();
+  std::array<char, 4096> shared{};
+  if (api->agree(message.c_str(), shared.data(), shared.size()) != 0)
     return true;
-  int rank = 0;
-  int size = 1;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
-  const int mine = ok ? size : rank;
-  int owner = 0;
-  MPI_Allreduce(&mine, &owner, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
-  int len = 0;
-  if (rank == owner)
-    len = static_cast<int>(
-        std::min(message.size(), static_cast<std::size_t>(4095)));
-  MPI_Bcast(&len, 1, MPI_INT, owner, MPI_COMM_WORLD);
-  std::vector<char> buf(static_cast<std::size_t>(len) + 1, '\0');
-  if (rank == owner && len > 0)
-    std::memcpy(buf.data(), message.data(), static_cast<std::size_t>(len));
-  if (len > 0)
-    MPI_Bcast(buf.data(), len, MPI_CHAR, owner, MPI_COMM_WORLD);
-  message.assign(buf.data(), static_cast<std::size_t>(len));
+  message.assign(shared.data());
   return false;
 }
-#endif
 
 } // namespace
 
@@ -328,7 +316,6 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
     // read params_path must not leave the others inside the split.
     if (mpi_world_hint() <= 1 && !local_error.empty())
       throw std::runtime_error(local_error);
-#if defined(__linux__) && defined(EON_RGPOT_MPI)
     // rgpot reports MPI only once MPI_Init has run, and agree_construction
     // is what initialises it, so the agreement keys on the launch size.
     if (mpi_world_hint() > 1 && !agree_construction(local_error)) {
@@ -339,7 +326,6 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
                     "RGPOT(cpmdc): a rank failed before the calculator split")
               : local_error);
     }
-#endif
     if (!local_error.empty())
       throw std::runtime_error(local_error);
     if (::rgpot::calculatorsUseMpi()) {
@@ -438,11 +424,14 @@ bool RGPotEngine::mpiAbortRequested() noexcept {
 }
 
 void RGPotEngine::armGroupedExit() const {
-#if defined(__linux__) && defined(EON_RGPOT_MPI)
+#if defined(__linux__)
   if (mpi_world_hint() <= 1)
     return;
+  const EonRgpotGroupMpi *api = group_mpi();
+  if (api == nullptr)
+    return;
   static std::once_flag once;
-  std::call_once(once, [] { ::on_exit(eon_rgpot_hard_exit, nullptr); });
+  std::call_once(once, [api] { ::on_exit(api->hard_exit, nullptr); });
 #else
   (void)this;
 #endif

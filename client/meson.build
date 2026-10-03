@@ -1959,6 +1959,23 @@ if get_option('with_tests')
             workdir: meson.project_source_root() +
                      '/client/unit_tests/data/systems/rgpot_nwchem_test',
         )
+        # librgpot and librgpot_pot are MPI-free; the MPI side loads on
+        # demand, so eonclient itself must not map libmpi or a transport.
+        if _rgpot_mpi_dep.found() and host_machine.system() == 'linux'
+            test(
+                'test_eonclient_no_mpi_at_load',
+                find_program('bash'),
+                args: [
+                    meson.project_source_root()
+                    / 'client'
+                    / 'unit_tests'
+                    / 'check_no_mpi_closure.sh',
+                    ec.full_path(),
+                ],
+                depends: [ec],
+                suite: ['eon', 'rgpot'],
+            )
+        endif
         # The three cases call the calculator-group agreement. That code
         # is compiled only when rgpot links MPI. mpirun on PATH is not
         # that build, and the cases then fail closed.
