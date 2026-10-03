@@ -13,6 +13,8 @@
 
 #include "LowestEigenmode.h"
 
+struct RgsaddleMinMode;
+
 namespace eonc {
 
 /// Lowest-mode rotation through a rgsaddle minimum-mode session.
@@ -22,7 +24,9 @@ class XtsciMinMode : public LowestEigenmode {
 public:
   XtsciMinMode(std::shared_ptr<Matter> matter, const Parameters &params,
                std::shared_ptr<Potential> pot);
-  ~XtsciMinMode() override = default;
+  ~XtsciMinMode() override;
+  XtsciMinMode(const XtsciMinMode &) = delete;
+  XtsciMinMode &operator=(const XtsciMinMode &) = delete;
 
   void compute(std::shared_ptr<Matter> matter,
                AtomMatrix initialDirection) override;
@@ -33,6 +37,9 @@ private:
   double m_eigenvalue{0.0};
   AtomMatrix m_eigenvector;
   AtomMatrix m_fixed;
+  // The rgsaddle session kept across compute() calls (ABI minor 5 and up).
+  RgsaddleMinMode *m_session{nullptr};
+  long m_sessionAtoms{0};
 };
 
 } // namespace eonc

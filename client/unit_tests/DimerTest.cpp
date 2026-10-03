@@ -31,6 +31,7 @@
 #include "eon/Parameters.h"
 #ifdef WITH_RGSADDLE
 #include "eon/XtsciMinMode.h"
+#include <rgsaddle.h>
 #endif
 
 #include <algorithm>
@@ -1053,6 +1054,31 @@ TEST_CASE_METHOD(DimerFixture, "XtsciMinMode returns a finite curvature",
   // Rotation does not climb. The host saddle search owns the step.
   REQUIRE(before.isApprox(matter->getPositions(), 0.0));
 }
+
+#if RGSADDLE_ABI_MINOR >= 5
+TEST_CASE_METHOD(DimerFixture, "XtsciMinMode keeps its session across a search",
+                 "[dimer][eigenmode][rgsaddle][force_calls]") {
+  ParametersLoadAccess::saddle_search_options(params).minmode_method =
+      LowestEigenmode::MINMODE_XTSCI;
+  ParametersLoadAccess::optimizer_options(params).xtsci.method = "fire";
+  // The fixture's 0.01 degree converged angle rotates to the cap every
+  // time; the default 5 degrees lets a mode that holds stop early.
+  ParametersLoadAccess::dimer_options(params).converged_angle = 5.0;
+  (void)matter->getForces();
+  XtsciMinMode modeSolver(matter, params, pot);
+  modeSolver.compute(matter, mode);
+  const long first = modeSolver.totalForceCalls;
+  // The refreshed mode seeds the next estimate at the same point, so a
+  // mode that still holds costs far fewer probes than the cold start.
+  modeSolver.compute(matter, modeSolver.getEigenvector());
+  const long second = modeSolver.totalForceCalls - first;
+  CAPTURE(first, second);
+  REQUIRE(first > 0);
+  REQUIRE(second < first);
+  REQUIRE(second <= 2);
+  REQUIRE(std::isfinite(modeSolver.getEigenvalue()));
+}
+#endif
 
 TEST_CASE_METHOD(DimerFixture, "XtsciMinMode keeps the centre's evaluation",
                  "[dimer][eigenmode][rgsaddle][force_calls]") {

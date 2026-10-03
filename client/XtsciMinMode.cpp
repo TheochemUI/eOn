@@ -11,6 +11,9 @@
 */
 #include "eon/XtsciMinMode.h"
 
+#include "eon/FiniteDifference.h"
+#include "eon/HelperFunctions.h"
+
 #include <rgsaddle.h>
 
 #include <stdexcept>
@@ -114,29 +117,70 @@ void XtsciMinMode::compute(std::shared_ptr<Matter> matter,
   config.method = params.optimizer_options().xtsci.method == "lbfgs"
                       ? RGSADDLE_METHOD_LBFGS
                       : RGSADDLE_METHOD_FIRE;
-  config.dr = dim.rotation_angle > 0.0 ? dim.rotation_angle : 1.0e-3;
+  // dr is the finite-difference length in Angstrom, the separation the
+  // host dimer and Lanczos use; rotation_angle is a rotation trial angle
+  // in radians and does not belong here.
+  const double fd = params.main_options().finiteDifference;
+  config.dr = fd > 0.0 ? fd : 1.0e-3;
   config.rotation_tol = dim.torque_min;
   config.max_rotations = std::max<long>(1, dim.rotations_max);
   config.krylov_dim = 12;
   config.force_tol = 0.0;
   // Zero cap: rotation only. The climb uses the host optimizer.
   config.max_move = 0.0;
+#if RGSADDLE_ABI_MINOR >= 5
+  config.rotation_angle_tol = eonc::helpers::pi * dim.converged_angle / 180.0;
+  config.difference =
+      parseFdScheme(params.hessian_options().fd_scheme) == FdScheme::OneSided
+          ? RGSADDLE_DIFFERENCE_FORWARD
+          : RGSADDLE_DIFFERENCE_CENTRAL;
+#endif
 
+  Matter probe(*matter);
+  MinModeUser ctx{matter.get(), &probe, &m_fixed};
+  const size_t callsBefore = matter->getPotentialCalls();
+  rgsaddle_report_t report{};
+  std::vector<double> mode(static_cast<size_t>(3 * nAtoms), 0.0);
+#if RGSADDLE_ABI_MINOR >= 5
+  // One session for the whole search: the refreshed mode seeds the next
+  // estimate, and the host's gradient at the centre is handed over so the
+  // session does not evaluate the centre again.
+  if (m_session != nullptr && m_sessionAtoms != nAtoms) {
+    rgsaddle_minmode_free(m_session);
+    m_session = nullptr;
+  }
+  if (m_session == nullptr) {
+    m_session = rgsaddle_minmode_create(&config, nAtoms, saved.data(),
+                                        initialDirection.data());
+    if (m_session == nullptr) {
+      throw std::runtime_error("rgsaddle_minmode_create failed");
+    }
+    m_sessionAtoms = nAtoms;
+  } else if (initialDirection != m_eigenvector) {
+    checkStatus(rgsaddle_minmode_set_mode(m_session, initialDirection.data()),
+                "rgsaddle_minmode_set_mode");
+  }
+  const AtomMatrix gradient = -matter->getForces();
+  checkStatus(
+      rgsaddle_minmode_set_position(m_session, saved.data(), gradient.data()),
+      "rgsaddle_minmode_set_position");
+  const int rc =
+      rgsaddle_minmode_estimate(m_session, surfaceCallback, &ctx, &report);
+  checkStatus(rc, "rgsaddle_minmode_estimate");
+  checkStatus(rgsaddle_minmode_mode(m_session, mode.data()),
+              "rgsaddle_minmode_mode");
+#else
   RgsaddleMinMode *session = rgsaddle_minmode_create(
       &config, nAtoms, saved.data(), initialDirection.data());
   if (session == nullptr) {
     throw std::runtime_error("rgsaddle_minmode_create failed");
   }
-  Matter probe(*matter);
-  MinModeUser ctx{matter.get(), &probe, &m_fixed};
-  const size_t callsBefore = matter->getPotentialCalls();
-  rgsaddle_report_t report{};
   const int rc = rgsaddle_minmode_step(session, surfaceCallback, &ctx, &report);
-  std::vector<double> mode(static_cast<size_t>(3 * nAtoms), 0.0);
   const int modeRc = rgsaddle_minmode_mode(session, mode.data());
   rgsaddle_minmode_free(session);
   checkStatus(rc, "rgsaddle_minmode_step");
   checkStatus(modeRc, "rgsaddle_minmode_mode");
+#endif
   m_eigenvector = AtomMatrix::Map(mode.data(), nAtoms, 3);
   m_eigenvalue = report.curvature;
   statsCurvature = report.curvature;
@@ -144,6 +188,12 @@ void XtsciMinMode::compute(std::shared_ptr<Matter> matter,
   totalIterations += 1;
   totalForceCalls +=
       static_cast<long>(matter->getPotentialCalls() - callsBefore);
+}
+
+XtsciMinMode::~XtsciMinMode() {
+  if (m_session != nullptr) {
+    rgsaddle_minmode_free(m_session);
+  }
 }
 
 double XtsciMinMode::getEigenvalue() { return m_eigenvalue; }
