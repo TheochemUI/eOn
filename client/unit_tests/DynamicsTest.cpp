@@ -490,3 +490,38 @@ TEST_CASE_METHOD(DynamicsFixture, "Dynamics run writes a movie when asked",
 }
 
 } /* namespace tests */
+
+namespace tests {
+
+// With no force the centroid-virial correction vanishes, so a ring of any
+// bead count reports the classical kinetic energy nFree kB T / 2 exactly.
+TEST_CASE_METHOD(DynamicsFixture,
+                 "Path-integral dynamics reports the ring kinetic energy",
+                 "[dynamics][path-integral]") {
+  auto flat = std::make_shared<FlatPot>();
+  Matter free(flat, params);
+  REQUIRE(eonc::io::io_ok(free.con2matter(std::string("reactant.con"))));
+  long nFree = 0;
+  for (long i = 0; i < free.numberOfAtoms(); ++i) {
+    for (int axis = 0; axis < 3; ++axis) {
+      nFree += free.getFixed(i, axis) ? 0 : 1;
+    }
+  }
+  REQUIRE(nFree > 0);
+  DynamicsConfig cfg;
+  cfg.time_step = 0.1;
+  cfg.steps = 40;
+  cfg.thermostat_kind = Dynamics::PILE;
+  cfg.temperature = 300.0;
+  cfg.path_beads = 6;
+  cfg.path_pile_tau = 10.0;
+  Dynamics dyn(&free, cfg);
+  REQUIRE(std::isnan(dyn.pathKineticEnergy()));
+  dyn.run();
+  REQUIRE_THAT(dyn.pathKineticEnergy(),
+               Catch::Matchers::WithinRel(0.5 * static_cast<double>(nFree) *
+                                              cfg.kB * cfg.temperature,
+                                          1e-12));
+}
+
+} // namespace tests

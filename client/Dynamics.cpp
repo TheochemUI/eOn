@@ -139,10 +139,23 @@ void Dynamics::runPathIntegral() {
   pathintegral::RingPolymer ring(atoms, masses, numbers, free, opt);
   const AtomMatrix pos = matter->getPositions();
   ring.setAllBeads(pos.data());
+  ring.thermalMomenta();
   const Matrix3d box =
       matter->getPeriodic() ? matter->getCell() : Matrix3d::Zero().eval();
-  for (long step = 0; step < m_config.steps; ++step) {
-    ring.step(*pot, box.data(), false);
+  // The first half of the run equilibrates; the second half averages the
+  // centroid-virial kinetic energy, the quantum kinetic energy of the
+  // N-bead ring.
+  const long equilibration = m_config.steps / 2;
+  const long production = m_config.steps - equilibration;
+  if (production > 0) {
+    const pathintegral::Sample sample =
+        ring.sample(*pot, box.data(), equilibration, production);
+    pathKineticEnergy_ = sample.kineticCv;
+    EONC_LOG_INFO("[Dynamics] ring polymer, {} beads at {:.2f} K: "
+                  "centroid-virial kinetic energy {:.6f} eV over the last {} "
+                  "of {} steps ({:.6f} eV classical)",
+                  opt.beads, temperature, pathKineticEnergy_, production,
+                  m_config.steps, 0.5 * nFreeCoords * kB * temperature);
   }
   const VectorXd centroid = ring.centroid();
   const VectorXd velocity = ring.centroidVelocity();
