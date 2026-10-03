@@ -1435,3 +1435,27 @@ TEST_CASE("A ring belongs to the saddle whose dividing plane it crosses "
   REQUIRE(across.sMax > 0.0);
   REQUIRE_FALSE(across.belongs);
 }
+
+// A soft bound mode, beta hbar omega = 1e-9 at the reactant and 2e-9 at the
+// saddle: the ratio of 2 sinh(x / 2) is 1/2 to 1e-18, which ln(1 - exp(-x))
+// loses to cancellation (3e-8 in each logarithm, mpmath reference in
+// instanton_references.py).
+TEST_CASE("Quantum harmonic TST keeps a soft mode's zero-point factor exact",
+          "[Tunneling][Instanton]") {
+  const double beta = 40.0;
+  const double bh = beta * kHbar;
+  const double xr = 1e-9, xs = 2e-9;
+  MatrixXd hr = MatrixXd::Zero(2, 2);
+  hr(0, 0) = std::pow(xr / bh, 2);
+  hr(1, 1) = 4.0;
+  MatrixXd hs = MatrixXd::Zero(2, 2);
+  hs(0, 0) = -2.0;
+  hs(1, 1) = std::pow(xs / bh, 2);
+  const double barrier = 0.3;
+  const double expected = std::log(xr / xs) +
+                          std::log(2.0 * std::sinh(0.5 * bh * 2.0)) -
+                          std::log(2.0 * std::numbers::pi * bh) -
+                          beta * barrier;
+  REQUIRE_THAT(quantumHarmonicTstLogRate(hr, hs, beta, barrier, 0),
+               Catch::Matchers::WithinAbs(expected, 1e-12));
+}

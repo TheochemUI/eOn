@@ -3521,9 +3521,10 @@ double quantumHarmonicTstLogRate(const MatrixXd &hessReactant,
   const std::vector<bool> rigidR = nearestZero(lr, rigidModes);
   const std::vector<bool> rigidS = nearestZero(ls, rigidModes, 1);
   const double bh = beta * kHbar;
-  // ln(2 sinh(x / 2)) without overflow for large x.
+  // ln(2 sinh(x / 2)) without overflow for large x, and without the
+  // cancellation of 1 - exp(-x) for small x.
   auto logTwoSinhHalf = [](double x) {
-    return 0.5 * x + std::log1p(-std::exp(-x));
+    return 0.5 * x + std::log(-std::expm1(-x));
   };
   double logRatio = 0.0;
   for (long m = 0; m < lr.size(); ++m) {
