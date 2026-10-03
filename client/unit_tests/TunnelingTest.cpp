@@ -1459,3 +1459,60 @@ TEST_CASE("Quantum harmonic TST keeps a soft mode's zero-point factor exact",
   REQUIRE_THAT(quantumHarmonicTstLogRate(hr, hs, beta, barrier, 0),
                Catch::Matchers::WithinAbs(expected, 1e-12));
 }
+
+// RA's prefactor runs over the eigenvalues of the ring Hessian with the
+// near-zero one left out. On a 12-bead ring the central difference along the
+// ring is not that eigenvalue's eigenvector, so lifting it leaves a factor
+// cos^2 of their angle in det'; the rate must match the dense spectrum with
+// its eigenvalue nearest zero removed.
+TEST_CASE("The rate leaves out the ring Hessian's near-zero eigenvalue",
+          "[Tunneling][Instanton]") {
+  const Eckart pes;
+  const MatrixXd hs = pes.hessian_at_top();
+  const double tc = crossoverTemperature(hs);
+  const double beta = 1.0 / (kBoltzmann * 0.5 * tc);
+  RateInstantonOptions opt;
+  opt.beads = 12;
+  opt.forceTolerance = 1e-10;
+  RateInstanton inst =
+      optimizeRateInstanton(VectorXd::Zero(1), hs, beta, {}, pes.batch(), opt);
+  REQUIRE(inst.converged);
+  const double bnh = inst.betaN * kHbar;
+  const double c = 1.0 / (bnh * bnh);
+  std::vector<MatrixXd> blocks;
+  for (const auto &q : inst.beads) {
+    blocks.push_back(pes.hessian_at(q));
+  }
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> es(denseRing(blocks, c),
+                                                   Eigen::EigenvaluesOnly);
+  std::vector<double> lam(es.eigenvalues().data(),
+                          es.eigenvalues().data() + opt.beads);
+  std::sort(lam.begin(), lam.end(), [](double a, double b) {
+    return std::abs(a) < std::abs(b);
+  });
+  double logDetPrime = 0.0;
+  for (size_t i = 1; i < lam.size(); ++i) {
+    logDetPrime += std::log(std::abs(lam[i]));
+  }
+  const double expected =
+      -std::log(bnh) +
+      0.5 * std::log(inst.bN /
+                     (2.0 * std::numbers::pi * inst.betaN * kHbar * kHbar)) -
+      (static_cast<double>(opt.beads - 1) * std::log(bnh) +
+       0.5 * logDetPrime) -
+      inst.betaN * inst.ringPotential;
+  for (const long dense : {4096L, 0L}) {
+    RateInstanton ring = inst;
+    instantonRate(
+        ring, [&](long, const VectorXd &q) { return pes.hessian_at(q); },
+        MatrixXd::Identity(1, 1), 0.0, MatrixXd(), 0.0, 0, dense);
+    CAPTURE(dense, expected, ring.logRateTimesZr, lam[0], lam[1], lam[2],
+            lam[3], ring.zeroEigenvalue, ring.negativeEigenvalue,
+            ring.negativeModes, c);
+    REQUIRE(ring.negativeModes == 1);
+    REQUIRE_THAT(ring.logRateTimesZr,
+                 Catch::Matchers::WithinAbs(expected, 1e-9));
+    REQUIRE_THAT(ring.zeroEigenvalue,
+                 Catch::Matchers::WithinAbs(lam[0], 1e-9 * c));
+  }
+}

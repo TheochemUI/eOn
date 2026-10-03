@@ -3212,47 +3212,80 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
         "instantonRate: the beads coincide, so the ring has collapsed");
   }
   scale(cycle, 1.0 / std::sqrt(cycleNorm));
-  // Each omitted direction is lifted by a spring-sized curvature c, far
-  // above any physical near-zero eigenvalue, and the lift comes off the
-  // log-determinant again: det(J + c u u^T) = c det' J when J u = 0.
-  std::vector<std::vector<VectorXd>> dropped{cycle};
-  std::vector<double> kappas{c};
+  // The rigid null vectors, orthonormal.
+  std::vector<std::vector<VectorXd>> rigid;
   if (!rigidBodies.sqrtMasses.empty()) {
-    // The ring's own rigid motions, orthonormalised against the cycle; the
-    // lemma needs an orthonormal basis of the null space, not the
-    // generators themselves.
-    std::vector<std::vector<VectorXd>> rigid =
-        ringRigidBasis(inst.beads, rigidBodies.sqrtMasses,
-                       rigidBodies.reference, rigidBodies.rotations);
+    // The ring's own rigid motions; the lemma needs an orthonormal basis of
+    // the null space, not the generators themselves.
+    rigid = ringRigidBasis(inst.beads, rigidBodies.sqrtMasses,
+                           rigidBodies.reference, rigidBodies.rotations);
     if (static_cast<long>(rigid.size()) != nullBasis.cols()) {
       throw std::runtime_error(
           "instantonRate: the ring has " + std::to_string(rigid.size()) +
           " rigid motions and the reactant " +
           std::to_string(nullBasis.cols()));
     }
-    for (auto &u : rigid) {
-      for (const auto &prev : dropped) {
-        const double o = dot(prev, u);
-        for (long j = 0; j < N; ++j) {
-          u[static_cast<size_t>(j)] -= o * prev[static_cast<size_t>(j)];
-        }
-      }
-      const double un = std::sqrt(dot(u, u));
-      if (!(un > 1e-8)) {
-        throw std::runtime_error(
-            "instantonRate: a rigid motion of the ring lies along its cycle");
-      }
-      scale(u, 1.0 / un);
-      dropped.push_back(std::move(u));
-      kappas.push_back(c);
-    }
   } else {
     for (long r = 0; r < nullBasis.cols(); ++r) {
-      dropped.emplace_back(
+      rigid.emplace_back(
           static_cast<size_t>(N),
           (nullBasis.col(r) / std::sqrt(static_cast<double>(N))).eval());
-      kappas.push_back(c);
     }
+  }
+  auto offRigid = [&](std::vector<VectorXd> &v) {
+    for (const auto &u : rigid) {
+      const double o = dot(u, v);
+      for (long j = 0; j < N; ++j) {
+        v[static_cast<size_t>(j)] -= o * u[static_cast<size_t>(j)];
+      }
+    }
+    const double vn = std::sqrt(dot(v, v));
+    if (!(vn > 1e-8)) {
+      throw std::runtime_error(
+          "instantonRate: a rigid motion of the ring lies along its cycle");
+    }
+    scale(v, 1.0 / vn);
+  };
+  offRigid(cycle);
+  // On a discrete ring the time shift is only nearly a symmetry, so the
+  // central difference tau is not quite the eigenvector of J's near-zero
+  // eigenvalue, and lifting tau would leave out cos^2 of their angle
+  // times that eigenvalue rather than the eigenvalue itself. Inverse
+  // iteration with the rigid modes lifted finds the eigenvector; tau stays
+  // when the iteration fails or wanders off it.
+  {
+    const std::vector<double> rigidKappas(rigid.size(), c);
+    const WoodburyRing lifted(c, diag, true, rigid, rigidKappas, false);
+    std::vector<VectorXd> v = cycle;
+    bool good = lifted.ok();
+    for (int it = 0; good && it < 12; ++it) {
+      std::vector<VectorXd> x = lifted.solve(v);
+      for (const auto &b : x) {
+        good = good && b.allFinite();
+      }
+      if (!good) {
+        break;
+      }
+      offRigid(x);
+      const double change = 1.0 - std::abs(dot(x, v));
+      v = std::move(x);
+      if (change < 1e-15) {
+        break;
+      }
+    }
+    if (good && std::abs(dot(v, cycle)) > 0.9) {
+      cycle = std::move(v);
+    }
+  }
+  // Each omitted direction is lifted by a spring-sized curvature c, far
+  // above any physical near-zero eigenvalue, and the lift comes off the
+  // log-determinant again: det(J + c u u^T) = (c + lambda) det' J for u the
+  // eigenvector of lambda.
+  std::vector<std::vector<VectorXd>> dropped{cycle};
+  std::vector<double> kappas{c};
+  for (auto &u : rigid) {
+    dropped.push_back(std::move(u));
+    kappas.push_back(c);
   }
   const WoodburyRing ring(c, diag, true, dropped, kappas, true);
   if (!ring.ok() || !std::isfinite(ring.logAbsDet())) {
@@ -3349,8 +3382,12 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
     }
   }
   const long nDrop = 1 + nullBasis.cols();
+  // Along an eigenvector the lift adds c to its eigenvalue, so it comes off
+  // as c + lambda_0 for the cycle (lambda_0 is not zero on a discrete ring)
+  // and as c for the exact rigid zeros.
   const double logDetPrime =
-      logAbsDet - static_cast<double>(nDrop) * std::log(c);
+      logAbsDet - std::log(std::abs(c + inst.zeroEigenvalue)) -
+      static_cast<double>(nDrop - 1) * std::log(c);
   const double logProd =
       static_cast<double>(N * f - nDrop) * std::log(bnh) + 0.5 * logDetPrime;
 
