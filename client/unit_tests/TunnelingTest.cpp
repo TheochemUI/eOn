@@ -1059,3 +1059,32 @@ TEST_CASE("Quantum harmonic TST has its closed form and the classical limit",
                    harmonicTstLogRate(hr, hs, hot, barrier, 0),
                Catch::Matchers::WithinAbs(0.0, 1e-6));
 }
+
+// A soft barrier: the saddle's unstable curvature, -1e-8, lies closer to
+// zero than the finite-difference residue of its rigid mode, 1e-6. The
+// rigid mode is the one to leave, and the barrier mode leaves as the
+// unstable mode, so only the bound curvature 2 stays at the saddle.
+TEST_CASE("Harmonic TST never takes a soft barrier mode for a rigid mode",
+          "[Tunneling][Instanton]") {
+  MatrixXd hr = MatrixXd::Zero(3, 3);
+  hr(0, 0) = 2e-6;
+  hr(1, 1) = 4.0;
+  hr(2, 2) = 9.0;
+  MatrixXd hs = MatrixXd::Zero(3, 3);
+  hs(0, 0) = -1e-8;
+  hs(1, 1) = 1e-6;
+  hs(2, 2) = 2.0;
+  const double barrier = 0.3;
+  const double beta = 5.0;
+  const double classical = 0.5 * std::log(4.0 * 9.0 / 2.0) -
+                           std::log(2.0 * std::numbers::pi) - beta * barrier;
+  REQUIRE_THAT(harmonicTstLogRate(hr, hs, beta, barrier, 1),
+               WithinRel(classical, 1e-12));
+  const double bh = beta * kHbar;
+  auto twoSinh = [&](double w) { return 2.0 * std::sinh(0.5 * bh * w); };
+  const double quantum =
+      std::log(twoSinh(2.0) * twoSinh(3.0) / twoSinh(std::sqrt(2.0))) -
+      std::log(2.0 * std::numbers::pi * bh) - beta * barrier;
+  REQUIRE_THAT(quantumHarmonicTstLogRate(hr, hs, beta, barrier, 1),
+               WithinRel(quantum, 1e-12));
+}

@@ -3107,15 +3107,19 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
 
 namespace {
 
-/// Flags the count entries of lam nearest zero.
-std::vector<bool> nearestZero(const VectorXd &lam, long count) {
-  std::vector<long> order(static_cast<size_t>(lam.size()));
-  std::iota(order.begin(), order.end(), 0L);
+/// Flags the count entries of lam nearest zero, among the entries from
+/// index `first` on. A saddle passes first = 1 so that its unstable mode,
+/// eigenvalue 0 in ascending order, is never taken for a rigid mode however
+/// soft the barrier is.
+std::vector<bool> nearestZero(const VectorXd &lam, long count, long first = 0) {
+  std::vector<long> order(static_cast<size_t>(lam.size() - first));
+  std::iota(order.begin(), order.end(), first);
   std::sort(order.begin(), order.end(), [&](long a, long b) {
     return std::abs(lam(a)) < std::abs(lam(b));
   });
   std::vector<bool> out(static_cast<size_t>(lam.size()), false);
-  for (long k = 0; k < std::min<long>(count, lam.size()); ++k) {
+  for (long k = 0; k < std::min<long>(count, static_cast<long>(order.size()));
+       ++k) {
     out[static_cast<size_t>(order[static_cast<size_t>(k)])] = true;
   }
   return out;
@@ -3333,7 +3337,7 @@ double harmonicTstLogRate(const MatrixXd &hessReactant,
         "harmonicTstLogRate: the saddle Hessian has no negative eigenvalue");
   }
   const std::vector<bool> rigidR = nearestZero(lr, rigidModes);
-  const std::vector<bool> rigidS = nearestZero(ls, rigidModes);
+  const std::vector<bool> rigidS = nearestZero(ls, rigidModes, 1);
   double logRatio = 0.0;
   for (long m = 0; m < lr.size(); ++m) {
     if (!rigidR[static_cast<size_t>(m)]) {
@@ -3373,7 +3377,7 @@ double quantumHarmonicTstLogRate(const MatrixXd &hessReactant,
                                 "Hessian has no negative eigenvalue");
   }
   const std::vector<bool> rigidR = nearestZero(lr, rigidModes);
-  const std::vector<bool> rigidS = nearestZero(ls, rigidModes);
+  const std::vector<bool> rigidS = nearestZero(ls, rigidModes, 1);
   const double bh = beta * kHbar;
   // ln(2 sinh(x / 2)) without overflow for large x.
   auto logTwoSinhHalf = [](double x) {

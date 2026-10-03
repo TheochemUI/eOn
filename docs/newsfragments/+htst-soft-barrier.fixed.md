@@ -1,0 +1,1 @@
+Harmonic TST and quantum harmonic TST choose the saddle's rigid modes among its bound modes, so a barrier softer than a rigid mode's finite-difference residue no longer leaves that rigid mode in the product.
