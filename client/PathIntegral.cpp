@@ -536,6 +536,7 @@ void RingPolymer::setHyperplane(const VectorXd &normal,
   constrain_ = true;
   projectPosition();
   projectMomentum();
+  haveForces_ = false;
 }
 
 double RingPolymer::gauss() {
@@ -823,7 +824,11 @@ void RingPolymer::step(Potential &pot, const double *box, bool record) {
   const double half = 0.5 * opt_.dt;
   thermostat(half);
   projectMomentum();
-  forces(pot, box);
+  // The thermostat and the momentum projection leave the beads where the
+  // last step evaluated them.
+  if (!haveForces_) {
+    forces(pot, box);
+  }
   kick(half, true);
   projectMomentum();
   propagate(half);

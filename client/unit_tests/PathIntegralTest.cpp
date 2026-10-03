@@ -193,8 +193,9 @@ TEST_CASE("Centroid hyperplane mean force of a harmonic oscillator",
   ring.setHyperplane(normal, origin);
   const auto sample = ring.sample(pot, nullptr, 0, 8);
   REQUIRE(sample.meanForce == Catch::Approx(-1.0).margin(1e-8));
-  REQUIRE(sample.batches == 16);
-  REQUIRE(pot.calls == 16);
+  // One bead batch per step, plus the first step's.
+  REQUIRE(sample.batches == 9);
+  REQUIRE(pot.calls == 9);
   REQUIRE(pot.minSystems == 4);
   REQUIRE(pot.maxSystems == 4);
   REQUIRE_FALSE(pot.sawForce);
@@ -230,7 +231,7 @@ TEST_CASE(
   const long production = 6000000;
   const auto sample = ring.sample(pot, nullptr, 200000, production);
   REQUIRE(sample.kineticCv == Catch::Approx(exact).epsilon(0.01));
-  REQUIRE(sample.batches == 2 * production);
+  REQUIRE(sample.batches == production);
   REQUIRE(pot.minSystems == beads);
   REQUIRE(pot.maxSystems == beads);
   REQUIRE_FALSE(pot.sawForce);
