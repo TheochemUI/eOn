@@ -248,11 +248,15 @@ bool RgpotPot::evaluate(long N, const double *R, const int *atomicNrs,
 
 void RgpotPot::computeSingle(long N, const double *R, const int *atomicNrs,
                              double *F, double *U, const double *box) {
-  // Group 0 computes; its first rank's result reaches every rank.
+  // Every calculator evaluates the structure, because the engine agrees
+  // on errors across MPI_COMM_WORLD after each call and a calculator that
+  // skipped the call would never join that agreement. Group 0's first
+  // rank then sends its result to every rank.
   std::string error;
-  bool ok = true;
-  if (impl_->calculatorIndex() == 0)
-    ok = evaluate(N, R, atomicNrs, F, U, box, error);
+  // Only group 0's call counts toward the calculator usage report.
+  const bool ok = impl_->calculatorIndex() == 0
+                      ? evaluate(N, R, atomicNrs, F, U, box, error)
+                      : try_force(*impl_, N, R, atomicNrs, F, U, box, error);
   if (!impl_->shareResult(0, N, F, U, ok, error))
     raise_failure(0, 0, error);
 }
@@ -276,11 +280,31 @@ void RgpotPot::computeBatch(long nSystems, long nAtoms,
   }
   std::vector<char> ok(static_cast<size_t>(nSystems), 1);
   std::vector<std::string> errors(static_cast<size_t>(nSystems));
+  std::vector<long> owned(static_cast<size_t>(groups), 0);
+  long last = -1;
   for (long j = 0; j < nSystems; j++) {
-    if (ownerOf(j) == mine)
+    owned[static_cast<size_t>(ownerOf(j))]++;
+    if (ownerOf(j) == mine) {
+      last = j;
       ok[static_cast<size_t>(j)] =
           evaluate(nAtoms, positions[j], atomicNrs[j], forces[j], &energies[j],
                    boxes[j], errors[static_cast<size_t>(j)]);
+    }
+  }
+  // Every calculator makes the same number of engine calls: the engine
+  // agrees on errors across MPI_COMM_WORLD after each one. A calculator
+  // that owns fewer systems repeats one into scratch buffers, its last
+  // own system or system 0 when it owns none.
+  const long most = *std::max_element(owned.begin(), owned.end());
+  const long pad = most - owned[static_cast<size_t>(mine)];
+  if (pad > 0) {
+    const long j = last >= 0 ? last : 0;
+    std::vector<double> scratchF(static_cast<size_t>(3 * nAtoms));
+    double scratchU = 0.0;
+    std::string scratchError;
+    for (long k = 0; k < pad; k++)
+      try_force(*impl_, nAtoms, positions[j], atomicNrs[j], scratchF.data(),
+                &scratchU, boxes[j], scratchError);
   }
   // Every share runs before any rank raises, so all ranks leave together.
   long failed = -1;

@@ -1999,6 +1999,24 @@ if get_option('with_tests')
                 env: _rgpot_test_env,
             )
             test(
+                'test_rgpot_mpi_single',
+                _rgpot_bash,
+                args: [_rgpot_mpi_script, rgpot_mpi_exit.full_path(), 'single'],
+                timeout: 90,
+                suite: ['eon', 'rgpot'],
+                is_parallel: false,
+                env: _rgpot_test_env,
+            )
+            test(
+                'test_rgpot_mpi_uneven',
+                _rgpot_bash,
+                args: [_rgpot_mpi_script, rgpot_mpi_exit.full_path(), 'uneven'],
+                timeout: 90,
+                suite: ['eon', 'rgpot'],
+                is_parallel: false,
+                env: _rgpot_test_env,
+            )
+            test(
                 'test_rgpot_mpi_params',
                 _rgpot_bash,
                 args: [_rgpot_mpi_script, rgpot_mpi_exit.full_path(), 'params'],

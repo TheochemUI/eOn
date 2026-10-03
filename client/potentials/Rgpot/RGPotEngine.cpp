@@ -517,12 +517,19 @@ bool RGPotEngine::available() const {
 
 void RGPotEngine::force(long N, const double *R, const int *atomicNrs,
                         double *F, double *U, const double *box) const {
+  forceEngine(N, R, atomicNrs, F, U, box);
   // Set on one rank by the multi-rank failure test. The text is the
-  // engine error that rank has to deliver to rank 0.
+  // engine error that rank has to deliver to rank 0. It is raised after
+  // the engine call, where an engine error surfaces, so the rank has
+  // already taken part in every collective the engine runs.
   if (const char *fail = std::getenv("RGPOT_FORCE_FAIL")) {
     if (fail[0] != '\0')
       throw std::runtime_error(fail);
   }
+}
+
+void RGPotEngine::forceEngine(long N, const double *R, const int *atomicNrs,
+                              double *F, double *U, const double *box) const {
   if (N <= 0)
     throw std::runtime_error("RGPotEngine::force called with N <= 0");
 
