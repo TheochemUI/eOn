@@ -25,17 +25,17 @@ struct MinModeUser {
   const AtomMatrix *fixed;
 };
 
-int surfaceCallback(void *user, rgsaddle_surface_request_t *req) {
+rgsaddle_status_t surfaceCallback(void *user, rgsaddle_surface_request_t *req) {
   auto *ctx = static_cast<MinModeUser *>(user);
   if (ctx == nullptr || ctx->matter == nullptr || req == nullptr ||
       req->positions == nullptr || req->energies == nullptr ||
       req->gradients == nullptr || req->n_images != 1) {
-    return -1;
+    return RGSADDLE_SURFACE_FAILED;
   }
   try {
     const auto nAtoms = ctx->matter->numberOfAtoms();
     if (req->n_atoms != nAtoms) {
-      return -1;
+      return RGSADDLE_SHAPE;
     }
     AtomMatrix pos = AtomMatrix::Map(req->positions, nAtoms, 3);
     if (ctx->fixed != nullptr) {
@@ -52,9 +52,9 @@ int surfaceCallback(void *user, rgsaddle_surface_request_t *req) {
     for (Eigen::Index k = 0; k < dof; ++k) {
       req->gradients[k] = -force.data()[k];
     }
-    return 0;
+    return RGSADDLE_OK;
   } catch (...) {
-    return -1;
+    return RGSADDLE_SURFACE_FAILED;
   }
 }
 
@@ -62,8 +62,9 @@ void checkStatus(int rc, const char *what) {
   if (rc == RGSADDLE_OK) {
     return;
   }
-  throw std::runtime_error(std::string(what) + ": " +
-                           rgsaddle_status_name(rc));
+  throw std::runtime_error(
+      std::string(what) + ": " +
+      rgsaddle_status_name(static_cast<rgsaddle_status_t>(rc)));
 }
 
 } // namespace
@@ -119,8 +120,7 @@ void XtsciMinMode::compute(std::shared_ptr<Matter> matter,
   }
   MinModeUser ctx{matter.get(), &m_fixed};
   rgsaddle_report_t report{};
-  const int rc =
-      rgsaddle_minmode_step(session, surfaceCallback, &ctx, &report);
+  const int rc = rgsaddle_minmode_step(session, surfaceCallback, &ctx, &report);
   std::vector<double> mode(static_cast<size_t>(3 * nAtoms), 0.0);
   const int modeRc = rgsaddle_minmode_mode(session, mode.data());
   rgsaddle_minmode_free(session);

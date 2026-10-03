@@ -328,9 +328,10 @@ if get_option('with_xtsci')
 endif
 
 if get_option('with_rgsaddle')
+    # 0.2.0: typed surface callback, interior-only band requests.
     rgsaddle_dep = dependency(
         'rgsaddle',
-        version: '>=0.1.0',
+        version: '>=0.2.0',
         method: 'pkg-config',
         required: true,
     )

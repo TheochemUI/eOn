@@ -19,6 +19,7 @@
 #include <cstddef>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace eonc {
 
@@ -26,17 +27,19 @@ int xtsciBandSurface(void *user, void *request);
 
 namespace {
 
-int surfaceCallback(void *user, rgsaddle_surface_request_t *req) {
+rgsaddle_status_t surfaceCallback(void *user, rgsaddle_surface_request_t *req) {
   auto *self = static_cast<XtsciBand *>(user);
-  return self == nullptr ? -1 : xtsciBandSurface(self, req);
+  return static_cast<rgsaddle_status_t>(
+      self == nullptr ? RGSADDLE_SURFACE_FAILED : xtsciBandSurface(self, req));
 }
 
 void checkStatus(int rc, const char *what) {
   if (rc == RGSADDLE_OK) {
     return;
   }
-  throw std::runtime_error(std::string(what) + ": " +
-                           rgsaddle_status_name(rc));
+  throw std::runtime_error(
+      std::string(what) + ": " +
+      rgsaddle_status_name(static_cast<rgsaddle_status_t>(rc)));
 }
 
 int32_t tangentKind(const neb_options_t &neb) {
@@ -93,37 +96,66 @@ int xtsciBandSurface(void *user, void *request) {
   auto *req = static_cast<rgsaddle_surface_request_t *>(request);
   if (self == nullptr || req == nullptr || req->positions == nullptr ||
       req->energies == nullptr || req->gradients == nullptr) {
-    return -1;
+    return RGSADDLE_SURFACE_FAILED;
   }
   try {
     auto *neb = self->m_neb;
-    const auto nImages = static_cast<int64_t>(neb->numImages + 2);
+    const auto band = static_cast<int64_t>(neb->numImages + 2);
     const auto nAtoms = static_cast<int64_t>(neb->atoms);
-    if (req->n_images != nImages || req->n_atoms != nAtoms) {
-      return -1;
-    }
     if (req->version.major != RGSADDLE_ABI_MAJOR) {
       return RGSADDLE_ABI_MISMATCH;
     }
-    const auto dof = static_cast<Eigen::Index>(3 * nAtoms);
-    for (int64_t i = 0; i < nImages; ++i) {
-      AtomMatrix pos = AtomMatrix::Map(req->positions + i * dof, nAtoms, 3);
-      neb->path[static_cast<size_t>(i)]->setPositions(pos);
-      if (static_cast<size_t>(i) < self->m_fixed.size()) {
-        pinFixed(self->m_fixed[static_cast<size_t>(i)], *neb->path[static_cast<size_t>(i)],
-                 &pos);
+    if (req->n_atoms != nAtoms) {
+      return RGSADDLE_SHAPE;
+    }
+    // Rows carried by this request and the band image of row 0. The
+    // session sends the whole band on its first evaluation, the interior
+    // images 1 .. band - 2 afterwards, or one image with
+    // RGSADDLE_REQ_ONE_IMAGE.
+    int64_t rows = 0;
+    int64_t first = 0;
+    if ((req->flags & RGSADDLE_REQ_ONE_IMAGE) != 0) {
+      if (req->n_images != band || req->image < 0 || req->image >= band) {
+        return RGSADDLE_SHAPE;
       }
-      req->energies[i] = neb->path[i]->getPotentialEnergy();
-      const AtomMatrix &force = neb->path[i]->getForces();
-      double *grad = req->gradients + i * dof;
+      rows = 1;
+      first = req->image;
+    } else if (req->n_images == band) {
+      rows = band;
+    } else if (req->n_images == band - 2) {
+      rows = band - 2;
+      first = 1;
+    } else {
+      return RGSADDLE_SHAPE;
+    }
+    const auto dof = static_cast<Eigen::Index>(3 * nAtoms);
+    std::vector<Matter *> carried;
+    carried.reserve(static_cast<size_t>(rows));
+    for (int64_t r = 0; r < rows; ++r) {
+      const auto i = static_cast<size_t>(first + r);
+      AtomMatrix pos = AtomMatrix::Map(req->positions + r * dof, nAtoms, 3);
+      neb->path[i]->setPositions(pos);
+      if (i < self->m_fixed.size()) {
+        pinFixed(self->m_fixed[i], *neb->path[i], &pos);
+      }
+      carried.push_back(neb->path[i].get());
+    }
+    // One batch for every carried image, so calculator groups or a batched
+    // model take them together; a serial potential evaluates them in turn.
+    eonc::evaluateTogether(*carried.front()->getPotential(), carried);
+    for (int64_t r = 0; r < rows; ++r) {
+      Matter &image = *carried[static_cast<size_t>(r)];
+      req->energies[r] = image.getPotentialEnergy();
+      const AtomMatrix &force = image.getForces();
+      double *grad = req->gradients + r * dof;
       const double *src = force.data();
       for (Eigen::Index k = 0; k < dof; ++k) {
         grad[k] = -src[k];
       }
     }
-    return 0;
+    return RGSADDLE_OK;
   } catch (...) {
-    return -1;
+    return RGSADDLE_SURFACE_FAILED;
   }
 }
 
@@ -142,8 +174,7 @@ XtsciBand::XtsciBand(NudgedElasticBand &neb, const Parameters &params)
     throw std::runtime_error("rgsaddle band needs at least 3 images");
   }
   if (springKind(nebOpt) == RGSADDLE_SPRING_WEIGHTED) {
-    m_springKs.assign(static_cast<size_t>(nImages - 1),
-                      nebOpt.spring.constant);
+    m_springKs.assign(static_cast<size_t>(nImages - 1), nebOpt.spring.constant);
   }
   rgsaddle_band_config_t config{};
   config.version = RGSADDLE_VERSION_INIT;
@@ -174,8 +205,7 @@ XtsciBand::XtsciBand(NudgedElasticBand &neb, const Parameters &params)
   config.max_move = m_maxMove > 0.0 ? m_maxMove : 0.2;
   config.memory = std::max<long>(1, params.optimizer_options().lbfgs.memory);
 
-  std::vector<double> positions(
-      static_cast<size_t>(nImages * 3 * nAtoms), 0.0);
+  std::vector<double> positions(static_cast<size_t>(nImages * 3 * nAtoms), 0.0);
   for (int64_t i = 0; i < nImages; ++i) {
     const AtomMatrix &pos = neb.path[i]->getPositions();
     std::copy(pos.data(), pos.data() + pos.size(),
@@ -192,8 +222,7 @@ XtsciBand::~XtsciBand() { rgsaddle_band_free(m_band); }
 void XtsciBand::syncFromPath() {
   const auto nImages = static_cast<int64_t>(m_neb->numImages + 2);
   const auto nAtoms = static_cast<int64_t>(m_neb->atoms);
-  std::vector<double> positions(
-      static_cast<size_t>(nImages * 3 * nAtoms), 0.0);
+  std::vector<double> positions(static_cast<size_t>(nImages * 3 * nAtoms), 0.0);
   for (int64_t i = 0; i < nImages; ++i) {
     const AtomMatrix &pos = m_neb->path[i]->getPositions();
     std::copy(pos.data(), pos.data() + pos.size(),

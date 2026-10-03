@@ -14,9 +14,16 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/NudgedElasticBand.h"
 #include "eon/Potential.h"
+#include "eon/XtsciBand.h"
 #include <memory>
+#include <rgsaddle.h>
+#include <vector>
 
 #include <cmath>
+
+namespace eonc {
+int xtsciBandSurface(void *user, void *request);
+} // namespace eonc
 
 namespace tests {
 
@@ -54,6 +61,84 @@ TEST_CASE("rgsaddle band steps a short LJ path", "[neb][rgsaddle]") {
   for (const auto &image : neb.path) {
     REQUIRE(std::isfinite(image->getPotentialEnergy()));
   }
+}
+
+TEST_CASE("rgsaddle band surface serves whole, interior and one-image "
+          "requests",
+          "[neb][rgsaddle]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::neb_options(params).opt_method = OptType::XTSCI;
+  ParametersLoadAccess::neb_options(params).image_count = 3;
+  ParametersLoadAccess::neb_options(params).climbing_image.enabled = false;
+  ParametersLoadAccess::neb_options(params).initialization.method =
+      NEBInit::LINEAR;
+  ParametersLoadAccess::neb_options(params).endpoints.minimize = false;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = std::make_shared<Matter>(pot, params);
+  auto product = std::make_shared<Matter>(pot, params);
+  reactant->con2matter(std::string("reactant.con"));
+  product->con2matter(std::string("reactant.con"));
+  auto shifted = product->getPositions();
+  shifted(0, 0) += 0.5;
+  product->setPositions(shifted);
+  NudgedElasticBand neb(reactant, product, params, pot);
+  eonc::XtsciBand band(neb, params);
+
+  const long band_n = neb.numImages + 2;
+  const long atoms = neb.atoms;
+  const long dof = 3 * atoms;
+  // Reference energies of every image, and the positions of every image
+  // displaced a little so each request is a new evaluation.
+  std::vector<double> all(static_cast<size_t>(band_n * dof));
+  std::vector<double> reference(static_cast<size_t>(band_n));
+  for (long i = 0; i < band_n; ++i) {
+    AtomMatrix p = neb.path[static_cast<size_t>(i)]->getPositions();
+    p(1, 1) += 0.01 * static_cast<double>(i + 1);
+    Matter probe(*neb.path[static_cast<size_t>(i)]);
+    probe.setPositions(p);
+    reference[static_cast<size_t>(i)] = probe.getPotentialEnergy();
+    std::copy(p.data(), p.data() + dof, all.begin() + i * dof);
+  }
+
+  auto request = [&](long rows, long first, uint64_t flags, long image) {
+    std::vector<double> e(static_cast<size_t>(rows));
+    std::vector<double> g(static_cast<size_t>(rows * dof));
+    rgsaddle_surface_request_t req{};
+    req.version = RGSADDLE_VERSION_INIT;
+    req.flags = flags;
+    req.n_images = (flags & RGSADDLE_REQ_ONE_IMAGE) != 0 ? band_n : rows;
+    req.n_atoms = atoms;
+    req.positions = all.data() + first * dof;
+    req.energies = e.data();
+    req.gradients = g.data();
+    req.image = image;
+    const int rc = eonc::xtsciBandSurface(&band, &req);
+    return std::make_pair(rc, e);
+  };
+
+  // The whole band: row r is image r.
+  auto [rcAll, eAll] = request(band_n, 0, 0, -1);
+  REQUIRE(rcAll == RGSADDLE_OK);
+  for (long r = 0; r < band_n; ++r) {
+    REQUIRE(eAll[static_cast<size_t>(r)] ==
+            Catch::Approx(reference[static_cast<size_t>(r)]));
+  }
+  // Interior only: row r is image r + 1.
+  auto [rcIn, eIn] = request(band_n - 2, 1, 0, -1);
+  REQUIRE(rcIn == RGSADDLE_OK);
+  for (long r = 0; r < band_n - 2; ++r) {
+    REQUIRE(eIn[static_cast<size_t>(r)] ==
+            Catch::Approx(reference[static_cast<size_t>(r + 1)]));
+  }
+  // One image with its band index.
+  auto [rcOne, eOne] = request(1, 2, RGSADDLE_REQ_ONE_IMAGE, 2);
+  REQUIRE(rcOne == RGSADDLE_OK);
+  REQUIRE(eOne[0] == Catch::Approx(reference[2]));
+  // Any other row count is a shape error, not a silent mismatch.
+  auto [rcBad, eBad] = request(band_n - 1, 0, 0, -1);
+  REQUIRE(rcBad == RGSADDLE_SHAPE);
 }
 
 } // namespace tests
