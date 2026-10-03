@@ -101,6 +101,11 @@ TEST_CASE("rgsaddle band evaluates each moved image once per step",
   const size_t interior = static_cast<size_t>(neb.numImages);
   CAPTURE(calls);
   REQUIRE(calls <= 2 + interior + 2 * steps * interior);
+#if RGSADDLE_ABI_MINOR >= 5
+  // From ABI minor 5 the session keeps its last evaluation, so a warm
+  // step carries exactly the interior images once.
+  REQUIRE(calls <= 2 + interior + steps * interior);
+#endif
 }
 
 TEST_CASE("rgsaddle band surface serves whole, interior and one-image "

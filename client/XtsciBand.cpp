@@ -238,7 +238,13 @@ void XtsciBand::syncFromPath() {
 }
 
 void XtsciBand::reset() {
+#if RGSADDLE_ABI_MINOR >= 5
+  // Same surface: drop the optimizer history and climbing state, keep the
+  // endpoint energies and the last evaluation.
+  checkStatus(rgsaddle_band_restart(m_band), "rgsaddle_band_restart");
+#else
   checkStatus(rgsaddle_band_reset(m_band), "rgsaddle_band_reset");
+#endif
 }
 
 void XtsciBand::step(double maxMove) {
@@ -253,9 +259,14 @@ void XtsciBand::step(double maxMove) {
   // The session holds the band of the last step. Resending it drops the
   // session's cached endpoint and start-point evaluations, so only a band
   // moved outside the session (a reparameterization) is resent.
+#if RGSADDLE_ABI_MINOR >= 5
+  // Unchanged rows cost nothing: the session keeps its cached values.
+  syncFromPath();
+#else
   if (!sessionMatchesPath()) {
     syncFromPath();
   }
+#endif
   rgsaddle_report_t report{};
   checkStatus(rgsaddle_band_step(m_band, surfaceCallback, this, &report),
               "rgsaddle_band_step");
@@ -276,6 +287,26 @@ void XtsciBand::step(double maxMove) {
     // image still holds; the band update after the step then costs nothing.
     moveTo(*m_neb->path[i], pos);
   }
+#if RGSADDLE_ABI_MINOR >= 5
+  // An image whose last evaluation was elsewhere (the solver backed off to
+  // a point it evaluated earlier) takes the session's evaluation of the
+  // accepted band instead of a fresh force call.
+  std::vector<double> energies(m_fixed.size());
+  std::vector<double> gradients(m_fixed.size() * dof);
+  if (rgsaddle_band_evaluation(m_band, energies.data(), gradients.data(),
+                               nullptr) == RGSADDLE_OK) {
+    for (size_t i = 1; i + 1 < m_fixed.size(); ++i) {
+      Matter &image = *m_neb->path[i];
+      if (!image.needsForceUpdate()) {
+        continue;
+      }
+      const AtomMatrix grad = AtomMatrix::Map(
+          gradients.data() + static_cast<std::ptrdiff_t>(i * dof), m_neb->atoms,
+          3);
+      image.setEvaluation(-grad, energies[i]);
+    }
+  }
+#endif
   m_neb->movedAfterForceCall = true;
 }
 
