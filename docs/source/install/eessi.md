@@ -102,7 +102,12 @@ export CARGO_HOME="$PWD/../eon-cargo-home"
 mkdir -p "$CARGO_HOME"
 ```
 
-A git `insteadOf` rule that rewrites `https://github.com/` to SSH also rewrites Meson wrap downloads. Drop that rule for the configure, or the wrap fetch fails.
+A git `insteadOf` rule that rewrites `https://github.com/` to SSH also rewrites Meson wrap downloads. Drop that rule for the configure, or the wrap fetch fails. An empty global git configuration drops it for one shell:
+
+```{code-block} bash
+touch "$PWD/../eon-empty-gitconfig"
+export GIT_CONFIG_GLOBAL="$PWD/../eon-empty-gitconfig"
+```
 
 That configure has two Message Passing Interface (MPI) switches. `with_mpi` in `meson_options.txt` is the eOn client switch, and this build leaves it off. Calculator groups are the rgpot subproject switch, `-Drgpot:with_mpi=enabled`. `ranks_per_image` greater than 0 throws when that switch is off.
 
@@ -134,4 +139,4 @@ export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 meson test -C build-eessi --suite eon
 ```
 
-Those ranks, on 2026-09-30, for `develop` commit `13b3b8a5`, gave a suite of 48 passed and a fail count of 0. Later commits on `develop` add tests, so a newer checkout can report a higher pass count. The fail count on that run was 0.
+Those ranks, on 2026-10-02, for `develop` commit `6f0199ee4`, gave 57 tests: 54 passed, 3 skipped and 0 failed, in 84 s on 8 cores. The three skips are `test_rgpot_mpi_fault`, `test_rgpot_mpi_abort` and `test_rgpot_mpi_params`. Each exits 77 when the CPMD engine library `libcpmdc` is not installed. Later commits on `develop` add tests, so a newer checkout can report a higher pass count.
