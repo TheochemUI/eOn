@@ -740,6 +740,16 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
                   temperature, inst.ringPotential, inst.iterations,
                   inst.converged ? "" : " (not converged)");
 
+    if (inst.collapsed) {
+      EONC_LOG_ERROR("[Instanton] {:.4g} K: the ring collapsed after {} "
+                     "iterations (B_N {:.3e}, every bead at one point near "
+                     "s = {:.4f}); the search left the bounce for a "
+                     "stationary point of V, no rate",
+                     temperature, inst.iterations, inst.bN,
+                     inst.beads.empty()
+                         ? 0.0
+                         : (inst.beads.front() - qSaddle).dot(unstableMode));
+    }
     const tunneling::RingChannel channel =
         tunneling::ringChannel(inst.beads, qSaddle, unstableMode);
     EONC_LOG_INFO("[Instanton] {:.4g} K: ring spans s = {:.4f} to {:.4f} "
@@ -890,6 +900,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
                         static_cast<double>(inst.iterations));
     extras.emplace_back("instanton_ring_potential", inst.ringPotential);
     extras.emplace_back("instanton_bN", inst.bN);
+    extras.emplace_back("instanton_collapsed", inst.collapsed ? 1.0 : 0.0);
     extras.emplace_back("instanton_s_min", channel.sMin);
     extras.emplace_back("instanton_s_max", channel.sMax);
     extras.emplace_back("instanton_chord_overlap", channel.chordOverlap);

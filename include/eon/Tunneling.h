@@ -327,6 +327,10 @@ struct RateInstanton {
   long negativeModes = 0;          ///< eigenvalues below the zero mode
   long iterations = 0;
   bool converged = false;
+  /// The search stopped because B_N fell below 1e-4 of the starting
+  /// ring's: the beads fell together onto one point (a minimum or the
+  /// saddle), which is no instanton.
+  bool collapsed = false;
   double logRateTimesZr = 0.0; ///< ln(k Z_r), k in 1 / time
   double logZr = 0.0;          ///< ln Z_r
   double logRate = 0.0;        ///< ln k, k in 1 / time

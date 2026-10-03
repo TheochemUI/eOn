@@ -15,6 +15,7 @@
 ** Algorithms implemented by Yair Litman and Mariana Rossi, 2017.
 */
 #include "eon/Tunneling.h"
+#include "eon/EonLogger.h"
 
 #include <Eigen/Eigenvalues>
 #include <Eigen/LU>
@@ -2066,7 +2067,15 @@ struct NewtonOut {
   // Half ring, stationary, and not index 1. The odd-mode probe decides
   // whether the search continues on the whole ring.
   bool stalledHalf = false;
+  // The beads fell together: B_N dropped below kCollapse of the starting
+  // ring, so the search left the bounce for a stationary point of V.
+  bool collapsed = false;
 };
+
+/// A ring whose B_N falls below this fraction of its starting value has
+/// collapsed onto one point; no instanton is that much shorter than its
+/// seed at the same temperature.
+constexpr double kCollapse = 1e-4;
 
 // Index-1 Newton on one ring. `x` holds N beads. A half ring optimises beads
 // 0..N/2 and mirrors them. Trust is the largest bead displacement.
@@ -2464,8 +2473,29 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   constexpr int kMaxHessianRefreshes = 3;
   int refreshes = 0;
   bool exactAtX = false;
+  // B_N of the closed ring the beads describe.
+  auto ringLength = [&](const std::vector<VectorXd> &q) {
+    double b = 0.0;
+    if (half) {
+      for (size_t j = 0; j + 1 < q.size(); ++j) {
+        b += 2.0 * (q[j + 1] - q[j]).squaredNorm();
+      }
+    } else {
+      for (size_t j = 0; j < q.size(); ++j) {
+        b += (q[(j + 1) % q.size()] - q[j]).squaredNorm();
+      }
+    }
+    return b;
+  };
+  const double startLength = ringLength(x);
+  bool collapsed = false;
   for (long it = 0; it < options.maxIterations; ++it) {
     ++entries;
+    const double length = ringLength(x);
+    if (startLength > 0.0 && length < kCollapse * startLength) {
+      collapsed = true;
+      break;
+    }
     if (f == 1) {
       const double eps = options.lanczosStep > 0.0 ? options.lanczosStep : 1e-4;
       for (size_t j = 0; j < x.size(); ++j) {
@@ -2473,6 +2503,11 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       }
     }
     const View v = viewOf(cur);
+    EONC_LOG_DEBUG("[Instanton] Newton {}: U_N {:.10g} eV, largest residual "
+                   "{:.3e}, B_N {:.6e}, climb curvature {:.4e}, {} negative, "
+                   "trust {:.3e}",
+                   it, half ? 2.0 * cur.u : cur.u, v.gmax, length,
+                   v.climb.curvature, v.climb.negative, trust);
     if (done(v)) {
       converged = true;
       break;
@@ -2654,6 +2689,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   out.iterations = entries;
   out.converged = converged;
   out.stalledHalf = stalledHalf;
+  out.collapsed = collapsed;
   if (half) {
     const long m = static_cast<long>(x.size()) - 1;
     const long n = 2 * m;
@@ -2732,6 +2768,7 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
     inst.bN = got.bN;
     inst.iterations = got.iterations;
     inst.converged = got.converged;
+    inst.collapsed = got.collapsed;
     if (inst.converged || !cool) {
       return inst;
     }
@@ -2768,6 +2805,9 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
       last = optimizeRateInstanton(saddle, hessSaddle, betaStage,
                                    std::move(stageGuess), potential, opt);
       used += last.iterations;
+      if (last.collapsed) {
+        break;
+      }
       beads = last.beads;
       if (target) {
         targetRan = true;
@@ -2838,6 +2878,7 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
   inst.bN = got.bN;
   inst.iterations = got.iterations;
   inst.converged = got.converged;
+  inst.collapsed = got.collapsed;
   return inst;
 }
 

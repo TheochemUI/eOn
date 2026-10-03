@@ -1549,3 +1549,40 @@ TEST_CASE("Finite-difference initial bead Hessians find the same ring",
                Catch::Matchers::WithinAbs(copied.ringPotential, 1e-8));
   REQUIRE_THAT(fd.bN, WithinRel(copied.bN, 1e-6));
 }
+
+// A ring in a harmonic well, V = q^2 / 2, searched with a saddle Hessian
+// whose barrier curvature is -1: the well has no index-1 ring, the index-1
+// step climbs the centroid and takes exact Newton on every internal mode,
+// whose stationary point is a ring of zero size. The search must stop at
+// that collapse instead of spending its budget there.
+TEST_CASE("A ring that collapses onto one point stops early",
+          "[Tunneling][Instanton]") {
+  const BatchPotential well = [](const std::vector<VectorXd> &q,
+                                 std::vector<double> &v,
+                                 std::vector<VectorXd> &g) {
+    v.resize(q.size());
+    g.resize(q.size());
+    for (size_t j = 0; j < q.size(); ++j) {
+      v[j] = 0.5 * q[j].squaredNorm();
+      g[j] = q[j];
+    }
+  };
+  const VectorXd saddle = VectorXd::Zero(1);
+  const MatrixXd hs = MatrixXd::Constant(1, 1, -1.0);
+  const double beta = 1.0 / (kBoltzmann * 0.5 * crossoverTemperature(hs));
+  RateInstantonOptions opt;
+  opt.beads = 16;
+  opt.maxIterations = 500;
+  std::vector<VectorXd> guess;
+  for (long j = 0; j < opt.beads; ++j) {
+    guess.push_back(VectorXd::Constant(
+        1, 0.02 * std::cos(2.0 * std::numbers::pi * static_cast<double>(j) /
+                           static_cast<double>(opt.beads))));
+  }
+  const RateInstanton inst =
+      optimizeRateInstanton(saddle, hs, beta, guess, well, opt);
+  CAPTURE(inst.iterations, inst.bN, inst.converged, inst.ringPotential);
+  REQUIRE(inst.collapsed);
+  REQUIRE_FALSE(inst.converged);
+  REQUIRE(inst.iterations < 20);
+}

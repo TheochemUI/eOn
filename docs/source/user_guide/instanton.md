@@ -309,6 +309,7 @@ the change in the moments of inertia along the ring.
 | `instanton_zero_mode` | the eigenvalue left out |
 | `instanton_s_min`, `instanton_s_max` | the turning points along the saddle's unstable mode, amu^0.5 Angstrom from the saddle |
 | `instanton_chord_overlap` | cosine of the angle between the chord joining the turning points and the unstable mode |
+| `instanton_collapsed` | 1 when the search stopped because the beads fell onto one point (B_N below 1e-4 of the starting ring's) |
 | `instanton_crossing_offset` | largest distance from the saddle, across the mode, at which the ring crosses the dividing plane |
 
 A converged ring is given a rate only when it belongs to the seeded saddle:
