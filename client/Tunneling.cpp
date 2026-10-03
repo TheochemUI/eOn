@@ -3262,12 +3262,58 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
   }
   inst.zeroEigenvalue = dot(cycle, applyDiagonal(diag, c, true, cycle));
   inst.negativeModes = ring.negative();
-  // The lowest ring eigenvalue, for the report, from products alone.
-  {
+  double logAbsDet = ring.logAbsDet();
+  const long dim = N * f;
+  if (denseLimit < 0 || dim <= denseLimit) {
+    // The lifted ring Hessian, dense: its eigenvalues give the determinant,
+    // the inertia and the lowest mode directly, and check the block chain.
+    ColMajorXd full = ColMajorXd::Zero(dim, dim);
+    for (long j = 0; j < N; ++j) {
+      full.block(j * f, j * f, f, f) = diag[static_cast<size_t>(j)];
+      const long k = (j + 1) % N;
+      full.block(j * f, k * f, f, f) -= c * eye;
+      full.block(k * f, j * f, f, f) -= c * eye;
+    }
+    for (size_t d = 0; d < dropped.size(); ++d) {
+      VectorXd u(dim);
+      for (long j = 0; j < N; ++j) {
+        u.segment(j * f, f) = dropped[d][static_cast<size_t>(j)];
+      }
+      full += kappas[d] * u * u.transpose();
+    }
+    const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(full,
+                                                       Eigen::EigenvaluesOnly);
+    const VectorXd lam = es.eigenvalues();
+    double dense = 0.0, scaleSum = 0.0;
+    long negative = 0;
+    for (long i = 0; i < dim; ++i) {
+      const double l = std::abs(lam(i));
+      dense += std::log(l);
+      scaleSum += std::abs(std::log(l));
+      negative += lam(i) < 0.0 ? 1 : 0;
+    }
+    if (!(std::abs(dense - logAbsDet) <= 1e-6 * std::max(1.0, scaleSum))) {
+      throw std::runtime_error(
+          "instantonRate: the block-chain determinant disagrees with the "
+          "dense ring Hessian");
+    }
+    logAbsDet = dense;
+    inst.negativeEigenvalue = std::min(0.0, lam(0));
+    // A numerical null eigenvalue can sit just below zero off the lifted
+    // directions; it is not a second unstable mode when it is tiny next to
+    // the barrier curvature.
+    long tiny = 0;
+    for (long i = 1; i < dim && lam(i) < 0.0; ++i) {
+      if (lam(i) > 1e-3 * lam(0)) {
+        ++tiny;
+      }
+    }
+    inst.negativeModes = negative > 1 ? std::max(1L, negative - tiny) : negative;
+  } else {
+    // The lowest ring eigenvalue, for the report, from products alone.
     auto applyFull = [&](const std::vector<VectorXd> &vec) {
       return applyDiagonal(diag, c, true, vec);
     };
-    const long dim = N * f;
     const long steps = std::min(dim, static_cast<long>(60));
     std::vector<VectorXd> start = cycle;
     std::uint64_t h = 0x9E3779B97F4A7C15ULL;
@@ -3304,7 +3350,7 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
   }
   const long nDrop = 1 + nullBasis.cols();
   const double logDetPrime =
-      ring.logAbsDet() - static_cast<double>(nDrop) * std::log(c);
+      logAbsDet - static_cast<double>(nDrop) * std::log(c);
   const double logProd =
       static_cast<double>(N * f - nDrop) * std::log(bnh) + 0.5 * logDetPrime;
 

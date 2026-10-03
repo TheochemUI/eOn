@@ -407,11 +407,14 @@ struct RingRigidBodies {
 /// reactant Hessian's null vectors copied to every bead, which are exact
 /// only for a coordinate every bead shares. The bead Hessians must then
 /// keep their rotational part: projecting a rotation out of a bead that is
-/// not stationary removes the curvature that balances its springs. Up to denseLimit ring degrees of freedom
-/// the product is the dense eigenproduct, checked against the cyclic block
-/// determinant. Beyond that, and for a limit of 0, the block determinant is
-/// used and the eigenvalues nearest zero come from inverse iteration on that
-/// factorisation. A negative limit forces the dense product.
+/// not stationary removes the curvature that balances its springs.
+///
+/// Up to denseLimit ring degrees of freedom, and for any negative limit,
+/// the determinant, the negative-mode count and the lowest eigenvalue come
+/// from the dense eigenvalues of the lifted ring Hessian, and a block-chain
+/// determinant that disagrees with them throws. Beyond that, and for a
+/// limit of 0, the block chain gives the determinant and the inertia, and a
+/// Lanczos run on ring products the lowest eigenvalue.
 void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
                    const MatrixXd &hessReactant, double vReactant,
                    const MatrixXd &hessSaddle = MatrixXd(),
