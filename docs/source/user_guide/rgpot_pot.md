@@ -297,36 +297,55 @@ The reactant and the product are one batch at the start. The reactant
 runs on group 0. The product runs on group 1.
 
 Seven groups of 4 ranks need 28 ranks. Intermediate image 1 runs on
-group 0, and image 7 runs on group 6. An update that skips an image
-leaves the others on those groups. Some groups own fewer images than
-the busiest group. Those groups repeat their last image into scratch.
-An empty group repeats system 0 of that batch. Every group then enters
-the engine the same number of times. The systems count omits those
-repeats.
+group 0, and image 7 runs on group 6. Every image keeps its group from
+one iteration to the next, because the group holds that image's
+orbitals.
+
+A batch puts at most ceil(M / G) of its M systems on one group. An
+update of only some images, which would stack them on the groups that
+own them, moves the excess to the least-loaded groups, and a moved image
+stays on its new group. Groups that own fewer systems than the busiest
+group repeat their last system into scratch, and an empty group repeats
+system 0 of that batch, so every group enters the engine the same number
+of times. A repeat of a group's last system is the stored result of its
+session and runs no SCF. The systems count omits those repeats.
 
 With `ci_mmf = true` the climbing image takes improved-dimer steps on its
 own. Each step evaluates the moved centre and its forward image as one
-batch, on groups 0 and 1. A rotation trial depends on the previous one.
-Every group evaluates that one structure, and the run keeps the result
-from group 0. The usage line counts the call on group 0. A saddle search
-does the same, and with `min_mode_method = lanczos` the second system of
-that batch is the first Krylov product's displaced image.
+batch. A rotation trial depends on the previous one and runs alone:
+every group evaluates that one structure, and the run keeps the result
+of the group that last evaluated the geometry nearest to it. The usage
+line counts the call on that group. A saddle search does the same, and
+with `min_mode_method = lanczos` the second system of that batch is the
+first Krylov product's displaced image.
 
 A Hessian or a prefactor with an empty `checkpoint_path` sends its
-displaced structures through these groups the same way. Structure `j`
-runs on group `j` modulo the group count.
+displaced structures through these groups the same way.
 
 Each group keeps the converged orbitals of every system it evaluates,
 under that system's key: the image index for a band, the bead index for a
 ring polymer, the position in the batch otherwise, and one key for every
 single request. The next SCF of an image or a bead starts from its own
 orbitals of the previous step rather than from those of whichever system
-the group evaluated last. A ring of more beads than groups runs as rounds:
-bead `j` on group `j` modulo the group count, every step. One group
-(`ranks_per_image = 0`) batches as well, so the keys hold there too. The
-engine needs `cpmdc_session_select_orbitals`; an older libcpmdc keeps one
-stored copy per group, and so does an rgpot without
-`CPMDPot::selectOrbitals` (3.4.0 and older).
+the group evaluated last. One group (`ranks_per_image = 0`) batches as
+well, so the keys hold there too. The engine needs
+`cpmdc_session_select_orbitals`; an older libcpmdc keeps one stored copy
+per group, and so does an rgpot without `CPMDPot::selectOrbitals` (3.4.0
+and older).
+
+### Choosing the number of groups
+
+A batch of M systems on G groups takes ceil(M / G) rounds, so its load
+balance is M / (G ceil(M / G)). Pick G to divide the systems of the
+batch that repeats: the interior images of a band (`images`), or the
+beads of a ring (`path_beads`, `pi_beads`). Seven images run evenly on 1
+or 7 groups; on 2 groups the second round leaves one group idle and the
+load balance is 7/8. Sixteen beads run evenly on 1, 2, 4, 8 or 16 groups.
+Past that, fewer groups of more ranks often win: a CPMD SCF step of a
+small cell scales over the ranks of one group better than the groups
+share a node. For the Si3N4 Geo1 cell of this page, one group of 28
+ranks took 141.7 s for 9 force calls against 160.6 s for 7 groups of 4.
+Keep to one rank per physical core.
 
 The run reads `reactant.con` and `product.con`.
 

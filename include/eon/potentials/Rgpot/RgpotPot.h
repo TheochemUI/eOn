@@ -13,6 +13,8 @@
 
 #include "eon/CalculatorGroupUse.h"
 #include "eon/Potential.h"
+#include "eon/potentials/Rgpot/GroupSchedule.h"
+#include <cstdint>
 #include <memory>
 #include <string>
 
@@ -37,16 +39,18 @@ public:
   [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
 
   /// With cpmdc calculator groups ([RgpotPot] ranks_per_image), a batch is
-  /// spread over the groups: system j runs on group j mod G, then every
-  /// rank receives every result, so all ranks keep the same band.
+  /// spread over the groups by eonc::GroupSchedule: a system stays on the
+  /// group that holds its orbitals, at most ceil(M / G) systems per group,
+  /// then every rank receives every result, so all ranks keep the same
+  /// band.
   [[nodiscard]] bool supportsBatchEvaluation() const noexcept override;
   void forceBatch(long nSystems, long nAtoms, const double *const *positions,
                   const int *const *atomicNrs, double *const *forces,
                   double *energies, double *variances,
                   const double *const *boxes) override;
-  /// System j runs on group owners[j] mod G when owners is given (an
-  /// owner below zero falls back to j), so a NEB image keeps its group
-  /// across partial band updates.
+  /// owners[j] is system j's identity (a NEB image, a ring bead): it names
+  /// the orbitals the engine starts from and keeps the system on one group
+  /// across steps. Without it, or below zero, the batch position stands in.
   void forceBatchOwned(long nSystems, long nAtoms,
                        const double *const *positions,
                        const int *const *atomicNrs, double *const *forces,
@@ -70,11 +74,11 @@ private:
   // from the constructor until the driver sends a stop, then exit.
   [[noreturn]] void serveWorker();
   void computeSingle(long N, const double *R, const int *atomicNrs, double *F,
-                     double *U, const double *box);
+                     double *U, const double *box, int group);
   void computeBatch(long nSystems, long nAtoms, const double *const *positions,
                     const int *const *atomicNrs, double *const *forces,
                     double *energies, const double *const *boxes,
-                    const std::int64_t *owners);
+                    const std::int64_t *owners, const std::int64_t *route);
   void sendStop();
   void stopAndDrop();
   void releaseWorkersAtExit();
@@ -94,4 +98,6 @@ private:
   double busy_{0.0};
   double systemsDone_{0.0};
   eonc::CalculatorGroupUse use_;
+  // Driver only: which group evaluates which system.
+  std::unique_ptr<eonc::GroupSchedule> schedule_;
 };

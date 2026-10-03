@@ -137,7 +137,8 @@ RgpotPot::~RgpotPot() {
 bool RgpotPot::engineAvailable() const { return impl_ && impl_->available(); }
 
 namespace {
-// Request header broadcast from the driver: kind, atoms, systems.
+// Request header broadcast from the driver: kind, atoms, systems, and the
+// group a single request runs on.
 // kDown is the second broadcast: every rank has dropped CPMD, and
 // workers may enter MPI_Finalize.
 enum : std::int64_t { kStop = 0, kSingle = 1, kBatch = 2, kDown = 3 };
@@ -150,7 +151,7 @@ RgpotPot *g_driver = nullptr;
 void RgpotPot::sendStop() {
   if (!impl_ || !driver_ || stopped_ || impl_->calculatorWorld() <= 1)
     return;
-  std::int64_t hdr[3] = {kStop, 0, 0};
+  std::int64_t hdr[4] = {kStop, 0, 0, 0};
   impl_->broadcastFromDriver(hdr, sizeof(hdr));
   stopped_ = true;
   if (g_driver == this)
@@ -190,7 +191,7 @@ void RgpotPot::stopAndDrop() {
     dropped_ = true;
   }
   if (grouped && !acked_) {
-    std::int64_t hdr[3] = {kDown, 0, 0};
+    std::int64_t hdr[4] = {kDown, 0, 0, 0};
     impl_->broadcastFromDriver(hdr, sizeof(hdr));
     acked_ = true;
   }
@@ -259,32 +260,32 @@ bool RgpotPot::evaluate(long N, const double *R, const int *atomicNrs,
 }
 
 void RgpotPot::computeSingle(long N, const double *R, const int *atomicNrs,
-                             double *F, double *U, const double *box) {
+                             double *F, double *U, const double *box,
+                             int group) {
   // Every calculator evaluates the structure, because the engine agrees
   // on errors across MPI_COMM_WORLD after each call and a calculator that
-  // skipped the call would never join that agreement. Group 0's first
-  // rank then sends its result to every rank.
+  // skipped the call would never join that agreement. The first rank of
+  // `group`, the one whose stored orbitals are nearest, sends its result
+  // to every rank.
   std::string error;
-  // Only group 0's call counts toward the calculator usage report.
+  // Only that group's call counts toward the calculator usage report.
   impl_->selectOrbitals(kSingleKey);
-  const bool ok = impl_->calculatorIndex() == 0
+  const bool ok = impl_->calculatorIndex() == group
                       ? evaluate(N, R, atomicNrs, F, U, box, error)
                       : try_force(*impl_, N, R, atomicNrs, F, U, box, error);
-  if (!impl_->shareResult(0, N, F, U, ok, error))
-    raise_failure(0, 0, error);
+  if (!impl_->shareResult(group, N, F, U, ok, error))
+    raise_failure(0, group, error);
 }
 
 void RgpotPot::computeBatch(long nSystems, long nAtoms,
                             const double *const *positions,
                             const int *const *atomicNrs, double *const *forces,
                             double *energies, const double *const *boxes,
-                            const std::int64_t *owners) {
+                            const std::int64_t *owners,
+                            const std::int64_t *route) {
   const int groups = impl_->calculatorGroups();
   const int mine = impl_->calculatorIndex();
-  auto ownerOf = [&](long j) {
-    const std::int64_t id = owners && owners[j] >= 0 ? owners[j] : j;
-    return static_cast<int>(id % groups);
-  };
+  auto ownerOf = [&](long j) { return static_cast<int>(route[j]); };
   if (impl_->calculatorWorld() <= 1) {
     for (long j = 0; j < nSystems; j++) {
       impl_->selectOrbitals(orbital_key(owners, j));
@@ -341,7 +342,7 @@ void RgpotPot::computeBatch(long nSystems, long nAtoms,
 
 void RgpotPot::serveWorker() {
   for (;;) {
-    std::int64_t hdr[3] = {kStop, 0, 0};
+    std::int64_t hdr[4] = {kStop, 0, 0, 0};
     impl_->broadcastFromDriver(hdr, sizeof(hdr));
     if (hdr[0] == kStop) {
       // Drop CPMD, wait until the driver has dropped it too, then exit 0.
@@ -354,7 +355,7 @@ void RgpotPot::serveWorker() {
         impl_->shutdownModule();
         dropped_ = true;
       }
-      std::int64_t ack[3] = {kDown, 0, 0};
+      std::int64_t ack[4] = {kDown, 0, 0, 0};
       impl_->broadcastFromDriver(ack, sizeof(ack));
       std::exit(0);
     }
@@ -367,14 +368,19 @@ void RgpotPot::serveWorker() {
     impl_->broadcastFromDriver(Z.data(), Z.size() * sizeof(int));
     impl_->broadcastFromDriver(box.data(), box.size() * sizeof(double));
     std::vector<std::int64_t> ids(static_cast<size_t>(m), -1);
-    if (hdr[0] == kBatch)
+    std::vector<std::int64_t> route(static_cast<size_t>(m), 0);
+    if (hdr[0] == kBatch) {
       impl_->broadcastFromDriver(ids.data(), ids.size() * sizeof(std::int64_t));
+      impl_->broadcastFromDriver(route.data(),
+                                 route.size() * sizeof(std::int64_t));
+    }
     std::vector<double> F(R.size()), U(static_cast<size_t>(m));
     // A failed request raised on the driver too; the driver decides
     // whether the job goes on, so a worker keeps serving.
     if (hdr[0] == kSingle) {
       try {
-        computeSingle(n, R.data(), Z.data(), F.data(), U.data(), box.data());
+        computeSingle(n, R.data(), Z.data(), F.data(), U.data(), box.data(),
+                      static_cast<int>(hdr[3]));
       } catch (const std::runtime_error &) {
       }
       continue;
@@ -390,7 +396,7 @@ void RgpotPot::serveWorker() {
     }
     try {
       computeBatch(m, n, pos.data(), nrs.data(), frc.data(), U.data(),
-                   bx.data(), ids.data());
+                   bx.data(), ids.data(), route.data());
     } catch (const std::runtime_error &) {
     }
   }
@@ -406,7 +412,13 @@ void RgpotPot::force(long N, const double *R, const int *atomicNrs, double *F,
     return;
   }
   const auto t0 = std::chrono::steady_clock::now();
-  std::int64_t hdr[3] = {kSingle, N, 1};
+  if (!schedule_)
+    schedule_ = std::make_unique<eonc::GroupSchedule>(impl_->calculatorGroups());
+  // The group whose last geometry is nearest holds the warmest orbitals.
+  const int group = schedule_->nearest(R, 3 * N);
+  schedule_->settle(kSingleKey, group);
+  schedule_->record(kSingleKey, R, 3 * N);
+  std::int64_t hdr[4] = {kSingle, N, 1, group};
   impl_->broadcastFromDriver(hdr, sizeof(hdr));
   impl_->broadcastFromDriver(const_cast<double *>(R), 3 * N * sizeof(double));
   impl_->broadcastFromDriver(const_cast<int *>(atomicNrs), N * sizeof(int));
@@ -414,7 +426,7 @@ void RgpotPot::force(long N, const double *R, const int *atomicNrs, double *F,
   // Before the evaluation, so a failure that ends the job still stops
   // the workers.
   releaseWorkersAtExit();
-  computeSingle(N, R, atomicNrs, F, U, box);
+  computeSingle(N, R, atomicNrs, F, U, box, group);
   const double dt =
       std::chrono::duration<double>(std::chrono::steady_clock::now() - t0)
           .count();
@@ -453,8 +465,21 @@ void RgpotPot::forceBatchOwned(long nSystems, long nAtoms,
   }
   const bool grouped = impl_->calculatorWorld() > 1;
   const auto t0 = std::chrono::steady_clock::now();
+  std::vector<std::int64_t> route(static_cast<size_t>(nSystems), 0);
   if (grouped) {
-    std::int64_t hdr[3] = {kBatch, nAtoms, nSystems};
+    if (!schedule_)
+      schedule_ =
+          std::make_unique<eonc::GroupSchedule>(impl_->calculatorGroups());
+    std::vector<std::int64_t> keys(static_cast<size_t>(nSystems));
+    for (long j = 0; j < nSystems; j++)
+      keys[static_cast<size_t>(j)] = orbital_key(ids.data(), j);
+    const std::vector<int> groupOf = schedule_->assign(keys);
+    for (long j = 0; j < nSystems; j++) {
+      route[static_cast<size_t>(j)] = groupOf[static_cast<size_t>(j)];
+      schedule_->record(keys[static_cast<size_t>(j)], positions[j],
+                        3 * nAtoms);
+    }
+    std::int64_t hdr[4] = {kBatch, nAtoms, nSystems, 0};
     impl_->broadcastFromDriver(hdr, sizeof(hdr));
     std::vector<double> R(static_cast<size_t>(3 * nAtoms * nSystems));
     std::vector<int> Z(static_cast<size_t>(nAtoms * nSystems));
@@ -469,10 +494,12 @@ void RgpotPot::forceBatchOwned(long nSystems, long nAtoms,
     impl_->broadcastFromDriver(Z.data(), Z.size() * sizeof(int));
     impl_->broadcastFromDriver(box.data(), box.size() * sizeof(double));
     impl_->broadcastFromDriver(ids.data(), ids.size() * sizeof(std::int64_t));
+    impl_->broadcastFromDriver(route.data(),
+                               route.size() * sizeof(std::int64_t));
   }
   releaseWorkersAtExit();
   computeBatch(nSystems, nAtoms, positions, atomicNrs, forces, energies, boxes,
-               ids.data());
+               ids.data(), route.data());
   if (grouped) {
     use_.wall +=
         std::chrono::duration<double>(std::chrono::steady_clock::now() - t0)
