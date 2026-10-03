@@ -1982,6 +1982,80 @@ void projectMonotonePrefix(std::vector<VectorXd> &q, long last,
   }
 }
 
+/// The rigid motions of a whole ring: the three translations and each free
+/// rotation about the ring's centre of mass, built from the beads
+/// themselves and orthonormalised (rank-revealing, so a linear ring keeps
+/// two rotations). A rotation moves bead j along sqrt(m) e x (r_j - centre),
+/// which differs from bead to bead, so a single structure's generator copied
+/// to every bead is not a null vector of the ring Hessian.
+std::vector<std::vector<VectorXd>>
+ringRigidBasis(const std::vector<VectorXd> &q,
+               const std::vector<double> &sqrtMasses, const VectorXd &reference,
+               const std::array<bool, 3> &rotations) {
+  std::vector<std::vector<VectorXd>> out;
+  const long nAtoms = static_cast<long>(sqrtMasses.size());
+  if (nAtoms == 0 || q.empty() || reference.size() != 3 * nAtoms ||
+      q.front().size() != 3 * nAtoms) {
+    return out;
+  }
+  const long nb = static_cast<long>(q.size());
+  // Cartesian positions and the ring's centre of mass.
+  Eigen::Vector3d centre = Eigen::Vector3d::Zero();
+  double total = 0.0;
+  for (long j = 0; j < nb; ++j) {
+    for (long k = 0; k < nAtoms; ++k) {
+      const double sm = sqrtMasses[static_cast<size_t>(k)];
+      const Eigen::Vector3d r =
+          reference.segment<3>(3 * k) +
+          q[static_cast<size_t>(j)].segment<3>(3 * k) / sm;
+      centre += sm * sm * r;
+      total += sm * sm;
+    }
+  }
+  centre /= total;
+  std::vector<int> kinds{0, 1, 2};
+  for (int c = 0; c < 3; ++c) {
+    if (rotations[static_cast<size_t>(c)]) {
+      kinds.push_back(3 + c);
+    }
+  }
+  const long dim = nb * 3 * nAtoms;
+  MatrixXd g = MatrixXd::Zero(dim, static_cast<long>(kinds.size()));
+  for (size_t col = 0; col < kinds.size(); ++col) {
+    const int kind = kinds[col];
+    for (long j = 0; j < nb; ++j) {
+      for (long k = 0; k < nAtoms; ++k) {
+        const double sm = sqrtMasses[static_cast<size_t>(k)];
+        Eigen::Vector3d d = Eigen::Vector3d::Zero();
+        if (kind < 3) {
+          d(kind) = sm;
+        } else {
+          const Eigen::Vector3d r =
+              reference.segment<3>(3 * k) +
+              q[static_cast<size_t>(j)].segment<3>(3 * k) / sm;
+          Eigen::Vector3d e = Eigen::Vector3d::Zero();
+          e(kind - 3) = 1.0;
+          d = sm * e.cross(r - centre);
+        }
+        g.block(j * 3 * nAtoms + 3 * k, static_cast<long>(col), 3, 1) = d;
+      }
+    }
+  }
+  const ColMajorXd gc = g;
+  const Eigen::ColPivHouseholderQR<ColMajorXd> qr(gc);
+  const long rank = qr.rank();
+  const ColMajorXd basis = qr.householderQ() * ColMajorXd::Identity(dim, rank);
+  for (long r = 0; r < rank; ++r) {
+    std::vector<VectorXd> u(static_cast<size_t>(nb));
+    for (long j = 0; j < nb; ++j) {
+      u[static_cast<size_t>(j)] =
+          basis.col(r).segment(j * 3 * nAtoms, 3 * nAtoms);
+    }
+    out.push_back(std::move(u));
+  }
+  return out;
+}
+
 struct NewtonOut {
   std::vector<VectorXd> beads;
   std::vector<double> energies;
@@ -2034,67 +2108,11 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   const bool quotient = nAtoms > 0 && 3 * nAtoms == hS.rows() &&
                         options.rigidReference.size() == 3 * nAtoms;
   auto ringRigid = [&](const std::vector<VectorXd> &q) {
-    std::vector<std::vector<VectorXd>> out;
     if (!quotient) {
-      return out;
+      return std::vector<std::vector<VectorXd>>{};
     }
-    const long nb = static_cast<long>(q.size());
-    // Cartesian positions and the ring's centre of mass.
-    Eigen::Vector3d centre = Eigen::Vector3d::Zero();
-    double total = 0.0;
-    for (long j = 0; j < nb; ++j) {
-      for (long k = 0; k < nAtoms; ++k) {
-        const double sm = options.rigidSqrtMasses[static_cast<size_t>(k)];
-        const Eigen::Vector3d r =
-            options.rigidReference.segment<3>(3 * k) +
-            q[static_cast<size_t>(j)].segment<3>(3 * k) / sm;
-        centre += sm * sm * r;
-        total += sm * sm;
-      }
-    }
-    centre /= total;
-    std::vector<int> kinds{0, 1, 2};
-    for (int c = 0; c < 3; ++c) {
-      if (options.rigidRotations[static_cast<size_t>(c)]) {
-        kinds.push_back(3 + c);
-      }
-    }
-    const long dim = nb * 3 * nAtoms;
-    MatrixXd g = MatrixXd::Zero(dim, static_cast<long>(kinds.size()));
-    for (size_t col = 0; col < kinds.size(); ++col) {
-      const int kind = kinds[col];
-      for (long j = 0; j < nb; ++j) {
-        for (long k = 0; k < nAtoms; ++k) {
-          const double sm = options.rigidSqrtMasses[static_cast<size_t>(k)];
-          Eigen::Vector3d d = Eigen::Vector3d::Zero();
-          if (kind < 3) {
-            d(kind) = sm;
-          } else {
-            const Eigen::Vector3d r =
-                options.rigidReference.segment<3>(3 * k) +
-                q[static_cast<size_t>(j)].segment<3>(3 * k) / sm;
-            Eigen::Vector3d e = Eigen::Vector3d::Zero();
-            e(kind - 3) = 1.0;
-            d = sm * e.cross(r - centre);
-          }
-          g.block(j * 3 * nAtoms + 3 * k, static_cast<long>(col), 3, 1) = d;
-        }
-      }
-    }
-    const ColMajorXd gc = g;
-    const Eigen::ColPivHouseholderQR<ColMajorXd> qr(gc);
-    const long rank = qr.rank();
-    const ColMajorXd basis =
-        qr.householderQ() * ColMajorXd::Identity(dim, rank);
-    for (long r = 0; r < rank; ++r) {
-      std::vector<VectorXd> u(static_cast<size_t>(nb));
-      for (long j = 0; j < nb; ++j) {
-        u[static_cast<size_t>(j)] =
-            basis.col(r).segment(j * 3 * nAtoms, 3 * nAtoms);
-      }
-      out.push_back(std::move(u));
-    }
-    return out;
+    return ringRigidBasis(q, options.rigidSqrtMasses, options.rigidReference,
+                          options.rigidRotations);
   };
   std::vector<std::vector<VectorXd>> nullRing;
   // A one-dimensional well is already the saddle curvature. In more
@@ -3134,7 +3152,7 @@ std::vector<bool> nearestZero(const VectorXd &lam, long count, long first = 0) {
 void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
                    const MatrixXd &hessReactant, double vReactant,
                    const MatrixXd &hessSaddle, double vSaddle, long rigidModes,
-                   long denseLimit) {
+                   long denseLimit, const RingRigidBodies &rigidBodies) {
   const long N = static_cast<long>(inst.beads.size());
   if (N < 4 || !(inst.betaN > 0.0)) {
     throw std::invalid_argument("instantonRate: no optimised ring");
@@ -3199,11 +3217,42 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
   // log-determinant again: det(J + c u u^T) = c det' J when J u = 0.
   std::vector<std::vector<VectorXd>> dropped{cycle};
   std::vector<double> kappas{c};
-  for (long r = 0; r < nullBasis.cols(); ++r) {
-    dropped.emplace_back(
-        static_cast<size_t>(N),
-        (nullBasis.col(r) / std::sqrt(static_cast<double>(N))).eval());
-    kappas.push_back(c);
+  if (!rigidBodies.sqrtMasses.empty()) {
+    // The ring's own rigid motions, orthonormalised against the cycle; the
+    // lemma needs an orthonormal basis of the null space, not the
+    // generators themselves.
+    std::vector<std::vector<VectorXd>> rigid =
+        ringRigidBasis(inst.beads, rigidBodies.sqrtMasses,
+                       rigidBodies.reference, rigidBodies.rotations);
+    if (static_cast<long>(rigid.size()) != nullBasis.cols()) {
+      throw std::runtime_error(
+          "instantonRate: the ring has " + std::to_string(rigid.size()) +
+          " rigid motions and the reactant " +
+          std::to_string(nullBasis.cols()));
+    }
+    for (auto &u : rigid) {
+      for (const auto &prev : dropped) {
+        const double o = dot(prev, u);
+        for (long j = 0; j < N; ++j) {
+          u[static_cast<size_t>(j)] -= o * prev[static_cast<size_t>(j)];
+        }
+      }
+      const double un = std::sqrt(dot(u, u));
+      if (!(un > 1e-8)) {
+        throw std::runtime_error(
+            "instantonRate: a rigid motion of the ring lies along its cycle");
+      }
+      scale(u, 1.0 / un);
+      dropped.push_back(std::move(u));
+      kappas.push_back(c);
+    }
+  } else {
+    for (long r = 0; r < nullBasis.cols(); ++r) {
+      dropped.emplace_back(
+          static_cast<size_t>(N),
+          (nullBasis.col(r) / std::sqrt(static_cast<double>(N))).eval());
+      kappas.push_back(c);
+    }
   }
   const WoodburyRing ring(c, diag, true, dropped, kappas, true);
   if (!ring.ok() || !std::isfinite(ring.logAbsDet())) {

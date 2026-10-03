@@ -358,6 +358,16 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
 /// The mass-weighted Hessian d2V/dq2 at ring bead j (0..N-1).
 using RingBeadHessian = std::function<MatrixXd(long j, const VectorXd &q)>;
 
+/// The atoms behind a ring's mass-weighted coordinates, for its rigid
+/// motions: sqrt(m) per atom, the Cartesian positions q is measured from
+/// (3 per atom), and which rotations are free. Empty masses: the rigid
+/// directions come from the reactant Hessian instead.
+struct RingRigidBodies {
+  std::vector<double> sqrtMasses;
+  VectorXd reference;
+  std::array<bool, 3> rotations{{false, false, false}};
+};
+
 /// Fills the rate from the bead Hessians, the reactant minimum's Hessian and
 /// energy, and optionally the saddle's Hessian and energy for the classical
 /// comparison (pass an empty matrix to skip it). rigidModes is the count of
@@ -365,7 +375,15 @@ using RingBeadHessian = std::function<MatrixXd(long j, const VectorXd &q)>;
 /// the reactant Hessian leaves it null (a free cluster has them, a crystal
 /// does not, and an atom held fixed has none). They leave the centroid
 /// factors, so the rotational and translational partition functions of
-/// reactant and instanton cancel. Up to denseLimit ring degrees of freedom
+/// reactant and instanton cancel; for rotations that is an approximation,
+/// since the ring's moments of inertia are not the reactant's. On the ring
+/// the omitted directions are its null vectors: with `rigidBodies` given,
+/// the translations and rotations of the beads themselves about the ring's
+/// centre of mass (a rotation moves each bead differently), otherwise the
+/// reactant Hessian's null vectors copied to every bead, which are exact
+/// only for a coordinate every bead shares. The bead Hessians must then
+/// keep their rotational part: projecting a rotation out of a bead that is
+/// not stationary removes the curvature that balances its springs. Up to denseLimit ring degrees of freedom
 /// the product is the dense eigenproduct, checked against the cyclic block
 /// determinant. Beyond that, and for a limit of 0, the block determinant is
 /// used and the eigenvalues nearest zero come from inverse iteration on that
@@ -374,7 +392,8 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
                    const MatrixXd &hessReactant, double vReactant,
                    const MatrixXd &hessSaddle = MatrixXd(),
                    double vSaddle = 0.0, long rigidModes = 0,
-                   long denseLimit = 4096);
+                   long denseLimit = 4096,
+                   const RingRigidBodies &rigidBodies = {});
 
 /// log|det| of the cyclic block-tridiagonal ring Hessian. Each diag[j]
 /// already contains the bead Hessian plus 2 c I, and the neighbour coupling

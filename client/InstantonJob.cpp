@@ -431,6 +431,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         const Matter &reactant, const MassWeighted &mw,
         const tunneling::BatchPotential &evaluate,
         const std::function<MatrixXd(const VectorXd &)> &hessianAt,
+        const std::function<MatrixXd(const VectorXd &)> &beadHessianAt,
         const std::array<bool, 3> &rotationZero,
         const std::array<double, 3> &rotationResidual) {
   const auto &o = params.instanton_options();
@@ -776,7 +777,8 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         }
         auto it = anchors.find(j);
         if (it == anchors.end()) {
-          it = anchors.emplace(j, hessianAt(inst.beads[static_cast<size_t>(j)]))
+          it = anchors
+                   .emplace(j, beadHessianAt(inst.beads[static_cast<size_t>(j)]))
                    .first;
         }
         return it->second;
@@ -793,9 +795,14 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         return (1.0 - t) * anchor(lo) + t * anchor(hi);
       };
       try {
+        tunneling::RingRigidBodies bodies;
+        bodies.sqrtMasses = ro.rigidSqrtMasses;
+        bodies.reference = ro.rigidReference;
+        bodies.rotations = ro.rigidRotations;
         tunneling::instantonRate(inst, beadHessian, hReactant,
                                  vReactant - o.energy_shift, hSaddle,
-                                 vSaddle - o.energy_shift, rigidModes);
+                                 vSaddle - o.energy_shift, rigidModes, 4096,
+                                 bodies);
         rateOk = std::isfinite(inst.logRate) && inst.negativeModes == 1;
         if (inst.negativeModes != 1) {
           EONC_LOG_ERROR("[Instanton] the ring Hessian has {} negative modes, "
@@ -984,7 +991,7 @@ std::vector<std::string> InstantonJob::run(void) {
   std::array<bool, 3> rotationZero{{false, false, false}};
   std::array<double, 3> rotationResidual{{0.0, 0.0, 0.0}};
   bool rotationsKnown = false;
-  auto hessianAt = [&](const VectorXd &q) {
+  auto hessianWith = [&](const VectorXd &q, bool projectRotations) {
     Matter m(*reactant);
     mw.place(q, m);
     Hessian h(params, &m);
@@ -999,18 +1006,30 @@ std::vector<std::string> InstantonJob::run(void) {
       rotationsKnown = true;
     }
     // A finite-difference Hessian of a free structure has small nonzero
-    // rigid eigenvalues of either sign; project them to zero.
-    const MatrixXd rigid = mw.rigidBasis(m, rotationZero);
+    // rigid eigenvalues of either sign; project them to zero. At a point
+    // that is not stationary, H r for a rotation r is the rotated gradient,
+    // which on a ring bead balances the springs; ring beads keep it and
+    // lose only their translations.
+    const std::array<bool, 3> none{{false, false, false}};
+    const MatrixXd rigid =
+        mw.rigidBasis(m, projectRotations ? rotationZero : none);
     if (rigid.cols() > 0) {
       const MatrixXd p = MatrixXd::Identity(n, n) - rigid * rigid.transpose();
       out = p * out * p;
     }
     return out;
   };
+  auto hessianAt = [&](const VectorXd &q) { return hessianWith(q, true); };
+  auto beadHessianAt = [&](const VectorXd &q) {
+    if (!rotationsKnown) {
+      hessianWith(VectorXd::Zero(n), true);
+    }
+    return hessianWith(q, false);
+  };
 
   if (o.mode == "rate") {
     return runRate(params, pot, *reactant, mw, evaluate, hessianAt,
-                   rotationZero, rotationResidual);
+                   beadHessianAt, rotationZero, rotationResidual);
   }
 
   auto product = std::make_unique<Matter>(pot, params);

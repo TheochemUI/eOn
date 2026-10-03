@@ -285,6 +285,14 @@ rotation is omitted when it is a zero mode of the reactant Hessian, which a
 free cluster has and a crystal does not. A cluster in a large periodic cell
 is told apart by that Hessian, not by the periodic flag. The springs along
 those directions stay, so they cancel between the instanton and the reactant.
+On the ring the omitted rotations are those of the beads themselves about
+the ring's centre of mass: a rotation moves each bead by a different
+amount, so the reactant's rotation copied to every bead is not a zero mode
+of the ring. The bead Hessians keep their rotational curvature, which
+balances the springs on a bead that is not a minimum, and lose only their
+translations. Omitting the rotations on both sides treats the rotational
+partition functions of the ring and the reactant as equal, which neglects
+the change in the moments of inertia along the ring.
 
 `results.dat` reports the rate. The keys are:
 
@@ -576,9 +584,10 @@ In one dimension the instanton is the steepest-descent evaluation of the
 WKB thermal integral, so its limit shares the uniform WKB error; the Kemble
 integral along the path gives the same 0.928. `The ring spectrum from the
 block chain matches the dense Hessian` ties the chain's determinant and
-inertia to a dense eigendecomposition, and `A rigid mode leaves the
+inertia to a dense eigendecomposition, `A rigid mode leaves the
 instanton rate unchanged` checks the rigid-mode bookkeeping through the
-search.
+search, and `The rate lifts the rotations of a free diatomic's ring`
+checks the rotations against the dense spectrum of a stretching bond.
 
 ## References
 

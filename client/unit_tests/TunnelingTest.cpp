@@ -1124,3 +1124,144 @@ TEST_CASE("The instanton splitting refuses a path with two negative modes",
       instantonSplitting(inst, oneDip, pes.hessian(a), pes.hessian(b)),
       std::runtime_error);
 }
+
+namespace {
+
+// Two unit-mass atoms whose bond d = r - r_e decays from a cubic well,
+// V = K d^2 / 2 - G d^3 / 3: a free diatomic with three translations and
+// two rotations. Unit masses make q the Cartesian displacement from
+// `reference`.
+struct CubicBond {
+  double k = 1.0, g = std::sqrt(1.0 / 3.0), re = 2.0;
+  VectorXd reference() const {
+    VectorXd r = VectorXd::Zero(6);
+    r(3) = re;
+    return r;
+  }
+  double vd(double d) const { return 0.5 * k * d * d - g * d * d * d / 3.0; }
+  double dvd(double d) const { return k * d - g * d * d; }
+  double d2vd(double d) const { return k - 2.0 * g * d; }
+  Eigen::Vector3d bond(const VectorXd &q) const {
+    const VectorXd x = reference() + q;
+    return x.segment<3>(3) - x.segment<3>(0);
+  }
+  double value(const VectorXd &q) const { return vd(bond(q).norm() - re); }
+  VectorXd gradient(const VectorXd &q) const {
+    const Eigen::Vector3d b = bond(q);
+    const double r = b.norm();
+    const Eigen::Vector3d f = dvd(r - re) * b / r;
+    VectorXd out(6);
+    out << -f, f;
+    return out;
+  }
+  MatrixXd hessian(const VectorXd &q) const {
+    const Eigen::Vector3d b = bond(q);
+    const double r = b.norm();
+    const Eigen::Vector3d u = b / r;
+    const Eigen::Matrix3d a = d2vd(r - re) * u * u.transpose() +
+                              dvd(r - re) / r *
+                                  (Eigen::Matrix3d::Identity() -
+                                   u * u.transpose());
+    MatrixXd h(6, 6);
+    h << a, -a, -a, a;
+    return h;
+  }
+  BatchPotential batch() const {
+    return [this](const std::vector<VectorXd> &q, std::vector<double> &v,
+                  std::vector<VectorXd> &grad) {
+      v.resize(q.size());
+      grad.resize(q.size());
+      for (size_t j = 0; j < q.size(); ++j) {
+        v[j] = value(q[j]);
+        grad[j] = gradient(q[j]);
+      }
+    };
+  }
+};
+
+} // namespace
+
+// The rate's det' leaves out the ring's null vectors. For a rotation those
+// are e x (r_j - centre) at each bead, which a stretched bond makes differ
+// from bead to bead; the reactant's generator copied to every bead is not
+// one of them. The reference is the dense ring Hessian's spectrum with its
+// six eigenvalues nearest zero (the cycle, three translations, two
+// rotations) left out.
+TEST_CASE("The rate lifts the rotations of a free diatomic's ring",
+          "[Tunneling][Instanton]") {
+  const CubicBond pes;
+  const double db = pes.k / pes.g;
+  VectorXd saddle = VectorXd::Zero(6);
+  saddle(0) = -0.5 * db;
+  saddle(3) = 0.5 * db;
+  const MatrixXd hs = pes.hessian(saddle);
+  const MatrixXd hr = pes.hessian(VectorXd::Zero(6));
+  const double tc = crossoverTemperature(hs);
+  REQUIRE_THAT(tc, WithinRel(kHbar * std::sqrt(2.0 * pes.k) /
+                                 (2.0 * std::numbers::pi * kBoltzmann),
+                             1e-10));
+  const double beta = 1.0 / (kBoltzmann * 0.5 * tc);
+  RateInstantonOptions opt;
+  opt.beads = 24;
+  opt.forceTolerance = 1e-9;
+  opt.rigidSqrtMasses = {1.0, 1.0};
+  opt.rigidReference = pes.reference();
+  opt.rigidRotations = {true, true, true};
+  RateInstanton inst =
+      optimizeRateInstanton(saddle, hs, beta, {}, pes.batch(), opt);
+  CAPTURE(inst.iterations, inst.ringPotential);
+  REQUIRE(inst.converged);
+  // The bond stretches along the ring.
+  double rMin = 1e9, rMax = 0.0;
+  for (const auto &q : inst.beads) {
+    rMin = std::min(rMin, pes.bond(q).norm());
+    rMax = std::max(rMax, pes.bond(q).norm());
+  }
+  CAPTURE(rMin, rMax);
+  REQUIRE(rMax - rMin > 0.5);
+
+  const long n = opt.beads, f = 6;
+  const double bnh = inst.betaN * kHbar;
+  const double c = 1.0 / (bnh * bnh);
+  std::vector<MatrixXd> blocks;
+  for (const auto &q : inst.beads) {
+    blocks.push_back(pes.hessian(q));
+  }
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> es(denseRing(blocks, c),
+                                                   Eigen::EigenvaluesOnly);
+  std::vector<double> lam(es.eigenvalues().data(),
+                          es.eigenvalues().data() + n * f);
+  std::sort(lam.begin(), lam.end(), [](double a, double b) {
+    return std::abs(a) < std::abs(b);
+  });
+  double logDetPrime = 0.0;
+  long negative = 0;
+  for (size_t i = 6; i < lam.size(); ++i) {
+    logDetPrime += std::log(std::abs(lam[i]));
+    negative += lam[i] < 0.0 ? 1 : 0;
+  }
+  REQUIRE(negative == 1);
+  const double expected =
+      -std::log(bnh) +
+      0.5 * std::log(inst.bN /
+                     (2.0 * std::numbers::pi * inst.betaN * kHbar * kHbar)) -
+      (static_cast<double>(n * f - 6) * std::log(bnh) + 0.5 * logDetPrime) -
+      inst.betaN * inst.ringPotential;
+
+  auto hessian = [&](long, const VectorXd &q) { return pes.hessian(q); };
+  RateInstanton ring = inst;
+  RingRigidBodies bodies;
+  bodies.sqrtMasses = {1.0, 1.0};
+  bodies.reference = pes.reference();
+  bodies.rotations = {true, true, true};
+  instantonRate(ring, hessian, hr, 0.0, MatrixXd(), 0.0, 5, 4096, bodies);
+  RateInstanton copied = inst;
+  instantonRate(copied, hessian, hr, 0.0, MatrixXd(), 0.0, 5);
+  CAPTURE(expected, ring.logRateTimesZr, copied.logRateTimesZr);
+  REQUIRE(ring.negativeModes == 1);
+  REQUIRE_THAT(ring.logRateTimesZr,
+               Catch::Matchers::WithinAbs(expected, 1e-6));
+  // The reactant's rotation generators on every bead miss the ring's null
+  // space by a stretch-dependent angle.
+  REQUIRE(std::abs(copied.logRateTimesZr - expected) > 1e-3);
+}
