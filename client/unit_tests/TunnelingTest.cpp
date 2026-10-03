@@ -1265,3 +1265,116 @@ TEST_CASE("The rate lifts the rotations of a free diatomic's ring",
   // space by a stretch-dependent angle.
   REQUIRE(std::abs(copied.logRateTimesZr - expected) > 1e-3);
 }
+
+// Known answers independent of eOn, from
+// client/validation/instanton_references.py (mpmath, 40 digits).
+//
+// Symmetric Eckart V0 sech^2(x / a), V0 = 0.425 eV, a = 0.734, unit mass:
+// T_c = hbar sqrt(2 V0) / (2 pi kB a) = 149.98818880973 K. In one dimension
+// the N -> infinity ring-polymer instanton is the steepest-descent value of
+// (1 / 2 pi hbar) int exp(-theta(E) - beta E) dE with
+// theta = 2 sqrt(2) pi a (sqrt(V0) - sqrt(E)) / hbar, in closed form:
+// ln(k Z_r) = -50.7985982061252 at T_c / 2 (the exact flux, -50.7235175117,
+// is 7.8 percent above it). The discrete ring approaches it as 1 / N^2.
+// The reactant partition function, here a harmonic well of curvature 1,
+// approaches ln Z = -ln(2 sinh(u / 2)) with error u^3 coth(u / 2) / (48 N^2),
+// u = beta hbar omega.
+TEST_CASE("The Eckart ring converges to the analytic instanton at second "
+          "order",
+          "[Tunneling][Instanton]") {
+  const Eckart pes;
+  const MatrixXd hs = pes.hessian_at_top();
+  const double tc = crossoverTemperature(hs);
+  REQUIRE_THAT(tc, WithinRel(149.98818880973, 1e-11));
+  const double beta = 1.0 / (kBoltzmann * 0.5 * tc);
+  const double analytic = -50.7985982061252;
+  const double u = beta * kHbar;
+  const double logZ = -std::log(2.0 * std::sinh(0.5 * u));
+  RateInstantonOptions opt;
+  opt.forceTolerance = 1e-9;
+  std::vector<double> err, errZ;
+  const std::vector<long> sizes{16, 32, 64, 128};
+  for (const long n : sizes) {
+    opt.beads = n;
+    RateInstanton inst = optimizeRateInstanton(VectorXd::Zero(1), hs, beta, {},
+                                               pes.batch(), opt);
+    REQUIRE(inst.converged);
+    instantonRate(
+        inst, [&](long, const VectorXd &q) { return pes.hessian_at(q); },
+        MatrixXd::Identity(1, 1), 0.0);
+    REQUIRE(inst.negativeModes == 1);
+    // The ring belongs to the barrier: its turning points lie on either
+    // side of the top, mirror images of each other.
+    double lo = 0.0, hi = 0.0;
+    for (const auto &q : inst.beads) {
+      lo = std::min(lo, q(0));
+      hi = std::max(hi, q(0));
+    }
+    REQUIRE(lo < 0.0);
+    REQUIRE_THAT(hi, Catch::Matchers::WithinAbs(-lo, 1e-6));
+    err.push_back(inst.logRateTimesZr - analytic);
+    errZ.push_back(inst.logZr - logZ);
+    const double leading = u * u * u / std::tanh(0.5 * u) / 48.0 /
+                           static_cast<double>(n * n);
+    CAPTURE(n, inst.logRateTimesZr, err.back(), errZ.back(), leading);
+    REQUIRE(errZ.back() > 0.0);
+    if (n >= 64) {
+      REQUIRE_THAT(errZ.back(), WithinRel(leading, 0.05));
+    }
+  }
+  for (size_t i = 1; i < sizes.size(); ++i) {
+    const double order = std::log2(err[i - 1] / err[i]);
+    const double orderZ = std::log2(errZ[i - 1] / errZ[i]);
+    CAPTURE(sizes[i], err[i], order, orderZ);
+    REQUIRE(err[i] * err[i - 1] > 0.0);
+    if (i + 1 == sizes.size()) {
+      REQUIRE(order > 1.9);
+      REQUIRE(order < 2.1);
+      REQUIRE(orderZ > 1.9);
+      REQUIRE(orderZ < 2.1);
+    }
+  }
+  // Richardson extrapolation from 64 and 128 beads lands on the analytic
+  // instanton.
+  const double extrapolated = (4.0 * err[3] - err[2]) / 3.0;
+  CAPTURE(extrapolated);
+  REQUIRE(std::abs(extrapolated) < 2e-3);
+}
+
+// The quartic double well V0 (x^2 - 1)^2 at unit mass, here with a
+// decoupled transverse mode that cancels between path and wells. The exact
+// splitting at V0 = 0.3 eV is 1.19539175e-7 eV (sinc DVR, converged to 5e-8
+// relative from 301 to 601 points over [-2.4, 2.4]); the continuum
+// instanton is 2 hbar omega sqrt(4 omega / (pi hbar)) exp(-2 omega /
+// (3 hbar)), omega^2 = 8 V0, = 1.2777723497e-7 eV, 6.9 percent above it,
+// the semiclassical error of order hbar omega / V0 (S0 / hbar = 16.0). The
+// discrete instanton converges to the continuum one as 1 / P^2 once
+// omega dtau = beta hbar omega / P is small: from 64 to 128 beads
+// (omega dtau 0.63 to 0.31) the observed order is still 1.43.
+TEST_CASE("The instanton splitting converges to the analytic continuum "
+          "value at second order",
+          "[Tunneling][Instanton]") {
+  const CurvedValley pes{0.3, 4.0, 0.0};
+  const double continuum = 1.2777723497e-7;
+  const double dvr = 1.19539175e-7;
+  std::vector<double> err;
+  const std::vector<long> sizes{128, 256, 512};
+  for (const long p : sizes) {
+    const Instanton inst = valleyInstanton(pes, p, 40.0);
+    REQUIRE(inst.converged);
+    REQUIRE(inst.modeSeparation > 1e3);
+    err.push_back(std::log(inst.delta0 / continuum));
+    CAPTURE(p, inst.delta0, err.back(), inst.delta0 / dvr);
+  }
+  for (size_t i = 1; i < sizes.size(); ++i) {
+    const double order = std::log2(err[i - 1] / err[i]);
+    CAPTURE(sizes[i], err[i], order);
+    REQUIRE(err[i] * err[i - 1] > 0.0);
+    REQUIRE(order > 1.8);
+    REQUIRE(order < 2.2);
+  }
+  const double extrapolated = (4.0 * err.back() - err[err.size() - 2]) / 3.0;
+  CAPTURE(extrapolated);
+  REQUIRE(std::abs(extrapolated) < 1e-3);
+  REQUIRE_THAT(continuum / dvr, WithinRel(1.0689151, 1e-6));
+}

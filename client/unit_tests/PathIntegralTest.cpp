@@ -268,3 +268,62 @@ TEST_CASE("Economised springs reach the Trotter error at half the beads",
   REQUIRE(pot.maxSystems == ecoBeads);
   REQUIRE_FALSE(pot.sawForce);
 }
+
+// PILE sampling of a harmonic oscillator at beta hbar omega = 4: the
+// centroid-virial kinetic energy is an unbiased estimator of the N-bead
+// value 0.5 sum_k 1 / (1 + (omega_k / omega)^2), which itself tends to the
+// quantum (hbar omega / 4) coth(beta hbar omega / 2) as 1 / N^2. Twenty
+// blocks per bead count give the sampling error. The OBABO splitting biases
+// the ring's configurations at O(dt^2), most for the stiff internal modes:
+// at dt = 0.05 the 16-bead mean sat 0.007 (4 errors) above the N-bead value,
+// so the step here is 0.0125, where that bias is about 0.0004.
+TEST_CASE("PILE samples the N-bead kinetic energy of a harmonic oscillator",
+          "[path-integral]") {
+  const double x = 4.0;
+  const double exact = exactKinetic(x);
+  double previous = 0.0;
+  for (const long beads : {4L, 8L, 16L}) {
+    Options opt = baseOptions(beads);
+    opt.dt = 0.0125;
+    opt.pileTau = 0.5;
+    opt.seed = 1000 + static_cast<std::uint64_t>(beads);
+    Harmonic pot;
+    pot.omega = x;
+    RingPolymer ring = makePolymer(opt);
+    Eigen::VectorXd q = Eigen::VectorXd::Zero(3);
+    ring.setAllBeads(q.data());
+    ring.thermalMomenta();
+    ring.sample(pot, nullptr, 8000, 1);
+    const long blocks = 20;
+    std::vector<double> means;
+    for (long b = 0; b < blocks; ++b) {
+      means.push_back(ring.sample(pot, nullptr, 0, 40000).kineticCv);
+    }
+    double mean = 0.0;
+    for (const double m : means) {
+      mean += m;
+    }
+    mean /= static_cast<double>(blocks);
+    double var = 0.0;
+    for (const double m : means) {
+      var += (m - mean) * (m - mean);
+    }
+    const double error =
+        std::sqrt(var / static_cast<double>(blocks * (blocks - 1)));
+    const double nBead = trotterKinetic(beads, x);
+    CAPTURE(beads, mean, error, nBead, exact);
+    REQUIRE(error > 0.0);
+    REQUIRE(error < 0.01 * nBead);
+    REQUIRE(std::abs(mean - nBead) < 4.0 * error);
+    // The discretisation error of the N-bead value falls as 1 / N^2.
+    const double gap = exact - nBead;
+    REQUIRE(gap > 0.0);
+    if (previous > 0.0) {
+      const double order = std::log2(previous / gap);
+      CAPTURE(order);
+      REQUIRE(order > 1.6);
+      REQUIRE(order < 2.2);
+    }
+    previous = gap;
+  }
+}
