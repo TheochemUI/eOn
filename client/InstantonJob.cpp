@@ -551,6 +551,10 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
                     "force calls",
                     pathQ.size(),
                     PotRegistry::get().total_force_calls() - before);
+      for (size_t k = 0; k < pathQ.size(); ++k) {
+        EONC_LOG_DEBUG("[Instanton] path {} s {:.6f} V - V_reactant {:.8f}",
+                       k, profile->s()[k], pathV[k] - vReactant);
+      }
     } catch (const std::exception &ex) {
       EONC_LOG_WARNING("[Instanton] steepest-descent path unusable: {}; "
                        "seeding from the saddle mode",
@@ -674,8 +678,14 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     std::vector<VectorXd> guess = ring;
     if (guess.empty() && profile) {
       try {
+        tunneling::RingSeed seed;
         guess = tunneling::ringFromPath(pathQ, pathV, beta * tunneling::kHbar,
-                                        o.beads);
+                                        o.beads, &seed);
+        EONC_LOG_INFO("[Instanton] seed orbit {:.6f} eV above the reactant, "
+                      "period {:.4g} against beta hbar {:.4g}; the path's "
+                      "higher end sits {:.6f} eV above the reactant",
+                      seed.energy - vReactant, seed.period,
+                      beta * tunneling::kHbar, seed.pathLow - vReactant);
         EONC_LOG_INFO("[Instanton] ring seeded from {} by the period condition",
                       o.initial_path.empty() ? "the steepest-descent path"
                                              : o.initial_path);

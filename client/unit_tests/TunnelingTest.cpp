@@ -1689,3 +1689,31 @@ TEST_CASE("Rotational zero modes are told apart on the Hessian's own scale",
   REQUIRE(bond.zero[2]);
   REQUIRE(bond.softestVibration > 0.0);
 }
+
+// A double well with a small bump on the reactant slope: below the bump's
+// top the reactant turning point jumps across it, so the period jumps too.
+// A bisection over the whole energy range converged onto that jump, a ring
+// whose period is not beta hbar (on the Al slab of examples/neb-al: period
+// 103.8 for beta hbar 129.1 and 91.2 alike). Every requested period that a
+// continuous branch reaches must be met.
+TEST_CASE("The seed ring meets its period across a jump in the orbit",
+          "[Tunneling][Instanton]") {
+  std::vector<VectorXd> path;
+  std::vector<double> energies;
+  const int images = 2001;
+  for (int i = 0; i < images; ++i) {
+    const double x = -1.0 + 2.0 * static_cast<double>(i) / (images - 1);
+    path.push_back(VectorXd::Constant(1, x));
+    const double b = (x + 0.6) / 0.08;
+    energies.push_back((x * x - 1.0) * (x * x - 1.0) +
+                       0.25 * std::exp(-0.5 * b * b));
+  }
+  for (const double bh : {3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 5.0}) {
+    RingSeed seed;
+    const auto ring = ringFromPath(path, energies, bh, 32, &seed);
+    CAPTURE(bh, seed.energy, seed.period);
+    REQUIRE(ring.size() == 32);
+    REQUIRE(seed.reached);
+    REQUIRE_THAT(seed.period, WithinRel(bh, 1e-6));
+  }
+}

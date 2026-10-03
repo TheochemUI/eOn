@@ -270,7 +270,8 @@ double halfPeriod(const Profile &p, double sMinus, double sPlus, double energy,
 
 std::vector<VectorXd> ringFromPath(const std::vector<VectorXd> &path,
                                    const std::vector<double> &energies,
-                                   double betaHbar, long beads) {
+                                   double betaHbar, long beads,
+                                   RingSeed *seed) {
   if (path.size() < 3 || path.size() != energies.size() || beads < 4 ||
       !(betaHbar > 0.0)) {
     throw std::invalid_argument(
@@ -334,28 +335,75 @@ std::vector<VectorXd> ringFromPath(const std::vector<VectorXd> &path,
           "this path");
     }
   }
-  // Bracket the orbit energy geometrically above the lower end: the period
-  // grows only logarithmically as E approaches a well bottom.
+  // Orbit energies on a geometric grid above the lower end: the period
+  // grows only logarithmically as E approaches a well bottom. The period
+  // need not fall monotonically with E: a shoulder on the path, where V'
+  // nearly vanishes away from a well, makes it spike, and a bisection over
+  // the whole range then converges onto the spike for every beta hbar it
+  // spans. Every crossing of beta hbar on the grid is refined, and the
+  // one kept minimises theta(E) + beta E, theta = 2 x the WKB action: it
+  // dominates the steepest-descent integral the instanton evaluates.
   const double span = vTop - vLow;
-  double eHi = vTop - 1e-9 * span;
-  double eLo = vLow + 1e-14 * span;
-  if (period(eLo) < betaHbar) {
-    // The path does not reach a long enough orbit. The lowest one it
-    // holds is the start.
-    eHi = eLo;
+  const double eBottom = vLow + 1e-14 * span;
+  // Geometric in the distance from the top over the upper half, where a
+  // flat-topped barrier keeps the crossing within a small fraction of the
+  // span, and geometric in the height above the lower end over the lower
+  // half, where the period diverges only logarithmically.
+  constexpr int kHalf = 200;
+  constexpr int kScan = 2 * kHalf + 1;
+  std::vector<double> levels(kScan + 1);
+  std::vector<double> gap(kScan + 1);
+  for (int k = 0; k <= kHalf; ++k) {
+    const double u = static_cast<double>(k) / kHalf;
+    levels[static_cast<size_t>(k)] =
+        vTop - span * std::pow(10.0, -9.0 + u * (9.0 + std::log10(0.5)));
+    levels[static_cast<size_t>(kScan - k)] =
+        vLow + span * std::pow(10.0, -14.0 + u * (14.0 + std::log10(0.5)));
   }
-  for (int k = 0; k < 200 && eHi > eLo; ++k) {
-    const double e = vLow + std::sqrt((eLo - vLow) * (eHi - vLow));
-    if (period(e) > betaHbar) {
-      eLo = e;
-    } else {
-      eHi = e;
+  for (int k = 0; k <= kScan; ++k) {
+    gap[static_cast<size_t>(k)] =
+        period(levels[static_cast<size_t>(k)]) - betaHbar;
+  }
+  const double beta = betaHbar / kHbar;
+  double energy = eBottom;
+  double best = std::numeric_limits<double>::infinity();
+  for (int k = 0; k < kScan; ++k) {
+    double a = levels[static_cast<size_t>(k)];
+    double b = levels[static_cast<size_t>(k + 1)];
+    double ga = gap[static_cast<size_t>(k)];
+    if ((ga > 0.0) == (gap[static_cast<size_t>(k + 1)] > 0.0)) {
+      continue;
     }
-    if (eHi - eLo < 1e-15 * span) {
-      break;
+    for (int it = 0; it < 200 && std::abs(a - b) > 1e-15 * span; ++it) {
+      const double m = vLow + std::sqrt((a - vLow) * (b - vLow));
+      const double gm = period(m) - betaHbar;
+      if ((gm > 0.0) == (ga > 0.0)) {
+        a = m;
+        ga = gm;
+      } else {
+        b = m;
+      }
+    }
+    const double root = 0.5 * (a + b);
+    // A bracket around a jump of the turning point refines onto the jump,
+    // where the period is not beta hbar.
+    if (!(std::abs(period(root) - betaHbar) <= 1e-6 * betaHbar)) {
+      continue;
+    }
+    const double w = 2.0 * wkbAction(profile, root) + beta * root;
+    if (w < best) {
+      best = w;
+      energy = root;
     }
   }
-  const double energy = 0.5 * (eLo + eHi);
+  // With no crossing the path does not reach a long enough orbit; the
+  // lowest one it holds is the start.
+  if (seed != nullptr) {
+    seed->energy = energy;
+    seed->period = period(energy);
+    seed->pathLow = vLow;
+    seed->reached = std::abs(seed->period - betaHbar) <= 1e-6 * betaHbar;
+  }
   const auto [sMinus, sPlus] = turningPoints(profile, sTop, energy);
   std::vector<double> tau;
   std::vector<double> pos;

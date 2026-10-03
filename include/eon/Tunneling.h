@@ -103,9 +103,20 @@ Splitting bandSplitting(const std::vector<std::shared_ptr<Matter>> &band,
 /// `betaHbar`. Bead 0 is the reactant-side turning point and bead N/2 the
 /// other; bead N - j repeats bead j. Throws when the path has no barrier,
 /// or when the period at the barrier top already exceeds `betaHbar`.
+/// What ringFromPath chose: the orbit energy, its period, and whether that
+/// period reaches betaHbar. When the path ends before a long enough orbit
+/// (its ends sit above the wells), the lowest orbit it holds is used and
+/// `reached` is false; that ring belongs to a higher temperature.
+struct RingSeed {
+  double energy = 0.0;
+  double period = 0.0;
+  double pathLow = 0.0; ///< the higher of the path's two end energies
+  bool reached = false;
+};
 std::vector<VectorXd> ringFromPath(const std::vector<VectorXd> &path,
                                    const std::vector<double> &energies,
-                                   double betaHbar, long beads);
+                                   double betaHbar, long beads,
+                                   RingSeed *seed = nullptr);
 
 /// ln(k), k in 1/time, for the one-dimensional thermal rate along `profile`.
 /// `hwReactant` is hbar omega of the reactant well, in eV. Below the barrier
