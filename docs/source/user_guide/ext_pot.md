@@ -216,7 +216,7 @@ needs nothing else than the script as `ext_pot_path`:
 
 ```{code-block} bash
 export CPMD_BIN=/path/to/cpmd.x PP_LIBRARY_PATH=/path/to/pseudopotentials/
-export CPMD_LAUNCH="mpirun -np 4" CPMD_CUTOFF=70
+export CPMD_LAUNCH="mpirun -np 4 --bind-to none" CPMD_CUTOFF=70
 export CPMD_PP="14:Si_MT_BLYP.psp:LMAX=D,7:N_MT_BLYP.psp:LMAX=P"
 cat > config.ini <<'EOF'
 [Main]
@@ -228,6 +228,11 @@ ext_pot_path = /absolute/path/to/eOn/examples/akmc-cpmd-slurm/potfiles/cpmd_extp
 EOF
 eonclient
 ```
+
+Inside a Slurm job, ask for as many tasks as `CPMD_LAUNCH` starts ranks
+(`--ntasks=4`), or OpenMPI finds one slot and refuses `-np 4`.
+`--bind-to none` keeps it from refusing to bind when the allocation is
+hardware threads rather than whole cores.
 
 `examples/akmc-cpmd-slurm` runs adaptive kinetic Monte Carlo on a silicon
 vacancy with the same script. The `cluster` communicator submits each
