@@ -225,6 +225,18 @@ bool try_force(const RGPotEngine &engine, long N, const double *R,
   }
 }
 
+// The orbital key of system j of a batch: its owner hint (a NEB image, a
+// ring bead) when it has one, else its batch position, kept apart from
+// the hints. A single evaluation has its own key. cpmdc keeps converged
+// orbitals per key, so a calculator that evaluates several systems in
+// turn starts each SCF from that system's own previous orbitals.
+constexpr std::int64_t kSingleKey = -1;
+std::int64_t orbital_key(const std::int64_t *owners, long j) {
+  if (owners && owners[j] >= 0)
+    return owners[j];
+  return -2 - static_cast<std::int64_t>(j);
+}
+
 [[noreturn]] void raise_failure(long system, int owner,
                                 const std::string &error) {
   std::string msg = "RGPOT: calculator " + std::to_string(owner) +
@@ -254,6 +266,7 @@ void RgpotPot::computeSingle(long N, const double *R, const int *atomicNrs,
   // rank then sends its result to every rank.
   std::string error;
   // Only group 0's call counts toward the calculator usage report.
+  impl_->selectOrbitals(kSingleKey);
   const bool ok = impl_->calculatorIndex() == 0
                       ? evaluate(N, R, atomicNrs, F, U, box, error)
                       : try_force(*impl_, N, R, atomicNrs, F, U, box, error);
@@ -273,9 +286,11 @@ void RgpotPot::computeBatch(long nSystems, long nAtoms,
     return static_cast<int>(id % groups);
   };
   if (impl_->calculatorWorld() <= 1) {
-    for (long j = 0; j < nSystems; j++)
+    for (long j = 0; j < nSystems; j++) {
+      impl_->selectOrbitals(orbital_key(owners, j));
       impl_->force(nAtoms, positions[j], atomicNrs[j], forces[j], &energies[j],
                    boxes[j]);
+    }
     return;
   }
   std::vector<char> ok(static_cast<size_t>(nSystems), 1);
@@ -286,6 +301,7 @@ void RgpotPot::computeBatch(long nSystems, long nAtoms,
     owned[static_cast<size_t>(ownerOf(j))]++;
     if (ownerOf(j) == mine) {
       last = j;
+      impl_->selectOrbitals(orbital_key(owners, j));
       ok[static_cast<size_t>(j)] =
           evaluate(nAtoms, positions[j], atomicNrs[j], forces[j], &energies[j],
                    boxes[j], errors[static_cast<size_t>(j)]);
@@ -294,11 +310,14 @@ void RgpotPot::computeBatch(long nSystems, long nAtoms,
   // Every calculator makes the same number of engine calls: the engine
   // agrees on errors across MPI_COMM_WORLD after each one. A calculator
   // that owns fewer systems repeats one into scratch buffers, its last
-  // own system or system 0 when it owns none.
+  // own system or system 0 when it owns none. The repeat runs under that
+  // system's key, so a repeat of the last own system is the session's
+  // stored result and costs no SCF.
   const long most = *std::max_element(owned.begin(), owned.end());
   const long pad = most - owned[static_cast<size_t>(mine)];
   if (pad > 0) {
     const long j = last >= 0 ? last : 0;
+    impl_->selectOrbitals(orbital_key(owners, j));
     std::vector<double> scratchF(static_cast<size_t>(3 * nAtoms));
     double scratchU = 0.0;
     std::string scratchError;
@@ -382,6 +401,7 @@ void RgpotPot::force(long N, const double *R, const int *atomicNrs, double *F,
   if (variance)
     *variance = 0.0;
   if (impl_->calculatorWorld() <= 1) {
+    impl_->selectOrbitals(kSingleKey);
     impl_->force(N, R, atomicNrs, F, U, box);
     return;
   }
@@ -404,7 +424,11 @@ void RgpotPot::force(long N, const double *R, const int *atomicNrs, double *F,
 }
 
 bool RgpotPot::supportsBatchEvaluation() const noexcept {
-  return impl_ && impl_->calculatorGroups() > 1;
+  // One calculator gains from a batch too when the engine keeps orbitals
+  // per key: the batch carries each image's or bead's identity, a single
+  // force() does not.
+  return impl_ &&
+         (impl_->calculatorGroups() > 1 || impl_->keepsOrbitalsPerKey());
 }
 
 void RgpotPot::forceBatch(long nSystems, long nAtoms,

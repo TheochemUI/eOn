@@ -515,6 +515,32 @@ bool RGPotEngine::available() const {
   return false;
 }
 
+namespace {
+// rgpot gained per-key orbitals after 3.4.0; an older rgpot has neither
+// call, and its CPMD session keeps one stored copy.
+template <class Pot> void select_orbitals(Pot &pot, std::int64_t key) {
+  if constexpr (requires { pot.selectOrbitals(key); })
+    pot.selectOrbitals(key);
+}
+
+template <class Pot> bool keeps_orbitals_per_key(const Pot &pot) {
+  if constexpr (requires { pot.keepsOrbitalsPerKey(); })
+    return pot.keepsOrbitalsPerKey();
+  else
+    return false;
+}
+} // namespace
+
+void RGPotEngine::selectOrbitals(std::int64_t key) const {
+  if (impl_ && impl_->backend == Impl::Backend::Cpmdc && impl_->cpmd)
+    select_orbitals(*impl_->cpmd, key);
+}
+
+bool RGPotEngine::keepsOrbitalsPerKey() const {
+  return impl_ && impl_->backend == Impl::Backend::Cpmdc && impl_->cpmd &&
+         keeps_orbitals_per_key(*impl_->cpmd);
+}
+
 void RGPotEngine::force(long N, const double *R, const int *atomicNrs,
                         double *F, double *U, const double *box) const {
   forceEngine(N, R, atomicNrs, F, U, box);

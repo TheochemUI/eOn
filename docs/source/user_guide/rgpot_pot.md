@@ -316,6 +316,18 @@ A Hessian or a prefactor with an empty `checkpoint_path` sends its
 displaced structures through these groups the same way. Structure `j`
 runs on group `j` modulo the group count.
 
+Each group keeps the converged orbitals of every system it evaluates,
+under that system's key: the image index for a band, the bead index for a
+ring polymer, the position in the batch otherwise, and one key for every
+single request. The next SCF of an image or a bead starts from its own
+orbitals of the previous step rather than from those of whichever system
+the group evaluated last. A ring of more beads than groups runs as rounds:
+bead `j` on group `j` modulo the group count, every step. One group
+(`ranks_per_image = 0`) batches as well, so the keys hold there too. The
+engine needs `cpmdc_session_select_orbitals`; an older libcpmdc keeps one
+stored copy per group, and so does an rgpot without
+`CPMDPot::selectOrbitals` (3.4.0 and older).
+
 The run reads `reactant.con` and `product.con`.
 
 ```{code-block} ini

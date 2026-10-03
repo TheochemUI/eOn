@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <string>
 
@@ -54,6 +55,12 @@ public:
   [[nodiscard]] bool available() const;
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, const double *box) const;
+  /// Names the calculation the next force() belongs to (cpmdc: the engine
+  /// keeps converged orbitals per key, so each image or bead starts its
+  /// SCF from its own previous orbitals). Other backends ignore it.
+  void selectOrbitals(std::int64_t key) const;
+  /// True when the engine keeps converged orbitals per key.
+  [[nodiscard]] bool keepsOrbitalsPerKey() const;
 
   /// Number of calculator groups the MPI world is split into (1 when
   /// ranks_per_image is off) and the group this rank belongs to.
