@@ -1516,3 +1516,36 @@ TEST_CASE("The rate leaves out the ring Hessian's near-zero eigenvalue",
                  Catch::Matchers::WithinAbs(lam[0], 1e-9 * c));
   }
 }
+
+// initial_hessians = finite_difference builds every bead block from 2 f
+// gradient calls before the first step; the search wrote those blocks into
+// an empty vector. The ring it finds is the one the saddle-copied blocks
+// find.
+TEST_CASE("Finite-difference initial bead Hessians find the same ring",
+          "[Tunneling][Instanton]") {
+  const CubicBond pes;
+  const double db = pes.k / pes.g;
+  VectorXd saddle = VectorXd::Zero(6);
+  saddle(0) = -0.5 * db;
+  saddle(3) = 0.5 * db;
+  const MatrixXd hs = pes.hessian(saddle);
+  const double beta = 1.0 / (kBoltzmann * 0.5 * crossoverTemperature(hs));
+  RateInstantonOptions opt;
+  opt.beads = 16;
+  opt.forceTolerance = 1e-9;
+  opt.rigidSqrtMasses = {1.0, 1.0};
+  opt.rigidReference = pes.reference();
+  opt.rigidRotations = {true, true, true};
+  const RateInstanton copied =
+      optimizeRateInstanton(saddle, hs, beta, {}, pes.batch(), opt);
+  opt.initialHessians = "finite_difference";
+  const RateInstanton fd =
+      optimizeRateInstanton(saddle, hs, beta, {}, pes.batch(), opt);
+  CAPTURE(copied.ringPotential, fd.ringPotential, copied.iterations,
+          fd.iterations);
+  REQUIRE(copied.converged);
+  REQUIRE(fd.converged);
+  REQUIRE_THAT(fd.ringPotential,
+               Catch::Matchers::WithinAbs(copied.ringPotential, 1e-8));
+  REQUIRE_THAT(fd.bN, WithinRel(copied.bN, 1e-6));
+}

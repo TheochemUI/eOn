@@ -2123,6 +2123,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     physical.assign(x.size(), hS);
   } else {
     const double eps = options.lanczosStep > 0.0 ? options.lanczosStep : 1e-4;
+    physical.resize(x.size());
     for (size_t j = 0; j < x.size(); ++j) {
       physical[j] = fdPhysicalHessian(x[j], potential, eps);
     }
