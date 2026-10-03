@@ -1,13 +1,14 @@
 #!/bin/bash
 # run_rgpot_mpi.sh EXE MODE
-# MODE is fault, params or abort. Exit 77 when cpmdc or mpirun is absent.
+# MODE is fault, params, abort, single or uneven. Exit 77 when cpmdc or
+# mpirun is absent.
 # A hang in MPI_Comm_split is a failure. A Segmentation fault on the
 # way out is a failure. Rank 0's text has to carry the engine error.
 set -u
 EXE=$1
 MODE=$2
 if [ -z "${EXE}" ] || [ -z "${MODE}" ]; then
-  echo "usage: run_rgpot_mpi.sh EXE fault|params|abort" >&2
+  echo "usage: run_rgpot_mpi.sh EXE fault|params|abort|single|uneven" >&2
   exit 2
 fi
 if ! command -v mpirun >/dev/null 2>&1; then
@@ -35,7 +36,12 @@ export OMPI_MCA_rmaps_base_oversubscribe=1
 exe_dir=$(CDPATH= cd -- "$(dirname "$EXE")" && pwd)
 preload_arg=()
 potso="$exe_dir/potentials/Rgpot/librgpot_pot.so"
-if [ -f "$potso" ]; then
+# Preload only when the loader would pick another librgpot_pot.so. A
+# preload the binary does not need corrupts the heap under some runtime
+# loaders (EESSI 2026.06) before main runs.
+resolved=$(ldd "$EXE" 2>/dev/null | awk '/librgpot_pot\.so/ {print $3; exit}')
+if [ -f "$potso" ] && [ -n "$resolved" ] &&
+  [ "$(readlink -f "$resolved")" != "$(readlink -f "$potso")" ]; then
   if [ -n "${LD_PRELOAD:-}" ]; then
     preload_arg=(-x "LD_PRELOAD=${potso}:${LD_PRELOAD}")
   else
@@ -97,6 +103,17 @@ if [ "$MODE" = "abort" ]; then
   }
   [ "$rc" -ne 0 ] || {
     echo "mpirun exited 0"
+    exit 1
+  }
+  exit 0
+fi
+if [ "$MODE" = "single" ] || [ "$MODE" = "uneven" ]; then
+  grep -q "rank=0 $MODE done" stderr || {
+    echo "rank 0 did not finish the $MODE call"
+    exit 1
+  }
+  [ "$rc" -eq 0 ] || {
+    echo "mpirun exited $rc"
     exit 1
   }
   exit 0
