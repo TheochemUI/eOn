@@ -546,6 +546,63 @@ private:
   int sign_ = 1;
 };
 
+// Block LU of an open block-tridiagonal chain with given diagonal blocks
+// and -c I between neighbours. Solves, and the inertia and log-determinant
+// from the Schur complements (Haynsworth: the inertia of the chain is the
+// sum over its Schur blocks).
+class HaynsworthChain {
+public:
+  HaynsworthChain(double c, const std::vector<MatrixXd> &diag, bool spectrum)
+      : c_(c) {
+    lu_.reserve(diag.size());
+    for (size_t k = 0; k < diag.size(); ++k) {
+      const long f = diag[k].rows();
+      MatrixXd d = 0.5 * (diag[k] + diag[k].transpose());
+      if (k > 0) {
+        const MatrixXd inv = lu_.back().inverse();
+        d -= c * c * 0.5 * (inv + inv.transpose());
+      }
+      if (spectrum) {
+        const ColMajorXd sym = d;
+        const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(
+            sym, Eigen::EigenvaluesOnly);
+        for (long i = 0; i < f; ++i) {
+          const double lam = es.eigenvalues()(i);
+          if (lam == 0.0) {
+            throw std::runtime_error("instanton: singular chain Hessian block");
+          }
+          if (lam < 0.0) {
+            ++negative_;
+          }
+          logAbsDet_ += std::log(std::abs(lam));
+        }
+      }
+      lu_.emplace_back(ColMajorXd(d));
+    }
+  }
+  double logAbsDet() const { return logAbsDet_; }
+  long negative() const { return negative_; }
+  std::vector<VectorXd> solve(const std::vector<VectorXd> &b) const {
+    const size_t m = b.size();
+    std::vector<VectorXd> y(m), x(m);
+    y[0] = b[0];
+    for (size_t k = 1; k < m; ++k) {
+      y[k] = b[k] + c_ * lu_[k - 1].solve(y[k - 1]);
+    }
+    x[m - 1] = lu_[m - 1].solve(y[m - 1]);
+    for (size_t k = m - 1; k-- > 0;) {
+      x[k] = lu_[k].solve(y[k] + c_ * x[k + 1]);
+    }
+    return x;
+  }
+
+private:
+  double c_;
+  std::vector<Eigen::PartialPivLU<ColMajorXd>> lu_;
+  double logAbsDet_ = 0.0;
+  long negative_ = 0;
+};
+
 double dot(const std::vector<VectorXd> &a, const std::vector<VectorXd> &b) {
   double s = 0.0;
   for (size_t k = 0; k < a.size(); ++k) {
@@ -798,13 +855,16 @@ void instantonSplitting(Instanton &inst, const BeadHessian &hessian,
     }
     diag.push_back(spring + dtau * 0.5 * (h + h.transpose()));
   }
-  const BlockChain chain(c, diag);
+  // The inertia comes from the Schur blocks (Haynsworth), so a path with
+  // two negative modes is not mistaken for a minimum by the determinant's
+  // sign.
+  const HaynsworthChain chain(c, diag, true);
 
   auto wellLogDet = [&](const MatrixXd &h) {
     const std::vector<MatrixXd> d(static_cast<size_t>(P - 1),
                                   spring + dtau * 0.5 * (h + h.transpose()));
-    const BlockChain well(c, d);
-    if (well.sign() < 0) {
+    const HaynsworthChain well(c, d, true);
+    if (well.negative() > 0) {
       throw std::runtime_error(
           "instantonSplitting: a well Hessian is not positive definite");
     }
@@ -821,8 +881,9 @@ void instantonSplitting(Instanton &inst, const BeadHessian &hessian,
   }
   scale(v, 1.0 / std::sqrt(dot(v, v)));
   const double vJv = dot(v, chain.solve(v));
-  const int signPrime = chain.sign() * (vJv < 0.0 ? -1 : 1);
-  if (signPrime < 0) {
+  // A zero mode just below zero is one negative eigenvalue the prime
+  // leaves out; any other negative eigenvalue is a second unstable mode.
+  if (chain.negative() - (vJv < 0.0 ? 1 : 0) != 0) {
     throw std::runtime_error(
         "instantonSplitting: the path is not a minimum of the action "
         "(a negative mode besides the kink's translation)");
@@ -1301,63 +1362,6 @@ struct CyclicFactor {
     }
     return y;
   }
-};
-
-// Block LU of an open block-tridiagonal chain with given diagonal blocks
-// and -c I between neighbours. Solves, and the inertia and log-determinant
-// from the Schur complements (Haynsworth: the inertia of the chain is the
-// sum over its Schur blocks).
-class HaynsworthChain {
-public:
-  HaynsworthChain(double c, const std::vector<MatrixXd> &diag, bool spectrum)
-      : c_(c) {
-    lu_.reserve(diag.size());
-    for (size_t k = 0; k < diag.size(); ++k) {
-      const long f = diag[k].rows();
-      MatrixXd d = 0.5 * (diag[k] + diag[k].transpose());
-      if (k > 0) {
-        const MatrixXd inv = lu_.back().inverse();
-        d -= c * c * 0.5 * (inv + inv.transpose());
-      }
-      if (spectrum) {
-        const ColMajorXd sym = d;
-        const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(
-            sym, Eigen::EigenvaluesOnly);
-        for (long i = 0; i < f; ++i) {
-          const double lam = es.eigenvalues()(i);
-          if (lam == 0.0) {
-            throw std::runtime_error("instanton: singular chain Hessian block");
-          }
-          if (lam < 0.0) {
-            ++negative_;
-          }
-          logAbsDet_ += std::log(std::abs(lam));
-        }
-      }
-      lu_.emplace_back(ColMajorXd(d));
-    }
-  }
-  double logAbsDet() const { return logAbsDet_; }
-  long negative() const { return negative_; }
-  std::vector<VectorXd> solve(const std::vector<VectorXd> &b) const {
-    const size_t m = b.size();
-    std::vector<VectorXd> y(m), x(m);
-    y[0] = b[0];
-    for (size_t k = 1; k < m; ++k) {
-      y[k] = b[k] + c_ * lu_[k - 1].solve(y[k - 1]);
-    }
-    x[m - 1] = lu_[m - 1].solve(y[m - 1]);
-    for (size_t k = m - 1; k-- > 0;) {
-      x[k] = lu_[k].solve(y[k] + c_ * x[k + 1]);
-    }
-    return x;
-  }
-
-private:
-  double c_;
-  std::vector<Eigen::PartialPivLU<ColMajorXd>> lu_;
-  double logAbsDet_ = 0.0;
-  long negative_ = 0;
 };
 
 // J = T + G K G^T over the chain T: the closure blocks (-c I between the

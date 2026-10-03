@@ -1088,3 +1088,39 @@ TEST_CASE("Harmonic TST never takes a soft barrier mode for a rigid mode",
   REQUIRE_THAT(quantumHarmonicTstLogRate(hr, hs, beta, barrier, 1),
                WithinRel(quantum, 1e-12));
 }
+
+// Two beads in the wells given a curvature far below the spring's make two
+// negative modes of the action Hessian. The determinant keeps its sign, so
+// only the inertia shows that the path is not a minimum of the action.
+TEST_CASE("The instanton splitting refuses a path with two negative modes",
+          "[Tunneling][Instanton]") {
+  const CurvedValley pes{0.3, 4.0, 0.0};
+  Instanton inst = valleyInstanton(pes, 128, 40.0);
+  REQUIRE(inst.converged);
+  REQUIRE(inst.delta0 > 0.0);
+  const double big = 4.0 / (inst.dtau * inst.dtau) + 100.0;
+  auto twoDips = [&](long j, const VectorXd &q) -> MatrixXd {
+    MatrixXd h = pes.hessian(q);
+    if (j == 20 || j == 108) {
+      h(1, 1) -= big;
+    }
+    return h;
+  };
+  VectorXd a(2), b(2);
+  a << -1.0, 0.0;
+  b << 1.0, 0.0;
+  REQUIRE_THROWS_AS(
+      instantonSplitting(inst, twoDips, pes.hessian(a), pes.hessian(b)),
+      std::runtime_error);
+  // One such bead flips the determinant's sign and was refused before too.
+  auto oneDip = [&](long j, const VectorXd &q) -> MatrixXd {
+    MatrixXd h = pes.hessian(q);
+    if (j == 20) {
+      h(1, 1) -= big;
+    }
+    return h;
+  };
+  REQUIRE_THROWS_AS(
+      instantonSplitting(inst, oneDip, pes.hessian(a), pes.hessian(b)),
+      std::runtime_error);
+}
