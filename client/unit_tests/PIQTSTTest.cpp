@@ -619,8 +619,11 @@ TEST_CASE("RPMD rates of the Craig-Manolopoulos Eckart barrier",
     double kBeta; // 1e-3 / K
     long beads;
   };
+  // Every temperature, then 0.54 T_c (kB beta 5e-3 / K) at 16, 32, 64 and
+  // 128 beads for the convergence in N.
   for (const Case cs : {Case{2.0, 16}, Case{3.0, 32}, Case{5.0, 48},
-                        Case{7.0, 64}}) {
+                        Case{7.0, 64}, Case{5.0, 16}, Case{5.0, 32},
+                        Case{5.0, 64}, Case{5.0, 128}}) {
     const double t = 1e3 / cs.kBeta;
     const double beta = 1.0 / (tunneling::kBoltzmann * t);
     piqtst::ScanOptions so;
