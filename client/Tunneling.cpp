@@ -2472,7 +2472,12 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   // Finite-difference rebuilds of the bead blocks when the search stalls.
   constexpr int kMaxHessianRefreshes = 3;
   int refreshes = 0;
-  bool exactAtX = false;
+  bool exactAtX = f > 1 && options.initialHessians == "finite_difference";
+  // Negative curvatures the last finite-difference blocks showed, and the
+  // rebuilds a growing Bofill count has asked for.
+  long exactNegatives = -1;
+  constexpr int kMaxDriftRefreshes = 4;
+  int driftRefreshes = 0;
   // B_N of the closed ring the beads describe.
   auto ringLength = [&](const std::vector<VectorXd> &q) {
     double b = 0.0;
@@ -2511,6 +2516,29 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     if (done(v)) {
       converged = true;
       break;
+    }
+    // Bofill blocks copied from the saddle can grow negative curvatures the
+    // surface does not have: on a 1203-coordinate Al slab the model's count
+    // rose from 2 to 11 while every flip turned the ring downhill, and the
+    // ring collapsed onto a minimum. More negatives than the last exact
+    // blocks showed rebuild them from finite differences, a few times.
+    if (f > 1 && v.ok) {
+      if (exactAtX) {
+        exactNegatives = v.climb.negative;
+      } else if (v.climb.negative > std::max(1L, exactNegatives) &&
+                 driftRefreshes < kMaxDriftRefreshes) {
+        ++driftRefreshes;
+        const double eps =
+            options.lanczosStep > 0.0 ? options.lanczosStep : 1e-4;
+        for (size_t j = 0; j < x.size(); ++j) {
+          physical[j] = fdPhysicalHessian(x[j], potential, eps);
+        }
+        exactAtX = true;
+        EONC_LOG_DEBUG("[Instanton] Newton {}: {} negative curvatures in the "
+                       "Bofill blocks, rebuilt from finite differences",
+                       it, v.climb.negative);
+        continue;
+      }
     }
     // A shorter Newton step when the quadratic model does not match. A step
     // that only reduces the residual is a walk into a well.
