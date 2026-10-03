@@ -3348,6 +3348,49 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
   }
 }
 
+RingChannel ringChannel(const std::vector<VectorXd> &beads,
+                        const VectorXd &saddle, const VectorXd &mode) {
+  RingChannel out;
+  const double mn = mode.norm();
+  if (beads.size() < 2 || !(mn > 0.0)) {
+    return out;
+  }
+  const VectorXd n = mode / mn;
+  const size_t nb = beads.size();
+  std::vector<double> s(nb);
+  size_t jLo = 0, jHi = 0;
+  for (size_t j = 0; j < nb; ++j) {
+    s[j] = (beads[j] - saddle).dot(n);
+    if (s[j] < s[jLo]) {
+      jLo = j;
+    }
+    if (s[j] > s[jHi]) {
+      jHi = j;
+    }
+  }
+  out.sMin = s[jLo];
+  out.sMax = s[jHi];
+  const VectorXd chord = beads[jHi] - beads[jLo];
+  const double cn = chord.norm();
+  out.chordOverlap = cn > 0.0 ? std::abs(chord.dot(n)) / cn : 0.0;
+  bool crossed = false;
+  for (size_t j = 0; j < nb; ++j) {
+    const size_t k = (j + 1) % nb;
+    if ((s[j] < 0.0) == (s[k] < 0.0)) {
+      continue;
+    }
+    const double t = s[j] / (s[j] - s[k]);
+    const VectorXd p = beads[j] + t * (beads[k] - beads[j]) - saddle;
+    const VectorXd across = p - p.dot(n) * n;
+    out.crossingOffset = std::max(out.crossingOffset, across.norm());
+    crossed = true;
+  }
+  out.belongs = crossed && out.sMin < 0.0 && out.sMax > 0.0 &&
+                out.chordOverlap >= 0.5 &&
+                out.crossingOffset <= out.sMax - out.sMin;
+  return out;
+}
+
 double parabolicFactor(double temperature, double crossover) {
   if (!(temperature > 0.0) || !(crossover > 0.0)) {
     throw std::invalid_argument(

@@ -1378,3 +1378,60 @@ TEST_CASE("The instanton splitting converges to the analytic continuum "
   REQUIRE(std::abs(extrapolated) < 1e-3);
   REQUIRE_THAT(continuum / dvr, WithinRel(1.0689151, 1e-6));
 }
+
+// A ring around the seeded saddle straddles its dividing plane close to the
+// saddle. A ring of the same shape moved across the mode to a neighbouring
+// saddle still straddles the plane, and that alone passed it, but it
+// crosses the plane far from this saddle; a ring turned across the mode
+// fails the chord test.
+TEST_CASE("A ring belongs to the saddle whose dividing plane it crosses "
+          "nearby",
+          "[Tunneling][Instanton]") {
+  VectorXd saddle = VectorXd::Zero(2);
+  VectorXd mode(2);
+  mode << 1.0, 0.0;
+  std::vector<VectorXd> ring;
+  for (int j = 0; j < 16; ++j) {
+    const double t = 2.0 * std::numbers::pi * j / 16.0;
+    VectorXd q(2);
+    q << -0.8 * std::cos(t), 0.1 * std::sin(t) + 0.05;
+    ring.push_back(q);
+  }
+  const RingChannel own = ringChannel(ring, saddle, mode);
+  CAPTURE(own.sMin, own.sMax, own.chordOverlap, own.crossingOffset);
+  REQUIRE(own.belongs);
+  REQUIRE_THAT(own.sMin, Catch::Matchers::WithinAbs(-0.8, 1e-12));
+  REQUIRE_THAT(own.sMax, Catch::Matchers::WithinAbs(0.8, 1e-12));
+  REQUIRE(own.chordOverlap > 0.99);
+  REQUIRE(own.crossingOffset < 0.2);
+
+  std::vector<VectorXd> shifted = ring;
+  for (auto &q : shifted) {
+    q(1) += 3.0;
+  }
+  const RingChannel other = ringChannel(shifted, saddle, mode);
+  CAPTURE(other.crossingOffset);
+  REQUIRE(other.sMin < 0.0);
+  REQUIRE(other.sMax > 0.0);
+  REQUIRE_FALSE(other.belongs);
+
+  // The same ellipse turned 70 degrees off the mode: it still straddles
+  // the plane near the saddle, but its turning points run across the mode.
+  std::vector<VectorXd> turned;
+  const double th = 70.0 * std::numbers::pi / 180.0;
+  for (int j = 0; j < 16; ++j) {
+    const double t = 2.0 * std::numbers::pi * j / 16.0;
+    const double x = 0.8 * std::cos(t), y = 0.1 * std::sin(t);
+    VectorXd r(2);
+    r << std::cos(th) * x - std::sin(th) * y,
+        std::sin(th) * x + std::cos(th) * y;
+    turned.push_back(r);
+  }
+  const RingChannel across = ringChannel(turned, saddle, mode);
+  CAPTURE(across.chordOverlap, across.crossingOffset);
+  REQUIRE(across.chordOverlap < 0.5);
+  REQUIRE(across.crossingOffset < across.sMax - across.sMin);
+  REQUIRE(across.sMin < 0.0);
+  REQUIRE(across.sMax > 0.0);
+  REQUIRE_FALSE(across.belongs);
+}

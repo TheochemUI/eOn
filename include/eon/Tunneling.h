@@ -355,6 +355,30 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
                                     const BatchPotential &potential,
                                     const RateInstantonOptions &options);
 
+/// Where a ring sits against the saddle it was seeded from, in
+/// mass-weighted coordinates. s = (q - saddle) . mode along the unstable
+/// mode; the turning points are the beads of least and greatest s.
+struct RingChannel {
+  double sMin = 0.0; ///< least s over the beads, amu^0.5 Angstrom
+  double sMax = 0.0; ///< greatest s over the beads
+  /// |cos| of the angle between the chord joining the turning points and
+  /// the unstable mode.
+  double chordOverlap = 0.0;
+  /// Largest distance from the saddle, across the mode, of a point where
+  /// the ring crosses the dividing plane s = 0.
+  double crossingOffset = 0.0;
+  /// Beads on both sides of the dividing plane, the chord within 60 degrees
+  /// of the mode, and every crossing within sMax - sMin of the saddle. A
+  /// ring around a neighbouring saddle can still straddle the plane, but it
+  /// crosses it far from this saddle.
+  bool belongs = false;
+};
+
+/// The channel test above for a ring of beads, a saddle and its unstable
+/// mode (normalised inside).
+RingChannel ringChannel(const std::vector<VectorXd> &beads,
+                        const VectorXd &saddle, const VectorXd &mode);
+
 /// The mass-weighted Hessian d2V/dq2 at ring bead j (0..N-1).
 using RingBeadHessian = std::function<MatrixXd(long j, const VectorXd &q)>;
 

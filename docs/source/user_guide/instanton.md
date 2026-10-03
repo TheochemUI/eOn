@@ -234,9 +234,9 @@ the period condition below. On LJ13 that path costs 586 gradient calls. Cooling 
 ring from 0.85 of the crossover is the fallback when no path can be
 built; it finds the ring only where the ring grows continuously out of
 the saddle as the temperature drops. Where it does not, the search walks
-to a neighbouring saddle, so a converged ring with no bead on either side
-of the saddle's dividing plane (the plane normal to its unstable mode) is
-refused and no rate is written. The step climbs the mode that overlaps
+to a neighbouring saddle, so a converged ring that fails the channel test
+described with the `results.dat` keys below is refused and no rate is
+written. The step climbs the mode that overlaps
 the last climb and turns every other negative curvature downhill; the
 imaginary-time cycle and the rigid motions of the whole ring, rebuilt
 from the current beads, are held in place and left out of the step. A
@@ -302,11 +302,22 @@ the change in the moments of inertia along the ring.
 | `rate_instanton_log` | {math}`\ln(k\,/\,\mathrm{s}^{-1})` |
 | `rate_htst_log` | classical harmonic transition-state theory, the same logarithm |
 | `parabolic_factor` | {math}`\kappa`, above {math}`T_c` |
-| `rate_parabolic` | {math}`\kappa` times the harmonic TST rate, s^{-1} |
+| `rate_parabolic` | {math}`\kappa` times the quantum harmonic TST rate, s^{-1} |
 | `rate_parabolic_log` | {math}`\ln(k\,/\,\mathrm{s}^{-1})` of that rate |
 | `instanton_crossover_K` | {math}`T_c`, K |
 | `instanton_negative_modes` | negative eigenvalues of the ring Hessian; a first-order saddle has 1 |
 | `instanton_zero_mode` | the eigenvalue left out |
+| `instanton_s_min`, `instanton_s_max` | the turning points along the saddle's unstable mode, amu^0.5 Angstrom from the saddle |
+| `instanton_chord_overlap` | cosine of the angle between the chord joining the turning points and the unstable mode |
+| `instanton_crossing_offset` | largest distance from the saddle, across the mode, at which the ring crosses the dividing plane |
+
+A converged ring is given a rate only when it belongs to the seeded saddle:
+it straddles the plane through the saddle normal to the unstable mode,
+crosses that plane no farther from the saddle than its own span
+`instanton_s_max - instanton_s_min`, and its chord lies within 60 degrees
+of the mode. A ring that slid to a neighbouring saddle can still straddle
+the plane and have one negative mode, and then its rate would belong to a
+different reaction.
 
 {cite:t}`inst-habershonRingpolymerMolecularDynamics2013` expect the sampled
 ring-polymer rate to lie within about a factor of two of the exact quantum

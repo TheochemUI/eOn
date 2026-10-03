@@ -406,24 +406,6 @@ void steepestDescentPath(const VectorXd &qSaddle, double vSaddle,
   }
 }
 
-/// Whether the ring has beads on both sides of the saddle's dividing plane,
-/// the plane through the saddle normal to its unstable mode. A ring that
-/// converged off that plane belongs to another saddle.
-bool straddlesSaddle(const std::vector<VectorXd> &beads,
-                     const VectorXd &qSaddle, const MatrixXd &hSaddle) {
-  const Eigen::SelfAdjointEigenSolver<MatrixXd> es(
-      0.5 * (hSaddle + hSaddle.transpose()));
-  const VectorXd mode = es.eigenvectors().col(0);
-  double lo = std::numeric_limits<double>::infinity();
-  double hi = -lo;
-  for (const auto &b : beads) {
-    const double s = (b - qSaddle).dot(mode);
-    lo = std::min(lo, s);
-    hi = std::max(hi, s);
-  }
-  return lo < 0.0 && hi > 0.0;
-}
-
 /// Mode rate: the ring-polymer instanton through the saddle out of the
 /// reactant, and its thermal rate.
 std::vector<std::string>
@@ -470,6 +452,11 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   const double vSaddle = saddle.getPotentialEnergy();
   const MatrixXd hReactant = hessianAt(VectorXd::Zero(n));
   const MatrixXd hSaddle = hessianAt(qSaddle);
+  const VectorXd unstableMode =
+      Eigen::SelfAdjointEigenSolver<MatrixXd>(0.5 *
+                                              (hSaddle + hSaddle.transpose()))
+          .eigenvectors()
+          .col(0);
   const double tc = tunneling::crossoverTemperature(hSaddle);
   const long rigidModes = mw.rigidBasis(reactant, rotationZero).cols();
   if (temperatures.size() == 1) {
@@ -753,9 +740,19 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
                   temperature, inst.ringPotential, inst.iterations,
                   inst.converged ? "" : " (not converged)");
 
-    if (inst.converged && !straddlesSaddle(inst.beads, qSaddle, hSaddle)) {
-      EONC_LOG_ERROR("[Instanton] {:.4g} K: the ring converged off the "
-                     "saddle's dividing plane, onto another saddle; no rate",
+    const tunneling::RingChannel channel =
+        tunneling::ringChannel(inst.beads, qSaddle, unstableMode);
+    EONC_LOG_INFO("[Instanton] {:.4g} K: ring spans s = {:.4f} to {:.4f} "
+                  "amu^0.5 A along the unstable mode, chord overlap {:.3f}, "
+                  "dividing-plane crossing {:.4f} amu^0.5 A off the saddle",
+                  temperature, channel.sMin, channel.sMax,
+                  channel.chordOverlap, channel.crossingOffset);
+    if (inst.converged && !channel.belongs) {
+      EONC_LOG_ERROR("[Instanton] {:.4g} K: the ring does not pass through "
+                     "the seeded saddle's channel (it must straddle the "
+                     "dividing plane, cross it within its own span of the "
+                     "saddle, and run within 60 degrees of the unstable "
+                     "mode); it belongs to another saddle, no rate",
                      temperature);
       inst.converged = false;
     }
@@ -893,6 +890,10 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
                         static_cast<double>(inst.iterations));
     extras.emplace_back("instanton_ring_potential", inst.ringPotential);
     extras.emplace_back("instanton_bN", inst.bN);
+    extras.emplace_back("instanton_s_min", channel.sMin);
+    extras.emplace_back("instanton_s_max", channel.sMax);
+    extras.emplace_back("instanton_chord_overlap", channel.chordOverlap);
+    extras.emplace_back("instanton_crossing_offset", channel.crossingOffset);
     if (std::isfinite(wkbLog)) {
       extras.emplace_back("rate_wkb_path_log", wkbLog);
     }
