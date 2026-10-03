@@ -383,6 +383,24 @@ struct RingChannel {
 RingChannel ringChannel(const std::vector<VectorXd> &beads,
                         const VectorXd &saddle, const VectorXd &mode);
 
+/// Which rotations of a structure are zero modes of its mass-weighted
+/// Hessian. `generators` holds three translations then three rotations as
+/// columns (a zero column for a rotation a linear molecule lacks). A
+/// rotation r is a zero mode when its Rayleigh quotient r^T H r / r^T r is
+/// at most kRotationZeroFraction of the softest vibration, the lowest
+/// eigenvalue of H on the complement of all six generators. Both sides
+/// scale with H and neither grows with the atom count, unlike a comparison
+/// with ||H||_F. The residual reported is that ratio; a structure with no
+/// positive vibration on the complement has no rotational zero modes.
+inline constexpr double kRotationZeroFraction = 0.1;
+struct RotationZeroModes {
+  std::array<bool, 3> zero{{false, false, false}};
+  std::array<double, 3> residual{{0.0, 0.0, 0.0}};
+  double softestVibration = 0.0; ///< lowest eigenvalue on the complement
+};
+RotationZeroModes rotationZeroModes(const MatrixXd &hess,
+                                    const MatrixXd &generators);
+
 /// The mass-weighted Hessian d2V/dq2 at ring bead j (0..N-1).
 using RingBeadHessian = std::function<MatrixXd(long j, const VectorXd &q)>;
 

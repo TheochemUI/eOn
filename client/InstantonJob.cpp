@@ -46,10 +46,6 @@ namespace {
 /// One unit of imaginary time, sqrt(amu Angstrom^2 / eV), in fs.
 constexpr double kTimeUnitFs = 10.180505717871193;
 
-/// ||H r|| / (||H||_F ||r||) at or below this is a rotational zero mode.
-/// A real curvature sits near the scale of ||H||; a finite-difference null
-/// vector does not.
-constexpr double kRotationZero = 1e-2;
 
 /// Mass-weighted coordinates over the free atoms, measured from a reference
 /// structure under its minimum image.
@@ -152,26 +148,17 @@ public:
     }
     return b;
   }
-  /// Which of the three rotation generators are zero modes of hess.
-  /// ||H r|| small against ||H||, not whether the cell is periodic: a
-  /// cluster in a box is periodic and still free to rotate.
+  /// Which of the three rotation generators are zero modes of hess, by
+  /// tunneling::rotationZeroModes: the rotation's curvature against the
+  /// softest vibration, not whether the cell is periodic (a cluster in a box
+  /// is periodic and still free to rotate).
   void markRotationZeroModes(const MatrixXd &hess, const MatrixXd &generators,
                              std::array<bool, 3> &keep,
                              std::array<double, 3> &residual) const {
-    const MatrixXd h = 0.5 * (hess + hess.transpose());
-    const double hn = h.norm();
-    for (int c = 0; c < 3; ++c) {
-      const VectorXd r = generators.col(3 + c);
-      const double rn = r.norm();
-      if (!(rn > 0.0)) {
-        keep[static_cast<size_t>(c)] = false;
-        residual[static_cast<size_t>(c)] = 0.0;
-        continue;
-      }
-      const double rel = hn > 0.0 ? (h * r).norm() / (hn * rn) : 0.0;
-      residual[static_cast<size_t>(c)] = rel;
-      keep[static_cast<size_t>(c)] = rel <= kRotationZero;
-    }
+    const tunneling::RotationZeroModes z =
+        tunneling::rotationZeroModes(hess, generators);
+    keep = z.zero;
+    residual = z.residual;
   }
   /// With no atom fixed, an orthonormal basis of the rigid motions of m:
   /// three translations, plus each rotation `rotations` marks as a zero
@@ -471,8 +458,10 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
                   o.beads, temperatures.size(), temperatures.front(),
                   temperatures.back(), tc, vSaddle - vReactant, n, rigidModes);
   }
-  EONC_LOG_INFO("[Instanton] rotation residuals {:.3g}, {:.3g}, {:.3g}",
-                rotationResidual[0], rotationResidual[1], rotationResidual[2]);
+  EONC_LOG_INFO("[Instanton] rotation curvatures over the softest vibration "
+                "{:.3g}, {:.3g}, {:.3g} (zero modes at or below {:.3g})",
+                rotationResidual[0], rotationResidual[1], rotationResidual[2],
+                tunneling::kRotationZeroFraction);
 
   std::vector<std::pair<std::string, double>> extras{
       {"instanton_crossover_K", tc},

@@ -1586,3 +1586,106 @@ TEST_CASE("A ring that collapses onto one point stops early",
   REQUIRE_FALSE(inst.converged);
   REQUIRE(inst.iterations < 20);
 }
+
+namespace {
+
+// A periodic square slab of L x L unit-mass atoms with central springs to
+// the nearest (k) and next-nearest (k / 2) neighbours and a bending
+// stiffness across each bond, no atom fixed. A
+// rotation about the normal stretches the bonds across the cell boundary,
+// a real curvature that falls only as 1 / L.
+MatrixXd periodicSlabHessian(long l, MatrixXd &generators) {
+  const long n = l * l;
+  std::vector<Eigen::Vector3d> pos;
+  for (long i = 0; i < l; ++i) {
+    for (long j = 0; j < l; ++j) {
+      pos.emplace_back(static_cast<double>(i), static_cast<double>(j), 0.0);
+    }
+  }
+  const double box = static_cast<double>(l);
+  MatrixXd h = MatrixXd::Zero(3 * n, 3 * n);
+  auto add = [&](long p, long q, double k) {
+    Eigen::Vector3d d = pos[static_cast<size_t>(q)] - pos[static_cast<size_t>(p)];
+    for (int a = 0; a < 2; ++a) {
+      d(a) -= box * std::round(d(a) / box);
+    }
+    const Eigen::Vector3d u = d.normalized();
+    const Eigen::Matrix3d b = k * u * u.transpose();
+    h.block(3 * p, 3 * p, 3, 3) += b;
+    h.block(3 * q, 3 * q, 3, 3) += b;
+    h.block(3 * p, 3 * q, 3, 3) -= b;
+    h.block(3 * q, 3 * p, 3, 3) -= b;
+    // A bending stiffness k_z (z_p - z_q)^2 / 2 keeps the slab flat.
+    const double kz = 0.3 * k;
+    h(3 * p + 2, 3 * p + 2) += kz;
+    h(3 * q + 2, 3 * q + 2) += kz;
+    h(3 * p + 2, 3 * q + 2) -= kz;
+    h(3 * q + 2, 3 * p + 2) -= kz;
+  };
+  auto idx = [&](long i, long j) { return ((i + l) % l) * l + ((j + l) % l); };
+  for (long i = 0; i < l; ++i) {
+    for (long j = 0; j < l; ++j) {
+      add(idx(i, j), idx(i + 1, j), 1.0);
+      add(idx(i, j), idx(i, j + 1), 1.0);
+      add(idx(i, j), idx(i + 1, j + 1), 0.5);
+      add(idx(i, j), idx(i + 1, j - 1), 0.5);
+    }
+  }
+  Eigen::Vector3d com = Eigen::Vector3d::Zero();
+  for (const auto &p : pos) {
+    com += p;
+  }
+  com /= static_cast<double>(n);
+  generators = MatrixXd::Zero(3 * n, 6);
+  for (long p = 0; p < n; ++p) {
+    for (int c = 0; c < 3; ++c) {
+      generators(3 * p + c, c) = 1.0;
+      Eigen::Vector3d e = Eigen::Vector3d::Zero();
+      e(c) = 1.0;
+      generators.block(3 * p, 3 + c, 3, 1) =
+          e.cross(pos[static_cast<size_t>(p)] - com);
+    }
+  }
+  return h;
+}
+
+} // namespace
+
+// The rotation of a 16 x 16 periodic slab about its normal has
+// ||H r|| / (||H||_F ||r||) = 0.008, under the 1e-2 that marked a rotation
+// as a zero mode, because ||H||_F grows as the square root of the
+// coordinates. Against the softest vibration it is no zero mode. A free
+// diatomic at its minimum keeps its two rotations as zero modes.
+TEST_CASE("Rotational zero modes are told apart on the Hessian's own scale",
+          "[Tunneling][Instanton]") {
+  MatrixXd gens;
+  const MatrixXd h = periodicSlabHessian(16, gens);
+  const VectorXd r = gens.col(5);
+  const double frobenius = (h * r).norm() / (h.norm() * r.norm());
+  CAPTURE(frobenius);
+  REQUIRE(frobenius < 1e-2);
+  const RotationZeroModes slab = rotationZeroModes(h, gens);
+  CAPTURE(slab.residual[2], slab.softestVibration);
+  REQUIRE(slab.softestVibration > 0.0);
+  REQUIRE_FALSE(slab.zero[2]);
+
+  const CubicBond pes;
+  const VectorXd x = pes.reference();
+  MatrixXd g = MatrixXd::Zero(6, 6);
+  Eigen::Vector3d com = 0.5 * (x.segment<3>(0) + x.segment<3>(3));
+  for (int atom = 0; atom < 2; ++atom) {
+    for (int c = 0; c < 3; ++c) {
+      g(3 * atom + c, c) = 1.0;
+      Eigen::Vector3d e = Eigen::Vector3d::Zero();
+      e(c) = 1.0;
+      g.block(3 * atom, 3 + c, 3, 1) = e.cross(x.segment<3>(3 * atom) - com);
+    }
+  }
+  const RotationZeroModes bond = rotationZeroModes(pes.hessian(VectorXd::Zero(6)), g);
+  CAPTURE(bond.residual[0], bond.residual[1], bond.residual[2],
+          bond.softestVibration);
+  REQUIRE_FALSE(bond.zero[0]); // about the bond: no generator
+  REQUIRE(bond.zero[1]);
+  REQUIRE(bond.zero[2]);
+  REQUIRE(bond.softestVibration > 0.0);
+}

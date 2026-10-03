@@ -3501,6 +3501,46 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
   }
 }
 
+RotationZeroModes rotationZeroModes(const MatrixXd &hess,
+                                    const MatrixXd &generators) {
+  RotationZeroModes out;
+  const long n = hess.rows();
+  if (hess.cols() != n || generators.rows() != n || generators.cols() != 6) {
+    throw std::invalid_argument(
+        "rotationZeroModes: need a square Hessian and six generators");
+  }
+  const ColMajorXd h = 0.5 * (hess + hess.transpose());
+  const ColMajorXd g = generators;
+  const Eigen::ColPivHouseholderQR<ColMajorXd> qr(g);
+  const long rank = qr.rank();
+  if (rank >= n) {
+    return out;
+  }
+  const ColMajorXd q = qr.householderQ() * ColMajorXd::Identity(n, n);
+  const ColMajorXd z = q.rightCols(n - rank);
+  const ColMajorXd reduced = z.transpose() * h * z;
+  const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(
+      0.5 * (reduced + reduced.transpose()), Eigen::EigenvaluesOnly);
+  out.softestVibration = es.eigenvalues()(0);
+  for (int c = 0; c < 3; ++c) {
+    const VectorXd r = generators.col(3 + c);
+    const double rr = r.squaredNorm();
+    if (!(rr > 0.0)) {
+      continue;
+    }
+    const double rq = r.dot(h * r) / rr;
+    if (out.softestVibration > 0.0) {
+      out.residual[static_cast<size_t>(c)] = rq / out.softestVibration;
+      out.zero[static_cast<size_t>(c)] =
+          std::abs(rq) <= kRotationZeroFraction * out.softestVibration;
+    } else {
+      out.residual[static_cast<size_t>(c)] =
+          std::numeric_limits<double>::infinity();
+    }
+  }
+  return out;
+}
+
 RingChannel ringChannel(const std::vector<VectorXd> &beads,
                         const VectorXd &saddle, const VectorXd &mode) {
   RingChannel out;

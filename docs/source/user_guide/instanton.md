@@ -282,7 +282,10 @@ the parabolic rate. Below {math}`T_c` those two are empty. A run at more than on
 With no atom fixed, both the reactant and the instanton omit the three
 translations. A
 rotation is omitted when it is a zero mode of the reactant Hessian, which a
-free cluster has and a crystal does not. A cluster in a large periodic cell
+free cluster has and a crystal does not: when its curvature r^T H r / r^T r
+is at most 0.1 of the softest vibration, the lowest eigenvalue of the
+Hessian once the translations and rotations are projected out. Both sides
+scale with the Hessian and neither grows with the atom count. A cluster in a large periodic cell
 is told apart by that Hessian, not by the periodic flag. The springs along
 those directions stay, so they cancel between the instanton and the reactant.
 On the ring the omitted rotations are those of the beads themselves about
