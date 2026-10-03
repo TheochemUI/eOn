@@ -35,6 +35,7 @@
 #include <cmath>
 #include <fstream>
 #include <numbers>
+#include <numeric>
 #include <sstream>
 #include <stdexcept>
 #include <utility>
@@ -624,8 +625,15 @@ void RingPolymer::forces(Potential &pot, const double *box) {
   }
   std::vector<double> energies(static_cast<size_t>(nBeads_), 0.0);
   std::vector<double> variances(static_cast<size_t>(nBeads_), 0.0);
-  pot.forceBatch(nBeads_, nAtoms_, pos.data(), nrs.data(), frc.data(),
-                 energies.data(), variances.data(), boxes.data());
+  // The bead index is each system's identity across steps: a potential
+  // that spreads the ring over calculators keeps a bead on one calculator,
+  // and one that stores per-system state (cpmdc orbitals) keeps it with
+  // the bead.
+  std::vector<long> owners(static_cast<size_t>(nBeads_));
+  std::iota(owners.begin(), owners.end(), 0L);
+  pot.forceBatchOwned(nBeads_, nAtoms_, pos.data(), nrs.data(), frc.data(),
+                      energies.data(), variances.data(), boxes.data(),
+                      owners.data());
   ++batches_;
   for (long bead = 0; bead < nBeads_; ++bead) {
     for (long a = 0; a < nDof_; ++a) {

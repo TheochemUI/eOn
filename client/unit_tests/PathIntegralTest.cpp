@@ -75,6 +75,19 @@ struct Harmonic final : eonc::Potential {
     return true;
   }
 
+  std::vector<long> lastOwners;
+
+  void forceBatchOwned(long nSystems, long nAtoms,
+                       const double *const *positions,
+                       const int *const *atomicNrs, double *const *forces,
+                       double *energies, double *variances,
+                       const double *const *boxes,
+                       const long *owners) override {
+    lastOwners.assign(owners, owners + (owners != nullptr ? nSystems : 0));
+    forceBatch(nSystems, nAtoms, positions, atomicNrs, forces, energies,
+               variances, boxes);
+  }
+
   void forceBatch(long nSystems, long nAtoms, const double *const *positions,
                   const int *const * /*atomicNrs*/, double *const *forces,
                   double *energies, double *variances,
@@ -200,6 +213,25 @@ TEST_CASE("Centroid hyperplane mean force of a harmonic oscillator",
   REQUIRE(pot.maxSystems == 4);
   REQUIRE_FALSE(pot.sawForce);
   REQUIRE(ring.centroid()[0] == Catch::Approx(s).margin(1e-10));
+}
+
+TEST_CASE("A ring names each bead as the owner of its system",
+          "[path-integral]") {
+  Options opt = baseOptions(5);
+  opt.seed = 3;
+  Harmonic pot;
+  RingPolymer ring = makePolymer(opt);
+  Eigen::VectorXd q = Eigen::VectorXd::Zero(3);
+  q[0] = 0.1;
+  ring.setAllBeads(q.data());
+  const std::vector<long> beads{0, 1, 2, 3, 4};
+  ring.step(pot, nullptr, false);
+  REQUIRE(pot.lastOwners == beads);
+  pot.lastOwners.clear();
+  ring.step(pot, nullptr, false);
+  REQUIRE(pot.lastOwners == beads);
+  REQUIRE(pot.minSystems == 5);
+  REQUIRE(pot.maxSystems == 5);
 }
 
 TEST_CASE(
