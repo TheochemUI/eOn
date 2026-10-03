@@ -467,6 +467,21 @@ class MPI(Communicator):
         return 0
 
 
+def client_environment(base=None):
+    """Environment for an eonclient the server starts outside an MPI launcher.
+
+    An eonclient built with MPI (rgpot calculator groups) loads libmpi, and
+    with it UCX, in every run. UCX patches the memory functions as the
+    library loads, which on conda's OpenMPI costs about 0.4 s per process
+    against 0.02 s for the job itself. A client the Local communicator
+    starts is one process with no MPI peers, so the memory events are of no
+    use to it. An explicit UCX_MEM_EVENTS from the user wins.
+    """
+    env = dict(os.environ if base is None else base)
+    env.setdefault("UCX_MEM_EVENTS", "no")
+    return env
+
+
 class Local(Communicator):
     def __init__(self, scratchpath, client, ncpus, bundle_size, config: ConfigClass = None):
         Communicator.__init__(self, scratchpath, bundle_size, config = config)
@@ -586,6 +601,7 @@ class Local(Communicator):
             # A session of its own lets cleanup() reach every process the
             # client starts (ExtPot wrappers, srun, mpirun), not just the client.
             p = Popen(self.client, cwd=jobpath, stdout=fstdout, stderr=fstderr,
+                      env=client_environment(),
                       start_new_session=(os.name == 'posix'))
             self.joblist.append((p, jobpath, fstdout, fstderr))
 
