@@ -225,12 +225,17 @@ The image pool is plain `std::thread`, so GCC and Clang builds need no TBB.
 `[Main] parallel` is a client key and defaults to true.
 `eon/config.yaml` has no `parallel` key in `[Main]`.
 Setting that key makes the server exit before the client runs.
-With `parallel = true`, dirty-image force calls run on at most
-`std::thread::hardware_concurrency()` threads, each taking the next image,
-so a 20-image band on 8 cores keeps 8 threads busy. An error in one image is
-reported after the other images finish. No extra library is needed.
+With `parallel = true`, a band that reaches the projection step projects
+each image's tangent, spring, and projected force on one pool. Dirty-image
+force calls use that pool too. The pool starts once and stays for the
+process. On Linux the pool sizes itself to the affinity mask, so a Slurm
+or taskset limit sets the thread count. Other systems take the size from
+`std::thread::hardware_concurrency()`. The caller is one of those workers,
+so a 20-image band on 8 allowed cores keeps 8 threads busy. The pool
+reports an error in one image after the other images finish. The pool
+needs no extra library.
 nvc++ builds with `-Dstdpar=cpu` / `-Dstdpar=gpu` use
-`std::execution::par` instead; see {doc}`stdpar`. Python-based potentials fall back to serial
+`std::execution::par` for those force calls instead; see {doc}`stdpar`. Python-based potentials fall back to serial
 evaluation unless they report thread-safe shared instances or per-image
 copies. Morse and other host potentials stay on the CPU.
 

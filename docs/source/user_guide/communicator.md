@@ -44,6 +44,12 @@ client_path = "eonclient-custom"
 number_of_cpus = 8
 ```
 
+The local communicator starts each `eonclient` with `UCX_MEM_EVENTS=no`
+unless the environment already sets that variable. An `eonclient` that
+links MPI loads Unified Communication X on every run. A local client has
+no MPI peers, so it never uses those memory hooks. Conda OpenMPI spends
+about 0.4 s on them per process, against about 0.02 s for a one-call job.
+
 ### In-process (`type = local_lib` / inprocess)
 
 `LocalInProcess` runs jobs as `pyeonclient.Matter` in the server process.

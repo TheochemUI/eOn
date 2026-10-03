@@ -298,14 +298,19 @@ runs on group 0. The product runs on group 1.
 
 Seven groups of 4 ranks need 28 ranks. Intermediate image 1 runs on
 group 0, and image 7 runs on group 6. An update that skips an image
-leaves the others on those groups.
+leaves the others on those groups. Some groups own fewer images than
+the busiest group. Those groups repeat their last image into scratch.
+An empty group repeats system 0 of that batch. Every group then enters
+the engine the same number of times. The systems count omits those
+repeats.
 
 With `ci_mmf = true` the climbing image takes improved-dimer steps on its
 own. Each step evaluates the moved centre and its forward image as one
-batch, on groups 0 and 1. A rotation trial depends on the previous one
-and runs alone on group 0. A saddle search does the same, and with
-`min_mode_method = lanczos` the second system of that batch is the first
-Krylov product's displaced image.
+batch, on groups 0 and 1. A rotation trial depends on the previous one.
+Every group evaluates that one structure, and the run keeps the result
+from group 0. The usage line counts the call on group 0. A saddle search
+does the same, and with `min_mode_method = lanczos` the second system of
+that batch is the first Krylov product's displaced image.
 
 A Hessian or a prefactor with an empty `checkpoint_path` sends its
 displaced structures through these groups the same way. Structure `j`

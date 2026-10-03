@@ -17,7 +17,10 @@ An overview may be found in {cite:t}`dm-olsenComparisonMethodsFinding2004`.
 The dimer separation is set in the **[Main]** section with the
 `finiteDifference` parameter. With `[Main] parallel` left on, an `ext_pot`
 dimer keeps a separate potential, and a separate exchange directory, on
-each image. See <project:ext_pot.md>.
+each image. See <project:ext_pot.md>. On a potential that evaluates
+batches, the moved centre and its forward image go out in one call.
+`remove_rotation` skips that call. A Lanczos, Davidson, or LOR rotation
+skips it too, and leaves the centre evaluation in place.
 
 The method of {cite:t}`dm-melanderRemovingExternalDegrees2015` is also
 implemented for use with gas phase systems.
