@@ -797,11 +797,20 @@ void NudgedElasticBand::updateForces(bool ci_active) {
   auto spring = eonc::neb::buildSpringStrategy(params, path, numImages, atoms,
                                                maxEnergy, E_ref);
 
-  // Pre-allocate temporaries outside the loop to avoid repeated heap
-  // allocation of Nx3 matrices (each ~8KB for 337 atoms).
-  AtomMatrix posDiffNext(atoms, 3), posDiffPrev(atoms, 3);
+  if (const auto *uniform = std::get_if<eonc::neb::UniformSpring>(&spring)) {
+    ksp = uniform->ksp;
+  }
+  // The climbing image, chosen before the per-image work so that work
+  // writes nothing outside its own image.
+  if (climb) {
+    climbingImage = maxEnergyImage;
+  }
 
-  for (long i = 1; i <= numImages; i++) {
+  // Each image reads its neighbours' positions and energies and writes
+  // only its own tangent and projected force, so with [Main] parallel the
+  // images are projected on the image pool like their forces.
+  auto projectImage = [&](long i) {
+    AtomMatrix posDiffNext(atoms, 3), posDiffPrev(atoms, 3);
     const AtomMatrix &force = path[i]->getForces();
     const AtomMatrix &pos = path[i]->getPositions();
     const AtomMatrix &posPrev = path[i - 1]->getPositions();
@@ -829,7 +838,6 @@ void NudgedElasticBand::updateForces(bool ci_active) {
         [&](auto &s) -> eonc::neb::SpringResult {
           using T = std::decay_t<decltype(s)>;
           if constexpr (std::is_same_v<T, eonc::neb::UniformSpring>) {
-            this->ksp = s.ksp;
             return s.compute(i, *tangent[i], distNext, distPrev, posDiffNext,
                              posDiffPrev, path[i]);
           } else if constexpr (std::is_same_v<T, eonc::neb::WeightedSpring>) {
@@ -842,7 +850,6 @@ void NudgedElasticBand::updateForces(bool ci_active) {
 
     // Climbing image or projected force
     if (climb && i == static_cast<long>(maxEnergyImage)) {
-      climbingImage = maxEnergyImage;
       // CI force: F - 2*(F.t)*t, plus DNEB correction if active
       AtomMatrix forceDNEB = AtomMatrix::Zero(atoms, 3);
       if (const auto *dnebProj =
@@ -875,6 +882,13 @@ void NudgedElasticBand::updateForces(bool ci_active) {
 
     eonc::neb::zeroTranslation(*projectedForce[i], path[i]->numberOfFreeAtoms(),
                                path[i]->numberOfAtoms());
+  };
+  if (numImages > 1 && params.main_options().parallel) {
+    eonc::forEachImage(numImages, projectImage);
+  } else {
+    for (long i = 1; i <= numImages; i++) {
+      projectImage(i);
+    }
   }
 
   movedAfterForceCall = false;
