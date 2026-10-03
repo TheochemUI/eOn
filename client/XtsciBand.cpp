@@ -75,17 +75,20 @@ int32_t methodKind(const Parameters::optimizer_options_t &opt) {
   return RGSADDLE_METHOD_FIRE;
 }
 
-void pinFixed(const AtomMatrix &ref, Matter &image, AtomMatrix *pos) {
-  bool any = false;
+// Fixed atoms keep the coordinates they had before the step.
+void pinRows(const AtomMatrix &ref, const Matter &image, AtomMatrix *pos) {
   for (int j = 0; j < image.numberOfAtoms(); ++j) {
-    if (!image.getFixed(j)) {
-      continue;
+    if (image.getFixed(j)) {
+      pos->row(j) = ref.row(j);
     }
-    pos->row(j) = ref.row(j);
-    any = true;
   }
-  if (any) {
-    image.setPositions(*pos);
+}
+
+// Moves an image only when the coordinates differ, so an image that
+// already holds this geometry keeps its evaluation.
+void moveTo(Matter &image, const AtomMatrix &pos) {
+  if (image.getPositions() != pos) {
+    image.setPositions(pos);
   }
 }
 
@@ -134,10 +137,12 @@ int xtsciBandSurface(void *user, void *request) {
     for (int64_t r = 0; r < rows; ++r) {
       const auto i = static_cast<size_t>(first + r);
       AtomMatrix pos = AtomMatrix::Map(req->positions + r * dof, nAtoms, 3);
-      neb->path[i]->setPositions(pos);
       if (i < self->m_fixed.size()) {
-        pinFixed(self->m_fixed[i], *neb->path[i], &pos);
+        pinRows(self->m_fixed[i], *neb->path[i], &pos);
       }
+      // The fixed endpoints and a start point the band already evaluated
+      // come back from the image's own cache.
+      moveTo(*neb->path[i], pos);
       carried.push_back(neb->path[i].get());
     }
     // One batch for every carried image, so calculator groups or a batched
@@ -245,7 +250,12 @@ void XtsciBand::step(double maxMove) {
   for (int64_t i = 0; i < nImages; ++i) {
     m_fixed[static_cast<size_t>(i)] = m_neb->path[i]->getPositions();
   }
-  syncFromPath();
+  // The session holds the band of the last step. Resending it drops the
+  // session's cached endpoint and start-point evaluations, so only a band
+  // moved outside the session (a reparameterization) is resent.
+  if (!sessionMatchesPath()) {
+    syncFromPath();
+  }
   rgsaddle_report_t report{};
   checkStatus(rgsaddle_band_step(m_band, surfaceCallback, this, &report),
               "rgsaddle_band_step");
@@ -261,10 +271,30 @@ void XtsciBand::step(double maxMove) {
     if (i == 0 || i + 1 == m_fixed.size()) {
       continue;
     }
-    m_neb->path[i]->setPositions(pos);
-    pinFixed(m_fixed[i], *m_neb->path[i], &pos);
+    pinRows(m_fixed[i], *m_neb->path[i], &pos);
+    // The accepted point is usually the band's last evaluation, which the
+    // image still holds; the band update after the step then costs nothing.
+    moveTo(*m_neb->path[i], pos);
   }
   m_neb->movedAfterForceCall = true;
+}
+
+bool XtsciBand::sessionMatchesPath() const {
+  const auto nImages = static_cast<int64_t>(m_neb->numImages + 2);
+  const auto nAtoms = static_cast<int64_t>(m_neb->atoms);
+  std::vector<double> positions(static_cast<size_t>(nImages * 3 * nAtoms));
+  if (rgsaddle_band_positions(m_band, positions.data()) != RGSADDLE_OK) {
+    return false;
+  }
+  const auto dof = static_cast<std::ptrdiff_t>(3 * nAtoms);
+  for (int64_t i = 0; i < nImages; ++i) {
+    const AtomMatrix &pos = m_neb->path[static_cast<size_t>(i)]->getPositions();
+    if (!std::equal(pos.data(), pos.data() + dof,
+                    positions.begin() + i * dof)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 } // namespace eonc

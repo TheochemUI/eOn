@@ -41,6 +41,8 @@ public:
 
 private:
   friend int xtsciBandSurface(void *user, void *request);
+  // True when the session's band is the host path, bit for bit.
+  bool sessionMatchesPath() const;
 
   NudgedElasticBand *m_neb;
   RgsaddleBand *m_band{nullptr};

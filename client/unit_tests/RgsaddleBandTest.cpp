@@ -63,6 +63,46 @@ TEST_CASE("rgsaddle band steps a short LJ path", "[neb][rgsaddle]") {
   }
 }
 
+TEST_CASE("rgsaddle band evaluates each moved image once per step",
+          "[neb][rgsaddle][force_calls]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::neb_options(params).opt_method = OptType::XTSCI;
+  ParametersLoadAccess::neb_options(params).image_count = 3;
+  ParametersLoadAccess::neb_options(params).max_iterations = 4;
+  ParametersLoadAccess::neb_options(params).force_tolerance = 1e-8;
+  ParametersLoadAccess::neb_options(params).climbing_image.enabled = false;
+  ParametersLoadAccess::neb_options(params).climbing_image.ocineb.use_mmf =
+      false;
+  ParametersLoadAccess::neb_options(params).initialization.method =
+      NEBInit::LINEAR;
+  ParametersLoadAccess::neb_options(params).endpoints.minimize = false;
+  ParametersLoadAccess::optimizer_options(params).max_move = 0.05;
+  ParametersLoadAccess::optimizer_options(params).xtsci.method = "fire";
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = std::make_shared<Matter>(pot, params);
+  auto product = std::make_shared<Matter>(pot, params);
+  reactant->con2matter(std::string("reactant.con"));
+  product->con2matter(std::string("reactant.con"));
+  auto shifted = product->getPositions();
+  shifted(0, 0) += 0.5;
+  product->setPositions(shifted);
+  const size_t before = pot->forceCallCounter;
+  NudgedElasticBand neb(reactant, product, params, pot);
+  (void)neb.compute();
+  const size_t calls = pot->forceCallCounter - before;
+  // Two endpoints and the first band update, then at most two
+  // evaluations of the interior per FIRE step (rgmin's start point and its
+  // trial). The fixed endpoints and the band update after each step come
+  // from the images' own caches; resending the band every step cost about
+  // 3.2 evaluations of the whole band per step.
+  const size_t steps = 4;
+  const size_t interior = static_cast<size_t>(neb.numImages);
+  CAPTURE(calls);
+  REQUIRE(calls <= 2 + interior + 2 * steps * interior);
+}
+
 TEST_CASE("rgsaddle band surface serves whole, interior and one-image "
           "requests",
           "[neb][rgsaddle]") {
