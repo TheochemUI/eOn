@@ -157,7 +157,9 @@ cost. The MPI side is loaded on demand: rgpot's `librgpot_mpi`, and
 eOn's `librgpot_pot_mpi`, which holds the construction agreement and the
 grouped exit handler below. eOn loads it only under an MPI launcher,
 from `EON_RGPOT_MPI_LIBRARY`, the directory of `librgpot_pot`, or the
-linker path. It builds when rgpot has MPI: the wrap with
+linker path. rgpot finds `librgpot_mpi.so.3` the same way: from
+`RGPOT_MPI_LIBRARY`, the directory of `librgpot`, or the linker path.
+Set both variables when the libraries sit outside those directories. It builds when rgpot has MPI: the wrap with
 `-Drgpot:with_mpi=enabled`, or an installed rgpot whose `rgpot.pc`
 defines `RGPOT_HAS_MPI`; eOn's `-Dwith_mpi=enabled` also builds it.
 After a failed engine call rgpot asks for `MPI_Abort` at exit, and the
