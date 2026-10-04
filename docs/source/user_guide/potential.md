@@ -129,6 +129,27 @@ An exact listed spelling wins, so `SocketNWChem` stays distinct from `socketnwch
 .. autopydantic_model:: eon.schema.PotentialConfig
 ```
 
+### Pair cutoff switch
+
+The pair potentials `lj`, `ljcluster` and `morse_pt` shift each pair
+energy to zero at the cutoff: 15 Angstrom for LJ, 9.5 Angstrom for
+Morse. The same terms of `expr` do too. The force still jumps there, and
+a line search or a dimer rotation reads that jump as noise.
+`pair_switch_width` replaces the shift with the quintic switch
+`S(t) = 1 - 10t^3 + 15t^4 - 6t^5`. It acts over the last
+`pair_switch_width` Angstrom below the cutoff. The energy, the force,
+and the curvature then reach zero at the cutoff:
+
+```{code-block} ini
+[Potential]
+potential = morse_pt
+pair_switch_width = 1.0
+```
+
+The default 0 keeps the shifted truncation. A width must lie in
+`(0, cutoff]`; rgpot refuses any other. The switch changes the energy
+surface, so results with and without it do not compare directly.
+
 ## Potential configurations
 
 Several potentials have additional configuration stanzas.

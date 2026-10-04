@@ -60,6 +60,10 @@ struct potential_options_t {
   std::string extPotPath{"./ext_pot"};
   std::string potentialsPath{
       ""}; // colon-separated dirs for Fortran potential .so files
+  /// Width (Angstrom) of the C^2 quintic switch that takes the lj,
+  /// ljcluster and morse_pt pair terms to zero at their cutoff. 0 keeps
+  /// the shifted truncation, whose force jumps at the cutoff.
+  double pairSwitchWidth{0.0};
   int MPIPotentialRank{-1};
   /// Opaque MPI_Comm bits. Read/write with ParametersMpi.h in MPI TUs.
   std::uintptr_t MPIClientComm{0};

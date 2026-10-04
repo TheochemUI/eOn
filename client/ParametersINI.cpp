@@ -122,6 +122,9 @@ int load_ini(const INIReader &ini, Parameters &params) {
   ParametersLoadAccess::potential_options(params).potentialsPath =
       ini.Get("Potential", "potentials_path",
               ParametersLoadAccess::potential_options(params).potentialsPath);
+  ParametersLoadAccess::potential_options(params).pairSwitchWidth =
+      ini.GetReal("Potential", "pair_switch_width",
+                  ParametersLoadAccess::potential_options(params).pairSwitchWidth);
 
   if (params.potential_options().potential == PotType::MPI ||
       params.potential_options().potential == PotType::VASP) {

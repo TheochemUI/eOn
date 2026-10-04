@@ -141,6 +141,13 @@ Potential:
             kind: string
             default: ext_pot
 
+        pair_switch_width:
+            kind: float
+            default: 0.0
+            # Angstrom. C^2 quintic switch over the last pair_switch_width
+            # below the cutoff of lj, ljcluster and morse_pt; 0 keeps the
+            # shifted truncation.
+
 
 ################################################################################
 

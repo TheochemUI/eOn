@@ -89,6 +89,8 @@ json to_json(const Parameters &p) {
       {"ext_pot_path", ParametersLoadAccess::potential_options(p).extPotPath},
       {"potentials_path",
        ParametersLoadAccess::potential_options(p).potentialsPath},
+      {"pair_switch_width",
+       ParametersLoadAccess::potential_options(p).pairSwitchWidth},
   };
 
   // [Structure Comparison]
@@ -502,6 +504,8 @@ void from_json(const json &j, Parameters &p) {
              ParametersLoadAccess::potential_options(p).extPotPath);
     JSON_OPT(s, "potentials_path",
              ParametersLoadAccess::potential_options(p).potentialsPath);
+    JSON_OPT(s, "pair_switch_width",
+             ParametersLoadAccess::potential_options(p).pairSwitchWidth);
   }
 
   // [Structure Comparison]
