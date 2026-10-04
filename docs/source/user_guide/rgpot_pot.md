@@ -109,6 +109,28 @@ accuracy = 1.0
 `engine_path` may point at `libxtb_engine.so`. The client also reads
 `RGPOT_XTB_ENGINE` and `XTB_ENGINE`.
 
+### UMA
+
+The engine is `libuma_engine.so`, loaded at run time through the generic
+engine interface. `model_path` names the ahead-of-time compiled model,
+`task_name` selects its task head (default `omol`), and `charge` and
+`multiplicity` set the total charge and spin.
+
+```{code-block} ini
+[Potential]
+potential = rgpot
+
+[RgpotPot]
+backend = uma
+model_path = /path/to/uma.pt2
+task_name = omol
+device = cpu
+```
+
+`engine_path` may point at `libuma_engine.so`. The client also reads
+`RGPOT_UMA_ENGINE`. A molecule whose `.con` file carries no cell gets a
+25 angstrom diagonal box.
+
 ## CPMD
 
 `backend = cpmdc` runs one Car-Parrinello molecular dynamics (CPMD)

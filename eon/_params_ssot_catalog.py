@@ -1023,6 +1023,13 @@ CATALOG = {
           "ordinal": 30,
           "snake": "xtb_uhf",
           "type": "Int32"
+        },
+        {
+          "capnp": "task_name",
+          "default": "omol",
+          "ordinal": 31,
+          "snake": "task_name",
+          "type": "Text"
         }
       ],
       "ini_when": "potential=RGPOT",

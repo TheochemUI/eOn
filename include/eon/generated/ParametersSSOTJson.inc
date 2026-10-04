@@ -35,7 +35,8 @@ inline void project_ssot_json_write(json &j, const Parameters &p) {
         {"xtb_electronic_temperature", o.xtb_electronic_temperature},
         {"xtb_max_iterations", o.xtb_max_iterations},
         {"xtb_charge", o.xtb_charge},
-        {"xtb_uhf", o.xtb_uhf}
+        {"xtb_uhf", o.xtb_uhf},
+        {"task_name", o.task_name}
     };
   }
 }
@@ -87,6 +88,7 @@ inline void project_ssot_json_read(const json &j, Parameters &p) {
     else if (s.contains("xtb_max_iterations")) o.xtb_max_iterations = s.at("xtb_max_iterations").get<decltype(o.xtb_max_iterations)>();
     if (s.contains("uhf")) o.xtb_uhf = s.at("uhf").get<decltype(o.xtb_uhf)>();
     else if (s.contains("xtb_uhf")) o.xtb_uhf = s.at("xtb_uhf").get<decltype(o.xtb_uhf)>();
+    if (s.contains("task_name")) o.task_name = s.at("task_name").get<decltype(o.task_name)>();
     if (s.contains("xtb_charge")) o.xtb_charge = s.at("xtb_charge").get<decltype(o.xtb_charge)>();
     else o.xtb_charge = static_cast<double>(o.charge);
   }

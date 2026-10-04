@@ -41,9 +41,13 @@ struct RGPotEngineOptions {
   int xtb_max_iterations{250};
   double xtb_charge{0.0};
   int xtb_uhf{0};
+  // UMA (backend=uma): dlopen libuma_engine.so through the generic engine
+  // C ABI. model_path is the AOTI package; charge and multiplicity ride
+  // the shared fields.
+  std::string task_name{"omol"};
 };
 
-/** Opaque rgpot-backed engine (nwchemc / cpmdc / metatomic / xtb). */
+/** Opaque rgpot-backed engine (nwchemc / cpmdc / metatomic / uma / xtb). */
 class RGPotEngine {
 public:
   explicit RGPotEngine(const RGPotEngineOptions &opt);

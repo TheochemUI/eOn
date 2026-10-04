@@ -179,6 +179,7 @@ struct rgpot_options_t {
   int xtb_max_iterations{250};
   double xtb_charge{0.0};
   int xtb_uhf{0};
+  std::string task_name{"omol"};
 };
 
 // [Structure Comparison] //

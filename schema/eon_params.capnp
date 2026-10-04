@@ -226,6 +226,8 @@ struct RgpotPotOptions {
   # ini-order: uhf, xtb_uhf
   # cxx-cast: static_cast<int>
   xtb_uhf @30 :Int32 = 0;
+  # UMA (backend=uma): model task head of the AOTI package.
+  task_name @31 :Text = "omol";
 }
 
 # ---------------------------------------------------------------------

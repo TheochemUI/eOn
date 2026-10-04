@@ -51,6 +51,7 @@ RgpotPot::RgpotPot(const eonc::Parameters &p)
   opt.xtb_max_iterations = o.xtb_max_iterations;
   opt.xtb_charge = o.xtb_charge;
   opt.xtb_uhf = o.xtb_uhf;
+  opt.task_name = o.task_name;
 
   // Env overrides (CI / benchmarks)
   if (const char *e = std::getenv("RGPOT_BACKEND"))

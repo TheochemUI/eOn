@@ -131,6 +131,7 @@
     "RgpotPot.ranks_per_image",
     "RgpotPot.scf_type",
     "RgpotPot.scratch_dir",
+    "RgpotPot.task_name",
     "RgpotPot.theory",
     "RgpotPot.title",
     "RgpotPot.torch_determinism_strict",

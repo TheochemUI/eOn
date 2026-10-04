@@ -109,5 +109,6 @@ struct GeneratedDefaults {
   static constexpr auto RGPOTPOT_XTB_MAX_ITERATIONS = 250;
   static constexpr auto RGPOTPOT_XTB_CHARGE = 0.0;
   static constexpr auto RGPOTPOT_XTB_UHF = 0;
+  static constexpr auto RGPOTPOT_TASK_NAME = std::string_view{"omol"};
 };
 } // namespace eonc::params_ssot

@@ -34,4 +34,5 @@
     o.xtb_max_iterations = GD::RGPOTPOT_XTB_MAX_ITERATIONS;
     o.xtb_charge = GD::RGPOTPOT_XTB_CHARGE;
     o.xtb_uhf = GD::RGPOTPOT_XTB_UHF;
+    o.task_name = std::string(GD::RGPOTPOT_TASK_NAME);
   }

@@ -17,6 +17,7 @@ rgpot_pot = library(
     sources: [
         'RgpotPot.cpp',
         'RGPotEngine.cpp',
+        'GenericEngineLoader.cpp',
         'MetatomicEngineLoader.cpp',
         'XTBEngineLoader.cpp',
     ],
