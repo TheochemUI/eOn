@@ -161,17 +161,12 @@ static int eonClientMain(int argc, char **argv) {
   const auto logHome = std::filesystem::current_path();
 
 #ifdef EONMPI
-  bool client_standalone = false;
-  if (getenv("EON_CLIENT_STANDALONE") != nullptr) {
-    client_standalone = true;
-  }
+  // The same rule as the flag parse above: only a rank an eOn server
+  // launched (EON_SERVER_PATH set, EON_CLIENT_STANDALONE unset) runs as a
+  // server-driven client. Any other MPI client runs config.ini standalone.
+  const bool client_standalone = !serverRank;
   int number_of_clients;
   if (!client_standalone) {
-    if (getenv("EON_SERVER_PATH") == nullptr) {
-      QUILL_LOG_ERROR(logger, "error: must set the env var EON_SERVER_PATH");
-      logger->flush_log();
-      return 1;
-    }
     if (getenv("EON_NUMBER_OF_CLIENTS") == nullptr) {
       QUILL_LOG_ERROR(logger,
                       "error: must set the env var EON_NUMBER_OF_CLIENTS");
