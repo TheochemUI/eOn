@@ -285,7 +285,8 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
 }
 
 NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
-  long iteration = 0;
+  iteration_ = 0;
+  long &iteration = iteration_;
   this->status = NEBStatus::RUNNING;
 
   QUILL_LOG_DEBUG(log, "Nudged elastic band calculation started.");
