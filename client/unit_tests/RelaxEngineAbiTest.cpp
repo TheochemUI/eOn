@@ -1033,7 +1033,9 @@ TEST_CASE("relax engine stepper keeps the climbing image on a local max",
   for (long im = 0; im < n_images; ++im) {
     const double t =
         static_cast<double>(im) / static_cast<double>(n_images - 1);
-    const double x = 2.0 - 4.0 * t;
+    // Endpoints sit on the well minima. The middle image is the barrier,
+    // above both ends, so climbing selects it.
+    const double x = 1.0 - 2.0 * t;
     pos[static_cast<size_t>(im * 6)] = x;
     pos[static_cast<size_t>(im * 6 + 3)] = x;
     double *b = boxes.data() + im * 9;
