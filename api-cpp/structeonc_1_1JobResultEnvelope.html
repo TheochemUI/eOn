@@ -245,12 +245,14 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('structeonc_1_1
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:acbc1ffea5ccfbf46e1beed35eb053089" id="r_acbc1ffea5ccfbf46e1beed35eb053089"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#acbc1ffea5ccfbf46e1beed35eb053089">processSearchString</a> () const</td></tr>
 <tr class="memitem:ad22e26e28b4254d0f80e08341526fe99" id="r_ad22e26e28b4254d0f80e08341526fe99"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#ad22e26e28b4254d0f80e08341526fe99">toString</a> () const</td></tr>
 <tr class="memitem:a49b89d6be57cd79cf5bf95e3bba3d009" id="r_a49b89d6be57cd79cf5bf95e3bba3d009"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a49b89d6be57cd79cf5bf95e3bba3d009">writeResultsDat</a> (const std::string &amp;path) const</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:adcc250879257d0fb4823bb0c799a3510" id="r_adcc250879257d0fb4823bb0c799a3510"><td class="memItemLeft">static <a class="el" href="structeonc_1_1JobResultEnvelope.html">JobResultEnvelope</a>&#160;</td><td class="memItemRight"><a class="el" href="#adcc250879257d0fb4823bb0c799a3510">fromMinimization</a> (<a class="el" href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459">RunStatus</a> status, <a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> pot, std::uint64_t fcalls, bool hasE, double energy)</td></tr>
+<tr class="memitem:a94c3830e447fa0fd214a9e2e6811a54a" id="r_a94c3830e447fa0fd214a9e2e6811a54a"><td class="memItemLeft">static <a class="el" href="structeonc_1_1JobResultEnvelope.html">JobResultEnvelope</a>&#160;</td><td class="memItemRight"><a class="el" href="#a94c3830e447fa0fd214a9e2e6811a54a">fromProcessSearch</a> (int status, std::string statusText, <a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> pot, std::int64_t seed, std::uint64_t fMin, std::uint64_t fSaddle, std::uint64_t fPref, double eSaddle, double eReactant, double eProduct, double barrierFwd, double barrierRev, double displacement, double prefFwd, double prefRev, bool dynamics, double simTime, double mdTemp)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -268,14 +270,30 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a0a5f89b45cac1a866914c13f7765b690" id="r_a0a5f89b45cac1a866914c13f7765b690"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a0a5f89b45cac1a866914c13f7765b690">has_saddle</a> {false}</td></tr>
 <tr class="memitem:a63e5cd87b1d3c9a0b303728032c637ae" id="r_a63e5cd87b1d3c9a0b303728032c637ae"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a63e5cd87b1d3c9a0b303728032c637ae">has_reactant</a> {false}</td></tr>
 <tr class="memitem:add061da4deb02c2ad53e14b886601293" id="r_add061da4deb02c2ad53e14b886601293"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#add061da4deb02c2ad53e14b886601293">has_product</a> {false}</td></tr>
+<tr class="memitem:a1df44d8ba72c0ece9f2dc1b0e5b974f1" id="r_a1df44d8ba72c0ece9f2dc1b0e5b974f1"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a1df44d8ba72c0ece9f2dc1b0e5b974f1">process_search_layout</a> {false}</td></tr>
+<tr class="memitem:a0042f31b72db4c9fb86ae2221747e529" id="r_a0042f31b72db4c9fb86ae2221747e529"><td class="memItemLeft">std::uint64_t&#160;</td><td class="memItemRight"><a class="el" href="#a0042f31b72db4c9fb86ae2221747e529">force_calls_minimization</a> {0}</td></tr>
+<tr class="memitem:a7c3db405a132294ae1b00d0a8926c093" id="r_a7c3db405a132294ae1b00d0a8926c093"><td class="memItemLeft">std::uint64_t&#160;</td><td class="memItemRight"><a class="el" href="#a7c3db405a132294ae1b00d0a8926c093">force_calls_saddle</a> {0}</td></tr>
+<tr class="memitem:a3f0aeb94db4e3fbb6963d452239e91f0" id="r_a3f0aeb94db4e3fbb6963d452239e91f0"><td class="memItemLeft">std::uint64_t&#160;</td><td class="memItemRight"><a class="el" href="#a3f0aeb94db4e3fbb6963d452239e91f0">force_calls_prefactors</a> {0}</td></tr>
+<tr class="memitem:af0f72cfcde974086c33dc88387500065" id="r_af0f72cfcde974086c33dc88387500065"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#af0f72cfcde974086c33dc88387500065">barrier_reactant_to_product</a> {0.0}</td></tr>
+<tr class="memitem:a0ed3cfbfa613b2a6c9cdd92d7f8002d9" id="r_a0ed3cfbfa613b2a6c9cdd92d7f8002d9"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a0ed3cfbfa613b2a6c9cdd92d7f8002d9">barrier_product_to_reactant</a> {0.0}</td></tr>
+<tr class="memitem:a35ea1cdc44443633a944c9d33daf7e4c" id="r_a35ea1cdc44443633a944c9d33daf7e4c"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a35ea1cdc44443633a944c9d33daf7e4c">prefactor_reactant_to_product</a> {0.0}</td></tr>
+<tr class="memitem:a2d260d65753e3c0ca2e986a0ed6cee84" id="r_a2d260d65753e3c0ca2e986a0ed6cee84"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a2d260d65753e3c0ca2e986a0ed6cee84">prefactor_product_to_reactant</a> {0.0}</td></tr>
+<tr class="memitem:a3cdb01577a9abba71b2508bdb254b969" id="r_a3cdb01577a9abba71b2508bdb254b969"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a3cdb01577a9abba71b2508bdb254b969">displacement_saddle_distance</a> {0.0}</td></tr>
+<tr class="memitem:a23165aece99bec899a23e883f24ced65" id="r_a23165aece99bec899a23e883f24ced65"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a23165aece99bec899a23e883f24ced65">simulation_time</a> {0.0}</td></tr>
+<tr class="memitem:acec6b2dbc1c82bc4a5a49607845220d2" id="r_acec6b2dbc1c82bc4a5a49607845220d2"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#acec6b2dbc1c82bc4a5a49607845220d2">md_temperature</a> {0.0}</td></tr>
+<tr class="memitem:ac3f973d47b947d1527202d433e69d984" id="r_ac3f973d47b947d1527202d433e69d984"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#ac3f973d47b947d1527202d433e69d984">has_dynamics</a> {false}</td></tr>
+<tr class="memitem:ac285eb897980ccf57ed5e7633d822da9" id="r_ac285eb897980ccf57ed5e7633d822da9"><td class="memItemLeft">std::optional&lt; readcon::ConFrame &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ac285eb897980ccf57ed5e7633d822da9">reactant_frame</a></td></tr>
+<tr class="memitem:a8957866c9f69084300097895d64232b5" id="r_a8957866c9f69084300097895d64232b5"><td class="memItemLeft">std::optional&lt; readcon::ConFrame &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a8957866c9f69084300097895d64232b5">saddle_frame</a></td></tr>
+<tr class="memitem:a444a1d89805b553696e32638018c5afd" id="r_a444a1d89805b553696e32638018c5afd"><td class="memItemLeft">std::optional&lt; readcon::ConFrame &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a444a1d89805b553696e32638018c5afd">product_frame</a></td></tr>
 <tr class="memitem:a062d9b81e51daf875404f7aad5bf8bad" id="r_a062d9b81e51daf875404f7aad5bf8bad"><td class="memItemLeft">std::vector&lt; std::pair&lt; std::string, double &gt; &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a062d9b81e51daf875404f7aad5bf8bad">extras</a></td></tr>
 <tr class="memitem:a3c82eedc545ba050d69e84c1262ac7bb" id="r_a3c82eedc545ba050d69e84c1262ac7bb"><td class="memItemLeft">std::vector&lt; std::pair&lt; std::string, std::string &gt; &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a3c82eedc545ba050d69e84c1262ac7bb">tags</a></td></tr>
+<tr class="memitem:ad3c831a9c3d679453a4523457f97105c" id="r_ad3c831a9c3d679453a4523457f97105c"><td class="memItemLeft"><a class="el" href="structeonc_1_1JobResultProvenance.html">JobResultProvenance</a>&#160;</td><td class="memItemRight"><a class="el" href="#ad3c831a9c3d679453a4523457f97105c">provenance</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>In-memory JobResult scalars. </p>
 <p>Matches schema/eon_job_result.capnp field names as results.dat keys. Geometries stay on <a class="el" href="classeonc_1_1Matter.html">Matter</a> until capnp codegen lands. </p>
 
-<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00032">32</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00118">118</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="adcc250879257d0fb4823bb0c799a3510" name="adcc250879257d0fb4823bb0c799a3510"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adcc250879257d0fb4823bb0c799a3510">&#9670;&#160;</a></span>fromMinimization()</h2>
@@ -319,18 +337,239 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00101">101</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  103</span>                                                           {</div>
-<div class="line"><span class="lineno">  104</span>    JobResultEnvelope e;</div>
-<div class="line"><span class="lineno">  105</span>    e.job_type = <span class="stringliteral">&quot;minimization&quot;</span>;</div>
-<div class="line"><span class="lineno">  106</span>    e.status_code = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(status);</div>
-<div class="line"><span class="lineno">  107</span>    e.status_text = std::string(magic_enum::enum_name&lt;RunStatus&gt;(status));</div>
-<div class="line"><span class="lineno">  108</span>    e.potential_type = std::string(magic_enum::enum_name&lt;PotType&gt;(pot));</div>
-<div class="line"><span class="lineno">  109</span>    e.force_calls = fcalls;</div>
-<div class="line"><span class="lineno">  110</span>    e.has_energy = hasE;</div>
-<div class="line"><span class="lineno">  111</span>    e.potential_energy = energy;</div>
-<div class="line"><span class="lineno">  112</span>    <span class="keywordflow">return</span> e;</div>
-<div class="line"><span class="lineno">  113</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00244">244</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  246</span>                                                           {</div>
+<div class="line"><span class="lineno">  247</span>    JobResultEnvelope e;</div>
+<div class="line"><span class="lineno">  248</span>    e.job_type = <span class="stringliteral">&quot;minimization&quot;</span>;</div>
+<div class="line"><span class="lineno">  249</span>    e.status_code = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(status);</div>
+<div class="line"><span class="lineno">  250</span>    e.status_text = std::string(magic_enum::enum_name&lt;RunStatus&gt;(status));</div>
+<div class="line"><span class="lineno">  251</span>    e.potential_type = std::string(magic_enum::enum_name&lt;PotType&gt;(pot));</div>
+<div class="line"><span class="lineno">  252</span>    e.force_calls = fcalls;</div>
+<div class="line"><span class="lineno">  253</span>    e.has_energy = hasE;</div>
+<div class="line"><span class="lineno">  254</span>    e.potential_energy = energy;</div>
+<div class="line"><span class="lineno">  255</span>    <span class="keywordflow">return</span> e;</div>
+<div class="line"><span class="lineno">  256</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a94c3830e447fa0fd214a9e2e6811a54a" name="a94c3830e447fa0fd214a9e2e6811a54a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94c3830e447fa0fd214a9e2e6811a54a">&#9670;&#160;</a></span>fromProcessSearch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1JobResultEnvelope.html">JobResultEnvelope</a> eonc::JobResultEnvelope::fromProcessSearch </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>statusText</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a></td>          <td class="paramname"><span class="paramname"><em>pot</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int64_t</td>          <td class="paramname"><span class="paramname"><em>seed</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t</td>          <td class="paramname"><span class="paramname"><em>fMin</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t</td>          <td class="paramname"><span class="paramname"><em>fSaddle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t</td>          <td class="paramname"><span class="paramname"><em>fPref</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>eSaddle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>eReactant</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>eProduct</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>barrierFwd</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>barrierRev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>displacement</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>prefFwd</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>prefRev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>dynamics</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>simTime</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>mdTemp</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00258">258</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  263</span>                                                    {</div>
+<div class="line"><span class="lineno">  264</span>    JobResultEnvelope e;</div>
+<div class="line"><span class="lineno">  265</span>    e.process_search_layout = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  266</span>    e.job_type = <span class="stringliteral">&quot;process_search&quot;</span>;</div>
+<div class="line"><span class="lineno">  267</span>    e.status_code = status;</div>
+<div class="line"><span class="lineno">  268</span>    e.status_text = std::move(statusText);</div>
+<div class="line"><span class="lineno">  269</span>    e.potential_type = std::string(magic_enum::enum_name&lt;PotType&gt;(pot));</div>
+<div class="line"><span class="lineno">  270</span>    e.random_seed = seed;</div>
+<div class="line"><span class="lineno">  271</span>    e.force_calls_minimization = fMin;</div>
+<div class="line"><span class="lineno">  272</span>    e.force_calls_saddle = fSaddle;</div>
+<div class="line"><span class="lineno">  273</span>    e.force_calls_prefactors = fPref;</div>
+<div class="line"><span class="lineno">  274</span>    e.force_calls = fMin + fSaddle + fPref;</div>
+<div class="line"><span class="lineno">  275</span>    e.has_saddle = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  276</span>    e.has_reactant = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  277</span>    e.has_product = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  278</span>    e.potential_energy_saddle = eSaddle;</div>
+<div class="line"><span class="lineno">  279</span>    e.potential_energy_reactant = eReactant;</div>
+<div class="line"><span class="lineno">  280</span>    e.potential_energy_product = eProduct;</div>
+<div class="line"><span class="lineno">  281</span>    e.barrier_reactant_to_product = barrierFwd;</div>
+<div class="line"><span class="lineno">  282</span>    e.barrier_product_to_reactant = barrierRev;</div>
+<div class="line"><span class="lineno">  283</span>    e.displacement_saddle_distance = displacement;</div>
+<div class="line"><span class="lineno">  284</span>    e.prefactor_reactant_to_product = prefFwd;</div>
+<div class="line"><span class="lineno">  285</span>    e.prefactor_product_to_reactant = prefRev;</div>
+<div class="line"><span class="lineno">  286</span>    e.has_dynamics = dynamics;</div>
+<div class="line"><span class="lineno">  287</span>    e.simulation_time = simTime;</div>
+<div class="line"><span class="lineno">  288</span>    e.md_temperature = mdTemp;</div>
+<div class="line"><span class="lineno">  289</span>    <span class="keywordflow">return</span> e;</div>
+<div class="line"><span class="lineno">  290</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="acbc1ffea5ccfbf46e1beed35eb053089" name="acbc1ffea5ccfbf46e1beed35eb053089"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbc1ffea5ccfbf46e1beed35eb053089">&#9670;&#160;</a></span>processSearchString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::JobResultEnvelope::processSearchString </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00152">152</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  152</span>                                        {</div>
+<div class="line"><span class="lineno">  153</span>    std::ostringstream out;</div>
+<div class="line"><span class="lineno">  154</span>    out &lt;&lt; <a class="code hl_variable" href="#a6b196f1317a29707c693d84533172402">status_code</a> &lt;&lt; <span class="stringliteral">&quot; termination_reason\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  155</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aaa5f253627da3134d2765405c62d852a">status_text</a>.empty()) {</div>
+<div class="line"><span class="lineno">  156</span>      out &lt;&lt; <a class="code hl_variable" href="#aaa5f253627da3134d2765405c62d852a">status_text</a> &lt;&lt; <span class="stringliteral">&quot; termination_reason_text\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  157</span>    }</div>
+<div class="line"><span class="lineno">  158</span>    out &lt;&lt; <a class="code hl_variable" href="#ad70b85a67d4de3375999fcc1f11135c8">random_seed</a> &lt;&lt; <span class="stringliteral">&quot; random_seed\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  159</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a46aa8a42b30f17697b4b723a349a9f5c">potential_type</a>.empty()) {</div>
+<div class="line"><span class="lineno">  160</span>      out &lt;&lt; <a class="code hl_variable" href="#a46aa8a42b30f17697b4b723a349a9f5c">potential_type</a> &lt;&lt; <span class="stringliteral">&quot; potential_type\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  161</span>    }</div>
+<div class="line"><span class="lineno">  162</span>    out &lt;&lt; <a class="code hl_variable" href="#a0655612415a487b0d4a207cc8f185241">force_calls</a> &lt;&lt; <span class="stringliteral">&quot; total_force_calls\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  163</span>    out &lt;&lt; <a class="code hl_variable" href="#a0042f31b72db4c9fb86ae2221747e529">force_calls_minimization</a> &lt;&lt; <span class="stringliteral">&quot; force_calls_minimization\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  164</span>    out &lt;&lt; <a class="code hl_variable" href="#a7c3db405a132294ae1b00d0a8926c093">force_calls_saddle</a> &lt;&lt; <span class="stringliteral">&quot; force_calls_saddle\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  165</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} potential_energy_saddle\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  166</span>                       <a class="code hl_variable" href="#a36ae5db22fd616fc62eebd7b66e60302">potential_energy_saddle</a>);</div>
+<div class="line"><span class="lineno">  167</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} potential_energy_reactant\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  168</span>                       <a class="code hl_variable" href="#ab80465f32ce13a4ccf7173239fb39130">potential_energy_reactant</a>);</div>
+<div class="line"><span class="lineno">  169</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} potential_energy_product\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  170</span>                       <a class="code hl_variable" href="#a259737b03a44f2d12bf0c79350f44e59">potential_energy_product</a>);</div>
+<div class="line"><span class="lineno">  171</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} barrier_reactant_to_product\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  172</span>                       <a class="code hl_variable" href="#af0f72cfcde974086c33dc88387500065">barrier_reactant_to_product</a>);</div>
+<div class="line"><span class="lineno">  173</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} barrier_product_to_reactant\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  174</span>                       <a class="code hl_variable" href="#a0ed3cfbfa613b2a6c9cdd92d7f8002d9">barrier_product_to_reactant</a>);</div>
+<div class="line"><span class="lineno">  175</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} displacement_saddle_distance\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  176</span>                       <a class="code hl_variable" href="#a3cdb01577a9abba71b2508bdb254b969">displacement_saddle_distance</a>);</div>
+<div class="line"><span class="lineno">  177</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ac3f973d47b947d1527202d433e69d984">has_dynamics</a>) {</div>
+<div class="line"><span class="lineno">  178</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} simulation_time\n&quot;</span>, <a class="code hl_variable" href="#a23165aece99bec899a23e883f24ced65">simulation_time</a>);</div>
+<div class="line"><span class="lineno">  179</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} md_temperature\n&quot;</span>, <a class="code hl_variable" href="#acec6b2dbc1c82bc4a5a49607845220d2">md_temperature</a>);</div>
+<div class="line"><span class="lineno">  180</span>    }</div>
+<div class="line"><span class="lineno">  181</span>    out &lt;&lt; <a class="code hl_variable" href="#a3f0aeb94db4e3fbb6963d452239e91f0">force_calls_prefactors</a> &lt;&lt; <span class="stringliteral">&quot; force_calls_prefactors\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  182</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} prefactor_reactant_to_product\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  183</span>                       <a class="code hl_variable" href="#a35ea1cdc44443633a944c9d33daf7e4c">prefactor_reactant_to_product</a>);</div>
+<div class="line"><span class="lineno">  184</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} prefactor_product_to_reactant\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  185</span>                       <a class="code hl_variable" href="#a2d260d65753e3c0ca2e986a0ed6cee84">prefactor_product_to_reactant</a>);</div>
+<div class="line"><span class="lineno">  186</span>    <span class="keywordflow">return</span> out.str();</div>
+<div class="line"><span class="lineno">  187</span>  }</div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a0042f31b72db4c9fb86ae2221747e529"><div class="ttname"><a href="#a0042f31b72db4c9fb86ae2221747e529">eonc::JobResultEnvelope::force_calls_minimization</a></div><div class="ttdeci">std::uint64_t force_calls_minimization</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00134">JobResult.h:134</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a0655612415a487b0d4a207cc8f185241"><div class="ttname"><a href="#a0655612415a487b0d4a207cc8f185241">eonc::JobResultEnvelope::force_calls</a></div><div class="ttdeci">std::uint64_t force_calls</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00124">JobResult.h:124</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a0ed3cfbfa613b2a6c9cdd92d7f8002d9"><div class="ttname"><a href="#a0ed3cfbfa613b2a6c9cdd92d7f8002d9">eonc::JobResultEnvelope::barrier_product_to_reactant</a></div><div class="ttdeci">double barrier_product_to_reactant</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00138">JobResult.h:138</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a23165aece99bec899a23e883f24ced65"><div class="ttname"><a href="#a23165aece99bec899a23e883f24ced65">eonc::JobResultEnvelope::simulation_time</a></div><div class="ttdeci">double simulation_time</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00142">JobResult.h:142</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a259737b03a44f2d12bf0c79350f44e59"><div class="ttname"><a href="#a259737b03a44f2d12bf0c79350f44e59">eonc::JobResultEnvelope::potential_energy_product</a></div><div class="ttdeci">double potential_energy_product</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00129">JobResult.h:129</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a2d260d65753e3c0ca2e986a0ed6cee84"><div class="ttname"><a href="#a2d260d65753e3c0ca2e986a0ed6cee84">eonc::JobResultEnvelope::prefactor_product_to_reactant</a></div><div class="ttdeci">double prefactor_product_to_reactant</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00140">JobResult.h:140</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a35ea1cdc44443633a944c9d33daf7e4c"><div class="ttname"><a href="#a35ea1cdc44443633a944c9d33daf7e4c">eonc::JobResultEnvelope::prefactor_reactant_to_product</a></div><div class="ttdeci">double prefactor_reactant_to_product</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00139">JobResult.h:139</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a36ae5db22fd616fc62eebd7b66e60302"><div class="ttname"><a href="#a36ae5db22fd616fc62eebd7b66e60302">eonc::JobResultEnvelope::potential_energy_saddle</a></div><div class="ttdeci">double potential_energy_saddle</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00127">JobResult.h:127</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a3cdb01577a9abba71b2508bdb254b969"><div class="ttname"><a href="#a3cdb01577a9abba71b2508bdb254b969">eonc::JobResultEnvelope::displacement_saddle_distance</a></div><div class="ttdeci">double displacement_saddle_distance</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00141">JobResult.h:141</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a3f0aeb94db4e3fbb6963d452239e91f0"><div class="ttname"><a href="#a3f0aeb94db4e3fbb6963d452239e91f0">eonc::JobResultEnvelope::force_calls_prefactors</a></div><div class="ttdeci">std::uint64_t force_calls_prefactors</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00136">JobResult.h:136</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a46aa8a42b30f17697b4b723a349a9f5c"><div class="ttname"><a href="#a46aa8a42b30f17697b4b723a349a9f5c">eonc::JobResultEnvelope::potential_type</a></div><div class="ttdeci">std::string potential_type</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00122">JobResult.h:122</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a6b196f1317a29707c693d84533172402"><div class="ttname"><a href="#a6b196f1317a29707c693d84533172402">eonc::JobResultEnvelope::status_code</a></div><div class="ttdeci">int status_code</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00120">JobResult.h:120</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a7c3db405a132294ae1b00d0a8926c093"><div class="ttname"><a href="#a7c3db405a132294ae1b00d0a8926c093">eonc::JobResultEnvelope::force_calls_saddle</a></div><div class="ttdeci">std::uint64_t force_calls_saddle</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00135">JobResult.h:135</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_aaa5f253627da3134d2765405c62d852a"><div class="ttname"><a href="#aaa5f253627da3134d2765405c62d852a">eonc::JobResultEnvelope::status_text</a></div><div class="ttdeci">std::string status_text</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00121">JobResult.h:121</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_ab80465f32ce13a4ccf7173239fb39130"><div class="ttname"><a href="#ab80465f32ce13a4ccf7173239fb39130">eonc::JobResultEnvelope::potential_energy_reactant</a></div><div class="ttdeci">double potential_energy_reactant</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00128">JobResult.h:128</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_ac3f973d47b947d1527202d433e69d984"><div class="ttname"><a href="#ac3f973d47b947d1527202d433e69d984">eonc::JobResultEnvelope::has_dynamics</a></div><div class="ttdeci">bool has_dynamics</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00144">JobResult.h:144</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_acec6b2dbc1c82bc4a5a49607845220d2"><div class="ttname"><a href="#acec6b2dbc1c82bc4a5a49607845220d2">eonc::JobResultEnvelope::md_temperature</a></div><div class="ttdeci">double md_temperature</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00143">JobResult.h:143</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_ad70b85a67d4de3375999fcc1f11135c8"><div class="ttname"><a href="#ad70b85a67d4de3375999fcc1f11135c8">eonc::JobResultEnvelope::random_seed</a></div><div class="ttdeci">std::int64_t random_seed</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00123">JobResult.h:123</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_af0f72cfcde974086c33dc88387500065"><div class="ttname"><a href="#af0f72cfcde974086c33dc88387500065">eonc::JobResultEnvelope::barrier_reactant_to_product</a></div><div class="ttdeci">double barrier_reactant_to_product</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00137">JobResult.h:137</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -357,62 +596,61 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00050">50</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   50</span>                             {</div>
-<div class="line"><span class="lineno">   51</span>    std::ostringstream out;</div>
-<div class="line"><span class="lineno">   52</span>    out &lt;&lt; <a class="code hl_variable" href="#a6b196f1317a29707c693d84533172402">status_code</a> &lt;&lt; <span class="stringliteral">&quot; termination_reason\n&quot;</span>;</div>
-<div class="line"><span class="lineno">   53</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aaa5f253627da3134d2765405c62d852a">status_text</a>.empty()) {</div>
-<div class="line"><span class="lineno">   54</span>      out &lt;&lt; <a class="code hl_variable" href="#aaa5f253627da3134d2765405c62d852a">status_text</a> &lt;&lt; <span class="stringliteral">&quot; termination_reason_text\n&quot;</span>;</div>
-<div class="line"><span class="lineno">   55</span>    }</div>
-<div class="line"><span class="lineno">   56</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a927280fb16e9345a58aa0a133bf2b925">job_type</a>.empty()) {</div>
-<div class="line"><span class="lineno">   57</span>      out &lt;&lt; <a class="code hl_variable" href="#a927280fb16e9345a58aa0a133bf2b925">job_type</a> &lt;&lt; <span class="stringliteral">&quot; job_type\n&quot;</span>;</div>
-<div class="line"><span class="lineno">   58</span>    }</div>
-<div class="line"><span class="lineno">   59</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a46aa8a42b30f17697b4b723a349a9f5c">potential_type</a>.empty()) {</div>
-<div class="line"><span class="lineno">   60</span>      out &lt;&lt; <a class="code hl_variable" href="#a46aa8a42b30f17697b4b723a349a9f5c">potential_type</a> &lt;&lt; <span class="stringliteral">&quot; potential_type\n&quot;</span>;</div>
-<div class="line"><span class="lineno">   61</span>    }</div>
-<div class="line"><span class="lineno">   62</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ad70b85a67d4de3375999fcc1f11135c8">random_seed</a> &gt;= 0) {</div>
-<div class="line"><span class="lineno">   63</span>      out &lt;&lt; <a class="code hl_variable" href="#ad70b85a67d4de3375999fcc1f11135c8">random_seed</a> &lt;&lt; <span class="stringliteral">&quot; random_seed\n&quot;</span>;</div>
-<div class="line"><span class="lineno">   64</span>    }</div>
-<div class="line"><span class="lineno">   65</span>    out &lt;&lt; <a class="code hl_variable" href="#a0655612415a487b0d4a207cc8f185241">force_calls</a> &lt;&lt; <span class="stringliteral">&quot; total_force_calls\n&quot;</span>;</div>
-<div class="line"><span class="lineno">   66</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a884095e49cd415335911c8e065134de1">has_energy</a>) {</div>
-<div class="line"><span class="lineno">   67</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} potential_energy\n&quot;</span>, <a class="code hl_variable" href="#a0822711471cd9fe67f81314e0a267fa6">potential_energy</a>);</div>
-<div class="line"><span class="lineno">   68</span>    }</div>
-<div class="line"><span class="lineno">   69</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a0a5f89b45cac1a866914c13f7765b690">has_saddle</a>) {</div>
-<div class="line"><span class="lineno">   70</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} potential_energy_saddle\n&quot;</span>,</div>
-<div class="line"><span class="lineno">   71</span>                         <a class="code hl_variable" href="#a36ae5db22fd616fc62eebd7b66e60302">potential_energy_saddle</a>);</div>
-<div class="line"><span class="lineno">   72</span>    }</div>
-<div class="line"><span class="lineno">   73</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a63e5cd87b1d3c9a0b303728032c637ae">has_reactant</a>) {</div>
-<div class="line"><span class="lineno">   74</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} potential_energy_reactant\n&quot;</span>,</div>
-<div class="line"><span class="lineno">   75</span>                         <a class="code hl_variable" href="#ab80465f32ce13a4ccf7173239fb39130">potential_energy_reactant</a>);</div>
-<div class="line"><span class="lineno">   76</span>    }</div>
-<div class="line"><span class="lineno">   77</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#add061da4deb02c2ad53e14b886601293">has_product</a>) {</div>
-<div class="line"><span class="lineno">   78</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} potential_energy_product\n&quot;</span>,</div>
-<div class="line"><span class="lineno">   79</span>                         <a class="code hl_variable" href="#a259737b03a44f2d12bf0c79350f44e59">potential_energy_product</a>);</div>
-<div class="line"><span class="lineno">   80</span>    }</div>
-<div class="line"><span class="lineno">   81</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;kv : <a class="code hl_variable" href="#a062d9b81e51daf875404f7aad5bf8bad">extras</a>) {</div>
-<div class="line"><span class="lineno">   82</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} {}\n&quot;</span>, kv.second, kv.first);</div>
-<div class="line"><span class="lineno">   83</span>    }</div>
-<div class="line"><span class="lineno">   84</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;kv : <a class="code hl_variable" href="#a3c82eedc545ba050d69e84c1262ac7bb">tags</a>) {</div>
-<div class="line"><span class="lineno">   85</span>      out &lt;&lt; kv.second &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; kv.first &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><span class="lineno">   86</span>    }</div>
-<div class="line"><span class="lineno">   87</span>    <span class="keywordflow">return</span> out.str();</div>
-<div class="line"><span class="lineno">   88</span>  }</div>
-<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a062d9b81e51daf875404f7aad5bf8bad"><div class="ttname"><a href="#a062d9b81e51daf875404f7aad5bf8bad">eonc::JobResultEnvelope::extras</a></div><div class="ttdeci">std::vector&lt; std::pair&lt; std::string, double &gt; &gt; extras</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00047">JobResult.h:47</a></div></div>
-<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a0655612415a487b0d4a207cc8f185241"><div class="ttname"><a href="#a0655612415a487b0d4a207cc8f185241">eonc::JobResultEnvelope::force_calls</a></div><div class="ttdeci">std::uint64_t force_calls</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00038">JobResult.h:38</a></div></div>
-<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a0822711471cd9fe67f81314e0a267fa6"><div class="ttname"><a href="#a0822711471cd9fe67f81314e0a267fa6">eonc::JobResultEnvelope::potential_energy</a></div><div class="ttdeci">double potential_energy</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00039">JobResult.h:39</a></div></div>
-<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a0a5f89b45cac1a866914c13f7765b690"><div class="ttname"><a href="#a0a5f89b45cac1a866914c13f7765b690">eonc::JobResultEnvelope::has_saddle</a></div><div class="ttdeci">bool has_saddle</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00044">JobResult.h:44</a></div></div>
-<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a259737b03a44f2d12bf0c79350f44e59"><div class="ttname"><a href="#a259737b03a44f2d12bf0c79350f44e59">eonc::JobResultEnvelope::potential_energy_product</a></div><div class="ttdeci">double potential_energy_product</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00043">JobResult.h:43</a></div></div>
-<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a36ae5db22fd616fc62eebd7b66e60302"><div class="ttname"><a href="#a36ae5db22fd616fc62eebd7b66e60302">eonc::JobResultEnvelope::potential_energy_saddle</a></div><div class="ttdeci">double potential_energy_saddle</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00041">JobResult.h:41</a></div></div>
-<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a3c82eedc545ba050d69e84c1262ac7bb"><div class="ttname"><a href="#a3c82eedc545ba050d69e84c1262ac7bb">eonc::JobResultEnvelope::tags</a></div><div class="ttdeci">std::vector&lt; std::pair&lt; std::string, std::string &gt; &gt; tags</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00048">JobResult.h:48</a></div></div>
-<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a46aa8a42b30f17697b4b723a349a9f5c"><div class="ttname"><a href="#a46aa8a42b30f17697b4b723a349a9f5c">eonc::JobResultEnvelope::potential_type</a></div><div class="ttdeci">std::string potential_type</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00036">JobResult.h:36</a></div></div>
-<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a63e5cd87b1d3c9a0b303728032c637ae"><div class="ttname"><a href="#a63e5cd87b1d3c9a0b303728032c637ae">eonc::JobResultEnvelope::has_reactant</a></div><div class="ttdeci">bool has_reactant</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00045">JobResult.h:45</a></div></div>
-<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a6b196f1317a29707c693d84533172402"><div class="ttname"><a href="#a6b196f1317a29707c693d84533172402">eonc::JobResultEnvelope::status_code</a></div><div class="ttdeci">int status_code</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00034">JobResult.h:34</a></div></div>
-<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a884095e49cd415335911c8e065134de1"><div class="ttname"><a href="#a884095e49cd415335911c8e065134de1">eonc::JobResultEnvelope::has_energy</a></div><div class="ttdeci">bool has_energy</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00040">JobResult.h:40</a></div></div>
-<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a927280fb16e9345a58aa0a133bf2b925"><div class="ttname"><a href="#a927280fb16e9345a58aa0a133bf2b925">eonc::JobResultEnvelope::job_type</a></div><div class="ttdeci">std::string job_type</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00033">JobResult.h:33</a></div></div>
-<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_aaa5f253627da3134d2765405c62d852a"><div class="ttname"><a href="#aaa5f253627da3134d2765405c62d852a">eonc::JobResultEnvelope::status_text</a></div><div class="ttdeci">std::string status_text</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00035">JobResult.h:35</a></div></div>
-<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_ab80465f32ce13a4ccf7173239fb39130"><div class="ttname"><a href="#ab80465f32ce13a4ccf7173239fb39130">eonc::JobResultEnvelope::potential_energy_reactant</a></div><div class="ttdeci">double potential_energy_reactant</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00042">JobResult.h:42</a></div></div>
-<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_ad70b85a67d4de3375999fcc1f11135c8"><div class="ttname"><a href="#ad70b85a67d4de3375999fcc1f11135c8">eonc::JobResultEnvelope::random_seed</a></div><div class="ttdeci">std::int64_t random_seed</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00037">JobResult.h:37</a></div></div>
-<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_add061da4deb02c2ad53e14b886601293"><div class="ttname"><a href="#add061da4deb02c2ad53e14b886601293">eonc::JobResultEnvelope::has_product</a></div><div class="ttdeci">bool has_product</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00046">JobResult.h:46</a></div></div>
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00189">189</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  189</span>                             {</div>
+<div class="line"><span class="lineno">  190</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a1df44d8ba72c0ece9f2dc1b0e5b974f1">process_search_layout</a>) {</div>
+<div class="line"><span class="lineno">  191</span>      <span class="keywordflow">return</span> <a class="code hl_function" href="#acbc1ffea5ccfbf46e1beed35eb053089">processSearchString</a>();</div>
+<div class="line"><span class="lineno">  192</span>    }</div>
+<div class="line"><span class="lineno">  193</span>    std::ostringstream out;</div>
+<div class="line"><span class="lineno">  194</span>    out &lt;&lt; <a class="code hl_variable" href="#a6b196f1317a29707c693d84533172402">status_code</a> &lt;&lt; <span class="stringliteral">&quot; termination_reason\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  195</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aaa5f253627da3134d2765405c62d852a">status_text</a>.empty()) {</div>
+<div class="line"><span class="lineno">  196</span>      out &lt;&lt; <a class="code hl_variable" href="#aaa5f253627da3134d2765405c62d852a">status_text</a> &lt;&lt; <span class="stringliteral">&quot; termination_reason_text\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  197</span>    }</div>
+<div class="line"><span class="lineno">  198</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a927280fb16e9345a58aa0a133bf2b925">job_type</a>.empty()) {</div>
+<div class="line"><span class="lineno">  199</span>      out &lt;&lt; <a class="code hl_variable" href="#a927280fb16e9345a58aa0a133bf2b925">job_type</a> &lt;&lt; <span class="stringliteral">&quot; job_type\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  200</span>    }</div>
+<div class="line"><span class="lineno">  201</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a46aa8a42b30f17697b4b723a349a9f5c">potential_type</a>.empty()) {</div>
+<div class="line"><span class="lineno">  202</span>      out &lt;&lt; <a class="code hl_variable" href="#a46aa8a42b30f17697b4b723a349a9f5c">potential_type</a> &lt;&lt; <span class="stringliteral">&quot; potential_type\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  203</span>    }</div>
+<div class="line"><span class="lineno">  204</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ad70b85a67d4de3375999fcc1f11135c8">random_seed</a> &gt;= 0) {</div>
+<div class="line"><span class="lineno">  205</span>      out &lt;&lt; <a class="code hl_variable" href="#ad70b85a67d4de3375999fcc1f11135c8">random_seed</a> &lt;&lt; <span class="stringliteral">&quot; random_seed\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  206</span>    }</div>
+<div class="line"><span class="lineno">  207</span>    out &lt;&lt; <a class="code hl_variable" href="#a0655612415a487b0d4a207cc8f185241">force_calls</a> &lt;&lt; <span class="stringliteral">&quot; total_force_calls\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  208</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a884095e49cd415335911c8e065134de1">has_energy</a>) {</div>
+<div class="line"><span class="lineno">  209</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} potential_energy\n&quot;</span>, <a class="code hl_variable" href="#a0822711471cd9fe67f81314e0a267fa6">potential_energy</a>);</div>
+<div class="line"><span class="lineno">  210</span>    }</div>
+<div class="line"><span class="lineno">  211</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a0a5f89b45cac1a866914c13f7765b690">has_saddle</a>) {</div>
+<div class="line"><span class="lineno">  212</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} potential_energy_saddle\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  213</span>                         <a class="code hl_variable" href="#a36ae5db22fd616fc62eebd7b66e60302">potential_energy_saddle</a>);</div>
+<div class="line"><span class="lineno">  214</span>    }</div>
+<div class="line"><span class="lineno">  215</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a63e5cd87b1d3c9a0b303728032c637ae">has_reactant</a>) {</div>
+<div class="line"><span class="lineno">  216</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} potential_energy_reactant\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  217</span>                         <a class="code hl_variable" href="#ab80465f32ce13a4ccf7173239fb39130">potential_energy_reactant</a>);</div>
+<div class="line"><span class="lineno">  218</span>    }</div>
+<div class="line"><span class="lineno">  219</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#add061da4deb02c2ad53e14b886601293">has_product</a>) {</div>
+<div class="line"><span class="lineno">  220</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} potential_energy_product\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  221</span>                         <a class="code hl_variable" href="#a259737b03a44f2d12bf0c79350f44e59">potential_energy_product</a>);</div>
+<div class="line"><span class="lineno">  222</span>    }</div>
+<div class="line"><span class="lineno">  223</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;kv : <a class="code hl_variable" href="#a062d9b81e51daf875404f7aad5bf8bad">extras</a>) {</div>
+<div class="line"><span class="lineno">  224</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.12e} {}\n&quot;</span>, kv.second, kv.first);</div>
+<div class="line"><span class="lineno">  225</span>    }</div>
+<div class="line"><span class="lineno">  226</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;kv : <a class="code hl_variable" href="#a3c82eedc545ba050d69e84c1262ac7bb">tags</a>) {</div>
+<div class="line"><span class="lineno">  227</span>      out &lt;&lt; kv.second &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; kv.first &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  228</span>    }</div>
+<div class="line"><span class="lineno">  229</span>    out &lt;&lt; <a class="code hl_variable" href="#ad3c831a9c3d679453a4523457f97105c">provenance</a>.text();</div>
+<div class="line"><span class="lineno">  230</span>    <span class="keywordflow">return</span> out.str();</div>
+<div class="line"><span class="lineno">  231</span>  }</div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a062d9b81e51daf875404f7aad5bf8bad"><div class="ttname"><a href="#a062d9b81e51daf875404f7aad5bf8bad">eonc::JobResultEnvelope::extras</a></div><div class="ttdeci">std::vector&lt; std::pair&lt; std::string, double &gt; &gt; extras</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00148">JobResult.h:148</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a0822711471cd9fe67f81314e0a267fa6"><div class="ttname"><a href="#a0822711471cd9fe67f81314e0a267fa6">eonc::JobResultEnvelope::potential_energy</a></div><div class="ttdeci">double potential_energy</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00125">JobResult.h:125</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a0a5f89b45cac1a866914c13f7765b690"><div class="ttname"><a href="#a0a5f89b45cac1a866914c13f7765b690">eonc::JobResultEnvelope::has_saddle</a></div><div class="ttdeci">bool has_saddle</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00130">JobResult.h:130</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a1df44d8ba72c0ece9f2dc1b0e5b974f1"><div class="ttname"><a href="#a1df44d8ba72c0ece9f2dc1b0e5b974f1">eonc::JobResultEnvelope::process_search_layout</a></div><div class="ttdeci">bool process_search_layout</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00133">JobResult.h:133</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a3c82eedc545ba050d69e84c1262ac7bb"><div class="ttname"><a href="#a3c82eedc545ba050d69e84c1262ac7bb">eonc::JobResultEnvelope::tags</a></div><div class="ttdeci">std::vector&lt; std::pair&lt; std::string, std::string &gt; &gt; tags</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00149">JobResult.h:149</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a63e5cd87b1d3c9a0b303728032c637ae"><div class="ttname"><a href="#a63e5cd87b1d3c9a0b303728032c637ae">eonc::JobResultEnvelope::has_reactant</a></div><div class="ttdeci">bool has_reactant</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00131">JobResult.h:131</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a884095e49cd415335911c8e065134de1"><div class="ttname"><a href="#a884095e49cd415335911c8e065134de1">eonc::JobResultEnvelope::has_energy</a></div><div class="ttdeci">bool has_energy</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00126">JobResult.h:126</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_a927280fb16e9345a58aa0a133bf2b925"><div class="ttname"><a href="#a927280fb16e9345a58aa0a133bf2b925">eonc::JobResultEnvelope::job_type</a></div><div class="ttdeci">std::string job_type</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00119">JobResult.h:119</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_acbc1ffea5ccfbf46e1beed35eb053089"><div class="ttname"><a href="#acbc1ffea5ccfbf46e1beed35eb053089">eonc::JobResultEnvelope::processSearchString</a></div><div class="ttdeci">std::string processSearchString() const</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00152">JobResult.h:152</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_ad3c831a9c3d679453a4523457f97105c"><div class="ttname"><a href="#ad3c831a9c3d679453a4523457f97105c">eonc::JobResultEnvelope::provenance</a></div><div class="ttdeci">JobResultProvenance provenance</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00150">JobResult.h:150</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_add061da4deb02c2ad53e14b886601293"><div class="ttname"><a href="#add061da4deb02c2ad53e14b886601293">eonc::JobResultEnvelope::has_product</a></div><div class="ttdeci">bool has_product</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00132">JobResult.h:132</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -439,22 +677,73 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00090">90</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   90</span>                                                    {</div>
-<div class="line"><span class="lineno">   91</span>    std::ofstream out(path, std::ios::binary);</div>
-<div class="line"><span class="lineno">   92</span>    <span class="keywordflow">if</span> (!out) {</div>
-<div class="line"><span class="lineno">   93</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;JobResultEnvelope: cannot open &quot;</span> + path);</div>
-<div class="line"><span class="lineno">   94</span>    }</div>
-<div class="line"><span class="lineno">   95</span>    out &lt;&lt; <a class="code hl_function" href="#ad22e26e28b4254d0f80e08341526fe99">toString</a>();</div>
-<div class="line"><span class="lineno">   96</span>    <span class="keywordflow">if</span> (!out) {</div>
-<div class="line"><span class="lineno">   97</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;JobResultEnvelope: write failed for &quot;</span> + path);</div>
-<div class="line"><span class="lineno">   98</span>    }</div>
-<div class="line"><span class="lineno">   99</span>  }</div>
-<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_ad22e26e28b4254d0f80e08341526fe99"><div class="ttname"><a href="#ad22e26e28b4254d0f80e08341526fe99">eonc::JobResultEnvelope::toString</a></div><div class="ttdeci">std::string toString() const</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00050">JobResult.h:50</a></div></div>
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00233">233</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  233</span>                                                    {</div>
+<div class="line"><span class="lineno">  234</span>    std::ofstream out(path, std::ios::binary);</div>
+<div class="line"><span class="lineno">  235</span>    <span class="keywordflow">if</span> (!out) {</div>
+<div class="line"><span class="lineno">  236</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;JobResultEnvelope: cannot open &quot;</span> + path);</div>
+<div class="line"><span class="lineno">  237</span>    }</div>
+<div class="line"><span class="lineno">  238</span>    out &lt;&lt; <a class="code hl_function" href="#ad22e26e28b4254d0f80e08341526fe99">toString</a>();</div>
+<div class="line"><span class="lineno">  239</span>    <span class="keywordflow">if</span> (!out) {</div>
+<div class="line"><span class="lineno">  240</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;JobResultEnvelope: write failed for &quot;</span> + path);</div>
+<div class="line"><span class="lineno">  241</span>    }</div>
+<div class="line"><span class="lineno">  242</span>  }</div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_ad22e26e28b4254d0f80e08341526fe99"><div class="ttname"><a href="#ad22e26e28b4254d0f80e08341526fe99">eonc::JobResultEnvelope::toString</a></div><div class="ttdeci">std::string toString() const</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00189">JobResult.h:189</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a0ed3cfbfa613b2a6c9cdd92d7f8002d9" name="a0ed3cfbfa613b2a6c9cdd92d7f8002d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ed3cfbfa613b2a6c9cdd92d7f8002d9">&#9670;&#160;</a></span>barrier_product_to_reactant</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::JobResultEnvelope::barrier_product_to_reactant {0.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00138">138</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  138</span>{0.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af0f72cfcde974086c33dc88387500065" name="af0f72cfcde974086c33dc88387500065"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0f72cfcde974086c33dc88387500065">&#9670;&#160;</a></span>barrier_reactant_to_product</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::JobResultEnvelope::barrier_reactant_to_product {0.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00137">137</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  137</span>{0.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a3cdb01577a9abba71b2508bdb254b969" name="a3cdb01577a9abba71b2508bdb254b969"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cdb01577a9abba71b2508bdb254b969">&#9670;&#160;</a></span>displacement_saddle_distance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::JobResultEnvelope::displacement_saddle_distance {0.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00141">141</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  141</span>{0.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="a062d9b81e51daf875404f7aad5bf8bad" name="a062d9b81e51daf875404f7aad5bf8bad"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a062d9b81e51daf875404f7aad5bf8bad">&#9670;&#160;</a></span>extras</h2>
 
@@ -467,7 +756,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00047">47</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00148">148</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
 
 </div>
 </div>
@@ -483,8 +772,76 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00038">38</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   38</span>{0};</div>
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00124">124</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  124</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0042f31b72db4c9fb86ae2221747e529" name="a0042f31b72db4c9fb86ae2221747e529"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0042f31b72db4c9fb86ae2221747e529">&#9670;&#160;</a></span>force_calls_minimization</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eonc::JobResultEnvelope::force_calls_minimization {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00134">134</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  134</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a3f0aeb94db4e3fbb6963d452239e91f0" name="a3f0aeb94db4e3fbb6963d452239e91f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f0aeb94db4e3fbb6963d452239e91f0">&#9670;&#160;</a></span>force_calls_prefactors</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eonc::JobResultEnvelope::force_calls_prefactors {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00136">136</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  136</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7c3db405a132294ae1b00d0a8926c093" name="a7c3db405a132294ae1b00d0a8926c093"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c3db405a132294ae1b00d0a8926c093">&#9670;&#160;</a></span>force_calls_saddle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eonc::JobResultEnvelope::force_calls_saddle {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00135">135</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  135</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac3f973d47b947d1527202d433e69d984" name="ac3f973d47b947d1527202d433e69d984"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3f973d47b947d1527202d433e69d984">&#9670;&#160;</a></span>has_dynamics</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::JobResultEnvelope::has_dynamics {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00144">144</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  144</span>{<span class="keyword">false</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -500,8 +857,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00040">40</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   40</span>{<span class="keyword">false</span>};</div>
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00126">126</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  126</span>{<span class="keyword">false</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -517,8 +874,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00046">46</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   46</span>{<span class="keyword">false</span>};</div>
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00132">132</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  132</span>{<span class="keyword">false</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -534,8 +891,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00045">45</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   45</span>{<span class="keyword">false</span>};</div>
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00131">131</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  131</span>{<span class="keyword">false</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -551,8 +908,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00044">44</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   44</span>{<span class="keyword">false</span>};</div>
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00130">130</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  130</span>{<span class="keyword">false</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -568,8 +925,25 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00033">33</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00119">119</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
 
+</div>
+</div>
+<a id="acec6b2dbc1c82bc4a5a49607845220d2" name="acec6b2dbc1c82bc4a5a49607845220d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acec6b2dbc1c82bc4a5a49607845220d2">&#9670;&#160;</a></span>md_temperature</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::JobResultEnvelope::md_temperature {0.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00143">143</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  143</span>{0.0};</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a0822711471cd9fe67f81314e0a267fa6" name="a0822711471cd9fe67f81314e0a267fa6"></a>
@@ -584,8 +958,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00039">39</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   39</span>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00125">125</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  125</span>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -601,8 +975,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00043">43</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   43</span>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00129">129</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  129</span>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -618,8 +992,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00042">42</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   42</span>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00128">128</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  128</span>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -635,8 +1009,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00041">41</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   41</span>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00127">127</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  127</span>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -652,7 +1026,90 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00036">36</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00122">122</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+
+</div>
+</div>
+<a id="a2d260d65753e3c0ca2e986a0ed6cee84" name="a2d260d65753e3c0ca2e986a0ed6cee84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d260d65753e3c0ca2e986a0ed6cee84">&#9670;&#160;</a></span>prefactor_product_to_reactant</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::JobResultEnvelope::prefactor_product_to_reactant {0.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00140">140</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  140</span>{0.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a35ea1cdc44443633a944c9d33daf7e4c" name="a35ea1cdc44443633a944c9d33daf7e4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35ea1cdc44443633a944c9d33daf7e4c">&#9670;&#160;</a></span>prefactor_reactant_to_product</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::JobResultEnvelope::prefactor_reactant_to_product {0.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00139">139</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  139</span>{0.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a1df44d8ba72c0ece9f2dc1b0e5b974f1" name="a1df44d8ba72c0ece9f2dc1b0e5b974f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1df44d8ba72c0ece9f2dc1b0e5b974f1">&#9670;&#160;</a></span>process_search_layout</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::JobResultEnvelope::process_search_layout {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00133">133</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  133</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a444a1d89805b553696e32638018c5afd" name="a444a1d89805b553696e32638018c5afd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a444a1d89805b553696e32638018c5afd">&#9670;&#160;</a></span>product_frame</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;readcon::ConFrame&gt; eonc::JobResultEnvelope::product_frame</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00147">147</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+
+</div>
+</div>
+<a id="ad3c831a9c3d679453a4523457f97105c" name="ad3c831a9c3d679453a4523457f97105c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3c831a9c3d679453a4523457f97105c">&#9670;&#160;</a></span>provenance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1JobResultProvenance.html">JobResultProvenance</a> eonc::JobResultEnvelope::provenance</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00150">150</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
 
 </div>
 </div>
@@ -668,8 +1125,57 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00037">37</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   37</span>{-1};</div>
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00123">123</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  123</span>{-1};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac285eb897980ccf57ed5e7633d822da9" name="ac285eb897980ccf57ed5e7633d822da9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac285eb897980ccf57ed5e7633d822da9">&#9670;&#160;</a></span>reactant_frame</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;readcon::ConFrame&gt; eonc::JobResultEnvelope::reactant_frame</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00145">145</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+
+</div>
+</div>
+<a id="a8957866c9f69084300097895d64232b5" name="a8957866c9f69084300097895d64232b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8957866c9f69084300097895d64232b5">&#9670;&#160;</a></span>saddle_frame</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;readcon::ConFrame&gt; eonc::JobResultEnvelope::saddle_frame</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00146">146</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+
+</div>
+</div>
+<a id="a23165aece99bec899a23e883f24ced65" name="a23165aece99bec899a23e883f24ced65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23165aece99bec899a23e883f24ced65">&#9670;&#160;</a></span>simulation_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::JobResultEnvelope::simulation_time {0.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00142">142</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  142</span>{0.0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -685,8 +1191,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00034">34</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   34</span>{0};</div>
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00120">120</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  120</span>{0};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -702,7 +1208,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00035">35</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00121">121</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
 
 </div>
 </div>
@@ -718,7 +1224,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00048">48</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00149">149</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
 
 </div>
 </div>

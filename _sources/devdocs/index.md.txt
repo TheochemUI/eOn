@@ -29,7 +29,7 @@ svn
 svn-migration
 tracking-changes
 release
-design/client
+design/client/index
 ```
 
 ```{toctree}

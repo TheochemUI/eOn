@@ -6,6 +6,7 @@ var structeonc_1_1tunneling_1_1RateInstanton =
     [ "bN", "structeonc_1_1tunneling_1_1RateInstanton.html#a9ea2e8adf0fce66248309bdb5f1eca00", null ],
     [ "classicalLogRate", "structeonc_1_1tunneling_1_1RateInstanton.html#a31bf91136e704a59f15ecd76f36ac3b9", null ],
     [ "classicalRate", "structeonc_1_1tunneling_1_1RateInstanton.html#ab82cc178df96f52dfe1b69ded2a26c40", null ],
+    [ "collapsed", "structeonc_1_1tunneling_1_1RateInstanton.html#a51806a79adc3b019d58598ba121b3d41", null ],
     [ "converged", "structeonc_1_1tunneling_1_1RateInstanton.html#a966d6d71a703bc9c8d341f56cc9fcf76", null ],
     [ "crossover", "structeonc_1_1tunneling_1_1RateInstanton.html#aa651d5d72191c7885e9b32332075c89c", null ],
     [ "effectiveBarrier", "structeonc_1_1tunneling_1_1RateInstanton.html#ae91aff6fc22fd30ac9cd5daba7351f86", null ],

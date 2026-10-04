@@ -36,8 +36,8 @@
   <div class="sy-head-blur"></div>
   <div class="sy-head-inner sy-container mx-auto">
     <a class="sy-head-brand" href="../index.html">
-      
-      
+      <img class="light-logo" src="../logo/eon_v3_light.svg" alt="eOn" height="28" loading="lazy" />
+      <img class="dark-logo" src="../logo/eon_v3_dark.svg" alt="eOn" height="28" loading="lazy" />
       <strong>eOn</strong>
     </a>
     <div class="sy-head-nav" id="head-nav">
@@ -86,6 +86,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../team.html">eOn team</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../install/eessi.html">Build develop on EESSI</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../install/lammps.html">LAMMPS</a></li>
 </ul>
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html#obtaining-sources">Obtaining sources</a></li>
@@ -130,17 +131,23 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="lanczos.html">Lanczos</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="finite_difference.html">Finite-difference curvature</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="akmc.html">Adaptive kinetic Monte Carlo</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="saddle_search.html">Saddle search</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="basin_hopping.html">Basin hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="global_optimization.html">Minima hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="monte_carlo.html">Monte Carlo</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="replica_exchange.html">Replica exchange</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="process_search.html">Process search</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="recycling.html">Recycling</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="coarse_graining.html">Coarse graining</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="dynamics.html">Dynamics</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="parallel_replica.html">Parallel replica</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="tad.html">Temperature accelerated dynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="oh_tst.html">Optimal hyperplane transition state theory</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="communicator.html">Communicator</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="debug.html">Debug</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="paths.html">Paths</a></li>
@@ -166,6 +173,14 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn-migration.html">Migrating from SVN</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/tracking-changes.html">Tracking changes</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/release.html">Release workflow</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/design/client/index.html">Client design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/types.html">Type system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/parameters.html">Parameters system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/neb-modularization.html">NEB modularization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/confile.html">CON file I/O via readcon-core</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/pyeonclient.html">pyeonclient (nanobind client bindings)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/eon-schema.html">eon-schema (shared parameter package)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/pyeonclient-pypi.html">pyeonclient on PyPI</a></li>
@@ -174,7 +189,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../apidocs/index.html">API Reference</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
 </ul>
 </li>
@@ -196,6 +210,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.cancel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.cancel</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.job_result.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.job_result</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
@@ -249,6 +264,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../releases/v3.2.0/release-notes.html">eOn 3.2.0</a></li>
 </ul>
 </li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.17.0/release-notes.html">eOn 2.17.0</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.16.0/index.html">[v2.16.0] - 2026-07-03</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.16.0/release-notes.html">Release notes</a></li>
 </ul>
@@ -314,6 +330,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 </ul>
 </li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../glossary.html">Glossary</a></li>
 </ul>
         </div>
       </div>
@@ -389,14 +406,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li><a class="reference internal" href="#outputs">Outputs</a></li>
-<li><a class="reference internal" href="#refinement">Refinement</a><ul>
-<li><a class="reference internal" href="#eon.schema.RefineConfig"><code class="docutils literal notranslate"><span class="pre">RefineConfig</span></code></a><ul>
-<li><a class="reference internal" href="#eon.schema.RefineConfig.refine_opt_method"><code class="docutils literal notranslate">refine_opt_method</span></code></a></li>
-<li><a class="reference internal" href="#eon.schema.RefineConfig.refine_threshold"><code class="docutils literal notranslate">refine_threshold</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a class="reference internal" href="#refinement">Refinement</a></li>
 <li><a class="reference internal" href="#references">References</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
@@ -538,8 +548,8 @@ Jacobian for atomic displacements and cell strain
 </section>
 <section id="dimer-seeds-from-every-band-peak">
 <h2>Dimer seeds from every band peak<a class="headerlink" href="#dimer-seeds-from-every-band-peak" title="Link to this heading">¶</a></h2>
-<p>After the band is written, eOn walks <strong>all</strong> spline maxima (not only the
-climbing image). Each interior maximum more than <code class="docutils literal notranslate"><span class="pre">mmf_peak_tolerance</span></code> above
+<p>After the band is written, eOn walks every spline maximum. Each interior
+maximum more than <code class="docutils literal notranslate"><span class="pre">mmf_peak_tolerance</span></code> above
 the reactant is written as <code class="docutils literal notranslate"><span class="pre">peakNN_pos.con</span></code> plus <code class="docutils literal notranslate"><span class="pre">peakNN_mode.dat</span></code> (the
 interpolated tangent). That is the native gen-dimer seed: run a
 <code class="docutils literal notranslate"><span class="pre">saddle_search</span></code> from each pair. <code class="docutils literal notranslate"><span class="pre">setup_mmf_peaks</span></code> defaults to true; set it
@@ -552,7 +562,9 @@ false to skip the files.</p>
 <p>Isomer endpoints with scrambled atom order can be aligned before
 interpolation with <code class="docutils literal notranslate"><span class="pre">match_endpoints</span> <span class="pre">=</span> <span class="pre">true</span></code> (default off). The <code class="docutils literal notranslate"><span class="pre">ira</span></code>
 method rigid-rotates and permutes the reactant onto the product via
-IRACompare. Hungarian assignment is not in-tree; <code class="docutils literal notranslate"><span class="pre">match_method</span> <span class="pre">=</span> <span class="pre">hungarian</span></code> currently uses IRA.</p>
+IRACompare. Hungarian assignment is not in-tree; <code class="docutils literal notranslate"><span class="pre">match_method</span> <span class="pre">=</span> <span class="pre">hungarian</span></code> currently uses IRA.
+<code class="docutils literal notranslate"><span class="pre">match_endpoints</span></code> and <code class="docutils literal notranslate"><span class="pre">match_method</span></code> are client keys.
+Neither key is in <code class="docutils literal notranslate"><span class="pre">eon/config.yaml</span></code>, and the server exits on the unknown option.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><code class="docutils literal notranslate"><span class="pre">eOn</span></code>, like many other codes after <span id="id11">Sheppard <em>et al.</em> [<a class="reference internal" href="#id92" title="Daniel Sheppard, Rye Terrell, and Graeme Henkelman. Optimization methods for finding minimum energy paths. The Journal of Chemical Physics, 128(13):134106, April 2008. doi:10.1063/1.2841941.">NEB_STH08</a>]</span> uses one optimizer instance for moving the whole band of images.</p>
@@ -565,7 +577,7 @@ IRACompare. Hungarian assignment is not in-tree; <code class="docutils literal n
 <ul class="simple">
 <li><p>Onsager-Machlup action-based NEB for minimum action paths.</p></li>
 <li><p>OCINEB (Off-Path Climbing Image NEB) <span id="id14">Goswami <em>et al.</em> [<a class="reference internal" href="#id42" title="Rohit Goswami, Miha Gunde, and Hannes Jónsson. Enhanced climbing image nudged elastic band method with hessian eigenmode alignment. Frontiers in Chemistry, 2026. arXiv:2601.12630, doi:10.3389/fchem.2026.1807063.">NEB_GGJonsson26</a>]</span>: hybrid CI-NEB + Min-Mode Following with hessian eigenmode alignment for automated saddle point refinement.</p></li>
-<li><p>Parallel image force evaluation (<code class="docutils literal notranslate"><span class="pre">[Main]</span> <span class="pre">parallel</span> <span class="pre">=</span> <span class="pre">true</span></code>). In 2.12 it required TBB and <code class="docutils literal notranslate"><span class="pre">-Dwith_parallel_neb=true</span></code>; see the note under Parallel evaluation.</p></li>
+<li><p>Parallel image force evaluation (<code class="docutils literal notranslate"><span class="pre">[Main]</span> <span class="pre">parallel</span></code> on the client). In 2.12 it required TBB and <code class="docutils literal notranslate"><span class="pre">-Dwith_parallel_neb=true</span></code>; see the note under Parallel evaluation.</p></li>
 <li><p>IDPP (Image Dependent Pair Potential) path initialization.</p></li>
 <li><p>Modular strategy pattern for tangent, projection, and spring force components.</p></li>
 </ul>
@@ -599,13 +611,25 @@ that lands two images on the same point can put the climber on a
 stationary artifact while the rest of the band is still at 2 eV/Å.
 <code class="docutils literal notranslate"><span class="pre">climbing_image_band_slack</span></code> (default 10) refuses that report. The job is
 not converged while any image exceeds slack times the tolerance. SIDPP
-itself throws if adjacent images collapse below (10^{-6}) Å.</p>
+itself throws if adjacent images collapse below (10^{-6}) Å.
+That key is not in <code class="docutils literal notranslate"><span class="pre">eon/config.yaml</span></code>.
+The client reads it.
+A file the server loads that sets the key exits on the unknown option.</p>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Nudged Elastic Band]</span>
 </span><span data-line="2"><span class="na">climbing_image_method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
 </span><span data-line="3"><span class="na">climbing_image_converged_only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
-</span><span data-line="4"><span class="na">climbing_image_band_slack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">10.0</span>
 </span></pre></div>
 </div>
+<p>The client sets the climb flag only when climbing is active and the highest
+interior image is strictly above the higher endpoint.
+A fixed-cell band compares potential energy.
+A solid-state band compares enthalpy.
+A monotonic band keeps the spring on every interior image.
+With <code class="docutils literal notranslate"><span class="pre">climbing_image_method</span></code> on, either force test activates climbing.
+One test requires the band force to be under the initial force times <code class="docutils literal notranslate"><span class="pre">ci_after_rel</span></code>.
+The other requires it to be under <code class="docutils literal notranslate"><span class="pre">ci_after</span></code>.
+<code class="docutils literal notranslate"><span class="pre">ci_after</span></code> is a server option.
+<code class="docutils literal notranslate"><span class="pre">ci_after_rel</span></code> is not in <code class="docutils literal notranslate"><span class="pre">eon/config.yaml</span></code>, so the server rejects a file that sets it.</p>
 </section>
 <section id="zoom-neb">
 <h3>Zoom-NEB<a class="headerlink" href="#zoom-neb" title="Link to this heading">¶</a></h3>
@@ -653,8 +677,13 @@ that metric. Positive pressure favors a smaller cell. Zero leaves the
 potential-energy surface.</p>
 <p>The cell force is the stress tensor. A potential that implements the Cauchy
 stress, with the sign <code class="docutils literal notranslate"><span class="pre">sigma</span> <span class="pre">=</span> <span class="pre">(1/V)</span> <span class="pre">dE/dε</span></code> for the right strain
-<code class="docutils literal notranslate"><span class="pre">h</span> <span class="pre">&lt;-</span> <span class="pre">h</span> <span class="pre">(I+ε)</span></code> at fixed fractional coordinates, is used directly. Any other
-potential is differentiated on the six lower strain components.</p>
+<code class="docutils literal notranslate"><span class="pre">h</span> <span class="pre">&lt;-</span> <span class="pre">h</span> <span class="pre">(I+ε)</span></code> at fixed fractional coordinates, is used directly: the band
+reads the stress the potential returned with each image’s force call, so an
+iteration costs one call per moved image. Any other potential is
+differentiated on the six lower strain components with a central difference
+of step 1e-5. That costs 12 extra energy calls per image and iteration; they
+go to the potential as one batch over the band, which calculator groups or a
+batched model evaluate together.</p>
 <p><code class="docutils literal notranslate"><span class="pre">ci_mmf</span></code>, <code class="docutils literal notranslate"><span class="pre">zoom_neb</span></code>, <code class="docutils literal notranslate"><span class="pre">onsager_machlup</span></code>, <code class="docutils literal notranslate"><span class="pre">neb_doubly_nudged</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">neb_elastic_band</span></code> are refused. The climbing image itself is the joint-space
 reflection of the force. Peak files still carry the atomic block of the tangent.</p>
@@ -671,12 +700,20 @@ reflection of the force. Peak files still carry the atomic block of the tangent.
 <p><span class="versionmodified changed">Changed in version 3.5.0: </span>The image pool is plain <code class="docutils literal notranslate"><span class="pre">std::thread</span></code>, so GCC and Clang builds need no TBB.
 <code class="docutils literal notranslate"><span class="pre">-Dwith_parallel_neb</span></code> is deprecated and has no effect.</p>
 </div>
-<p>With <code class="docutils literal notranslate"><span class="pre">parallel</span> <span class="pre">=</span> <span class="pre">true</span></code>, dirty-image force calls run on at most
-<code class="docutils literal notranslate"><span class="pre">std::thread::hardware_concurrency()</span></code> threads, each taking the next image,
-so a 20-image band on 8 cores keeps 8 threads busy. An error in one image is
-reported after the other images finish. No extra library is needed.
+<p><code class="docutils literal notranslate"><span class="pre">[Main]</span> <span class="pre">parallel</span></code> is a client key and defaults to true.
+<code class="docutils literal notranslate"><span class="pre">eon/config.yaml</span></code> has no <code class="docutils literal notranslate"><span class="pre">parallel</span></code> key in <code class="docutils literal notranslate"><span class="pre">[Main]</span></code>.
+Setting that key makes the server exit before the client runs.
+With <code class="docutils literal notranslate"><span class="pre">parallel</span> <span class="pre">=</span> <span class="pre">true</span></code>, a band that reaches the projection step projects
+each image’s tangent, spring, and projected force on one pool. Dirty-image
+force calls use that pool too. The pool starts once and stays for the
+process. On Linux the pool sizes itself to the affinity mask, so a Slurm
+or taskset limit sets the thread count. Other systems take the size from
+<code class="docutils literal notranslate"><span class="pre">std::thread::hardware_concurrency()</span></code>. The caller is one of those workers,
+so a 20-image band on 8 allowed cores keeps 8 threads busy. The pool
+reports an error in one image after the other images finish. The pool
+needs no extra library.
 nvc++ builds with <code class="docutils literal notranslate"><span class="pre">-Dstdpar=cpu</span></code> / <code class="docutils literal notranslate"><span class="pre">-Dstdpar=gpu</span></code> use
-<code class="docutils literal notranslate"><span class="pre">std::execution::par</span></code> instead; see <a class="reference internal" href="stdpar.html"><span class="doc">nvc++ stdpar (NEB image forces)</span></a>. Python-based potentials fall back to serial
+<code class="docutils literal notranslate"><span class="pre">std::execution::par</span></code> for those force calls instead; see <a class="reference internal" href="stdpar.html"><span class="doc">nvc++ stdpar (NEB image forces)</span></a>. Python-based potentials fall back to serial
 evaluation unless they report thread-safe shared instances or per-image
 copies. Morse and other host potentials stay on the CPU.</p>
 </section>
@@ -1103,8 +1140,8 @@ sections of the potential energy surface rapidly, it is best to use an
 accelerating optimizer like QuickMin to begin with and transition to LBFGS
 later. The <code class="docutils literal notranslate"><span class="pre">[Refine]</span></code> section does that switch.</p>
 <dl class="py class pydantic_model">
-<dt class="sig sig-object py" id="eon.schema.RefineConfig">
-<span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">RefineConfig</span></span><a class="reference internal" href="../_modules/eon_schema/config/models.html#RefineConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.RefineConfig" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">RefineConfig</span></span><a class="reference internal" href="../_modules/eon_schema/config/models.html#RefineConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Fields<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1114,8 +1151,8 @@ later. The <code class="docutils literal notranslate"><span class="pre">[Refine]
 </dd>
 </dl>
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.RefineConfig.refine_opt_method">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">refine_opt_method</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'cg'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lbfgs'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fire'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'box'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'qm'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'none'</span></span><a class="headerlink" href="#eon.schema.RefineConfig.refine_opt_method" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">refine_opt_method</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'cg'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lbfgs'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fire'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'box'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'qm'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'none'</span></span></dt>
 <dd><dl class="simple">
 <dt>Options:</dt><dd><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">none</span></code>: No refinement optimization</p></li>
@@ -1131,8 +1168,8 @@ later. The <code class="docutils literal notranslate"><span class="pre">[Refine]
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="eon.schema.RefineConfig.refine_threshold">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">refine_threshold</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></span><a class="headerlink" href="#eon.schema.RefineConfig.refine_threshold" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">refine_threshold</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></span></dt>
 <dd><p>Threshold for refinement optimization.</p>
 </dd></dl>
 

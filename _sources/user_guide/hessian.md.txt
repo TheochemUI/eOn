@@ -78,6 +78,13 @@ built one column at a time when the potential is not finite-range, when
 `[Main] remove_net_force` couples every atom, or when a column checkpoint is
 in use.
 
+When `checkpoint_path` is empty and the potential evaluates batches, the
+displaced structures go out together, at most 32 columns per call.
+`RgpotPot` takes that path once `[RgpotPot] ranks_per_image` has more than
+one calculator group. Structure `j` runs on group `j` modulo the group
+count, and every rank receives every result. A prefactor Hessian uses the
+same call.
+
 ### Column resume
 
 Long partial Hessians can checkpoint FD columns to `checkpoint_path` (e.g.
@@ -105,6 +112,12 @@ The output `results.dat` records force-call counts; `hessian.dat` contains the
 mass-weighted matrix. `[Main] quiet = true` suppresses the write log line only.
 Eigenvalues (squared frequencies) are obtained by diagonalizing the symmetrized
 matrix (ColMajor eigen solve in the client).
+
+The job drops each eigenvalue at or below `zero_freq_value` (default
+`1e-6`). A free cluster has 6 of those eigenvalues, a linear cluster has
+5, a periodic cell has 3, and a structure with any fully fixed atom has
+none. The job still drops a different count, and it logs a warning. It
+does not stop for that warning.
 
 With `[Hessian] write_modes = true` (the default), `modes.con` holds one frame
 per eigenvalue, lowest first. Each frame is the input structure with the mode

@@ -19,7 +19,11 @@ var searchData=
   ['rgpotpot_16',['RgpotPot',['../classRgpotPot.html',1,'']]],
   ['rgpotxtbconfig_17',['RgpotXtbConfig',['../structRgpotXtbConfig.html',1,'']]],
   ['rho_18',['Rho',['../structforcefields_1_1Ccl_1_1Rho.html',1,'forcefields::Ccl']]],
-  ['ringpolymer_19',['RingPolymer',['../classeonc_1_1pathintegral_1_1RingPolymer.html',1,'eonc::pathintegral']]],
-  ['ringspectrum_20',['RingSpectrum',['../structeonc_1_1tunneling_1_1RingSpectrum.html',1,'eonc::tunneling']]],
-  ['runtime_21',['Runtime',['../classeonc_1_1Runtime.html',1,'eonc']]]
+  ['ringchannel_19',['RingChannel',['../structeonc_1_1tunneling_1_1RingChannel.html',1,'eonc::tunneling']]],
+  ['ringpolymer_20',['RingPolymer',['../classeonc_1_1pathintegral_1_1RingPolymer.html',1,'eonc::pathintegral']]],
+  ['ringrigidbodies_21',['RingRigidBodies',['../structeonc_1_1tunneling_1_1RingRigidBodies.html',1,'eonc::tunneling']]],
+  ['ringseed_22',['RingSeed',['../structeonc_1_1tunneling_1_1RingSeed.html',1,'eonc::tunneling']]],
+  ['ringspectrum_23',['RingSpectrum',['../structeonc_1_1tunneling_1_1RingSpectrum.html',1,'eonc::tunneling']]],
+  ['rotationzeromodes_24',['RotationZeroModes',['../structeonc_1_1tunneling_1_1RotationZeroModes.html',1,'eonc::tunneling']]],
+  ['runtime_25',['Runtime',['../classeonc_1_1Runtime.html',1,'eonc']]]
 ];

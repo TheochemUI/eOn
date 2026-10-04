@@ -237,9 +237,10 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('SolidStateNEB_
   <div class="headertitle"><div class="title">SolidStateNEB.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="Eigen_8h_source.html">Eigen.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="Matter_8h_source.html">Matter.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &lt;span&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
+<code>#include &quot;<a class="el" href="Eigen_8h_source.html">Eigen.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Matter_8h_source.html">Matter.h</a>&quot;</code><br />
 </div>
 <p><a href="SolidStateNEB_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -271,6 +272,8 @@ Functions</h2></td></tr>
 <tr class="memdesc:aeb0fa4776bcb090f7256a095b0e1183f"><td class="mdescLeft">&#160;</td><td class="mdescRight">NEB force on the Jacobian-scaled strain.  <br /></td></tr>
 <tr class="memitem:ae5b588a41a2cca2ae99609d6fe8e6e11" id="r_ae5b588a41a2cca2ae99609d6fe8e6e11"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a>&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1neb.html#ae5b588a41a2cca2ae99609d6fe8e6e11">eonc::neb::finiteDifferenceCauchyStress</a> (const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;image, double strainStep)</td></tr>
 <tr class="memdesc:ae5b588a41a2cca2ae99609d6fe8e6e11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Central difference of the potential energy on the six lower strain components.  <br /></td></tr>
+<tr class="memitem:a5c7063d07b10a060f0f5bc13565dd7e4" id="r_a5c7063d07b10a060f0f5bc13565dd7e4"><td class="memItemLeft">std::vector&lt; <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1neb.html#a5c7063d07b10a060f0f5bc13565dd7e4">eonc::neb::finiteDifferenceCauchyStresses</a> (std::span&lt; const <a class="el" href="classeonc_1_1Matter.html">Matter</a> *const  &gt; images, double strainStep)</td></tr>
+<tr class="memdesc:a5c7063d07b10a060f0f5bc13565dd7e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">The same central difference for several images at once.  <br /></td></tr>
 <tr class="memitem:a960b1702e269ca42e88a9240b352f749" id="r_a960b1702e269ca42e88a9240b352f749"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1neb.html#a960b1702e269ca42e88a9240b352f749">eonc::neb::solidStateEnthalpy</a> (const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;image, const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;reference, double pressure)</td></tr>
 <tr class="memdesc:a960b1702e269ca42e88a9240b352f749"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeonc_1_1Potential.html">Potential</a> energy plus P : (h0^{-1} (h-h0)) * V0.  <br /></td></tr>
 <tr class="memitem:a3c6d7be8fb5777d625b17120e3e1c736" id="r_a3c6d7be8fb5777d625b17120e3e1c736"><td class="memItemLeft"><a class="el" href="structeonc_1_1neb_1_1CartesianStep.html">CartesianStep</a>&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1neb.html#a3c6d7be8fb5777d625b17120e3e1c736">eonc::neb::solidStateCartesianStep</a> (const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;image, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;atomicForce, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;cellForce, double jacobian)</td></tr>

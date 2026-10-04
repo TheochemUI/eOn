@@ -4,6 +4,7 @@ var classeonc_1_1MinModeObjectiveFunction =
     [ "~MinModeObjectiveFunction", "classeonc_1_1MinModeObjectiveFunction.html#a281673240d4987bccffecba1736e2d74", null ],
     [ "degreesOfFreedom", "classeonc_1_1MinModeObjectiveFunction.html#a61906eb047a60894ec776d64b05e2573", null ],
     [ "difference", "classeonc_1_1MinModeObjectiveFunction.html#a916915d7c2933667ade677719a6f1b38", null ],
+    [ "evaluateCentre", "classeonc_1_1MinModeObjectiveFunction.html#aa2737279e7b4b1326347c7b121fd8e8b", null ],
     [ "getConvergence", "classeonc_1_1MinModeObjectiveFunction.html#a963ad1146a73f8907d6f02bb4adff35d", null ],
     [ "getEnergy", "classeonc_1_1MinModeObjectiveFunction.html#acd9a980aff0ce3eefa9aef08d40aa5af", null ],
     [ "getGradient", "classeonc_1_1MinModeObjectiveFunction.html#a6d66337710dadc9e124e7ed7f553164f", null ],

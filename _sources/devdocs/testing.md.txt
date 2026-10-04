@@ -59,7 +59,7 @@ source and linked against `eonclib`.
 
 Registration uses meson's array iteration:
 
-```{code-block} meson
+```{code-block} text
 test_array = [
     ['test_name', 'TestFile.cpp', 'data_dir'],
 ]

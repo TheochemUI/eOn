@@ -268,15 +268,17 @@ Functions</h2></td></tr>
 <div class="fragment"><div class="line"><span class="lineno">   17</span>           {</div>
 <div class="line"><span class="lineno">   18</span>  std::string confile(<span class="stringliteral">&quot;pos.con&quot;</span>);</div>
 <div class="line"><span class="lineno">   19</span>  <a class="code hl_class" href="classeonc_1_1Parameters.html">eonc::Parameters</a> parameters;</div>
-<div class="line"><span class="lineno">   20</span>  <span class="keyword">auto</span> pot = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">eonc::helpers::makePotential</a>(parameters);</div>
-<div class="line"><span class="lineno">   21</span>  <a class="code hl_class" href="classeonc_1_1Matter.html">eonc::Matter</a> matter(pot, parameters);</div>
-<div class="line"><span class="lineno">   22</span>  matter.con2matter(confile);</div>
-<div class="line"><span class="lineno">   23</span>  matter.writeTibble(<span class="stringliteral">&quot;rSysdat.txt&quot;</span>);</div>
-<div class="line"><span class="lineno">   24</span>  <span class="keywordflow">return</span> EXIT_SUCCESS;</div>
-<div class="line"><span class="lineno">   25</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Matter_html"><div class="ttname"><a href="classeonc_1_1Matter.html">eonc::Matter</a></div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00090">Matter.h:90</a></div></div>
+<div class="line"><span class="lineno">   20</span>  <span class="keyword">auto</span> pot =</div>
+<div class="line"><span class="lineno">   21</span>      <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a67ab5cb7bee60443753fcae864fd27e4">eonc::helpers::sharePotential</a>(<a class="code hl_function" href="namespaceeonc_1_1helpers.html#a5f1e0c7a3fbf2324d5e6c2b84c0ddb86">eonc::helpers::makePotential</a>(parameters));</div>
+<div class="line"><span class="lineno">   22</span>  <a class="code hl_class" href="classeonc_1_1Matter.html">eonc::Matter</a> matter(pot, parameters);</div>
+<div class="line"><span class="lineno">   23</span>  matter.con2matter(confile);</div>
+<div class="line"><span class="lineno">   24</span>  matter.writeTibble(<span class="stringliteral">&quot;rSysdat.txt&quot;</span>);</div>
+<div class="line"><span class="lineno">   25</span>  <span class="keywordflow">return</span> EXIT_SUCCESS;</div>
+<div class="line"><span class="lineno">   26</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html"><div class="ttname"><a href="classeonc_1_1Matter.html">eonc::Matter</a></div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00092">Matter.h:92</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Parameters_html"><div class="ttname"><a href="classeonc_1_1Parameters.html">eonc::Parameters</a></div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00035">Parameters.h:35</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1helpers_html_ad3c8668c89bd3ffae898307b0890f1ff"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">eonc::helpers::makePotential</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; makePotential(const Parameters &amp;params)</div><div class="ttdef"><b>Definition</b> <a href="Potential_8cpp_source.html#l00246">Potential.cpp:246</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_a5f1e0c7a3fbf2324d5e6c2b84c0ddb86"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a5f1e0c7a3fbf2324d5e6c2b84c0ddb86">eonc::helpers::makePotential</a></div><div class="ttdeci">std::unique_ptr&lt; Potential &gt; makePotential(const Parameters &amp;params)</div><div class="ttdoc">Exclusive ownership.</div><div class="ttdef"><b>Definition</b> <a href="Potential_8cpp_source.html#l00246">Potential.cpp:246</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_a67ab5cb7bee60443753fcae864fd27e4"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a67ab5cb7bee60443753fcae864fd27e4">eonc::helpers::sharePotential</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; sharePotential(std::unique_ptr&lt; Potential &gt; pot)</div><div class="ttdoc">Multi-owner boundary: one instance observed by several Matters, images, or a binding.</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00228">Potential.h:228</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>

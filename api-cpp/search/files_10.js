@@ -11,8 +11,10 @@ var searchData=
   ['rgpotadapter_2eh_8',['RgpotAdapter.h',['../RgpotAdapter_8h.html',1,'']]],
   ['rgpotengine_2ecpp_9',['RGPotEngine.cpp',['../RGPotEngine_8cpp.html',1,'']]],
   ['rgpotengine_2eh_10',['RGPotEngine.h',['../RGPotEngine_8h.html',1,'']]],
-  ['rgpotpot_2ecpp_11',['RgpotPot.cpp',['../RgpotPot_8cpp.html',1,'']]],
-  ['rgpotpot_2eh_12',['RgpotPot.h',['../RgpotPot_8h.html',1,'']]],
-  ['runtime_2ecpp_13',['Runtime.cpp',['../Runtime_8cpp.html',1,'']]],
-  ['runtime_2eh_14',['Runtime.h',['../Runtime_8h.html',1,'']]]
+  ['rgpotgroupmpi_2ecpp_11',['RgpotGroupMpi.cpp',['../RgpotGroupMpi_8cpp.html',1,'']]],
+  ['rgpotgroupmpi_2eh_12',['RgpotGroupMpi.h',['../RgpotGroupMpi_8h.html',1,'']]],
+  ['rgpotpot_2ecpp_13',['RgpotPot.cpp',['../RgpotPot_8cpp.html',1,'']]],
+  ['rgpotpot_2eh_14',['RgpotPot.h',['../RgpotPot_8h.html',1,'']]],
+  ['runtime_2ecpp_15',['Runtime.cpp',['../Runtime_8cpp.html',1,'']]],
+  ['runtime_2eh_16',['Runtime.h',['../Runtime_8h.html',1,'']]]
 ];

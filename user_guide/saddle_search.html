@@ -36,8 +36,8 @@
   <div class="sy-head-blur"></div>
   <div class="sy-head-inner sy-container mx-auto">
     <a class="sy-head-brand" href="../index.html">
-      
-      
+      <img class="light-logo" src="../logo/eon_v3_light.svg" alt="eOn" height="28" loading="lazy" />
+      <img class="dark-logo" src="../logo/eon_v3_dark.svg" alt="eOn" height="28" loading="lazy" />
       <strong>eOn</strong>
     </a>
     <div class="sy-head-nav" id="head-nav">
@@ -86,6 +86,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../team.html">eOn team</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../install/eessi.html">Build develop on EESSI</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../install/lammps.html">LAMMPS</a></li>
 </ul>
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html#obtaining-sources">Obtaining sources</a></li>
@@ -130,17 +131,23 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="lanczos.html">Lanczos</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="finite_difference.html">Finite-difference curvature</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="akmc.html">Adaptive kinetic Monte Carlo</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Saddle search</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="basin_hopping.html">Basin hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="global_optimization.html">Minima hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="monte_carlo.html">Monte Carlo</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="replica_exchange.html">Replica exchange</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="process_search.html">Process search</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="recycling.html">Recycling</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="coarse_graining.html">Coarse graining</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="dynamics.html">Dynamics</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="parallel_replica.html">Parallel replica</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="tad.html">Temperature accelerated dynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="oh_tst.html">Optimal hyperplane transition state theory</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="communicator.html">Communicator</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="debug.html">Debug</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="paths.html">Paths</a></li>
@@ -166,6 +173,14 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn-migration.html">Migrating from SVN</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/tracking-changes.html">Tracking changes</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/release.html">Release workflow</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/design/client/index.html">Client design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/types.html">Type system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/parameters.html">Parameters system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/neb-modularization.html">NEB modularization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/confile.html">CON file I/O via readcon-core</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/pyeonclient.html">pyeonclient (nanobind client bindings)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/eon-schema.html">eon-schema (shared parameter package)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/pyeonclient-pypi.html">pyeonclient on PyPI</a></li>
@@ -174,7 +189,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../apidocs/index.html">API Reference</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
 </ul>
 </li>
@@ -196,6 +210,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.cancel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.cancel</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.job_result.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.job_result</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
@@ -249,6 +264,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../releases/v3.2.0/release-notes.html">eOn 3.2.0</a></li>
 </ul>
 </li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.17.0/release-notes.html">eOn 2.17.0</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.16.0/index.html">[v2.16.0] - 2026-07-03</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.16.0/release-notes.html">Release notes</a></li>
 </ul>
@@ -314,6 +330,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 </ul>
 </li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../glossary.html">Glossary</a></li>
 </ul>
         </div>
       </div>
@@ -333,6 +350,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#client-side-displacement">Client-Side Displacement</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#basin-hopping">Basin hopping</a></li>
 <li><a class="reference internal" href="#configuration">Configuration</a><ul>
 <li><a class="reference internal" href="#eon.schema.SaddleSearchConfig"><code class="docutils literal notranslate"><span class="pre">SaddleSearchConfig</span></code></a><ul>
 <li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.method"><code class="docutils literal notranslate">method</span></code></a></li>
@@ -578,6 +596,14 @@ same client helper.</p></li>
 </ul>
 </section>
 </section>
+<section id="basin-hopping">
+<h2>Basin hopping<a class="headerlink" href="#basin-hopping" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">basin_hopping</span></code> quenches the hop, builds a band, and starts a
+dimer on the highest interior image. The dimer direction is the
+minimum-image <code class="docutils literal notranslate"><span class="pre">(next</span> <span class="pre">-</span> <span class="pre">prev)</span> <span class="pre">/</span> <span class="pre">2</span></code>. A bead that has crossed a periodic
+face takes the short step. The acceptance test is on the
+<a class="reference internal" href="basin_hopping.html"><span class="std std-doc">basin hopping</span></a> page.</p>
+</section>
 <section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Saddle Search]</span>
@@ -590,7 +616,7 @@ same client helper.</p></li>
 <dt class="field-odd">Fields<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">method</span> <span class="pre">(Literal['min_mode',</span> <span class="pre">'dynamics',</span> <span class="pre">'basin_hopping',</span> <span class="pre">'bgsd',</span> <span class="pre">'artn'])</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">min_mode_method</span> <span class="pre">(Literal['dimer',</span> <span class="pre">'lanczos',</span> <span class="pre">'davidson',</span> <span class="pre">'gprdimer',</span> <span class="pre">'artn'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">min_mode_method</span> <span class="pre">(Literal['dimer',</span> <span class="pre">'lanczos',</span> <span class="pre">'davidson',</span> <span class="pre">'gprdimer',</span> <span class="pre">'artn',</span> <span class="pre">'xtsci'])</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">disp_at_random</span> <span class="pre">(int)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_energy</span> <span class="pre">(float)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_step_size</span> <span class="pre">(float)</span></code></p></li>
@@ -669,7 +695,7 @@ the initial push when present.</p></li>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.min_mode_method">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">min_mode_method</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'dimer'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lanczos'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'davidson'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'gprdimer'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'artn'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dimer'</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.min_mode_method" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">min_mode_method</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'dimer'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lanczos'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'davidson'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'gprdimer'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'artn'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'xtsci'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dimer'</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.min_mode_method" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Options:</dt><dd><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">dimer</span></code>: Use the dimer min-mode method from <span id="id1">Henkelman and Jónsson [<a class="reference internal" href="#id30" title="Graeme Henkelman and Hannes Jónsson. A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives. The Journal of Chemical Physics, 111(15):7010–7022, October 1999. doi:10.1063/1.480097.">SS_HJonsson99</a>]</span></p></li>
@@ -678,6 +704,8 @@ the initial push when present.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">gprdimer</span></code>: GP dimer. The Linux default is <code class="docutils literal notranslate"><span class="pre">-Dwith_gprd=auto</span></code>, which links <code class="docutils literal notranslate"><span class="pre">subprojects/gpr_optim</span></code> when that subproject configures. A failed fetch leaves the dimer off.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">artn</span></code>: Use ARTn as a drop-in for min-mode search. eOn’s displacement
 seeds the initial mode; ARTn takes over from the displaced structure.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xtsci</span></code>: Rotate the lowest mode in a rgsaddle session. Needs
+<code class="docutils literal notranslate"><span class="pre">-Dwith_rgsaddle=true</span></code>. The saddle search still climbs.</p></li>
 </ul>
 </dd>
 </dl>

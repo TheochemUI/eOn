@@ -36,8 +36,8 @@
   <div class="sy-head-blur"></div>
   <div class="sy-head-inner sy-container mx-auto">
     <a class="sy-head-brand" href="../index.html">
-      
-      
+      <img class="light-logo" src="../logo/eon_v3_light.svg" alt="eOn" height="28" loading="lazy" />
+      <img class="dark-logo" src="../logo/eon_v3_dark.svg" alt="eOn" height="28" loading="lazy" />
       <strong>eOn</strong>
     </a>
     <div class="sy-head-nav" id="head-nav">
@@ -86,6 +86,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../team.html">eOn team</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../install/eessi.html">Build develop on EESSI</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../install/lammps.html">LAMMPS</a></li>
 </ul>
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html#obtaining-sources">Obtaining sources</a></li>
@@ -130,17 +131,23 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="lanczos.html">Lanczos</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="finite_difference.html">Finite-difference curvature</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="akmc.html">Adaptive kinetic Monte Carlo</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="saddle_search.html">Saddle search</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="basin_hopping.html">Basin hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="global_optimization.html">Minima hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="monte_carlo.html">Monte Carlo</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="replica_exchange.html">Replica exchange</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="process_search.html">Process search</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="recycling.html">Recycling</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="coarse_graining.html">Coarse graining</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="dynamics.html">Dynamics</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="parallel_replica.html">Parallel replica</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="tad.html">Temperature accelerated dynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="oh_tst.html">Optimal hyperplane transition state theory</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="communicator.html">Communicator</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="debug.html">Debug</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="paths.html">Paths</a></li>
@@ -166,6 +173,14 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn-migration.html">Migrating from SVN</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/tracking-changes.html">Tracking changes</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/release.html">Release workflow</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/design/client/index.html">Client design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/types.html">Type system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/parameters.html">Parameters system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/neb-modularization.html">NEB modularization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/confile.html">CON file I/O via readcon-core</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/pyeonclient.html">pyeonclient (nanobind client bindings)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/eon-schema.html">eon-schema (shared parameter package)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/pyeonclient-pypi.html">pyeonclient on PyPI</a></li>
@@ -174,7 +189,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../apidocs/index.html">API Reference</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
 </ul>
 </li>
@@ -196,6 +210,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.cancel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.cancel</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.job_result.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.job_result</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
@@ -249,6 +264,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../releases/v3.2.0/release-notes.html">eOn 3.2.0</a></li>
 </ul>
 </li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.17.0/release-notes.html">eOn 2.17.0</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.16.0/index.html">[v2.16.0] - 2026-07-03</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.16.0/release-notes.html">Release notes</a></li>
 </ul>
@@ -314,6 +330,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 </ul>
 </li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../glossary.html">Glossary</a></li>
 </ul>
         </div>
       </div>
@@ -325,6 +342,7 @@ data-aria-dark="Switch to auto color mode">
       <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#the-client-decides-a-match">The client decides a match</a></li>
 <li><a class="reference internal" href="#configuration">Configuration</a><ul>
 <li><a class="reference internal" href="#eon.schema.StructureComparisonConfig"><code class="docutils literal notranslate"><span class="pre">StructureComparisonConfig</span></code></a><ul>
 <li><a class="reference internal" href="#eon.schema.StructureComparisonConfig.energy_difference"><code class="docutils literal notranslate">energy_difference</span></code></a></li>
@@ -435,6 +453,32 @@ data-aria-dark="Switch to auto color mode">
 </div><article class="yue dark-code" role="main">
           <section id="structure-comparison">
 <h1>Structure comparison<a class="headerlink" href="#structure-comparison" title="Link to this heading">¶</a></h1>
+<section id="the-client-decides-a-match">
+<h2>The client decides a match<a class="headerlink" href="#the-client-decides-a-match" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">job</span> <span class="pre">=</span> <span class="pre">structure_comparison</span></code> reads <code class="docutils literal notranslate"><span class="pre">matter1.con</span></code> and <code class="docutils literal notranslate"><span class="pre">matter2.con</span></code>. It
+writes <code class="docutils literal notranslate"><span class="pre">results.dat</span></code> with <code class="docutils literal notranslate"><span class="pre">match</span></code>, <code class="docutils literal notranslate"><span class="pre">distance</span></code>, and <code class="docutils literal notranslate"><span class="pre">per_atom_norm</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">match</span></code> follows this section. Leave <code class="docutils literal notranslate"><span class="pre">check_rotation</span></code> off and set
+<code class="docutils literal notranslate"><span class="pre">indistinguishable_atoms</span></code>. Same-element atoms may then pair in any order
+inside <code class="docutils literal notranslate"><span class="pre">distance_difference</span></code>. The pairing is one-to-one. A crossed pair
+can match. Two atoms cannot take one site. Set <code class="docutils literal notranslate"><span class="pre">check_rotation</span></code> alone
+and the client removes the centroids. It then rotates with its Kabsch
+routine and compares atoms in file order. Set both flags and the client
+compares sorted neighbor-distance lists.</p>
+<p><code class="docutils literal notranslate"><span class="pre">remove_translation</span></code> defaults to true. Leave <code class="docutils literal notranslate"><span class="pre">check_rotation</span></code> off. Leave
+no atom fixed on all three Cartesian components. The client then shifts
+the first structure onto the second. The shift equals the mean
+minimum-image displacement. A periodic cell that drifted as a whole still
+matches. <code class="docutils literal notranslate"><span class="pre">check_rotation</span></code> skips the shift. A fully fixed atom skips it
+too. The adaptive kinetic Monte Carlo server uses the same test for a
+repeated saddle and for a state it already stores.</p>
+<p><code class="docutils literal notranslate"><span class="pre">eon.atoms.rot_match</span></code> is a separate helper. It calls iterative rotations
+and assignments through <code class="docutils literal notranslate"><span class="pre">pyeonclient</span></code> when that routine is present. A
+missing routine selects the helper’s own Kabsch test. An error from the
+call selects that test too. <code class="docutils literal notranslate"><span class="pre">eon.atoms.crystal_spacegroup</span></code> reads the cell
+and the atoms.
+It returns an international symbol, an international number, and a Hall
+number. The function does not decide whether two clusters match.</p>
+</section>
 <section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Structure Comparison]</span>

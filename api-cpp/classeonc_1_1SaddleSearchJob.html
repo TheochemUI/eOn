@@ -307,6 +307,8 @@ Private Attributes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pro_methods_classeonc_1_1Job"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classeonc_1_1Job')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classeonc_1_1Job.html">eonc::Job</a></td></tr>
+<tr class="memitem:a40423b75b9614f0fc81797a5d817948d inherit pro_methods_classeonc_1_1Job" id="r_a40423b75b9614f0fc81797a5d817948d"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a40423b75b9614f0fc81797a5d817948d">Job</a> (std::unique_ptr&lt; <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &gt; parameters, <a class="el" href="classeonc_1_1Runtime.html">Runtime</a> &amp;rt, <a class="el" href="structeonc_1_1Job_1_1ExclusivePotential.html">ExclusivePotential</a>)</td></tr>
 <tr class="inherit_header pro_attribs_classeonc_1_1Job"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classeonc_1_1Job')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classeonc_1_1Job.html">eonc::Job</a></td></tr>
 <tr class="memitem:a90e97e92096c7c2ea7dec3d9c49f485f inherit pro_attribs_classeonc_1_1Job" id="r_a90e97e92096c7c2ea7dec3d9c49f485f"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379">JobType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a90e97e92096c7c2ea7dec3d9c49f485f">jtype</a></td></tr>
 <tr class="memitem:a9f0bfab75a98f383ba58f1c592fd2500 inherit pro_attribs_classeonc_1_1Job" id="r_a9f0bfab75a98f383ba58f1c592fd2500"><td class="memItemLeft"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a></td></tr>
@@ -314,7 +316,10 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memdesc:a79f4bf70ec1c7e3e08a0a5c0ff5ee965 inherit pro_attribs_classeonc_1_1Job"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-null when this <a class="el" href="classeonc_1_1Job.html" title="Declaration of job class.">Job</a> owns the composition root (one-shot makeJob).  <br /></td></tr>
 <tr class="memitem:add247a8d4ae4bb5e59ec85ecfcf1bd37 inherit pro_attribs_classeonc_1_1Job" id="r_add247a8d4ae4bb5e59ec85ecfcf1bd37"><td class="memItemLeft"><a class="el" href="classeonc_1_1Runtime.html">Runtime</a> *&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#add247a8d4ae4bb5e59ec85ecfcf1bd37">runtime_</a></td></tr>
 <tr class="memdesc:add247a8d4ae4bb5e59ec85ecfcf1bd37 inherit pro_attribs_classeonc_1_1Job"><td class="mdescLeft">&#160;</td><td class="mdescRight">Always valid: either owned_runtime_.get() or a caller-owned <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a>.  <br /></td></tr>
+<tr class="memitem:ae11b351685b8b2ca364f1877636328ca inherit pro_attribs_classeonc_1_1Job" id="r_ae11b351685b8b2ca364f1877636328ca"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#ae11b351685b8b2ca364f1877636328ca">ownedPot</a></td></tr>
+<tr class="memdesc:ae11b351685b8b2ca364f1877636328ca inherit pro_attribs_classeonc_1_1Job"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exclusive until a multi-owner job promotes it in the public constructor.  <br /></td></tr>
 <tr class="memitem:a948da0de6ec2575bd6ac975fedaad0c9 inherit pro_attribs_classeonc_1_1Job" id="r_a948da0de6ec2575bd6ac975fedaad0c9"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a></td></tr>
+<tr class="memdesc:a948da0de6ec2575bd6ac975fedaad0c9 inherit pro_attribs_classeonc_1_1Job"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set when one <a class="el" href="classeonc_1_1Potential.html">Potential</a> is shared across Matters, images, or a caller.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Declaration of the Saddle Search job. </p>
@@ -351,16 +356,17 @@ Additional Inherited Members</h2></td></tr>
 <p>Saddle Search job constructor. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">*params</td><td>defined by the config.init file </td></tr>
+    <tr><td class="paramname">parameters</td><td>defined by the config.init file </td></tr>
+    <tr><td class="paramname">rt</td><td>process runtime </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8h_source.html#l00051">51</a> of file <a class="el" href="SaddleSearchJob_8h_source.html">SaddleSearchJob.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   52</span>      : <a class="code hl_function" href="classeonc_1_1Job.html#a048903796c5d81f4425e1392e1bcea8d">Job</a>(std::move(parameters), rt),</div>
-<div class="line"><span class="lineno">   53</span>        <a class="code hl_variable" href="#a75179d05d423a1054898e8029a92ea43">fCallsSaddle</a>{0} {}</div>
-<div class="ttc" id="aclasseonc_1_1Job_html_a048903796c5d81f4425e1392e1bcea8d"><div class="ttname"><a href="classeonc_1_1Job.html#a048903796c5d81f4425e1392e1bcea8d">eonc::Job::Job</a></div><div class="ttdeci">Job(std::unique_ptr&lt; Parameters &gt; parameters, Runtime &amp;rt)</div><div class="ttdoc">Borrow: caller keeps Runtime alive (CLI stack / Python Session).</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00076">Job.h:76</a></div></div>
-<div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_a75179d05d423a1054898e8029a92ea43"><div class="ttname"><a href="#a75179d05d423a1054898e8029a92ea43">eonc::SaddleSearchJob::fCallsSaddle</a></div><div class="ttdeci">int fCallsSaddle</div><div class="ttdoc">Force calls to find the saddle.</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8h_source.html#l00083">SaddleSearchJob.h:83</a></div></div>
+<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8h_source.html#l00052">52</a> of file <a class="el" href="SaddleSearchJob_8h_source.html">SaddleSearchJob.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   53</span>      : <a class="code hl_function" href="classeonc_1_1Job.html#a40423b75b9614f0fc81797a5d817948d">Job</a>(std::move(parameters), rt),</div>
+<div class="line"><span class="lineno">   54</span>        <a class="code hl_variable" href="#a75179d05d423a1054898e8029a92ea43">fCallsSaddle</a>{0} {}</div>
+<div class="ttc" id="aclasseonc_1_1Job_html_a40423b75b9614f0fc81797a5d817948d"><div class="ttname"><a href="classeonc_1_1Job.html#a40423b75b9614f0fc81797a5d817948d">eonc::Job::Job</a></div><div class="ttdeci">Job(std::unique_ptr&lt; Parameters &gt; parameters, Runtime &amp;rt, ExclusivePotential)</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00071">Job.h:71</a></div></div>
+<div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_a75179d05d423a1054898e8029a92ea43"><div class="ttname"><a href="#a75179d05d423a1054898e8029a92ea43">eonc::SaddleSearchJob::fCallsSaddle</a></div><div class="ttdeci">int fCallsSaddle</div><div class="ttdoc">Force calls to find the saddle.</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8h_source.html#l00084">SaddleSearchJob.h:84</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -448,12 +454,12 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">  166</span> </div>
 <div class="line"><span class="lineno">  167</span>  <span class="keywordflow">return</span> status;</div>
 <div class="line"><span class="lineno">  168</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Job_html_a948da0de6ec2575bd6ac975fedaad0c9"><div class="ttname"><a href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">eonc::Job::pot</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; pot</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00063">Job.h:63</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Job_html_a948da0de6ec2575bd6ac975fedaad0c9"><div class="ttname"><a href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">eonc::Job::pot</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; pot</div><div class="ttdoc">Set when one Potential is shared across Matters, images, or a caller.</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00066">Job.h:66</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Job_html_a9f0bfab75a98f383ba58f1c592fd2500"><div class="ttname"><a href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">eonc::Job::params</a></div><div class="ttdeci">Parameters params</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00058">Job.h:58</a></div></div>
 <div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_a14617f4b0ae6355cdbd54882065b0534"><div class="ttname"><a href="classeonc_1_1LowestEigenmode.html#a14617f4b0ae6355cdbd54882065b0534">eonc::LowestEigenmode::MINMODE_GPRDIMER</a></div><div class="ttdeci">static const char MINMODE_GPRDIMER[]</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00036">LowestEigenmode.h:36</a></div></div>
 <div class="ttc" id="aclasseonc_1_1MinModeSaddleSearch_html_a4a5c4ebad104382ef600037faafd5960a2a928bdf6876c8070daddb67f01b0cf7"><div class="ttname"><a href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a2a928bdf6876c8070daddb67f01b0cf7">eonc::MinModeSaddleSearch::STATUS_POTENTIAL_FAILED</a></div><div class="ttdeci">@ STATUS_POTENTIAL_FAILED</div><div class="ttdef"><b>Definition</b> <a href="MinModeSaddleSearch_8h_source.html#l00042">MinModeSaddleSearch.h:42</a></div></div>
-<div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_a161f26542b381ae7cf03302dedfaa84f"><div class="ttname"><a href="#a161f26542b381ae7cf03302dedfaa84f">eonc::SaddleSearchJob::saddleSearch</a></div><div class="ttdeci">std::unique_ptr&lt; SaddleSearchMethod &gt; saddleSearch</div><div class="ttdoc">Initializes a ref SaddleSearchMethod (base class for polymorphism).</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8h_source.html#l00074">SaddleSearchJob.h:74</a></div></div>
-<div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_a5a2729f713e551950ed663702834a2d0"><div class="ttname"><a href="#a5a2729f713e551950ed663702834a2d0">eonc::SaddleSearchJob::log</a></div><div class="ttdeci">eonc::log::Scoped log</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8h_source.html#l00085">SaddleSearchJob.h:85</a></div></div>
+<div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_a161f26542b381ae7cf03302dedfaa84f"><div class="ttname"><a href="#a161f26542b381ae7cf03302dedfaa84f">eonc::SaddleSearchJob::saddleSearch</a></div><div class="ttdeci">std::unique_ptr&lt; SaddleSearchMethod &gt; saddleSearch</div><div class="ttdoc">Initializes a ref SaddleSearchMethod (base class for polymorphism).</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8h_source.html#l00075">SaddleSearchJob.h:75</a></div></div>
+<div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_a5a2729f713e551950ed663702834a2d0"><div class="ttname"><a href="#a5a2729f713e551950ed663702834a2d0">eonc::SaddleSearchJob::log</a></div><div class="ttdeci">eonc::log::Scoped log</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8h_source.html#l00086">SaddleSearchJob.h:86</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -579,11 +585,11 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">   82</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a1734aa63a9af7868ef4c05b33a9e00f7">returnFiles</a>;</div>
 <div class="line"><span class="lineno">   83</span>}</div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
-<div class="ttc" id="aEonLogger_8h_html_afe4077bbe89c5bc6e818b057a692e64a"><div class="ttname"><a href="EonLogger_8h.html#afe4077bbe89c5bc6e818b057a692e64a">EONC_LOG_CRITICAL</a></div><div class="ttdeci">#define EONC_LOG_CRITICAL(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00267">EonLogger.h:267</a></div></div>
-<div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_a1734aa63a9af7868ef4c05b33a9e00f7"><div class="ttname"><a href="#a1734aa63a9af7868ef4c05b33a9e00f7">eonc::SaddleSearchJob::returnFiles</a></div><div class="ttdeci">std::vector&lt; std::string &gt; returnFiles</div><div class="ttdoc">Container for the results of the run.</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8h_source.html#l00071">SaddleSearchJob.h:71</a></div></div>
-<div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_a3a33a90398d82ea43bfd9441a5f8a1da"><div class="ttname"><a href="#a3a33a90398d82ea43bfd9441a5f8a1da">eonc::SaddleSearchJob::saddle</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; saddle</div><div class="ttdoc">Configuration used during the saddle point search.</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8h_source.html#l00078">SaddleSearchJob.h:78</a></div></div>
-<div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_aa77a99e2be44f56adde9b39b18c93f67"><div class="ttname"><a href="#aa77a99e2be44f56adde9b39b18c93f67">eonc::SaddleSearchJob::displacement</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; displacement</div><div class="ttdoc">Configuration used during the saddle point search.</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8h_source.html#l00080">SaddleSearchJob.h:80</a></div></div>
-<div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_af6514fdabcf77def780bba06003258d6"><div class="ttname"><a href="#af6514fdabcf77def780bba06003258d6">eonc::SaddleSearchJob::initial</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; initial</div><div class="ttdoc">Initial configuration.</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8h_source.html#l00076">SaddleSearchJob.h:76</a></div></div>
+<div class="ttc" id="aEonLogger_8h_html_afe4077bbe89c5bc6e818b057a692e64a"><div class="ttname"><a href="EonLogger_8h.html#afe4077bbe89c5bc6e818b057a692e64a">EONC_LOG_CRITICAL</a></div><div class="ttdeci">#define EONC_LOG_CRITICAL(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00329">EonLogger.h:329</a></div></div>
+<div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_a1734aa63a9af7868ef4c05b33a9e00f7"><div class="ttname"><a href="#a1734aa63a9af7868ef4c05b33a9e00f7">eonc::SaddleSearchJob::returnFiles</a></div><div class="ttdeci">std::vector&lt; std::string &gt; returnFiles</div><div class="ttdoc">Container for the results of the run.</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8h_source.html#l00072">SaddleSearchJob.h:72</a></div></div>
+<div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_a3a33a90398d82ea43bfd9441a5f8a1da"><div class="ttname"><a href="#a3a33a90398d82ea43bfd9441a5f8a1da">eonc::SaddleSearchJob::saddle</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; saddle</div><div class="ttdoc">Configuration used during the saddle point search.</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8h_source.html#l00079">SaddleSearchJob.h:79</a></div></div>
+<div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_aa77a99e2be44f56adde9b39b18c93f67"><div class="ttname"><a href="#aa77a99e2be44f56adde9b39b18c93f67">eonc::SaddleSearchJob::displacement</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; displacement</div><div class="ttdoc">Configuration used during the saddle point search.</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8h_source.html#l00081">SaddleSearchJob.h:81</a></div></div>
+<div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_af6514fdabcf77def780bba06003258d6"><div class="ttname"><a href="#af6514fdabcf77def780bba06003258d6">eonc::SaddleSearchJob::initial</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; initial</div><div class="ttdoc">Initial configuration.</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8h_source.html#l00077">SaddleSearchJob.h:77</a></div></div>
 <div class="ttc" id="aclasseonc_1_1SaddleSearchJob_html_aff605973139028c49bae405543c56dec"><div class="ttname"><a href="#aff605973139028c49bae405543c56dec">eonc::SaddleSearchJob::runPrepared</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; runPrepared(const AtomMatrix &amp;mode)</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchJob_8cpp_source.html#l00103">SaddleSearchJob.cpp:103</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1EpiCenters_html_a3daeffdce455426b6819b083964fa53a"><div class="ttname"><a href="namespaceeonc_1_1EpiCenters.html#a3daeffdce455426b6819b083964fa53a">eonc::EpiCenters::DISP_LOAD</a></div><div class="ttdeci">const char DISP_LOAD[]</div><div class="ttdef"><b>Definition</b> <a href="EpiCenters_8h_source.html#l00020">EpiCenters.h:20</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1helpers_html_a2a110b853a8d95856f9e66dc9ef65dc1"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a2a110b853a8d95856f9e66dc9ef65dc1">eonc::helpers::applyClientDisplacement</a></div><div class="ttdeci">bool applyClientDisplacement(Matter &amp;target, const Matter &amp;initial, const Parameters &amp;params, AtomMatrix *modeOut)</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00246">HelperFunctions.cpp:246</a></div></div>
@@ -787,7 +793,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Configuration used during the saddle point search. </p>
 
-<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8h_source.html#l00080">80</a> of file <a class="el" href="SaddleSearchJob_8h_source.html">SaddleSearchJob.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8h_source.html#l00081">81</a> of file <a class="el" href="SaddleSearchJob_8h_source.html">SaddleSearchJob.h</a>.</p>
 
 </div>
 </div>
@@ -813,7 +819,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Force calls to find the saddle. </p>
 
-<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8h_source.html#l00083">83</a> of file <a class="el" href="SaddleSearchJob_8h_source.html">SaddleSearchJob.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8h_source.html#l00084">84</a> of file <a class="el" href="SaddleSearchJob_8h_source.html">SaddleSearchJob.h</a>.</p>
 
 </div>
 </div>
@@ -839,7 +845,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Initial configuration. </p>
 
-<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8h_source.html#l00076">76</a> of file <a class="el" href="SaddleSearchJob_8h_source.html">SaddleSearchJob.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8h_source.html#l00077">77</a> of file <a class="el" href="SaddleSearchJob_8h_source.html">SaddleSearchJob.h</a>.</p>
 
 </div>
 </div>
@@ -863,7 +869,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8h_source.html#l00085">85</a> of file <a class="el" href="SaddleSearchJob_8h_source.html">SaddleSearchJob.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8h_source.html#l00086">86</a> of file <a class="el" href="SaddleSearchJob_8h_source.html">SaddleSearchJob.h</a>.</p>
 
 </div>
 </div>
@@ -889,7 +895,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Container for the results of the run. </p>
 
-<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8h_source.html#l00071">71</a> of file <a class="el" href="SaddleSearchJob_8h_source.html">SaddleSearchJob.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8h_source.html#l00072">72</a> of file <a class="el" href="SaddleSearchJob_8h_source.html">SaddleSearchJob.h</a>.</p>
 
 </div>
 </div>
@@ -915,7 +921,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Configuration used during the saddle point search. </p>
 
-<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8h_source.html#l00078">78</a> of file <a class="el" href="SaddleSearchJob_8h_source.html">SaddleSearchJob.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8h_source.html#l00079">79</a> of file <a class="el" href="SaddleSearchJob_8h_source.html">SaddleSearchJob.h</a>.</p>
 
 </div>
 </div>
@@ -941,7 +947,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Initializes a ref <a class="el" href="classeonc_1_1SaddleSearchMethod.html">SaddleSearchMethod</a> (base class for polymorphism). </p>
 
-<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8h_source.html#l00074">74</a> of file <a class="el" href="SaddleSearchJob_8h_source.html">SaddleSearchJob.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SaddleSearchJob_8h_source.html#l00075">75</a> of file <a class="el" href="SaddleSearchJob_8h_source.html">SaddleSearchJob.h</a>.</p>
 
 </div>
 </div>

@@ -13,8 +13,10 @@ var searchData=
   ['env_5ft_10',['env_t',['../structeonc_1_1ams__options__t_1_1env__t.html',1,'eonc::ams_options_t']]],
   ['eonmtaconfig_11',['EonMtaConfig',['../structEonMtaConfig.html',1,'']]],
   ['eonmtapot_12',['EonMtaPot',['../structEonMtaPot.html',1,'']]],
-  ['exception_13',['Exception',['../classException.html',1,'']]],
-  ['expr_5foptions_5ft_14',['expr_options_t',['../structeonc_1_1expr__options__t.html',1,'eonc']]],
-  ['extpot_15',['ExtPot',['../classExtPot.html',1,'']]],
-  ['extremaresult_16',['ExtremaResult',['../structeonc_1_1neb_1_1ExtremaResult.html',1,'eonc::neb']]]
+  ['eonrgpotgroupmpi_13',['EonRgpotGroupMpi',['../structEonRgpotGroupMpi.html',1,'']]],
+  ['exception_14',['Exception',['../classException.html',1,'']]],
+  ['exclusivepotential_15',['ExclusivePotential',['../structeonc_1_1Job_1_1ExclusivePotential.html',1,'eonc::Job']]],
+  ['expr_5foptions_5ft_16',['expr_options_t',['../structeonc_1_1expr__options__t.html',1,'eonc']]],
+  ['extpot_17',['ExtPot',['../classExtPot.html',1,'']]],
+  ['extremaresult_18',['ExtremaResult',['../structeonc_1_1neb_1_1ExtremaResult.html',1,'eonc::neb']]]
 ];

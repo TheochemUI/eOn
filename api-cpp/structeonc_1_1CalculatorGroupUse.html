@@ -1,0 +1,725 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: eonc::CalculatorGroupUse Struct Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn 3.2.0</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('structeonc_1_1CalculatorGroupUse.html','','structeonc_1_1CalculatorGroupUse-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">eonc::CalculatorGroupUse Struct Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>How a job used its calculator groups: the seconds each group spent inside engine calls, the systems it evaluated, and the driver's wall time inside grouped requests.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="CalculatorGroupUse_8h_source.html">CalculatorGroupUse.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a858e9136dca2b66f7c863fa5994423aa" id="r_a858e9136dca2b66f7c863fa5994423aa"><td class="memItemLeft">std::size_t&#160;</td><td class="memItemRight"><a class="el" href="#a858e9136dca2b66f7c863fa5994423aa">groups</a> () const noexcept</td></tr>
+<tr class="memitem:af77aa6d4db77a61f1e4bd3d588b28fd8" id="r_af77aa6d4db77a61f1e4bd3d588b28fd8"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#af77aa6d4db77a61f1e4bd3d588b28fd8">meanBusy</a> () const noexcept</td></tr>
+<tr class="memitem:a912044f7ce5dad34864059c24aedad3f" id="r_a912044f7ce5dad34864059c24aedad3f"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a912044f7ce5dad34864059c24aedad3f">maxBusy</a> () const noexcept</td></tr>
+<tr class="memitem:ab37cc52489776b2dfd72682da8a5f338" id="r_ab37cc52489776b2dfd72682da8a5f338"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#ab37cc52489776b2dfd72682da8a5f338">loadBalance</a> () const noexcept</td></tr>
+<tr class="memdesc:ab37cc52489776b2dfd72682da8a5f338"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mean over max busy time: 1 when every group carried the same work.  <br /></td></tr>
+<tr class="memitem:a59c61c0b941bfe21acd71f89ce649a4c" id="r_a59c61c0b941bfe21acd71f89ce649a4c"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a59c61c0b941bfe21acd71f89ce649a4c">communicationEfficiency</a> () const noexcept</td></tr>
+<tr class="memdesc:a59c61c0b941bfe21acd71f89ce649a4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max busy over wall: the share of the driver's wait that the busiest group spent computing.  <br /></td></tr>
+<tr class="memitem:a343a8f6ad6a2867f6e08fec75576f33b" id="r_a343a8f6ad6a2867f6e08fec75576f33b"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a343a8f6ad6a2867f6e08fec75576f33b">parallelEfficiency</a> () const noexcept</td></tr>
+<tr class="memitem:a057fcc10fda58bfb3a82a154f25721db" id="r_a057fcc10fda58bfb3a82a154f25721db"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a057fcc10fda58bfb3a82a154f25721db">idleFraction</a> (std::size_t group) const noexcept</td></tr>
+<tr class="memdesc:a057fcc10fda58bfb3a82a154f25721db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fraction of the grouped wall time a group spent outside engine calls.  <br /></td></tr>
+<tr class="memitem:a819790c46eade5b8c34ec6e77041a47d" id="r_a819790c46eade5b8c34ec6e77041a47d"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a819790c46eade5b8c34ec6e77041a47d">table</a> () const</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a8bcf46c9592939069a03972ccc47aa3a" id="r_a8bcf46c9592939069a03972ccc47aa3a"><td class="memItemLeft">std::vector&lt; double &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a8bcf46c9592939069a03972ccc47aa3a">busy</a></td></tr>
+<tr class="memdesc:a8bcf46c9592939069a03972ccc47aa3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">seconds in engine calls, per group  <br /></td></tr>
+<tr class="memitem:a3840a7954b711a1f7180e3e0a6ff07ee" id="r_a3840a7954b711a1f7180e3e0a6ff07ee"><td class="memItemLeft">std::vector&lt; double &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a3840a7954b711a1f7180e3e0a6ff07ee">systems</a></td></tr>
+<tr class="memdesc:a3840a7954b711a1f7180e3e0a6ff07ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">systems evaluated, per group  <br /></td></tr>
+<tr class="memitem:ad658d8a5e9fd850adce0b08487f7a6cd" id="r_ad658d8a5e9fd850adce0b08487f7a6cd"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#ad658d8a5e9fd850adce0b08487f7a6cd">wall</a> {0.0}</td></tr>
+<tr class="memdesc:ad658d8a5e9fd850adce0b08487f7a6cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">driver seconds inside grouped requests  <br /></td></tr>
+<tr class="memitem:a1a77c863648261c26a04d00692f2444a" id="r_a1a77c863648261c26a04d00692f2444a"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a1a77c863648261c26a04d00692f2444a">singleWall</a> {0.0}</td></tr>
+<tr class="memdesc:a1a77c863648261c26a04d00692f2444a"><td class="mdescLeft">&#160;</td><td class="mdescRight">of which single-system requests  <br /></td></tr>
+<tr class="memitem:a42410668eec18e8e137455449d4aa0ae" id="r_a42410668eec18e8e137455449d4aa0ae"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a42410668eec18e8e137455449d4aa0ae">batches</a> {0}</td></tr>
+<tr class="memdesc:a42410668eec18e8e137455449d4aa0ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">grouped batch requests  <br /></td></tr>
+<tr class="memitem:a1e206acd58ce140919cf9f6ee5fef166" id="r_a1e206acd58ce140919cf9f6ee5fef166"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a1e206acd58ce140919cf9f6ee5fef166">singles</a> {0}</td></tr>
+<tr class="memdesc:a1e206acd58ce140919cf9f6ee5fef166"><td class="mdescLeft">&#160;</td><td class="mdescRight">single-system requests (group 0 only)  <br /></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>How a job used its calculator groups: the seconds each group spent inside engine calls, the systems it evaluated, and the driver's wall time inside grouped requests. </p>
+<p>The ratios follow the POP parallel efficiency model: parallel efficiency is load balance times communication efficiency. </p>
+
+<p class="definition">Definition at line <a class="el" href="CalculatorGroupUse_8h_source.html#l00028">28</a> of file <a class="el" href="CalculatorGroupUse_8h_source.html">CalculatorGroupUse.h</a>.</p>
+</div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a59c61c0b941bfe21acd71f89ce649a4c" name="a59c61c0b941bfe21acd71f89ce649a4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59c61c0b941bfe21acd71f89ce649a4c">&#9670;&#160;</a></span>communicationEfficiency()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::CalculatorGroupUse::communicationEfficiency </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Max busy over wall: the share of the driver's wait that the busiest group spent computing. </p>
+<p>Waits for a slower group in one batch, serial requests on group 0 and the result broadcasts all lower it. </p>
+
+<p class="definition">Definition at line <a class="el" href="CalculatorGroupUse_8h_source.html#l00059">59</a> of file <a class="el" href="CalculatorGroupUse_8h_source.html">CalculatorGroupUse.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   59</span>                                                                {</div>
+<div class="line"><span class="lineno">   60</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#ad658d8a5e9fd850adce0b08487f7a6cd">wall</a> &gt; 0.0 ? std::min(1.0, <a class="code hl_function" href="#a912044f7ce5dad34864059c24aedad3f">maxBusy</a>() / <a class="code hl_variable" href="#ad658d8a5e9fd850adce0b08487f7a6cd">wall</a>) : 1.0;</div>
+<div class="line"><span class="lineno">   61</span>  }</div>
+<div class="ttc" id="astructeonc_1_1CalculatorGroupUse_html_a912044f7ce5dad34864059c24aedad3f"><div class="ttname"><a href="#a912044f7ce5dad34864059c24aedad3f">eonc::CalculatorGroupUse::maxBusy</a></div><div class="ttdeci">double maxBusy() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="CalculatorGroupUse_8h_source.html#l00046">CalculatorGroupUse.h:46</a></div></div>
+<div class="ttc" id="astructeonc_1_1CalculatorGroupUse_html_ad658d8a5e9fd850adce0b08487f7a6cd"><div class="ttname"><a href="#ad658d8a5e9fd850adce0b08487f7a6cd">eonc::CalculatorGroupUse::wall</a></div><div class="ttdeci">double wall</div><div class="ttdoc">driver seconds inside grouped requests</div><div class="ttdef"><b>Definition</b> <a href="CalculatorGroupUse_8h_source.html#l00031">CalculatorGroupUse.h:31</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a858e9136dca2b66f7c863fa5994423aa" name="a858e9136dca2b66f7c863fa5994423aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a858e9136dca2b66f7c863fa5994423aa">&#9670;&#160;</a></span>groups()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eonc::CalculatorGroupUse::groups </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="CalculatorGroupUse_8h_source.html#l00036">36</a> of file <a class="el" href="CalculatorGroupUse_8h_source.html">CalculatorGroupUse.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   36</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a8bcf46c9592939069a03972ccc47aa3a">busy</a>.size(); }</div>
+<div class="ttc" id="astructeonc_1_1CalculatorGroupUse_html_a8bcf46c9592939069a03972ccc47aa3a"><div class="ttname"><a href="#a8bcf46c9592939069a03972ccc47aa3a">eonc::CalculatorGroupUse::busy</a></div><div class="ttdeci">std::vector&lt; double &gt; busy</div><div class="ttdoc">seconds in engine calls, per group</div><div class="ttdef"><b>Definition</b> <a href="CalculatorGroupUse_8h_source.html#l00029">CalculatorGroupUse.h:29</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a057fcc10fda58bfb3a82a154f25721db" name="a057fcc10fda58bfb3a82a154f25721db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a057fcc10fda58bfb3a82a154f25721db">&#9670;&#160;</a></span>idleFraction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::CalculatorGroupUse::idleFraction </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t</td>          <td class="paramname"><span class="paramname"><em>group</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Fraction of the grouped wall time a group spent outside engine calls. </p>
+
+<p class="definition">Definition at line <a class="el" href="CalculatorGroupUse_8h_source.html#l00068">68</a> of file <a class="el" href="CalculatorGroupUse_8h_source.html">CalculatorGroupUse.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   68</span>                                                                    {</div>
+<div class="line"><span class="lineno">   69</span>    <span class="keywordflow">if</span> (group &gt;= <a class="code hl_variable" href="#a8bcf46c9592939069a03972ccc47aa3a">busy</a>.size() || <a class="code hl_variable" href="#ad658d8a5e9fd850adce0b08487f7a6cd">wall</a> &lt;= 0.0) {</div>
+<div class="line"><span class="lineno">   70</span>      <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><span class="lineno">   71</span>    }</div>
+<div class="line"><span class="lineno">   72</span>    <span class="keywordflow">return</span> std::clamp(1.0 - <a class="code hl_variable" href="#a8bcf46c9592939069a03972ccc47aa3a">busy</a>[group] / <a class="code hl_variable" href="#ad658d8a5e9fd850adce0b08487f7a6cd">wall</a>, 0.0, 1.0);</div>
+<div class="line"><span class="lineno">   73</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ab37cc52489776b2dfd72682da8a5f338" name="ab37cc52489776b2dfd72682da8a5f338"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab37cc52489776b2dfd72682da8a5f338">&#9670;&#160;</a></span>loadBalance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::CalculatorGroupUse::loadBalance </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mean over max busy time: 1 when every group carried the same work. </p>
+
+<p class="definition">Definition at line <a class="el" href="CalculatorGroupUse_8h_source.html#l00051">51</a> of file <a class="el" href="CalculatorGroupUse_8h_source.html">CalculatorGroupUse.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   51</span>                                                    {</div>
+<div class="line"><span class="lineno">   52</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> m = <a class="code hl_function" href="#a912044f7ce5dad34864059c24aedad3f">maxBusy</a>();</div>
+<div class="line"><span class="lineno">   53</span>    <span class="keywordflow">return</span> m &gt; 0.0 ? <a class="code hl_function" href="#af77aa6d4db77a61f1e4bd3d588b28fd8">meanBusy</a>() / m : 1.0;</div>
+<div class="line"><span class="lineno">   54</span>  }</div>
+<div class="ttc" id="astructeonc_1_1CalculatorGroupUse_html_af77aa6d4db77a61f1e4bd3d588b28fd8"><div class="ttname"><a href="#af77aa6d4db77a61f1e4bd3d588b28fd8">eonc::CalculatorGroupUse::meanBusy</a></div><div class="ttdeci">double meanBusy() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="CalculatorGroupUse_8h_source.html#l00038">CalculatorGroupUse.h:38</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a912044f7ce5dad34864059c24aedad3f" name="a912044f7ce5dad34864059c24aedad3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a912044f7ce5dad34864059c24aedad3f">&#9670;&#160;</a></span>maxBusy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::CalculatorGroupUse::maxBusy </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="CalculatorGroupUse_8h_source.html#l00046">46</a> of file <a class="el" href="CalculatorGroupUse_8h_source.html">CalculatorGroupUse.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   46</span>                                                {</div>
+<div class="line"><span class="lineno">   47</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a8bcf46c9592939069a03972ccc47aa3a">busy</a>.empty() ? 0.0 : *std::max_element(<a class="code hl_variable" href="#a8bcf46c9592939069a03972ccc47aa3a">busy</a>.begin(), <a class="code hl_variable" href="#a8bcf46c9592939069a03972ccc47aa3a">busy</a>.end());</div>
+<div class="line"><span class="lineno">   48</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af77aa6d4db77a61f1e4bd3d588b28fd8" name="af77aa6d4db77a61f1e4bd3d588b28fd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af77aa6d4db77a61f1e4bd3d588b28fd8">&#9670;&#160;</a></span>meanBusy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::CalculatorGroupUse::meanBusy </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="CalculatorGroupUse_8h_source.html#l00038">38</a> of file <a class="el" href="CalculatorGroupUse_8h_source.html">CalculatorGroupUse.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   38</span>                                                 {</div>
+<div class="line"><span class="lineno">   39</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a8bcf46c9592939069a03972ccc47aa3a">busy</a>.empty()) {</div>
+<div class="line"><span class="lineno">   40</span>      <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><span class="lineno">   41</span>    }</div>
+<div class="line"><span class="lineno">   42</span>    <span class="keywordflow">return</span> std::accumulate(<a class="code hl_variable" href="#a8bcf46c9592939069a03972ccc47aa3a">busy</a>.begin(), <a class="code hl_variable" href="#a8bcf46c9592939069a03972ccc47aa3a">busy</a>.end(), 0.0) /</div>
+<div class="line"><span class="lineno">   43</span>           <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a8bcf46c9592939069a03972ccc47aa3a">busy</a>.size());</div>
+<div class="line"><span class="lineno">   44</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a343a8f6ad6a2867f6e08fec75576f33b" name="a343a8f6ad6a2867f6e08fec75576f33b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a343a8f6ad6a2867f6e08fec75576f33b">&#9670;&#160;</a></span>parallelEfficiency()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::CalculatorGroupUse::parallelEfficiency </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="CalculatorGroupUse_8h_source.html#l00063">63</a> of file <a class="el" href="CalculatorGroupUse_8h_source.html">CalculatorGroupUse.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   63</span>                                                           {</div>
+<div class="line"><span class="lineno">   64</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#ab37cc52489776b2dfd72682da8a5f338">loadBalance</a>() * <a class="code hl_function" href="#a59c61c0b941bfe21acd71f89ce649a4c">communicationEfficiency</a>();</div>
+<div class="line"><span class="lineno">   65</span>  }</div>
+<div class="ttc" id="astructeonc_1_1CalculatorGroupUse_html_a59c61c0b941bfe21acd71f89ce649a4c"><div class="ttname"><a href="#a59c61c0b941bfe21acd71f89ce649a4c">eonc::CalculatorGroupUse::communicationEfficiency</a></div><div class="ttdeci">double communicationEfficiency() const noexcept</div><div class="ttdoc">Max busy over wall: the share of the driver&#39;s wait that the busiest group spent computing.</div><div class="ttdef"><b>Definition</b> <a href="CalculatorGroupUse_8h_source.html#l00059">CalculatorGroupUse.h:59</a></div></div>
+<div class="ttc" id="astructeonc_1_1CalculatorGroupUse_html_ab37cc52489776b2dfd72682da8a5f338"><div class="ttname"><a href="#ab37cc52489776b2dfd72682da8a5f338">eonc::CalculatorGroupUse::loadBalance</a></div><div class="ttdeci">double loadBalance() const noexcept</div><div class="ttdoc">Mean over max busy time: 1 when every group carried the same work.</div><div class="ttdef"><b>Definition</b> <a href="CalculatorGroupUse_8h_source.html#l00051">CalculatorGroupUse.h:51</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a819790c46eade5b8c34ec6e77041a47d" name="a819790c46eade5b8c34ec6e77041a47d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a819790c46eade5b8c34ec6e77041a47d">&#9670;&#160;</a></span>table()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::CalculatorGroupUse::table </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="CalculatorGroupUse_8h_source.html#l00075">75</a> of file <a class="el" href="CalculatorGroupUse_8h_source.html">CalculatorGroupUse.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   75</span>                                        {</div>
+<div class="line"><span class="lineno">   76</span>    std::string out = std::format(</div>
+<div class="line"><span class="lineno">   77</span>        <span class="stringliteral">&quot;calculator groups: {} groups, {} batches and {} single requests, &quot;</span></div>
+<div class="line"><span class="lineno">   78</span>        <span class="stringliteral">&quot;{:.1f} s grouped wall ({:.1f} s single)\n&quot;</span>,</div>
+<div class="line"><span class="lineno">   79</span>        <a class="code hl_function" href="#a858e9136dca2b66f7c863fa5994423aa">groups</a>(), <a class="code hl_variable" href="#a42410668eec18e8e137455449d4aa0ae">batches</a>, <a class="code hl_variable" href="#a1e206acd58ce140919cf9f6ee5fef166">singles</a>, <a class="code hl_variable" href="#ad658d8a5e9fd850adce0b08487f7a6cd">wall</a>, <a class="code hl_variable" href="#a1a77c863648261c26a04d00692f2444a">singleWall</a>);</div>
+<div class="line"><span class="lineno">   80</span>    out += std::format(<span class="stringliteral">&quot;{:&gt;6} {:&gt;8} {:&gt;10} {:&gt;6}\n&quot;</span>, <span class="stringliteral">&quot;group&quot;</span>, <span class="stringliteral">&quot;systems&quot;</span>,</div>
+<div class="line"><span class="lineno">   81</span>                       <span class="stringliteral">&quot;busy_s&quot;</span>, <span class="stringliteral">&quot;idle&quot;</span>);</div>
+<div class="line"><span class="lineno">   82</span>    <span class="keywordflow">for</span> (std::size_t g = 0; g &lt; <a class="code hl_variable" href="#a8bcf46c9592939069a03972ccc47aa3a">busy</a>.size(); ++g) {</div>
+<div class="line"><span class="lineno">   83</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> n = g &lt; <a class="code hl_variable" href="#a3840a7954b711a1f7180e3e0a6ff07ee">systems</a>.size() ? <a class="code hl_variable" href="#a3840a7954b711a1f7180e3e0a6ff07ee">systems</a>[g] : 0.0;</div>
+<div class="line"><span class="lineno">   84</span>      out += std::format(<span class="stringliteral">&quot;{:&gt;6} {:&gt;8.0f} {:&gt;10.2f} {:&gt;5.1f}%\n&quot;</span>, g, n, <a class="code hl_variable" href="#a8bcf46c9592939069a03972ccc47aa3a">busy</a>[g],</div>
+<div class="line"><span class="lineno">   85</span>                         100.0 * <a class="code hl_function" href="#a057fcc10fda58bfb3a82a154f25721db">idleFraction</a>(g));</div>
+<div class="line"><span class="lineno">   86</span>    }</div>
+<div class="line"><span class="lineno">   87</span>    out += std::format(<span class="stringliteral">&quot;load balance {:.3f}, communication efficiency {:.3f}, &quot;</span></div>
+<div class="line"><span class="lineno">   88</span>                       <span class="stringliteral">&quot;parallel efficiency {:.3f}\n&quot;</span>,</div>
+<div class="line"><span class="lineno">   89</span>                       <a class="code hl_function" href="#ab37cc52489776b2dfd72682da8a5f338">loadBalance</a>(), <a class="code hl_function" href="#a59c61c0b941bfe21acd71f89ce649a4c">communicationEfficiency</a>(),</div>
+<div class="line"><span class="lineno">   90</span>                       <a class="code hl_function" href="#a343a8f6ad6a2867f6e08fec75576f33b">parallelEfficiency</a>());</div>
+<div class="line"><span class="lineno">   91</span>    <span class="keywordflow">return</span> out;</div>
+<div class="line"><span class="lineno">   92</span>  }</div>
+<div class="ttc" id="astructeonc_1_1CalculatorGroupUse_html_a057fcc10fda58bfb3a82a154f25721db"><div class="ttname"><a href="#a057fcc10fda58bfb3a82a154f25721db">eonc::CalculatorGroupUse::idleFraction</a></div><div class="ttdeci">double idleFraction(std::size_t group) const noexcept</div><div class="ttdoc">Fraction of the grouped wall time a group spent outside engine calls.</div><div class="ttdef"><b>Definition</b> <a href="CalculatorGroupUse_8h_source.html#l00068">CalculatorGroupUse.h:68</a></div></div>
+<div class="ttc" id="astructeonc_1_1CalculatorGroupUse_html_a1a77c863648261c26a04d00692f2444a"><div class="ttname"><a href="#a1a77c863648261c26a04d00692f2444a">eonc::CalculatorGroupUse::singleWall</a></div><div class="ttdeci">double singleWall</div><div class="ttdoc">of which single-system requests</div><div class="ttdef"><b>Definition</b> <a href="CalculatorGroupUse_8h_source.html#l00032">CalculatorGroupUse.h:32</a></div></div>
+<div class="ttc" id="astructeonc_1_1CalculatorGroupUse_html_a1e206acd58ce140919cf9f6ee5fef166"><div class="ttname"><a href="#a1e206acd58ce140919cf9f6ee5fef166">eonc::CalculatorGroupUse::singles</a></div><div class="ttdeci">long singles</div><div class="ttdoc">single-system requests (group 0 only)</div><div class="ttdef"><b>Definition</b> <a href="CalculatorGroupUse_8h_source.html#l00034">CalculatorGroupUse.h:34</a></div></div>
+<div class="ttc" id="astructeonc_1_1CalculatorGroupUse_html_a343a8f6ad6a2867f6e08fec75576f33b"><div class="ttname"><a href="#a343a8f6ad6a2867f6e08fec75576f33b">eonc::CalculatorGroupUse::parallelEfficiency</a></div><div class="ttdeci">double parallelEfficiency() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="CalculatorGroupUse_8h_source.html#l00063">CalculatorGroupUse.h:63</a></div></div>
+<div class="ttc" id="astructeonc_1_1CalculatorGroupUse_html_a3840a7954b711a1f7180e3e0a6ff07ee"><div class="ttname"><a href="#a3840a7954b711a1f7180e3e0a6ff07ee">eonc::CalculatorGroupUse::systems</a></div><div class="ttdeci">std::vector&lt; double &gt; systems</div><div class="ttdoc">systems evaluated, per group</div><div class="ttdef"><b>Definition</b> <a href="CalculatorGroupUse_8h_source.html#l00030">CalculatorGroupUse.h:30</a></div></div>
+<div class="ttc" id="astructeonc_1_1CalculatorGroupUse_html_a42410668eec18e8e137455449d4aa0ae"><div class="ttname"><a href="#a42410668eec18e8e137455449d4aa0ae">eonc::CalculatorGroupUse::batches</a></div><div class="ttdeci">long batches</div><div class="ttdoc">grouped batch requests</div><div class="ttdef"><b>Definition</b> <a href="CalculatorGroupUse_8h_source.html#l00033">CalculatorGroupUse.h:33</a></div></div>
+<div class="ttc" id="astructeonc_1_1CalculatorGroupUse_html_a858e9136dca2b66f7c863fa5994423aa"><div class="ttname"><a href="#a858e9136dca2b66f7c863fa5994423aa">eonc::CalculatorGroupUse::groups</a></div><div class="ttdeci">std::size_t groups() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="CalculatorGroupUse_8h_source.html#l00036">CalculatorGroupUse.h:36</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a42410668eec18e8e137455449d4aa0ae" name="a42410668eec18e8e137455449d4aa0ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42410668eec18e8e137455449d4aa0ae">&#9670;&#160;</a></span>batches</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::CalculatorGroupUse::batches {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>grouped batch requests </p>
+
+<p class="definition">Definition at line <a class="el" href="CalculatorGroupUse_8h_source.html#l00033">33</a> of file <a class="el" href="CalculatorGroupUse_8h_source.html">CalculatorGroupUse.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   33</span>{0};             </div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8bcf46c9592939069a03972ccc47aa3a" name="a8bcf46c9592939069a03972ccc47aa3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bcf46c9592939069a03972ccc47aa3a">&#9670;&#160;</a></span>busy</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; eonc::CalculatorGroupUse::busy</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>seconds in engine calls, per group </p>
+
+<p class="definition">Definition at line <a class="el" href="CalculatorGroupUse_8h_source.html#l00029">29</a> of file <a class="el" href="CalculatorGroupUse_8h_source.html">CalculatorGroupUse.h</a>.</p>
+
+</div>
+</div>
+<a id="a1e206acd58ce140919cf9f6ee5fef166" name="a1e206acd58ce140919cf9f6ee5fef166"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e206acd58ce140919cf9f6ee5fef166">&#9670;&#160;</a></span>singles</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::CalculatorGroupUse::singles {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>single-system requests (group 0 only) </p>
+
+<p class="definition">Definition at line <a class="el" href="CalculatorGroupUse_8h_source.html#l00034">34</a> of file <a class="el" href="CalculatorGroupUse_8h_source.html">CalculatorGroupUse.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   34</span>{0};             </div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a1a77c863648261c26a04d00692f2444a" name="a1a77c863648261c26a04d00692f2444a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a77c863648261c26a04d00692f2444a">&#9670;&#160;</a></span>singleWall</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::CalculatorGroupUse::singleWall {0.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>of which single-system requests </p>
+
+<p class="definition">Definition at line <a class="el" href="CalculatorGroupUse_8h_source.html#l00032">32</a> of file <a class="el" href="CalculatorGroupUse_8h_source.html">CalculatorGroupUse.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   32</span>{0.0};      </div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a3840a7954b711a1f7180e3e0a6ff07ee" name="a3840a7954b711a1f7180e3e0a6ff07ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3840a7954b711a1f7180e3e0a6ff07ee">&#9670;&#160;</a></span>systems</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; eonc::CalculatorGroupUse::systems</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>systems evaluated, per group </p>
+
+<p class="definition">Definition at line <a class="el" href="CalculatorGroupUse_8h_source.html#l00030">30</a> of file <a class="el" href="CalculatorGroupUse_8h_source.html">CalculatorGroupUse.h</a>.</p>
+
+</div>
+</div>
+<a id="ad658d8a5e9fd850adce0b08487f7a6cd" name="ad658d8a5e9fd850adce0b08487f7a6cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad658d8a5e9fd850adce0b08487f7a6cd">&#9670;&#160;</a></span>wall</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::CalculatorGroupUse::wall {0.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>driver seconds inside grouped requests </p>
+
+<p class="definition">Definition at line <a class="el" href="CalculatorGroupUse_8h_source.html#l00031">31</a> of file <a class="el" href="CalculatorGroupUse_8h_source.html">CalculatorGroupUse.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   31</span>{0.0};            </div>
+</div><!-- fragment -->
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/<a class="el" href="CalculatorGroupUse_8h_source.html">CalculatorGroupUse.h</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="namespaceeonc.html">eonc</a></li><li class="navelem"><a href="structeonc_1_1CalculatorGroupUse.html">CalculatorGroupUse</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

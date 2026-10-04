@@ -251,6 +251,8 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a15257d2e98b666900cf9bc37ca4084f3" id="r_a15257d2e98b666900cf9bc37ca4084f3"><td class="memItemLeft">quill::Logger *&#160;</td><td class="memItemRight"><a class="el" href="#a15257d2e98b666900cf9bc37ca4084f3">init_client</a> () noexcept</td></tr>
+<tr class="memdesc:a15257d2e98b666900cf9bc37ca4084f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start the client backend and the combi / traceback loggers once.  <br /></td></tr>
 <tr class="memitem:a4e7c8b5e4189cf657384f1c4bbf14dab" id="r_a4e7c8b5e4189cf657384f1c4bbf14dab"><td class="memItemLeft">quill::Logger *&#160;</td><td class="memItemRight"><a class="el" href="#a4e7c8b5e4189cf657384f1c4bbf14dab">get</a> () noexcept</td></tr>
 <tr class="memdesc:a4e7c8b5e4189cf657384f1c4bbf14dab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or create the default "combi" logger.  <br /></td></tr>
 <tr class="memitem:aad1a942f68ca20cc5bc1d7601b4cf816" id="r_aad1a942f68ca20cc5bc1d7601b4cf816"><td class="memItemLeft">quill::Logger *&#160;</td><td class="memItemRight"><a class="el" href="#aad1a942f68ca20cc5bc1d7601b4cf816">traceback</a> () noexcept</td></tr>
@@ -286,43 +288,43 @@ Functions</h2></td></tr>
 <p>This is the primary logger used throughout eOn. Returns a raw pointer (quill's API) that is valid for the lifetime of the program.</p>
 <p>Usage: auto* log = <a class="el" href="#a4e7c8b5e4189cf657384f1c4bbf14dab" title="Get or create the default &quot;combi&quot; logger.">eonc::log::get()</a>; QUILL_LOG_INFO(log, "message"); </p>
 
-<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00044">44</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   44</span>                                                 {</div>
-<div class="line"><span class="lineno">   45</span>  <span class="keyword">static</span> std::atomic&lt;quill::Logger *&gt; cached_logger{<span class="keyword">nullptr</span>};</div>
-<div class="line"><span class="lineno">   46</span>  <span class="keywordflow">if</span> (quill::Logger *l = cached_logger.load(std::memory_order_relaxed)) {</div>
-<div class="line"><span class="lineno">   47</span>    <span class="keywordflow">return</span> l;</div>
-<div class="line"><span class="lineno">   48</span>  }</div>
-<div class="line"><span class="lineno">   49</span> </div>
-<div class="line"><span class="lineno">   50</span>  <span class="keywordflow">if</span> (<span class="keyword">auto</span> *logger = quill::Frontend::get_logger(</div>
-<div class="line"><span class="lineno">   51</span>          std::string(<a class="code hl_variable" href="namespaceeonc_1_1log_1_1detail.html#a98fff7a6b38782d04baafd43880b7b83">detail::kDefaultLoggerName</a>))) {</div>
-<div class="line"><span class="lineno">   52</span>    cached_logger.store(logger, std::memory_order_relaxed);</div>
-<div class="line"><span class="lineno">   53</span>    <span class="keywordflow">return</span> logger;</div>
-<div class="line"><span class="lineno">   54</span>  }</div>
-<div class="line"><span class="lineno">   55</span> </div>
-<div class="line"><span class="lineno">   56</span>  <span class="comment">// Fallback for Python bindings/tests that didn&#39;t run ClientEON&#39;s main()</span></div>
-<div class="line"><span class="lineno">   57</span>  <span class="keyword">static</span> quill::Logger *fallback = []() -&gt; quill::Logger * {</div>
-<div class="line"><span class="lineno">   58</span>    <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">   59</span>      quill::Backend::start();</div>
-<div class="line"><span class="lineno">   60</span>    } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><span class="lineno">   61</span>    } <span class="comment">// Ignore if backend already started</span></div>
-<div class="line"><span class="lineno">   62</span> </div>
-<div class="line"><span class="lineno">   63</span>    <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">   64</span>      <span class="keyword">auto</span> console_sink =</div>
-<div class="line"><span class="lineno">   65</span>          quill::Frontend::create_or_get_sink&lt;quill::ConsoleSink&gt;(</div>
-<div class="line"><span class="lineno">   66</span>              <span class="stringliteral">&quot;fallback_console&quot;</span>);</div>
-<div class="line"><span class="lineno">   67</span>      <span class="keywordflow">return</span> quill::Frontend::create_or_get_logger(</div>
-<div class="line"><span class="lineno">   68</span>          <span class="stringliteral">&quot;combi&quot;</span>, std::move(console_sink),</div>
-<div class="line"><span class="lineno">   69</span>          quill::PatternFormatterOptions{<span class="stringliteral">&quot;%(message)&quot;</span>},</div>
-<div class="line"><span class="lineno">   70</span>          quill::ClockSourceType::System);</div>
-<div class="line"><span class="lineno">   71</span>    } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><span class="lineno">   72</span>      <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">   73</span>    }</div>
-<div class="line"><span class="lineno">   74</span>  }();</div>
-<div class="line"><span class="lineno">   75</span>  <span class="keywordflow">if</span> (fallback)</div>
-<div class="line"><span class="lineno">   76</span>    cached_logger.store(fallback, std::memory_order_relaxed);</div>
-<div class="line"><span class="lineno">   77</span>  <span class="keywordflow">return</span> fallback;</div>
-<div class="line"><span class="lineno">   78</span>}</div>
-<div class="ttc" id="anamespaceeonc_1_1log_1_1detail_html_a98fff7a6b38782d04baafd43880b7b83"><div class="ttname"><a href="namespaceeonc_1_1log_1_1detail.html#a98fff7a6b38782d04baafd43880b7b83">eonc::log::detail::kDefaultLoggerName</a></div><div class="ttdeci">constexpr std::string_view kDefaultLoggerName</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00032">EonLogger.h:32</a></div></div>
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00106">106</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  106</span>                                                 {</div>
+<div class="line"><span class="lineno">  107</span>  <span class="keyword">static</span> std::atomic&lt;quill::Logger *&gt; cached_logger{<span class="keyword">nullptr</span>};</div>
+<div class="line"><span class="lineno">  108</span>  <span class="keywordflow">if</span> (quill::Logger *l = cached_logger.load(std::memory_order_relaxed)) {</div>
+<div class="line"><span class="lineno">  109</span>    <span class="keywordflow">return</span> l;</div>
+<div class="line"><span class="lineno">  110</span>  }</div>
+<div class="line"><span class="lineno">  111</span> </div>
+<div class="line"><span class="lineno">  112</span>  <span class="keywordflow">if</span> (<span class="keyword">auto</span> *logger = quill::Frontend::get_logger(</div>
+<div class="line"><span class="lineno">  113</span>          std::string(<a class="code hl_variable" href="namespaceeonc_1_1log_1_1detail.html#a98fff7a6b38782d04baafd43880b7b83">detail::kDefaultLoggerName</a>))) {</div>
+<div class="line"><span class="lineno">  114</span>    cached_logger.store(logger, std::memory_order_relaxed);</div>
+<div class="line"><span class="lineno">  115</span>    <span class="keywordflow">return</span> logger;</div>
+<div class="line"><span class="lineno">  116</span>  }</div>
+<div class="line"><span class="lineno">  117</span> </div>
+<div class="line"><span class="lineno">  118</span>  <span class="comment">// Fallback for Python bindings/tests that didn&#39;t run ClientEON&#39;s main()</span></div>
+<div class="line"><span class="lineno">  119</span>  <span class="keyword">static</span> quill::Logger *fallback = []() -&gt; quill::Logger * {</div>
+<div class="line"><span class="lineno">  120</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  121</span>      quill::Backend::start();</div>
+<div class="line"><span class="lineno">  122</span>    } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  123</span>    } <span class="comment">// Ignore if backend already started</span></div>
+<div class="line"><span class="lineno">  124</span> </div>
+<div class="line"><span class="lineno">  125</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  126</span>      <span class="keyword">auto</span> console_sink =</div>
+<div class="line"><span class="lineno">  127</span>          quill::Frontend::create_or_get_sink&lt;quill::ConsoleSink&gt;(</div>
+<div class="line"><span class="lineno">  128</span>              <span class="stringliteral">&quot;fallback_console&quot;</span>);</div>
+<div class="line"><span class="lineno">  129</span>      <span class="keywordflow">return</span> quill::Frontend::create_or_get_logger(</div>
+<div class="line"><span class="lineno">  130</span>          <span class="stringliteral">&quot;combi&quot;</span>, std::move(console_sink),</div>
+<div class="line"><span class="lineno">  131</span>          quill::PatternFormatterOptions{<span class="stringliteral">&quot;%(message)&quot;</span>},</div>
+<div class="line"><span class="lineno">  132</span>          quill::ClockSourceType::System);</div>
+<div class="line"><span class="lineno">  133</span>    } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  134</span>      <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  135</span>    }</div>
+<div class="line"><span class="lineno">  136</span>  }();</div>
+<div class="line"><span class="lineno">  137</span>  <span class="keywordflow">if</span> (fallback)</div>
+<div class="line"><span class="lineno">  138</span>    cached_logger.store(fallback, std::memory_order_relaxed);</div>
+<div class="line"><span class="lineno">  139</span>  <span class="keywordflow">return</span> fallback;</div>
+<div class="line"><span class="lineno">  140</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1log_1_1detail_html_a98fff7a6b38782d04baafd43880b7b83"><div class="ttname"><a href="namespaceeonc_1_1log_1_1detail.html#a98fff7a6b38782d04baafd43880b7b83">eonc::log::detail::kDefaultLoggerName</a></div><div class="ttdeci">constexpr std::string_view kDefaultLoggerName</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00033">EonLogger.h:33</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -370,51 +372,136 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Raw pointer to the logger (valid for program lifetime) </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00111">111</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  112</span>                                              {</div>
-<div class="line"><span class="lineno">  113</span>  <span class="comment">// If the logger already exists, return it immediately.</span></div>
-<div class="line"><span class="lineno">  114</span>  <span class="comment">// Quill strictly checks configuration matches on recreation and throws if</span></div>
-<div class="line"><span class="lineno">  115</span>  <span class="comment">// PatternFormatterOptions differ, which crashes instances (like</span></div>
-<div class="line"><span class="lineno">  116</span>  <span class="comment">// Dimer/Optimizers) that are created multiple times in loops (e.g., NEB).</span></div>
-<div class="line"><span class="lineno">  117</span>  <span class="keywordflow">if</span> (<span class="keyword">auto</span> *existing = quill::Frontend::get_logger(std::string(name))) {</div>
-<div class="line"><span class="lineno">  118</span>    <span class="keywordflow">return</span> existing;</div>
-<div class="line"><span class="lineno">  119</span>  }</div>
-<div class="line"><span class="lineno">  120</span>  <span class="keyword">static</span> std::mutex file_logger_mutex;</div>
-<div class="line"><span class="lineno">  121</span>  std::lock_guard&lt;std::mutex&gt; lock(file_logger_mutex);</div>
-<div class="line"><span class="lineno">  122</span>  <span class="keywordflow">if</span> (<span class="keyword">auto</span> *existing = quill::Frontend::get_logger(std::string(name))) {</div>
-<div class="line"><span class="lineno">  123</span>    <span class="keywordflow">return</span> existing;</div>
-<div class="line"><span class="lineno">  124</span>  }</div>
-<div class="line"><span class="lineno">  125</span> </div>
-<div class="line"><span class="lineno">  126</span>  <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  127</span>    <span class="comment">// Durable absolute path: optimizers open &quot;_lbfgs.log&quot; etc. under CWD.</span></div>
-<div class="line"><span class="lineno">  128</span>    <span class="comment">// Job integration fixtures chdir into /tmp/eon_test_job_* then delete that</span></div>
-<div class="line"><span class="lineno">  129</span>    <span class="comment">// tree when the case ends, while Quill&#39;s process-lifetime FileSink still</span></div>
-<div class="line"><span class="lineno">  130</span>    <span class="comment">// flushes — &quot;fopen failed after 3 attempts&quot;. Keep logs under a stable</span></div>
-<div class="line"><span class="lineno">  131</span>    <span class="comment">// temp subdir instead of the disposable workdir.</span></div>
-<div class="line"><span class="lineno">  132</span>    <span class="keyword">namespace </span>fs = std::filesystem;</div>
-<div class="line"><span class="lineno">  133</span>    fs::path path{std::string(filename)};</div>
-<div class="line"><span class="lineno">  134</span>    <span class="keywordflow">if</span> (!path.is_absolute()) {</div>
-<div class="line"><span class="lineno">  135</span>      <span class="keyword">static</span> <span class="keyword">const</span> fs::path log_dir = [] {</div>
-<div class="line"><span class="lineno">  136</span>        fs::path d = fs::temp_directory_path() / <span class="stringliteral">&quot;eon_logs&quot;</span>;</div>
-<div class="line"><span class="lineno">  137</span>        std::error_code ec;</div>
-<div class="line"><span class="lineno">  138</span>        fs::create_directories(d, ec);</div>
-<div class="line"><span class="lineno">  139</span>        <span class="keywordflow">return</span> d;</div>
-<div class="line"><span class="lineno">  140</span>      }();</div>
-<div class="line"><span class="lineno">  141</span>      path = log_dir / path.filename();</div>
-<div class="line"><span class="lineno">  142</span>    }</div>
-<div class="line"><span class="lineno">  143</span>    quill::FileSinkConfig cfg;</div>
-<div class="line"><span class="lineno">  144</span>    cfg.set_open_mode(<span class="charliteral">&#39;w&#39;</span>);</div>
-<div class="line"><span class="lineno">  145</span>    <span class="keyword">auto</span> file_sink = quill::Frontend::create_or_get_sink&lt;quill::FileSink&gt;(</div>
-<div class="line"><span class="lineno">  146</span>        path.string(), cfg);</div>
-<div class="line"><span class="lineno">  147</span>    <span class="keywordflow">return</span> quill::Frontend::create_or_get_logger(</div>
-<div class="line"><span class="lineno">  148</span>        std::string(name), std::move(file_sink),</div>
-<div class="line"><span class="lineno">  149</span>        quill::PatternFormatterOptions{std::string(pattern)},</div>
-<div class="line"><span class="lineno">  150</span>        quill::ClockSourceType::System);</div>
-<div class="line"><span class="lineno">  151</span>  } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><span class="lineno">  152</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#a4e7c8b5e4189cf657384f1c4bbf14dab">get</a>(); <span class="comment">// Fallback to default combi logger if creation fails</span></div>
-<div class="line"><span class="lineno">  153</span>  }</div>
-<div class="line"><span class="lineno">  154</span>}</div>
-<div class="ttc" id="anamespaceeonc_1_1log_html_a4e7c8b5e4189cf657384f1c4bbf14dab"><div class="ttname"><a href="#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a></div><div class="ttdeci">quill::Logger * get() noexcept</div><div class="ttdoc">Get or create the default &quot;combi&quot; logger.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00044">EonLogger.h:44</a></div></div>
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00173">173</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  174</span>                                              {</div>
+<div class="line"><span class="lineno">  175</span>  <span class="comment">// If the logger already exists, return it immediately.</span></div>
+<div class="line"><span class="lineno">  176</span>  <span class="comment">// Quill strictly checks configuration matches on recreation and throws if</span></div>
+<div class="line"><span class="lineno">  177</span>  <span class="comment">// PatternFormatterOptions differ, which crashes instances (like</span></div>
+<div class="line"><span class="lineno">  178</span>  <span class="comment">// Dimer/Optimizers) that are created multiple times in loops (e.g., NEB).</span></div>
+<div class="line"><span class="lineno">  179</span>  <span class="keywordflow">if</span> (<span class="keyword">auto</span> *existing = quill::Frontend::get_logger(std::string(name))) {</div>
+<div class="line"><span class="lineno">  180</span>    <span class="keywordflow">return</span> existing;</div>
+<div class="line"><span class="lineno">  181</span>  }</div>
+<div class="line"><span class="lineno">  182</span>  <span class="keyword">static</span> std::mutex file_logger_mutex;</div>
+<div class="line"><span class="lineno">  183</span>  std::lock_guard&lt;std::mutex&gt; lock(file_logger_mutex);</div>
+<div class="line"><span class="lineno">  184</span>  <span class="keywordflow">if</span> (<span class="keyword">auto</span> *existing = quill::Frontend::get_logger(std::string(name))) {</div>
+<div class="line"><span class="lineno">  185</span>    <span class="keywordflow">return</span> existing;</div>
+<div class="line"><span class="lineno">  186</span>  }</div>
+<div class="line"><span class="lineno">  187</span> </div>
+<div class="line"><span class="lineno">  188</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  189</span>    <span class="comment">// Durable absolute path: optimizers open &quot;_lbfgs.log&quot; etc. under CWD.</span></div>
+<div class="line"><span class="lineno">  190</span>    <span class="comment">// Job integration fixtures chdir into /tmp/eon_test_job_* then delete that</span></div>
+<div class="line"><span class="lineno">  191</span>    <span class="comment">// tree when the case ends, while Quill&#39;s process-lifetime FileSink still</span></div>
+<div class="line"><span class="lineno">  192</span>    <span class="comment">// flushes — &quot;fopen failed after 3 attempts&quot;. Keep logs under a stable</span></div>
+<div class="line"><span class="lineno">  193</span>    <span class="comment">// temp subdir instead of the disposable workdir.</span></div>
+<div class="line"><span class="lineno">  194</span>    <span class="keyword">namespace </span>fs = std::filesystem;</div>
+<div class="line"><span class="lineno">  195</span>    fs::path path{std::string(filename)};</div>
+<div class="line"><span class="lineno">  196</span>    <span class="keywordflow">if</span> (!path.is_absolute()) {</div>
+<div class="line"><span class="lineno">  197</span>      <span class="keyword">static</span> <span class="keyword">const</span> fs::path log_dir = [] {</div>
+<div class="line"><span class="lineno">  198</span>        fs::path d = fs::temp_directory_path() / <span class="stringliteral">&quot;eon_logs&quot;</span>;</div>
+<div class="line"><span class="lineno">  199</span>        std::error_code ec;</div>
+<div class="line"><span class="lineno">  200</span>        fs::create_directories(d, ec);</div>
+<div class="line"><span class="lineno">  201</span>        <span class="keywordflow">return</span> d;</div>
+<div class="line"><span class="lineno">  202</span>      }();</div>
+<div class="line"><span class="lineno">  203</span>      path = log_dir / path.filename();</div>
+<div class="line"><span class="lineno">  204</span>    }</div>
+<div class="line"><span class="lineno">  205</span>    quill::FileSinkConfig cfg;</div>
+<div class="line"><span class="lineno">  206</span>    cfg.set_open_mode(<span class="charliteral">&#39;w&#39;</span>);</div>
+<div class="line"><span class="lineno">  207</span>    <span class="keyword">auto</span> file_sink = quill::Frontend::create_or_get_sink&lt;quill::FileSink&gt;(</div>
+<div class="line"><span class="lineno">  208</span>        path.string(), cfg);</div>
+<div class="line"><span class="lineno">  209</span>    <span class="keywordflow">return</span> quill::Frontend::create_or_get_logger(</div>
+<div class="line"><span class="lineno">  210</span>        std::string(name), std::move(file_sink),</div>
+<div class="line"><span class="lineno">  211</span>        quill::PatternFormatterOptions{std::string(pattern)},</div>
+<div class="line"><span class="lineno">  212</span>        quill::ClockSourceType::System);</div>
+<div class="line"><span class="lineno">  213</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  214</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#a4e7c8b5e4189cf657384f1c4bbf14dab">get</a>(); <span class="comment">// Fallback to default combi logger if creation fails</span></div>
+<div class="line"><span class="lineno">  215</span>  }</div>
+<div class="line"><span class="lineno">  216</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1log_html_a4e7c8b5e4189cf657384f1c4bbf14dab"><div class="ttname"><a href="#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a></div><div class="ttdeci">quill::Logger * get() noexcept</div><div class="ttdoc">Get or create the default &quot;combi&quot; logger.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00106">EonLogger.h:106</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a15257d2e98b666900cf9bc37ca4084f3" name="a15257d2e98b666900cf9bc37ca4084f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15257d2e98b666900cf9bc37ca4084f3">&#9670;&#160;</a></span>init_client()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">quill::Logger * eonc::log::init_client </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Start the client backend and the combi / traceback loggers once. </p>
+<p>Not called from process load. Help, version, and feature flags return before this. Tests that already registered "combi" are left alone. </p>
+
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00042">42</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   42</span>                                                         {</div>
+<div class="line"><span class="lineno">   43</span>  <span class="keyword">static</span> std::once_flag once;</div>
+<div class="line"><span class="lineno">   44</span>  std::call_once(once, [] {</div>
+<div class="line"><span class="lineno">   45</span>    <span class="keywordflow">if</span> (quill::Frontend::get_logger(std::string(<a class="code hl_variable" href="namespaceeonc_1_1log_1_1detail.html#a98fff7a6b38782d04baafd43880b7b83">detail::kDefaultLoggerName</a>))) {</div>
+<div class="line"><span class="lineno">   46</span>      <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   47</span>    }</div>
+<div class="line"><span class="lineno">   48</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">   49</span>      quill::BackendOptions backend_options;</div>
+<div class="line"><span class="lineno">   50</span>      backend_options.sleep_duration = std::chrono::microseconds{10};</div>
+<div class="line"><span class="lineno">   51</span>      backend_options.transit_event_buffer_initial_capacity = 2048;</div>
+<div class="line"><span class="lineno">   52</span>      backend_options.log_timestamp_ordering_grace_period =</div>
+<div class="line"><span class="lineno">   53</span>          std::chrono::microseconds{0};</div>
+<div class="line"><span class="lineno">   54</span>      backend_options.sink_min_flush_interval = std::chrono::milliseconds{100};</div>
+<div class="line"><span class="lineno">   55</span>      backend_options.check_printable_char = {};</div>
+<div class="line"><span class="lineno">   56</span>      <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">   57</span>        quill::Backend::start(backend_options);</div>
+<div class="line"><span class="lineno">   58</span>      } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">   59</span>      }</div>
+<div class="line"><span class="lineno">   60</span>      <span class="keyword">auto</span> console_sink =</div>
+<div class="line"><span class="lineno">   61</span>          quill::Frontend::create_or_get_sink&lt;quill::ConsoleSink&gt;(<span class="stringliteral">&quot;console&quot;</span>);</div>
+<div class="line"><span class="lineno">   62</span>      <span class="keyword">auto</span> file_sink = quill::Frontend::create_or_get_sink&lt;quill::FileSink&gt;(</div>
+<div class="line"><span class="lineno">   63</span>          <span class="stringliteral">&quot;client_quill.log&quot;</span>,</div>
+<div class="line"><span class="lineno">   64</span>          []() {</div>
+<div class="line"><span class="lineno">   65</span>            quill::FileSinkConfig cfg;</div>
+<div class="line"><span class="lineno">   66</span>            cfg.set_open_mode(<span class="charliteral">&#39;w&#39;</span>);</div>
+<div class="line"><span class="lineno">   67</span>            <span class="keywordflow">return</span> cfg;</div>
+<div class="line"><span class="lineno">   68</span>          }(),</div>
+<div class="line"><span class="lineno">   69</span>          quill::FileEventNotifier{});</div>
+<div class="line"><span class="lineno">   70</span>      <span class="keyword">auto</span> *logger = quill::Frontend::create_or_get_logger(</div>
+<div class="line"><span class="lineno">   71</span>          <span class="stringliteral">&quot;combi&quot;</span>, {std::move(console_sink), std::move(file_sink)},</div>
+<div class="line"><span class="lineno">   72</span>          quill::PatternFormatterOptions{<span class="stringliteral">&quot;%(message)&quot;</span>},</div>
+<div class="line"><span class="lineno">   73</span>          quill::ClockSourceType::System);</div>
+<div class="line"><span class="lineno">   74</span>      logger-&gt;set_log_level(quill::LogLevel::TraceL3);</div>
+<div class="line"><span class="lineno">   75</span>      <span class="keyword">auto</span> trace_csink =</div>
+<div class="line"><span class="lineno">   76</span>          quill::Frontend::create_or_get_sink&lt;quill::ConsoleSink&gt;(</div>
+<div class="line"><span class="lineno">   77</span>              <span class="stringliteral">&quot;trace_console&quot;</span>);</div>
+<div class="line"><span class="lineno">   78</span>      <span class="keyword">auto</span> trace_fsink = quill::Frontend::create_or_get_sink&lt;quill::FileSink&gt;(</div>
+<div class="line"><span class="lineno">   79</span>          <span class="stringliteral">&quot;client_traceback.log&quot;</span>,</div>
+<div class="line"><span class="lineno">   80</span>          []() {</div>
+<div class="line"><span class="lineno">   81</span>            quill::FileSinkConfig cfg;</div>
+<div class="line"><span class="lineno">   82</span>            cfg.set_open_mode(<span class="charliteral">&#39;w&#39;</span>);</div>
+<div class="line"><span class="lineno">   83</span>            <span class="keywordflow">return</span> cfg;</div>
+<div class="line"><span class="lineno">   84</span>          }(),</div>
+<div class="line"><span class="lineno">   85</span>          quill::FileEventNotifier{});</div>
+<div class="line"><span class="lineno">   86</span>      quill::Frontend::create_or_get_logger(</div>
+<div class="line"><span class="lineno">   87</span>          <span class="stringliteral">&quot;_traceback&quot;</span>, {std::move(trace_csink), std::move(trace_fsink)},</div>
+<div class="line"><span class="lineno">   88</span>          quill::PatternFormatterOptions{</div>
+<div class="line"><span class="lineno">   89</span>              <span class="stringliteral">&quot; [%(log_level)] [%(source_location)] [%(caller_function)] \n &quot;</span></div>
+<div class="line"><span class="lineno">   90</span>              <span class="stringliteral">&quot;%(message)\n[end %(log_level)]&quot;</span>},</div>
+<div class="line"><span class="lineno">   91</span>          quill::ClockSourceType::System);</div>
+<div class="line"><span class="lineno">   92</span>    } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">   93</span>    }</div>
+<div class="line"><span class="lineno">   94</span>  });</div>
+<div class="line"><span class="lineno">   95</span>  <span class="keywordflow">return</span> quill::Frontend::get_logger(std::string(<a class="code hl_variable" href="namespaceeonc_1_1log_1_1detail.html#a98fff7a6b38782d04baafd43880b7b83">detail::kDefaultLoggerName</a>));</div>
+<div class="line"><span class="lineno">   96</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -445,20 +532,20 @@ Functions</h2></td></tr>
 <p>This logger is used for detailed traceback and debugging information. Returns a raw pointer (quill's API) valid for the lifetime of the program.</p>
 <p>Usage: auto* log = <a class="el" href="#aad1a942f68ca20cc5bc1d7601b4cf816" title="Get or create the &quot;_traceback&quot; logger for traceback logging.">eonc::log::traceback()</a>; QUILL_LOG_INFO(log, "traceback message"); </p>
 
-<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00088">88</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   88</span>                                                       {</div>
-<div class="line"><span class="lineno">   89</span>  <span class="keyword">static</span> std::atomic&lt;quill::Logger *&gt; cached{<span class="keyword">nullptr</span>};</div>
-<div class="line"><span class="lineno">   90</span>  <span class="keywordflow">if</span> (quill::Logger *l = cached.load(std::memory_order_relaxed)) {</div>
-<div class="line"><span class="lineno">   91</span>    <span class="keywordflow">return</span> l;</div>
-<div class="line"><span class="lineno">   92</span>  }</div>
-<div class="line"><span class="lineno">   93</span>  <span class="keywordflow">if</span> (<span class="keyword">auto</span> *logger = quill::Frontend::get_logger(</div>
-<div class="line"><span class="lineno">   94</span>          std::string(<a class="code hl_variable" href="namespaceeonc_1_1log_1_1detail.html#a13ecaa4676a7d55b383cf89f9b3a68cc">detail::kTracebackLoggerName</a>))) {</div>
-<div class="line"><span class="lineno">   95</span>    cached.store(logger, std::memory_order_relaxed);</div>
-<div class="line"><span class="lineno">   96</span>    <span class="keywordflow">return</span> logger;</div>
-<div class="line"><span class="lineno">   97</span>  }</div>
-<div class="line"><span class="lineno">   98</span>  <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">   99</span>}</div>
-<div class="ttc" id="anamespaceeonc_1_1log_1_1detail_html_a13ecaa4676a7d55b383cf89f9b3a68cc"><div class="ttname"><a href="namespaceeonc_1_1log_1_1detail.html#a13ecaa4676a7d55b383cf89f9b3a68cc">eonc::log::detail::kTracebackLoggerName</a></div><div class="ttdeci">constexpr std::string_view kTracebackLoggerName</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00033">EonLogger.h:33</a></div></div>
+<p class="definition">Definition at line <a class="el" href="EonLogger_8h_source.html#l00150">150</a> of file <a class="el" href="EonLogger_8h_source.html">EonLogger.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  150</span>                                                       {</div>
+<div class="line"><span class="lineno">  151</span>  <span class="keyword">static</span> std::atomic&lt;quill::Logger *&gt; cached{<span class="keyword">nullptr</span>};</div>
+<div class="line"><span class="lineno">  152</span>  <span class="keywordflow">if</span> (quill::Logger *l = cached.load(std::memory_order_relaxed)) {</div>
+<div class="line"><span class="lineno">  153</span>    <span class="keywordflow">return</span> l;</div>
+<div class="line"><span class="lineno">  154</span>  }</div>
+<div class="line"><span class="lineno">  155</span>  <span class="keywordflow">if</span> (<span class="keyword">auto</span> *logger = quill::Frontend::get_logger(</div>
+<div class="line"><span class="lineno">  156</span>          std::string(<a class="code hl_variable" href="namespaceeonc_1_1log_1_1detail.html#a13ecaa4676a7d55b383cf89f9b3a68cc">detail::kTracebackLoggerName</a>))) {</div>
+<div class="line"><span class="lineno">  157</span>    cached.store(logger, std::memory_order_relaxed);</div>
+<div class="line"><span class="lineno">  158</span>    <span class="keywordflow">return</span> logger;</div>
+<div class="line"><span class="lineno">  159</span>  }</div>
+<div class="line"><span class="lineno">  160</span>  <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  161</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1log_1_1detail_html_a13ecaa4676a7d55b383cf89f9b3a68cc"><div class="ttname"><a href="namespaceeonc_1_1log_1_1detail.html#a13ecaa4676a7d55b383cf89f9b3a68cc">eonc::log::detail::kTracebackLoggerName</a></div><div class="ttdeci">constexpr std::string_view kTracebackLoggerName</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00034">EonLogger.h:34</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>

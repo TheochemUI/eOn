@@ -758,7 +758,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">  325</span>      <span class="keyword">new</span> <a class="code hl_function" href="#a6c59f3f7770e46cd8436fb885541733c">MetatomicPotential</a>(*<span class="keyword">this</span>, <a class="code hl_struct" href="structMetatomicPotential_1_1CloneTag.html">CloneTag</a>{}));</div>
 <div class="line"><span class="lineno">  326</span>}</div>
 <div class="ttc" id="aclassMetatomicPotential_html_a6c59f3f7770e46cd8436fb885541733c"><div class="ttname"><a href="#a6c59f3f7770e46cd8436fb885541733c">MetatomicPotential::MetatomicPotential</a></div><div class="ttdeci">MetatomicPotential(const eonc::Parameters &amp;params)</div><div class="ttdoc">Constructor for the MetatomicPotential.</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8cpp_source.html#l00056">MetatomicPotential.cpp:56</a></div></div>
-<div class="ttc" id="astructMetatomicPotential_1_1CloneTag_html"><div class="ttname"><a href="structMetatomicPotential_1_1CloneTag.html">MetatomicPotential::CloneTag</a></div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8h_source.html#l00158">MetatomicPotential.h:158</a></div></div>
+<div class="ttc" id="astructMetatomicPotential_1_1CloneTag_html"><div class="ttname"><a href="structMetatomicPotential_1_1CloneTag.html">MetatomicPotential::CloneTag</a></div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8h_source.html#l00159">MetatomicPotential.h:159</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -812,6 +812,7 @@ Additional Inherited Members</h2></td></tr>
     <tr><td class="paramname">nAtoms</td><td>The number of atoms in the system. </td></tr>
     <tr><td class="paramname">positions</td><td>Pointer to the atomic positions array. </td></tr>
     <tr><td class="paramname">box</td><td>Pointer to the simulation box matrix. </td></tr>
+    <tr><td class="paramname">periodic</td><td>Periodicity flags for the three cell axes. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1186,7 +1187,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">  565</span> </div>
 <div class="line"><span class="lineno">  566</span>  fpeh.<a class="code hl_function" href="classeonc_1_1FPEHandler.html#abce91443c8e3c366d6932a457145540a">restore_fpe</a>();</div>
 <div class="line"><span class="lineno">  567</span>}</div>
-<div class="ttc" id="aclassMetatomicPotential_html_a88809b804eda8d73fb8946ac4b58a323"><div class="ttname"><a href="#a88809b804eda8d73fb8946ac4b58a323">MetatomicPotential::inference_mutex_</a></div><div class="ttdeci">std::mutex inference_mutex_</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8h_source.html#l00165">MetatomicPotential.h:165</a></div></div>
+<div class="ttc" id="aclassMetatomicPotential_html_a88809b804eda8d73fb8946ac4b58a323"><div class="ttname"><a href="#a88809b804eda8d73fb8946ac4b58a323">MetatomicPotential::inference_mutex_</a></div><div class="ttdeci">std::mutex inference_mutex_</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8h_source.html#l00166">MetatomicPotential.h:166</a></div></div>
 <div class="ttc" id="aclassMetatomicPotential_html_a8e6d7512bcc2dd29c797831f50ee3f45"><div class="ttname"><a href="#a8e6d7512bcc2dd29c797831f50ee3f45">MetatomicPotential::computeNeighbors</a></div><div class="ttdeci">metatensor_torch::TensorBlock computeNeighbors(metatomic_torch::NeighborListOptions request, long nAtoms, const double *positions, const double *box, const bool periodic[3])</div><div class="ttdoc">Computes neighbor list using the vesin library.</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8cpp_source.html#l00571">MetatomicPotential.cpp:571</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -1280,8 +1281,8 @@ Additional Inherited Members</h2></td></tr>
 <div class="ttc" id="aclassMetatomicPotential_html_a08c581fea858ffc4e689a6d2ff619f0e"><div class="ttname"><a href="#a08c581fea858ffc4e689a6d2ff619f0e">MetatomicPotential::forceBatchNative</a></div><div class="ttdeci">void forceBatchNative(long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes)</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8cpp_source.html#l00693">MetatomicPotential.cpp:693</a></div></div>
 <div class="ttc" id="aclasseonc_1_1PotRegistry_html_a46a3c876ed01abc8123cd88bc3aae8da"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a46a3c876ed01abc8123cd88bc3aae8da">eonc::PotRegistry::on_force_call</a></div><div class="ttdeci">void on_force_call(PotType t) noexcept override</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00088">PotRegistry.cpp:88</a></div></div>
 <div class="ttc" id="aclasseonc_1_1PotRegistry_html_a5d307a4845d9c0d6d16031a5a637e23b"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">eonc::PotRegistry::get</a></div><div class="ttdeci">static PotRegistry &amp; get() noexcept</div><div class="ttdoc">Process-lifetime singleton.</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00050">PotRegistry.cpp:50</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Potential_html_a2ae7cca425e3d69d2825c58d1c7704eb"><div class="ttname"><a href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">eonc::Potential::forceCallCounter</a></div><div class="ttdeci">std::atomic&lt; size_t &gt; forceCallCounter</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00053">Potential.h:53</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Potential_html_ac102f249b890f52d06d96feff8f2047a"><div class="ttname"><a href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">eonc::Potential::ptype</a></div><div class="ttdeci">PotType ptype</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00044">Potential.h:44</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_a2ae7cca425e3d69d2825c58d1c7704eb"><div class="ttname"><a href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">eonc::Potential::forceCallCounter</a></div><div class="ttdeci">std::atomic&lt; size_t &gt; forceCallCounter</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00054">Potential.h:54</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_ac102f249b890f52d06d96feff8f2047a"><div class="ttname"><a href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">eonc::Potential::ptype</a></div><div class="ttdeci">PotType ptype</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00045">Potential.h:45</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1502,8 +1503,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#af6c385eb52d3764246416ea389c84131">eonc::Potential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00140">140</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  140</span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00141">141</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  141</span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1535,10 +1536,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#a8b83745c9898990f848daafa4c351c2f">eonc::Potential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00141">141</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  141</span>                                                                     {</div>
-<div class="line"><span class="lineno">  142</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  143</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00142">142</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  142</span>                                                                     {</div>
+<div class="line"><span class="lineno">  143</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  144</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1570,10 +1571,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#a2d8781e3cbea888f88b7523c5d00bc43">eonc::Potential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00149">149</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  149</span>                                                                       {</div>
-<div class="line"><span class="lineno">  150</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  151</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00150">150</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  150</span>                                                                       {</div>
+<div class="line"><span class="lineno">  151</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  152</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1790,7 +1791,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00165">165</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00166">166</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
 
 </div>
 </div>

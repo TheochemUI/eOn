@@ -4,6 +4,7 @@ var SolidStateNEB_8h =
     [ "eonc::neb::CartesianStep", "structeonc_1_1neb_1_1CartesianStep.html", "structeonc_1_1neb_1_1CartesianStep" ],
     [ "eonc::neb::cellNebForce", "namespaceeonc_1_1neb.html#aeb0fa4776bcb090f7256a095b0e1183f", null ],
     [ "eonc::neb::finiteDifferenceCauchyStress", "namespaceeonc_1_1neb.html#ae5b588a41a2cca2ae99609d6fe8e6e11", null ],
+    [ "eonc::neb::finiteDifferenceCauchyStresses", "namespaceeonc_1_1neb.html#a5c7063d07b10a060f0f5bc13565dd7e4", null ],
     [ "eonc::neb::interpolateSolidStateLinear", "namespaceeonc_1_1neb.html#a1cd6aa7232d2706d28750e8487bb1873", null ],
     [ "eonc::neb::jointDisplacement", "namespaceeonc_1_1neb.html#a878bd9e04ba095d1b6a33b57d81ac6a9", null ],
     [ "eonc::neb::jointNorm", "namespaceeonc_1_1neb.html#a56f330ea1a8ea5dacb011eb0746f1990", null ],

@@ -63,9 +63,24 @@ A complete tutorial is [also provided](project:../tutorials/akmc.md).
 
 ## Configuration
 
+Start the aKMC server with `python -m eon.server`.
+The server accepts `[Main] job = akmc`.
+The client has no `akmc` job, so that token does not run there.
+
 ```{code-block} ini
-[akmc]
+[Main]
+job = akmc
+
+[AKMC]
+confidence_scheme = old
 ```
+
+`eon/config.yaml` names this section `[AKMC]`.
+The server lowercases a heading only to test whether the section is known.
+That test accepts `[akmc]`.
+The server reads `[AKMC]`, so keys under `[akmc]` are ignored.
+On the server, `confidence_scheme` defaults to `old`.
+The schema class below defaults `confidence_scheme` to `new`.
 
 ```{eval-rst}
 .. autopydantic_model:: eon.schema.AKMCConfig

@@ -281,35 +281,35 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8cpp_source.html#l00061">61</a> of file <a class="el" href="Tunneling_8cpp_source.html">Tunneling.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   62</span>    : <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>(std::move(<a class="code hl_function" href="#ad14377dae08739be66375935cb0df882">s</a>)),</div>
-<div class="line"><span class="lineno">   63</span>      <a class="code hl_variable" href="#a75486d5b75755e20a945b4769570854b">v_</a>(std::move(<a class="code hl_function" href="#ab2357338cfff52ed2c1966601c8bb59f">v</a>)),</div>
-<div class="line"><span class="lineno">   64</span>      <a class="code hl_variable" href="#a4e77a2034f0493c6406e91ff0b5725d7">m_</a>(<a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>.size(), 0.0) {</div>
-<div class="line"><span class="lineno">   65</span>  <span class="keyword">const</span> <span class="keywordtype">size_t</span> n = <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>.size();</div>
-<div class="line"><span class="lineno">   66</span>  <span class="keywordflow">if</span> (n &lt; 2 || <a class="code hl_variable" href="#a75486d5b75755e20a945b4769570854b">v_</a>.size() != n) {</div>
-<div class="line"><span class="lineno">   67</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
-<div class="line"><span class="lineno">   68</span>        <span class="stringliteral">&quot;a profile needs matching s and V with two points or more&quot;</span>);</div>
-<div class="line"><span class="lineno">   69</span>  }</div>
-<div class="line"><span class="lineno">   70</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> k = 1; k &lt; n; ++k) {</div>
-<div class="line"><span class="lineno">   71</span>    <span class="keywordflow">if</span> (!(<a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>[k] &gt; <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>[k - 1])) {</div>
-<div class="line"><span class="lineno">   72</span>      <span class="keywordflow">throw</span> std::invalid_argument(</div>
-<div class="line"><span class="lineno">   73</span>          <span class="stringliteral">&quot;the path coordinate must increase along the band&quot;</span>);</div>
-<div class="line"><span class="lineno">   74</span>    }</div>
-<div class="line"><span class="lineno">   75</span>  }</div>
-<div class="line"><span class="lineno">   76</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> k = 1; k + 1 &lt; n; ++k) {</div>
-<div class="line"><span class="lineno">   77</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> h0 = <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>[k] - <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>[k - 1];</div>
-<div class="line"><span class="lineno">   78</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> h1 = <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>[k + 1] - <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>[k];</div>
-<div class="line"><span class="lineno">   79</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> d0 = (<a class="code hl_variable" href="#a75486d5b75755e20a945b4769570854b">v_</a>[k] - <a class="code hl_variable" href="#a75486d5b75755e20a945b4769570854b">v_</a>[k - 1]) / h0;</div>
-<div class="line"><span class="lineno">   80</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> d1 = (<a class="code hl_variable" href="#a75486d5b75755e20a945b4769570854b">v_</a>[k + 1] - <a class="code hl_variable" href="#a75486d5b75755e20a945b4769570854b">v_</a>[k]) / h1;</div>
-<div class="line"><span class="lineno">   81</span>    <span class="keywordflow">if</span> (d0 * d1 &lt;= 0.0) {</div>
-<div class="line"><span class="lineno">   82</span>      <a class="code hl_variable" href="#a4e77a2034f0493c6406e91ff0b5725d7">m_</a>[k] = 0.0;</div>
-<div class="line"><span class="lineno">   83</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">   84</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> w1 = 2.0 * h1 + h0;</div>
-<div class="line"><span class="lineno">   85</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> w2 = h1 + 2.0 * h0;</div>
-<div class="line"><span class="lineno">   86</span>      <a class="code hl_variable" href="#a4e77a2034f0493c6406e91ff0b5725d7">m_</a>[k] = (w1 + w2) / (w1 / d0 + w2 / d1);</div>
-<div class="line"><span class="lineno">   87</span>    }</div>
-<div class="line"><span class="lineno">   88</span>  }</div>
-<div class="line"><span class="lineno">   89</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8cpp_source.html#l00062">62</a> of file <a class="el" href="Tunneling_8cpp_source.html">Tunneling.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   63</span>    : <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>(std::move(<a class="code hl_function" href="#ad14377dae08739be66375935cb0df882">s</a>)),</div>
+<div class="line"><span class="lineno">   64</span>      <a class="code hl_variable" href="#a75486d5b75755e20a945b4769570854b">v_</a>(std::move(<a class="code hl_function" href="#ab2357338cfff52ed2c1966601c8bb59f">v</a>)),</div>
+<div class="line"><span class="lineno">   65</span>      <a class="code hl_variable" href="#a4e77a2034f0493c6406e91ff0b5725d7">m_</a>(<a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>.size(), 0.0) {</div>
+<div class="line"><span class="lineno">   66</span>  <span class="keyword">const</span> <span class="keywordtype">size_t</span> n = <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>.size();</div>
+<div class="line"><span class="lineno">   67</span>  <span class="keywordflow">if</span> (n &lt; 2 || <a class="code hl_variable" href="#a75486d5b75755e20a945b4769570854b">v_</a>.size() != n) {</div>
+<div class="line"><span class="lineno">   68</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">   69</span>        <span class="stringliteral">&quot;a profile needs matching s and V with two points or more&quot;</span>);</div>
+<div class="line"><span class="lineno">   70</span>  }</div>
+<div class="line"><span class="lineno">   71</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> k = 1; k &lt; n; ++k) {</div>
+<div class="line"><span class="lineno">   72</span>    <span class="keywordflow">if</span> (!(<a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>[k] &gt; <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>[k - 1])) {</div>
+<div class="line"><span class="lineno">   73</span>      <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">   74</span>          <span class="stringliteral">&quot;the path coordinate must increase along the band&quot;</span>);</div>
+<div class="line"><span class="lineno">   75</span>    }</div>
+<div class="line"><span class="lineno">   76</span>  }</div>
+<div class="line"><span class="lineno">   77</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> k = 1; k + 1 &lt; n; ++k) {</div>
+<div class="line"><span class="lineno">   78</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> h0 = <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>[k] - <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>[k - 1];</div>
+<div class="line"><span class="lineno">   79</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> h1 = <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>[k + 1] - <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>[k];</div>
+<div class="line"><span class="lineno">   80</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> d0 = (<a class="code hl_variable" href="#a75486d5b75755e20a945b4769570854b">v_</a>[k] - <a class="code hl_variable" href="#a75486d5b75755e20a945b4769570854b">v_</a>[k - 1]) / h0;</div>
+<div class="line"><span class="lineno">   81</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> d1 = (<a class="code hl_variable" href="#a75486d5b75755e20a945b4769570854b">v_</a>[k + 1] - <a class="code hl_variable" href="#a75486d5b75755e20a945b4769570854b">v_</a>[k]) / h1;</div>
+<div class="line"><span class="lineno">   82</span>    <span class="keywordflow">if</span> (d0 * d1 &lt;= 0.0) {</div>
+<div class="line"><span class="lineno">   83</span>      <a class="code hl_variable" href="#a4e77a2034f0493c6406e91ff0b5725d7">m_</a>[k] = 0.0;</div>
+<div class="line"><span class="lineno">   84</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   85</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> w1 = 2.0 * h1 + h0;</div>
+<div class="line"><span class="lineno">   86</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> w2 = h1 + 2.0 * h0;</div>
+<div class="line"><span class="lineno">   87</span>      <a class="code hl_variable" href="#a4e77a2034f0493c6406e91ff0b5725d7">m_</a>[k] = (w1 + w2) / (w1 / d0 + w2 / d1);</div>
+<div class="line"><span class="lineno">   88</span>    }</div>
+<div class="line"><span class="lineno">   89</span>  }</div>
+<div class="line"><span class="lineno">   90</span>}</div>
 <div class="ttc" id="aclasseonc_1_1tunneling_1_1Profile_html_a4e77a2034f0493c6406e91ff0b5725d7"><div class="ttname"><a href="#a4e77a2034f0493c6406e91ff0b5725d7">eonc::tunneling::Profile::m_</a></div><div class="ttdeci">std::vector&lt; double &gt; m_</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8h_source.html#l00062">Tunneling.h:62</a></div></div>
 <div class="ttc" id="aclasseonc_1_1tunneling_1_1Profile_html_a56f80f67633eb564d65e0f9192edf663"><div class="ttname"><a href="#a56f80f67633eb564d65e0f9192edf663">eonc::tunneling::Profile::s_</a></div><div class="ttdeci">std::vector&lt; double &gt; s_</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8h_source.html#l00062">Tunneling.h:62</a></div></div>
 <div class="ttc" id="aclasseonc_1_1tunneling_1_1Profile_html_a75486d5b75755e20a945b4769570854b"><div class="ttname"><a href="#a75486d5b75755e20a945b4769570854b">eonc::tunneling::Profile::v_</a></div><div class="ttdeci">std::vector&lt; double &gt; v_</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8h_source.html#l00062">Tunneling.h:62</a></div></div>
@@ -334,19 +334,19 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tunneling_8cpp_source.html#l00091">91</a> of file <a class="el" href="Tunneling_8cpp_source.html">Tunneling.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   91</span>                                         {</div>
-<div class="line"><span class="lineno">   92</span>  x = std::clamp(x, <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>.front(), <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>.back());</div>
-<div class="line"><span class="lineno">   93</span>  <span class="keyword">auto</span> it = std::upper_bound(<a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>.begin(), <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>.end(), x);</div>
-<div class="line"><span class="lineno">   94</span>  <span class="keywordtype">size_t</span> k = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(std::distance(<a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>.begin(), it));</div>
-<div class="line"><span class="lineno">   95</span>  k = std::clamp&lt;size_t&gt;(k == 0 ? 0 : k - 1, 0, <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>.size() - 2);</div>
-<div class="line"><span class="lineno">   96</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> h = <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>[k + 1] - <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>[k];</div>
-<div class="line"><span class="lineno">   97</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> t = (x - <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>[k]) / h;</div>
-<div class="line"><span class="lineno">   98</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> t2 = t * t;</div>
-<div class="line"><span class="lineno">   99</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> t3 = t2 * t;</div>
-<div class="line"><span class="lineno">  100</span>  <span class="keywordflow">return</span> (2 * t3 - 3 * t2 + 1) * <a class="code hl_variable" href="#a75486d5b75755e20a945b4769570854b">v_</a>[k] + (t3 - 2 * t2 + t) * h * <a class="code hl_variable" href="#a4e77a2034f0493c6406e91ff0b5725d7">m_</a>[k] +</div>
-<div class="line"><span class="lineno">  101</span>         (-2 * t3 + 3 * t2) * <a class="code hl_variable" href="#a75486d5b75755e20a945b4769570854b">v_</a>[k + 1] + (t3 - t2) * h * <a class="code hl_variable" href="#a4e77a2034f0493c6406e91ff0b5725d7">m_</a>[k + 1];</div>
-<div class="line"><span class="lineno">  102</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Tunneling_8cpp_source.html#l00092">92</a> of file <a class="el" href="Tunneling_8cpp_source.html">Tunneling.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   92</span>                                         {</div>
+<div class="line"><span class="lineno">   93</span>  x = std::clamp(x, <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>.front(), <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>.back());</div>
+<div class="line"><span class="lineno">   94</span>  <span class="keyword">auto</span> it = std::upper_bound(<a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>.begin(), <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>.end(), x);</div>
+<div class="line"><span class="lineno">   95</span>  <span class="keywordtype">size_t</span> k = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(std::distance(<a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>.begin(), it));</div>
+<div class="line"><span class="lineno">   96</span>  k = std::clamp&lt;size_t&gt;(k == 0 ? 0 : k - 1, 0, <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>.size() - 2);</div>
+<div class="line"><span class="lineno">   97</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> h = <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>[k + 1] - <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>[k];</div>
+<div class="line"><span class="lineno">   98</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> t = (x - <a class="code hl_variable" href="#a56f80f67633eb564d65e0f9192edf663">s_</a>[k]) / h;</div>
+<div class="line"><span class="lineno">   99</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> t2 = t * t;</div>
+<div class="line"><span class="lineno">  100</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> t3 = t2 * t;</div>
+<div class="line"><span class="lineno">  101</span>  <span class="keywordflow">return</span> (2 * t3 - 3 * t2 + 1) * <a class="code hl_variable" href="#a75486d5b75755e20a945b4769570854b">v_</a>[k] + (t3 - 2 * t2 + t) * h * <a class="code hl_variable" href="#a4e77a2034f0493c6406e91ff0b5725d7">m_</a>[k] +</div>
+<div class="line"><span class="lineno">  102</span>         (-2 * t3 + 3 * t2) * <a class="code hl_variable" href="#a75486d5b75755e20a945b4769570854b">v_</a>[k + 1] + (t3 - t2) * h * <a class="code hl_variable" href="#a4e77a2034f0493c6406e91ff0b5725d7">m_</a>[k + 1];</div>
+<div class="line"><span class="lineno">  103</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

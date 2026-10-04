@@ -1,6 +1,9 @@
 var annotated_dup =
 [
     [ "eonc", "namespaceeonc.html", [
+      [ "detail", "namespaceeonc_1_1detail.html", [
+        [ "ImagePool", "classeonc_1_1detail_1_1ImagePool.html", "classeonc_1_1detail_1_1ImagePool" ]
+      ] ],
       [ "geometry", "namespaceeonc_1_1geometry.html", [
         [ "atom", "structeonc_1_1geometry_1_1atom.html", "structeonc_1_1geometry_1_1atom" ],
         [ "by_atom", "structeonc_1_1geometry_1_1by__atom.html", "structeonc_1_1geometry_1_1by__atom" ]
@@ -55,7 +58,11 @@ var annotated_dup =
         [ "Profile", "classeonc_1_1tunneling_1_1Profile.html", "classeonc_1_1tunneling_1_1Profile" ],
         [ "RateInstanton", "structeonc_1_1tunneling_1_1RateInstanton.html", "structeonc_1_1tunneling_1_1RateInstanton" ],
         [ "RateInstantonOptions", "structeonc_1_1tunneling_1_1RateInstantonOptions.html", "structeonc_1_1tunneling_1_1RateInstantonOptions" ],
+        [ "RingChannel", "structeonc_1_1tunneling_1_1RingChannel.html", "structeonc_1_1tunneling_1_1RingChannel" ],
+        [ "RingRigidBodies", "structeonc_1_1tunneling_1_1RingRigidBodies.html", "structeonc_1_1tunneling_1_1RingRigidBodies" ],
+        [ "RingSeed", "structeonc_1_1tunneling_1_1RingSeed.html", "structeonc_1_1tunneling_1_1RingSeed" ],
         [ "RingSpectrum", "structeonc_1_1tunneling_1_1RingSpectrum.html", "structeonc_1_1tunneling_1_1RingSpectrum" ],
+        [ "RotationZeroModes", "structeonc_1_1tunneling_1_1RotationZeroModes.html", "structeonc_1_1tunneling_1_1RotationZeroModes" ],
         [ "Splitting", "structeonc_1_1tunneling_1_1Splitting.html", "structeonc_1_1tunneling_1_1Splitting" ]
       ] ],
       [ "xtsci_eindir", "namespaceeonc_1_1xtsci__eindir.html", [
@@ -75,6 +82,8 @@ var annotated_dup =
       [ "BGSDObjectiveFunction", "classeonc_1_1BGSDObjectiveFunction.html", "classeonc_1_1BGSDObjectiveFunction" ],
       [ "BiasedGradientSquaredDescent", "classeonc_1_1BiasedGradientSquaredDescent.html", "classeonc_1_1BiasedGradientSquaredDescent" ],
       [ "BondBoost", "classeonc_1_1BondBoost.html", "classeonc_1_1BondBoost" ],
+      [ "CalculatorGroupUse", "structeonc_1_1CalculatorGroupUse.html", "structeonc_1_1CalculatorGroupUse" ],
+      [ "CancelToken", "classeonc_1_1CancelToken.html", "classeonc_1_1CancelToken" ],
       [ "catlearn_options_t", "structeonc_1_1catlearn__options__t.html", "structeonc_1_1catlearn__options__t" ],
       [ "CollectiveIDPPObjectiveFunction", "classeonc_1_1CollectiveIDPPObjectiveFunction.html", "classeonc_1_1CollectiveIDPPObjectiveFunction" ],
       [ "ConjugateGradients", "classeonc_1_1ConjugateGradients.html", "classeonc_1_1ConjugateGradients" ],
@@ -107,6 +116,7 @@ var annotated_dup =
       [ "gp_surrogate_options_t", "structeonc_1_1gp__surrogate__options__t.html", "structeonc_1_1gp__surrogate__options__t" ],
       [ "gpr_dimer_options_t", "structeonc_1_1gpr__dimer__options__t.html", "structeonc_1_1gpr__dimer__options__t" ],
       [ "GPSurrogateJob", "classeonc_1_1GPSurrogateJob.html", "classeonc_1_1GPSurrogateJob" ],
+      [ "GroupSchedule", "classeonc_1_1GroupSchedule.html", "classeonc_1_1GroupSchedule" ],
       [ "Hessian", "classeonc_1_1Hessian.html", "classeonc_1_1Hessian" ],
       [ "hessian_options_t", "structeonc_1_1hessian__options__t.html", "structeonc_1_1hessian__options__t" ],
       [ "HessianJob", "classeonc_1_1HessianJob.html", "classeonc_1_1HessianJob" ],
@@ -126,7 +136,9 @@ var annotated_dup =
       [ "IRACompare", "classeonc_1_1IRACompare.html", "classeonc_1_1IRACompare" ],
       [ "IRAResource", "classeonc_1_1IRAResource.html", "classeonc_1_1IRAResource" ],
       [ "Job", "classeonc_1_1Job.html", "classeonc_1_1Job" ],
+      [ "JobCancelled", "classeonc_1_1JobCancelled.html", "classeonc_1_1JobCancelled" ],
       [ "JobResultEnvelope", "structeonc_1_1JobResultEnvelope.html", "structeonc_1_1JobResultEnvelope" ],
+      [ "JobResultProvenance", "structeonc_1_1JobResultProvenance.html", "structeonc_1_1JobResultProvenance" ],
       [ "LammpsLoader", "classeonc_1_1LammpsLoader.html", "classeonc_1_1LammpsLoader" ],
       [ "Lanczos", "classeonc_1_1Lanczos.html", "classeonc_1_1Lanczos" ],
       [ "lanczos_options_t", "structeonc_1_1lanczos__options__t.html", "structeonc_1_1lanczos__options__t" ],
@@ -193,6 +205,8 @@ var annotated_dup =
       [ "VesinNeighbors", "classeonc_1_1VesinNeighbors.html", "classeonc_1_1VesinNeighbors" ],
       [ "X86DivRegs", "structeonc_1_1X86DivRegs.html", "structeonc_1_1X86DivRegs" ],
       [ "xtb_options_t", "structeonc_1_1xtb__options__t.html", "structeonc_1_1xtb__options__t" ],
+      [ "XtsciBand", "classeonc_1_1XtsciBand.html", "classeonc_1_1XtsciBand" ],
+      [ "XtsciMinMode", "classeonc_1_1XtsciMinMode.html", "classeonc_1_1XtsciMinMode" ],
       [ "XtsciOptimizer", "classeonc_1_1XtsciOptimizer.html", "classeonc_1_1XtsciOptimizer" ],
       [ "zbl_options_t", "structeonc_1_1zbl__options__t.html", "structeonc_1_1zbl__options__t" ],
       [ "ZBLRepulsiveIDPPObjective", "classeonc_1_1ZBLRepulsiveIDPPObjective.html", "classeonc_1_1ZBLRepulsiveIDPPObjective" ]
@@ -226,6 +240,7 @@ var annotated_dup =
     [ "EMTRasmussenParameterProvider", "classEMTRasmussenParameterProvider.html", "classEMTRasmussenParameterProvider" ],
     [ "EonMtaConfig", "structEonMtaConfig.html", "structEonMtaConfig" ],
     [ "EonMtaPot", "structEonMtaPot.html", "structEonMtaPot" ],
+    [ "EonRgpotGroupMpi", "structEonRgpotGroupMpi.html", "structEonRgpotGroupMpi" ],
     [ "Exception", "classException.html", "classException" ],
     [ "ExtPot", "classExtPot.html", "classExtPot" ],
     [ "GhostAtoms", "classGhostAtoms.html", "classGhostAtoms" ],
@@ -261,6 +276,5 @@ var annotated_dup =
     [ "vector", "classvector.html", "classvector" ],
     [ "XTBEngineLoader", "classXTBEngineLoader.html", "classXTBEngineLoader" ],
     [ "XTBEngineOptions", "structXTBEngineOptions.html", "structXTBEngineOptions" ],
-    [ "XTBPot", "classXTBPot.html", "classXTBPot" ],
     [ "XtsciOptimizer", "classXtsciOptimizer.html", "classXtsciOptimizer" ]
 ];

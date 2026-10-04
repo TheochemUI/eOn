@@ -238,6 +238,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('CommandLine_8c
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="CommandLine_8h_source.html">eon/CommandLine.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="EonLogger_8h_source.html">eon/EonLogger.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Matter_8h_source.html">eon/Matter.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Parameters_8h_source.html">eon/Parameters.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Potential_8h_source.html">eon/Potential.h</a>&quot;</code><br />
@@ -286,18 +287,20 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="CommandLine_8cpp_source.html#l00046">46</a> of file <a class="el" href="CommandLine_8cpp_source.html">CommandLine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   47</span>                                           {</div>
-<div class="line"><span class="lineno">   48</span>  matter-&gt;relax(<span class="keyword">false</span>, <span class="keyword">false</span>);</div>
-<div class="line"><span class="lineno">   49</span>  <span class="keywordflow">if</span> (confileout.empty()) {</div>
-<div class="line"><span class="lineno">   50</span>    std::cout &lt;&lt; <span class="stringliteral">&quot;No output file specified, not saving&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><span class="lineno">   51</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">   52</span>  }</div>
-<div class="line"><span class="lineno">   53</span>  std::cout &lt;&lt; <span class="stringliteral">&quot;Saving relaxed structure to &quot;</span> &lt;&lt; confileout &lt;&lt; std::endl;</div>
-<div class="line"><span class="lineno">   54</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(matter-&gt;matter2con(confileout))) {</div>
-<div class="line"><span class="lineno">   55</span>    std::cerr &lt;&lt; <span class="stringliteral">&quot;Failed to write &quot;</span> &lt;&lt; confileout &lt;&lt; std::endl;</div>
-<div class="line"><span class="lineno">   56</span>  }</div>
-<div class="line"><span class="lineno">   57</span>}</div>
+<p class="definition">Definition at line <a class="el" href="CommandLine_8cpp_source.html#l00047">47</a> of file <a class="el" href="CommandLine_8cpp_source.html">CommandLine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   48</span>                                           {</div>
+<div class="line"><span class="lineno">   49</span>  matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a25abf714e57724766dedf90408598b8c">relax</a>(<span class="keyword">false</span>, <span class="keyword">false</span>);</div>
+<div class="line"><span class="lineno">   50</span>  <span class="keywordflow">if</span> (confileout.empty()) {</div>
+<div class="line"><span class="lineno">   51</span>    std::cout &lt;&lt; <span class="stringliteral">&quot;No output file specified, not saving&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><span class="lineno">   52</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   53</span>  }</div>
+<div class="line"><span class="lineno">   54</span>  std::cout &lt;&lt; <span class="stringliteral">&quot;Saving relaxed structure to &quot;</span> &lt;&lt; confileout &lt;&lt; std::endl;</div>
+<div class="line"><span class="lineno">   55</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#ae8ecf570ce353f150952bc8038371222">matter2con</a>(confileout))) {</div>
+<div class="line"><span class="lineno">   56</span>    std::cerr &lt;&lt; <span class="stringliteral">&quot;Failed to write &quot;</span> &lt;&lt; confileout &lt;&lt; std::endl;</div>
+<div class="line"><span class="lineno">   57</span>  }</div>
+<div class="line"><span class="lineno">   58</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a25abf714e57724766dedf90408598b8c"><div class="ttname"><a href="classeonc_1_1Matter.html#a25abf714e57724766dedf90408598b8c">eonc::Matter::relax</a></div><div class="ttdeci">bool relax(bool quiet=false, bool writeMovie=false, bool checkpoint=false, std::string prefixMovie=std::string(), std::string prefixCheckpoint=std::string(), bool retainMovieFrames=false)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00343">Matter.cpp:343</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_ae8ecf570ce353f150952bc8038371222"><div class="ttname"><a href="classeonc_1_1Matter.html#ae8ecf570ce353f150952bc8038371222">eonc::Matter::matter2con</a></div><div class="ttdeci">io::IoStatus matter2con(std::string filename, bool append=false, const io::ConFrameMetadata *metadata=nullptr)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00274">Matter.h:274</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_af66b2723d892a4095754f9b0354b4f78"><div class="ttname"><a href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a></div><div class="ttdeci">constexpr bool io_ok(IoStatus s) noexcept</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00038">ConFileIO.h:38</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -317,38 +320,38 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="CommandLine_8cpp_source.html#l00059">59</a> of file <a class="el" href="CommandLine_8cpp_source.html">CommandLine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   59</span>                     {</div>
-<div class="line"><span class="lineno">   60</span>  std::cout &lt;&lt; colorizer.heading(<span class="stringliteral">&quot;Compile-time features:&quot;</span>) &lt;&lt; std::endl;</div>
-<div class="line"><span class="lineno">   61</span>  <span class="comment">// Parse FEATURES_STRING and colorize enabled/disabled</span></div>
-<div class="line"><span class="lineno">   62</span>  std::istringstream stream(FEATURES_STRING);</div>
-<div class="line"><span class="lineno">   63</span>  std::string line;</div>
-<div class="line"><span class="lineno">   64</span>  <span class="keywordflow">while</span> (std::getline(stream, line)) {</div>
-<div class="line"><span class="lineno">   65</span>    <span class="keywordflow">if</span> (line.find(<span class="stringliteral">&quot;: enabled&quot;</span>) != std::string::npos) {</div>
-<div class="line"><span class="lineno">   66</span>      <span class="comment">// Extract feature name and colorize &quot;enabled&quot; with warning (yellow)</span></div>
-<div class="line"><span class="lineno">   67</span>      <span class="keywordtype">size_t</span> colonPos = line.find(<span class="stringliteral">&quot;: &quot;</span>);</div>
-<div class="line"><span class="lineno">   68</span>      <span class="keywordflow">if</span> (colonPos != std::string::npos) {</div>
-<div class="line"><span class="lineno">   69</span>        std::string featureName = line.substr(0, colonPos + 2);</div>
-<div class="line"><span class="lineno">   70</span>        std::string status = line.substr(colonPos + 2);</div>
-<div class="line"><span class="lineno">   71</span>        std::cout &lt;&lt; featureName &lt;&lt; colorizer.warning(status) &lt;&lt; std::endl;</div>
-<div class="line"><span class="lineno">   72</span>      } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">   73</span>        std::cout &lt;&lt; line &lt;&lt; std::endl;</div>
-<div class="line"><span class="lineno">   74</span>      }</div>
-<div class="line"><span class="lineno">   75</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (line.find(<span class="stringliteral">&quot;: disabled&quot;</span>) != std::string::npos) {</div>
-<div class="line"><span class="lineno">   76</span>      <span class="comment">// Extract feature name and colorize &quot;disabled&quot; with error (red)</span></div>
-<div class="line"><span class="lineno">   77</span>      <span class="keywordtype">size_t</span> colonPos = line.find(<span class="stringliteral">&quot;: &quot;</span>);</div>
-<div class="line"><span class="lineno">   78</span>      <span class="keywordflow">if</span> (colonPos != std::string::npos) {</div>
-<div class="line"><span class="lineno">   79</span>        std::string featureName = line.substr(0, colonPos + 2);</div>
-<div class="line"><span class="lineno">   80</span>        std::string status = line.substr(colonPos + 2);</div>
-<div class="line"><span class="lineno">   81</span>        std::cout &lt;&lt; featureName &lt;&lt; colorizer.error(status) &lt;&lt; std::endl;</div>
-<div class="line"><span class="lineno">   82</span>      } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">   83</span>        std::cout &lt;&lt; line &lt;&lt; std::endl;</div>
-<div class="line"><span class="lineno">   84</span>      }</div>
-<div class="line"><span class="lineno">   85</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">   86</span>      std::cout &lt;&lt; line &lt;&lt; std::endl;</div>
-<div class="line"><span class="lineno">   87</span>    }</div>
-<div class="line"><span class="lineno">   88</span>  }</div>
-<div class="line"><span class="lineno">   89</span>}</div>
+<p class="definition">Definition at line <a class="el" href="CommandLine_8cpp_source.html#l00060">60</a> of file <a class="el" href="CommandLine_8cpp_source.html">CommandLine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   60</span>                     {</div>
+<div class="line"><span class="lineno">   61</span>  std::cout &lt;&lt; colorizer.heading(<span class="stringliteral">&quot;Compile-time features:&quot;</span>) &lt;&lt; std::endl;</div>
+<div class="line"><span class="lineno">   62</span>  <span class="comment">// Parse FEATURES_STRING and colorize enabled/disabled</span></div>
+<div class="line"><span class="lineno">   63</span>  std::istringstream stream(FEATURES_STRING);</div>
+<div class="line"><span class="lineno">   64</span>  std::string line;</div>
+<div class="line"><span class="lineno">   65</span>  <span class="keywordflow">while</span> (std::getline(stream, line)) {</div>
+<div class="line"><span class="lineno">   66</span>    <span class="keywordflow">if</span> (line.find(<span class="stringliteral">&quot;: enabled&quot;</span>) != std::string::npos) {</div>
+<div class="line"><span class="lineno">   67</span>      <span class="comment">// Extract feature name and colorize &quot;enabled&quot; with warning (yellow)</span></div>
+<div class="line"><span class="lineno">   68</span>      <span class="keywordtype">size_t</span> colonPos = line.find(<span class="stringliteral">&quot;: &quot;</span>);</div>
+<div class="line"><span class="lineno">   69</span>      <span class="keywordflow">if</span> (colonPos != std::string::npos) {</div>
+<div class="line"><span class="lineno">   70</span>        std::string featureName = line.substr(0, colonPos + 2);</div>
+<div class="line"><span class="lineno">   71</span>        std::string status = line.substr(colonPos + 2);</div>
+<div class="line"><span class="lineno">   72</span>        std::cout &lt;&lt; featureName &lt;&lt; colorizer.warning(status) &lt;&lt; std::endl;</div>
+<div class="line"><span class="lineno">   73</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   74</span>        std::cout &lt;&lt; line &lt;&lt; std::endl;</div>
+<div class="line"><span class="lineno">   75</span>      }</div>
+<div class="line"><span class="lineno">   76</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (line.find(<span class="stringliteral">&quot;: disabled&quot;</span>) != std::string::npos) {</div>
+<div class="line"><span class="lineno">   77</span>      <span class="comment">// Extract feature name and colorize &quot;disabled&quot; with error (red)</span></div>
+<div class="line"><span class="lineno">   78</span>      <span class="keywordtype">size_t</span> colonPos = line.find(<span class="stringliteral">&quot;: &quot;</span>);</div>
+<div class="line"><span class="lineno">   79</span>      <span class="keywordflow">if</span> (colonPos != std::string::npos) {</div>
+<div class="line"><span class="lineno">   80</span>        std::string featureName = line.substr(0, colonPos + 2);</div>
+<div class="line"><span class="lineno">   81</span>        std::string status = line.substr(colonPos + 2);</div>
+<div class="line"><span class="lineno">   82</span>        std::cout &lt;&lt; featureName &lt;&lt; colorizer.error(status) &lt;&lt; std::endl;</div>
+<div class="line"><span class="lineno">   83</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   84</span>        std::cout &lt;&lt; line &lt;&lt; std::endl;</div>
+<div class="line"><span class="lineno">   85</span>      }</div>
+<div class="line"><span class="lineno">   86</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   87</span>      std::cout &lt;&lt; line &lt;&lt; std::endl;</div>
+<div class="line"><span class="lineno">   88</span>    }</div>
+<div class="line"><span class="lineno">   89</span>  }</div>
+<div class="line"><span class="lineno">   90</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -367,14 +370,17 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="CommandLine_8cpp_source.html#l00038">38</a> of file <a class="el" href="CommandLine_8cpp_source.html">CommandLine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   38</span>                                                   {</div>
-<div class="line"><span class="lineno">   39</span>  std::cout &lt;&lt; <span class="stringliteral">&quot;Energy:         &quot;</span> &lt;&lt; std::fixed &lt;&lt; std::setprecision(15)</div>
-<div class="line"><span class="lineno">   40</span>            &lt;&lt; matter-&gt;getPotentialEnergy() &lt;&lt; std::endl;</div>
-<div class="line"><span class="lineno">   41</span>  std::cout &lt;&lt; <span class="stringliteral">&quot;(free) Forces:         \n&quot;</span> &lt;&lt; matter-&gt;getForcesFree() &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><span class="lineno">   42</span>  std::cout &lt;&lt; <span class="stringliteral">&quot;Max atom force: &quot;</span> &lt;&lt; std::scientific &lt;&lt; matter-&gt;maxForce()</div>
-<div class="line"><span class="lineno">   43</span>            &lt;&lt; std::endl;</div>
-<div class="line"><span class="lineno">   44</span>}</div>
+<p class="definition">Definition at line <a class="el" href="CommandLine_8cpp_source.html#l00039">39</a> of file <a class="el" href="CommandLine_8cpp_source.html">CommandLine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   39</span>                                                   {</div>
+<div class="line"><span class="lineno">   40</span>  std::cout &lt;&lt; <span class="stringliteral">&quot;Energy:         &quot;</span> &lt;&lt; std::fixed &lt;&lt; std::setprecision(15)</div>
+<div class="line"><span class="lineno">   41</span>            &lt;&lt; matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a991745c4fb760027221d419b8cf6fd8e">getPotentialEnergy</a>() &lt;&lt; std::endl;</div>
+<div class="line"><span class="lineno">   42</span>  std::cout &lt;&lt; <span class="stringliteral">&quot;(free) Forces:         \n&quot;</span> &lt;&lt; matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a302a7e4ad4d12e67819d3d5d612ed8c8">getForcesFree</a>() &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   43</span>  std::cout &lt;&lt; <span class="stringliteral">&quot;Max atom force: &quot;</span> &lt;&lt; std::scientific &lt;&lt; matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#afeac675bf888327ac3c8f51cb70c544b">maxForce</a>()</div>
+<div class="line"><span class="lineno">   44</span>            &lt;&lt; std::endl;</div>
+<div class="line"><span class="lineno">   45</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a302a7e4ad4d12e67819d3d5d612ed8c8"><div class="ttname"><a href="classeonc_1_1Matter.html#a302a7e4ad4d12e67819d3d5d612ed8c8">eonc::Matter::getForcesFree</a></div><div class="ttdeci">AtomMatrix getForcesFree() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00441">Matter.cpp:441</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a991745c4fb760027221d419b8cf6fd8e"><div class="ttname"><a href="classeonc_1_1Matter.html#a991745c4fb760027221d419b8cf6fd8e">eonc::Matter::getPotentialEnergy</a></div><div class="ttdeci">double getPotentialEnergy() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00563">Matter.cpp:563</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_afeac675bf888327ac3c8f51cb70c544b"><div class="ttname"><a href="classeonc_1_1Matter.html#afeac675bf888327ac3c8f51cb70c544b">eonc::Matter::maxForce</a></div><div class="ttdeci">double maxForce(void) const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00697">Matter.cpp:697</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>

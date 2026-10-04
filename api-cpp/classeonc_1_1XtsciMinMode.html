@@ -1,0 +1,802 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: eonc::XtsciMinMode Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn 3.2.0</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classeonc_1_1XtsciMinMode.html','','classeonc_1_1XtsciMinMode-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">eonc::XtsciMinMode Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Lowest-mode rotation through a rgsaddle minimum-mode session.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="XtsciMinMode_8h_source.html">XtsciMinMode.h</a>&gt;</code></p>
+<div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for eonc::XtsciMinMode:</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+ <div class="center">
+  <img src="classeonc_1_1XtsciMinMode.png" usemap="#eonc_3A_3AXtsciMinMode_map" alt=""/>
+  <map id="eonc_3A_3AXtsciMinMode_map" name="eonc_3A_3AXtsciMinMode_map">
+<area href="classeonc_1_1LowestEigenmode.html" title="Base for eigenmode solvers." alt="eonc::LowestEigenmode" shape="rect" coords="0,0,147,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a1fa1e974231187bab0439a107f2c3229" id="r_a1fa1e974231187bab0439a107f2c3229"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a1fa1e974231187bab0439a107f2c3229">XtsciMinMode</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; matter, const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;params, std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt; pot)</td></tr>
+<tr class="memitem:ad14aea63ccd854b52c2453d1a169a216" id="r_ad14aea63ccd854b52c2453d1a169a216"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#ad14aea63ccd854b52c2453d1a169a216">~XtsciMinMode</a> () override</td></tr>
+<tr class="memitem:a4ba58c5a6450f939c48488309d985d4a" id="r_a4ba58c5a6450f939c48488309d985d4a"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a4ba58c5a6450f939c48488309d985d4a">XtsciMinMode</a> (const XtsciMinMode &amp;)=delete</td></tr>
+<tr class="memitem:a0a1097e10d4009f55ea609f18b384fa9" id="r_a0a1097e10d4009f55ea609f18b384fa9"><td class="memItemLeft"><a class="el" href="#a1fa1e974231187bab0439a107f2c3229">XtsciMinMode</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a0a1097e10d4009f55ea609f18b384fa9">operator=</a> (const <a class="el" href="#a1fa1e974231187bab0439a107f2c3229">XtsciMinMode</a> &amp;)=delete</td></tr>
+<tr class="memitem:a5715532686af0491b69f03f245e4dab7" id="r_a5715532686af0491b69f03f245e4dab7"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a5715532686af0491b69f03f245e4dab7">compute</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; matter, <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> initialDirection) override</td></tr>
+<tr class="memitem:a43432022a99d3bb3362bcdc7bdac75e5" id="r_a43432022a99d3bb3362bcdc7bdac75e5"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a43432022a99d3bb3362bcdc7bdac75e5">getEigenvalue</a> () override</td></tr>
+<tr class="memitem:a216a877537c80398418b02e11402da47" id="r_a216a877537c80398418b02e11402da47"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>&#160;</td><td class="memItemRight"><a class="el" href="#a216a877537c80398418b02e11402da47">getEigenvector</a> () override</td></tr>
+<tr class="inherit_header pub_methods_classeonc_1_1LowestEigenmode"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1LowestEigenmode')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1LowestEigenmode.html">eonc::LowestEigenmode</a></td></tr>
+<tr class="memitem:af5c7e532e7e02cb38d6f27c348c52473 inherit pub_methods_classeonc_1_1LowestEigenmode" id="r_af5c7e532e7e02cb38d6f27c348c52473"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#af5c7e532e7e02cb38d6f27c348c52473">LowestEigenmode</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt; potPassed, const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;parameters)</td></tr>
+<tr class="memitem:a381aa32bbba8b6eb8cab60ec17a9bd0a inherit pub_methods_classeonc_1_1LowestEigenmode" id="r_a381aa32bbba8b6eb8cab60ec17a9bd0a"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a381aa32bbba8b6eb8cab60ec17a9bd0a">~LowestEigenmode</a> ()=default</td></tr>
+<tr class="memitem:a7312ae8a9eb2dae9a3b222c85f0db767 inherit pub_methods_classeonc_1_1LowestEigenmode" id="r_a7312ae8a9eb2dae9a3b222c85f0db767"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a7312ae8a9eb2dae9a3b222c85f0db767">evaluateWithProbe</a> (const std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &amp;centre, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;direction)</td></tr>
+<tr class="memdesc:a7312ae8a9eb2dae9a3b222c85f0db767 inherit pub_methods_classeonc_1_1LowestEigenmode"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluates a dirty <span class="tt">centre</span> together with the first displaced image the next compute(centre, direction) needs, as one batch, when the potential batches (calculator groups, a batched model).  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a7c5cec927269d8ad603a64ef48f284ff" id="r_a7c5cec927269d8ad603a64ef48f284ff"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a7c5cec927269d8ad603a64ef48f284ff">m_eigenvalue</a> {0.0}</td></tr>
+<tr class="memitem:a81ba342cea76f96ccaa1aa8081c38925" id="r_a81ba342cea76f96ccaa1aa8081c38925"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>&#160;</td><td class="memItemRight"><a class="el" href="#a81ba342cea76f96ccaa1aa8081c38925">m_eigenvector</a></td></tr>
+<tr class="memitem:aead96370d726f137603a48c73b2184a7" id="r_aead96370d726f137603a48c73b2184a7"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>&#160;</td><td class="memItemRight"><a class="el" href="#aead96370d726f137603a48c73b2184a7">m_fixed</a></td></tr>
+<tr class="memitem:acc1d19dd589000a3bc287e48194aac58" id="r_acc1d19dd589000a3bc287e48194aac58"><td class="memItemLeft">RgsaddleMinMode *&#160;</td><td class="memItemRight"><a class="el" href="#acc1d19dd589000a3bc287e48194aac58">m_session</a> {nullptr}</td></tr>
+<tr class="memitem:afa0b3b45b5e983648732f0193596b9f2" id="r_afa0b3b45b5e983648732f0193596b9f2"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#afa0b3b45b5e983648732f0193596b9f2">m_sessionAtoms</a> {0}</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_attribs_classeonc_1_1LowestEigenmode"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_classeonc_1_1LowestEigenmode')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="classeonc_1_1LowestEigenmode.html">eonc::LowestEigenmode</a></td></tr>
+<tr class="memitem:a724f93c18ebe10e59fb24d29cf0703c1 inherit pub_attribs_classeonc_1_1LowestEigenmode" id="r_a724f93c18ebe10e59fb24d29cf0703c1"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a724f93c18ebe10e59fb24d29cf0703c1">totalForceCalls</a> {0}</td></tr>
+<tr class="memitem:a60b737b93fe99a9004ee424f0d897d87 inherit pub_attribs_classeonc_1_1LowestEigenmode" id="r_a60b737b93fe99a9004ee424f0d897d87"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a60b737b93fe99a9004ee424f0d897d87">statsTorque</a> {0.0}</td></tr>
+<tr class="memitem:ae4a178406585da7f462cade19451eba3 inherit pub_attribs_classeonc_1_1LowestEigenmode" id="r_ae4a178406585da7f462cade19451eba3"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#ae4a178406585da7f462cade19451eba3">statsCurvature</a> {0.0}</td></tr>
+<tr class="memitem:a0b00be5551a5221a2951a5271e353e1c inherit pub_attribs_classeonc_1_1LowestEigenmode" id="r_a0b00be5551a5221a2951a5271e353e1c"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a0b00be5551a5221a2951a5271e353e1c">statsAngle</a> {0.0}</td></tr>
+<tr class="memitem:a882f5b774893c01f8fdf2b0f2608a098 inherit pub_attribs_classeonc_1_1LowestEigenmode" id="r_a882f5b774893c01f8fdf2b0f2608a098"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a> {0}</td></tr>
+<tr class="memitem:aaddd4f58289e430dcb327c814d9b1874 inherit pub_attribs_classeonc_1_1LowestEigenmode" id="r_aaddd4f58289e430dcb327c814d9b1874"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#aaddd4f58289e430dcb327c814d9b1874">totalIterations</a> {0}</td></tr>
+<tr class="inherit_header pub_static_attribs_classeonc_1_1LowestEigenmode"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_static_attribs_classeonc_1_1LowestEigenmode')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Static Public Attributes inherited from <a class="el" href="classeonc_1_1LowestEigenmode.html">eonc::LowestEigenmode</a></td></tr>
+<tr class="memitem:a4ddf3e59de723dc31d810ef8f8cf4c7d inherit pub_static_attribs_classeonc_1_1LowestEigenmode" id="r_a4ddf3e59de723dc31d810ef8f8cf4c7d"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a4ddf3e59de723dc31d810ef8f8cf4c7d">MINMODE_DIMER</a> [] = &quot;dimer&quot;</td></tr>
+<tr class="memitem:a14617f4b0ae6355cdbd54882065b0534 inherit pub_static_attribs_classeonc_1_1LowestEigenmode" id="r_a14617f4b0ae6355cdbd54882065b0534"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a14617f4b0ae6355cdbd54882065b0534">MINMODE_GPRDIMER</a> [] = &quot;gprdimer&quot;</td></tr>
+<tr class="memitem:a545a60db6d74011ce08833f1935f1ea0 inherit pub_static_attribs_classeonc_1_1LowestEigenmode" id="r_a545a60db6d74011ce08833f1935f1ea0"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a545a60db6d74011ce08833f1935f1ea0">MINMODE_LANCZOS</a> [] = &quot;lanczos&quot;</td></tr>
+<tr class="memitem:a827baff84ad96c6917f2029ed0e2b86b inherit pub_static_attribs_classeonc_1_1LowestEigenmode" id="r_a827baff84ad96c6917f2029ed0e2b86b"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a827baff84ad96c6917f2029ed0e2b86b">MINMODE_DAVIDSON</a> [] = &quot;davidson&quot;</td></tr>
+<tr class="memitem:af060f39a6915b5993b383a61af65ff89 inherit pub_static_attribs_classeonc_1_1LowestEigenmode" id="r_af060f39a6915b5993b383a61af65ff89"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#af060f39a6915b5993b383a61af65ff89">MINMODE_XTSCI</a> [] = &quot;xtsci&quot;</td></tr>
+<tr class="inherit_header pro_attribs_classeonc_1_1LowestEigenmode"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classeonc_1_1LowestEigenmode')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classeonc_1_1LowestEigenmode.html">eonc::LowestEigenmode</a></td></tr>
+<tr class="memitem:a37333ab6591b41d3d0e0a5e5f0481300 inherit pro_attribs_classeonc_1_1LowestEigenmode" id="r_a37333ab6591b41d3d0e0a5e5f0481300"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a37333ab6591b41d3d0e0a5e5f0481300">pot</a></td></tr>
+<tr class="memitem:a372b0c7160716051cd847072498d8322 inherit pro_attribs_classeonc_1_1LowestEigenmode" id="r_a372b0c7160716051cd847072498d8322"><td class="memItemLeft">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Lowest-mode rotation through a rgsaddle minimum-mode session. </p>
+<p>The session is created with a zero translation cap so the climb stays in <a class="el" href="classeonc_1_1MinModeSaddleSearch.html">MinModeSaddleSearch</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="XtsciMinMode_8h_source.html#l00023">23</a> of file <a class="el" href="XtsciMinMode_8h_source.html">XtsciMinMode.h</a>.</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a1fa1e974231187bab0439a107f2c3229" name="a1fa1e974231187bab0439a107f2c3229"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fa1e974231187bab0439a107f2c3229">&#9670;&#160;</a></span>XtsciMinMode() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eonc::XtsciMinMode::XtsciMinMode </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>matter</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>pot</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XtsciMinMode_8cpp_source.html#l00084">84</a> of file <a class="el" href="XtsciMinMode_8cpp_source.html">XtsciMinMode.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   87</span>    : <a class="code hl_function" href="classeonc_1_1LowestEigenmode.html#af5c7e532e7e02cb38d6f27c348c52473">LowestEigenmode</a>(<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a37333ab6591b41d3d0e0a5e5f0481300">pot</a>, <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>) {</div>
+<div class="line"><span class="lineno">   88</span>  <span class="keywordflow">if</span> (matter) {</div>
+<div class="line"><span class="lineno">   89</span>    <a class="code hl_variable" href="#a81ba342cea76f96ccaa1aa8081c38925">m_eigenvector</a> = AtomMatrix::Zero(matter-&gt;numberOfAtoms(), 3);</div>
+<div class="line"><span class="lineno">   90</span>  }</div>
+<div class="line"><span class="lineno">   91</span>}</div>
+<div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_a372b0c7160716051cd847072498d8322"><div class="ttname"><a href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">eonc::LowestEigenmode::params</a></div><div class="ttdeci">const Parameters &amp; params</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00026">LowestEigenmode.h:26</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_a37333ab6591b41d3d0e0a5e5f0481300"><div class="ttname"><a href="classeonc_1_1LowestEigenmode.html#a37333ab6591b41d3d0e0a5e5f0481300">eonc::LowestEigenmode::pot</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; pot</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00025">LowestEigenmode.h:25</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_af5c7e532e7e02cb38d6f27c348c52473"><div class="ttname"><a href="classeonc_1_1LowestEigenmode.html#af5c7e532e7e02cb38d6f27c348c52473">eonc::LowestEigenmode::LowestEigenmode</a></div><div class="ttdeci">LowestEigenmode(std::shared_ptr&lt; Potential &gt; potPassed, const Parameters &amp;parameters)</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00041">LowestEigenmode.h:41</a></div></div>
+<div class="ttc" id="aclasseonc_1_1XtsciMinMode_html_a81ba342cea76f96ccaa1aa8081c38925"><div class="ttname"><a href="#a81ba342cea76f96ccaa1aa8081c38925">eonc::XtsciMinMode::m_eigenvector</a></div><div class="ttdeci">AtomMatrix m_eigenvector</div><div class="ttdef"><b>Definition</b> <a href="XtsciMinMode_8h_source.html#l00038">XtsciMinMode.h:38</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad14aea63ccd854b52c2453d1a169a216" name="ad14aea63ccd854b52c2453d1a169a216"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad14aea63ccd854b52c2453d1a169a216">&#9670;&#160;</a></span>~XtsciMinMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eonc::XtsciMinMode::~XtsciMinMode </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XtsciMinMode_8cpp_source.html#l00193">193</a> of file <a class="el" href="XtsciMinMode_8cpp_source.html">XtsciMinMode.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  193</span>                            {</div>
+<div class="line"><span class="lineno">  194</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc1d19dd589000a3bc287e48194aac58">m_session</a> != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  195</span>    rgsaddle_minmode_free(<a class="code hl_variable" href="#acc1d19dd589000a3bc287e48194aac58">m_session</a>);</div>
+<div class="line"><span class="lineno">  196</span>  }</div>
+<div class="line"><span class="lineno">  197</span>}</div>
+<div class="ttc" id="aclasseonc_1_1XtsciMinMode_html_acc1d19dd589000a3bc287e48194aac58"><div class="ttname"><a href="#acc1d19dd589000a3bc287e48194aac58">eonc::XtsciMinMode::m_session</a></div><div class="ttdeci">RgsaddleMinMode * m_session</div><div class="ttdef"><b>Definition</b> <a href="XtsciMinMode_8h_source.html#l00041">XtsciMinMode.h:41</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a4ba58c5a6450f939c48488309d985d4a" name="a4ba58c5a6450f939c48488309d985d4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ba58c5a6450f939c48488309d985d4a">&#9670;&#160;</a></span>XtsciMinMode() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eonc::XtsciMinMode::XtsciMinMode </td>
+          <td>(</td>
+          <td class="paramtype">const XtsciMinMode &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a5715532686af0491b69f03f245e4dab7" name="a5715532686af0491b69f03f245e4dab7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5715532686af0491b69f03f245e4dab7">&#9670;&#160;</a></span>compute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::XtsciMinMode::compute </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>matter</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></td>          <td class="paramname"><span class="paramname"><em>initialDirection</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classeonc_1_1LowestEigenmode.html#a072cd9d6badc02cea8db64823324e757">eonc::LowestEigenmode</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="XtsciMinMode_8cpp_source.html#l00093">93</a> of file <a class="el" href="XtsciMinMode_8cpp_source.html">XtsciMinMode.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   94</span>                                                        {</div>
+<div class="line"><span class="lineno">   95</span>  <span class="keywordflow">if</span> (!matter) {</div>
+<div class="line"><span class="lineno">   96</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;xtsci min-mode requires a geometry&quot;</span>);</div>
+<div class="line"><span class="lineno">   97</span>  }</div>
+<div class="line"><span class="lineno">   98</span>  rgsaddle_version_t stamp{};</div>
+<div class="line"><span class="lineno">   99</span>  checkStatus(rgsaddle_abi_stamp(&amp;stamp), <span class="stringliteral">&quot;rgsaddle_abi_stamp&quot;</span>);</div>
+<div class="line"><span class="lineno">  100</span>  <span class="keywordflow">if</span> (stamp.major != RGSADDLE_ABI_MAJOR) {</div>
+<div class="line"><span class="lineno">  101</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;incompatible rgsaddle ABI&quot;</span>);</div>
+<div class="line"><span class="lineno">  102</span>  }</div>
+<div class="line"><span class="lineno">  103</span>  <span class="keyword">const</span> <span class="keyword">auto</span> nAtoms = matter-&gt;numberOfAtoms();</div>
+<div class="line"><span class="lineno">  104</span>  <span class="keywordflow">if</span> (initialDirection.rows() != nAtoms || initialDirection.cols() != 3) {</div>
+<div class="line"><span class="lineno">  105</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;xtsci min-mode direction shape&quot;</span>);</div>
+<div class="line"><span class="lineno">  106</span>  }</div>
+<div class="line"><span class="lineno">  107</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> saved = matter-&gt;getPositions();</div>
+<div class="line"><span class="lineno">  108</span>  <a class="code hl_variable" href="#aead96370d726f137603a48c73b2184a7">m_fixed</a> = saved;</div>
+<div class="line"><span class="lineno">  109</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;dim = <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.dimer_options();</div>
+<div class="line"><span class="lineno">  110</span>  rgsaddle_minmode_config_t config{};</div>
+<div class="line"><span class="lineno">  111</span>  config.version = RGSADDLE_VERSION_INIT;</div>
+<div class="line"><span class="lineno">  112</span>  config.flags = 0;</div>
+<div class="line"><span class="lineno">  113</span>  <span class="comment">// Dimer rotation. Lanczos is the same session with kind Lanczos when</span></div>
+<div class="line"><span class="lineno">  114</span>  <span class="comment">// the host dimer flag is off and the optimizer method is &quot;lanczos&quot;.</span></div>
+<div class="line"><span class="lineno">  115</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> lanczos = <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.optimizer_options().xtsci.method == <span class="stringliteral">&quot;lanczos&quot;</span>;</div>
+<div class="line"><span class="lineno">  116</span>  config.kind = lanczos ? RGSADDLE_MINMODE_LANCZOS : RGSADDLE_MINMODE_DIMER;</div>
+<div class="line"><span class="lineno">  117</span>  config.method = <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.optimizer_options().xtsci.method == <span class="stringliteral">&quot;lbfgs&quot;</span></div>
+<div class="line"><span class="lineno">  118</span>                      ? RGSADDLE_METHOD_LBFGS</div>
+<div class="line"><span class="lineno">  119</span>                      : RGSADDLE_METHOD_FIRE;</div>
+<div class="line"><span class="lineno">  120</span>  <span class="comment">// dr is the finite-difference length in Angstrom, the separation the</span></div>
+<div class="line"><span class="lineno">  121</span>  <span class="comment">// host dimer and Lanczos use; rotation_angle is a rotation trial angle</span></div>
+<div class="line"><span class="lineno">  122</span>  <span class="comment">// in radians and does not belong here.</span></div>
+<div class="line"><span class="lineno">  123</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> fd = <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.main_options().finiteDifference;</div>
+<div class="line"><span class="lineno">  124</span>  config.dr = fd &gt; 0.0 ? fd : 1.0e-3;</div>
+<div class="line"><span class="lineno">  125</span>  config.rotation_tol = dim.torque_min;</div>
+<div class="line"><span class="lineno">  126</span>  config.max_rotations = std::max&lt;long&gt;(1, dim.rotations_max);</div>
+<div class="line"><span class="lineno">  127</span>  config.krylov_dim = 12;</div>
+<div class="line"><span class="lineno">  128</span>  config.force_tol = 0.0;</div>
+<div class="line"><span class="lineno">  129</span>  <span class="comment">// Zero cap: rotation only. The climb uses the host optimizer.</span></div>
+<div class="line"><span class="lineno">  130</span>  config.max_move = 0.0;</div>
+<div class="line"><span class="lineno">  131</span><span class="preprocessor">#if RGSADDLE_ABI_MINOR &gt;= 5</span></div>
+<div class="line"><span class="lineno">  132</span>  config.rotation_angle_tol = <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a> * dim.converged_angle / 180.0;</div>
+<div class="line"><span class="lineno">  133</span>  config.difference =</div>
+<div class="line"><span class="lineno">  134</span>      <a class="code hl_function" href="namespaceeonc.html#a54c78dc90bd7020c23096bbb8744789f">parseFdScheme</a>(<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.hessian_options().fd_scheme) == <a class="code hl_enumvalue" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda81797e9c6fc44586202026bb6aaefe8c">FdScheme::OneSided</a></div>
+<div class="line"><span class="lineno">  135</span>          ? RGSADDLE_DIFFERENCE_FORWARD</div>
+<div class="line"><span class="lineno">  136</span>          : RGSADDLE_DIFFERENCE_CENTRAL;</div>
+<div class="line"><span class="lineno">  137</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  138</span> </div>
+<div class="line"><span class="lineno">  139</span>  Matter probe(*matter);</div>
+<div class="line"><span class="lineno">  140</span>  MinModeUser ctx{matter.get(), &amp;probe, &amp;<a class="code hl_variable" href="#aead96370d726f137603a48c73b2184a7">m_fixed</a>};</div>
+<div class="line"><span class="lineno">  141</span>  <span class="keyword">const</span> <span class="keywordtype">size_t</span> callsBefore = matter-&gt;getPotentialCalls();</div>
+<div class="line"><span class="lineno">  142</span>  rgsaddle_report_t report{};</div>
+<div class="line"><span class="lineno">  143</span>  std::vector&lt;double&gt; mode(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(3 * nAtoms), 0.0);</div>
+<div class="line"><span class="lineno">  144</span><span class="preprocessor">#if RGSADDLE_ABI_MINOR &gt;= 5</span></div>
+<div class="line"><span class="lineno">  145</span>  <span class="comment">// One session for the whole search: the refreshed mode seeds the next</span></div>
+<div class="line"><span class="lineno">  146</span>  <span class="comment">// estimate, and the host&#39;s gradient at the centre is handed over so the</span></div>
+<div class="line"><span class="lineno">  147</span>  <span class="comment">// session does not evaluate the centre again.</span></div>
+<div class="line"><span class="lineno">  148</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc1d19dd589000a3bc287e48194aac58">m_session</a> != <span class="keyword">nullptr</span> &amp;&amp; <a class="code hl_variable" href="#afa0b3b45b5e983648732f0193596b9f2">m_sessionAtoms</a> != nAtoms) {</div>
+<div class="line"><span class="lineno">  149</span>    rgsaddle_minmode_free(<a class="code hl_variable" href="#acc1d19dd589000a3bc287e48194aac58">m_session</a>);</div>
+<div class="line"><span class="lineno">  150</span>    <a class="code hl_variable" href="#acc1d19dd589000a3bc287e48194aac58">m_session</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  151</span>  }</div>
+<div class="line"><span class="lineno">  152</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc1d19dd589000a3bc287e48194aac58">m_session</a> == <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  153</span>    <a class="code hl_variable" href="#acc1d19dd589000a3bc287e48194aac58">m_session</a> = rgsaddle_minmode_create(&amp;config, nAtoms, saved.data(),</div>
+<div class="line"><span class="lineno">  154</span>                                        initialDirection.data());</div>
+<div class="line"><span class="lineno">  155</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc1d19dd589000a3bc287e48194aac58">m_session</a> == <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  156</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;rgsaddle_minmode_create failed&quot;</span>);</div>
+<div class="line"><span class="lineno">  157</span>    }</div>
+<div class="line"><span class="lineno">  158</span>    <a class="code hl_variable" href="#afa0b3b45b5e983648732f0193596b9f2">m_sessionAtoms</a> = nAtoms;</div>
+<div class="line"><span class="lineno">  159</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (initialDirection != <a class="code hl_variable" href="#a81ba342cea76f96ccaa1aa8081c38925">m_eigenvector</a>) {</div>
+<div class="line"><span class="lineno">  160</span>    checkStatus(rgsaddle_minmode_set_mode(<a class="code hl_variable" href="#acc1d19dd589000a3bc287e48194aac58">m_session</a>, initialDirection.data()),</div>
+<div class="line"><span class="lineno">  161</span>                <span class="stringliteral">&quot;rgsaddle_minmode_set_mode&quot;</span>);</div>
+<div class="line"><span class="lineno">  162</span>  }</div>
+<div class="line"><span class="lineno">  163</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> gradient = -matter-&gt;getForces();</div>
+<div class="line"><span class="lineno">  164</span>  checkStatus(</div>
+<div class="line"><span class="lineno">  165</span>      rgsaddle_minmode_set_position(<a class="code hl_variable" href="#acc1d19dd589000a3bc287e48194aac58">m_session</a>, saved.data(), gradient.data()),</div>
+<div class="line"><span class="lineno">  166</span>      <span class="stringliteral">&quot;rgsaddle_minmode_set_position&quot;</span>);</div>
+<div class="line"><span class="lineno">  167</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> rc =</div>
+<div class="line"><span class="lineno">  168</span>      rgsaddle_minmode_estimate(<a class="code hl_variable" href="#acc1d19dd589000a3bc287e48194aac58">m_session</a>, surfaceCallback, &amp;ctx, &amp;report);</div>
+<div class="line"><span class="lineno">  169</span>  checkStatus(rc, <span class="stringliteral">&quot;rgsaddle_minmode_estimate&quot;</span>);</div>
+<div class="line"><span class="lineno">  170</span>  checkStatus(rgsaddle_minmode_mode(<a class="code hl_variable" href="#acc1d19dd589000a3bc287e48194aac58">m_session</a>, mode.data()),</div>
+<div class="line"><span class="lineno">  171</span>              <span class="stringliteral">&quot;rgsaddle_minmode_mode&quot;</span>);</div>
+<div class="line"><span class="lineno">  172</span><span class="preprocessor">#else</span></div>
+<div class="line"><span class="lineno">  173</span>  RgsaddleMinMode *session = rgsaddle_minmode_create(</div>
+<div class="line"><span class="lineno">  174</span>      &amp;config, nAtoms, saved.data(), initialDirection.data());</div>
+<div class="line"><span class="lineno">  175</span>  <span class="keywordflow">if</span> (session == <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  176</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;rgsaddle_minmode_create failed&quot;</span>);</div>
+<div class="line"><span class="lineno">  177</span>  }</div>
+<div class="line"><span class="lineno">  178</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> rc = rgsaddle_minmode_step(session, surfaceCallback, &amp;ctx, &amp;report);</div>
+<div class="line"><span class="lineno">  179</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> modeRc = rgsaddle_minmode_mode(session, mode.data());</div>
+<div class="line"><span class="lineno">  180</span>  rgsaddle_minmode_free(session);</div>
+<div class="line"><span class="lineno">  181</span>  checkStatus(rc, <span class="stringliteral">&quot;rgsaddle_minmode_step&quot;</span>);</div>
+<div class="line"><span class="lineno">  182</span>  checkStatus(modeRc, <span class="stringliteral">&quot;rgsaddle_minmode_mode&quot;</span>);</div>
+<div class="line"><span class="lineno">  183</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  184</span>  <a class="code hl_variable" href="#a81ba342cea76f96ccaa1aa8081c38925">m_eigenvector</a> = AtomMatrix::Map(mode.data(), nAtoms, 3);</div>
+<div class="line"><span class="lineno">  185</span>  <a class="code hl_variable" href="#a7c5cec927269d8ad603a64ef48f284ff">m_eigenvalue</a> = report.curvature;</div>
+<div class="line"><span class="lineno">  186</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#ae4a178406585da7f462cade19451eba3">statsCurvature</a> = report.curvature;</div>
+<div class="line"><span class="lineno">  187</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a> = report.rotations;</div>
+<div class="line"><span class="lineno">  188</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#aaddd4f58289e430dcb327c814d9b1874">totalIterations</a> += 1;</div>
+<div class="line"><span class="lineno">  189</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a724f93c18ebe10e59fb24d29cf0703c1">totalForceCalls</a> +=</div>
+<div class="line"><span class="lineno">  190</span>      <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(matter-&gt;getPotentialCalls() - callsBefore);</div>
+<div class="line"><span class="lineno">  191</span>}</div>
+<div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_a724f93c18ebe10e59fb24d29cf0703c1"><div class="ttname"><a href="classeonc_1_1LowestEigenmode.html#a724f93c18ebe10e59fb24d29cf0703c1">eonc::LowestEigenmode::totalForceCalls</a></div><div class="ttdeci">long totalForceCalls</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00029">LowestEigenmode.h:29</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_a882f5b774893c01f8fdf2b0f2608a098"><div class="ttname"><a href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">eonc::LowestEigenmode::statsRotations</a></div><div class="ttdeci">long statsRotations</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00033">LowestEigenmode.h:33</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_aaddd4f58289e430dcb327c814d9b1874"><div class="ttname"><a href="classeonc_1_1LowestEigenmode.html#aaddd4f58289e430dcb327c814d9b1874">eonc::LowestEigenmode::totalIterations</a></div><div class="ttdeci">long totalIterations</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00034">LowestEigenmode.h:34</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_ae4a178406585da7f462cade19451eba3"><div class="ttname"><a href="classeonc_1_1LowestEigenmode.html#ae4a178406585da7f462cade19451eba3">eonc::LowestEigenmode::statsCurvature</a></div><div class="ttdeci">double statsCurvature</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00031">LowestEigenmode.h:31</a></div></div>
+<div class="ttc" id="aclasseonc_1_1XtsciMinMode_html_a7c5cec927269d8ad603a64ef48f284ff"><div class="ttname"><a href="#a7c5cec927269d8ad603a64ef48f284ff">eonc::XtsciMinMode::m_eigenvalue</a></div><div class="ttdeci">double m_eigenvalue</div><div class="ttdef"><b>Definition</b> <a href="XtsciMinMode_8h_source.html#l00037">XtsciMinMode.h:37</a></div></div>
+<div class="ttc" id="aclasseonc_1_1XtsciMinMode_html_aead96370d726f137603a48c73b2184a7"><div class="ttname"><a href="#aead96370d726f137603a48c73b2184a7">eonc::XtsciMinMode::m_fixed</a></div><div class="ttdeci">AtomMatrix m_fixed</div><div class="ttdef"><b>Definition</b> <a href="XtsciMinMode_8h_source.html#l00039">XtsciMinMode.h:39</a></div></div>
+<div class="ttc" id="aclasseonc_1_1XtsciMinMode_html_afa0b3b45b5e983648732f0193596b9f2"><div class="ttname"><a href="#afa0b3b45b5e983648732f0193596b9f2">eonc::XtsciMinMode::m_sessionAtoms</a></div><div class="ttdeci">long m_sessionAtoms</div><div class="ttdef"><b>Definition</b> <a href="XtsciMinMode_8h_source.html#l00042">XtsciMinMode.h:42</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_a96a0233e9530dc3963dbcd001e1015c0"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a></div><div class="ttdeci">constexpr double pi</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8h_source.html#l00029">HelperFunctions.h:29</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a1473c0575632e4e2549120f33b8525dda81797e9c6fc44586202026bb6aaefe8c"><div class="ttname"><a href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda81797e9c6fc44586202026bb6aaefe8c">eonc::FdScheme::OneSided</a></div><div class="ttdeci">@ OneSided</div><div class="ttdef"><b>Definition</b> <a href="FiniteDifference_8h_source.html#l00025">FiniteDifference.h:25</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a54c78dc90bd7020c23096bbb8744789f"><div class="ttname"><a href="namespaceeonc.html#a54c78dc90bd7020c23096bbb8744789f">eonc::parseFdScheme</a></div><div class="ttdeci">FdScheme parseFdScheme(std::string_view scheme)</div><div class="ttdef"><b>Definition</b> <a href="FiniteDifference_8h_source.html#l00027">FiniteDifference.h:27</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a43432022a99d3bb3362bcdc7bdac75e5" name="a43432022a99d3bb3362bcdc7bdac75e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43432022a99d3bb3362bcdc7bdac75e5">&#9670;&#160;</a></span>getEigenvalue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::XtsciMinMode::getEigenvalue </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classeonc_1_1LowestEigenmode.html#a6fffec92e8e345dc32dd8a46e689b4ab">eonc::LowestEigenmode</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="XtsciMinMode_8cpp_source.html#l00199">199</a> of file <a class="el" href="XtsciMinMode_8cpp_source.html">XtsciMinMode.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  199</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a7c5cec927269d8ad603a64ef48f284ff">m_eigenvalue</a>; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a216a877537c80398418b02e11402da47" name="a216a877537c80398418b02e11402da47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a216a877537c80398418b02e11402da47">&#9670;&#160;</a></span>getEigenvector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> eonc::XtsciMinMode::getEigenvector </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classeonc_1_1LowestEigenmode.html#af3f08bac4c99061f6fe82c75edd6417d">eonc::LowestEigenmode</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="XtsciMinMode_8cpp_source.html#l00201">201</a> of file <a class="el" href="XtsciMinMode_8cpp_source.html">XtsciMinMode.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  201</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a81ba342cea76f96ccaa1aa8081c38925">m_eigenvector</a>; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0a1097e10d4009f55ea609f18b384fa9" name="a0a1097e10d4009f55ea609f18b384fa9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a1097e10d4009f55ea609f18b384fa9">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a1fa1e974231187bab0439a107f2c3229">XtsciMinMode</a> &amp; eonc::XtsciMinMode::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#a1fa1e974231187bab0439a107f2c3229">XtsciMinMode</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a7c5cec927269d8ad603a64ef48f284ff" name="a7c5cec927269d8ad603a64ef48f284ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c5cec927269d8ad603a64ef48f284ff">&#9670;&#160;</a></span>m_eigenvalue</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::XtsciMinMode::m_eigenvalue {0.0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XtsciMinMode_8h_source.html#l00037">37</a> of file <a class="el" href="XtsciMinMode_8h_source.html">XtsciMinMode.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   37</span>{0.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a81ba342cea76f96ccaa1aa8081c38925" name="a81ba342cea76f96ccaa1aa8081c38925"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81ba342cea76f96ccaa1aa8081c38925">&#9670;&#160;</a></span>m_eigenvector</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> eonc::XtsciMinMode::m_eigenvector</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XtsciMinMode_8h_source.html#l00038">38</a> of file <a class="el" href="XtsciMinMode_8h_source.html">XtsciMinMode.h</a>.</p>
+
+</div>
+</div>
+<a id="aead96370d726f137603a48c73b2184a7" name="aead96370d726f137603a48c73b2184a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aead96370d726f137603a48c73b2184a7">&#9670;&#160;</a></span>m_fixed</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> eonc::XtsciMinMode::m_fixed</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XtsciMinMode_8h_source.html#l00039">39</a> of file <a class="el" href="XtsciMinMode_8h_source.html">XtsciMinMode.h</a>.</p>
+
+</div>
+</div>
+<a id="acc1d19dd589000a3bc287e48194aac58" name="acc1d19dd589000a3bc287e48194aac58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc1d19dd589000a3bc287e48194aac58">&#9670;&#160;</a></span>m_session</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">RgsaddleMinMode* eonc::XtsciMinMode::m_session {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XtsciMinMode_8h_source.html#l00041">41</a> of file <a class="el" href="XtsciMinMode_8h_source.html">XtsciMinMode.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   41</span>{<span class="keyword">nullptr</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="afa0b3b45b5e983648732f0193596b9f2" name="afa0b3b45b5e983648732f0193596b9f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa0b3b45b5e983648732f0193596b9f2">&#9670;&#160;</a></span>m_sessionAtoms</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::XtsciMinMode::m_sessionAtoms {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XtsciMinMode_8h_source.html#l00042">42</a> of file <a class="el" href="XtsciMinMode_8h_source.html">XtsciMinMode.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   42</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/<a class="el" href="XtsciMinMode_8h_source.html">XtsciMinMode.h</a></li>
+<li>/home/runner/work/eOn/eOn/client/<a class="el" href="XtsciMinMode_8cpp_source.html">XtsciMinMode.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="namespaceeonc.html">eonc</a></li><li class="navelem"><a href="classeonc_1_1XtsciMinMode.html">XtsciMinMode</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

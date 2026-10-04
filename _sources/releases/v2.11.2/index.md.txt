@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn v2.11.2, release, metatomic, SIGFPE, FPE, uncertainty, dimer"
 ---
 
-## [v2.11.2] - 2026-03-02
+# [v2.11.2] - 2026-03-02
 
 A patch release that fixes SIGFPE crashes when using the built-in `metatomic`
 potential (libtorch triggers benign FPE), changes the `uncertainty_threshold`

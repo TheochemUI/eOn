@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['vectors_0',['Common operations 3D vectors.',['../group__vector3d.html',1,'']]]
+  ['structure_20optimizers_0',['Structure optimizers',['../group__Optimizers.html',1,'']]]
 ];

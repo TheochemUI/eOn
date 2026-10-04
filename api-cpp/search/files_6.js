@@ -15,5 +15,6 @@ var searchData=
   ['gprpotential_2ecpp_12',['GPRPotential.cpp',['../GPRPotential_8cpp.html',1,'']]],
   ['gprpotential_2eh_13',['GPRPotential.h',['../GPRPotential_8h.html',1,'']]],
   ['gpsurrogatejob_2ecpp_14',['GPSurrogateJob.cpp',['../GPSurrogateJob_8cpp.html',1,'']]],
-  ['gpsurrogatejob_2eh_15',['GPSurrogateJob.h',['../GPSurrogateJob_8h.html',1,'']]]
+  ['gpsurrogatejob_2eh_15',['GPSurrogateJob.h',['../GPSurrogateJob_8h.html',1,'']]],
+  ['groupschedule_2eh_16',['GroupSchedule.h',['../GroupSchedule_8h.html',1,'']]]
 ];

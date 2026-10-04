@@ -18,6 +18,5 @@ var dir_a8aef543466d2fa8dc828abfbb06a958 =
     [ "VASP", "dir_1a634fe8beab0ff351cfe44bf19663e3.html", "dir_1a634fe8beab0ff351cfe44bf19663e3" ],
     [ "Water", "dir_acb7f7abac07ac31f591458a0640c386.html", "dir_acb7f7abac07ac31f591458a0640c386" ],
     [ "Water_Pt", "dir_9780e5286ed348d39641027f6c823c7b.html", "dir_9780e5286ed348d39641027f6c823c7b" ],
-    [ "XTBPot", "dir_369fca98f72895a88603278aec2b4319.html", "dir_369fca98f72895a88603278aec2b4319" ],
     [ "PluginLoader.cpp", "PluginLoader_8cpp.html", null ]
 ];

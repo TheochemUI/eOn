@@ -31,9 +31,10 @@ var searchData=
   ['knock_5fout_5fmax_5fmove_28',['knock_out_max_move',['../structeonc_1_1optimizer__options__t_1_1cg__t.html#a1bf667f34d95d6e737e6058c3b48fcd2',1,'eonc::optimizer_options_t::cg_t']]],
   ['kopenergy_29',['kOpEnergy',['../namespaceeonc_1_1xtsci__eindir.html#a8cc6861b948d552492096a2ff4803b31',1,'eonc::xtsci_eindir']]],
   ['kopforces_30',['kOpForces',['../namespaceeonc_1_1xtsci__eindir.html#a979fc4a7f83eb1cee175873dc0721f15',1,'eonc::xtsci_eindir']]],
-  ['kschemaid_31',['kSchemaId',['../namespaceeonc_1_1xtsci__eindir.html#a3892ded03ff7ae137a4c5b7e4618b6fc',1,'eonc::xtsci_eindir']]],
-  ['ksp_32',['ksp',['../structeonc_1_1neb_1_1UniformSpring.html#a727a317587c6c59cd4f967153418d900',1,'eonc::neb::UniformSpring::ksp'],['../classeonc_1_1NudgedElasticBand.html#a5f1edccdd1810d5e2af0121248ba3dd5',1,'eonc::NudgedElasticBand::ksp']]],
-  ['ktimeunitseconds_33',['kTimeUnitSeconds',['../namespaceeonc_1_1tunneling.html#a520ac3171661d0e32fa444d7cdd546c4',1,'eonc::tunneling']]],
-  ['ktracebackloggername_34',['kTracebackLoggerName',['../namespaceeonc_1_1log_1_1detail.html#a13ecaa4676a7d55b383cf89f9b3a68cc',1,'eonc::log::detail']]],
-  ['kwindowsmxcsrexceptionmasks_35',['kWindowsMxcsrExceptionMasks',['../namespaceeonc.html#a5326686c75d3fe7a05fa2a5b49bcd0ba',1,'eonc']]]
+  ['krotationzerofraction_31',['kRotationZeroFraction',['../namespaceeonc_1_1tunneling.html#a6a7e28068c8650ec8880a716e48e94ed',1,'eonc::tunneling']]],
+  ['kschemaid_32',['kSchemaId',['../namespaceeonc_1_1xtsci__eindir.html#a3892ded03ff7ae137a4c5b7e4618b6fc',1,'eonc::xtsci_eindir']]],
+  ['ksp_33',['ksp',['../structeonc_1_1neb_1_1UniformSpring.html#a727a317587c6c59cd4f967153418d900',1,'eonc::neb::UniformSpring::ksp'],['../classeonc_1_1NudgedElasticBand.html#a5f1edccdd1810d5e2af0121248ba3dd5',1,'eonc::NudgedElasticBand::ksp']]],
+  ['ktimeunitseconds_34',['kTimeUnitSeconds',['../namespaceeonc_1_1tunneling.html#a520ac3171661d0e32fa444d7cdd546c4',1,'eonc::tunneling']]],
+  ['ktracebackloggername_35',['kTracebackLoggerName',['../namespaceeonc_1_1log_1_1detail.html#a13ecaa4676a7d55b383cf89f9b3a68cc',1,'eonc::log::detail']]],
+  ['kwindowsmxcsrexceptionmasks_36',['kWindowsMxcsrExceptionMasks',['../namespaceeonc.html#a5326686c75d3fe7a05fa2a5b49bcd0ba',1,'eonc']]]
 ];

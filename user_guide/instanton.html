@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="teal" data-content_root="../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Tunnelling splittings - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Prefactor" href="prefactor.html" /><link rel="prev" title="Hessian" href="hessian.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Tunnelling splittings - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Prefactor" href="prefactor.html" /><link rel="prev" title="Finite-difference curvature" href="finite_difference.html" />
       <link rel="canonical" href="https://eondocs.org/user_guide/instanton.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
@@ -36,8 +36,8 @@
   <div class="sy-head-blur"></div>
   <div class="sy-head-inner sy-container mx-auto">
     <a class="sy-head-brand" href="../index.html">
-      
-      
+      <img class="light-logo" src="../logo/eon_v3_light.svg" alt="eOn" height="28" loading="lazy" />
+      <img class="dark-logo" src="../logo/eon_v3_dark.svg" alt="eOn" height="28" loading="lazy" />
       <strong>eOn</strong>
     </a>
     <div class="sy-head-nav" id="head-nav">
@@ -86,6 +86,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../team.html">eOn team</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../install/eessi.html">Build develop on EESSI</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../install/lammps.html">LAMMPS</a></li>
 </ul>
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html#obtaining-sources">Obtaining sources</a></li>
@@ -130,17 +131,23 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="lanczos.html">Lanczos</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="finite_difference.html">Finite-difference curvature</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="akmc.html">Adaptive kinetic Monte Carlo</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="saddle_search.html">Saddle search</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="basin_hopping.html">Basin hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="global_optimization.html">Minima hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="monte_carlo.html">Monte Carlo</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="replica_exchange.html">Replica exchange</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="process_search.html">Process search</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="recycling.html">Recycling</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="coarse_graining.html">Coarse graining</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="dynamics.html">Dynamics</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="parallel_replica.html">Parallel replica</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="tad.html">Temperature accelerated dynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="oh_tst.html">Optimal hyperplane transition state theory</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="communicator.html">Communicator</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="debug.html">Debug</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="paths.html">Paths</a></li>
@@ -166,6 +173,14 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn-migration.html">Migrating from SVN</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/tracking-changes.html">Tracking changes</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/release.html">Release workflow</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/design/client/index.html">Client design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/types.html">Type system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/parameters.html">Parameters system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/neb-modularization.html">NEB modularization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/confile.html">CON file I/O via readcon-core</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/pyeonclient.html">pyeonclient (nanobind client bindings)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/eon-schema.html">eon-schema (shared parameter package)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/pyeonclient-pypi.html">pyeonclient on PyPI</a></li>
@@ -174,7 +189,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../apidocs/index.html">API Reference</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
 </ul>
 </li>
@@ -196,6 +210,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.cancel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.cancel</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.job_result.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.job_result</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
@@ -249,6 +264,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../releases/v3.2.0/release-notes.html">eOn 3.2.0</a></li>
 </ul>
 </li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.17.0/release-notes.html">eOn 2.17.0</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.16.0/index.html">[v2.16.0] - 2026-07-03</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.16.0/release-notes.html">Release notes</a></li>
 </ul>
@@ -314,6 +330,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 </ul>
 </li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../glossary.html">Glossary</a></li>
 </ul>
         </div>
       </div>
@@ -706,6 +723,14 @@ between those anchors. That interpolation is an approximation: the rate
 formula uses the Hessian of every bead.</p>
 <p><code class="docutils literal notranslate"><span class="pre">half_ring</span></code> defaults to enabled. On an even bead count the potential is
 evaluated from one turning point to the other and copied onto the mirror.
+The reaction coordinate on that half stays monotone, so the search cannot
+settle on an out-and-back bounce.
+A half ring that has converged, or that has stopped with the gradient
+under the force tolerance while the negative-mode count is not 1, is
+checked for an unstable mode that is odd under the mirror when the
+interior beads still match their mirrors. Two copies of the instanton
+on one ring are that mode. The search steps along it and continues on
+the whole ring.
 An odd count keeps every bead. <code class="docutils literal notranslate"><span class="pre">energy_shift</span></code> (default 0, in eV) is
 subtracted from every bead potential and from the reactant and saddle
 energies in the rate.</p>
@@ -716,9 +741,9 @@ the period condition below. On LJ13 that path costs 586 gradient calls. Cooling 
 ring from 0.85 of the crossover is the fallback when no path can be
 built; it finds the ring only where the ring grows continuously out of
 the saddle as the temperature drops. Where it does not, the search walks
-to a neighbouring saddle, so a converged ring with no bead on either side
-of the saddle’s dividing plane (the plane normal to its unstable mode) is
-refused and no rate is written. The step climbs the mode that overlaps
+to a neighbouring saddle, so a converged ring that fails the channel test
+described with the <code class="docutils literal notranslate"><span class="pre">results.dat</span></code> keys below is refused and no rate is
+written. The step climbs the mode that overlaps
 the last climb and turns every other negative curvature downhill; the
 imaginary-time cycle and the rigid motions of the whole ring, rebuilt
 from the current beads, are held in place and left out of the step. A
@@ -736,8 +761,10 @@ modes come from Lanczos on matrix-vector products. The bead curvature
 blocks start from the saddle Hessian (<code class="docutils literal notranslate"><span class="pre">initial_hessians</span> <span class="pre">=</span> <span class="pre">saddle</span></code>, no force
 calls) and follow accepted moves with a Bofill update, rebuilt from
 finite differences up to three times when the trust radius reaches its
-floor;
-<code class="docutils literal notranslate"><span class="pre">initial_hessians</span> <span class="pre">=</span> <span class="pre">finite_difference</span></code> takes <span class="math notranslate nohighlight">\(2f\)</span> gradient calls per
+floor. Near-zero eigenvectors of the saddle Hessian are held at a
+spring-sized curvature in the Newton step, so a rigid displacement does
+not singularize the chain. <code class="docutils literal notranslate"><span class="pre">initial_hessians</span> <span class="pre">=</span> <span class="pre">finite_difference</span></code> takes
+<span class="math notranslate nohighlight">\(2f\)</span> gradient calls per
 bead first. The rate uses the bead Hessians chosen by <code class="docutils literal notranslate"><span class="pre">hessian_final</span></code>, not
 that update. On the one-dimensional Eckart barrier the search converges
 in 4 to 7 steps from either seed.</p>
@@ -759,9 +786,20 @@ the parabolic rate. Below <span class="math notranslate nohighlight">\(T_c\)</sp
 <p>With no atom fixed, both the reactant and the instanton omit the three
 translations. A
 rotation is omitted when it is a zero mode of the reactant Hessian, which a
-free cluster has and a crystal does not. A cluster in a large periodic cell
+free cluster has and a crystal does not: when its curvature r^T H r / r^T r
+is at most 0.1 of the softest vibration, the lowest eigenvalue of the
+Hessian once the translations and rotations are projected out. Both sides
+scale with the Hessian and neither grows with the atom count. A cluster in a large periodic cell
 is told apart by that Hessian, not by the periodic flag. The springs along
-those directions stay, so they cancel between the instanton and the reactant.</p>
+those directions stay, so they cancel between the instanton and the reactant.
+On the ring the omitted rotations are those of the beads themselves about
+the ring’s centre of mass: a rotation moves each bead by a different
+amount, so the reactant’s rotation copied to every bead is not a zero mode
+of the ring. The bead Hessians keep their rotational curvature, which
+balances the springs on a bead that is not a minimum, and lose only their
+translations. Omitting the rotations on both sides treats the rotational
+partition functions of the ring and the reactant as equal, which neglects
+the change in the moments of inertia along the ring.</p>
 <p><code class="docutils literal notranslate"><span class="pre">results.dat</span></code> reports the rate. The keys are:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
@@ -784,7 +822,7 @@ those directions stay, so they cancel between the instanton and the reactant.</p
 <td><p><span class="math notranslate nohighlight">\(\kappa\)</span>, above <span class="math notranslate nohighlight">\(T_c\)</span></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rate_parabolic</span></code></p></td>
-<td><p><span class="math notranslate nohighlight">\(\kappa\)</span> times the harmonic TST rate, s^{-1}</p></td>
+<td><p><span class="math notranslate nohighlight">\(\kappa\)</span> times the quantum harmonic TST rate, s^{-1}</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rate_parabolic_log</span></code></p></td>
 <td><p><span class="math notranslate nohighlight">\(\ln(k\,/\,\mathrm{s}^{-1})\)</span> of that rate</p></td>
@@ -798,9 +836,28 @@ those directions stay, so they cancel between the instanton and the reactant.</p
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">instanton_zero_mode</span></code></p></td>
 <td><p>the eigenvalue left out</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">instanton_s_min</span></code>, <code class="docutils literal notranslate"><span class="pre">instanton_s_max</span></code></p></td>
+<td><p>the turning points along the saddle’s unstable mode, amu^0.5 Angstrom from the saddle</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">instanton_chord_overlap</span></code></p></td>
+<td><p>cosine of the angle between the chord joining the turning points and the unstable mode</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">instanton_collapsed</span></code></p></td>
+<td><p>1 when the search stopped because the beads fell onto one point (B_N below 1e-4 of the starting ring’s)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">instanton_crossing_offset</span></code></p></td>
+<td><p>largest distance from the saddle, across the mode, at which the ring crosses the dividing plane</p></td>
+</tr>
 </tbody>
 </table>
 </div>
+<p>A converged ring is given a rate only when it belongs to the seeded saddle:
+it straddles the plane through the saddle normal to the unstable mode,
+crosses that plane no farther from the saddle than its own span
+<code class="docutils literal notranslate"><span class="pre">instanton_s_max</span> <span class="pre">-</span> <span class="pre">instanton_s_min</span></code>, and its chord lies within 60 degrees
+of the mode. A ring that slid to a neighbouring saddle can still straddle
+the plane and have one negative mode, and then its rate would belong to a
+different reaction.</p>
 <p><span id="id2">Habershon <em>et al.</em> [<a class="reference internal" href="#id107" title="Scott Habershon, David E. Manolopoulos, Thomas E. Markland, and Thomas F. Miller. Ring-polymer molecular dynamics: quantum effects in chemical dynamics from classical trajectories in an extended phase space. Annual Review of Physical Chemistry, 64(1):387–413, April 2013. doi:10.1146/annurev-physchem-040412-110122.">INST_HMMM13</a>]</span> expect the sampled
 ring-polymer rate to lie within about a factor of two of the exact quantum
 rate between <span class="math notranslate nohighlight">\(T_c\)</span> and <span class="math notranslate nohighlight">\(T_c/2\)</span>. That bound compares the sampled
@@ -1160,8 +1217,9 @@ probability, at <span class="math notranslate nohighlight">\(T = 0.5\,T_c\)</spa
 <p>In one dimension the instanton is the steepest-descent evaluation of the
 WKB thermal integral, so its limit shares the uniform WKB error; the Kemble
 integral along the path gives the same 0.928. <code class="docutils literal notranslate"><span class="pre">The</span> <span class="pre">ring</span> <span class="pre">spectrum</span> <span class="pre">from</span> <span class="pre">the</span> <span class="pre">block</span> <span class="pre">chain</span> <span class="pre">matches</span> <span class="pre">the</span> <span class="pre">dense</span> <span class="pre">Hessian</span></code> ties the chain’s determinant and
-inertia to a dense eigendecomposition, and <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">rigid</span> <span class="pre">mode</span> <span class="pre">leaves</span> <span class="pre">the</span> <span class="pre">instanton</span> <span class="pre">rate</span> <span class="pre">unchanged</span></code> checks the rigid-mode bookkeeping through the
-search.</p>
+inertia to a dense eigendecomposition, <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">rigid</span> <span class="pre">mode</span> <span class="pre">leaves</span> <span class="pre">the</span> <span class="pre">instanton</span> <span class="pre">rate</span> <span class="pre">unchanged</span></code> checks the rigid-mode bookkeeping through the
+search, and <code class="docutils literal notranslate"><span class="pre">The</span> <span class="pre">rate</span> <span class="pre">lifts</span> <span class="pre">the</span> <span class="pre">rotations</span> <span class="pre">of</span> <span class="pre">a</span> <span class="pre">free</span> <span class="pre">diatomic's</span> <span class="pre">ring</span></code>
+checks the rotations against the dense spectrum of a stretching bond.</p>
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
@@ -1207,10 +1265,10 @@ search.</p>
   </svg>
   <span>Back to top</span>
 </button><div class="navigation flex print:hidden"><div class="navigation-prev">
-    <a href="hessian.html">
+    <a href="finite_difference.html">
       <i class="i-lucide chevron-left"></i>
       <div class="page-info">
-        <span>Previous</span><div class="title">Hessian</div></div>
+        <span>Previous</span><div class="title">Finite-difference curvature</div></div>
     </a>
   </div><div class="navigation-next">
     <a href="prefactor.html">

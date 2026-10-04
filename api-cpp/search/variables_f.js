@@ -68,6 +68,7 @@ var searchData=
   ['oversampling_65',['oversampling',['../structeonc_1_1neb__options__t_1_1path__initialization__t.html#a8f58b4e9610875af39ec081f6f251cd4',1,'eonc::neb_options_t::path_initialization_t']]],
   ['oversampling_5ffactor_66',['oversampling_factor',['../structeonc_1_1neb__options__t_1_1path__initialization__t.html#aa81ebe6957b293097d436cc28deb1989',1,'eonc::neb_options_t::path_initialization_t']]],
   ['owned_5fruntime_5f_67',['owned_runtime_',['../classeonc_1_1Job.html#a79f4bf70ec1c7e3e08a0a5c0ff5ee965',1,'eonc::Job']]],
-  ['ownprovider_68',['ownProvider',['../classEMT.html#a53c157cf5c58fa25af4e64b9b7b3f462',1,'EMT']]],
-  ['owns_5f_69',['owns_',['../classeonc_1_1VesinNeighbors.html#a2c375c43c369dd784c2319220b27e89a',1,'eonc::VesinNeighbors']]]
+  ['ownedpot_68',['ownedPot',['../classeonc_1_1Job.html#ae11b351685b8b2ca364f1877636328ca',1,'eonc::Job']]],
+  ['ownprovider_69',['ownProvider',['../classEMT.html#a53c157cf5c58fa25af4e64b9b7b3f462',1,'EMT']]],
+  ['owns_5f_70',['owns_',['../classeonc_1_1VesinNeighbors.html#a2c375c43c369dd784c2319220b27e89a',1,'eonc::VesinNeighbors']]]
 ];

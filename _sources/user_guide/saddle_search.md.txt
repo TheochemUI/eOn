@@ -78,6 +78,14 @@ server:
   same client helper.
 - `load` — read a displacement vector from a file written by the server
 
+## Basin hopping
+
+`method = basin_hopping` quenches the hop, builds a band, and starts a
+dimer on the highest interior image. The dimer direction is the
+minimum-image `(next - prev) / 2`. A bead that has crossed a periodic
+face takes the short step. The acceptance test is on the
+[basin hopping](project:basin_hopping.md) page.
+
 ## Configuration
 
 ```{code-block} ini

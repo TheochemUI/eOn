@@ -36,8 +36,8 @@
   <div class="sy-head-blur"></div>
   <div class="sy-head-inner sy-container mx-auto">
     <a class="sy-head-brand" href="../../index.html">
-      
-      
+      <img class="light-logo" src="../../logo/eon_v3_light.svg" alt="eOn" height="28" loading="lazy" />
+      <img class="dark-logo" src="../../logo/eon_v3_dark.svg" alt="eOn" height="28" loading="lazy" />
       <strong>eOn</strong>
     </a>
     <div class="sy-head-nav" id="head-nav">
@@ -86,6 +86,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../team.html">eOn team</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../install/eessi.html">Build develop on EESSI</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../install/lammps.html">LAMMPS</a></li>
 </ul>
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../install/index.html#obtaining-sources">Obtaining sources</a></li>
@@ -130,17 +131,23 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lanczos.html">Lanczos</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/finite_difference.html">Finite-difference curvature</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/akmc.html">Adaptive kinetic Monte Carlo</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/saddle_search.html">Saddle search</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/basin_hopping.html">Basin hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/global_optimization.html">Minima hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/monte_carlo.html">Monte Carlo</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/replica_exchange.html">Replica exchange</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/process_search.html">Process search</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/recycling.html">Recycling</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/coarse_graining.html">Coarse graining</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/dynamics.html">Dynamics</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/parallel_replica.html">Parallel replica</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/tad.html">Temperature accelerated dynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/oh_tst.html">Optimal hyperplane transition state theory</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/communicator.html">Communicator</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/debug.html">Debug</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/paths.html">Paths</a></li>
@@ -166,6 +173,14 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/svn-migration.html">Migrating from SVN</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/tracking-changes.html">Tracking changes</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/release.html">Release workflow</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/design/client/index.html">Client design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/types.html">Type system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/parameters.html">Parameters system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/neb-modularization.html">NEB modularization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/confile.html">CON file I/O via readcon-core</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/pyeonclient.html">pyeonclient (nanobind client bindings)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/eon-schema.html">eon-schema (shared parameter package)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/pyeonclient-pypi.html">pyeonclient on PyPI</a></li>
@@ -174,7 +189,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../apidocs/index.html">API Reference</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
 </ul>
 </li>
@@ -196,6 +210,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.cancel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.cancel</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.job_result.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.job_result</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
@@ -249,6 +264,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v3.2.0/release-notes.html">eOn 3.2.0</a></li>
 </ul>
 </li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.17.0/release-notes.html">eOn 2.17.0</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.16.0/index.html">[v2.16.0] - 2026-07-03</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v2.16.0/release-notes.html">Release notes</a></li>
 </ul>
@@ -314,6 +330,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 </ul>
 </li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../glossary.html">Glossary</a></li>
 </ul>
         </div>
       </div>
@@ -381,446 +398,513 @@ data-aria-dark="Switch to auto color mode">
           <h1>Source code for eon.process_catalog</h1><div class="highlight"><pre>
 <span></span><span data-line="1"><span class="sd">&quot;&quot;&quot;Process catalog for aKMC.</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="sd">Frames live in the run&#39;s readcon-db corpus. The barrier, the prefactor,</span>
-</span><span data-line="4"><span class="sd">the mode, and the frame keys live on ``amsel.KdbProcess``. A good saddle</span>
-</span><span data-line="5"><span class="sd">is stored when it is registered. The next search of a matching state</span>
-</span><span data-line="6"><span class="sd">refines from the stored saddle, then a random displacement follows when</span>
-</span><span data-line="7"><span class="sd">no suggestion remains.</span>
-</span><span data-line="8">
-</span><span data-line="9"><span class="sd">``kdb_nf`` is the neighbor fudge (a fraction). ``kdb_dc`` is the distance</span>
-</span><span data-line="10"><span class="sd">cutoff in angstroms. ``kdb_mac`` is the minimum absolute cosine at which</span>
-</span><span data-line="11"><span class="sd">the stored mode is the refine direction; below it the direction is the</span>
-</span><span data-line="12"><span class="sd">reactant-to-saddle vector. ``Paths.kdb`` is the directory</span>
-</span><span data-line="13"><span class="sd">``amsel.KdbStore`` opens.</span>
-</span><span data-line="14"><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="15">
-</span><span data-line="16"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+</span><span data-line="3"><span class="sd">Frames live in the run&#39;s readcon-db corpus. The saddle frame carries the</span>
+</span><span data-line="4"><span class="sd">process mode as its readcon displacements section; the line-2 JSON names</span>
+</span><span data-line="5"><span class="sd">that section. The barrier, the prefactor, the same mode components, and</span>
+</span><span data-line="6"><span class="sd">the frame keys live on ``amsel.KdbProcess``. A good saddle is stored when</span>
+</span><span data-line="7"><span class="sd">it is registered. The next search of a matching state refines from the</span>
+</span><span data-line="8"><span class="sd">stored saddle, then a random displacement follows when no suggestion</span>
+</span><span data-line="9"><span class="sd">remains.</span>
+</span><span data-line="10">
+</span><span data-line="11"><span class="sd">``kdb_nf`` is the neighbor fudge (a fraction). ``kdb_dc`` is the distance</span>
+</span><span data-line="12"><span class="sd">cutoff in angstroms. ``kdb_mac`` is the minimum absolute cosine at which</span>
+</span><span data-line="13"><span class="sd">the stored mode is the refine direction; below it the direction is the</span>
+</span><span data-line="14"><span class="sd">reactant-to-saddle vector. ``Paths.kdb`` is the directory</span>
+</span><span data-line="15"><span class="sd">``amsel.KdbStore`` opens.</span>
+</span><span data-line="16"><span class="sd">&quot;&quot;&quot;</span>
 </span><span data-line="17">
-</span><span data-line="18"><span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
-</span><span data-line="19"><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
-</span><span data-line="20"><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-</span><span data-line="21"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-</span><span data-line="22">
-</span><span data-line="23"><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</span><span data-line="18"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+</span><span data-line="19">
+</span><span data-line="20"><span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+</span><span data-line="21"><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+</span><span data-line="22"><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+</span><span data-line="23"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 </span><span data-line="24">
-</span><span data-line="25"><span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">fileio</span> <span class="k">as</span> <span class="n">io</span>
-</span><span data-line="26"><span class="kn">from</span><span class="w"> </span><span class="nn">eon.concorpus</span><span class="w"> </span><span class="kn">import</span> <span class="n">corpus_dir</span><span class="p">,</span> <span class="n">store_frame_text</span>
-</span><span data-line="27">
-</span><span data-line="28"><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;kdb&quot;</span><span class="p">)</span>
-</span><span data-line="29">
+</span><span data-line="25"><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</span><span data-line="26">
+</span><span data-line="27"><span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">fileio</span> <span class="k">as</span> <span class="n">io</span>
+</span><span data-line="28"><span class="kn">from</span><span class="w"> </span><span class="nn">eon.concorpus</span><span class="w"> </span><span class="kn">import</span> <span class="n">corpus_dir</span><span class="p">,</span> <span class="n">store_frame_text</span>
+</span><span data-line="29"><span class="kn">from</span><span class="w"> </span><span class="nn">eon.structure</span><span class="w"> </span><span class="kn">import</span> <span class="n">structure_order</span>
 </span><span data-line="30">
+</span><span data-line="31"><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;kdb&quot;</span><span class="p">)</span>
+</span><span data-line="32">
+</span><span data-line="33">
 <div class="viewcode-block" id="pack_frame_key">
 <a class="viewcode-back" href="../../apidocs/eon/eon.process_catalog.html#eon.process_catalog.pack_frame_key">[docs]</a>
-</span><span data-line="31"><span class="k">def</span><span class="w"> </span><span class="nf">pack_frame_key</span><span class="p">(</span><span class="n">traj_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">frame_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
-</span><span data-line="32"><span class="w">    </span><span class="sd">&quot;&quot;&quot;12-byte readcon-db key: traj_id then frame index, both big-endian.&quot;&quot;&quot;</span>
-</span><span data-line="33">    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">traj_id</span><span class="p">)</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="s2">&quot;big&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">frame_idx</span><span class="p">)</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;big&quot;</span><span class="p">)</span></div>
+</span><span data-line="34"><span class="k">def</span><span class="w"> </span><span class="nf">pack_frame_key</span><span class="p">(</span><span class="n">traj_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">frame_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+</span><span data-line="35"><span class="w">    </span><span class="sd">&quot;&quot;&quot;12-byte readcon-db key: traj_id then frame index, both big-endian.&quot;&quot;&quot;</span>
+</span><span data-line="36">    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">traj_id</span><span class="p">)</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="s2">&quot;big&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">frame_idx</span><span class="p">)</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;big&quot;</span><span class="p">)</span></div>
 
-</span><span data-line="34">
-</span><span data-line="35">
+</span><span data-line="37">
+</span><span data-line="38">
 <div class="viewcode-block" id="unpack_frame_key">
 <a class="viewcode-back" href="../../apidocs/eon/eon.process_catalog.html#eon.process_catalog.unpack_frame_key">[docs]</a>
-</span><span data-line="36"><span class="k">def</span><span class="w"> </span><span class="nf">unpack_frame_key</span><span class="p">(</span><span class="n">blob</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-</span><span data-line="37">    <span class="n">raw</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">blob</span><span class="p">)</span>
-</span><span data-line="38">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">12</span><span class="p">:</span>
-</span><span data-line="39">        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;frame key is </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span><span class="si">}</span><span class="s2"> bytes, expected 12&quot;</span><span class="p">)</span>
-</span><span data-line="40">    <span class="k">return</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">raw</span><span class="p">[:</span><span class="mi">8</span><span class="p">],</span> <span class="s2">&quot;big&quot;</span><span class="p">),</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">raw</span><span class="p">[</span><span class="mi">8</span><span class="p">:],</span> <span class="s2">&quot;big&quot;</span><span class="p">)</span></div>
+</span><span data-line="39"><span class="k">def</span><span class="w"> </span><span class="nf">unpack_frame_key</span><span class="p">(</span><span class="n">blob</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+</span><span data-line="40">    <span class="n">raw</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">blob</span><span class="p">)</span>
+</span><span data-line="41">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">12</span><span class="p">:</span>
+</span><span data-line="42">        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;frame key is </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span><span class="si">}</span><span class="s2"> bytes, expected 12&quot;</span><span class="p">)</span>
+</span><span data-line="43">    <span class="k">return</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">raw</span><span class="p">[:</span><span class="mi">8</span><span class="p">],</span> <span class="s2">&quot;big&quot;</span><span class="p">),</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">raw</span><span class="p">[</span><span class="mi">8</span><span class="p">:],</span> <span class="s2">&quot;big&quot;</span><span class="p">)</span></div>
 
-</span><span data-line="41">
-</span><span data-line="42">
+</span><span data-line="44">
+</span><span data-line="45">
 <div class="viewcode-block" id="env_hash">
 <a class="viewcode-back" href="../../apidocs/eon/eon.process_catalog.html#eon.process_catalog.env_hash">[docs]</a>
-</span><span data-line="43"><span class="k">def</span><span class="w"> </span><span class="nf">env_hash</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
-</span><span data-line="44"><span class="w">    </span><span class="sd">&quot;&quot;&quot;16-byte hash of element names and positions rounded to 1e-4 angstrom.</span>
-</span><span data-line="45">
-</span><span data-line="46"><span class="sd">    Rounding is finer than ``kdb_dc``, so the same minimum matches and a</span>
-</span><span data-line="47"><span class="sd">    real hop does not.</span>
-</span><span data-line="48"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="49">    <span class="n">positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span>
-</span><span data-line="50">    <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">atoms</span><span class="o">.</span><span class="n">names</span><span class="p">]</span>
-</span><span data-line="51">    <span class="n">payload</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
-</span><span data-line="52">        <span class="p">{</span><span class="s2">&quot;names&quot;</span><span class="p">:</span> <span class="n">names</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">:</span> <span class="n">positions</span><span class="o">.</span><span class="n">tolist</span><span class="p">()},</span>
-</span><span data-line="53">        <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">),</span>
-</span><span data-line="54">    <span class="p">)</span>
-</span><span data-line="55">    <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">blake2s</span><span class="p">(</span><span class="n">payload</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span> <span class="n">digest_size</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span></div>
+</span><span data-line="46"><span class="k">def</span><span class="w"> </span><span class="nf">env_hash</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+</span><span data-line="47"><span class="w">    </span><span class="sd">&quot;&quot;&quot;16-byte hash of element names and positions rounded to 1e-4 angstrom.</span>
+</span><span data-line="48">
+</span><span data-line="49"><span class="sd">    Rounding is finer than ``kdb_dc``, so the same minimum matches and a</span>
+</span><span data-line="50"><span class="sd">    real hop does not.</span>
+</span><span data-line="51"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="52">    <span class="n">positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span>
+</span><span data-line="53">    <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">atoms</span><span class="o">.</span><span class="n">names</span><span class="p">]</span>
+</span><span data-line="54">    <span class="n">payload</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+</span><span data-line="55">        <span class="p">{</span><span class="s2">&quot;names&quot;</span><span class="p">:</span> <span class="n">names</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">:</span> <span class="n">positions</span><span class="o">.</span><span class="n">tolist</span><span class="p">()},</span>
+</span><span data-line="56">        <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">),</span>
+</span><span data-line="57">    <span class="p">)</span>
+</span><span data-line="58">    <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">blake2s</span><span class="p">(</span><span class="n">payload</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span> <span class="n">digest_size</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span></div>
 
-</span><span data-line="56">
-</span><span data-line="57">
-</span><span data-line="58"><span class="k">def</span><span class="w"> </span><span class="nf">_floats</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
-</span><span data-line="59">    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">kdb_nf</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">kdb_dc</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">kdb_mac</span><span class="p">)</span>
+</span><span data-line="59">
 </span><span data-line="60">
-</span><span data-line="61">
-</span><span data-line="62"><span class="k">def</span><span class="w"> </span><span class="nf">_open_store</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
-</span><span data-line="63"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Open the catalog at ``config.kdb_path``, or None when amsel is absent.&quot;&quot;&quot;</span>
-</span><span data-line="64">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="65">        <span class="kn">from</span><span class="w"> </span><span class="nn">amsel</span><span class="w"> </span><span class="kn">import</span> <span class="n">KdbStore</span>
-</span><span data-line="66">    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-</span><span data-line="67">        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;amsel is not installed; the process catalog is closed&quot;</span><span class="p">)</span>
-</span><span data-line="68">        <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="69">    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">kdb_path</span><span class="p">)</span>
-</span><span data-line="70">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="71">        <span class="n">path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="72">        <span class="k">return</span> <span class="n">KdbStore</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
-</span><span data-line="73">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-</span><span data-line="74">        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;amsel.KdbStore failed to open </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-</span><span data-line="75">        <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="76">
-</span><span data-line="77">
-</span><span data-line="78"><span class="k">def</span><span class="w"> </span><span class="nf">_match_dir</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-</span><span data-line="79">    <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">kdb_scratch_path</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;kdbmatches&quot;</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;state_</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">number</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="61"><span class="k">def</span><span class="w"> </span><span class="nf">_floats</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+</span><span data-line="62">    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">kdb_nf</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">kdb_dc</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">kdb_mac</span><span class="p">)</span>
+</span><span data-line="63">
+</span><span data-line="64">
+</span><span data-line="65"><span class="k">def</span><span class="w"> </span><span class="nf">_open_store</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+</span><span data-line="66"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Open the catalog at ``config.kdb_path``, or None when amsel is absent.&quot;&quot;&quot;</span>
+</span><span data-line="67">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="68">        <span class="kn">from</span><span class="w"> </span><span class="nn">amsel</span><span class="w"> </span><span class="kn">import</span> <span class="n">KdbStore</span>
+</span><span data-line="69">    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+</span><span data-line="70">        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;amsel is not installed; the process catalog is closed&quot;</span><span class="p">)</span>
+</span><span data-line="71">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="72">    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">kdb_path</span><span class="p">)</span>
+</span><span data-line="73">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="74">        <span class="n">path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="75">        <span class="k">return</span> <span class="n">KdbStore</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+</span><span data-line="76">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="77">        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;amsel.KdbStore failed to open </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+</span><span data-line="78">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="79">
 </span><span data-line="80">
-</span><span data-line="81">
-</span><span data-line="82"><span class="k">def</span><span class="w"> </span><span class="nf">_queried_path</span><span class="p">(</span><span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-</span><span data-line="83">    <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">kdb_scratch_path</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;queried&quot;</span>
+</span><span data-line="81"><span class="k">def</span><span class="w"> </span><span class="nf">_match_dir</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+</span><span data-line="82">    <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">kdb_scratch_path</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;kdbmatches&quot;</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;state_</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">number</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="83">
 </span><span data-line="84">
-</span><span data-line="85">
+</span><span data-line="85"><span class="k">def</span><span class="w"> </span><span class="nf">_queried_path</span><span class="p">(</span><span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+</span><span data-line="86">    <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">kdb_scratch_path</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;queried&quot;</span>
+</span><span data-line="87">
+</span><span data-line="88">
 <div class="viewcode-block" id="was_queried">
 <a class="viewcode-back" href="../../apidocs/eon/eon.process_catalog.html#eon.process_catalog.was_queried">[docs]</a>
-</span><span data-line="86"><span class="k">def</span><span class="w"> </span><span class="nf">was_queried</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="87">    <span class="n">path</span> <span class="o">=</span> <span class="n">_queried_path</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</span><span data-line="88">    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-</span><span data-line="89">        <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="90">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="91">        <span class="n">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
-</span><span data-line="92">    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-</span><span data-line="93">        <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="94">    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">number</span><span class="p">)</span> <span class="ow">in</span> <span class="n">numbers</span></div>
+</span><span data-line="89"><span class="k">def</span><span class="w"> </span><span class="nf">was_queried</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="90">    <span class="n">path</span> <span class="o">=</span> <span class="n">_queried_path</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span data-line="91">    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+</span><span data-line="92">        <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="93">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="94">        <span class="n">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+</span><span data-line="95">    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+</span><span data-line="96">        <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="97">    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">number</span><span class="p">)</span> <span class="ow">in</span> <span class="n">numbers</span></div>
 
-</span><span data-line="95">
-</span><span data-line="96">
-</span><span data-line="97"><span class="k">def</span><span class="w"> </span><span class="nf">_mark_queried</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="98">    <span class="n">path</span> <span class="o">=</span> <span class="n">_queried_path</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</span><span data-line="99">    <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="100">    <span class="n">numbers</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="101">    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-</span><span data-line="102">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="103">            <span class="n">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
-</span><span data-line="104">        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-</span><span data-line="105">            <span class="n">numbers</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="106">    <span class="n">number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
-</span><span data-line="107">    <span class="k">if</span> <span class="n">number</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">numbers</span><span class="p">:</span>
-</span><span data-line="108">        <span class="n">numbers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
-</span><span data-line="109">    <span class="n">path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">numbers</span><span class="p">))</span>
-</span><span data-line="110">
-</span><span data-line="111">
-</span><span data-line="112"><span class="k">def</span><span class="w"> </span><span class="nf">_consumed_path</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-</span><span data-line="113">    <span class="k">return</span> <span class="n">_match_dir</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;consumed&quot;</span>
+</span><span data-line="98">
+</span><span data-line="99">
+</span><span data-line="100"><span class="k">def</span><span class="w"> </span><span class="nf">_mark_queried</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="101">    <span class="n">path</span> <span class="o">=</span> <span class="n">_queried_path</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span data-line="102">    <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="103">    <span class="n">numbers</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="104">    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+</span><span data-line="105">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="106">            <span class="n">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+</span><span data-line="107">        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+</span><span data-line="108">            <span class="n">numbers</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="109">    <span class="n">number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
+</span><span data-line="110">    <span class="k">if</span> <span class="n">number</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">numbers</span><span class="p">:</span>
+</span><span data-line="111">        <span class="n">numbers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+</span><span data-line="112">    <span class="n">path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">numbers</span><span class="p">))</span>
+</span><span data-line="113">
 </span><span data-line="114">
-</span><span data-line="115">
-</span><span data-line="116"><span class="k">def</span><span class="w"> </span><span class="nf">_consumed</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-</span><span data-line="117">    <span class="n">path</span> <span class="o">=</span> <span class="n">_consumed_path</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
-</span><span data-line="118">    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-</span><span data-line="119">        <span class="k">return</span> <span class="nb">set</span><span class="p">()</span>
-</span><span data-line="120">    <span class="n">out</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-</span><span data-line="121">    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
-</span><span data-line="122">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="123">            <span class="n">out</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
-</span><span data-line="124">        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-</span><span data-line="125">            <span class="k">continue</span>
-</span><span data-line="126">    <span class="k">return</span> <span class="n">out</span>
-</span><span data-line="127">
-</span><span data-line="128">
-</span><span data-line="129"><span class="k">def</span><span class="w"> </span><span class="nf">_mark_consumed</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="130">    <span class="n">path</span> <span class="o">=</span> <span class="n">_consumed_path</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
-</span><span data-line="131">    <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="132">    <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
-</span><span data-line="133">        <span class="n">handle</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span data-line="134">
-</span><span data-line="135">
-</span><span data-line="136"><span class="k">def</span><span class="w"> </span><span class="nf">_mode_cosine</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">reactant</span><span class="p">,</span> <span class="n">saddle</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-</span><span data-line="137">    <span class="n">disp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">saddle</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">reactant</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-</span><span data-line="138">    <span class="n">vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-</span><span data-line="139">    <span class="n">flat</span> <span class="o">=</span> <span class="n">disp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-</span><span data-line="140">    <span class="n">n</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">vec</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">flat</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
-</span><span data-line="141">    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-</span><span data-line="142">        <span class="k">return</span> <span class="mf">0.0</span>
-</span><span data-line="143">    <span class="n">vec</span> <span class="o">=</span> <span class="n">vec</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span>
-</span><span data-line="144">    <span class="n">flat</span> <span class="o">=</span> <span class="n">flat</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span>
-</span><span data-line="145">    <span class="n">denom</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">flat</span><span class="p">))</span>
-</span><span data-line="146">    <span class="k">if</span> <span class="n">denom</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
-</span><span data-line="147">        <span class="k">return</span> <span class="mf">0.0</span>
-</span><span data-line="148">    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span> <span class="n">flat</span><span class="p">)</span> <span class="o">/</span> <span class="n">denom</span><span class="p">)</span>
-</span><span data-line="149">
-</span><span data-line="150">
-</span><span data-line="151"><span class="k">def</span><span class="w"> </span><span class="nf">_max_distance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-</span><span data-line="152">    <span class="n">ar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-</span><span data-line="153">    <span class="n">br</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-</span><span data-line="154">    <span class="n">n</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ar</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">br</span><span class="p">))</span>
-</span><span data-line="155">    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-</span><span data-line="156">        <span class="k">return</span> <span class="mf">0.0</span>
-</span><span data-line="157">    <span class="n">delta</span> <span class="o">=</span> <span class="n">ar</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span> <span class="o">-</span> <span class="n">br</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span>
-</span><span data-line="158">    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">delta</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)))</span>
-</span><span data-line="159">
-</span><span data-line="160">
-</span><span data-line="161"><span class="k">def</span><span class="w"> </span><span class="nf">_load_frame</span><span class="p">(</span><span class="n">corpus_directory</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">):</span>
-</span><span data-line="162">    <span class="kn">from</span><span class="w"> </span><span class="nn">eon.concorpus</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_frame_text</span>
+</span><span data-line="115"><span class="k">def</span><span class="w"> </span><span class="nf">_consumed_path</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+</span><span data-line="116">    <span class="k">return</span> <span class="n">_match_dir</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;consumed&quot;</span>
+</span><span data-line="117">
+</span><span data-line="118">
+</span><span data-line="119"><span class="k">def</span><span class="w"> </span><span class="nf">_consumed</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+</span><span data-line="120">    <span class="n">path</span> <span class="o">=</span> <span class="n">_consumed_path</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+</span><span data-line="121">    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+</span><span data-line="122">        <span class="k">return</span> <span class="nb">set</span><span class="p">()</span>
+</span><span data-line="123">    <span class="n">out</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+</span><span data-line="124">    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
+</span><span data-line="125">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="126">            <span class="n">out</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+</span><span data-line="127">        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+</span><span data-line="128">            <span class="k">continue</span>
+</span><span data-line="129">    <span class="k">return</span> <span class="n">out</span>
+</span><span data-line="130">
+</span><span data-line="131">
+</span><span data-line="132"><span class="k">def</span><span class="w"> </span><span class="nf">_mark_consumed</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="133">    <span class="n">path</span> <span class="o">=</span> <span class="n">_consumed_path</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+</span><span data-line="134">    <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="135">    <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
+</span><span data-line="136">        <span class="n">handle</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="137">
+</span><span data-line="138">
+</span><span data-line="139"><span class="k">def</span><span class="w"> </span><span class="nf">_mode_cosine</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">reactant</span><span class="p">,</span> <span class="n">saddle</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+</span><span data-line="140">    <span class="n">disp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">saddle</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">reactant</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span data-line="141">    <span class="n">vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="142">    <span class="n">flat</span> <span class="o">=</span> <span class="n">disp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="143">    <span class="n">n</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">vec</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">flat</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+</span><span data-line="144">    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="145">        <span class="k">return</span> <span class="mf">0.0</span>
+</span><span data-line="146">    <span class="n">vec</span> <span class="o">=</span> <span class="n">vec</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span>
+</span><span data-line="147">    <span class="n">flat</span> <span class="o">=</span> <span class="n">flat</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span>
+</span><span data-line="148">    <span class="n">denom</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">flat</span><span class="p">))</span>
+</span><span data-line="149">    <span class="k">if</span> <span class="n">denom</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+</span><span data-line="150">        <span class="k">return</span> <span class="mf">0.0</span>
+</span><span data-line="151">    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span> <span class="n">flat</span><span class="p">)</span> <span class="o">/</span> <span class="n">denom</span><span class="p">)</span>
+</span><span data-line="152">
+</span><span data-line="153">
+</span><span data-line="154"><span class="k">def</span><span class="w"> </span><span class="nf">_max_distance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+</span><span data-line="155">    <span class="n">ar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span data-line="156">    <span class="n">br</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span data-line="157">    <span class="n">n</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ar</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">br</span><span class="p">))</span>
+</span><span data-line="158">    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="159">        <span class="k">return</span> <span class="mf">0.0</span>
+</span><span data-line="160">    <span class="n">delta</span> <span class="o">=</span> <span class="n">ar</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span> <span class="o">-</span> <span class="n">br</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span>
+</span><span data-line="161">    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">delta</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)))</span>
+</span><span data-line="162">
 </span><span data-line="163">
-</span><span data-line="164">    <span class="n">traj_id</span><span class="p">,</span> <span class="n">frame_idx</span> <span class="o">=</span> <span class="n">unpack_frame_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-</span><span data-line="165">    <span class="n">text</span> <span class="o">=</span> <span class="n">load_frame_text</span><span class="p">(</span><span class="n">corpus_directory</span><span class="p">,</span> <span class="n">traj_id</span><span class="p">,</span> <span class="n">frame_idx</span><span class="p">)</span>
-</span><span data-line="166">    <span class="k">if</span> <span class="ow">not</span> <span class="n">text</span><span class="p">:</span>
-</span><span data-line="167">        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;readcon-db has no frame </span><span class="si">{</span><span class="n">traj_id</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">frame_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span data-line="168">    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">traj_id</span><span class="p">,</span> <span class="n">frame_idx</span>
-</span><span data-line="169">
-</span><span data-line="170">
-</span><span data-line="171"><span class="k">def</span><span class="w"> </span><span class="nf">_suggestion_mode</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">reactant</span><span class="p">,</span> <span class="n">saddle</span><span class="p">,</span> <span class="n">mac</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-</span><span data-line="172"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Direction for a refine.</span>
+</span><span data-line="164"><span class="k">def</span><span class="w"> </span><span class="nf">_load_frame</span><span class="p">(</span><span class="n">corpus_directory</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">):</span>
+</span><span data-line="165">    <span class="kn">from</span><span class="w"> </span><span class="nn">eon.concorpus</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_frame_text</span>
+</span><span data-line="166">
+</span><span data-line="167">    <span class="n">traj_id</span><span class="p">,</span> <span class="n">frame_idx</span> <span class="o">=</span> <span class="n">unpack_frame_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="168">    <span class="n">text</span> <span class="o">=</span> <span class="n">load_frame_text</span><span class="p">(</span><span class="n">corpus_directory</span><span class="p">,</span> <span class="n">traj_id</span><span class="p">,</span> <span class="n">frame_idx</span><span class="p">)</span>
+</span><span data-line="169">    <span class="k">if</span> <span class="ow">not</span> <span class="n">text</span><span class="p">:</span>
+</span><span data-line="170">        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;readcon-db has no frame </span><span class="si">{</span><span class="n">traj_id</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">frame_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="171">    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">traj_id</span><span class="p">,</span> <span class="n">frame_idx</span>
+</span><span data-line="172">
 </span><span data-line="173">
-</span><span data-line="174"><span class="sd">    The stored mode is used when its cosine with the reactant-to-saddle</span>
-</span><span data-line="175"><span class="sd">    vector is at least ``mac``. A negative cosine flips the mode. Below</span>
-</span><span data-line="176"><span class="sd">    ``mac`` the direction is that vector, so a curved path is still offered.</span>
-</span><span data-line="177"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="178">    <span class="n">stored</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">mode</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-</span><span data-line="179">    <span class="n">cosine</span> <span class="o">=</span> <span class="n">_mode_cosine</span><span class="p">(</span><span class="n">stored</span><span class="p">,</span> <span class="n">reactant</span><span class="p">,</span> <span class="n">saddle</span><span class="p">)</span>
-</span><span data-line="180">    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">cosine</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">float</span><span class="p">(</span><span class="n">mac</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">stored</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
-</span><span data-line="181">        <span class="k">if</span> <span class="n">cosine</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
-</span><span data-line="182">            <span class="k">return</span> <span class="o">-</span><span class="n">stored</span>
-</span><span data-line="183">        <span class="k">return</span> <span class="n">stored</span>
-</span><span data-line="184">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-</span><span data-line="185">        <span class="s2">&quot;kdb mode cosine=</span><span class="si">%.3f</span><span class="s2"> is below mac=</span><span class="si">%s</span><span class="s2">; using the reactant-to-saddle vector&quot;</span><span class="p">,</span>
-</span><span data-line="186">        <span class="n">cosine</span><span class="p">,</span>
-</span><span data-line="187">        <span class="n">mac</span><span class="p">,</span>
-</span><span data-line="188">    <span class="p">)</span>
-</span><span data-line="189">    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">saddle</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">reactant</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span data-line="174"><span class="k">def</span><span class="w"> </span><span class="nf">_mode_in_structure_order</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="175"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Displacements section in the same row order as ``Structure.r``.</span>
+</span><span data-line="176">
+</span><span data-line="177"><span class="sd">    The file groups atoms by species. ``mode_&lt;id&gt;.dat`` follows ``atom_id``</span>
+</span><span data-line="178"><span class="sd">    order, which is the order :meth:`Structure.from_conframe` restores.</span>
+</span><span data-line="179"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="180">    <span class="n">disp</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">disp</span>
+</span><span data-line="181">    <span class="k">if</span> <span class="n">disp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="182">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="183">    <span class="n">vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">disp</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span data-line="184">    <span class="n">ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">atom</span><span class="o">.</span><span class="n">atom_id</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">frame</span><span class="o">.</span><span class="n">atoms</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span>
+</span><span data-line="185">    <span class="k">return</span> <span class="n">vec</span><span class="p">[</span><span class="n">structure_order</span><span class="p">(</span><span class="n">ids</span><span class="p">)]</span>
+</span><span data-line="186">
+</span><span data-line="187">
+</span><span data-line="188"><span class="k">def</span><span class="w"> </span><span class="nf">_saddle_text_with_mode</span><span class="p">(</span><span class="n">saddle_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="189"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the saddle con with ``mode`` in the displacements section.</span>
 </span><span data-line="190">
-</span><span data-line="191">
-</span><span data-line="192"><span class="k">def</span><span class="w"> </span><span class="nf">_accepts</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">reactant</span><span class="p">,</span> <span class="n">corpus_directory</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">nf</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">dc</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
-</span><span data-line="193"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return (reactant, saddle) frames when the stored reactant matches.&quot;&quot;&quot;</span>
-</span><span data-line="194">    <span class="k">if</span> <span class="ow">not</span> <span class="n">process</span><span class="o">.</span><span class="n">saddle_frame_key</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">process</span><span class="o">.</span><span class="n">reactant_frame_key</span><span class="p">:</span>
-</span><span data-line="195">        <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="196">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="197">        <span class="n">reactant_text</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_load_frame</span><span class="p">(</span><span class="n">corpus_directory</span><span class="p">,</span> <span class="n">process</span><span class="o">.</span><span class="n">reactant_frame_key</span><span class="p">)</span>
-</span><span data-line="198">        <span class="n">saddle_text</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_load_frame</span><span class="p">(</span><span class="n">corpus_directory</span><span class="p">,</span> <span class="n">process</span><span class="o">.</span><span class="n">saddle_frame_key</span><span class="p">)</span>
-</span><span data-line="199">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-</span><span data-line="200">        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;readcon-db frame load failed&quot;</span><span class="p">)</span>
-</span><span data-line="201">        <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="202">    <span class="n">stored_reactant</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">reactant_text</span><span class="p">))</span>
-</span><span data-line="203">    <span class="n">stored_saddle</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">saddle_text</span><span class="p">))</span>
-</span><span data-line="204">    <span class="n">allowed</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dc</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">nf</span><span class="p">))</span>
-</span><span data-line="205">    <span class="n">mismatch</span> <span class="o">=</span> <span class="n">_max_distance</span><span class="p">(</span><span class="n">reactant</span><span class="p">,</span> <span class="n">stored_reactant</span><span class="p">)</span>
-</span><span data-line="206">    <span class="k">if</span> <span class="n">mismatch</span> <span class="o">&gt;</span> <span class="n">allowed</span><span class="p">:</span>
-</span><span data-line="207">        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-</span><span data-line="208">            <span class="s2">&quot;kdb reactant mismatch </span><span class="si">%.4f</span><span class="s2"> A, allowed </span><span class="si">%.4f</span><span class="s2"> A&quot;</span><span class="p">,</span>
-</span><span data-line="209">            <span class="n">mismatch</span><span class="p">,</span>
-</span><span data-line="210">            <span class="n">allowed</span><span class="p">,</span>
-</span><span data-line="211">        <span class="p">)</span>
-</span><span data-line="212">        <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="213">    <span class="k">return</span> <span class="n">stored_reactant</span><span class="p">,</span> <span class="n">stored_saddle</span>
+</span><span data-line="191"><span class="sd">    ``mode`` is Nx3 in ``atom_id`` order, the order of ``mode_&lt;id&gt;.dat``.</span>
+</span><span data-line="192"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="193">    <span class="kn">import</span><span class="w"> </span><span class="nn">readcon</span>
+</span><span data-line="194">
+</span><span data-line="195">    <span class="n">frames</span> <span class="o">=</span> <span class="n">readcon</span><span class="o">.</span><span class="n">read_con_string</span><span class="p">(</span><span class="n">saddle_text</span><span class="p">)</span>
+</span><span data-line="196">    <span class="k">if</span> <span class="ow">not</span> <span class="n">frames</span><span class="p">:</span>
+</span><span data-line="197">        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;saddle con has no frame&quot;</span><span class="p">)</span>
+</span><span data-line="198">    <span class="n">frame</span> <span class="o">=</span> <span class="n">frames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span data-line="199">    <span class="n">vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</span><span data-line="200">    <span class="n">atoms</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
+</span><span data-line="201">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vec</span><span class="p">):</span>
+</span><span data-line="202">        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+</span><span data-line="203">            <span class="sa">f</span><span class="s2">&quot;mode has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span><span class="si">}</span><span class="s2"> rows and the saddle has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span><span class="si">}</span><span class="s2"> atoms&quot;</span>
+</span><span data-line="204">        <span class="p">)</span>
+</span><span data-line="205">    <span class="n">ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">atom</span><span class="o">.</span><span class="n">atom_id</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">atoms</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span>
+</span><span data-line="206">    <span class="n">order</span> <span class="o">=</span> <span class="n">structure_order</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span>
+</span><span data-line="207">    <span class="k">for</span> <span class="n">struct_i</span><span class="p">,</span> <span class="n">file_i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">order</span><span class="p">):</span>
+</span><span data-line="208">        <span class="n">atom</span> <span class="o">=</span> <span class="n">atoms</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">file_i</span><span class="p">)]</span>
+</span><span data-line="209">        <span class="n">atom</span><span class="o">.</span><span class="n">dx</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">vec</span><span class="p">[</span><span class="n">struct_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+</span><span data-line="210">        <span class="n">atom</span><span class="o">.</span><span class="n">dy</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">vec</span><span class="p">[</span><span class="n">struct_i</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+</span><span data-line="211">        <span class="n">atom</span><span class="o">.</span><span class="n">dz</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">vec</span><span class="p">[</span><span class="n">struct_i</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+</span><span data-line="212">    <span class="k">return</span> <span class="n">readcon</span><span class="o">.</span><span class="n">write_con_string</span><span class="p">([</span><span class="n">frame</span><span class="p">],</span> <span class="mi">17</span><span class="p">)</span>
+</span><span data-line="213">
 </span><span data-line="214">
-</span><span data-line="215">
+</span><span data-line="215"><span class="k">def</span><span class="w"> </span><span class="nf">_suggestion_mode</span><span class="p">(</span>
+</span><span data-line="216">    <span class="n">process</span><span class="p">,</span>
+</span><span data-line="217">    <span class="n">reactant</span><span class="p">,</span>
+</span><span data-line="218">    <span class="n">saddle</span><span class="p">,</span>
+</span><span data-line="219">    <span class="n">mac</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+</span><span data-line="220">    <span class="n">saddle_text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="221"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+</span><span data-line="222"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Direction for a refine.</span>
+</span><span data-line="223">
+</span><span data-line="224"><span class="sd">    The mode in the saddle frame&#39;s displacements section is used when its</span>
+</span><span data-line="225"><span class="sd">    cosine with the reactant-to-saddle vector is at least ``mac``. A</span>
+</span><span data-line="226"><span class="sd">    negative cosine flips the mode. Below ``mac`` the direction is that</span>
+</span><span data-line="227"><span class="sd">    vector, so a curved path is still offered. A frame with no</span>
+</span><span data-line="228"><span class="sd">    displacements section uses the mode stored on the catalog row.</span>
+</span><span data-line="229"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="230">    <span class="n">stored</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="231">    <span class="k">if</span> <span class="n">saddle_text</span><span class="p">:</span>
+</span><span data-line="232">        <span class="kn">import</span><span class="w"> </span><span class="nn">readcon</span>
+</span><span data-line="233">
+</span><span data-line="234">        <span class="n">frames</span> <span class="o">=</span> <span class="n">readcon</span><span class="o">.</span><span class="n">read_con_string</span><span class="p">(</span><span class="n">saddle_text</span><span class="p">)</span>
+</span><span data-line="235">        <span class="k">if</span> <span class="n">frames</span><span class="p">:</span>
+</span><span data-line="236">            <span class="n">stored</span> <span class="o">=</span> <span class="n">_mode_in_structure_order</span><span class="p">(</span><span class="n">frames</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span><span data-line="237">    <span class="k">if</span> <span class="n">stored</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="238">        <span class="n">stored</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">mode</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</span><span data-line="239">    <span class="n">cosine</span> <span class="o">=</span> <span class="n">_mode_cosine</span><span class="p">(</span><span class="n">stored</span><span class="p">,</span> <span class="n">reactant</span><span class="p">,</span> <span class="n">saddle</span><span class="p">)</span>
+</span><span data-line="240">    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">cosine</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">float</span><span class="p">(</span><span class="n">mac</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">stored</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+</span><span data-line="241">        <span class="k">if</span> <span class="n">cosine</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+</span><span data-line="242">            <span class="k">return</span> <span class="o">-</span><span class="n">stored</span>
+</span><span data-line="243">        <span class="k">return</span> <span class="n">stored</span>
+</span><span data-line="244">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+</span><span data-line="245">        <span class="s2">&quot;kdb mode cosine=</span><span class="si">%.3f</span><span class="s2"> is below mac=</span><span class="si">%s</span><span class="s2">; using the reactant-to-saddle vector&quot;</span><span class="p">,</span>
+</span><span data-line="246">        <span class="n">cosine</span><span class="p">,</span>
+</span><span data-line="247">        <span class="n">mac</span><span class="p">,</span>
+</span><span data-line="248">    <span class="p">)</span>
+</span><span data-line="249">    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">saddle</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">reactant</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span data-line="250">
+</span><span data-line="251">
+</span><span data-line="252"><span class="k">def</span><span class="w"> </span><span class="nf">_accepts</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">reactant</span><span class="p">,</span> <span class="n">corpus_directory</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">nf</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">dc</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+</span><span data-line="253"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return (reactant, saddle) frames when the stored reactant matches.&quot;&quot;&quot;</span>
+</span><span data-line="254">    <span class="k">if</span> <span class="ow">not</span> <span class="n">process</span><span class="o">.</span><span class="n">saddle_frame_key</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">process</span><span class="o">.</span><span class="n">reactant_frame_key</span><span class="p">:</span>
+</span><span data-line="255">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="256">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="257">        <span class="n">reactant_text</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_load_frame</span><span class="p">(</span><span class="n">corpus_directory</span><span class="p">,</span> <span class="n">process</span><span class="o">.</span><span class="n">reactant_frame_key</span><span class="p">)</span>
+</span><span data-line="258">        <span class="n">saddle_text</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_load_frame</span><span class="p">(</span><span class="n">corpus_directory</span><span class="p">,</span> <span class="n">process</span><span class="o">.</span><span class="n">saddle_frame_key</span><span class="p">)</span>
+</span><span data-line="259">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="260">        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;readcon-db frame load failed&quot;</span><span class="p">)</span>
+</span><span data-line="261">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="262">    <span class="n">stored_reactant</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">reactant_text</span><span class="p">))</span>
+</span><span data-line="263">    <span class="n">stored_saddle</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">saddle_text</span><span class="p">))</span>
+</span><span data-line="264">    <span class="n">allowed</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dc</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">nf</span><span class="p">))</span>
+</span><span data-line="265">    <span class="n">mismatch</span> <span class="o">=</span> <span class="n">_max_distance</span><span class="p">(</span><span class="n">reactant</span><span class="p">,</span> <span class="n">stored_reactant</span><span class="p">)</span>
+</span><span data-line="266">    <span class="k">if</span> <span class="n">mismatch</span> <span class="o">&gt;</span> <span class="n">allowed</span><span class="p">:</span>
+</span><span data-line="267">        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+</span><span data-line="268">            <span class="s2">&quot;kdb reactant mismatch </span><span class="si">%.4f</span><span class="s2"> A, allowed </span><span class="si">%.4f</span><span class="s2"> A&quot;</span><span class="p">,</span>
+</span><span data-line="269">            <span class="n">mismatch</span><span class="p">,</span>
+</span><span data-line="270">            <span class="n">allowed</span><span class="p">,</span>
+</span><span data-line="271">        <span class="p">)</span>
+</span><span data-line="272">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="273">    <span class="k">return</span> <span class="n">stored_reactant</span><span class="p">,</span> <span class="n">stored_saddle</span>
+</span><span data-line="274">
+</span><span data-line="275">
 <div class="viewcode-block" id="insert">
 <a class="viewcode-back" href="../../apidocs/eon/eon.process_catalog.html#eon.process_catalog.insert">[docs]</a>
-</span><span data-line="216"><span class="k">def</span><span class="w"> </span><span class="nf">insert</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">process_id</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="217"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Store one good process. Returns True when the catalog accepted it.</span>
-</span><span data-line="218">
-</span><span data-line="219"><span class="sd">    Called from process registration. Confidence is not consulted: a</span>
-</span><span data-line="220"><span class="sd">    process with zero repeats is stored.</span>
-</span><span data-line="221"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="222">    <span class="n">nf</span><span class="p">,</span> <span class="n">dc</span><span class="p">,</span> <span class="n">mac</span> <span class="o">=</span> <span class="n">_floats</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</span><span data-line="223">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-</span><span data-line="224">        <span class="s2">&quot;kdb insert nf=</span><span class="si">%r</span><span class="s2"> dc=</span><span class="si">%r</span><span class="s2"> mac=</span><span class="si">%r</span><span class="s2"> path=</span><span class="si">%s</span><span class="s2"> process=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-</span><span data-line="225">        <span class="n">nf</span><span class="p">,</span>
-</span><span data-line="226">        <span class="n">dc</span><span class="p">,</span>
-</span><span data-line="227">        <span class="n">mac</span><span class="p">,</span>
-</span><span data-line="228">        <span class="n">config</span><span class="o">.</span><span class="n">kdb_path</span><span class="p">,</span>
-</span><span data-line="229">        <span class="n">process_id</span><span class="p">,</span>
-</span><span data-line="230">    <span class="p">)</span>
-</span><span data-line="231">    <span class="n">row</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">procs</span><span class="p">[</span><span class="n">process_id</span><span class="p">]</span>
-</span><span data-line="232">    <span class="n">reactant_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">proc_reactant_path</span><span class="p">(</span><span class="n">process_id</span><span class="p">))</span>
-</span><span data-line="233">    <span class="n">saddle_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">proc_saddle_path</span><span class="p">(</span><span class="n">process_id</span><span class="p">))</span>
-</span><span data-line="234">    <span class="n">product_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">proc_product_path</span><span class="p">(</span><span class="n">process_id</span><span class="p">))</span>
-</span><span data-line="235">    <span class="n">reactant_text</span> <span class="o">=</span> <span class="n">reactant_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
-</span><span data-line="236">    <span class="n">saddle_text</span> <span class="o">=</span> <span class="n">saddle_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
-</span><span data-line="237">    <span class="n">product_text</span> <span class="o">=</span> <span class="n">product_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
-</span><span data-line="238">    <span class="n">keys</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="239">    <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="p">(</span>
-</span><span data-line="240">        <span class="p">(</span><span class="n">reactant_path</span><span class="p">,</span> <span class="n">reactant_text</span><span class="p">),</span>
-</span><span data-line="241">        <span class="p">(</span><span class="n">saddle_path</span><span class="p">,</span> <span class="n">saddle_text</span><span class="p">),</span>
-</span><span data-line="242">        <span class="p">(</span><span class="n">product_path</span><span class="p">,</span> <span class="n">product_text</span><span class="p">),</span>
-</span><span data-line="243">    <span class="p">):</span>
-</span><span data-line="244">        <span class="n">key</span> <span class="o">=</span> <span class="n">store_frame_text</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
-</span><span data-line="245">        <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="246">            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-</span><span data-line="247">                <span class="s2">&quot;readcon-db did not store </span><span class="si">%s</span><span class="s2">; the process was not catalogued&quot;</span><span class="p">,</span>
-</span><span data-line="248">                <span class="n">path</span><span class="p">,</span>
-</span><span data-line="249">            <span class="p">)</span>
-</span><span data-line="250">            <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="251">        <span class="n">keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pack_frame_key</span><span class="p">(</span><span class="o">*</span><span class="n">key</span><span class="p">))</span>
-</span><span data-line="252">    <span class="n">reactant_key</span><span class="p">,</span> <span class="n">saddle_key</span><span class="p">,</span> <span class="n">product_key</span> <span class="o">=</span> <span class="n">keys</span>
-</span><span data-line="253">    <span class="n">mode</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_process_mode</span><span class="p">(</span><span class="n">process_id</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-</span><span data-line="254">    <span class="n">product</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">product_path</span><span class="p">))</span>
-</span><span data-line="255">    <span class="n">store</span> <span class="o">=</span> <span class="n">_open_store</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</span><span data-line="256">    <span class="k">if</span> <span class="n">store</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="257">        <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="258">    <span class="c1"># Key by the state reactant. The client&#39;s reactant file is the same</span>
-</span><span data-line="259">    <span class="c1"># minimum rewritten, and a 1e-4 A grid would miss it.</span>
-</span><span data-line="260">    <span class="n">env</span> <span class="o">=</span> <span class="n">env_hash</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_reactant</span><span class="p">())</span>
-</span><span data-line="261">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="262">        <span class="n">existing</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
-</span><span data-line="263">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-</span><span data-line="264">        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;amsel.KdbStore lookup failed during insert&quot;</span><span class="p">)</span>
-</span><span data-line="265">        <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="266">    <span class="k">for</span> <span class="n">process</span> <span class="ow">in</span> <span class="n">existing</span><span class="p">:</span>
-</span><span data-line="267">        <span class="k">if</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">saddle_frame_key</span><span class="p">)</span> <span class="o">==</span> <span class="n">saddle_key</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span>
-</span><span data-line="268">            <span class="nb">float</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">barrier_ev</span><span class="p">)</span> <span class="o">-</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;barrier&quot;</span><span class="p">])</span>
-</span><span data-line="269">        <span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-8</span><span class="p">:</span>
-</span><span data-line="270">            <span class="k">return</span> <span class="kc">True</span>
-</span><span data-line="271">    <span class="kn">from</span><span class="w"> </span><span class="nn">amsel</span><span class="w"> </span><span class="kn">import</span> <span class="n">KdbProcess</span>
-</span><span data-line="272">
-</span><span data-line="273">    <span class="n">record</span> <span class="o">=</span> <span class="n">KdbProcess</span><span class="p">(</span>
-</span><span data-line="274">        <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-</span><span data-line="275">        <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-</span><span data-line="276">        <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;barrier&quot;</span><span class="p">]),</span>
-</span><span data-line="277">        <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;prefactor&quot;</span><span class="p">]),</span>
-</span><span data-line="278">        <span class="n">discovery_temperature</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;main_temperature&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
-</span><span data-line="279">        <span class="n">usage_hint</span><span class="o">=</span><span class="s2">&quot;RefineFirst&quot;</span><span class="p">,</span>
-</span><span data-line="280">        <span class="n">product_env_hash</span><span class="o">=</span><span class="n">env_hash</span><span class="p">(</span><span class="n">product</span><span class="p">),</span>
-</span><span data-line="281">        <span class="n">reactant_frame_key</span><span class="o">=</span><span class="n">reactant_key</span><span class="p">,</span>
-</span><span data-line="282">        <span class="n">saddle_frame_key</span><span class="o">=</span><span class="n">saddle_key</span><span class="p">,</span>
-</span><span data-line="283">        <span class="n">product_frame_key</span><span class="o">=</span><span class="n">product_key</span><span class="p">,</span>
-</span><span data-line="284">        <span class="n">mode</span><span class="o">=</span><span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">mode</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)],</span>
-</span><span data-line="285">        <span class="n">metadata_json</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
-</span><span data-line="286">            <span class="p">{</span>
-</span><span data-line="287">                <span class="s2">&quot;nf&quot;</span><span class="p">:</span> <span class="n">nf</span><span class="p">,</span>
-</span><span data-line="288">                <span class="s2">&quot;dc&quot;</span><span class="p">:</span> <span class="n">dc</span><span class="p">,</span>
-</span><span data-line="289">                <span class="s2">&quot;mac&quot;</span><span class="p">:</span> <span class="n">mac</span><span class="p">,</span>
-</span><span data-line="290">                <span class="s2">&quot;process_id&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">process_id</span><span class="p">),</span>
-</span><span data-line="291">            <span class="p">}</span>
-</span><span data-line="292">        <span class="p">),</span>
-</span><span data-line="293">    <span class="p">)</span>
-</span><span data-line="294">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="295">        <span class="n">store</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span>
-</span><span data-line="296">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-</span><span data-line="297">        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;amsel.KdbStore insert failed&quot;</span><span class="p">)</span>
-</span><span data-line="298">        <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="299">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-</span><span data-line="300">        <span class="s2">&quot;kdb insert barrier=</span><span class="si">%.4f</span><span class="s2"> eV saddle frame </span><span class="si">%d</span><span class="s2">:</span><span class="si">%d</span><span class="s2"> into readcon.db&quot;</span><span class="p">,</span>
-</span><span data-line="301">        <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;barrier&quot;</span><span class="p">]),</span>
-</span><span data-line="302">        <span class="o">*</span><span class="n">unpack_frame_key</span><span class="p">(</span><span class="n">saddle_key</span><span class="p">),</span>
-</span><span data-line="303">    <span class="p">)</span>
-</span><span data-line="304">    <span class="k">return</span> <span class="kc">True</span></div>
+</span><span data-line="276"><span class="k">def</span><span class="w"> </span><span class="nf">insert</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">process_id</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="277"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Store one good process. Returns True when the catalog accepted it.</span>
+</span><span data-line="278">
+</span><span data-line="279"><span class="sd">    Called from process registration. Confidence is not consulted: a</span>
+</span><span data-line="280"><span class="sd">    process with zero repeats is stored.</span>
+</span><span data-line="281"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="282">    <span class="n">nf</span><span class="p">,</span> <span class="n">dc</span><span class="p">,</span> <span class="n">mac</span> <span class="o">=</span> <span class="n">_floats</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span data-line="283">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+</span><span data-line="284">        <span class="s2">&quot;kdb insert nf=</span><span class="si">%r</span><span class="s2"> dc=</span><span class="si">%r</span><span class="s2"> mac=</span><span class="si">%r</span><span class="s2"> path=</span><span class="si">%s</span><span class="s2"> process=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span data-line="285">        <span class="n">nf</span><span class="p">,</span>
+</span><span data-line="286">        <span class="n">dc</span><span class="p">,</span>
+</span><span data-line="287">        <span class="n">mac</span><span class="p">,</span>
+</span><span data-line="288">        <span class="n">config</span><span class="o">.</span><span class="n">kdb_path</span><span class="p">,</span>
+</span><span data-line="289">        <span class="n">process_id</span><span class="p">,</span>
+</span><span data-line="290">    <span class="p">)</span>
+</span><span data-line="291">    <span class="n">row</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">procs</span><span class="p">[</span><span class="n">process_id</span><span class="p">]</span>
+</span><span data-line="292">    <span class="n">reactant_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">proc_reactant_path</span><span class="p">(</span><span class="n">process_id</span><span class="p">))</span>
+</span><span data-line="293">    <span class="n">saddle_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">proc_saddle_path</span><span class="p">(</span><span class="n">process_id</span><span class="p">))</span>
+</span><span data-line="294">    <span class="n">product_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">proc_product_path</span><span class="p">(</span><span class="n">process_id</span><span class="p">))</span>
+</span><span data-line="295">    <span class="n">reactant_text</span> <span class="o">=</span> <span class="n">reactant_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
+</span><span data-line="296">    <span class="n">saddle_text</span> <span class="o">=</span> <span class="n">saddle_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
+</span><span data-line="297">    <span class="n">product_text</span> <span class="o">=</span> <span class="n">product_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
+</span><span data-line="298">    <span class="n">mode</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_process_mode</span><span class="p">(</span><span class="n">process_id</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span data-line="299">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="300">        <span class="n">saddle_text</span> <span class="o">=</span> <span class="n">_saddle_text_with_mode</span><span class="p">(</span><span class="n">saddle_text</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+</span><span data-line="301">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="302">        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;saddle frame did not take the mode&quot;</span><span class="p">)</span>
+</span><span data-line="303">        <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="304">    <span class="n">keys</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="305">    <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="p">(</span>
+</span><span data-line="306">        <span class="p">(</span><span class="n">reactant_path</span><span class="p">,</span> <span class="n">reactant_text</span><span class="p">),</span>
+</span><span data-line="307">        <span class="p">(</span><span class="n">saddle_path</span><span class="p">,</span> <span class="n">saddle_text</span><span class="p">),</span>
+</span><span data-line="308">        <span class="p">(</span><span class="n">product_path</span><span class="p">,</span> <span class="n">product_text</span><span class="p">),</span>
+</span><span data-line="309">    <span class="p">):</span>
+</span><span data-line="310">        <span class="n">key</span> <span class="o">=</span> <span class="n">store_frame_text</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+</span><span data-line="311">        <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="312">            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+</span><span data-line="313">                <span class="s2">&quot;readcon-db did not store </span><span class="si">%s</span><span class="s2">; the process was not catalogued&quot;</span><span class="p">,</span>
+</span><span data-line="314">                <span class="n">path</span><span class="p">,</span>
+</span><span data-line="315">            <span class="p">)</span>
+</span><span data-line="316">            <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="317">        <span class="n">keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pack_frame_key</span><span class="p">(</span><span class="o">*</span><span class="n">key</span><span class="p">))</span>
+</span><span data-line="318">    <span class="n">reactant_key</span><span class="p">,</span> <span class="n">saddle_key</span><span class="p">,</span> <span class="n">product_key</span> <span class="o">=</span> <span class="n">keys</span>
+</span><span data-line="319">    <span class="n">product</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">product_path</span><span class="p">))</span>
+</span><span data-line="320">    <span class="n">store</span> <span class="o">=</span> <span class="n">_open_store</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span data-line="321">    <span class="k">if</span> <span class="n">store</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="322">        <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="323">    <span class="c1"># Key by the state reactant. The client&#39;s reactant file is the same</span>
+</span><span data-line="324">    <span class="c1"># minimum rewritten, and a 1e-4 A grid would miss it.</span>
+</span><span data-line="325">    <span class="n">env</span> <span class="o">=</span> <span class="n">env_hash</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_reactant</span><span class="p">())</span>
+</span><span data-line="326">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="327">        <span class="n">existing</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+</span><span data-line="328">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="329">        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;amsel.KdbStore lookup failed during insert&quot;</span><span class="p">)</span>
+</span><span data-line="330">        <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="331">    <span class="k">for</span> <span class="n">process</span> <span class="ow">in</span> <span class="n">existing</span><span class="p">:</span>
+</span><span data-line="332">        <span class="k">if</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">saddle_frame_key</span><span class="p">)</span> <span class="o">==</span> <span class="n">saddle_key</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span>
+</span><span data-line="333">            <span class="nb">float</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">barrier_ev</span><span class="p">)</span> <span class="o">-</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;barrier&quot;</span><span class="p">])</span>
+</span><span data-line="334">        <span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-8</span><span class="p">:</span>
+</span><span data-line="335">            <span class="k">return</span> <span class="kc">True</span>
+</span><span data-line="336">    <span class="kn">from</span><span class="w"> </span><span class="nn">amsel</span><span class="w"> </span><span class="kn">import</span> <span class="n">KdbProcess</span>
+</span><span data-line="337">
+</span><span data-line="338">    <span class="n">record</span> <span class="o">=</span> <span class="n">KdbProcess</span><span class="p">(</span>
+</span><span data-line="339">        <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="340">        <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="341">        <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;barrier&quot;</span><span class="p">]),</span>
+</span><span data-line="342">        <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;prefactor&quot;</span><span class="p">]),</span>
+</span><span data-line="343">        <span class="n">discovery_temperature</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;main_temperature&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+</span><span data-line="344">        <span class="n">usage_hint</span><span class="o">=</span><span class="s2">&quot;RefineFirst&quot;</span><span class="p">,</span>
+</span><span data-line="345">        <span class="n">product_env_hash</span><span class="o">=</span><span class="n">env_hash</span><span class="p">(</span><span class="n">product</span><span class="p">),</span>
+</span><span data-line="346">        <span class="n">reactant_frame_key</span><span class="o">=</span><span class="n">reactant_key</span><span class="p">,</span>
+</span><span data-line="347">        <span class="n">saddle_frame_key</span><span class="o">=</span><span class="n">saddle_key</span><span class="p">,</span>
+</span><span data-line="348">        <span class="n">product_frame_key</span><span class="o">=</span><span class="n">product_key</span><span class="p">,</span>
+</span><span data-line="349">        <span class="n">mode</span><span class="o">=</span><span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">mode</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)],</span>
+</span><span data-line="350">        <span class="n">metadata_json</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+</span><span data-line="351">            <span class="p">{</span>
+</span><span data-line="352">                <span class="s2">&quot;nf&quot;</span><span class="p">:</span> <span class="n">nf</span><span class="p">,</span>
+</span><span data-line="353">                <span class="s2">&quot;dc&quot;</span><span class="p">:</span> <span class="n">dc</span><span class="p">,</span>
+</span><span data-line="354">                <span class="s2">&quot;mac&quot;</span><span class="p">:</span> <span class="n">mac</span><span class="p">,</span>
+</span><span data-line="355">                <span class="s2">&quot;process_id&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">process_id</span><span class="p">),</span>
+</span><span data-line="356">            <span class="p">}</span>
+</span><span data-line="357">        <span class="p">),</span>
+</span><span data-line="358">    <span class="p">)</span>
+</span><span data-line="359">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="360">        <span class="n">store</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span>
+</span><span data-line="361">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="362">        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;amsel.KdbStore insert failed&quot;</span><span class="p">)</span>
+</span><span data-line="363">        <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="364">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+</span><span data-line="365">        <span class="s2">&quot;kdb insert barrier=</span><span class="si">%.4f</span><span class="s2"> eV saddle frame </span><span class="si">%d</span><span class="s2">:</span><span class="si">%d</span><span class="s2"> into readcon.db&quot;</span><span class="p">,</span>
+</span><span data-line="366">        <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;barrier&quot;</span><span class="p">]),</span>
+</span><span data-line="367">        <span class="o">*</span><span class="n">unpack_frame_key</span><span class="p">(</span><span class="n">saddle_key</span><span class="p">),</span>
+</span><span data-line="368">    <span class="p">)</span>
+</span><span data-line="369">    <span class="k">return</span> <span class="kc">True</span></div>
 
-</span><span data-line="305">
-</span><span data-line="306">
-</span><span data-line="307"><span class="k">def</span><span class="w"> </span><span class="nf">_corpus_directory</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-</span><span data-line="308">    <span class="n">reactant</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;reactant_path&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-</span><span data-line="309">    <span class="k">if</span> <span class="n">reactant</span><span class="p">:</span>
-</span><span data-line="310">        <span class="k">return</span> <span class="n">corpus_dir</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">reactant</span><span class="p">))</span>
-</span><span data-line="311">    <span class="k">return</span> <span class="n">corpus_dir</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">proc_reactant_path</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
-</span><span data-line="312">
-</span><span data-line="313">
-</span><span data-line="314"><span class="k">def</span><span class="w"> </span><span class="nf">_materialize</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">store</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="315"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Write this state&#39;s unused suggestions. Other states&#39; files stay.&quot;&quot;&quot;</span>
-</span><span data-line="316">    <span class="n">nf</span><span class="p">,</span> <span class="n">dc</span><span class="p">,</span> <span class="n">mac</span> <span class="o">=</span> <span class="n">_floats</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</span><span data-line="317">    <span class="n">reactant</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">get_reactant</span><span class="p">()</span>
-</span><span data-line="318">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="319">        <span class="n">processes</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">env_hash</span><span class="p">(</span><span class="n">reactant</span><span class="p">))</span>
-</span><span data-line="320">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-</span><span data-line="321">        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;amsel.KdbStore lookup failed&quot;</span><span class="p">)</span>
-</span><span data-line="322">        <span class="k">raise</span>
-</span><span data-line="323">    <span class="n">directory</span> <span class="o">=</span> <span class="n">_match_dir</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
-</span><span data-line="324">    <span class="n">directory</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="325">    <span class="n">corpus_directory</span> <span class="o">=</span> <span class="n">_corpus_directory</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
-</span><span data-line="326">    <span class="n">done</span> <span class="o">=</span> <span class="n">_consumed</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
-</span><span data-line="327">    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">process</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">processes</span><span class="p">):</span>
-</span><span data-line="328">        <span class="k">if</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">done</span><span class="p">:</span>
-</span><span data-line="329">            <span class="k">continue</span>
-</span><span data-line="330">        <span class="n">pair</span> <span class="o">=</span> <span class="n">_accepts</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">reactant</span><span class="p">,</span> <span class="n">corpus_directory</span><span class="p">,</span> <span class="n">nf</span><span class="p">,</span> <span class="n">dc</span><span class="p">)</span>
-</span><span data-line="331">        <span class="k">if</span> <span class="n">pair</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="332">            <span class="k">continue</span>
-</span><span data-line="333">        <span class="n">stored_reactant</span><span class="p">,</span> <span class="n">stored_saddle</span> <span class="o">=</span> <span class="n">pair</span>
-</span><span data-line="334">        <span class="n">saddle_text</span><span class="p">,</span> <span class="n">traj_id</span><span class="p">,</span> <span class="n">frame_idx</span> <span class="o">=</span> <span class="n">_load_frame</span><span class="p">(</span>
-</span><span data-line="335">            <span class="n">corpus_directory</span><span class="p">,</span> <span class="n">process</span><span class="o">.</span><span class="n">saddle_frame_key</span>
-</span><span data-line="336">        <span class="p">)</span>
-</span><span data-line="337">        <span class="n">saddle_path</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;SADDLE_</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span data-line="338">        <span class="n">mode_path</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;MODE_</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span data-line="339">        <span class="n">barrier_path</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;BARRIER_</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span data-line="340">        <span class="n">done_path</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;.done_</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span data-line="341">        <span class="k">if</span> <span class="ow">not</span> <span class="n">saddle_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-</span><span data-line="342">            <span class="n">saddle_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">saddle_text</span><span class="p">)</span>
-</span><span data-line="343">            <span class="n">mode</span> <span class="o">=</span> <span class="n">_suggestion_mode</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">stored_reactant</span><span class="p">,</span> <span class="n">stored_saddle</span><span class="p">,</span> <span class="n">mac</span><span class="p">)</span>
-</span><span data-line="344">            <span class="n">io</span><span class="o">.</span><span class="n">save_mode</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">mode_path</span><span class="p">),</span> <span class="n">mode</span><span class="p">)</span>
-</span><span data-line="345">            <span class="n">barrier_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">barrier_ev</span><span class="p">)</span><span class="si">:</span><span class="s2">.10f</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span data-line="346">            <span class="p">(</span><span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;KEY_</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">traj_id</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">frame_idx</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span data-line="347">            <span class="n">done_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-</span><span data-line="348">
-</span><span data-line="349">
+</span><span data-line="370">
+</span><span data-line="371">
+</span><span data-line="372"><span class="k">def</span><span class="w"> </span><span class="nf">_corpus_directory</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+</span><span data-line="373">    <span class="n">reactant</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;reactant_path&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span data-line="374">    <span class="k">if</span> <span class="n">reactant</span><span class="p">:</span>
+</span><span data-line="375">        <span class="k">return</span> <span class="n">corpus_dir</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">reactant</span><span class="p">))</span>
+</span><span data-line="376">    <span class="k">return</span> <span class="n">corpus_dir</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">proc_reactant_path</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
+</span><span data-line="377">
+</span><span data-line="378">
+</span><span data-line="379"><span class="k">def</span><span class="w"> </span><span class="nf">_materialize</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">store</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="380"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Write this state&#39;s unused suggestions. Other states&#39; files stay.&quot;&quot;&quot;</span>
+</span><span data-line="381">    <span class="n">nf</span><span class="p">,</span> <span class="n">dc</span><span class="p">,</span> <span class="n">mac</span> <span class="o">=</span> <span class="n">_floats</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span data-line="382">    <span class="n">reactant</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">get_reactant</span><span class="p">()</span>
+</span><span data-line="383">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="384">        <span class="n">processes</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">env_hash</span><span class="p">(</span><span class="n">reactant</span><span class="p">))</span>
+</span><span data-line="385">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="386">        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;amsel.KdbStore lookup failed&quot;</span><span class="p">)</span>
+</span><span data-line="387">        <span class="k">raise</span>
+</span><span data-line="388">    <span class="n">directory</span> <span class="o">=</span> <span class="n">_match_dir</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+</span><span data-line="389">    <span class="n">directory</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="390">    <span class="n">corpus_directory</span> <span class="o">=</span> <span class="n">_corpus_directory</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+</span><span data-line="391">    <span class="n">done</span> <span class="o">=</span> <span class="n">_consumed</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+</span><span data-line="392">    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">process</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">processes</span><span class="p">):</span>
+</span><span data-line="393">        <span class="k">if</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">done</span><span class="p">:</span>
+</span><span data-line="394">            <span class="k">continue</span>
+</span><span data-line="395">        <span class="n">pair</span> <span class="o">=</span> <span class="n">_accepts</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">reactant</span><span class="p">,</span> <span class="n">corpus_directory</span><span class="p">,</span> <span class="n">nf</span><span class="p">,</span> <span class="n">dc</span><span class="p">)</span>
+</span><span data-line="396">        <span class="k">if</span> <span class="n">pair</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="397">            <span class="k">continue</span>
+</span><span data-line="398">        <span class="n">stored_reactant</span><span class="p">,</span> <span class="n">stored_saddle</span> <span class="o">=</span> <span class="n">pair</span>
+</span><span data-line="399">        <span class="n">saddle_text</span><span class="p">,</span> <span class="n">traj_id</span><span class="p">,</span> <span class="n">frame_idx</span> <span class="o">=</span> <span class="n">_load_frame</span><span class="p">(</span>
+</span><span data-line="400">            <span class="n">corpus_directory</span><span class="p">,</span> <span class="n">process</span><span class="o">.</span><span class="n">saddle_frame_key</span>
+</span><span data-line="401">        <span class="p">)</span>
+</span><span data-line="402">        <span class="n">saddle_path</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;SADDLE_</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="403">        <span class="n">mode_path</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;MODE_</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="404">        <span class="n">barrier_path</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;BARRIER_</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="405">        <span class="n">done_path</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;.done_</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="406">        <span class="k">if</span> <span class="ow">not</span> <span class="n">saddle_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+</span><span data-line="407">            <span class="n">saddle_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">saddle_text</span><span class="p">)</span>
+</span><span data-line="408">            <span class="n">mode</span> <span class="o">=</span> <span class="n">_suggestion_mode</span><span class="p">(</span>
+</span><span data-line="409">                <span class="n">process</span><span class="p">,</span> <span class="n">stored_reactant</span><span class="p">,</span> <span class="n">stored_saddle</span><span class="p">,</span> <span class="n">mac</span><span class="p">,</span> <span class="n">saddle_text</span>
+</span><span data-line="410">            <span class="p">)</span>
+</span><span data-line="411">            <span class="n">io</span><span class="o">.</span><span class="n">save_mode</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">mode_path</span><span class="p">),</span> <span class="n">mode</span><span class="p">)</span>
+</span><span data-line="412">            <span class="n">barrier_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">barrier_ev</span><span class="p">)</span><span class="si">:</span><span class="s2">.10f</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="413">            <span class="p">(</span><span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;KEY_</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">traj_id</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">frame_idx</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="414">            <span class="n">done_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+</span><span data-line="415">
+</span><span data-line="416">
 <div class="viewcode-block" id="query">
 <a class="viewcode-back" href="../../apidocs/eon/eon.process_catalog.html#eon.process_catalog.query">[docs]</a>
-</span><span data-line="350"><span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="351"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Look up suggestions for ``state``.</span>
-</span><span data-line="352">
-</span><span data-line="353"><span class="sd">    The state number is appended to ``queried`` only after lookup returns.</span>
-</span><span data-line="354"><span class="sd">    An import failure or an open failure leaves that file unchanged, and</span>
-</span><span data-line="355"><span class="sd">    does not delete another state&#39;s ``SADDLE_`` files.</span>
-</span><span data-line="356"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="357">    <span class="n">nf</span><span class="p">,</span> <span class="n">dc</span><span class="p">,</span> <span class="n">mac</span> <span class="o">=</span> <span class="n">_floats</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</span><span data-line="358">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-</span><span data-line="359">        <span class="s2">&quot;kdb query nf=</span><span class="si">%r</span><span class="s2"> dc=</span><span class="si">%r</span><span class="s2"> mac=</span><span class="si">%r</span><span class="s2"> path=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-</span><span data-line="360">        <span class="n">nf</span><span class="p">,</span>
-</span><span data-line="361">        <span class="n">dc</span><span class="p">,</span>
-</span><span data-line="362">        <span class="n">mac</span><span class="p">,</span>
-</span><span data-line="363">        <span class="n">config</span><span class="o">.</span><span class="n">kdb_path</span><span class="p">,</span>
-</span><span data-line="364">    <span class="p">)</span>
-</span><span data-line="365">    <span class="n">store</span> <span class="o">=</span> <span class="n">_open_store</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</span><span data-line="366">    <span class="k">if</span> <span class="n">store</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="367">        <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="368">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="369">        <span class="n">_materialize</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">store</span><span class="p">)</span>
-</span><span data-line="370">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-</span><span data-line="371">        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;kdb query failed for state </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;number&quot;</span><span class="p">,</span> <span class="s2">&quot;?&quot;</span><span class="p">))</span>
-</span><span data-line="372">        <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="373">    <span class="n">_mark_queried</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
-</span><span data-line="374">    <span class="k">return</span> <span class="kc">True</span></div>
+</span><span data-line="417"><span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="418"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Look up suggestions for ``state``.</span>
+</span><span data-line="419">
+</span><span data-line="420"><span class="sd">    The state number is appended to ``queried`` only after lookup returns.</span>
+</span><span data-line="421"><span class="sd">    An import failure or an open failure leaves that file unchanged, and</span>
+</span><span data-line="422"><span class="sd">    does not delete another state&#39;s ``SADDLE_`` files.</span>
+</span><span data-line="423"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="424">    <span class="n">nf</span><span class="p">,</span> <span class="n">dc</span><span class="p">,</span> <span class="n">mac</span> <span class="o">=</span> <span class="n">_floats</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span data-line="425">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+</span><span data-line="426">        <span class="s2">&quot;kdb query nf=</span><span class="si">%r</span><span class="s2"> dc=</span><span class="si">%r</span><span class="s2"> mac=</span><span class="si">%r</span><span class="s2"> path=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span data-line="427">        <span class="n">nf</span><span class="p">,</span>
+</span><span data-line="428">        <span class="n">dc</span><span class="p">,</span>
+</span><span data-line="429">        <span class="n">mac</span><span class="p">,</span>
+</span><span data-line="430">        <span class="n">config</span><span class="o">.</span><span class="n">kdb_path</span><span class="p">,</span>
+</span><span data-line="431">    <span class="p">)</span>
+</span><span data-line="432">    <span class="n">store</span> <span class="o">=</span> <span class="n">_open_store</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span data-line="433">    <span class="k">if</span> <span class="n">store</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="434">        <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="435">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="436">        <span class="n">_materialize</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">store</span><span class="p">)</span>
+</span><span data-line="437">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="438">        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;kdb query failed for state </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;number&quot;</span><span class="p">,</span> <span class="s2">&quot;?&quot;</span><span class="p">))</span>
+</span><span data-line="439">        <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="440">    <span class="n">_mark_queried</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+</span><span data-line="441">    <span class="k">return</span> <span class="kc">True</span></div>
 
-</span><span data-line="375">
-</span><span data-line="376">
+</span><span data-line="442">
+</span><span data-line="443">
 <div class="viewcode-block" id="make_suggestion">
 <a class="viewcode-back" href="../../apidocs/eon/eon.process_catalog.html#eon.process_catalog.make_suggestion">[docs]</a>
-</span><span data-line="377"><span class="k">def</span><span class="w"> </span><span class="nf">make_suggestion</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
-</span><span data-line="378"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return one ``(displacement, mode)`` pair, or ``(None, None)``.</span>
-</span><span data-line="379">
-</span><span data-line="380"><span class="sd">    Pending ``SADDLE_`` files for this state are read first. A process</span>
-</span><span data-line="381"><span class="sd">    stored after the last query is materialized from ``amsel.KdbStore``</span>
-</span><span data-line="382"><span class="sd">    and the saddle frame is loaded from readcon-db. Each process is</span>
-</span><span data-line="383"><span class="sd">    offered once; the caller then uses a random displacement.</span>
-</span><span data-line="384"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="385">    <span class="n">store</span> <span class="o">=</span> <span class="n">_open_store</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</span><span data-line="386">    <span class="k">if</span> <span class="n">store</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="387">        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
-</span><span data-line="388">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="389">        <span class="n">_materialize</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">store</span><span class="p">)</span>
-</span><span data-line="390">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-</span><span data-line="391">        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;kdb suggestion lookup failed&quot;</span><span class="p">)</span>
-</span><span data-line="392">        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
-</span><span data-line="393">    <span class="n">directory</span> <span class="o">=</span> <span class="n">_match_dir</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
-</span><span data-line="394">    <span class="k">if</span> <span class="ow">not</span> <span class="n">directory</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
-</span><span data-line="395">        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
-</span><span data-line="396">    <span class="n">dones</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">directory</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;.done_*&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_file</span><span class="p">())</span>
-</span><span data-line="397">    <span class="k">if</span> <span class="ow">not</span> <span class="n">dones</span><span class="p">:</span>
-</span><span data-line="398">        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
-</span><span data-line="399">    <span class="n">number</span> <span class="o">=</span> <span class="n">dones</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-</span><span data-line="400">    <span class="n">saddle_path</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;SADDLE_</span><span class="si">{</span><span class="n">number</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span data-line="401">    <span class="n">mode_path</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;MODE_</span><span class="si">{</span><span class="n">number</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span data-line="402">    <span class="n">barrier_path</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;BARRIER_</span><span class="si">{</span><span class="n">number</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span data-line="403">    <span class="n">key_path</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;KEY_</span><span class="si">{</span><span class="n">number</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span data-line="404">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="405">        <span class="n">displacement</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">saddle_path</span><span class="p">))</span>
-</span><span data-line="406">        <span class="n">mode</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">load_mode</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">mode_path</span><span class="p">))</span>
-</span><span data-line="407">        <span class="n">barrier</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">barrier_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-</span><span data-line="408">        <span class="n">traj_id</span><span class="p">,</span> <span class="n">frame_idx</span> <span class="o">=</span> <span class="n">key_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-</span><span data-line="409">    <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-</span><span data-line="410">        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;kdb suggestion file </span><span class="si">%s</span><span class="s2"> is unreadable&quot;</span><span class="p">,</span> <span class="n">saddle_path</span><span class="p">)</span>
-</span><span data-line="411">        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
-</span><span data-line="412">    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">(</span><span class="n">dones</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">saddle_path</span><span class="p">,</span> <span class="n">mode_path</span><span class="p">,</span> <span class="n">barrier_path</span><span class="p">,</span> <span class="n">key_path</span><span class="p">):</span>
-</span><span data-line="413">        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-</span><span data-line="414">            <span class="n">path</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
-</span><span data-line="415">    <span class="n">_mark_consumed</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">number</span><span class="p">))</span>
-</span><span data-line="416">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-</span><span data-line="417">        <span class="s2">&quot;KDB suggestion barrier=</span><span class="si">%.4f</span><span class="s2"> eV saddle frame </span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2"> from readcon.db&quot;</span><span class="p">,</span>
-</span><span data-line="418">        <span class="n">barrier</span><span class="p">,</span>
-</span><span data-line="419">        <span class="n">traj_id</span><span class="p">,</span>
-</span><span data-line="420">        <span class="n">frame_idx</span><span class="p">,</span>
-</span><span data-line="421">    <span class="p">)</span>
-</span><span data-line="422">    <span class="k">return</span> <span class="n">displacement</span><span class="p">,</span> <span class="n">mode</span></div>
+</span><span data-line="444"><span class="k">def</span><span class="w"> </span><span class="nf">make_suggestion</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+</span><span data-line="445"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return one ``(displacement, mode)`` pair, or ``(None, None)``.</span>
+</span><span data-line="446">
+</span><span data-line="447"><span class="sd">    Pending ``SADDLE_`` files for this state are read first. A process</span>
+</span><span data-line="448"><span class="sd">    stored after the last query is materialized from ``amsel.KdbStore``</span>
+</span><span data-line="449"><span class="sd">    and the saddle frame is loaded from readcon-db. Each process is</span>
+</span><span data-line="450"><span class="sd">    offered once; the caller then uses a random displacement.</span>
+</span><span data-line="451"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="452">    <span class="n">store</span> <span class="o">=</span> <span class="n">_open_store</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span data-line="453">    <span class="k">if</span> <span class="n">store</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="454">        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+</span><span data-line="455">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="456">        <span class="n">_materialize</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">store</span><span class="p">)</span>
+</span><span data-line="457">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="458">        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;kdb suggestion lookup failed&quot;</span><span class="p">)</span>
+</span><span data-line="459">        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+</span><span data-line="460">    <span class="n">directory</span> <span class="o">=</span> <span class="n">_match_dir</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+</span><span data-line="461">    <span class="k">if</span> <span class="ow">not</span> <span class="n">directory</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+</span><span data-line="462">        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+</span><span data-line="463">    <span class="n">dones</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">directory</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;.done_*&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_file</span><span class="p">())</span>
+</span><span data-line="464">    <span class="k">if</span> <span class="ow">not</span> <span class="n">dones</span><span class="p">:</span>
+</span><span data-line="465">        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+</span><span data-line="466">    <span class="n">number</span> <span class="o">=</span> <span class="n">dones</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+</span><span data-line="467">    <span class="n">saddle_path</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;SADDLE_</span><span class="si">{</span><span class="n">number</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="468">    <span class="n">mode_path</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;MODE_</span><span class="si">{</span><span class="n">number</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="469">    <span class="n">barrier_path</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;BARRIER_</span><span class="si">{</span><span class="n">number</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="470">    <span class="n">key_path</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;KEY_</span><span class="si">{</span><span class="n">number</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="471">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="472">        <span class="n">displacement</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">saddle_path</span><span class="p">))</span>
+</span><span data-line="473">        <span class="n">mode</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">load_mode</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">mode_path</span><span class="p">))</span>
+</span><span data-line="474">        <span class="n">barrier</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">barrier_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+</span><span data-line="475">        <span class="n">traj_id</span><span class="p">,</span> <span class="n">frame_idx</span> <span class="o">=</span> <span class="n">key_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+</span><span data-line="476">    <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+</span><span data-line="477">        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;kdb suggestion file </span><span class="si">%s</span><span class="s2"> is unreadable&quot;</span><span class="p">,</span> <span class="n">saddle_path</span><span class="p">)</span>
+</span><span data-line="478">        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+</span><span data-line="479">    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">(</span><span class="n">dones</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">saddle_path</span><span class="p">,</span> <span class="n">mode_path</span><span class="p">,</span> <span class="n">barrier_path</span><span class="p">,</span> <span class="n">key_path</span><span class="p">):</span>
+</span><span data-line="480">        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+</span><span data-line="481">            <span class="n">path</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+</span><span data-line="482">    <span class="n">_mark_consumed</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">number</span><span class="p">))</span>
+</span><span data-line="483">    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+</span><span data-line="484">        <span class="s2">&quot;KDB suggestion barrier=</span><span class="si">%.4f</span><span class="s2"> eV saddle frame </span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2"> from readcon.db&quot;</span><span class="p">,</span>
+</span><span data-line="485">        <span class="n">barrier</span><span class="p">,</span>
+</span><span data-line="486">        <span class="n">traj_id</span><span class="p">,</span>
+</span><span data-line="487">        <span class="n">frame_idx</span><span class="p">,</span>
+</span><span data-line="488">    <span class="p">)</span>
+</span><span data-line="489">    <span class="k">return</span> <span class="n">displacement</span><span class="p">,</span> <span class="n">mode</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">

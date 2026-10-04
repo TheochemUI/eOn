@@ -215,6 +215,14 @@ formula uses the Hessian of every bead.
 
 `half_ring` defaults to enabled. On an even bead count the potential is
 evaluated from one turning point to the other and copied onto the mirror.
+The reaction coordinate on that half stays monotone, so the search cannot
+settle on an out-and-back bounce.
+A half ring that has converged, or that has stopped with the gradient
+under the force tolerance while the negative-mode count is not 1, is
+checked for an unstable mode that is odd under the mirror when the
+interior beads still match their mirrors. Two copies of the instanton
+on one ring are that mode. The search steps along it and continues on
+the whole ring.
 An odd count keeps every bead. `energy_shift` (default 0, in eV) is
 subtracted from every bead potential and from the reactant and saddle
 energies in the rate.
@@ -226,9 +234,9 @@ the period condition below. On LJ13 that path costs 586 gradient calls. Cooling 
 ring from 0.85 of the crossover is the fallback when no path can be
 built; it finds the ring only where the ring grows continuously out of
 the saddle as the temperature drops. Where it does not, the search walks
-to a neighbouring saddle, so a converged ring with no bead on either side
-of the saddle's dividing plane (the plane normal to its unstable mode) is
-refused and no rate is written. The step climbs the mode that overlaps
+to a neighbouring saddle, so a converged ring that fails the channel test
+described with the `results.dat` keys below is refused and no rate is
+written. The step climbs the mode that overlaps
 the last climb and turns every other negative curvature downhill; the
 imaginary-time cycle and the rigid motions of the whole ring, rebuilt
 from the current beads, are held in place and left out of the step. A
@@ -246,8 +254,10 @@ modes come from Lanczos on matrix-vector products. The bead curvature
 blocks start from the saddle Hessian (`initial_hessians = saddle`, no force
 calls) and follow accepted moves with a Bofill update, rebuilt from
 finite differences up to three times when the trust radius reaches its
-floor;
-`initial_hessians = finite_difference` takes {math}`2f` gradient calls per
+floor. Near-zero eigenvectors of the saddle Hessian are held at a
+spring-sized curvature in the Newton step, so a rigid displacement does
+not singularize the chain. `initial_hessians = finite_difference` takes
+{math}`2f` gradient calls per
 bead first. The rate uses the bead Hessians chosen by `hessian_final`, not
 that update. On the one-dimensional Eckart barrier the search converges
 in 4 to 7 steps from either seed.
@@ -272,9 +282,20 @@ the parabolic rate. Below {math}`T_c` those two are empty. A run at more than on
 With no atom fixed, both the reactant and the instanton omit the three
 translations. A
 rotation is omitted when it is a zero mode of the reactant Hessian, which a
-free cluster has and a crystal does not. A cluster in a large periodic cell
+free cluster has and a crystal does not: when its curvature r^T H r / r^T r
+is at most 0.1 of the softest vibration, the lowest eigenvalue of the
+Hessian once the translations and rotations are projected out. Both sides
+scale with the Hessian and neither grows with the atom count. A cluster in a large periodic cell
 is told apart by that Hessian, not by the periodic flag. The springs along
 those directions stay, so they cancel between the instanton and the reactant.
+On the ring the omitted rotations are those of the beads themselves about
+the ring's centre of mass: a rotation moves each bead by a different
+amount, so the reactant's rotation copied to every bead is not a zero mode
+of the ring. The bead Hessians keep their rotational curvature, which
+balances the springs on a bead that is not a minimum, and lose only their
+translations. Omitting the rotations on both sides treats the rotational
+partition functions of the ring and the reactant as equal, which neglects
+the change in the moments of inertia along the ring.
 
 `results.dat` reports the rate. The keys are:
 
@@ -284,11 +305,23 @@ those directions stay, so they cancel between the instanton and the reactant.
 | `rate_instanton_log` | {math}`\ln(k\,/\,\mathrm{s}^{-1})` |
 | `rate_htst_log` | classical harmonic transition-state theory, the same logarithm |
 | `parabolic_factor` | {math}`\kappa`, above {math}`T_c` |
-| `rate_parabolic` | {math}`\kappa` times the harmonic TST rate, s^{-1} |
+| `rate_parabolic` | {math}`\kappa` times the quantum harmonic TST rate, s^{-1} |
 | `rate_parabolic_log` | {math}`\ln(k\,/\,\mathrm{s}^{-1})` of that rate |
 | `instanton_crossover_K` | {math}`T_c`, K |
 | `instanton_negative_modes` | negative eigenvalues of the ring Hessian; a first-order saddle has 1 |
 | `instanton_zero_mode` | the eigenvalue left out |
+| `instanton_s_min`, `instanton_s_max` | the turning points along the saddle's unstable mode, amu^0.5 Angstrom from the saddle |
+| `instanton_chord_overlap` | cosine of the angle between the chord joining the turning points and the unstable mode |
+| `instanton_collapsed` | 1 when the search stopped because the beads fell onto one point (B_N below 1e-4 of the starting ring's) |
+| `instanton_crossing_offset` | largest distance from the saddle, across the mode, at which the ring crosses the dividing plane |
+
+A converged ring is given a rate only when it belongs to the seeded saddle:
+it straddles the plane through the saddle normal to the unstable mode,
+crosses that plane no farther from the saddle than its own span
+`instanton_s_max - instanton_s_min`, and its chord lies within 60 degrees
+of the mode. A ring that slid to a neighbouring saddle can still straddle
+the plane and have one negative mode, and then its rate would belong to a
+different reaction.
 
 {cite:t}`inst-habershonRingpolymerMolecularDynamics2013` expect the sampled
 ring-polymer rate to lie within about a factor of two of the exact quantum
@@ -566,9 +599,10 @@ In one dimension the instanton is the steepest-descent evaluation of the
 WKB thermal integral, so its limit shares the uniform WKB error; the Kemble
 integral along the path gives the same 0.928. `The ring spectrum from the
 block chain matches the dense Hessian` ties the chain's determinant and
-inertia to a dense eigendecomposition, and `A rigid mode leaves the
+inertia to a dense eigendecomposition, `A rigid mode leaves the
 instanton rate unchanged` checks the rigid-mode bookkeeping through the
-search.
+search, and `The rate lifts the rotations of a free diatomic's ring`
+checks the rotations against the dense spectrum of a stretching bond.
 
 ## References
 

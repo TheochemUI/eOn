@@ -1,0 +1,883 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: eonc::JobResultProvenance Struct Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn 3.2.0</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('structeonc_1_1JobResultProvenance.html','','structeonc_1_1JobResultProvenance-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">eonc::JobResultProvenance Struct Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeonc_1_1Optimizer.html" title="Abstract base of the structure optimizers.">Optimizer</a>, xtsci, eindir, and rgpot identity carried on a JobResult.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="JobResult_8h_source.html">JobResult.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a659f288e1ffe43923946b1ac33b2d173" id="r_a659f288e1ffe43923946b1ac33b2d173"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a659f288e1ffe43923946b1ac33b2d173">text</a> () const</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a678ebdc028739dc904c24aa387f28bf5" id="r_a678ebdc028739dc904c24aa387f28bf5"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a678ebdc028739dc904c24aa387f28bf5">backend</a></td></tr>
+<tr class="memitem:a8a9b2c9b78ebee8fc1f32e8795b026be" id="r_a8a9b2c9b78ebee8fc1f32e8795b026be"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a8a9b2c9b78ebee8fc1f32e8795b026be">engine_version</a></td></tr>
+<tr class="memitem:a311a62ad09f92bca11edcc7c53b24758" id="r_a311a62ad09f92bca11edcc7c53b24758"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a311a62ad09f92bca11edcc7c53b24758">engine_build_identity</a></td></tr>
+<tr class="memitem:a3b7a1f8e6aea5efc283a8e073b934c01" id="r_a3b7a1f8e6aea5efc283a8e073b934c01"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a3b7a1f8e6aea5efc283a8e073b934c01">rgpot_name</a></td></tr>
+<tr class="memitem:ad65d448a5cf9d4f5f10aeeaa4dba3695" id="r_ad65d448a5cf9d4f5f10aeeaa4dba3695"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#ad65d448a5cf9d4f5f10aeeaa4dba3695">rgpot_version</a></td></tr>
+<tr class="memitem:a22247e076caf84d623c66ddb8b3c01d5" id="r_a22247e076caf84d623c66ddb8b3c01d5"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a22247e076caf84d623c66ddb8b3c01d5">xtsci</a> {false}</td></tr>
+<tr class="memitem:a5f4c43bdec29d675d2b891ccac3ab5cb" id="r_a5f4c43bdec29d675d2b891ccac3ab5cb"><td class="memItemLeft">std::uint16_t&#160;</td><td class="memItemRight"><a class="el" href="#a5f4c43bdec29d675d2b891ccac3ab5cb">xts_abi_major</a> {0}</td></tr>
+<tr class="memitem:ae835b495ae8a28cbf61ae8bf627438a7" id="r_ae835b495ae8a28cbf61ae8bf627438a7"><td class="memItemLeft">std::uint16_t&#160;</td><td class="memItemRight"><a class="el" href="#ae835b495ae8a28cbf61ae8bf627438a7">xts_abi_minor</a> {0}</td></tr>
+<tr class="memitem:ac95da62e019c36f8167c3674aad8b10e" id="r_ac95da62e019c36f8167c3674aad8b10e"><td class="memItemLeft">std::uint16_t&#160;</td><td class="memItemRight"><a class="el" href="#ac95da62e019c36f8167c3674aad8b10e">xts_abi_layout</a> {0}</td></tr>
+<tr class="memitem:a9c18c9a0dcd43faeebdfc1b6376ad3d2" id="r_a9c18c9a0dcd43faeebdfc1b6376ad3d2"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a9c18c9a0dcd43faeebdfc1b6376ad3d2">has_eindir</a> {false}</td></tr>
+<tr class="memitem:a24abaa313b83281109cbb99398dc1232" id="r_a24abaa313b83281109cbb99398dc1232"><td class="memItemLeft">std::uint32_t&#160;</td><td class="memItemRight"><a class="el" href="#a24abaa313b83281109cbb99398dc1232">eindir_abi_major</a> {0}</td></tr>
+<tr class="memitem:a248d4276ee2b44ebc05b24b9f1270ba8" id="r_a248d4276ee2b44ebc05b24b9f1270ba8"><td class="memItemLeft">std::uint32_t&#160;</td><td class="memItemRight"><a class="el" href="#a248d4276ee2b44ebc05b24b9f1270ba8">eindir_abi_minor</a> {0}</td></tr>
+<tr class="memitem:a86a705e2f6c501da531bcb23a918c945" id="r_a86a705e2f6c501da531bcb23a918c945"><td class="memItemLeft">std::uint32_t&#160;</td><td class="memItemRight"><a class="el" href="#a86a705e2f6c501da531bcb23a918c945">eindir_objective_layout</a> {0}</td></tr>
+<tr class="memitem:a7b240b208b98d227d2dca64c7aaffbdf" id="r_a7b240b208b98d227d2dca64c7aaffbdf"><td class="memItemLeft">std::uint64_t&#160;</td><td class="memItemRight"><a class="el" href="#a7b240b208b98d227d2dca64c7aaffbdf">eindir_objective_size</a> {0}</td></tr>
+<tr class="memitem:ae09796a3c6a5f7de7e9152cccf4d683f" id="r_ae09796a3c6a5f7de7e9152cccf4d683f"><td class="memItemLeft">std::uint64_t&#160;</td><td class="memItemRight"><a class="el" href="#ae09796a3c6a5f7de7e9152cccf4d683f">eindir_objective_align</a> {0}</td></tr>
+<tr class="memitem:a20898cbd6f56c8abf2b67664ffe6bf40" id="r_a20898cbd6f56c8abf2b67664ffe6bf40"><td class="memItemLeft">std::uint32_t&#160;</td><td class="memItemRight"><a class="el" href="#a20898cbd6f56c8abf2b67664ffe6bf40">eindir_dlpack_major</a> {0}</td></tr>
+<tr class="memitem:a46e45728a95a452cbcdb173f0c6e5bb8" id="r_a46e45728a95a452cbcdb173f0c6e5bb8"><td class="memItemLeft">std::uint32_t&#160;</td><td class="memItemRight"><a class="el" href="#a46e45728a95a452cbcdb173f0c6e5bb8">eindir_dlpack_minor</a> {0}</td></tr>
+<tr class="memitem:a64ac0fe28bcda692734502a09fe32e45" id="r_a64ac0fe28bcda692734502a09fe32e45"><td class="memItemLeft">std::uint64_t&#160;</td><td class="memItemRight"><a class="el" href="#a64ac0fe28bcda692734502a09fe32e45">eindir_features</a> {0}</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:ae77cbf1405fe7a848b5df8178f14676a" id="r_ae77cbf1405fe7a848b5df8178f14676a"><td class="memItemLeft">static constexpr std::uint16_t&#160;</td><td class="memItemRight"><a class="el" href="#ae77cbf1405fe7a848b5df8178f14676a">readcon_spec_version</a> = 3</td></tr>
+<tr class="memitem:a66727996f1a1f74bebed9220e29b2c41" id="r_a66727996f1a1f74bebed9220e29b2c41"><td class="memItemLeft">static constexpr std::string_view&#160;</td><td class="memItemRight"><a class="el" href="#a66727996f1a1f74bebed9220e29b2c41">readcon_min_version</a> = &quot;0.14.9&quot;</td></tr>
+<tr class="memitem:a5c09d098ec00540e34618f715002fe3a" id="r_a5c09d098ec00540e34618f715002fe3a"><td class="memItemLeft">static constexpr std::string_view&#160;</td><td class="memItemRight"><a class="el" href="#a5c09d098ec00540e34618f715002fe3a">eon_schema_min_version</a> = &quot;0.2.3&quot;</td></tr>
+<tr class="memitem:a8d5d3d59823bcd9829546779cc52b3fb" id="r_a8d5d3d59823bcd9829546779cc52b3fb"><td class="memItemLeft">static constexpr std::string_view&#160;</td><td class="memItemRight"><a class="el" href="#a8d5d3d59823bcd9829546779cc52b3fb">rgpycrumbs_min_version</a> = &quot;1.10.4&quot;</td></tr>
+<tr class="memitem:af02ec46cd5e39cdbee63fc005f3ef100" id="r_af02ec46cd5e39cdbee63fc005f3ef100"><td class="memItemLeft">static constexpr std::string_view&#160;</td><td class="memItemRight"><a class="el" href="#af02ec46cd5e39cdbee63fc005f3ef100">chemparseplot_min_version</a> = &quot;1.9.17&quot;</td></tr>
+<tr class="memitem:adf50361c666479a231ba94b3f75c88a5" id="r_adf50361c666479a231ba94b3f75c88a5"><td class="memItemLeft">static constexpr std::string_view&#160;</td><td class="memItemRight"><a class="el" href="#adf50361c666479a231ba94b3f75c88a5">rgpot_pin</a> = &quot;3.2.0&quot;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p><a class="el" href="classeonc_1_1Optimizer.html" title="Abstract base of the structure optimizers.">Optimizer</a>, xtsci, eindir, and rgpot identity carried on a JobResult. </p>
+<p>Empty backend means the record is absent. Legacy results.dat parsing is unchanged: these lines are extra value-key records. </p>
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00035">35</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+</div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a659f288e1ffe43923946b1ac33b2d173" name="a659f288e1ffe43923946b1ac33b2d173"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a659f288e1ffe43923946b1ac33b2d173">&#9670;&#160;</a></span>text()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::JobResultProvenance::text </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00062">62</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   62</span>                         {</div>
+<div class="line"><span class="lineno">   63</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a678ebdc028739dc904c24aa387f28bf5">backend</a>.empty()) {</div>
+<div class="line"><span class="lineno">   64</span>      <span class="keywordflow">return</span> {};</div>
+<div class="line"><span class="lineno">   65</span>    }</div>
+<div class="line"><span class="lineno">   66</span>    std::ostringstream out;</div>
+<div class="line"><span class="lineno">   67</span>    out &lt;&lt; <a class="code hl_variable" href="#a678ebdc028739dc904c24aa387f28bf5">backend</a> &lt;&lt; <span class="stringliteral">&quot; optimizer_backend\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   68</span>    out &lt;&lt; <span class="stringliteral">&quot;eon.optimizer.v1 optimizer_provenance_schema\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   69</span>    out &lt;&lt; <span class="stringliteral">&quot;eon.compatibility.v1 compatibility_schema\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   70</span>    out &lt;&lt; <a class="code hl_variable" href="#ae77cbf1405fe7a848b5df8178f14676a">readcon_spec_version</a> &lt;&lt; <span class="stringliteral">&quot; compatibility_readcon_spec_version\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   71</span>    out &lt;&lt; <a class="code hl_variable" href="#a66727996f1a1f74bebed9220e29b2c41">readcon_min_version</a> &lt;&lt; <span class="stringliteral">&quot; compatibility_readcon_min_version\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   72</span>    out &lt;&lt; <a class="code hl_variable" href="#a5c09d098ec00540e34618f715002fe3a">eon_schema_min_version</a> &lt;&lt; <span class="stringliteral">&quot; compatibility_eon_schema_min_version\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   73</span>    out &lt;&lt; <a class="code hl_variable" href="#a8d5d3d59823bcd9829546779cc52b3fb">rgpycrumbs_min_version</a> &lt;&lt; <span class="stringliteral">&quot; compatibility_rgpycrumbs_min_version\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   74</span>    out &lt;&lt; <a class="code hl_variable" href="#af02ec46cd5e39cdbee63fc005f3ef100">chemparseplot_min_version</a></div>
+<div class="line"><span class="lineno">   75</span>        &lt;&lt; <span class="stringliteral">&quot; compatibility_chemparseplot_min_version\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   76</span>    out &lt;&lt; <span class="stringliteral">&quot;eon engine_id\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   77</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a8a9b2c9b78ebee8fc1f32e8795b026be">engine_version</a>.empty()) {</div>
+<div class="line"><span class="lineno">   78</span>      out &lt;&lt; <a class="code hl_variable" href="#a8a9b2c9b78ebee8fc1f32e8795b026be">engine_version</a> &lt;&lt; <span class="stringliteral">&quot; engine_version\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   79</span>    }</div>
+<div class="line"><span class="lineno">   80</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a311a62ad09f92bca11edcc7c53b24758">engine_build_identity</a>.empty()) {</div>
+<div class="line"><span class="lineno">   81</span>      out &lt;&lt; <a class="code hl_variable" href="#a311a62ad09f92bca11edcc7c53b24758">engine_build_identity</a> &lt;&lt; <span class="stringliteral">&quot; engine_build_identity\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   82</span>    }</div>
+<div class="line"><span class="lineno">   83</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a3b7a1f8e6aea5efc283a8e073b934c01">rgpot_name</a>.empty()) {</div>
+<div class="line"><span class="lineno">   84</span>      out &lt;&lt; <a class="code hl_variable" href="#a3b7a1f8e6aea5efc283a8e073b934c01">rgpot_name</a> &lt;&lt; <span class="stringliteral">&quot; rgpot_name\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   85</span>    }</div>
+<div class="line"><span class="lineno">   86</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#ad65d448a5cf9d4f5f10aeeaa4dba3695">rgpot_version</a>.empty()) {</div>
+<div class="line"><span class="lineno">   87</span>      out &lt;&lt; <span class="stringliteral">&quot;eon.rgpot.v1 rgpot_schema\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   88</span>      out &lt;&lt; <a class="code hl_variable" href="#ad65d448a5cf9d4f5f10aeeaa4dba3695">rgpot_version</a> &lt;&lt; <span class="stringliteral">&quot; rgpot_version\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   89</span>    }</div>
+<div class="line"><span class="lineno">   90</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a22247e076caf84d623c66ddb8b3c01d5">xtsci</a>) {</div>
+<div class="line"><span class="lineno">   91</span>      out &lt;&lt; <span class="stringliteral">&quot;eon.objective compatibility_engine_protocol_family\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   92</span>      out &lt;&lt; <span class="stringliteral">&quot;1 compatibility_engine_protocol_major\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   93</span>      out &lt;&lt; <span class="stringliteral">&quot;0 compatibility_engine_protocol_minor\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   94</span>      out &lt;&lt; <a class="code hl_variable" href="#a5f4c43bdec29d675d2b891ccac3ab5cb">xts_abi_major</a> &lt;&lt; <span class="stringliteral">&quot; compatibility_engine_abi_major\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   95</span>      out &lt;&lt; <a class="code hl_variable" href="#ae835b495ae8a28cbf61ae8bf627438a7">xts_abi_minor</a> &lt;&lt; <span class="stringliteral">&quot; compatibility_engine_abi_minor\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   96</span>      out &lt;&lt; <a class="code hl_variable" href="#ac95da62e019c36f8167c3674aad8b10e">xts_abi_layout</a> &lt;&lt; <span class="stringliteral">&quot; compatibility_engine_layout_revision\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   97</span>      out &lt;&lt; <a class="code hl_variable" href="#a5f4c43bdec29d675d2b891ccac3ab5cb">xts_abi_major</a> &lt;&lt; <span class="stringliteral">&quot; optimizer_xts_abi_major\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   98</span>      out &lt;&lt; <a class="code hl_variable" href="#ae835b495ae8a28cbf61ae8bf627438a7">xts_abi_minor</a> &lt;&lt; <span class="stringliteral">&quot; optimizer_xts_abi_minor\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   99</span>      out &lt;&lt; <a class="code hl_variable" href="#ac95da62e019c36f8167c3674aad8b10e">xts_abi_layout</a> &lt;&lt; <span class="stringliteral">&quot; optimizer_xts_abi_layout\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  100</span>    }</div>
+<div class="line"><span class="lineno">  101</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a9c18c9a0dcd43faeebdfc1b6376ad3d2">has_eindir</a>) {</div>
+<div class="line"><span class="lineno">  102</span>      out &lt;&lt; <a class="code hl_variable" href="#a24abaa313b83281109cbb99398dc1232">eindir_abi_major</a> &lt;&lt; <span class="stringliteral">&quot; optimizer_eindir_abi_major\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  103</span>      out &lt;&lt; <a class="code hl_variable" href="#a248d4276ee2b44ebc05b24b9f1270ba8">eindir_abi_minor</a> &lt;&lt; <span class="stringliteral">&quot; optimizer_eindir_abi_minor\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  104</span>      out &lt;&lt; <a class="code hl_variable" href="#a86a705e2f6c501da531bcb23a918c945">eindir_objective_layout</a> &lt;&lt; <span class="stringliteral">&quot; optimizer_eindir_objective_layout\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  105</span>      out &lt;&lt; <a class="code hl_variable" href="#a7b240b208b98d227d2dca64c7aaffbdf">eindir_objective_size</a> &lt;&lt; <span class="stringliteral">&quot; optimizer_eindir_objective_size\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  106</span>      out &lt;&lt; <a class="code hl_variable" href="#ae09796a3c6a5f7de7e9152cccf4d683f">eindir_objective_align</a> &lt;&lt; <span class="stringliteral">&quot; optimizer_eindir_objective_align\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  107</span>      out &lt;&lt; <a class="code hl_variable" href="#a20898cbd6f56c8abf2b67664ffe6bf40">eindir_dlpack_major</a> &lt;&lt; <span class="stringliteral">&quot; optimizer_eindir_dlpack_major\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  108</span>      out &lt;&lt; <a class="code hl_variable" href="#a46e45728a95a452cbcdb173f0c6e5bb8">eindir_dlpack_minor</a> &lt;&lt; <span class="stringliteral">&quot; optimizer_eindir_dlpack_minor\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  109</span>      out &lt;&lt; <a class="code hl_variable" href="#a64ac0fe28bcda692734502a09fe32e45">eindir_features</a> &lt;&lt; <span class="stringliteral">&quot; optimizer_eindir_features\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  110</span>    }</div>
+<div class="line"><span class="lineno">  111</span>    <span class="keywordflow">return</span> out.str();</div>
+<div class="line"><span class="lineno">  112</span>  }</div>
+<div class="ttc" id="astructeonc_1_1JobResultProvenance_html_a20898cbd6f56c8abf2b67664ffe6bf40"><div class="ttname"><a href="#a20898cbd6f56c8abf2b67664ffe6bf40">eonc::JobResultProvenance::eindir_dlpack_major</a></div><div class="ttdeci">std::uint32_t eindir_dlpack_major</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00051">JobResult.h:51</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultProvenance_html_a22247e076caf84d623c66ddb8b3c01d5"><div class="ttname"><a href="#a22247e076caf84d623c66ddb8b3c01d5">eonc::JobResultProvenance::xtsci</a></div><div class="ttdeci">bool xtsci</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00041">JobResult.h:41</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultProvenance_html_a248d4276ee2b44ebc05b24b9f1270ba8"><div class="ttname"><a href="#a248d4276ee2b44ebc05b24b9f1270ba8">eonc::JobResultProvenance::eindir_abi_minor</a></div><div class="ttdeci">std::uint32_t eindir_abi_minor</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00047">JobResult.h:47</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultProvenance_html_a24abaa313b83281109cbb99398dc1232"><div class="ttname"><a href="#a24abaa313b83281109cbb99398dc1232">eonc::JobResultProvenance::eindir_abi_major</a></div><div class="ttdeci">std::uint32_t eindir_abi_major</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00046">JobResult.h:46</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultProvenance_html_a311a62ad09f92bca11edcc7c53b24758"><div class="ttname"><a href="#a311a62ad09f92bca11edcc7c53b24758">eonc::JobResultProvenance::engine_build_identity</a></div><div class="ttdeci">std::string engine_build_identity</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00038">JobResult.h:38</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultProvenance_html_a3b7a1f8e6aea5efc283a8e073b934c01"><div class="ttname"><a href="#a3b7a1f8e6aea5efc283a8e073b934c01">eonc::JobResultProvenance::rgpot_name</a></div><div class="ttdeci">std::string rgpot_name</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00039">JobResult.h:39</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultProvenance_html_a46e45728a95a452cbcdb173f0c6e5bb8"><div class="ttname"><a href="#a46e45728a95a452cbcdb173f0c6e5bb8">eonc::JobResultProvenance::eindir_dlpack_minor</a></div><div class="ttdeci">std::uint32_t eindir_dlpack_minor</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00052">JobResult.h:52</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultProvenance_html_a5c09d098ec00540e34618f715002fe3a"><div class="ttname"><a href="#a5c09d098ec00540e34618f715002fe3a">eonc::JobResultProvenance::eon_schema_min_version</a></div><div class="ttdeci">static constexpr std::string_view eon_schema_min_version</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00057">JobResult.h:57</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultProvenance_html_a5f4c43bdec29d675d2b891ccac3ab5cb"><div class="ttname"><a href="#a5f4c43bdec29d675d2b891ccac3ab5cb">eonc::JobResultProvenance::xts_abi_major</a></div><div class="ttdeci">std::uint16_t xts_abi_major</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00042">JobResult.h:42</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultProvenance_html_a64ac0fe28bcda692734502a09fe32e45"><div class="ttname"><a href="#a64ac0fe28bcda692734502a09fe32e45">eonc::JobResultProvenance::eindir_features</a></div><div class="ttdeci">std::uint64_t eindir_features</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00053">JobResult.h:53</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultProvenance_html_a66727996f1a1f74bebed9220e29b2c41"><div class="ttname"><a href="#a66727996f1a1f74bebed9220e29b2c41">eonc::JobResultProvenance::readcon_min_version</a></div><div class="ttdeci">static constexpr std::string_view readcon_min_version</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00056">JobResult.h:56</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultProvenance_html_a678ebdc028739dc904c24aa387f28bf5"><div class="ttname"><a href="#a678ebdc028739dc904c24aa387f28bf5">eonc::JobResultProvenance::backend</a></div><div class="ttdeci">std::string backend</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00036">JobResult.h:36</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultProvenance_html_a7b240b208b98d227d2dca64c7aaffbdf"><div class="ttname"><a href="#a7b240b208b98d227d2dca64c7aaffbdf">eonc::JobResultProvenance::eindir_objective_size</a></div><div class="ttdeci">std::uint64_t eindir_objective_size</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00049">JobResult.h:49</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultProvenance_html_a86a705e2f6c501da531bcb23a918c945"><div class="ttname"><a href="#a86a705e2f6c501da531bcb23a918c945">eonc::JobResultProvenance::eindir_objective_layout</a></div><div class="ttdeci">std::uint32_t eindir_objective_layout</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00048">JobResult.h:48</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultProvenance_html_a8a9b2c9b78ebee8fc1f32e8795b026be"><div class="ttname"><a href="#a8a9b2c9b78ebee8fc1f32e8795b026be">eonc::JobResultProvenance::engine_version</a></div><div class="ttdeci">std::string engine_version</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00037">JobResult.h:37</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultProvenance_html_a8d5d3d59823bcd9829546779cc52b3fb"><div class="ttname"><a href="#a8d5d3d59823bcd9829546779cc52b3fb">eonc::JobResultProvenance::rgpycrumbs_min_version</a></div><div class="ttdeci">static constexpr std::string_view rgpycrumbs_min_version</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00058">JobResult.h:58</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultProvenance_html_a9c18c9a0dcd43faeebdfc1b6376ad3d2"><div class="ttname"><a href="#a9c18c9a0dcd43faeebdfc1b6376ad3d2">eonc::JobResultProvenance::has_eindir</a></div><div class="ttdeci">bool has_eindir</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00045">JobResult.h:45</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultProvenance_html_ac95da62e019c36f8167c3674aad8b10e"><div class="ttname"><a href="#ac95da62e019c36f8167c3674aad8b10e">eonc::JobResultProvenance::xts_abi_layout</a></div><div class="ttdeci">std::uint16_t xts_abi_layout</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00044">JobResult.h:44</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultProvenance_html_ad65d448a5cf9d4f5f10aeeaa4dba3695"><div class="ttname"><a href="#ad65d448a5cf9d4f5f10aeeaa4dba3695">eonc::JobResultProvenance::rgpot_version</a></div><div class="ttdeci">std::string rgpot_version</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00040">JobResult.h:40</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultProvenance_html_ae09796a3c6a5f7de7e9152cccf4d683f"><div class="ttname"><a href="#ae09796a3c6a5f7de7e9152cccf4d683f">eonc::JobResultProvenance::eindir_objective_align</a></div><div class="ttdeci">std::uint64_t eindir_objective_align</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00050">JobResult.h:50</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultProvenance_html_ae77cbf1405fe7a848b5df8178f14676a"><div class="ttname"><a href="#ae77cbf1405fe7a848b5df8178f14676a">eonc::JobResultProvenance::readcon_spec_version</a></div><div class="ttdeci">static constexpr std::uint16_t readcon_spec_version</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00055">JobResult.h:55</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultProvenance_html_ae835b495ae8a28cbf61ae8bf627438a7"><div class="ttname"><a href="#ae835b495ae8a28cbf61ae8bf627438a7">eonc::JobResultProvenance::xts_abi_minor</a></div><div class="ttdeci">std::uint16_t xts_abi_minor</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00043">JobResult.h:43</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultProvenance_html_af02ec46cd5e39cdbee63fc005f3ef100"><div class="ttname"><a href="#af02ec46cd5e39cdbee63fc005f3ef100">eonc::JobResultProvenance::chemparseplot_min_version</a></div><div class="ttdeci">static constexpr std::string_view chemparseplot_min_version</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00059">JobResult.h:59</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a678ebdc028739dc904c24aa387f28bf5" name="a678ebdc028739dc904c24aa387f28bf5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a678ebdc028739dc904c24aa387f28bf5">&#9670;&#160;</a></span>backend</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::JobResultProvenance::backend</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00036">36</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+
+</div>
+</div>
+<a id="af02ec46cd5e39cdbee63fc005f3ef100" name="af02ec46cd5e39cdbee63fc005f3ef100"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af02ec46cd5e39cdbee63fc005f3ef100">&#9670;&#160;</a></span>chemparseplot_min_version</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view eonc::JobResultProvenance::chemparseplot_min_version = &quot;1.9.17&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00059">59</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+
+</div>
+</div>
+<a id="a24abaa313b83281109cbb99398dc1232" name="a24abaa313b83281109cbb99398dc1232"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24abaa313b83281109cbb99398dc1232">&#9670;&#160;</a></span>eindir_abi_major</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t eonc::JobResultProvenance::eindir_abi_major {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00046">46</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   46</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a248d4276ee2b44ebc05b24b9f1270ba8" name="a248d4276ee2b44ebc05b24b9f1270ba8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a248d4276ee2b44ebc05b24b9f1270ba8">&#9670;&#160;</a></span>eindir_abi_minor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t eonc::JobResultProvenance::eindir_abi_minor {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00047">47</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   47</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a20898cbd6f56c8abf2b67664ffe6bf40" name="a20898cbd6f56c8abf2b67664ffe6bf40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20898cbd6f56c8abf2b67664ffe6bf40">&#9670;&#160;</a></span>eindir_dlpack_major</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t eonc::JobResultProvenance::eindir_dlpack_major {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00051">51</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   51</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a46e45728a95a452cbcdb173f0c6e5bb8" name="a46e45728a95a452cbcdb173f0c6e5bb8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46e45728a95a452cbcdb173f0c6e5bb8">&#9670;&#160;</a></span>eindir_dlpack_minor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t eonc::JobResultProvenance::eindir_dlpack_minor {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00052">52</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   52</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a64ac0fe28bcda692734502a09fe32e45" name="a64ac0fe28bcda692734502a09fe32e45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64ac0fe28bcda692734502a09fe32e45">&#9670;&#160;</a></span>eindir_features</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eonc::JobResultProvenance::eindir_features {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00053">53</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   53</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ae09796a3c6a5f7de7e9152cccf4d683f" name="ae09796a3c6a5f7de7e9152cccf4d683f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae09796a3c6a5f7de7e9152cccf4d683f">&#9670;&#160;</a></span>eindir_objective_align</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eonc::JobResultProvenance::eindir_objective_align {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00050">50</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   50</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a86a705e2f6c501da531bcb23a918c945" name="a86a705e2f6c501da531bcb23a918c945"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86a705e2f6c501da531bcb23a918c945">&#9670;&#160;</a></span>eindir_objective_layout</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t eonc::JobResultProvenance::eindir_objective_layout {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00048">48</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   48</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7b240b208b98d227d2dca64c7aaffbdf" name="a7b240b208b98d227d2dca64c7aaffbdf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b240b208b98d227d2dca64c7aaffbdf">&#9670;&#160;</a></span>eindir_objective_size</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eonc::JobResultProvenance::eindir_objective_size {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00049">49</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   49</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a311a62ad09f92bca11edcc7c53b24758" name="a311a62ad09f92bca11edcc7c53b24758"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a311a62ad09f92bca11edcc7c53b24758">&#9670;&#160;</a></span>engine_build_identity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::JobResultProvenance::engine_build_identity</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00038">38</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+
+</div>
+</div>
+<a id="a8a9b2c9b78ebee8fc1f32e8795b026be" name="a8a9b2c9b78ebee8fc1f32e8795b026be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a9b2c9b78ebee8fc1f32e8795b026be">&#9670;&#160;</a></span>engine_version</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::JobResultProvenance::engine_version</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00037">37</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+
+</div>
+</div>
+<a id="a5c09d098ec00540e34618f715002fe3a" name="a5c09d098ec00540e34618f715002fe3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c09d098ec00540e34618f715002fe3a">&#9670;&#160;</a></span>eon_schema_min_version</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view eonc::JobResultProvenance::eon_schema_min_version = &quot;0.2.3&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00057">57</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+
+</div>
+</div>
+<a id="a9c18c9a0dcd43faeebdfc1b6376ad3d2" name="a9c18c9a0dcd43faeebdfc1b6376ad3d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c18c9a0dcd43faeebdfc1b6376ad3d2">&#9670;&#160;</a></span>has_eindir</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::JobResultProvenance::has_eindir {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00045">45</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   45</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a66727996f1a1f74bebed9220e29b2c41" name="a66727996f1a1f74bebed9220e29b2c41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66727996f1a1f74bebed9220e29b2c41">&#9670;&#160;</a></span>readcon_min_version</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view eonc::JobResultProvenance::readcon_min_version = &quot;0.14.9&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00056">56</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+
+</div>
+</div>
+<a id="ae77cbf1405fe7a848b5df8178f14676a" name="ae77cbf1405fe7a848b5df8178f14676a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae77cbf1405fe7a848b5df8178f14676a">&#9670;&#160;</a></span>readcon_spec_version</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint16_t eonc::JobResultProvenance::readcon_spec_version = 3</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00055">55</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+
+</div>
+</div>
+<a id="a3b7a1f8e6aea5efc283a8e073b934c01" name="a3b7a1f8e6aea5efc283a8e073b934c01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b7a1f8e6aea5efc283a8e073b934c01">&#9670;&#160;</a></span>rgpot_name</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::JobResultProvenance::rgpot_name</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00039">39</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+
+</div>
+</div>
+<a id="adf50361c666479a231ba94b3f75c88a5" name="adf50361c666479a231ba94b3f75c88a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf50361c666479a231ba94b3f75c88a5">&#9670;&#160;</a></span>rgpot_pin</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view eonc::JobResultProvenance::rgpot_pin = &quot;3.2.0&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00060">60</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+
+</div>
+</div>
+<a id="ad65d448a5cf9d4f5f10aeeaa4dba3695" name="ad65d448a5cf9d4f5f10aeeaa4dba3695"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad65d448a5cf9d4f5f10aeeaa4dba3695">&#9670;&#160;</a></span>rgpot_version</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::JobResultProvenance::rgpot_version</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00040">40</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+
+</div>
+</div>
+<a id="a8d5d3d59823bcd9829546779cc52b3fb" name="a8d5d3d59823bcd9829546779cc52b3fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d5d3d59823bcd9829546779cc52b3fb">&#9670;&#160;</a></span>rgpycrumbs_min_version</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view eonc::JobResultProvenance::rgpycrumbs_min_version = &quot;1.10.4&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00058">58</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+
+</div>
+</div>
+<a id="ac95da62e019c36f8167c3674aad8b10e" name="ac95da62e019c36f8167c3674aad8b10e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac95da62e019c36f8167c3674aad8b10e">&#9670;&#160;</a></span>xts_abi_layout</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint16_t eonc::JobResultProvenance::xts_abi_layout {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00044">44</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   44</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a5f4c43bdec29d675d2b891ccac3ab5cb" name="a5f4c43bdec29d675d2b891ccac3ab5cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f4c43bdec29d675d2b891ccac3ab5cb">&#9670;&#160;</a></span>xts_abi_major</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint16_t eonc::JobResultProvenance::xts_abi_major {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00042">42</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   42</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ae835b495ae8a28cbf61ae8bf627438a7" name="ae835b495ae8a28cbf61ae8bf627438a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae835b495ae8a28cbf61ae8bf627438a7">&#9670;&#160;</a></span>xts_abi_minor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint16_t eonc::JobResultProvenance::xts_abi_minor {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00043">43</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   43</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a22247e076caf84d623c66ddb8b3c01d5" name="a22247e076caf84d623c66ddb8b3c01d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22247e076caf84d623c66ddb8b3c01d5">&#9670;&#160;</a></span>xtsci</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::JobResultProvenance::xtsci {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="JobResult_8h_source.html#l00041">41</a> of file <a class="el" href="JobResult_8h_source.html">JobResult.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   41</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/<a class="el" href="JobResult_8h_source.html">JobResult.h</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="namespaceeonc.html">eonc</a></li><li class="navelem"><a href="structeonc_1_1JobResultProvenance.html">JobResultProvenance</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

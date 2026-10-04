@@ -15,6 +15,7 @@ var searchData=
   ['updatesupercell_12',['UpdateSuperCell',['../classEMT.html#a352c3d0d14fa977614e016ddf5c362ba',1,'EMT::UpdateSuperCell()'],['../classNeighborList.html#a3ac08e2fc692fe2bf34f998753d9426a',1,'NeighborList::UpdateSuperCell()'],['../classAsapPotential.html#aa476373048cae08d073c7320b821a74d',1,'AsapPotential::UpdateSuperCell()']]],
   ['updatethresholdbackoff_13',['updateThresholdBackoff',['../classeonc_1_1neb_1_1OCINEBController.html#aeaa9683433dac5303bf895c28ffb9e0e',1,'eonc::neb::OCINEBController']]],
   ['updatethresholdsuccess_14',['updateThresholdSuccess',['../classeonc_1_1neb_1_1OCINEBController.html#a5e9c48080ecadc019093094ce77fca91',1,'eonc::neb::OCINEBController']]],
-  ['usesalternativerotation_15',['usesAlternativeRotation',['../namespaceeonc.html#a5b795f46811b90d51ec4a80335871aeb',1,'eonc']]],
-  ['usesprecon_16',['usesPrecon',['../classeonc_1_1LBFGS.html#a9d87a97212fc8d680e76cd59b1ecf1cc',1,'eonc::LBFGS']]]
+  ['usablecores_15',['usableCores',['../namespaceeonc_1_1detail.html#ac2ceb90ed825a626f307749b887cf028',1,'eonc::detail']]],
+  ['usesalternativerotation_16',['usesAlternativeRotation',['../namespaceeonc.html#a5b795f46811b90d51ec4a80335871aeb',1,'eonc']]],
+  ['usesprecon_17',['usesPrecon',['../classeonc_1_1LBFGS.html#a9d87a97212fc8d680e76cd59b1ecf1cc',1,'eonc::LBFGS']]]
 ];

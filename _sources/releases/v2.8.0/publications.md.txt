@@ -26,7 +26,7 @@ here, pull requests are welcome.
 - **Method ::** Quaternion-based removal of external degrees of freedom {cite:t}`2.8.0-melanderRemovingExternalDegrees2015`.
 - **Application ::** Tight-binding charge transfer model {cite:t}`2.8.0-marasImprovedTightbindingCharge2015`.
 - **Application ::** H diffusion on ice at low temperature {cite:t}`2.8.0-asgeirssonLongTimeScaleSimulations2017`.
-- **Application ::** Reassignment of Au cluster magic numbers {cite:t}`2.8.0-gardenReassignmentMagicNumbers2018a`.
+- **Application ::** Reassignment of Au cluster magic numbers {cite:t}`2.8.0-gardenReassignmentMagicNumbers2018`.
 - **Application ::** Structure and properties of an edge dislocation in Rutile TiO_2
   {cite:t}`2.8.0-marasDeterminationStructureProperties2019`.
 - **Method ::** Energy-weighted springs and eigenvector following for NEB {cite:t}`2.8.0-asgeirssonNudgedElasticBand2021`.

@@ -18,8 +18,6 @@ locally on the server, via MPI,  or using a job queuing system such as
 ```{note}
 From 2.0 on, prefer a workflow manager over eOn-generated submit
 scripts. For AiiDA the plugin is {doc}`aiida` (`pip install aiida-eon`).
-Snakemake and [FireWorks](https://materialsproject.github.io/fireworks)
-remain valid alternatives.
 ```
 
 ## Configuration
@@ -45,6 +43,12 @@ type = "local"
 client_path = "eonclient-custom"
 number_of_cpus = 8
 ```
+
+The local communicator starts each `eonclient` with `UCX_MEM_EVENTS=no`
+unless the environment already sets that variable. An `eonclient` that
+links MPI loads Unified Communication X on every run. A local client has
+no MPI peers, so it never uses those memory hooks. Conda OpenMPI spends
+about 0.4 s on them per process, against about 0.02 s for a one-call job.
 
 ### In-process (`type = local_lib` / inprocess)
 
@@ -73,6 +77,17 @@ refused. The result dict returns `product` and, when a saddle exists,
 numpy working set. `results.dat` is still synthesized as text so the classic
 explorer can parse scalars.
 
+The same record is the dict `job_result`. Its fields are
+`termination_reason` (the status integer), `termination_reason_text`
+(`GOOD`, `FAIL`, or `cancelled`), `job_type`, `potential_energy`, and
+`total_force_calls`.
+
+`cancel_state` returns 1 only while `submit_jobs` is inside a batch. That
+call sets a token the next job sees, and a second token that a compiled
+relax, band, or saddle search polls during the current call. A call while
+no batch is running returns 0. The token is cleared when `submit_jobs`
+returns.
+
 ## Additional topics
 
 ```{versionchanged} 2.0
@@ -82,8 +97,8 @@ Potentials which can be run in parallel, like those accessed through ASE (e.g. O
 ### MPI
 
 ```{note}
-Only AKMC runs on the MPI communicator. It was checked on 3.4 with Open MPI
-5 and an AKMC run of one server and two client ranks.
+Open MPI 5 on 3.4 ran an adaptive kinetic Monte Carlo check with one
+server rank and two client ranks.
 ```
 
 The MPI communicator runs the server and the clients as one MPI job. The
@@ -94,7 +109,9 @@ Build the client with `-Dwith_mpi=enabled`; the resulting `eonclient` only runs
 under MPI. Two environment variables set the layout. `EON_NUMBER_OF_CLIENTS`
 is how many ranks become clients, and `EON_SERVER_PATH` is a Python script
 that starts the server. Launch the clients, not the server: one extra rank
-turns into the server and runs that script. Only AKMC is supported.
+turns into the server and runs that script. With `[Communicator] type = mpi`,
+adaptive kinetic Monte Carlo, parallel replica, and basin hopping wait on
+that communicator. `examples/prd_mpi` and `examples/bh_mpi` use this launch.
 
 ```{code-block} python
 # server.py
@@ -121,13 +138,13 @@ Not tested on 2.0
 ```
 
 An example communicator section for the cluster communicator using the provided
-`sge6.2` scripts and a name prefix of `al_diffusion_`:
+`sge` scripts and a name prefix of `al_diffusion_`:
 
 ```{code-block} ini
 [Communicator]
 type = "cluster"
 name_prefix = "al_diffusion_"
-script_path = "/home/user/eon/tools/clusters/sge6.2"
+script_path = "/home/user/eon/tools/clusters/sge"
 ```
 
 The Slurm scripts in `tools/clusters/slurm` take their site options from
@@ -138,7 +155,7 @@ the command each job runs, `eonclient` by default:
 ```{code-block} bash
 export EON_SBATCH_ARGS="-A myaccount -p cpu -N 1 --ntasks=48 -t 01:00:00"
 export EON_CLIENT=eonclient
-eon
+eon-server
 ```
 
 ```{code-block} ini

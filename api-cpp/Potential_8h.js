@@ -2,7 +2,8 @@ var Potential_8h =
 [
     [ "eonc::PotentialConstructionScope", "classeonc_1_1PotentialConstructionScope.html", "classeonc_1_1PotentialConstructionScope" ],
     [ "eonc::Potential", "classeonc_1_1Potential.html", "classeonc_1_1Potential" ],
-    [ "eonc::helpers::makePotential", "namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff", null ],
-    [ "eonc::helpers::makePotential", "namespaceeonc_1_1helpers.html#a70007fc2a6a9fbbdd3d31b2780f1470b", null ],
-    [ "eonc::helpers::makePotential", "namespaceeonc_1_1helpers.html#a0dd5203b9b5778a163fdd2a2e68489f0", null ]
+    [ "eonc::helpers::makePotential", "namespaceeonc_1_1helpers.html#a5f1e0c7a3fbf2324d5e6c2b84c0ddb86", null ],
+    [ "eonc::helpers::makePotential", "namespaceeonc_1_1helpers.html#ae1932ddfd1850f07c690b461bba3faf6", null ],
+    [ "eonc::helpers::makePotential", "namespaceeonc_1_1helpers.html#a7a8efc5346c8f68c6f24b757cc0685d4", null ],
+    [ "eonc::helpers::sharePotential", "namespaceeonc_1_1helpers.html#a67ab5cb7bee60443753fcae864fd27e4", null ]
 ];

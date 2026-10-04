@@ -47,8 +47,11 @@ classes for Matter-in / Matter-out work.
 ```{code-block} bash
 pip install pyeonclient
 pip install 'pyeonclient[ase]'
-pip install 'rgpot>=2.5.2'   # multi-ABI engines for Metatomic via RGPOT
+pip install 'pyeonclient[metatomic]'
+pip install 'rgpot>=3.2.0'   # multi-ABI engines for Metatomic via RGPOT
 ```
+
+The `metatomic` extra does not define `WITH_METATOMIC` and does not pass `-Dwith_metatomic`.
 
 Typed Dimer/NEB specs come from the shared **[eon-schema](project:../devdocs/eon-schema.md)**
 package (`pip install 'pyeonclient[models]'` → `eon-schema>=0.2`). Job-config

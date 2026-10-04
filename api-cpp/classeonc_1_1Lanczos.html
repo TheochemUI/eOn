@@ -259,12 +259,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a11b0d3969583a132127e6a46e0463f4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Same as compute(matter, dir) but with an explicit mobile atom list (intersected with free flags).  <br /></td></tr>
 <tr class="memitem:aaaa40b92233c4a7c8d7f23e8dab4fbf6" id="r_aaaa40b92233c4a7c8d7f23e8dab4fbf6"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#aaaa40b92233c4a7c8d7f23e8dab4fbf6">getEigenvalue</a> () override</td></tr>
 <tr class="memitem:a9b50a6ef4fdd4e7522740cdf517c2c22" id="r_a9b50a6ef4fdd4e7522740cdf517c2c22"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>&#160;</td><td class="memItemRight"><a class="el" href="#a9b50a6ef4fdd4e7522740cdf517c2c22">getEigenvector</a> () override</td></tr>
+<tr class="memitem:a22f138fb8df071be0f551e83133d1d91" id="r_a22f138fb8df071be0f551e83133d1d91"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a22f138fb8df071be0f551e83133d1d91">evaluateWithProbe</a> (const std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &amp;centre, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;direction) override</td></tr>
+<tr class="memdesc:a22f138fb8df071be0f551e83133d1d91"><td class="mdescLeft">&#160;</td><td class="mdescRight">The probe is the first Krylov product's displaced image, for the one-sided product only.  <br /></td></tr>
 <tr class="inherit_header pub_methods_classeonc_1_1LowestEigenmode"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1LowestEigenmode')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1LowestEigenmode.html">eonc::LowestEigenmode</a></td></tr>
 <tr class="memitem:af5c7e532e7e02cb38d6f27c348c52473 inherit pub_methods_classeonc_1_1LowestEigenmode" id="r_af5c7e532e7e02cb38d6f27c348c52473"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#af5c7e532e7e02cb38d6f27c348c52473">LowestEigenmode</a> (std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt; potPassed, const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;parameters)</td></tr>
 <tr class="memitem:a381aa32bbba8b6eb8cab60ec17a9bd0a inherit pub_methods_classeonc_1_1LowestEigenmode" id="r_a381aa32bbba8b6eb8cab60ec17a9bd0a"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a381aa32bbba8b6eb8cab60ec17a9bd0a">~LowestEigenmode</a> ()=default</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
+<tr class="memitem:aebf952539874ee9b72a2f0697d8ded0e" id="r_aebf952539874ee9b72a2f0697d8ded0e"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#aebf952539874ee9b72a2f0697d8ded0e">probe_</a></td></tr>
 <tr class="memitem:a784c83638bdd48a4e2f7b06babd3c9cf" id="r_a784c83638bdd48a4e2f7b06babd3c9cf"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>&#160;</td><td class="memItemRight"><a class="el" href="#a784c83638bdd48a4e2f7b06babd3c9cf">lowestEv</a></td></tr>
 <tr class="memitem:a862fd99f7f81def38985142301891144" id="r_a862fd99f7f81def38985142301891144"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a862fd99f7f81def38985142301891144">lowestEw</a> {0.0}</td></tr>
 <tr class="memitem:af94afbd31daf3a735bf72389396ff157" id="r_af94afbd31daf3a735bf72389396ff157"><td class="memItemLeft"><a class="el" href="structeonc_1_1log_1_1Scoped.html">eonc::log::Scoped</a>&#160;</td><td class="memItemRight"><a class="el" href="#af94afbd31daf3a735bf72389396ff157">log</a></td></tr>
@@ -283,13 +286,14 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:a14617f4b0ae6355cdbd54882065b0534 inherit pub_static_attribs_classeonc_1_1LowestEigenmode" id="r_a14617f4b0ae6355cdbd54882065b0534"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a14617f4b0ae6355cdbd54882065b0534">MINMODE_GPRDIMER</a> [] = &quot;gprdimer&quot;</td></tr>
 <tr class="memitem:a545a60db6d74011ce08833f1935f1ea0 inherit pub_static_attribs_classeonc_1_1LowestEigenmode" id="r_a545a60db6d74011ce08833f1935f1ea0"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a545a60db6d74011ce08833f1935f1ea0">MINMODE_LANCZOS</a> [] = &quot;lanczos&quot;</td></tr>
 <tr class="memitem:a827baff84ad96c6917f2029ed0e2b86b inherit pub_static_attribs_classeonc_1_1LowestEigenmode" id="r_a827baff84ad96c6917f2029ed0e2b86b"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a827baff84ad96c6917f2029ed0e2b86b">MINMODE_DAVIDSON</a> [] = &quot;davidson&quot;</td></tr>
+<tr class="memitem:af060f39a6915b5993b383a61af65ff89 inherit pub_static_attribs_classeonc_1_1LowestEigenmode" id="r_af060f39a6915b5993b383a61af65ff89"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#af060f39a6915b5993b383a61af65ff89">MINMODE_XTSCI</a> [] = &quot;xtsci&quot;</td></tr>
 <tr class="inherit_header pro_attribs_classeonc_1_1LowestEigenmode"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classeonc_1_1LowestEigenmode')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classeonc_1_1LowestEigenmode.html">eonc::LowestEigenmode</a></td></tr>
 <tr class="memitem:a37333ab6591b41d3d0e0a5e5f0481300 inherit pro_attribs_classeonc_1_1LowestEigenmode" id="r_a37333ab6591b41d3d0e0a5e5f0481300"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a37333ab6591b41d3d0e0a5e5f0481300">pot</a></td></tr>
 <tr class="memitem:a372b0c7160716051cd847072498d8322 inherit pro_attribs_classeonc_1_1LowestEigenmode" id="r_a372b0c7160716051cd847072498d8322"><td class="memItemLeft">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="Lanczos_8h_source.html#l00026">26</a> of file <a class="el" href="Lanczos_8h_source.html">Lanczos.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Lanczos_8h_source.html#l00028">28</a> of file <a class="el" href="Lanczos_8h_source.html">Lanczos.h</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a0c6dfe3c1dc638d291d822cd1f112082" name="a0c6dfe3c1dc638d291d822cd1f112082"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0c6dfe3c1dc638d291d822cd1f112082">&#9670;&#160;</a></span>Lanczos()</h2>
@@ -315,17 +319,17 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Lanczos_8cpp_source.html#l00036">36</a> of file <a class="el" href="Lanczos_8cpp_source.html">Lanczos.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   38</span>    : <a class="code hl_function" href="classeonc_1_1LowestEigenmode.html#af5c7e532e7e02cb38d6f27c348c52473">LowestEigenmode</a>(<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a37333ab6591b41d3d0e0a5e5f0481300">pot</a>, <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>),</div>
-<div class="line"><span class="lineno">   39</span>      <a class="code hl_variable" href="#a862fd99f7f81def38985142301891144">lowestEw</a>{0.0} {</div>
-<div class="line"><span class="lineno">   40</span>  <a class="code hl_variable" href="#a784c83638bdd48a4e2f7b06babd3c9cf">lowestEv</a>.resize(matter-&gt;numberOfAtoms(), 3);</div>
-<div class="line"><span class="lineno">   41</span>  <a class="code hl_variable" href="#a784c83638bdd48a4e2f7b06babd3c9cf">lowestEv</a>.setZero();</div>
-<div class="line"><span class="lineno">   42</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Lanczos_html_a784c83638bdd48a4e2f7b06babd3c9cf"><div class="ttname"><a href="#a784c83638bdd48a4e2f7b06babd3c9cf">eonc::Lanczos::lowestEv</a></div><div class="ttdeci">AtomMatrix lowestEv</div><div class="ttdef"><b>Definition</b> <a href="Lanczos_8h_source.html#l00042">Lanczos.h:42</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Lanczos_html_a862fd99f7f81def38985142301891144"><div class="ttname"><a href="#a862fd99f7f81def38985142301891144">eonc::Lanczos::lowestEw</a></div><div class="ttdeci">double lowestEw</div><div class="ttdef"><b>Definition</b> <a href="Lanczos_8h_source.html#l00043">Lanczos.h:43</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Lanczos_8cpp_source.html#l00037">37</a> of file <a class="el" href="Lanczos_8cpp_source.html">Lanczos.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   39</span>    : <a class="code hl_function" href="classeonc_1_1LowestEigenmode.html#af5c7e532e7e02cb38d6f27c348c52473">LowestEigenmode</a>(<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a37333ab6591b41d3d0e0a5e5f0481300">pot</a>, <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>),</div>
+<div class="line"><span class="lineno">   40</span>      <a class="code hl_variable" href="#a862fd99f7f81def38985142301891144">lowestEw</a>{0.0} {</div>
+<div class="line"><span class="lineno">   41</span>  <a class="code hl_variable" href="#a784c83638bdd48a4e2f7b06babd3c9cf">lowestEv</a>.resize(matter-&gt;numberOfAtoms(), 3);</div>
+<div class="line"><span class="lineno">   42</span>  <a class="code hl_variable" href="#a784c83638bdd48a4e2f7b06babd3c9cf">lowestEv</a>.setZero();</div>
+<div class="line"><span class="lineno">   43</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Lanczos_html_a784c83638bdd48a4e2f7b06babd3c9cf"><div class="ttname"><a href="#a784c83638bdd48a4e2f7b06babd3c9cf">eonc::Lanczos::lowestEv</a></div><div class="ttdeci">AtomMatrix lowestEv</div><div class="ttdef"><b>Definition</b> <a href="Lanczos_8h_source.html#l00051">Lanczos.h:51</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Lanczos_html_a862fd99f7f81def38985142301891144"><div class="ttname"><a href="#a862fd99f7f81def38985142301891144">eonc::Lanczos::lowestEw</a></div><div class="ttdeci">double lowestEw</div><div class="ttdef"><b>Definition</b> <a href="Lanczos_8h_source.html#l00052">Lanczos.h:52</a></div></div>
 <div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_a372b0c7160716051cd847072498d8322"><div class="ttname"><a href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">eonc::LowestEigenmode::params</a></div><div class="ttdeci">const Parameters &amp; params</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00026">LowestEigenmode.h:26</a></div></div>
 <div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_a37333ab6591b41d3d0e0a5e5f0481300"><div class="ttname"><a href="classeonc_1_1LowestEigenmode.html#a37333ab6591b41d3d0e0a5e5f0481300">eonc::LowestEigenmode::pot</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; pot</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00025">LowestEigenmode.h:25</a></div></div>
-<div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_af5c7e532e7e02cb38d6f27c348c52473"><div class="ttname"><a href="classeonc_1_1LowestEigenmode.html#af5c7e532e7e02cb38d6f27c348c52473">eonc::LowestEigenmode::LowestEigenmode</a></div><div class="ttdeci">LowestEigenmode(std::shared_ptr&lt; Potential &gt; potPassed, const Parameters &amp;parameters)</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00040">LowestEigenmode.h:40</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_af5c7e532e7e02cb38d6f27c348c52473"><div class="ttname"><a href="classeonc_1_1LowestEigenmode.html#af5c7e532e7e02cb38d6f27c348c52473">eonc::LowestEigenmode::LowestEigenmode</a></div><div class="ttdeci">LowestEigenmode(std::shared_ptr&lt; Potential &gt; potPassed, const Parameters &amp;parameters)</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00041">LowestEigenmode.h:41</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -384,13 +388,13 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1LowestEigenmode.html#a072cd9d6badc02cea8db64823324e757">eonc::LowestEigenmode</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Lanczos_8cpp_source.html#l00044">44</a> of file <a class="el" href="Lanczos_8cpp_source.html">Lanczos.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   44</span>                                                                        {</div>
-<div class="line"><span class="lineno">   45</span>  <span class="keyword">const</span> VectorXi mobile =</div>
-<div class="line"><span class="lineno">   46</span>      <a class="code hl_function" href="namespaceeonc.html#a0925dba4103d133a844dfad8162f7c8a">resolveMobileAtoms</a>(matter.get(), <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.lanczos_options().phva_atoms);</div>
-<div class="line"><span class="lineno">   47</span>  <a class="code hl_function" href="#ac7da6e7accdb1d35f166e7efa02e0445">compute</a>(std::move(matter), std::move(direction), mobile);</div>
-<div class="line"><span class="lineno">   48</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Lanczos_html_ac7da6e7accdb1d35f166e7efa02e0445"><div class="ttname"><a href="#ac7da6e7accdb1d35f166e7efa02e0445">eonc::Lanczos::compute</a></div><div class="ttdeci">void compute(std::shared_ptr&lt; Matter &gt; matter, AtomMatrix initialDirection) override</div><div class="ttdef"><b>Definition</b> <a href="Lanczos_8cpp_source.html#l00044">Lanczos.cpp:44</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Lanczos_8cpp_source.html#l00045">45</a> of file <a class="el" href="Lanczos_8cpp_source.html">Lanczos.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   45</span>                                                                        {</div>
+<div class="line"><span class="lineno">   46</span>  <span class="keyword">const</span> VectorXi mobile =</div>
+<div class="line"><span class="lineno">   47</span>      <a class="code hl_function" href="namespaceeonc.html#a0925dba4103d133a844dfad8162f7c8a">resolveMobileAtoms</a>(matter.get(), <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.lanczos_options().phva_atoms);</div>
+<div class="line"><span class="lineno">   48</span>  <a class="code hl_function" href="#ac7da6e7accdb1d35f166e7efa02e0445">compute</a>(std::move(matter), std::move(direction), mobile);</div>
+<div class="line"><span class="lineno">   49</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Lanczos_html_ac7da6e7accdb1d35f166e7efa02e0445"><div class="ttname"><a href="#ac7da6e7accdb1d35f166e7efa02e0445">eonc::Lanczos::compute</a></div><div class="ttdeci">void compute(std::shared_ptr&lt; Matter &gt; matter, AtomMatrix initialDirection) override</div><div class="ttdef"><b>Definition</b> <a href="Lanczos_8cpp_source.html#l00045">Lanczos.cpp:45</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a0925dba4103d133a844dfad8162f7c8a"><div class="ttname"><a href="namespaceeonc.html#a0925dba4103d133a844dfad8162f7c8a">eonc::resolveMobileAtoms</a></div><div class="ttdeci">VectorXi resolveMobileAtoms(const Matter *matter, const std::string &amp;atomList)</div><div class="ttdoc">PHVA-class mobile set for FD Hessian and matrix-free Krylov (Lanczos / Davidson).</div><div class="ttdef"><b>Definition</b> <a href="MobileAtoms_8cpp_source.html#l00068">MobileAtoms.cpp:68</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -422,149 +426,163 @@ Additional Inherited Members</h2></td></tr>
 <p>Same as compute(matter, dir) but with an explicit mobile atom list (intersected with free flags). </p>
 <p>Eigenvector rows outside the list are 0. </p>
 
-<p class="definition">Definition at line <a class="el" href="Lanczos_8cpp_source.html#l00050">50</a> of file <a class="el" href="Lanczos_8cpp_source.html">Lanczos.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   51</span>                                                {</div>
-<div class="line"><span class="lineno">   52</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a724f93c18ebe10e59fb24d29cf0703c1">totalForceCalls</a> = 0;</div>
-<div class="line"><span class="lineno">   53</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a> = 0;</div>
-<div class="line"><span class="lineno">   54</span>  <a class="code hl_variable" href="#a784c83638bdd48a4e2f7b06babd3c9cf">lowestEv</a>.resize(matter-&gt;numberOfAtoms(), 3);</div>
-<div class="line"><span class="lineno">   55</span>  <a class="code hl_variable" href="#a784c83638bdd48a4e2f7b06babd3c9cf">lowestEv</a>.setZero();</div>
-<div class="line"><span class="lineno">   56</span> </div>
-<div class="line"><span class="lineno">   57</span>  <span class="keyword">const</span> VectorXi mobile = <a class="code hl_function" href="namespaceeonc.html#a0925dba4103d133a844dfad8162f7c8a">resolveMobileAtoms</a>(matter.get(), mobileIn);</div>
-<div class="line"><span class="lineno">   58</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> size = 3 * <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(mobile.size());</div>
-<div class="line"><span class="lineno">   59</span>  <span class="keywordflow">if</span> (size == 0) {</div>
-<div class="line"><span class="lineno">   60</span>    <a class="code hl_variable" href="#a862fd99f7f81def38985142301891144">lowestEw</a> = 0.0;</div>
-<div class="line"><span class="lineno">   61</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">   62</span>  }</div>
-<div class="line"><span class="lineno">   63</span> </div>
-<div class="line"><span class="lineno">   64</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> maxIters = std::max(1L, <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.lanczos_options().max_iterations);</div>
-<div class="line"><span class="lineno">   65</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> T(size, maxIters), Q(size, maxIters);</div>
-<div class="line"><span class="lineno">   66</span>  T.setZero();</div>
-<div class="line"><span class="lineno">   67</span>  VectorXd u(size), r = <a class="code hl_function" href="namespaceeonc.html#a6baeaa9ee75d8ba1f598e80639fa79ab">packMobileRows</a>(direction, mobile);</div>
-<div class="line"><span class="lineno">   68</span> </div>
-<div class="line"><span class="lineno">   69</span>  <span class="keywordtype">double</span> alpha, beta = r.norm();</div>
-<div class="line"><span class="lineno">   70</span>  <span class="keywordflow">if</span> (beta &lt; <a class="code hl_variable" href="namespaceeonc_1_1safemath.html#a57c5f23e983b67c789337e2108c86c8c">eonc::safemath::eps</a>) {</div>
-<div class="line"><span class="lineno">   71</span>    <a class="code hl_variable" href="#a862fd99f7f81def38985142301891144">lowestEw</a> = 0.0;</div>
-<div class="line"><span class="lineno">   72</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">   73</span>  }</div>
-<div class="line"><span class="lineno">   74</span>  <span class="keywordtype">double</span> ew = 0, ewOld = 0, ewAbsRelErr;</div>
-<div class="line"><span class="lineno">   75</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> dr = <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.main_options().finiteDifference;</div>
-<div class="line"><span class="lineno">   76</span>  <span class="keyword">const</span> <a class="code hl_enumeration" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dd">FdScheme</a> requested = <a class="code hl_function" href="namespaceeonc.html#a54c78dc90bd7020c23096bbb8744789f">parseFdScheme</a>(<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.hessian_options().fd_scheme);</div>
-<div class="line"><span class="lineno">   77</span>  <span class="comment">// Fourth-order is the only scheme that changes the matrix-free product.</span></div>
-<div class="line"><span class="lineno">   78</span>  <span class="comment">// one_sided and central keep the forward difference used by min-mode.</span></div>
-<div class="line"><span class="lineno">   79</span>  <span class="keyword">const</span> <a class="code hl_enumeration" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dd">FdScheme</a> hvpScheme =</div>
-<div class="line"><span class="lineno">   80</span>      requested == <a class="code hl_enumvalue" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda6e599f7a2a9186d391be4537f105be98">FdScheme::Fourth</a> ? <a class="code hl_enumvalue" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda6e599f7a2a9186d391be4537f105be98">FdScheme::Fourth</a> : <a class="code hl_enumvalue" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda81797e9c6fc44586202026bb6aaefe8c">FdScheme::OneSided</a>;</div>
-<div class="line"><span class="lineno">   81</span>  VectorXd evEst, evT, evOldEst;</div>
-<div class="line"><span class="lineno">   82</span> </div>
-<div class="line"><span class="lineno">   83</span>  <span class="keyword">auto</span> tmpMatter = std::make_unique&lt;Matter&gt;(*matter);</div>
-<div class="line"><span class="lineno">   84</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> forceCallsStart = tmpMatter-&gt;getForceCalls();</div>
-<div class="line"><span class="lineno">   85</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos0 = matter-&gt;getPositions();</div>
-<div class="line"><span class="lineno">   86</span>  <span class="keyword">const</span> VectorXd force0 = <a class="code hl_function" href="namespaceeonc.html#ac05c62309d9dc6b1ae410a98bd17c293">mobileForces</a>(tmpMatter.get(), mobile);</div>
-<div class="line"><span class="lineno">   87</span> </div>
-<div class="line"><span class="lineno">   88</span>  <span class="keyword">auto</span> applyH = [&amp;](<span class="keyword">const</span> VectorXd &amp;v) -&gt; VectorXd {</div>
-<div class="line"><span class="lineno">   89</span>    <span class="keyword">auto</span> at = [&amp;](<span class="keywordtype">double</span> scale) -&gt; VectorXd {</div>
-<div class="line"><span class="lineno">   90</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = pos0;</div>
-<div class="line"><span class="lineno">   91</span>      <a class="code hl_function" href="namespaceeonc.html#a419e9f0f2a85a8a76afe1ae0615f2022">unpackMobileRows</a>(<a class="code hl_function" href="namespaceeonc.html#a6baeaa9ee75d8ba1f598e80639fa79ab">packMobileRows</a>(pos0, mobile) + (scale * dr) * v, mobile,</div>
-<div class="line"><span class="lineno">   92</span>                       pos);</div>
-<div class="line"><span class="lineno">   93</span>      tmpMatter-&gt;setPositions(pos);</div>
-<div class="line"><span class="lineno">   94</span>      <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc.html#ac05c62309d9dc6b1ae410a98bd17c293">mobileForces</a>(tmpMatter.get(), mobile);</div>
-<div class="line"><span class="lineno">   95</span>    };</div>
-<div class="line"><span class="lineno">   96</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc.html#a1aaf34eb8de2a3b2ed22c536cc106aab">fdHessianVector</a>(hvpScheme, dr, force0, at);</div>
-<div class="line"><span class="lineno">   97</span>  };</div>
-<div class="line"><span class="lineno">   98</span> </div>
-<div class="line"><span class="lineno">   99</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; size; i++) {</div>
-<div class="line"><span class="lineno">  100</span>    <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a> = i;</div>
-<div class="line"><span class="lineno">  101</span>    Q.col(i) = r / beta;</div>
-<div class="line"><span class="lineno">  102</span> </div>
-<div class="line"><span class="lineno">  103</span>    u = applyH(Q.col(i));</div>
-<div class="line"><span class="lineno">  104</span> </div>
-<div class="line"><span class="lineno">  105</span>    <span class="keywordflow">if</span> (i == 0) {</div>
-<div class="line"><span class="lineno">  106</span>      r = u;</div>
-<div class="line"><span class="lineno">  107</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  108</span>      r = u - beta * Q.col(i - 1);</div>
-<div class="line"><span class="lineno">  109</span>    }</div>
-<div class="line"><span class="lineno">  110</span>    alpha = Q.col(i).dot(r);</div>
-<div class="line"><span class="lineno">  111</span>    r = r - alpha * Q.col(i);</div>
-<div class="line"><span class="lineno">  112</span> </div>
-<div class="line"><span class="lineno">  113</span>    T(i, i) = alpha;</div>
-<div class="line"><span class="lineno">  114</span>    <span class="keywordflow">if</span> (i &gt; 0) {</div>
-<div class="line"><span class="lineno">  115</span>      T(i - 1, i) = beta;</div>
-<div class="line"><span class="lineno">  116</span>      T(i, i - 1) = beta;</div>
-<div class="line"><span class="lineno">  117</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="Lanczos_8cpp_source.html#l00097">97</a> of file <a class="el" href="Lanczos_8cpp_source.html">Lanczos.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   98</span>                                                {</div>
+<div class="line"><span class="lineno">   99</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a724f93c18ebe10e59fb24d29cf0703c1">totalForceCalls</a> = 0;</div>
+<div class="line"><span class="lineno">  100</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a> = 0;</div>
+<div class="line"><span class="lineno">  101</span>  <span class="comment">// A probe from evaluateWithProbe() serves this call&#39;s first product only.</span></div>
+<div class="line"><span class="lineno">  102</span>  std::unique_ptr&lt;Matter&gt; probe = std::move(<a class="code hl_variable" href="#aebf952539874ee9b72a2f0697d8ded0e">probe_</a>);</div>
+<div class="line"><span class="lineno">  103</span>  <span class="keywordtype">long</span> probeCalls = 0;</div>
+<div class="line"><span class="lineno">  104</span>  <a class="code hl_variable" href="#a784c83638bdd48a4e2f7b06babd3c9cf">lowestEv</a>.resize(matter-&gt;numberOfAtoms(), 3);</div>
+<div class="line"><span class="lineno">  105</span>  <a class="code hl_variable" href="#a784c83638bdd48a4e2f7b06babd3c9cf">lowestEv</a>.setZero();</div>
+<div class="line"><span class="lineno">  106</span> </div>
+<div class="line"><span class="lineno">  107</span>  <span class="keyword">const</span> VectorXi mobile = <a class="code hl_function" href="namespaceeonc.html#a0925dba4103d133a844dfad8162f7c8a">resolveMobileAtoms</a>(matter.get(), mobileIn);</div>
+<div class="line"><span class="lineno">  108</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> size = 3 * <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(mobile.size());</div>
+<div class="line"><span class="lineno">  109</span>  <span class="keywordflow">if</span> (size == 0) {</div>
+<div class="line"><span class="lineno">  110</span>    <a class="code hl_variable" href="#a862fd99f7f81def38985142301891144">lowestEw</a> = 0.0;</div>
+<div class="line"><span class="lineno">  111</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  112</span>  }</div>
+<div class="line"><span class="lineno">  113</span> </div>
+<div class="line"><span class="lineno">  114</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> maxIters = std::max(1L, <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.lanczos_options().max_iterations);</div>
+<div class="line"><span class="lineno">  115</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> T(size, maxIters), Q(size, maxIters);</div>
+<div class="line"><span class="lineno">  116</span>  T.setZero();</div>
+<div class="line"><span class="lineno">  117</span>  VectorXd u(size), r = <a class="code hl_function" href="namespaceeonc.html#a6baeaa9ee75d8ba1f598e80639fa79ab">packMobileRows</a>(direction, mobile);</div>
 <div class="line"><span class="lineno">  118</span> </div>
-<div class="line"><span class="lineno">  119</span>    beta = r.norm();</div>
-<div class="line"><span class="lineno">  120</span>    <span class="comment">// A vanished residual closes this Krylov block. Take the Ritz pair from</span></div>
-<div class="line"><span class="lineno">  121</span>    <span class="comment">// the current T; breaking first keeps the previous subspace.</span></div>
-<div class="line"><span class="lineno">  122</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> krylovClosed = beta &lt;= 1e-10 * std::fabs(alpha);</div>
-<div class="line"><span class="lineno">  123</span> </div>
-<div class="line"><span class="lineno">  124</span>    <span class="keywordflow">if</span> (i &gt;= 1) {</div>
-<div class="line"><span class="lineno">  125</span>      Eigen::SelfAdjointEigenSolver&lt;MatrixXd&gt; es(T.block(0, 0, i + 1, i + 1));</div>
-<div class="line"><span class="lineno">  126</span>      ew = es.eigenvalues()(0);</div>
-<div class="line"><span class="lineno">  127</span>      evT = es.eigenvectors().col(0);</div>
-<div class="line"><span class="lineno">  128</span>      ewAbsRelErr = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(std::fabs(ew - ewOld),</div>
-<div class="line"><span class="lineno">  129</span>                                             std::fabs(ewOld), 1.0);</div>
-<div class="line"><span class="lineno">  130</span>      ewOld = ew;</div>
-<div class="line"><span class="lineno">  131</span> </div>
-<div class="line"><span class="lineno">  132</span>      evEst = Q.block(0, 0, size, i + 1) * evT;</div>
-<div class="line"><span class="lineno">  133</span>      eonc::safemath::safe_normalize_inplace(evEst);</div>
-<div class="line"><span class="lineno">  134</span>      <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a0b00be5551a5221a2951a5271e353e1c">statsAngle</a> = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a54d5df2519372b82461f76667d6f0223">eonc::safemath::safe_acos</a>(std::fabs(evEst.dot(evOldEst))) *</div>
-<div class="line"><span class="lineno">  135</span>                   (180 / <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a>);</div>
-<div class="line"><span class="lineno">  136</span>      <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a60b737b93fe99a9004ee424f0d897d87">statsTorque</a> = ewAbsRelErr;</div>
-<div class="line"><span class="lineno">  137</span>      evOldEst = evEst;</div>
-<div class="line"><span class="lineno">  138</span>      QUILL_LOG_INFO(<a class="code hl_variable" href="#af94afbd31daf3a735bf72389396ff157">log</a>,</div>
-<div class="line"><span class="lineno">  139</span>                     <span class="stringliteral">&quot;[ILanczos] {:9s} {:9s} {:10s} {:14s} {:9.4f} &quot;</span></div>
-<div class="line"><span class="lineno">  140</span>                     <span class="stringliteral">&quot;{:10.6f} {:7.3f} {:5} n_mobile={}&quot;</span>,</div>
-<div class="line"><span class="lineno">  141</span>                     <span class="stringliteral">&quot;----&quot;</span>, <span class="stringliteral">&quot;----&quot;</span>, <span class="stringliteral">&quot;----&quot;</span>, <span class="stringliteral">&quot;----&quot;</span>, ew, ewAbsRelErr,</div>
-<div class="line"><span class="lineno">  142</span>                     <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a0b00be5551a5221a2951a5271e353e1c">statsAngle</a>, i, mobile.size());</div>
-<div class="line"><span class="lineno">  143</span>      <span class="keywordflow">if</span> (krylovClosed) {</div>
-<div class="line"><span class="lineno">  144</span>        QUILL_LOG_ERROR(<a class="code hl_variable" href="#af94afbd31daf3a735bf72389396ff157">log</a>, <span class="stringliteral">&quot;[ILanczos] ERROR: linear dependence&quot;</span>);</div>
-<div class="line"><span class="lineno">  145</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  146</span>      }</div>
-<div class="line"><span class="lineno">  147</span>      <span class="keywordflow">if</span> (ewAbsRelErr &lt; <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.lanczos_options().tolerance) {</div>
-<div class="line"><span class="lineno">  148</span>        QUILL_LOG_INFO(<a class="code hl_variable" href="#af94afbd31daf3a735bf72389396ff157">log</a>, <span class="stringliteral">&quot;[ILanczos] Tolerance reached: {}&quot;</span>,</div>
-<div class="line"><span class="lineno">  149</span>                       <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.lanczos_options().tolerance);</div>
-<div class="line"><span class="lineno">  150</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  151</span>      }</div>
-<div class="line"><span class="lineno">  152</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  153</span>      ew = alpha;</div>
-<div class="line"><span class="lineno">  154</span>      ewOld = ew;</div>
-<div class="line"><span class="lineno">  155</span>      evEst = Q.col(0);</div>
-<div class="line"><span class="lineno">  156</span>      evOldEst = Q.col(0);</div>
-<div class="line"><span class="lineno">  157</span>      <span class="keywordflow">if</span> (krylovClosed) {</div>
-<div class="line"><span class="lineno">  158</span>        QUILL_LOG_ERROR(<a class="code hl_variable" href="#af94afbd31daf3a735bf72389396ff157">log</a>, <span class="stringliteral">&quot;[ILanczos] ERROR: linear dependence&quot;</span>);</div>
-<div class="line"><span class="lineno">  159</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  160</span>      }</div>
-<div class="line"><span class="lineno">  161</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a862fd99f7f81def38985142301891144">lowestEw</a> != 0.0 &amp;&amp; <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.lanczos_options().quit_early) {</div>
-<div class="line"><span class="lineno">  162</span>        <span class="keywordtype">double</span> Cprev = <a class="code hl_variable" href="#a862fd99f7f81def38985142301891144">lowestEw</a>;</div>
-<div class="line"><span class="lineno">  163</span>        <span class="keywordtype">double</span> Cnew = u.dot(Q.col(i));</div>
-<div class="line"><span class="lineno">  164</span>        ewAbsRelErr = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(std::fabs(Cnew - Cprev),</div>
-<div class="line"><span class="lineno">  165</span>                                               std::fabs(Cprev), 1.0);</div>
-<div class="line"><span class="lineno">  166</span>        <span class="keywordflow">if</span> (ewAbsRelErr &lt;= <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.lanczos_options().tolerance) {</div>
-<div class="line"><span class="lineno">  167</span>          <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a0b00be5551a5221a2951a5271e353e1c">statsAngle</a> = 0.0;</div>
-<div class="line"><span class="lineno">  168</span>          <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a60b737b93fe99a9004ee424f0d897d87">statsTorque</a> = ewAbsRelErr;</div>
-<div class="line"><span class="lineno">  169</span>          QUILL_LOG_INFO(<a class="code hl_variable" href="#af94afbd31daf3a735bf72389396ff157">log</a>, <span class="stringliteral">&quot;[ILanczos] Tolerance reached: {}&quot;</span>,</div>
-<div class="line"><span class="lineno">  170</span>                         <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.lanczos_options().tolerance);</div>
-<div class="line"><span class="lineno">  171</span>          <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  172</span>        }</div>
-<div class="line"><span class="lineno">  173</span>      }</div>
-<div class="line"><span class="lineno">  174</span>    }</div>
-<div class="line"><span class="lineno">  175</span> </div>
-<div class="line"><span class="lineno">  176</span>    <span class="keywordflow">if</span> (i &gt;= <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.lanczos_options().max_iterations - 1) {</div>
-<div class="line"><span class="lineno">  177</span>      QUILL_LOG_ERROR(<a class="code hl_variable" href="#af94afbd31daf3a735bf72389396ff157">log</a>, <span class="stringliteral">&quot;[ILanczos] Max iterations&quot;</span>);</div>
-<div class="line"><span class="lineno">  178</span>      <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  179</span>    }</div>
-<div class="line"><span class="lineno">  180</span>  }</div>
-<div class="line"><span class="lineno">  181</span> </div>
-<div class="line"><span class="lineno">  182</span>  <a class="code hl_variable" href="#a862fd99f7f81def38985142301891144">lowestEw</a> = ew;</div>
-<div class="line"><span class="lineno">  183</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a724f93c18ebe10e59fb24d29cf0703c1">totalForceCalls</a> = tmpMatter-&gt;getForceCalls() - forceCallsStart;</div>
-<div class="line"><span class="lineno">  184</span> </div>
-<div class="line"><span class="lineno">  185</span>  <a class="code hl_variable" href="#a784c83638bdd48a4e2f7b06babd3c9cf">lowestEv</a>.setZero();</div>
-<div class="line"><span class="lineno">  186</span>  <span class="keywordflow">if</span> (evEst.size() == size) {</div>
-<div class="line"><span class="lineno">  187</span>    <a class="code hl_function" href="namespaceeonc.html#a419e9f0f2a85a8a76afe1ae0615f2022">unpackMobileRows</a>(evEst, mobile, <a class="code hl_variable" href="#a784c83638bdd48a4e2f7b06babd3c9cf">lowestEv</a>);</div>
-<div class="line"><span class="lineno">  188</span>  }</div>
-<div class="line"><span class="lineno">  189</span>}</div>
+<div class="line"><span class="lineno">  119</span>  <span class="keywordtype">double</span> alpha, beta = r.norm();</div>
+<div class="line"><span class="lineno">  120</span>  <span class="keywordflow">if</span> (beta &lt; <a class="code hl_variable" href="namespaceeonc_1_1safemath.html#a57c5f23e983b67c789337e2108c86c8c">eonc::safemath::eps</a>) {</div>
+<div class="line"><span class="lineno">  121</span>    <a class="code hl_variable" href="#a862fd99f7f81def38985142301891144">lowestEw</a> = 0.0;</div>
+<div class="line"><span class="lineno">  122</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  123</span>  }</div>
+<div class="line"><span class="lineno">  124</span>  <span class="keywordtype">double</span> ew = 0, ewOld = 0, ewAbsRelErr;</div>
+<div class="line"><span class="lineno">  125</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> dr = <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.main_options().finiteDifference;</div>
+<div class="line"><span class="lineno">  126</span>  <span class="keyword">const</span> <a class="code hl_enumeration" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dd">FdScheme</a> requested = <a class="code hl_function" href="namespaceeonc.html#a54c78dc90bd7020c23096bbb8744789f">parseFdScheme</a>(<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.hessian_options().fd_scheme);</div>
+<div class="line"><span class="lineno">  127</span>  <span class="comment">// Fourth-order is the only scheme that changes the matrix-free product.</span></div>
+<div class="line"><span class="lineno">  128</span>  <span class="comment">// one_sided and central keep the forward difference used by min-mode.</span></div>
+<div class="line"><span class="lineno">  129</span>  <span class="keyword">const</span> <a class="code hl_enumeration" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dd">FdScheme</a> hvpScheme =</div>
+<div class="line"><span class="lineno">  130</span>      requested == <a class="code hl_enumvalue" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda6e599f7a2a9186d391be4537f105be98">FdScheme::Fourth</a> ? <a class="code hl_enumvalue" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda6e599f7a2a9186d391be4537f105be98">FdScheme::Fourth</a> : <a class="code hl_enumvalue" href="namespaceeonc.html#a1473c0575632e4e2549120f33b8525dda81797e9c6fc44586202026bb6aaefe8c">FdScheme::OneSided</a>;</div>
+<div class="line"><span class="lineno">  131</span>  VectorXd evEst, evT, evOldEst;</div>
+<div class="line"><span class="lineno">  132</span> </div>
+<div class="line"><span class="lineno">  133</span>  <span class="keyword">auto</span> tmpMatter = std::make_unique&lt;Matter&gt;(*matter);</div>
+<div class="line"><span class="lineno">  134</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> forceCallsStart = tmpMatter-&gt;getForceCalls();</div>
+<div class="line"><span class="lineno">  135</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos0 = matter-&gt;getPositions();</div>
+<div class="line"><span class="lineno">  136</span>  <span class="keyword">const</span> VectorXd force0 = <a class="code hl_function" href="namespaceeonc.html#ac05c62309d9dc6b1ae410a98bd17c293">mobileForces</a>(tmpMatter.get(), mobile);</div>
+<div class="line"><span class="lineno">  137</span> </div>
+<div class="line"><span class="lineno">  138</span>  <span class="keyword">auto</span> applyH = [&amp;](<span class="keyword">const</span> VectorXd &amp;v) -&gt; VectorXd {</div>
+<div class="line"><span class="lineno">  139</span>    <span class="keyword">auto</span> at = [&amp;](<span class="keywordtype">double</span> scale) -&gt; VectorXd {</div>
+<div class="line"><span class="lineno">  140</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = pos0;</div>
+<div class="line"><span class="lineno">  141</span>      <a class="code hl_function" href="namespaceeonc.html#a419e9f0f2a85a8a76afe1ae0615f2022">unpackMobileRows</a>(<a class="code hl_function" href="namespaceeonc.html#a6baeaa9ee75d8ba1f598e80639fa79ab">packMobileRows</a>(pos0, mobile) + (scale * dr) * v, mobile,</div>
+<div class="line"><span class="lineno">  142</span>                       pos);</div>
+<div class="line"><span class="lineno">  143</span>      tmpMatter-&gt;setPositions(pos);</div>
+<div class="line"><span class="lineno">  144</span>      <span class="comment">// Compared after setPositions, which wraps into the cell as the</span></div>
+<div class="line"><span class="lineno">  145</span>      <span class="comment">// probe&#39;s own setPositions did.</span></div>
+<div class="line"><span class="lineno">  146</span>      <span class="keywordflow">if</span> (probe &amp;&amp; !probe-&gt;needsForceUpdate() &amp;&amp;</div>
+<div class="line"><span class="lineno">  147</span>          probe-&gt;getPositions() == tmpMatter-&gt;getPositions()) {</div>
+<div class="line"><span class="lineno">  148</span>        <span class="keyword">const</span> VectorXd f = <a class="code hl_function" href="namespaceeonc.html#ac05c62309d9dc6b1ae410a98bd17c293">mobileForces</a>(probe.get(), mobile);</div>
+<div class="line"><span class="lineno">  149</span>        probe.reset();</div>
+<div class="line"><span class="lineno">  150</span>        probeCalls++;</div>
+<div class="line"><span class="lineno">  151</span>        <span class="keywordflow">return</span> f;</div>
+<div class="line"><span class="lineno">  152</span>      }</div>
+<div class="line"><span class="lineno">  153</span>      probe.reset();</div>
+<div class="line"><span class="lineno">  154</span>      <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc.html#ac05c62309d9dc6b1ae410a98bd17c293">mobileForces</a>(tmpMatter.get(), mobile);</div>
+<div class="line"><span class="lineno">  155</span>    };</div>
+<div class="line"><span class="lineno">  156</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc.html#a1aaf34eb8de2a3b2ed22c536cc106aab">fdHessianVector</a>(hvpScheme, dr, force0, at);</div>
+<div class="line"><span class="lineno">  157</span>  };</div>
+<div class="line"><span class="lineno">  158</span> </div>
+<div class="line"><span class="lineno">  159</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; size; i++) {</div>
+<div class="line"><span class="lineno">  160</span>    <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a> = i;</div>
+<div class="line"><span class="lineno">  161</span>    Q.col(i) = r / beta;</div>
+<div class="line"><span class="lineno">  162</span> </div>
+<div class="line"><span class="lineno">  163</span>    u = applyH(Q.col(i));</div>
+<div class="line"><span class="lineno">  164</span> </div>
+<div class="line"><span class="lineno">  165</span>    <span class="keywordflow">if</span> (i == 0) {</div>
+<div class="line"><span class="lineno">  166</span>      r = u;</div>
+<div class="line"><span class="lineno">  167</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  168</span>      r = u - beta * Q.col(i - 1);</div>
+<div class="line"><span class="lineno">  169</span>    }</div>
+<div class="line"><span class="lineno">  170</span>    alpha = Q.col(i).dot(r);</div>
+<div class="line"><span class="lineno">  171</span>    r = r - alpha * Q.col(i);</div>
+<div class="line"><span class="lineno">  172</span> </div>
+<div class="line"><span class="lineno">  173</span>    T(i, i) = alpha;</div>
+<div class="line"><span class="lineno">  174</span>    <span class="keywordflow">if</span> (i &gt; 0) {</div>
+<div class="line"><span class="lineno">  175</span>      T(i - 1, i) = beta;</div>
+<div class="line"><span class="lineno">  176</span>      T(i, i - 1) = beta;</div>
+<div class="line"><span class="lineno">  177</span>    }</div>
+<div class="line"><span class="lineno">  178</span> </div>
+<div class="line"><span class="lineno">  179</span>    beta = r.norm();</div>
+<div class="line"><span class="lineno">  180</span>    <span class="comment">// A vanished residual closes this Krylov block. Take the Ritz pair from</span></div>
+<div class="line"><span class="lineno">  181</span>    <span class="comment">// the current T; breaking first keeps the previous subspace.</span></div>
+<div class="line"><span class="lineno">  182</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> krylovClosed = beta &lt;= 1e-10 * std::fabs(alpha);</div>
+<div class="line"><span class="lineno">  183</span> </div>
+<div class="line"><span class="lineno">  184</span>    <span class="keywordflow">if</span> (i &gt;= 1) {</div>
+<div class="line"><span class="lineno">  185</span>      Eigen::SelfAdjointEigenSolver&lt;MatrixXd&gt; es(T.block(0, 0, i + 1, i + 1));</div>
+<div class="line"><span class="lineno">  186</span>      ew = es.eigenvalues()(0);</div>
+<div class="line"><span class="lineno">  187</span>      evT = es.eigenvectors().col(0);</div>
+<div class="line"><span class="lineno">  188</span>      ewAbsRelErr = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(std::fabs(ew - ewOld),</div>
+<div class="line"><span class="lineno">  189</span>                                             std::fabs(ewOld), 1.0);</div>
+<div class="line"><span class="lineno">  190</span>      ewOld = ew;</div>
+<div class="line"><span class="lineno">  191</span> </div>
+<div class="line"><span class="lineno">  192</span>      evEst = Q.block(0, 0, size, i + 1) * evT;</div>
+<div class="line"><span class="lineno">  193</span>      eonc::safemath::safe_normalize_inplace(evEst);</div>
+<div class="line"><span class="lineno">  194</span>      <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a0b00be5551a5221a2951a5271e353e1c">statsAngle</a> = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a54d5df2519372b82461f76667d6f0223">eonc::safemath::safe_acos</a>(std::fabs(evEst.dot(evOldEst))) *</div>
+<div class="line"><span class="lineno">  195</span>                   (180 / <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a>);</div>
+<div class="line"><span class="lineno">  196</span>      <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a60b737b93fe99a9004ee424f0d897d87">statsTorque</a> = ewAbsRelErr;</div>
+<div class="line"><span class="lineno">  197</span>      evOldEst = evEst;</div>
+<div class="line"><span class="lineno">  198</span>      QUILL_LOG_INFO(<a class="code hl_variable" href="#af94afbd31daf3a735bf72389396ff157">log</a>,</div>
+<div class="line"><span class="lineno">  199</span>                     <span class="stringliteral">&quot;[ILanczos] {:9s} {:9s} {:10s} {:14s} {:9.4f} &quot;</span></div>
+<div class="line"><span class="lineno">  200</span>                     <span class="stringliteral">&quot;{:10.6f} {:7.3f} {:5} n_mobile={}&quot;</span>,</div>
+<div class="line"><span class="lineno">  201</span>                     <span class="stringliteral">&quot;----&quot;</span>, <span class="stringliteral">&quot;----&quot;</span>, <span class="stringliteral">&quot;----&quot;</span>, <span class="stringliteral">&quot;----&quot;</span>, ew, ewAbsRelErr,</div>
+<div class="line"><span class="lineno">  202</span>                     <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a0b00be5551a5221a2951a5271e353e1c">statsAngle</a>, i, mobile.size());</div>
+<div class="line"><span class="lineno">  203</span>      <span class="keywordflow">if</span> (krylovClosed) {</div>
+<div class="line"><span class="lineno">  204</span>        QUILL_LOG_ERROR(<a class="code hl_variable" href="#af94afbd31daf3a735bf72389396ff157">log</a>, <span class="stringliteral">&quot;[ILanczos] ERROR: linear dependence&quot;</span>);</div>
+<div class="line"><span class="lineno">  205</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  206</span>      }</div>
+<div class="line"><span class="lineno">  207</span>      <span class="keywordflow">if</span> (ewAbsRelErr &lt; <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.lanczos_options().tolerance) {</div>
+<div class="line"><span class="lineno">  208</span>        QUILL_LOG_INFO(<a class="code hl_variable" href="#af94afbd31daf3a735bf72389396ff157">log</a>, <span class="stringliteral">&quot;[ILanczos] Tolerance reached: {}&quot;</span>,</div>
+<div class="line"><span class="lineno">  209</span>                       <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.lanczos_options().tolerance);</div>
+<div class="line"><span class="lineno">  210</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  211</span>      }</div>
+<div class="line"><span class="lineno">  212</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  213</span>      ew = alpha;</div>
+<div class="line"><span class="lineno">  214</span>      ewOld = ew;</div>
+<div class="line"><span class="lineno">  215</span>      evEst = Q.col(0);</div>
+<div class="line"><span class="lineno">  216</span>      evOldEst = Q.col(0);</div>
+<div class="line"><span class="lineno">  217</span>      <span class="keywordflow">if</span> (krylovClosed) {</div>
+<div class="line"><span class="lineno">  218</span>        QUILL_LOG_ERROR(<a class="code hl_variable" href="#af94afbd31daf3a735bf72389396ff157">log</a>, <span class="stringliteral">&quot;[ILanczos] ERROR: linear dependence&quot;</span>);</div>
+<div class="line"><span class="lineno">  219</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  220</span>      }</div>
+<div class="line"><span class="lineno">  221</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a862fd99f7f81def38985142301891144">lowestEw</a> != 0.0 &amp;&amp; <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.lanczos_options().quit_early) {</div>
+<div class="line"><span class="lineno">  222</span>        <span class="keywordtype">double</span> Cprev = <a class="code hl_variable" href="#a862fd99f7f81def38985142301891144">lowestEw</a>;</div>
+<div class="line"><span class="lineno">  223</span>        <span class="keywordtype">double</span> Cnew = u.dot(Q.col(i));</div>
+<div class="line"><span class="lineno">  224</span>        ewAbsRelErr = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(std::fabs(Cnew - Cprev),</div>
+<div class="line"><span class="lineno">  225</span>                                               std::fabs(Cprev), 1.0);</div>
+<div class="line"><span class="lineno">  226</span>        <span class="keywordflow">if</span> (ewAbsRelErr &lt;= <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.lanczos_options().tolerance) {</div>
+<div class="line"><span class="lineno">  227</span>          <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a0b00be5551a5221a2951a5271e353e1c">statsAngle</a> = 0.0;</div>
+<div class="line"><span class="lineno">  228</span>          <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a60b737b93fe99a9004ee424f0d897d87">statsTorque</a> = ewAbsRelErr;</div>
+<div class="line"><span class="lineno">  229</span>          QUILL_LOG_INFO(<a class="code hl_variable" href="#af94afbd31daf3a735bf72389396ff157">log</a>, <span class="stringliteral">&quot;[ILanczos] Tolerance reached: {}&quot;</span>,</div>
+<div class="line"><span class="lineno">  230</span>                         <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.lanczos_options().tolerance);</div>
+<div class="line"><span class="lineno">  231</span>          <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  232</span>        }</div>
+<div class="line"><span class="lineno">  233</span>      }</div>
+<div class="line"><span class="lineno">  234</span>    }</div>
+<div class="line"><span class="lineno">  235</span> </div>
+<div class="line"><span class="lineno">  236</span>    <span class="keywordflow">if</span> (i &gt;= <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.lanczos_options().max_iterations - 1) {</div>
+<div class="line"><span class="lineno">  237</span>      QUILL_LOG_ERROR(<a class="code hl_variable" href="#af94afbd31daf3a735bf72389396ff157">log</a>, <span class="stringliteral">&quot;[ILanczos] Max iterations&quot;</span>);</div>
+<div class="line"><span class="lineno">  238</span>      <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  239</span>    }</div>
+<div class="line"><span class="lineno">  240</span>  }</div>
+<div class="line"><span class="lineno">  241</span> </div>
+<div class="line"><span class="lineno">  242</span>  <a class="code hl_variable" href="#a862fd99f7f81def38985142301891144">lowestEw</a> = ew;</div>
+<div class="line"><span class="lineno">  243</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a724f93c18ebe10e59fb24d29cf0703c1">totalForceCalls</a> = tmpMatter-&gt;getForceCalls() - forceCallsStart + probeCalls;</div>
+<div class="line"><span class="lineno">  244</span> </div>
+<div class="line"><span class="lineno">  245</span>  <a class="code hl_variable" href="#a784c83638bdd48a4e2f7b06babd3c9cf">lowestEv</a>.setZero();</div>
+<div class="line"><span class="lineno">  246</span>  <span class="keywordflow">if</span> (evEst.size() == size) {</div>
+<div class="line"><span class="lineno">  247</span>    <a class="code hl_function" href="namespaceeonc.html#a419e9f0f2a85a8a76afe1ae0615f2022">unpackMobileRows</a>(evEst, mobile, <a class="code hl_variable" href="#a784c83638bdd48a4e2f7b06babd3c9cf">lowestEv</a>);</div>
+<div class="line"><span class="lineno">  248</span>  }</div>
+<div class="line"><span class="lineno">  249</span>}</div>
 <div class="ttc" id="aEigen_8h_html_a45bb4cbce093fca4dfb193d3f649da30"><div class="ttname"><a href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, eOnStorageOrder &gt; MatrixXd</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00033">Eigen.h:33</a></div></div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Lanczos_html_af94afbd31daf3a735bf72389396ff157"><div class="ttname"><a href="#af94afbd31daf3a735bf72389396ff157">eonc::Lanczos::log</a></div><div class="ttdeci">eonc::log::Scoped log</div><div class="ttdef"><b>Definition</b> <a href="Lanczos_8h_source.html#l00044">Lanczos.h:44</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Lanczos_html_aebf952539874ee9b72a2f0697d8ded0e"><div class="ttname"><a href="#aebf952539874ee9b72a2f0697d8ded0e">eonc::Lanczos::probe_</a></div><div class="ttdeci">std::unique_ptr&lt; Matter &gt; probe_</div><div class="ttdef"><b>Definition</b> <a href="Lanczos_8h_source.html#l00050">Lanczos.h:50</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Lanczos_html_af94afbd31daf3a735bf72389396ff157"><div class="ttname"><a href="#af94afbd31daf3a735bf72389396ff157">eonc::Lanczos::log</a></div><div class="ttdeci">eonc::log::Scoped log</div><div class="ttdef"><b>Definition</b> <a href="Lanczos_8h_source.html#l00053">Lanczos.h:53</a></div></div>
 <div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_a0b00be5551a5221a2951a5271e353e1c"><div class="ttname"><a href="classeonc_1_1LowestEigenmode.html#a0b00be5551a5221a2951a5271e353e1c">eonc::LowestEigenmode::statsAngle</a></div><div class="ttdeci">double statsAngle</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00032">LowestEigenmode.h:32</a></div></div>
 <div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_a60b737b93fe99a9004ee424f0d897d87"><div class="ttname"><a href="classeonc_1_1LowestEigenmode.html#a60b737b93fe99a9004ee424f0d897d87">eonc::LowestEigenmode::statsTorque</a></div><div class="ttdeci">double statsTorque</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00030">LowestEigenmode.h:30</a></div></div>
 <div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_a724f93c18ebe10e59fb24d29cf0703c1"><div class="ttname"><a href="classeonc_1_1LowestEigenmode.html#a724f93c18ebe10e59fb24d29cf0703c1">eonc::LowestEigenmode::totalForceCalls</a></div><div class="ttdeci">long totalForceCalls</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00029">LowestEigenmode.h:29</a></div></div>
@@ -581,6 +599,62 @@ Additional Inherited Members</h2></td></tr>
 <div class="ttc" id="anamespaceeonc_html_a54c78dc90bd7020c23096bbb8744789f"><div class="ttname"><a href="namespaceeonc.html#a54c78dc90bd7020c23096bbb8744789f">eonc::parseFdScheme</a></div><div class="ttdeci">FdScheme parseFdScheme(std::string_view scheme)</div><div class="ttdef"><b>Definition</b> <a href="FiniteDifference_8h_source.html#l00027">FiniteDifference.h:27</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a6baeaa9ee75d8ba1f598e80639fa79ab"><div class="ttname"><a href="namespaceeonc.html#a6baeaa9ee75d8ba1f598e80639fa79ab">eonc::packMobileRows</a></div><div class="ttdeci">VectorXd packMobileRows(const AtomMatrix &amp;full, const VectorXi &amp;mobile)</div><div class="ttdoc">Pack full (n_atoms,3) rows of mobile atoms into a 3*n_mobile vector.</div><div class="ttdef"><b>Definition</b> <a href="MobileAtoms_8cpp_source.html#l00127">MobileAtoms.cpp:127</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_ac05c62309d9dc6b1ae410a98bd17c293"><div class="ttname"><a href="namespaceeonc.html#ac05c62309d9dc6b1ae410a98bd17c293">eonc::mobileForces</a></div><div class="ttdeci">VectorXd mobileForces(Matter *matter, const VectorXi &amp;mobile)</div><div class="ttdoc">Force components on mobile atoms after Matter has a valid force cache (calls getForces under the hood...</div><div class="ttdef"><b>Definition</b> <a href="MobileAtoms_8cpp_source.html#l00142">MobileAtoms.cpp:142</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a22f138fb8df071be0f551e83133d1d91" name="a22f138fb8df071be0f551e83133d1d91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22f138fb8df071be0f551e83133d1d91">&#9670;&#160;</a></span>evaluateWithProbe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::Lanczos::evaluateWithProbe </td>
+          <td>(</td>
+          <td class="paramtype">const std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>centre</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>direction</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The probe is the first Krylov product's displaced image, for the one-sided product only. </p>
+
+<p>Reimplemented from <a class="el" href="classeonc_1_1LowestEigenmode.html#a7312ae8a9eb2dae9a3b222c85f0db767">eonc::LowestEigenmode</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="Lanczos_8cpp_source.html#l00075">75</a> of file <a class="el" href="Lanczos_8cpp_source.html">Lanczos.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   76</span>                                                             {</div>
+<div class="line"><span class="lineno">   77</span>  <a class="code hl_variable" href="#aebf952539874ee9b72a2f0697d8ded0e">probe_</a>.reset();</div>
+<div class="line"><span class="lineno">   78</span>  <span class="keywordflow">if</span> (!centre-&gt;needsForceUpdate() || !<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a37333ab6591b41d3d0e0a5e5f0481300">pot</a>-&gt;supportsBatchEvaluation() ||</div>
+<div class="line"><span class="lineno">   79</span>      !oneSidedProduct(<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>)) {</div>
+<div class="line"><span class="lineno">   80</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   81</span>  }</div>
+<div class="line"><span class="lineno">   82</span>  <span class="keyword">const</span> VectorXi mobile = <a class="code hl_function" href="namespaceeonc.html#a0925dba4103d133a844dfad8162f7c8a">resolveMobileAtoms</a>(</div>
+<div class="line"><span class="lineno">   83</span>      centre.get(),</div>
+<div class="line"><span class="lineno">   84</span>      <a class="code hl_function" href="namespaceeonc.html#a0925dba4103d133a844dfad8162f7c8a">resolveMobileAtoms</a>(centre.get(), <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.lanczos_options().phva_atoms));</div>
+<div class="line"><span class="lineno">   85</span>  <span class="keyword">const</span> <span class="keyword">auto</span> pos = firstProbe(*centre, direction, mobile,</div>
+<div class="line"><span class="lineno">   86</span>                              <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.main_options().finiteDifference);</div>
+<div class="line"><span class="lineno">   87</span>  <span class="keywordflow">if</span> (!pos) {</div>
+<div class="line"><span class="lineno">   88</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   89</span>  }</div>
+<div class="line"><span class="lineno">   90</span>  <span class="keyword">auto</span> probe = std::make_unique&lt;Matter&gt;(*centre);</div>
+<div class="line"><span class="lineno">   91</span>  probe-&gt;setPositions(*pos);</div>
+<div class="line"><span class="lineno">   92</span>  Matter *<span class="keyword">const</span> both[] = {centre.get(), probe.get()};</div>
+<div class="line"><span class="lineno">   93</span>  <a class="code hl_function" href="namespaceeonc.html#a0a75f0d31324c1f054a663565625d66c">eonc::evaluateTogether</a>(*<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a37333ab6591b41d3d0e0a5e5f0481300">pot</a>, both);</div>
+<div class="line"><span class="lineno">   94</span>  <a class="code hl_variable" href="#aebf952539874ee9b72a2f0697d8ded0e">probe_</a> = std::move(probe);</div>
+<div class="line"><span class="lineno">   95</span>}</div>
+<div class="ttc" id="anamespaceeonc_html_a0a75f0d31324c1f054a663565625d66c"><div class="ttname"><a href="namespaceeonc.html#a0a75f0d31324c1f054a663565625d66c">eonc::evaluateTogether</a></div><div class="ttdeci">void evaluateTogether(Potential &amp;pot, std::span&lt; Matter *const &gt; systems)</div><div class="ttdoc">Evaluates every system that needs a force update.</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00888">Matter.cpp:888</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -609,8 +683,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1LowestEigenmode.html#a6fffec92e8e345dc32dd8a46e689b4ab">eonc::LowestEigenmode</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Lanczos_8cpp_source.html#l00191">191</a> of file <a class="el" href="Lanczos_8cpp_source.html">Lanczos.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  191</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a862fd99f7f81def38985142301891144">lowestEw</a>; }</div>
+<p class="definition">Definition at line <a class="el" href="Lanczos_8cpp_source.html#l00251">251</a> of file <a class="el" href="Lanczos_8cpp_source.html">Lanczos.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  251</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a862fd99f7f81def38985142301891144">lowestEw</a>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -639,8 +713,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1LowestEigenmode.html#af3f08bac4c99061f6fe82c75edd6417d">eonc::LowestEigenmode</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Lanczos_8cpp_source.html#l00193">193</a> of file <a class="el" href="Lanczos_8cpp_source.html">Lanczos.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  193</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a784c83638bdd48a4e2f7b06babd3c9cf">lowestEv</a>; }</div>
+<p class="definition">Definition at line <a class="el" href="Lanczos_8cpp_source.html#l00253">253</a> of file <a class="el" href="Lanczos_8cpp_source.html">Lanczos.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  253</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a784c83638bdd48a4e2f7b06babd3c9cf">lowestEv</a>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -665,7 +739,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Lanczos_8h_source.html#l00044">44</a> of file <a class="el" href="Lanczos_8h_source.html">Lanczos.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Lanczos_8h_source.html#l00053">53</a> of file <a class="el" href="Lanczos_8h_source.html">Lanczos.h</a>.</p>
 
 </div>
 </div>
@@ -689,7 +763,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Lanczos_8h_source.html#l00042">42</a> of file <a class="el" href="Lanczos_8h_source.html">Lanczos.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Lanczos_8h_source.html#l00051">51</a> of file <a class="el" href="Lanczos_8h_source.html">Lanczos.h</a>.</p>
 
 </div>
 </div>
@@ -713,9 +787,33 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Lanczos_8h_source.html#l00043">43</a> of file <a class="el" href="Lanczos_8h_source.html">Lanczos.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   43</span>{0.0};</div>
+<p class="definition">Definition at line <a class="el" href="Lanczos_8h_source.html#l00052">52</a> of file <a class="el" href="Lanczos_8h_source.html">Lanczos.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   52</span>{0.0};</div>
 </div><!-- fragment -->
+</div>
+</div>
+<a id="aebf952539874ee9b72a2f0697d8ded0e" name="aebf952539874ee9b72a2f0697d8ded0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebf952539874ee9b72a2f0697d8ded0e">&#9670;&#160;</a></span>probe_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classeonc_1_1Matter.html">Matter</a>&gt; eonc::Lanczos::probe_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Lanczos_8h_source.html#l00050">50</a> of file <a class="el" href="Lanczos_8h_source.html">Lanczos.h</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>

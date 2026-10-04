@@ -416,7 +416,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">   33</span>    QUILL_LOG_INFO(<a class="code hl_function" href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a>(), <span class="stringliteral">&quot;[ASE] called potential {} times&quot;</span>,</div>
 <div class="line"><span class="lineno">   34</span>                   <a class="code hl_variable" href="#aafc2c1607f256fb7d54562879fe9d8e8">counter</a>);</div>
 <div class="line"><span class="lineno">   35</span>  }</div>
-<div class="ttc" id="anamespaceeonc_1_1log_html_a4e7c8b5e4189cf657384f1c4bbf14dab"><div class="ttname"><a href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a></div><div class="ttdeci">quill::Logger * get() noexcept</div><div class="ttdoc">Get or create the default &quot;combi&quot; logger.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00044">EonLogger.h:44</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1log_html_a4e7c8b5e4189cf657384f1c4bbf14dab"><div class="ttname"><a href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a></div><div class="ttdeci">quill::Logger * get() noexcept</div><div class="ttdoc">Get or create the default &quot;combi&quot; logger.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00106">EonLogger.h:106</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -513,7 +513,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">  104</span>  } <span class="keywordflow">catch</span> (py::error_already_set &amp;e) {</div>
 <div class="line"><span class="lineno">  105</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;ASE calculator Python error: {}&quot;</span>, e.what());</div>
 <div class="line"><span class="lineno">  106</span>    <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;ASE calculator Python error: &quot;</span>) +</div>
-<div class="ttc" id="aEonLogger_8h_html_a4cf9b473cf6a1d850b3725fca6805f86"><div class="ttname"><a href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a></div><div class="ttdeci">#define EONC_LOG_ERROR(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00261">EonLogger.h:261</a></div></div>
+<div class="ttc" id="aEonLogger_8h_html_a4cf9b473cf6a1d850b3725fca6805f86"><div class="ttname"><a href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a></div><div class="ttdeci">#define EONC_LOG_ERROR(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00323">EonLogger.h:323</a></div></div>
 <div class="ttc" id="aclassASE_html_a76e329778602bb3421e16cacce8a4fbe"><div class="ttname"><a href="#a76e329778602bb3421e16cacce8a4fbe">ASE::force</a></div><div class="ttdeci">void force(long nAtoms, const double *R, const int *atomicNrs, double *F, double *U, double *variance, const double *box) override</div><div class="ttdef"><b>Definition</b> <a href="ASE_8cpp_source.html#l00069">ASE.cpp:69</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -637,7 +637,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">  164</span>    }</div>
 <div class="line"><span class="lineno">  165</span>  } <span class="keywordflow">catch</span> (py::error_already_set &amp;e) {</div>
 <div class="ttc" id="aclassASE_html_a8f19bffa4b531c4e8b1033362da43311"><div class="ttname"><a href="#a8f19bffa4b531c4e8b1033362da43311">ASE::forceBatch</a></div><div class="ttdeci">void forceBatch(long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes) override</div><div class="ttdef"><b>Definition</b> <a href="ASE_8cpp_source.html#l00108">ASE.cpp:108</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Potential_html_aa66e1416134ff55639a6d20a34e3c1c1"><div class="ttname"><a href="classeonc_1_1Potential.html#aa66e1416134ff55639a6d20a34e3c1c1">eonc::Potential::forceBatch</a></div><div class="ttdeci">virtual void forceBatch(long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes)</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00198">Potential.h:198</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_aa66e1416134ff55639a6d20a34e3c1c1"><div class="ttname"><a href="classeonc_1_1Potential.html#aa66e1416134ff55639a6d20a34e3c1c1">eonc::Potential::forceBatch</a></div><div class="ttdeci">virtual void forceBatch(long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes)</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00199">Potential.h:199</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>

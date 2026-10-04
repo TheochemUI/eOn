@@ -6,7 +6,7 @@ var searchData=
   ['qn_5fstep_3',['qn_step',['../structeonc_1_1optimizer__options__t_1_1xtsci__t.html#afcfffb55747c5b18617f3cbcffc21f5f',1,'eonc::optimizer_options_t::xtsci_t']]],
   ['qnm_5f_4',['qnm_',['../classeonc_1_1pathintegral_1_1RingPolymer.html#adc71fcb35c3aa1c816a4378f549f1734',1,'eonc::pathintegral::RingPolymer']]],
   ['qrr_5',['qrr',['../structeonc_1_1hyperdynamics__options__t.html#a560e81c37bebd8c3f602b7159ece3001',1,'eonc::hyperdynamics_options_t']]],
-  ['quantities_6',['Converters: converting quantities.',['../units_8hpp.html#converters',1,'']]],
+  ['quantities_6',['quantities',['../tip4p__unit__system_8hpp.html#converters',1,'Converters: converting quantities.'],['../units_8hpp.html#xtb_converters',1,'Converters: converting quantities.']]],
   ['quantumharmonictstlograte_7',['quantumHarmonicTstLogRate',['../namespaceeonc_1_1tunneling.html#ab6203baa5614410a417747c74d5da0b1',1,'eonc::tunneling']]],
   ['quenching_5fsteps_8',['quenching_steps',['../structeonc_1_1basin__hopping__options__t.html#aa93c625a13ea9d55954e850492759424',1,'eonc::basin_hopping_options_t']]],
   ['quickmin_9',['Quickmin',['../classeonc_1_1Quickmin.html',1,'eonc::Quickmin'],['../classeonc_1_1Quickmin.html#a190e46af2be89154a4b8ac6c7a89afb4',1,'eonc::Quickmin::Quickmin()']]],

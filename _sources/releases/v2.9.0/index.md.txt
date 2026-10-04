@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn v2.9.0, release"
 ---
 
-## [v2.9.0] - 2026-01-27
+# [v2.9.0] - 2026-01-27
 
 A quick bugfix release that addresses issues in Nudged Elastic Band (NEB)
 calculations, including endpoint handling and potential floating-point errors.

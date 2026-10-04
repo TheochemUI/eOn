@@ -229,7 +229,6 @@ var menudata={children:[
 {text:"d",url:"globals_d.html#index_d"},
 {text:"e",url:"globals_e.html#index_e"},
 {text:"f",url:"globals_f.html#index_f"},
-{text:"h",url:"globals_h.html#index_h"},
 {text:"j",url:"globals_j.html#index_j"},
 {text:"l",url:"globals_l.html#index_l"},
 {text:"m",url:"globals_m.html#index_m"},

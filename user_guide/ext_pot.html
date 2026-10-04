@@ -36,8 +36,8 @@
   <div class="sy-head-blur"></div>
   <div class="sy-head-inner sy-container mx-auto">
     <a class="sy-head-brand" href="../index.html">
-      
-      
+      <img class="light-logo" src="../logo/eon_v3_light.svg" alt="eOn" height="28" loading="lazy" />
+      <img class="dark-logo" src="../logo/eon_v3_dark.svg" alt="eOn" height="28" loading="lazy" />
       <strong>eOn</strong>
     </a>
     <div class="sy-head-nav" id="head-nav">
@@ -86,6 +86,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../team.html">eOn team</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../install/eessi.html">Build develop on EESSI</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../install/lammps.html">LAMMPS</a></li>
 </ul>
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html#obtaining-sources">Obtaining sources</a></li>
@@ -130,17 +131,23 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="lanczos.html">Lanczos</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="finite_difference.html">Finite-difference curvature</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="akmc.html">Adaptive kinetic Monte Carlo</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="saddle_search.html">Saddle search</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="basin_hopping.html">Basin hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="global_optimization.html">Minima hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="monte_carlo.html">Monte Carlo</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="replica_exchange.html">Replica exchange</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="process_search.html">Process search</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="recycling.html">Recycling</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="coarse_graining.html">Coarse graining</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="dynamics.html">Dynamics</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="parallel_replica.html">Parallel replica</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="tad.html">Temperature accelerated dynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="oh_tst.html">Optimal hyperplane transition state theory</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="communicator.html">Communicator</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="debug.html">Debug</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="paths.html">Paths</a></li>
@@ -166,6 +173,14 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn-migration.html">Migrating from SVN</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/tracking-changes.html">Tracking changes</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/release.html">Release workflow</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/design/client/index.html">Client design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/types.html">Type system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/parameters.html">Parameters system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/neb-modularization.html">NEB modularization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/confile.html">CON file I/O via readcon-core</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/pyeonclient.html">pyeonclient (nanobind client bindings)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/eon-schema.html">eon-schema (shared parameter package)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/pyeonclient-pypi.html">pyeonclient on PyPI</a></li>
@@ -174,7 +189,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../apidocs/index.html">API Reference</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
 </ul>
 </li>
@@ -196,6 +210,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.cancel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.cancel</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.job_result.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.job_result</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
@@ -249,6 +264,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../releases/v3.2.0/release-notes.html">eOn 3.2.0</a></li>
 </ul>
 </li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.17.0/release-notes.html">eOn 2.17.0</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.16.0/index.html">[v2.16.0] - 2026-07-03</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.16.0/release-notes.html">Release notes</a></li>
 </ul>
@@ -314,6 +330,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 </ul>
 </li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../glossary.html">Glossary</a></li>
 </ul>
         </div>
       </div>
@@ -325,7 +342,8 @@ data-aria-dark="Switch to auto color mode">
       <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
-<li><a class="reference internal" href="#protocol">Protocol</a><ul>
+<li><a class="reference internal" href="#protocol">Protocol</a></li>
+<li><a class="reference internal" href="#one-directory-per-image">One directory per image</a><ul>
 <li><a class="reference internal" href="#input-file-from-eon-to-extpot">Input file (<code class="docutils literal notranslate"><span class="pre">from_eon_to_extpot</span></code>)</a></li>
 <li><a class="reference internal" href="#output-file-from-extpot-to-eon">Output file (<code class="docutils literal notranslate"><span class="pre">from_extpot_to_eon</span></code>)</a></li>
 </ul>
@@ -452,8 +470,8 @@ that are <strong>not</strong> enabled in the <code class="docutils literal notra
 <h2>Protocol<a class="headerlink" href="#protocol" title="Link to this heading">¶</a></h2>
 <p>When the client needs an energy/force evaluation it:</p>
 <ol class="arabic simple">
-<li><p>Creates a private exchange directory named <code class="docutils literal notranslate"><span class="pre">extpot_&lt;pid&gt;_&lt;n&gt;</span></code> beside the
-working directory, where <code class="docutils literal notranslate"><span class="pre">&lt;pid&gt;</span></code> is the client’s process id and <code class="docutils literal notranslate"><span class="pre">&lt;n&gt;</span></code>
+<li><p>Creates a private exchange directory named <code class="docutils literal notranslate"><span class="pre">extpot_&lt;pid&gt;_&lt;n&gt;</span></code> inside the
+directory eOn runs in, where <code class="docutils literal notranslate"><span class="pre">&lt;pid&gt;</span></code> is the client’s process id and <code class="docutils literal notranslate"><span class="pre">&lt;n&gt;</span></code>
 counts the potentials it built.</p></li>
 <li><p>Writes the file <code class="docutils literal notranslate"><span class="pre">from_eon_to_extpot</span></code> in that directory.</p></li>
 <li><p>Calls the executable (or script) specified by <code class="docutils literal notranslate"><span class="pre">ext_pot_path</span></code> via
@@ -464,8 +482,21 @@ directory.</p></li>
 <p>The two filenames do not change, so a wrapper that opens them by relative
 name, as every example below does, needs no edit. The exchange directory is
 what keeps two clients started in one directory from reading each other’s
-numbers; the client removes it once the exchange files are consumed, and
-leaves it in place when a call fails so its contents can be inspected.</p>
+numbers. The directory lives as long as the potential: each call reuses it,
+so a wrapper can keep state there between calls (the CPMD wrapper below
+keeps its wavefunction). When the potential is destroyed the client
+removes the two exchange files and then the directory, if nothing else is
+left in it. A failed call leaves everything in place for inspection.</p>
+</section>
+<section id="one-directory-per-image">
+<h2>One directory per image<a class="headerlink" href="#one-directory-per-image" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">[Main]</span> <span class="pre">parallel</span></code> defaults to true. A dimer, and the two product
+minimizations in a process search, then build a second potential when the
+potential asks for one instance per image. <code class="docutils literal notranslate"><span class="pre">ext_pot</span></code> does. Each instance
+takes the next <code class="docutils literal notranslate"><span class="pre">extpot_&lt;pid&gt;_&lt;n&gt;</span></code>, so the two calls do not share
+<code class="docutils literal notranslate"><span class="pre">from_eon_to_extpot</span></code>. An error on the second thread is stored, the first
+thread is joined, and the stored error is raised. <code class="docutils literal notranslate"><span class="pre">parallel</span> <span class="pre">=</span> <span class="pre">false</span></code> runs
+both images on the one instance, one after the other.</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p><code class="docutils literal notranslate"><span class="pre">ext_pot_path</span></code> is resolved against the directory eOn runs in when it names an
@@ -603,28 +634,110 @@ directly as the <code class="docutils literal notranslate"><span class="pre">ext
 </section>
 <section id="cpmd-on-several-mpi-ranks">
 <h3>CPMD on several MPI ranks<a class="headerlink" href="#cpmd-on-several-mpi-ranks" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">examples/akmc-cpmd-slurm/potfiles/cpmd_extpot.py</span></code> answers each call with a
+<code class="docutils literal notranslate"><span class="pre">cpmd.x</span></code> wavefunction optimisation on several MPI ranks. It reads its
+settings from the environment:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Meaning</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CPMD_BIN</span></code></p></td>
+<td><p>path to <code class="docutils literal notranslate"><span class="pre">cpmd.x</span></code></p></td>
+<td><p>required</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CPMD_LAUNCH</span></code></p></td>
+<td><p>MPI launcher put in front of <code class="docutils literal notranslate"><span class="pre">cpmd.x</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mpirun</span> <span class="pre">-np</span> <span class="pre">4</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PP_LIBRARY_PATH</span></code></p></td>
+<td><p>pseudopotential directory, passed to <code class="docutils literal notranslate"><span class="pre">cpmd.x</span></code></p></td>
+<td><p>required</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CPMD_PP</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Z:file[:options]</span></code> per element, comma separated, e.g. <code class="docutils literal notranslate"><span class="pre">14:Si_MT_BLYP.psp:LMAX=D,7:N_MT_BLYP.psp:LMAX=P</span></code></p></td>
+<td><p>required</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CPMD_CUTOFF</span></code></p></td>
+<td><p>plane-wave cutoff in Ry</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">30</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CPMD_FUNCTIONAL</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&amp;DFT</span> <span class="pre">FUNCTIONAL</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BLYP</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CPMD_CONVERGENCE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CONVERGENCE</span> <span class="pre">ORBITALS</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1e-6</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CPMD_MAXITER</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MAXITER</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">300</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CPMD_RESTART_POOL</span></code></p></td>
+<td><p>shared directory of converged <code class="docutils literal notranslate"><span class="pre">RESTART.1</span></code> files that seed a job’s first call</p></td>
+<td><p>unset</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>A single point, a minimization or a nudged elastic band on one machine
+needs nothing else than the script as <code class="docutils literal notranslate"><span class="pre">ext_pot_path</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nb">export</span><span class="w"> </span><span class="nv">CPMD_BIN</span><span class="o">=</span>/path/to/cpmd.x<span class="w"> </span><span class="nv">PP_LIBRARY_PATH</span><span class="o">=</span>/path/to/pseudopotentials/
+</span><span data-line="2"><span class="nb">export</span><span class="w"> </span><span class="nv">CPMD_LAUNCH</span><span class="o">=</span><span class="s2">&quot;mpirun -np 4 --bind-to none&quot;</span><span class="w"> </span><span class="nv">CPMD_CUTOFF</span><span class="o">=</span><span class="m">70</span>
+</span><span data-line="3"><span class="nb">export</span><span class="w"> </span><span class="nv">CPMD_PP</span><span class="o">=</span><span class="s2">&quot;14:Si_MT_BLYP.psp:LMAX=D,7:N_MT_BLYP.psp:LMAX=P&quot;</span>
+</span><span data-line="4">cat<span class="w"> </span>&gt;<span class="w"> </span>config.ini<span class="w"> </span><span class="s">&lt;&lt;&#39;EOF&#39;</span>
+</span><span data-line="5"><span class="s">[Main]</span>
+</span><span data-line="6"><span class="s">job = point</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="s">[Potential]</span>
+</span><span data-line="9"><span class="s">potential = ext_pot</span>
+</span><span data-line="10"><span class="s">ext_pot_path = /absolute/path/to/eOn/examples/akmc-cpmd-slurm/potfiles/cpmd_extpot.py</span>
+</span><span data-line="11"><span class="s">EOF</span>
+</span><span data-line="12">eonclient
+</span></pre></div>
+</div>
+<p>Inside a Slurm job, ask for as many tasks as <code class="docutils literal notranslate"><span class="pre">CPMD_LAUNCH</span></code> starts ranks
+(<code class="docutils literal notranslate"><span class="pre">--ntasks=4</span></code>), or OpenMPI finds one slot and refuses <code class="docutils literal notranslate"><span class="pre">-np</span> <span class="pre">4</span></code>.
+<code class="docutils literal notranslate"><span class="pre">--bind-to</span> <span class="pre">none</span></code> keeps it from refusing to bind when the allocation is
+hardware threads rather than whole cores.</p>
 <p><code class="docutils literal notranslate"><span class="pre">examples/akmc-cpmd-slurm</span></code> runs adaptive kinetic Monte Carlo on a silicon
-vacancy with CPMD. The <code class="docutils literal notranslate"><span class="pre">cluster</span></code> communicator submits each process search as
-a Slurm job (see <a class="reference internal" href="communicator.html"><span class="std std-doc">Communicator</span></a>), and inside the job
-<code class="docutils literal notranslate"><span class="pre">ext_pot</span></code> calls <code class="docutils literal notranslate"><span class="pre">cpmd_extpot.py</span></code>, which starts <code class="docutils literal notranslate"><span class="pre">cpmd.x</span></code> on several ranks
-with the launcher in <code class="docutils literal notranslate"><span class="pre">CPMD_LAUNCH</span></code>. The client stays one process; the ranks
-belong to CPMD alone.</p>
-<p>Three details of CPMD’s output decide whether the forces are right:</p>
+vacancy with the same script. The <code class="docutils literal notranslate"><span class="pre">cluster</span></code> communicator submits each
+process search as a Slurm job (see <a class="reference internal" href="communicator.html"><span class="std std-doc">Communicator</span></a>),
+and inside the job <code class="docutils literal notranslate"><span class="pre">ext_pot</span></code> calls <code class="docutils literal notranslate"><span class="pre">cpmd_extpot.py</span></code>. The client stays one
+process; the ranks belong to CPMD alone.</p>
+<p>What the script hands CPMD and reads back:</p>
 <ul class="simple">
+<li><p>The deck says <code class="docutils literal notranslate"><span class="pre">ANGSTROM</span></code>, so CPMD converts eOn’s positions with its own
+Bohr (0.529177210859 A). CPMD answers in Hartree and Hartree/Bohr, and the
+script converts with CODATA 2018 (27.211386245988 eV, 0.529177210903 A),
+as the in-process <a class="reference internal" href="rgpot_pot.html"><span class="std std-doc">RGPOT</span></a> route does. The two Bohr
+values differ by 8.3e-11 relative; <code class="docutils literal notranslate"><span class="pre">client/validation/cpmd_units.py</span></code>
+derives the chain.</p></li>
 <li><p>The table under <code class="docutils literal notranslate"><span class="pre">GRADIENTS</span> <span class="pre">(-FORCES)</span></code> holds forces, not gradients:
 <code class="docutils literal notranslate"><span class="pre">wrgeo</span></code> prints the ionic force <code class="docutils literal notranslate"><span class="pre">fion</span></code>. The first table, printed before the
 wavefunction optimisation, is all zeros; the last one is the result.</p></li>
 <li><p>That table carries three significant digits. <code class="docutils literal notranslate"><span class="pre">GEOMETRY</span></code> holds the same
-forces in Ha/Bohr to twelve decimals in columns 4 to 6, so the wrapper
+forces in Ha/Bohr to twelve decimals in columns 4 to 6, so the script
 reads forces from <code class="docutils literal notranslate"><span class="pre">GEOMETRY</span></code> and checks them against the table.</p></li>
-<li><p>CPMD lists atoms species by species. The wrapper maps them back to eOn’s
-order.</p></li>
+<li><p>The energy is the last <code class="docutils literal notranslate"><span class="pre">TOTAL</span> <span class="pre">ENERGY</span></code> of <code class="docutils literal notranslate"><span class="pre">cpmd.out</span></code>, which CPMD prints
+with eight decimals: the file route’s energy is good to 5e-9 Ha
+(1.4e-7 eV). The in-process route returns it to full precision.</p></li>
+<li><p>CPMD lists atoms species by species, in the order each element first
+appears. The script maps them back to eOn’s order.</p></li>
+<li><p>eOn’s cell goes to <code class="docutils literal notranslate"><span class="pre">CELL</span> <span class="pre">VECTORS</span></code> unchanged, one lattice vector per row.
+CPMD refuses <code class="docutils literal notranslate"><span class="pre">SYMMETRY</span></code> beside it, so the deck omits <code class="docutils literal notranslate"><span class="pre">SYMMETRY</span></code>. A
+system without a cell reaches the script as a zero box, which it
+refuses: CPMD needs a periodic cell.</p></li>
 </ul>
-<p>The wrapper also refuses a result whose wavefunction optimisation printed
-<code class="docutils literal notranslate"><span class="pre">BUT</span> <span class="pre">NO</span> <span class="pre">CONVERGENCE</span></code>, and keeps <code class="docutils literal notranslate"><span class="pre">RESTART.1</span></code> in the exchange directory, so
-every call after the first in a job restarts from the previous wavefunction.
-<code class="docutils literal notranslate"><span class="pre">CELL</span> <span class="pre">VECTORS</span></code> passes eOn’s cell unchanged, and CPMD refuses <code class="docutils literal notranslate"><span class="pre">SYMMETRY</span></code>
-beside it, so the deck omits <code class="docutils literal notranslate"><span class="pre">SYMMETRY</span></code>.</p>
+<p>The script refuses a result whose wavefunction optimisation printed
+<code class="docutils literal notranslate"><span class="pre">BUT</span> <span class="pre">NO</span> <span class="pre">CONVERGENCE</span></code>, after one retry from an atomic guess with
+<code class="docutils literal notranslate"><span class="pre">PCG</span> <span class="pre">MINIMIZE</span></code>. It keeps <code class="docutils literal notranslate"><span class="pre">RESTART.1</span></code> in the exchange directory, so every call
+after the first in a job restarts from the previous wavefunction.</p>
 </section>
 </section>
 <section id="performance-considerations">

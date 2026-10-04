@@ -270,18 +270,18 @@ Macros</h2></td></tr>
 <div class="textblock"><p>Physical constants, unit conversion. </p>
 <dl class="section author"><dt>Author</dt><dd>Jean-Claude C. Berthet </dd></dl>
 <dl class="section date"><dt>Date</dt><dd>2006-2007 University of Iceland </dd></dl>
-<h1 class="doxsection"><a class="anchor" id="introduction"></a>
+<h1 class="doxsection"><a class="anchor" id="xtb_introduction"></a>
 Introduction</h1>
 <p>This file contains constants to convert between different units and also to choose a default system of units. There are two types of constants, those in <em>lowercase</em> letters and those in <em>capital</em> letters. Constants in lowercase letters are universal constants usually expressed in the international sytem of unit (SI). The contents of these constants do not depend on the default system of unit chosen. The content of constants is capital letters depends on the default system. Those latter are further devided into two subgroups: unit name constants and converters.</p>
-<h1 class="doxsection"><a class="anchor" id="Default"></a>
+<h1 class="doxsection"><a class="anchor" id="xtb_default"></a>
 system of units:</h1>
 <p>The default system of units is selected at compilation by setting the macro <a class="el" href="#a1286742836184cb394390f105218510a" title="Default system of units.">FORCEFIELDS_UNIT_SYSTEM_HPP</a> .</p>
-<p>The content of the constants called <a class="el" href="#units" title="Default unit names:">unit name constants</a> and <a class="el" href="#converters" title="Converters: converting quantities.">converters</a> depends on the system chosen. <br  />
+<p>The content of the constants called <a class="el" href="#xtb_units" title="Default unit names:">unit name constants</a> and <a class="el" href="#xtb_converters" title="Converters: converting quantities.">converters</a> depends on the system chosen. <br  />
  The default system like the SI is based on the four dimensions distance, mass, time, electric current. All other units are extracted from the four units chosen for these four dimensions. For example if the default system is SI, the unit of energy will be Joule because \( 1\ J = 1\ m^2\ kg\ s^{-2}  \) . As well the unit of pressure will be Pascal ( \( 1\ Pa=1\ m^{-1}\ kg\ s^{-2} \) ). Quantities of same dimensions are always expressed with the same units. For instance the temperature has the dimension of the energy, therefore is default unit is the unit of the energy (Joule if SI is the default system).</p>
-<h1 class="doxsection"><a class="anchor" id="units"></a>
+<h1 class="doxsection"><a class="anchor" id="xtb_units"></a>
 Default unit names:</h1>
 <p>A unit constant is a constant string of characters named after a quantity (e.g. ENERGY, PRESSURE, etc). It contains the name of the default unit used for that quantity (e.g. <em>kJ</em> , <em>eV</em> , etc for an energy). These constants can be used to display a quantity in the default system of unit. For example, let us assume that <em> kJ/mol </em> is the default unit for the energy. We wish to display the content of a variable <em>energy</em> which contains an energy expressed in the default system of unit. We shall write the following code: </p><div class="fragment"><div class="line">cout &lt;&lt; energy &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; ENERGY &lt;&lt; endl;</div>
-</div><!-- fragment --><h1 class="doxsection"><a class="anchor" id="converters"></a>
+</div><!-- fragment --><h1 class="doxsection"><a class="anchor" id="xtb_converters"></a>
 Converters: converting quantities.</h1>
 <p>A converter is a double constant which has the name of a unit (e.g. PASCAL, KELVIN, ANGSTROM...). The constant contains the value of one quantity of the unit espressed in the default system of unit. Here is an example on how to use the converters. Let us assume that the default system of unit uses the meter as length unit. We wish to display the content of a variable <em class="arg">x</em> which contains a distance in meter, but we want to display it in Angstrom. To make the conversion we need to divide the quantity by one Angstrom:    </p><p class="formulaDsp">
 \[    \frac{x\ meter}{1\ Angstrom}=\frac{x\ meter}{10^{-10}\ meter}=x \time

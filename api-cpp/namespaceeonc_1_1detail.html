@@ -238,8 +238,13 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('namespaceeonc_
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:ImagePool" id="r_ImagePool"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1detail_1_1ImagePool.html">ImagePool</a></td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ac2ceb90ed825a626f307749b887cf028" id="r_ac2ceb90ed825a626f307749b887cf028"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#ac2ceb90ed825a626f307749b887cf028">usableCores</a> ()</td></tr>
 <tr class="memitem:a6b1eabf13d45174874c319017618aaec" id="r_a6b1eabf13d45174874c319017618aaec"><td class="memTemplParams" colspan="2">template&lt;typename Solver&gt; </td></tr>
 <tr class="memitem:a6b1eabf13d45174874c319017618aaec template"><td class="memItemLeft"><a class="el" href="structeonc_1_1DimerRotationResult.html">DimerRotationResult</a>&#160;</td><td class="memItemRight"><a class="el" href="#a6b1eabf13d45174874c319017618aaec">runRotationSolver</a> (const std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &amp;matter, const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;params, const std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt; &amp;pot, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;initialDirection)</td></tr>
 <tr class="memitem:a80ff6def7130f0f201757f99680ce040" id="r_a80ff6def7130f0f201757f99680ce040"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a80ff6def7130f0f201757f99680ce040">maxFreeAtomForceNormScalar</a> (const double *forces, const double *fixed, long begin, long nAtoms)</td></tr>
@@ -379,6 +384,46 @@ template&lt;typename Solver&gt; </div>
 <div class="ttc" id="astructeonc_1_1DimerRotationResult_html_a583de8c71b44cd847e99b80f0dd50c2f"><div class="ttname"><a href="structeonc_1_1DimerRotationResult.html#a583de8c71b44cd847e99b80f0dd50c2f">eonc::DimerRotationResult::forceCalls</a></div><div class="ttdeci">long forceCalls</div><div class="ttdef"><b>Definition</b> <a href="DimerRotationDispatch_8h_source.html#l00033">DimerRotationDispatch.h:33</a></div></div>
 <div class="ttc" id="astructeonc_1_1DimerRotationResult_html_ac95fdeb06b626503dad6236b39079674"><div class="ttname"><a href="structeonc_1_1DimerRotationResult.html#ac95fdeb06b626503dad6236b39079674">eonc::DimerRotationResult::eigenvalue</a></div><div class="ttdeci">double eigenvalue</div><div class="ttdef"><b>Definition</b> <a href="DimerRotationDispatch_8h_source.html#l00032">DimerRotationDispatch.h:32</a></div></div>
 <div class="ttc" id="astructeonc_1_1DimerRotationResult_html_af82705849c01e97278c58debdf4bc1af"><div class="ttname"><a href="structeonc_1_1DimerRotationResult.html#af82705849c01e97278c58debdf4bc1af">eonc::DimerRotationResult::eigenvector</a></div><div class="ttdeci">AtomMatrix eigenvector</div><div class="ttdef"><b>Definition</b> <a href="DimerRotationDispatch_8h_source.html#l00031">DimerRotationDispatch.h:31</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac2ceb90ed825a626f307749b887cf028" name="ac2ceb90ed825a626f307749b887cf028"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2ceb90ed825a626f307749b887cf028">&#9670;&#160;</a></span>usableCores()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::detail::usableCores </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ForEachImage_8h_source.html#l00026">26</a> of file <a class="el" href="ForEachImage_8h_source.html">ForEachImage.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   26</span>                          {</div>
+<div class="line"><span class="lineno">   27</span><span class="preprocessor">#if defined(__linux__)</span></div>
+<div class="line"><span class="lineno">   28</span>  cpu_set_t <a class="code hl_class" href="classset.html">set</a>;</div>
+<div class="line"><span class="lineno">   29</span>  CPU_ZERO(&amp;<a class="code hl_class" href="classset.html">set</a>);</div>
+<div class="line"><span class="lineno">   30</span>  <span class="keywordflow">if</span> (sched_getaffinity(0, <span class="keyword">sizeof</span>(<a class="code hl_class" href="classset.html">set</a>), &amp;<a class="code hl_class" href="classset.html">set</a>) == 0) {</div>
+<div class="line"><span class="lineno">   31</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> n = CPU_COUNT(&amp;<a class="code hl_class" href="classset.html">set</a>);</div>
+<div class="line"><span class="lineno">   32</span>    <span class="keywordflow">if</span> (n &gt; 0)</div>
+<div class="line"><span class="lineno">   33</span>      <span class="keywordflow">return</span> n;</div>
+<div class="line"><span class="lineno">   34</span>  }</div>
+<div class="line"><span class="lineno">   35</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">   36</span>  <span class="keywordflow">return</span> std::max(1L, <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(std::thread::hardware_concurrency()));</div>
+<div class="line"><span class="lineno">   37</span>}</div>
+<div class="ttc" id="aclassset_html"><div class="ttname"><a href="classset.html">set</a></div><div class="ttdoc">STL class.</div></div>
 </div><!-- fragment -->
 </div>
 </div>

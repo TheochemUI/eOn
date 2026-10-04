@@ -36,8 +36,8 @@
   <div class="sy-head-blur"></div>
   <div class="sy-head-inner sy-container mx-auto">
     <a class="sy-head-brand" href="../index.html">
-      
-      
+      <img class="light-logo" src="../logo/eon_v3_light.svg" alt="eOn" height="28" loading="lazy" />
+      <img class="dark-logo" src="../logo/eon_v3_dark.svg" alt="eOn" height="28" loading="lazy" />
       <strong>eOn</strong>
     </a>
     <div class="sy-head-nav" id="head-nav">
@@ -86,6 +86,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../team.html">eOn team</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../install/eessi.html">Build develop on EESSI</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../install/lammps.html">LAMMPS</a></li>
 </ul>
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html#obtaining-sources">Obtaining sources</a></li>
@@ -130,17 +131,23 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/lanczos.html">Lanczos</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/finite_difference.html">Finite-difference curvature</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/akmc.html">Adaptive kinetic Monte Carlo</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/saddle_search.html">Saddle search</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/basin_hopping.html">Basin hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/global_optimization.html">Minima hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/monte_carlo.html">Monte Carlo</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/replica_exchange.html">Replica exchange</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/process_search.html">Process search</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/recycling.html">Recycling</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/coarse_graining.html">Coarse graining</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/dynamics.html">Dynamics</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/parallel_replica.html">Parallel replica</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/tad.html">Temperature accelerated dynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/oh_tst.html">Optimal hyperplane transition state theory</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/communicator.html">Communicator</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/debug.html">Debug</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/paths.html">Paths</a></li>
@@ -166,6 +173,14 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn-migration.html">Migrating from SVN</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/tracking-changes.html">Tracking changes</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/release.html">Release workflow</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/design/client/index.html">Client design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/types.html">Type system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/parameters.html">Parameters system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/neb-modularization.html">NEB modularization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/confile.html">CON file I/O via readcon-core</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/pyeonclient.html">pyeonclient (nanobind client bindings)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/eon-schema.html">eon-schema (shared parameter package)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/pyeonclient-pypi.html">pyeonclient on PyPI</a></li>
@@ -174,7 +189,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../apidocs/index.html">API Reference</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
 </ul>
 </li>
@@ -196,6 +210,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.cancel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.cancel</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.job_result.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.job_result</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
@@ -249,6 +264,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../releases/v3.2.0/release-notes.html">eOn 3.2.0</a></li>
 </ul>
 </li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.17.0/release-notes.html">eOn 2.17.0</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.16.0/index.html">[v2.16.0] - 2026-07-03</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.16.0/release-notes.html">Release notes</a></li>
 </ul>
@@ -314,6 +330,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 </ul>
 </li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../glossary.html">Glossary</a></li>
 </ul>
         </div>
       </div>
@@ -471,8 +488,8 @@ Anything on stdout that is not a valid index list will cause a parse error.</p><
 <code class="docutils literal notranslate"><span class="pre">state.info</span></code> and reused for all saddle searches launched from that state.</p></li>
 <li><p>The path in <code class="docutils literal notranslate"><span class="pre">displace_atom_kmc_state_script</span></code> can be <strong>relative</strong> (resolved
 against the eOn root directory) or <strong>absolute</strong>.</p></li>
-<li><p>Scripts can use <a class="reference external" href="https://peps.python.org/pep-0723/">PEP 723</a> inline metadata
-so they are runnable with <code class="docutils literal notranslate"><span class="pre">uvx</span></code> without a separate virtual environment.</p></li>
+<li><p>The server runs the script with Python and passes the <code class="docutils literal notranslate"><span class="pre">.con</span></code> path as its
+only argument.</p></li>
 </ul>
 </section>
 <section id="example-1-vacancy-diffusion-in-cu">
@@ -529,10 +546,10 @@ Its core logic:</p>
 <li><p>Prints their indices to stdout.</p></li>
 </ol>
 <p>You can run it standalone to inspect the output:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">uvx<span class="w"> </span>ptmdisp.py<span class="w"> </span>pos.con
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">python<span class="w"> </span>ptmdisp.py<span class="w"> </span>pos.con
 </span><span data-line="2"><span class="c1"># Output: 42, 43, 51, 67, ...</span>
 </span><span data-line="3">
-</span><span data-line="4">uvx<span class="w"> </span>ptmdisp.py<span class="w"> </span>pos.con<span class="w"> </span>--verbose
+</span><span data-line="4">python<span class="w"> </span>ptmdisp.py<span class="w"> </span>pos.con<span class="w"> </span>--verbose
 </span><span data-line="5"><span class="c1"># Prints logging info to stderr, indices to stdout</span>
 </span></pre></div>
 </div>
@@ -575,7 +592,7 @@ adsorbate atom.</p></li>
 <h3>The script<a class="headerlink" href="#the-script" title="Link to this heading">¶</a></h3>
 <p>The file <code class="docutils literal notranslate"><span class="pre">examples/akmc-cu-vacancy/adsorbate_region.py</span></code> implements this
 approach using only ASE (no OVITO dependency):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">uvx<span class="w"> </span>adsorbate_region.py<span class="w"> </span>pos.con<span class="w"> </span>--adsorbate-elements<span class="w"> </span>C<span class="w"> </span>O<span class="w"> </span>--cutoff<span class="w"> </span><span class="m">4</span>.0
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">python<span class="w"> </span>adsorbate_region.py<span class="w"> </span>pos.con<span class="w"> </span>--adsorbate-elements<span class="w"> </span>C<span class="w"> </span>O<span class="w"> </span>--cutoff<span class="w"> </span><span class="m">4</span>.0
 </span><span data-line="2"><span class="c1"># Output: 0, 1, 23, 24, 31, ...</span>
 </span></pre></div>
 </div>
@@ -597,13 +614,20 @@ is useful when the adsorbate and surface share the same element. Pass
 </section>
 <section id="id1">
 <h3>Configuration<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<p>The configuration value is a path. The server runs that file as
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">&lt;script&gt;</span> <span class="pre">&lt;confile&gt;</span></code> and passes no flags. A value that also contains
+<code class="docutils literal notranslate"><span class="pre">--adsorbate-elements</span></code> is not a file, so the search stores an empty list.
+<code class="docutils literal notranslate"><span class="pre">adsorbate_region.py</span></code> exits when neither <code class="docutils literal notranslate"><span class="pre">--adsorbate-elements</span></code> nor
+<code class="docutils literal notranslate"><span class="pre">--z-above</span></code> is set, and that exit stops the server.</p>
+<p><code class="docutils literal notranslate"><span class="pre">examples/akmc-cu-vacancy/co_on_pt.py</span></code> calls the adsorbate script with the
+element choice fixed. The key names <code class="docutils literal notranslate"><span class="pre">co_on_pt.py</span></code>.</p>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text">config.ini (excerpt)</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Saddle Search]</span>
 </span><span data-line="2"><span class="na">displace_listed_atom_weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1.0</span>
 </span><span data-line="3"><span class="na">displace_radius</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">3.0</span>
 </span><span data-line="4"><span class="na">displace_magnitude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0.01</span>
-</span><span data-line="5"><span class="na">displace_atom_kmc_state_script</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">adsorbate_region.py --adsorbate-elements C O --cutoff 4.0</span>
+</span><span data-line="5"><span class="na">displace_atom_kmc_state_script</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">co_on_pt.py</span>
 </span><span data-line="6"><span class="na">displace_all_listed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
 </span></pre></div>
 </div>

@@ -103,6 +103,8 @@ var dir_db3a54907829b36871118d03417739cd =
     [ "testWriteR.cpp", "testWriteR_8cpp.html", "testWriteR_8cpp" ],
     [ "Tunneling.cpp", "Tunneling_8cpp.html", "Tunneling_8cpp" ],
     [ "VesinNeighbors.cpp", "VesinNeighbors_8cpp.html", null ],
+    [ "XtsciBand.cpp", "XtsciBand_8cpp.html", "XtsciBand_8cpp" ],
     [ "XtsciEindir.cpp", "XtsciEindir_8cpp.html", "XtsciEindir_8cpp" ],
+    [ "XtsciMinMode.cpp", "XtsciMinMode_8cpp.html", null ],
     [ "XtsciOptimizer.cpp", "XtsciOptimizer_8cpp.html", null ]
 ];

@@ -16,6 +16,8 @@ var hierarchy =
     [ "eonc::bgsd_options_t", "structeonc_1_1bgsd__options__t.html", null ],
     [ "eonc::BondBoost", "classeonc_1_1BondBoost.html", null ],
     [ "eonc::geometry::by_atom", "structeonc_1_1geometry_1_1by__atom.html", null ],
+    [ "eonc::CalculatorGroupUse", "structeonc_1_1CalculatorGroupUse.html", null ],
+    [ "eonc::CancelToken", "classeonc_1_1CancelToken.html", null ],
     [ "eonc::neb::CartesianStep", "structeonc_1_1neb_1_1CartesianStep.html", null ],
     [ "eonc::catlearn_options_t", "structeonc_1_1catlearn__options__t.html", null ],
     [ "CellList", "classCellList.html", null ],
@@ -61,13 +63,16 @@ var hierarchy =
     [ "eonc::ams_options_t::env_t", "structeonc_1_1ams__options__t_1_1env__t.html", null ],
     [ "EonMtaConfig", "structEonMtaConfig.html", null ],
     [ "EonMtaPot", "structEonMtaPot.html", null ],
+    [ "EonRgpotGroupMpi", "structEonRgpotGroupMpi.html", null ],
     [ "Exception", "classException.html", null ],
     [ "std::exception", null, [
       [ "eonc::DimerModeRestoredException", "classeonc_1_1DimerModeRestoredException.html", null ],
       [ "std::runtime_error", null, [
-        [ "eonc::DimerModeLostException", "classeonc_1_1DimerModeLostException.html", null ]
+        [ "eonc::DimerModeLostException", "classeonc_1_1DimerModeLostException.html", null ],
+        [ "eonc::JobCancelled", "classeonc_1_1JobCancelled.html", null ]
       ] ]
     ] ],
+    [ "eonc::Job::ExclusivePotential", "structeonc_1_1Job_1_1ExclusivePotential.html", null ],
     [ "eonc::expr_options_t", "structeonc_1_1expr__options__t.html", null ],
     [ "eonc::neb::ExtremaResult", "structeonc_1_1neb_1_1ExtremaResult.html", null ],
     [ "eonc::log::FileScoped", "structeonc_1_1log_1_1FileScoped.html", null ],
@@ -81,6 +86,7 @@ var hierarchy =
     [ "eonc::gp_surrogate_options_t", "structeonc_1_1gp__surrogate__options__t.html", null ],
     [ "eonc::gpr_dimer_options_t", "structeonc_1_1gpr__dimer__options__t.html", null ],
     [ "eonc::gpr_dimer_options_t::gpr_params_t", "structeonc_1_1gpr__dimer__options__t_1_1gpr__params__t.html", null ],
+    [ "eonc::GroupSchedule", "classeonc_1_1GroupSchedule.html", null ],
     [ "eonc::Hessian", "classeonc_1_1Hessian.html", null ],
     [ "eonc::hessian_options_t", "structeonc_1_1hessian__options__t.html", null ],
     [ "eonc::neb_options_t::climbing_image_options_t::hybrid_dimer_t", "structeonc_1_1neb__options__t_1_1climbing__image__options__t_1_1hybrid__dimer__t.html", null ],
@@ -98,6 +104,7 @@ var hierarchy =
     ] ],
     [ "Image", "structImage.html", null ],
     [ "eonc::neb::ImageForceData", "structeonc_1_1neb_1_1ImageForceData.html", null ],
+    [ "eonc::detail::ImagePool", "classeonc_1_1detail_1_1ImagePool.html", null ],
     [ "eonc::IMetatomicLoader", "classeonc_1_1IMetatomicLoader.html", [
       [ "eonc::MetatomicLoader", "classeonc_1_1MetatomicLoader.html", null ]
     ] ],
@@ -147,6 +154,7 @@ var hierarchy =
       [ "eonc::TestJob", "classeonc_1_1TestJob.html", null ]
     ] ],
     [ "eonc::JobResultEnvelope", "structeonc_1_1JobResultEnvelope.html", null ],
+    [ "eonc::JobResultProvenance", "structeonc_1_1JobResultProvenance.html", null ],
     [ "eonc::neb::JointBlock", "structeonc_1_1neb_1_1JointBlock.html", null ],
     [ "eonc::lanczos_options_t", "structeonc_1_1lanczos__options__t.html", null ],
     [ "eonc::optimizer_options_t::lbfgs_t", "structeonc_1_1optimizer__options__t_1_1lbfgs__t.html", null ],
@@ -156,7 +164,8 @@ var hierarchy =
       [ "eonc::Dimer", "classeonc_1_1Dimer.html", null ],
       [ "eonc::ImprovedDimer", "classeonc_1_1ImprovedDimer.html", null ],
       [ "eonc::LORRotation", "classeonc_1_1LORRotation.html", null ],
-      [ "eonc::Lanczos", "classeonc_1_1Lanczos.html", null ]
+      [ "eonc::Lanczos", "classeonc_1_1Lanczos.html", null ],
+      [ "eonc::XtsciMinMode", "classeonc_1_1XtsciMinMode.html", null ]
     ] ],
     [ "eonc::main_options_t", "structeonc_1_1main__options__t.html", null ],
     [ "eonc::IRACompare::MatchResult", "structeonc_1_1IRACompare_1_1MatchResult.html", null ],
@@ -227,7 +236,6 @@ var hierarchy =
       [ "Tip4p", "classTip4p.html", null ],
       [ "Tip4p_Pt", "classTip4p__Pt.html", null ],
       [ "VASP", "classVASP.html", null ],
-      [ "XTBPot", "classXTBPot.html", null ],
       [ "eonc::MetatomicDynPot", "classeonc_1_1MetatomicDynPot.html", null ],
       [ "eonc::SurrogatePotential", "classeonc_1_1SurrogatePotential.html", [
         [ "CatLearnPot", "classCatLearnPot.html", null ]
@@ -271,8 +279,12 @@ var hierarchy =
     [ "RgpotMtaPot", "structRgpotMtaPot.html", null ],
     [ "RgpotXtbConfig", "structRgpotXtbConfig.html", null ],
     [ "forcefields::Ccl::Rho", "structforcefields_1_1Ccl_1_1Rho.html", null ],
+    [ "eonc::tunneling::RingChannel", "structeonc_1_1tunneling_1_1RingChannel.html", null ],
     [ "eonc::pathintegral::RingPolymer", "classeonc_1_1pathintegral_1_1RingPolymer.html", null ],
+    [ "eonc::tunneling::RingRigidBodies", "structeonc_1_1tunneling_1_1RingRigidBodies.html", null ],
+    [ "eonc::tunneling::RingSeed", "structeonc_1_1tunneling_1_1RingSeed.html", null ],
     [ "eonc::tunneling::RingSpectrum", "structeonc_1_1tunneling_1_1RingSpectrum.html", null ],
+    [ "eonc::tunneling::RotationZeroModes", "structeonc_1_1tunneling_1_1RotationZeroModes.html", null ],
     [ "eonc::Runtime", "classeonc_1_1Runtime.html", null ],
     [ "eonc::saddle_search_options_t", "structeonc_1_1saddle__search__options__t.html", null ],
     [ "eonc::SaddleSearchMethod", "classeonc_1_1SaddleSearchMethod.html", [
@@ -323,6 +335,7 @@ var hierarchy =
     [ "XTBEngineLoader", "classXTBEngineLoader.html", null ],
     [ "XTBEngineOptions", "structXTBEngineOptions.html", null ],
     [ "eonc::optimizer_options_t::xtsci_t", "structeonc_1_1optimizer__options__t_1_1xtsci__t.html", null ],
+    [ "eonc::XtsciBand", "classeonc_1_1XtsciBand.html", null ],
     [ "eonc::zbl_options_t", "structeonc_1_1zbl__options__t.html", null ],
     [ "eonc::neb_options_t::zoom_options_t", "structeonc_1_1neb__options__t_1_1zoom__options__t.html", null ]
 ];

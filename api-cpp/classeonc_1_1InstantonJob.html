@@ -277,6 +277,8 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pro_methods_classeonc_1_1Job"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classeonc_1_1Job')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classeonc_1_1Job.html">eonc::Job</a></td></tr>
+<tr class="memitem:a40423b75b9614f0fc81797a5d817948d inherit pro_methods_classeonc_1_1Job" id="r_a40423b75b9614f0fc81797a5d817948d"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a40423b75b9614f0fc81797a5d817948d">Job</a> (std::unique_ptr&lt; <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &gt; parameters, <a class="el" href="classeonc_1_1Runtime.html">Runtime</a> &amp;rt, <a class="el" href="structeonc_1_1Job_1_1ExclusivePotential.html">ExclusivePotential</a>)</td></tr>
 <tr class="inherit_header pro_attribs_classeonc_1_1Job"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classeonc_1_1Job')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classeonc_1_1Job.html">eonc::Job</a></td></tr>
 <tr class="memitem:a90e97e92096c7c2ea7dec3d9c49f485f inherit pro_attribs_classeonc_1_1Job" id="r_a90e97e92096c7c2ea7dec3d9c49f485f"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379">JobType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a90e97e92096c7c2ea7dec3d9c49f485f">jtype</a></td></tr>
 <tr class="memitem:a9f0bfab75a98f383ba58f1c592fd2500 inherit pro_attribs_classeonc_1_1Job" id="r_a9f0bfab75a98f383ba58f1c592fd2500"><td class="memItemLeft"><a class="el" href="classeonc_1_1Parameters.html">Parameters</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a></td></tr>
@@ -284,7 +286,10 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memdesc:a79f4bf70ec1c7e3e08a0a5c0ff5ee965 inherit pro_attribs_classeonc_1_1Job"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-null when this <a class="el" href="classeonc_1_1Job.html" title="Declaration of job class.">Job</a> owns the composition root (one-shot makeJob).  <br /></td></tr>
 <tr class="memitem:add247a8d4ae4bb5e59ec85ecfcf1bd37 inherit pro_attribs_classeonc_1_1Job" id="r_add247a8d4ae4bb5e59ec85ecfcf1bd37"><td class="memItemLeft"><a class="el" href="classeonc_1_1Runtime.html">Runtime</a> *&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#add247a8d4ae4bb5e59ec85ecfcf1bd37">runtime_</a></td></tr>
 <tr class="memdesc:add247a8d4ae4bb5e59ec85ecfcf1bd37 inherit pro_attribs_classeonc_1_1Job"><td class="mdescLeft">&#160;</td><td class="mdescRight">Always valid: either owned_runtime_.get() or a caller-owned <a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a>.  <br /></td></tr>
+<tr class="memitem:ae11b351685b8b2ca364f1877636328ca inherit pro_attribs_classeonc_1_1Job" id="r_ae11b351685b8b2ca364f1877636328ca"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#ae11b351685b8b2ca364f1877636328ca">ownedPot</a></td></tr>
+<tr class="memdesc:ae11b351685b8b2ca364f1877636328ca inherit pro_attribs_classeonc_1_1Job"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exclusive until a multi-owner job promotes it in the public constructor.  <br /></td></tr>
 <tr class="memitem:a948da0de6ec2575bd6ac975fedaad0c9 inherit pro_attribs_classeonc_1_1Job" id="r_a948da0de6ec2575bd6ac975fedaad0c9"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a></td></tr>
+<tr class="memdesc:a948da0de6ec2575bd6ac975fedaad0c9 inherit pro_attribs_classeonc_1_1Job"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set when one <a class="el" href="classeonc_1_1Potential.html">Potential</a> is shared across Matters, images, or a caller.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Ring-polymer instanton ([Instanton]): the tunnelling splitting between two minima beyond one-dimensional WKB (mode splitting), or the thermal rate through a saddle (mode rate): the ring below the crossover temperature, and the parabolic barrier factor times harmonic transition-state theory above it, written to instanton.con and results.dat. </p>
@@ -319,8 +324,8 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="InstantonJob_8h_source.html#l00026">26</a> of file <a class="el" href="InstantonJob_8h_source.html">InstantonJob.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   27</span>      : <a class="code hl_function" href="classeonc_1_1Job.html#a048903796c5d81f4425e1392e1bcea8d">Job</a>(std::move(parameters), rt) {}</div>
-<div class="ttc" id="aclasseonc_1_1Job_html_a048903796c5d81f4425e1392e1bcea8d"><div class="ttname"><a href="classeonc_1_1Job.html#a048903796c5d81f4425e1392e1bcea8d">eonc::Job::Job</a></div><div class="ttdeci">Job(std::unique_ptr&lt; Parameters &gt; parameters, Runtime &amp;rt)</div><div class="ttdoc">Borrow: caller keeps Runtime alive (CLI stack / Python Session).</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00076">Job.h:76</a></div></div>
+<div class="fragment"><div class="line"><span class="lineno">   27</span>      : <a class="code hl_function" href="classeonc_1_1Job.html#a40423b75b9614f0fc81797a5d817948d">Job</a>(std::move(parameters), rt) {}</div>
+<div class="ttc" id="aclasseonc_1_1Job_html_a40423b75b9614f0fc81797a5d817948d"><div class="ttname"><a href="classeonc_1_1Job.html#a40423b75b9614f0fc81797a5d817948d">eonc::Job::Job</a></div><div class="ttdeci">Job(std::unique_ptr&lt; Parameters &gt; parameters, Runtime &amp;rt, ExclusivePotential)</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00071">Job.h:71</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -377,281 +382,293 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1Job.html#ac23db10c6a90d5c6cc8a3a49d7b0dace">eonc::Job</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="InstantonJob_8cpp_source.html#l00921">921</a> of file <a class="el" href="InstantonJob_8cpp_source.html">InstantonJob.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  921</span>                                           {</div>
-<div class="line"><span class="lineno">  922</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;o = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.instanton_options();</div>
-<div class="line"><span class="lineno">  923</span>  <a class="code hl_function" href="namespaceeonc_1_1pathintegral.html#ab31c49e76d72cce0ead85959bcc2fa62">pathintegral::requireTrotterSprings</a>(o.springs, <span class="stringliteral">&quot;instanton&quot;</span>);</div>
-<div class="line"><span class="lineno">  924</span>  std::vector&lt;std::string&gt; returnFiles;</div>
-<div class="line"><span class="lineno">  925</span>  <span class="keyword">const</span> std::string resultsFile = <span class="stringliteral">&quot;results.dat&quot;</span>;</div>
-<div class="line"><span class="lineno">  926</span>  <span class="keyword">const</span> std::string pathFile = <span class="stringliteral">&quot;instanton.con&quot;</span>;</div>
-<div class="line"><span class="lineno">  927</span>  returnFiles.push_back(resultsFile);</div>
-<div class="line"><span class="lineno">  928</span> </div>
-<div class="line"><span class="lineno">  929</span>  <span class="keyword">auto</span> reactant = std::make_unique&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno">  930</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">io::io_ok</a>(reactant-&gt;con2matter(o.reactant_filename))) {</div>
-<div class="line"><span class="lineno">  931</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;instanton: cannot read &quot;</span> + o.reactant_filename);</div>
-<div class="line"><span class="lineno">  932</span>  }</div>
-<div class="line"><span class="lineno">  933</span>  <span class="keyword">const</span> MassWeighted mw(*reactant);</div>
-<div class="line"><span class="lineno">  934</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> n = mw.dimension();</div>
-<div class="line"><span class="lineno">  935</span>  <span class="keyword">const</span> VectorXd qStart = VectorXd::Zero(n);</div>
-<div class="line"><span class="lineno">  936</span> </div>
-<div class="line"><span class="lineno">  937</span>  <span class="comment">// Bead evaluations: one batch per call, through forceBatch when the</span></div>
-<div class="line"><span class="lineno">  938</span>  <span class="comment">// potential spreads a batch over calculators.</span></div>
-<div class="line"><span class="lineno">  939</span>  std::vector&lt;std::unique_ptr&lt;Matter&gt;&gt; pool;</div>
-<div class="line"><span class="lineno">  940</span>  <span class="keyword">auto</span> evaluate = [&amp;](<span class="keyword">const</span> std::vector&lt;VectorXd&gt; &amp;q, std::vector&lt;double&gt; &amp;v,</div>
-<div class="line"><span class="lineno">  941</span>                      std::vector&lt;VectorXd&gt; &amp;grad) {</div>
-<div class="line"><span class="lineno">  942</span>    <span class="keywordflow">while</span> (pool.size() &lt; q.size()) {</div>
-<div class="line"><span class="lineno">  943</span>      pool.push_back(std::make_unique&lt;Matter&gt;(*reactant));</div>
-<div class="line"><span class="lineno">  944</span>    }</div>
-<div class="line"><span class="lineno">  945</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; q.size(); ++j) {</div>
-<div class="line"><span class="lineno">  946</span>      mw.place(q[j], *pool[j]);</div>
-<div class="line"><span class="lineno">  947</span>    }</div>
-<div class="line"><span class="lineno">  948</span>    v.resize(q.size());</div>
-<div class="line"><span class="lineno">  949</span>    grad.resize(q.size());</div>
-<div class="line"><span class="lineno">  950</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>-&gt;supportsBatchEvaluation() &amp;&amp; q.size() &gt; 1) {</div>
-<div class="line"><span class="lineno">  951</span>      <span class="keyword">const</span> <span class="keywordtype">long</span> atoms = reactant-&gt;numberOfAtoms();</div>
-<div class="line"><span class="lineno">  952</span>      std::vector&lt;VectorXi&gt; nrs(q.size());</div>
-<div class="line"><span class="lineno">  953</span>      std::vector&lt;Matrix3d&gt; boxes(q.size());</div>
-<div class="line"><span class="lineno">  954</span>      std::vector&lt;const double *&gt; posPtr, boxPtr;</div>
-<div class="line"><span class="lineno">  955</span>      std::vector&lt;const int *&gt; nrsPtr;</div>
-<div class="line"><span class="lineno">  956</span>      std::vector&lt;double *&gt; frcPtr;</div>
-<div class="line"><span class="lineno">  957</span>      <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; q.size(); ++j) {</div>
-<div class="line"><span class="lineno">  958</span>        nrs[j] = pool[j]-&gt;getAtomicNrs();</div>
-<div class="line"><span class="lineno">  959</span>        boxes[j] = pool[j]-&gt;getPeriodic() ? pool[j]-&gt;getCell()</div>
-<div class="line"><span class="lineno">  960</span>                                          : Matrix3d::Zero().eval();</div>
-<div class="line"><span class="lineno">  961</span>      }</div>
-<div class="line"><span class="lineno">  962</span>      <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; q.size(); ++j) {</div>
-<div class="line"><span class="lineno">  963</span>        posPtr.push_back(pool[j]-&gt;getPositions().data());</div>
-<div class="line"><span class="lineno">  964</span>        nrsPtr.push_back(nrs[j].data());</div>
-<div class="line"><span class="lineno">  965</span>        frcPtr.push_back(pool[j]-&gt;forcesData());</div>
-<div class="line"><span class="lineno">  966</span>        boxPtr.push_back(boxes[j].data());</div>
-<div class="line"><span class="lineno">  967</span>      }</div>
-<div class="line"><span class="lineno">  968</span>      std::vector&lt;double&gt; energies(q.size()), variances(q.size());</div>
-<div class="line"><span class="lineno">  969</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>-&gt;forceBatch(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(q.size()), atoms, posPtr.data(),</div>
-<div class="line"><span class="lineno">  970</span>                      nrsPtr.data(), frcPtr.data(), energies.data(),</div>
-<div class="line"><span class="lineno">  971</span>                      variances.data(), boxPtr.data());</div>
-<div class="line"><span class="lineno">  972</span>      <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; q.size(); ++j) {</div>
-<div class="line"><span class="lineno">  973</span>        pool[j]-&gt;setComputedPotential(energies[j], variances[j]);</div>
-<div class="line"><span class="lineno">  974</span>      }</div>
-<div class="line"><span class="lineno">  975</span>    }</div>
-<div class="line"><span class="lineno">  976</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; q.size(); ++j) {</div>
-<div class="line"><span class="lineno">  977</span>      v[j] = pool[j]-&gt;getPotentialEnergy();</div>
-<div class="line"><span class="lineno">  978</span>      grad[j] = mw.gradient(pool[j]-&gt;getForces());</div>
-<div class="line"><span class="lineno">  979</span>    }</div>
-<div class="line"><span class="lineno">  980</span>  };</div>
-<div class="line"><span class="lineno">  981</span> </div>
-<div class="line"><span class="lineno">  982</span>  <span class="comment">// The first call is the reactant. Its Hessian decides which rotations</span></div>
-<div class="line"><span class="lineno">  983</span>  <span class="comment">// are zero modes; later beads reuse that decision.</span></div>
-<div class="line"><span class="lineno">  984</span>  std::array&lt;bool, 3&gt; rotationZero{{<span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>}};</div>
-<div class="line"><span class="lineno">  985</span>  std::array&lt;double, 3&gt; rotationResidual{{0.0, 0.0, 0.0}};</div>
-<div class="line"><span class="lineno">  986</span>  <span class="keywordtype">bool</span> rotationsKnown = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  987</span>  <span class="keyword">auto</span> hessianAt = [&amp;](<span class="keyword">const</span> VectorXd &amp;q) {</div>
-<div class="line"><span class="lineno">  988</span>    Matter m(*reactant);</div>
-<div class="line"><span class="lineno">  989</span>    mw.place(q, m);</div>
-<div class="line"><span class="lineno">  990</span>    <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ac05b513f4ff7ad2680f4528f5c8136b9">Hessian</a> h(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>, &amp;m);</div>
-<div class="line"><span class="lineno">  991</span>    h.writeHessianFile(<span class="keyword">false</span>);</div>
-<div class="line"><span class="lineno">  992</span>    <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> out = h.getHessian(&amp;m, mw.freeAtoms());</div>
-<div class="line"><span class="lineno">  993</span>    <span class="keywordflow">if</span> (out.rows() != n) {</div>
-<div class="line"><span class="lineno">  994</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;instanton: a bead Hessian failed&quot;</span>);</div>
-<div class="line"><span class="lineno">  995</span>    }</div>
-<div class="line"><span class="lineno">  996</span>    <span class="keywordflow">if</span> (!rotationsKnown) {</div>
-<div class="line"><span class="lineno">  997</span>      mw.markRotationZeroModes(out, mw.rigidGenerators(m), rotationZero,</div>
-<div class="line"><span class="lineno">  998</span>                               rotationResidual);</div>
-<div class="line"><span class="lineno">  999</span>      rotationsKnown = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno"> 1000</span>    }</div>
-<div class="line"><span class="lineno"> 1001</span>    <span class="comment">// A finite-difference Hessian of a free structure has small nonzero</span></div>
-<div class="line"><span class="lineno"> 1002</span>    <span class="comment">// rigid eigenvalues of either sign; project them to zero.</span></div>
-<div class="line"><span class="lineno"> 1003</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> rigid = mw.rigidBasis(m, rotationZero);</div>
-<div class="line"><span class="lineno"> 1004</span>    <span class="keywordflow">if</span> (rigid.cols() &gt; 0) {</div>
-<div class="line"><span class="lineno"> 1005</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> p = MatrixXd::Identity(n, n) - rigid * rigid.transpose();</div>
-<div class="line"><span class="lineno"> 1006</span>      out = p * out * p;</div>
-<div class="line"><span class="lineno"> 1007</span>    }</div>
-<div class="line"><span class="lineno"> 1008</span>    <span class="keywordflow">return</span> out;</div>
-<div class="line"><span class="lineno"> 1009</span>  };</div>
-<div class="line"><span class="lineno"> 1010</span> </div>
-<div class="line"><span class="lineno"> 1011</span>  <span class="keywordflow">if</span> (o.mode == <span class="stringliteral">&quot;rate&quot;</span>) {</div>
-<div class="line"><span class="lineno"> 1012</span>    <span class="keywordflow">return</span> runRate(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, *reactant, mw, evaluate, hessianAt,</div>
-<div class="line"><span class="lineno"> 1013</span>                   rotationZero, rotationResidual);</div>
-<div class="line"><span class="lineno"> 1014</span>  }</div>
-<div class="line"><span class="lineno"> 1015</span> </div>
-<div class="line"><span class="lineno"> 1016</span>  <span class="keyword">auto</span> product = std::make_unique&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
-<div class="line"><span class="lineno"> 1017</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">io::io_ok</a>(product-&gt;con2matter(o.product_filename))) {</div>
-<div class="line"><span class="lineno"> 1018</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;instanton: cannot read &quot;</span> + o.product_filename);</div>
-<div class="line"><span class="lineno"> 1019</span>  }</div>
-<div class="line"><span class="lineno"> 1020</span>  <span class="keywordflow">if</span> (reactant-&gt;numberOfAtoms() != product-&gt;numberOfAtoms()) {</div>
-<div class="line"><span class="lineno"> 1021</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;instanton: the minima differ in atom count&quot;</span>);</div>
-<div class="line"><span class="lineno"> 1022</span>  }</div>
-<div class="line"><span class="lineno"> 1023</span>  alignRigid(*reactant, *product);</div>
-<div class="line"><span class="lineno"> 1024</span>  <span class="keyword">const</span> VectorXd qEnd = mw.toQ(*product);</div>
-<div class="line"><span class="lineno"> 1025</span> </div>
-<div class="line"><span class="lineno"> 1026</span>  <span class="comment">// Starting path: a band from file, else the straight line.</span></div>
-<div class="line"><span class="lineno"> 1027</span>  std::vector&lt;VectorXd&gt; guess;</div>
-<div class="line"><span class="lineno"> 1028</span>  <span class="keywordflow">if</span> (!o.initial_path.empty()) {</div>
-<div class="line"><span class="lineno"> 1029</span>    <span class="keyword">const</span> <span class="keyword">auto</span> frames = readcon::read_all_frames(o.initial_path);</div>
-<div class="line"><span class="lineno"> 1030</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;frame : frames) {</div>
-<div class="line"><span class="lineno"> 1031</span>      Matter m(*reactant);</div>
-<div class="line"><span class="lineno"> 1032</span>      <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">io::io_ok</a>(<a class="code hl_function" href="namespaceeonc_1_1io.html#a6f13ca53e923b1a8dbb98436987c984c">io::con2matter</a>(m, frame))) {</div>
-<div class="line"><span class="lineno"> 1033</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;instanton: cannot read &quot;</span> + o.initial_path);</div>
-<div class="line"><span class="lineno"> 1034</span>      }</div>
-<div class="line"><span class="lineno"> 1035</span>      alignRigid(*reactant, m);</div>
-<div class="line"><span class="lineno"> 1036</span>      guess.push_back(mw.toQ(m));</div>
+<p class="definition">Definition at line <a class="el" href="InstantonJob_8cpp_source.html#l00939">939</a> of file <a class="el" href="InstantonJob_8cpp_source.html">InstantonJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  939</span>                                           {</div>
+<div class="line"><span class="lineno">  940</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;o = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.instanton_options();</div>
+<div class="line"><span class="lineno">  941</span>  <a class="code hl_function" href="namespaceeonc_1_1pathintegral.html#ab31c49e76d72cce0ead85959bcc2fa62">pathintegral::requireTrotterSprings</a>(o.springs, <span class="stringliteral">&quot;instanton&quot;</span>);</div>
+<div class="line"><span class="lineno">  942</span>  std::vector&lt;std::string&gt; returnFiles;</div>
+<div class="line"><span class="lineno">  943</span>  <span class="keyword">const</span> std::string resultsFile = <span class="stringliteral">&quot;results.dat&quot;</span>;</div>
+<div class="line"><span class="lineno">  944</span>  <span class="keyword">const</span> std::string pathFile = <span class="stringliteral">&quot;instanton.con&quot;</span>;</div>
+<div class="line"><span class="lineno">  945</span>  returnFiles.push_back(resultsFile);</div>
+<div class="line"><span class="lineno">  946</span> </div>
+<div class="line"><span class="lineno">  947</span>  <span class="keyword">auto</span> reactant = std::make_unique&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  948</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">io::io_ok</a>(reactant-&gt;con2matter(o.reactant_filename))) {</div>
+<div class="line"><span class="lineno">  949</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;instanton: cannot read &quot;</span> + o.reactant_filename);</div>
+<div class="line"><span class="lineno">  950</span>  }</div>
+<div class="line"><span class="lineno">  951</span>  <span class="keyword">const</span> MassWeighted mw(*reactant);</div>
+<div class="line"><span class="lineno">  952</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> n = mw.dimension();</div>
+<div class="line"><span class="lineno">  953</span>  <span class="keyword">const</span> VectorXd qStart = VectorXd::Zero(n);</div>
+<div class="line"><span class="lineno">  954</span> </div>
+<div class="line"><span class="lineno">  955</span>  <span class="comment">// Bead evaluations: one batch per call, through forceBatch when the</span></div>
+<div class="line"><span class="lineno">  956</span>  <span class="comment">// potential spreads a batch over calculators.</span></div>
+<div class="line"><span class="lineno">  957</span>  std::vector&lt;std::unique_ptr&lt;Matter&gt;&gt; pool;</div>
+<div class="line"><span class="lineno">  958</span>  <span class="keyword">auto</span> evaluate = [&amp;](<span class="keyword">const</span> std::vector&lt;VectorXd&gt; &amp;q, std::vector&lt;double&gt; &amp;v,</div>
+<div class="line"><span class="lineno">  959</span>                      std::vector&lt;VectorXd&gt; &amp;grad) {</div>
+<div class="line"><span class="lineno">  960</span>    <span class="keywordflow">while</span> (pool.size() &lt; q.size()) {</div>
+<div class="line"><span class="lineno">  961</span>      pool.push_back(std::make_unique&lt;Matter&gt;(*reactant));</div>
+<div class="line"><span class="lineno">  962</span>    }</div>
+<div class="line"><span class="lineno">  963</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; q.size(); ++j) {</div>
+<div class="line"><span class="lineno">  964</span>      mw.place(q[j], *pool[j]);</div>
+<div class="line"><span class="lineno">  965</span>    }</div>
+<div class="line"><span class="lineno">  966</span>    v.resize(q.size());</div>
+<div class="line"><span class="lineno">  967</span>    grad.resize(q.size());</div>
+<div class="line"><span class="lineno">  968</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>-&gt;supportsBatchEvaluation() &amp;&amp; q.size() &gt; 1) {</div>
+<div class="line"><span class="lineno">  969</span>      <span class="keyword">const</span> <span class="keywordtype">long</span> atoms = reactant-&gt;numberOfAtoms();</div>
+<div class="line"><span class="lineno">  970</span>      std::vector&lt;VectorXi&gt; nrs(q.size());</div>
+<div class="line"><span class="lineno">  971</span>      std::vector&lt;Matrix3d&gt; boxes(q.size());</div>
+<div class="line"><span class="lineno">  972</span>      std::vector&lt;const double *&gt; posPtr, boxPtr;</div>
+<div class="line"><span class="lineno">  973</span>      std::vector&lt;const int *&gt; nrsPtr;</div>
+<div class="line"><span class="lineno">  974</span>      std::vector&lt;double *&gt; frcPtr;</div>
+<div class="line"><span class="lineno">  975</span>      <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; q.size(); ++j) {</div>
+<div class="line"><span class="lineno">  976</span>        nrs[j] = pool[j]-&gt;getAtomicNrs();</div>
+<div class="line"><span class="lineno">  977</span>        boxes[j] = pool[j]-&gt;getPeriodic() ? pool[j]-&gt;getCell()</div>
+<div class="line"><span class="lineno">  978</span>                                          : Matrix3d::Zero().eval();</div>
+<div class="line"><span class="lineno">  979</span>      }</div>
+<div class="line"><span class="lineno">  980</span>      <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; q.size(); ++j) {</div>
+<div class="line"><span class="lineno">  981</span>        posPtr.push_back(pool[j]-&gt;getPositions().data());</div>
+<div class="line"><span class="lineno">  982</span>        nrsPtr.push_back(nrs[j].data());</div>
+<div class="line"><span class="lineno">  983</span>        frcPtr.push_back(pool[j]-&gt;forcesData());</div>
+<div class="line"><span class="lineno">  984</span>        boxPtr.push_back(boxes[j].data());</div>
+<div class="line"><span class="lineno">  985</span>      }</div>
+<div class="line"><span class="lineno">  986</span>      std::vector&lt;double&gt; energies(q.size()), variances(q.size());</div>
+<div class="line"><span class="lineno">  987</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>-&gt;forceBatch(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(q.size()), atoms, posPtr.data(),</div>
+<div class="line"><span class="lineno">  988</span>                      nrsPtr.data(), frcPtr.data(), energies.data(),</div>
+<div class="line"><span class="lineno">  989</span>                      variances.data(), boxPtr.data());</div>
+<div class="line"><span class="lineno">  990</span>      <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; q.size(); ++j) {</div>
+<div class="line"><span class="lineno">  991</span>        pool[j]-&gt;setComputedPotential(energies[j], variances[j]);</div>
+<div class="line"><span class="lineno">  992</span>      }</div>
+<div class="line"><span class="lineno">  993</span>    }</div>
+<div class="line"><span class="lineno">  994</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; q.size(); ++j) {</div>
+<div class="line"><span class="lineno">  995</span>      v[j] = pool[j]-&gt;getPotentialEnergy();</div>
+<div class="line"><span class="lineno">  996</span>      grad[j] = mw.gradient(pool[j]-&gt;getForces());</div>
+<div class="line"><span class="lineno">  997</span>    }</div>
+<div class="line"><span class="lineno">  998</span>  };</div>
+<div class="line"><span class="lineno">  999</span> </div>
+<div class="line"><span class="lineno"> 1000</span>  <span class="comment">// The first call is the reactant. Its Hessian decides which rotations</span></div>
+<div class="line"><span class="lineno"> 1001</span>  <span class="comment">// are zero modes; later beads reuse that decision.</span></div>
+<div class="line"><span class="lineno"> 1002</span>  std::array&lt;bool, 3&gt; rotationZero{{<span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>}};</div>
+<div class="line"><span class="lineno"> 1003</span>  std::array&lt;double, 3&gt; rotationResidual{{0.0, 0.0, 0.0}};</div>
+<div class="line"><span class="lineno"> 1004</span>  <span class="keywordtype">bool</span> rotationsKnown = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno"> 1005</span>  <span class="keyword">auto</span> hessianWith = [&amp;](<span class="keyword">const</span> VectorXd &amp;q, <span class="keywordtype">bool</span> projectRotations) {</div>
+<div class="line"><span class="lineno"> 1006</span>    Matter m(*reactant);</div>
+<div class="line"><span class="lineno"> 1007</span>    mw.place(q, m);</div>
+<div class="line"><span class="lineno"> 1008</span>    <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ac05b513f4ff7ad2680f4528f5c8136b9">Hessian</a> h(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>, &amp;m);</div>
+<div class="line"><span class="lineno"> 1009</span>    h.writeHessianFile(<span class="keyword">false</span>);</div>
+<div class="line"><span class="lineno"> 1010</span>    <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> out = h.getHessian(&amp;m, mw.freeAtoms());</div>
+<div class="line"><span class="lineno"> 1011</span>    <span class="keywordflow">if</span> (out.rows() != n) {</div>
+<div class="line"><span class="lineno"> 1012</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;instanton: a bead Hessian failed&quot;</span>);</div>
+<div class="line"><span class="lineno"> 1013</span>    }</div>
+<div class="line"><span class="lineno"> 1014</span>    <span class="keywordflow">if</span> (!rotationsKnown) {</div>
+<div class="line"><span class="lineno"> 1015</span>      mw.markRotationZeroModes(out, mw.rigidGenerators(m), rotationZero,</div>
+<div class="line"><span class="lineno"> 1016</span>                               rotationResidual);</div>
+<div class="line"><span class="lineno"> 1017</span>      rotationsKnown = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno"> 1018</span>    }</div>
+<div class="line"><span class="lineno"> 1019</span>    <span class="comment">// A finite-difference Hessian of a free structure has small nonzero</span></div>
+<div class="line"><span class="lineno"> 1020</span>    <span class="comment">// rigid eigenvalues of either sign; project them to zero. At a point</span></div>
+<div class="line"><span class="lineno"> 1021</span>    <span class="comment">// that is not stationary, H r for a rotation r is the rotated gradient,</span></div>
+<div class="line"><span class="lineno"> 1022</span>    <span class="comment">// which on a ring bead balances the springs; ring beads keep it and</span></div>
+<div class="line"><span class="lineno"> 1023</span>    <span class="comment">// lose only their translations.</span></div>
+<div class="line"><span class="lineno"> 1024</span>    <span class="keyword">const</span> std::array&lt;bool, 3&gt; none{{<span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>}};</div>
+<div class="line"><span class="lineno"> 1025</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> rigid =</div>
+<div class="line"><span class="lineno"> 1026</span>        mw.rigidBasis(m, projectRotations ? rotationZero : none);</div>
+<div class="line"><span class="lineno"> 1027</span>    <span class="keywordflow">if</span> (rigid.cols() &gt; 0) {</div>
+<div class="line"><span class="lineno"> 1028</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> p = MatrixXd::Identity(n, n) - rigid * rigid.transpose();</div>
+<div class="line"><span class="lineno"> 1029</span>      out = p * out * p;</div>
+<div class="line"><span class="lineno"> 1030</span>    }</div>
+<div class="line"><span class="lineno"> 1031</span>    <span class="keywordflow">return</span> out;</div>
+<div class="line"><span class="lineno"> 1032</span>  };</div>
+<div class="line"><span class="lineno"> 1033</span>  <span class="keyword">auto</span> hessianAt = [&amp;](<span class="keyword">const</span> VectorXd &amp;q) { <span class="keywordflow">return</span> hessianWith(q, <span class="keyword">true</span>); };</div>
+<div class="line"><span class="lineno"> 1034</span>  <span class="keyword">auto</span> beadHessianAt = [&amp;](<span class="keyword">const</span> VectorXd &amp;q) {</div>
+<div class="line"><span class="lineno"> 1035</span>    <span class="keywordflow">if</span> (!rotationsKnown) {</div>
+<div class="line"><span class="lineno"> 1036</span>      hessianWith(VectorXd::Zero(n), <span class="keyword">true</span>);</div>
 <div class="line"><span class="lineno"> 1037</span>    }</div>
-<div class="line"><span class="lineno"> 1038</span>    <span class="keywordflow">if</span> (guess.size() &gt;= 2) {</div>
-<div class="line"><span class="lineno"> 1039</span>      guess.front() = qStart;</div>
-<div class="line"><span class="lineno"> 1040</span>      guess.back() = qEnd;</div>
-<div class="line"><span class="lineno"> 1041</span>    }</div>
-<div class="line"><span class="lineno"> 1042</span>  }</div>
-<div class="line"><span class="lineno"> 1043</span> </div>
-<div class="line"><span class="lineno"> 1044</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> hStart = hessianAt(qStart);</div>
-<div class="line"><span class="lineno"> 1045</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> hEnd = hessianAt(qEnd);</div>
-<div class="line"><span class="lineno"> 1046</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> omega = <a class="code hl_function" href="namespaceeonc_1_1tunneling.html#a62a61c2cba5bda32d9ee6b1e2d7034bd">tunneling::pathOmega</a>(hStart, hEnd, qStart, qEnd);</div>
-<div class="line"><span class="lineno"> 1047</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> betaHbar = o.beta_hbar_omega / omega;</div>
-<div class="line"><span class="lineno"> 1048</span>  tunneling::InstantonOptions opt;</div>
-<div class="line"><span class="lineno"> 1049</span>  opt.beads = o.beads;</div>
-<div class="line"><span class="lineno"> 1050</span>  opt.betaHbarOmega = o.beta_hbar_omega;</div>
-<div class="line"><span class="lineno"> 1051</span>  opt.maxIterations = o.max_iterations;</div>
-<div class="line"><span class="lineno"> 1052</span>  opt.forceTolerance = o.force_tolerance;</div>
-<div class="line"><span class="lineno"> 1053</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;[Instanton] {} beads over beta hbar = {:.4f} fs, {} degrees &quot;</span></div>
-<div class="line"><span class="lineno"> 1054</span>                <span class="stringliteral">&quot;of freedom&quot;</span>,</div>
-<div class="line"><span class="lineno"> 1055</span>                o.beads, betaHbar * kTimeUnitFs, n);</div>
-<div class="line"><span class="lineno"> 1056</span> </div>
-<div class="line"><span class="lineno"> 1057</span>  tunneling::Instanton inst = <a class="code hl_function" href="namespaceeonc_1_1tunneling.html#af0ee54cc399a779b8b15819aab321aa5">tunneling::optimizeInstanton</a>(</div>
-<div class="line"><span class="lineno"> 1058</span>      qStart, qEnd, betaHbar, guess, evaluate, opt);</div>
-<div class="line"><span class="lineno"> 1059</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;[Instanton] action {:.6f} after {} iterations{}&quot;</span>, inst.action,</div>
-<div class="line"><span class="lineno"> 1060</span>                inst.iterations, inst.converged ? <span class="stringliteral">&quot;&quot;</span> : <span class="stringliteral">&quot; (not converged)&quot;</span>);</div>
-<div class="line"><span class="lineno"> 1061</span> </div>
-<div class="line"><span class="lineno"> 1062</span>  <span class="keywordtype">bool</span> splitOk = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno"> 1063</span>  std::string failure;</div>
-<div class="line"><span class="lineno"> 1064</span>  <span class="comment">// beta |delta|: the propagator ratio reads delta0 only when the wells</span></div>
-<div class="line"><span class="lineno"> 1065</span>  <span class="comment">// lie within a small fraction of kB T of each other.</span></div>
-<div class="line"><span class="lineno"> 1066</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> betaAsymmetry =</div>
-<div class="line"><span class="lineno"> 1067</span>      std::abs(inst.asymmetry) * betaHbar / <a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#a9226451a02d96e8651470ee1fb21eaa9">tunneling::kHbar</a>;</div>
-<div class="line"><span class="lineno"> 1068</span>  <span class="keywordflow">if</span> (inst.converged &amp;&amp; !inst.symmetricEnough) {</div>
-<div class="line"><span class="lineno"> 1069</span>    <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;[Instanton] beta |delta| = {:.3g}: the wells differ by &quot;</span></div>
-<div class="line"><span class="lineno"> 1070</span>                     <span class="stringliteral">&quot;{:.4g} eV, too far for the splitting; the path and &quot;</span></div>
-<div class="line"><span class="lineno"> 1071</span>                     <span class="stringliteral">&quot;action are written, the splitting is not&quot;</span>,</div>
-<div class="line"><span class="lineno"> 1072</span>                     betaAsymmetry, inst.asymmetry);</div>
-<div class="line"><span class="lineno"> 1073</span>  }</div>
-<div class="line"><span class="lineno"> 1074</span>  <span class="keywordflow">if</span> (inst.converged &amp;&amp; inst.symmetricEnough) {</div>
-<div class="line"><span class="lineno"> 1075</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> stride = std::max&lt;long&gt;(1, o.hessian_stride);</div>
-<div class="line"><span class="lineno"> 1076</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> P = o.beads;</div>
-<div class="line"><span class="lineno"> 1077</span>    std::map&lt;long, MatrixXd&gt; anchors;</div>
-<div class="line"><span class="lineno"> 1078</span>    <span class="keyword">auto</span> anchor = [&amp;](<span class="keywordtype">long</span> j) -&gt; <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> &amp; {</div>
-<div class="line"><span class="lineno"> 1079</span>      <span class="keyword">auto</span> it = anchors.find(j);</div>
-<div class="line"><span class="lineno"> 1080</span>      <span class="keywordflow">if</span> (it == anchors.end()) {</div>
-<div class="line"><span class="lineno"> 1081</span>        it = anchors.emplace(j, hessianAt(inst.path[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)]))</div>
-<div class="line"><span class="lineno"> 1082</span>                 .first;</div>
-<div class="line"><span class="lineno"> 1083</span>      }</div>
-<div class="line"><span class="lineno"> 1084</span>      <span class="keywordflow">return</span> it-&gt;second;</div>
-<div class="line"><span class="lineno"> 1085</span>    };</div>
-<div class="line"><span class="lineno"> 1086</span>    <span class="keyword">auto</span> beadHessian = [&amp;](<span class="keywordtype">long</span> j, <span class="keyword">const</span> VectorXd &amp;) -&gt; <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> {</div>
-<div class="line"><span class="lineno"> 1087</span>      <span class="keywordflow">if</span> (stride == 1) {</div>
-<div class="line"><span class="lineno"> 1088</span>        <span class="keywordflow">return</span> anchor(j);</div>
-<div class="line"><span class="lineno"> 1089</span>      }</div>
-<div class="line"><span class="lineno"> 1090</span>      <span class="keyword">const</span> <span class="keywordtype">long</span> lo = 1 + ((j - 1) / stride) * stride;</div>
-<div class="line"><span class="lineno"> 1091</span>      <span class="keyword">const</span> <span class="keywordtype">long</span> hi = std::min(lo + stride, P - 1);</div>
-<div class="line"><span class="lineno"> 1092</span>      <span class="keywordflow">if</span> (j == lo || hi == lo) {</div>
-<div class="line"><span class="lineno"> 1093</span>        <span class="keywordflow">return</span> anchor(lo);</div>
-<div class="line"><span class="lineno"> 1094</span>      }</div>
-<div class="line"><span class="lineno"> 1095</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> t =</div>
-<div class="line"><span class="lineno"> 1096</span>          <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(j - lo) / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(hi - lo);</div>
-<div class="line"><span class="lineno"> 1097</span>      <span class="keywordflow">return</span> (1.0 - t) * anchor(lo) + t * anchor(hi);</div>
-<div class="line"><span class="lineno"> 1098</span>    };</div>
-<div class="line"><span class="lineno"> 1099</span>    <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno"> 1100</span>      <a class="code hl_function" href="namespaceeonc_1_1tunneling.html#a4656ac9701b42c731f9f7c84a635f57c">tunneling::instantonSplitting</a>(inst, beadHessian, hStart, hEnd);</div>
-<div class="line"><span class="lineno"> 1101</span>      splitOk = std::isfinite(inst.delta0);</div>
-<div class="line"><span class="lineno"> 1102</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::runtime_error &amp;ex) {</div>
-<div class="line"><span class="lineno"> 1103</span>      failure = ex.what();</div>
-<div class="line"><span class="lineno"> 1104</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;[Instanton] {}&quot;</span>, failure);</div>
-<div class="line"><span class="lineno"> 1105</span>    }</div>
-<div class="line"><span class="lineno"> 1106</span>  }</div>
-<div class="line"><span class="lineno"> 1107</span> </div>
-<div class="line"><span class="lineno"> 1108</span>  <span class="comment">// The path, one frame per bead; the splitting on the first frame.</span></div>
-<div class="line"><span class="lineno"> 1109</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> kelvin = <a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#a9226451a02d96e8651470ee1fb21eaa9">tunneling::kHbar</a> / (<a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#af7d7cff7a86f5d8ade50e485b3b184e9">tunneling::kBoltzmann</a> * betaHbar);</div>
-<div class="line"><span class="lineno"> 1110</span>  Matter frame(*reactant);</div>
-<div class="line"><span class="lineno"> 1111</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; inst.path.size(); ++j) {</div>
-<div class="line"><span class="lineno"> 1112</span>    mw.place(inst.path[j], frame);</div>
-<div class="line"><span class="lineno"> 1113</span>    io::ConFrameMetadata meta;</div>
-<div class="line"><span class="lineno"> 1114</span>    meta.frame_index = <span class="keyword">static_cast&lt;</span>uint64_t<span class="keyword">&gt;</span>(j);</div>
-<div class="line"><span class="lineno"> 1115</span>    meta.energy = inst.energies[j];</div>
-<div class="line"><span class="lineno"> 1116</span>    meta.write_con_forces = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno"> 1117</span>    meta.scalars = {{<span class="stringliteral">&quot;imaginary_time_fs&quot;</span>,</div>
-<div class="line"><span class="lineno"> 1118</span>                     <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(j) * inst.dtau * kTimeUnitFs}};</div>
-<div class="line"><span class="lineno"> 1119</span>    <span class="keywordflow">if</span> (j == 0) {</div>
-<div class="line"><span class="lineno"> 1120</span>      meta.scalars.push_back({<span class="stringliteral">&quot;instanton_action&quot;</span>, inst.action});</div>
-<div class="line"><span class="lineno"> 1121</span>      meta.scalars.push_back(</div>
-<div class="line"><span class="lineno"> 1122</span>          {<span class="stringliteral">&quot;instanton_beta_hbar_fs&quot;</span>, betaHbar * kTimeUnitFs});</div>
-<div class="line"><span class="lineno"> 1123</span>      meta.scalars.push_back({<span class="stringliteral">&quot;instanton_temperature_K&quot;</span>, kelvin});</div>
-<div class="line"><span class="lineno"> 1124</span>      meta.scalars.push_back(</div>
-<div class="line"><span class="lineno"> 1125</span>          {<span class="stringliteral">&quot;instanton_converged&quot;</span>, inst.converged ? 1.0 : 0.0});</div>
-<div class="line"><span class="lineno"> 1126</span>      meta.scalars.push_back({<span class="stringliteral">&quot;tunnel_asymmetry&quot;</span>, inst.asymmetry});</div>
-<div class="line"><span class="lineno"> 1127</span>      <span class="keywordflow">if</span> (splitOk) {</div>
-<div class="line"><span class="lineno"> 1128</span>        meta.scalars.push_back({<span class="stringliteral">&quot;tunnel_splitting_instanton&quot;</span>, inst.delta0});</div>
-<div class="line"><span class="lineno"> 1129</span>        meta.scalars.push_back(</div>
-<div class="line"><span class="lineno"> 1130</span>            {<span class="stringliteral">&quot;tls_energy_instanton&quot;</span>, std::hypot(inst.asymmetry, inst.delta0)});</div>
-<div class="line"><span class="lineno"> 1131</span>        meta.scalars.push_back({<span class="stringliteral">&quot;instanton_zero_mode&quot;</span>, inst.zeroMode});</div>
-<div class="line"><span class="lineno"> 1132</span>        meta.scalars.push_back(</div>
-<div class="line"><span class="lineno"> 1133</span>            {<span class="stringliteral">&quot;instanton_mode_separation&quot;</span>, inst.modeSeparation});</div>
-<div class="line"><span class="lineno"> 1134</span>        meta.scalars.push_back(</div>
-<div class="line"><span class="lineno"> 1135</span>            {<span class="stringliteral">&quot;instanton_symmetric&quot;</span>, inst.symmetricEnough ? 1.0 : 0.0});</div>
-<div class="line"><span class="lineno"> 1136</span>      }</div>
-<div class="line"><span class="lineno"> 1137</span>    }</div>
-<div class="line"><span class="lineno"> 1138</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">io::io_ok</a>(frame.matter2con(pathFile, j &gt; 0, &amp;meta))) {</div>
-<div class="line"><span class="lineno"> 1139</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;instanton: cannot write &quot;</span> + pathFile);</div>
-<div class="line"><span class="lineno"> 1140</span>    }</div>
-<div class="line"><span class="lineno"> 1141</span>  }</div>
-<div class="line"><span class="lineno"> 1142</span>  returnFiles.push_back(pathFile);</div>
-<div class="line"><span class="lineno"> 1143</span>  writeCentroid(<span class="stringliteral">&quot;instanton_centroid.con&quot;</span>, inst.path, mw, *reactant,</div>
-<div class="line"><span class="lineno"> 1144</span>                {{<span class="stringliteral">&quot;instanton_temperature_K&quot;</span>, kelvin},</div>
-<div class="line"><span class="lineno"> 1145</span>                 {<span class="stringliteral">&quot;instanton_converged&quot;</span>, inst.converged ? 1.0 : 0.0}});</div>
-<div class="line"><span class="lineno"> 1146</span>  returnFiles.push_back(<span class="stringliteral">&quot;instanton_centroid.con&quot;</span>);</div>
-<div class="line"><span class="lineno"> 1147</span> </div>
-<div class="line"><span class="lineno"> 1148</span>  <span class="comment">// A converged path between wells too far apart is a result, not a</span></div>
-<div class="line"><span class="lineno"> 1149</span>  <span class="comment">// failure: the flags say why no splitting was written.</span></div>
-<div class="line"><span class="lineno"> 1150</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> good = splitOk || (inst.converged &amp;&amp; !inst.symmetricEnough);</div>
-<div class="line"><span class="lineno"> 1151</span>  <span class="keyword">const</span> <span class="keyword">auto</span> status = good ? <a class="code hl_enumvalue" href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459a45802158e78dd9584161629098018fe8">RunStatus::GOOD</a></div>
-<div class="line"><span class="lineno"> 1152</span>                           : (inst.converged ? <a class="code hl_enumvalue" href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459ad0a9f0540a833cc97bd3921d0de2d9b5">RunStatus::FAIL_POTENTIAL_FAILED</a></div>
-<div class="line"><span class="lineno"> 1153</span>                                             : <a class="code hl_enumvalue" href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459a9d50412b69404284d20de2af7e4206dc">RunStatus::FAIL_MAX_ITERATIONS</a>);</div>
-<div class="line"><span class="lineno"> 1154</span>  <span class="keyword">auto</span> env = <a class="code hl_function" href="structeonc_1_1JobResultEnvelope.html#adcc250879257d0fb4823bb0c799a3510">JobResultEnvelope::fromMinimization</a>(</div>
-<div class="line"><span class="lineno"> 1155</span>      status, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.potential_options().potential,</div>
-<div class="line"><span class="lineno"> 1156</span>      <a class="code hl_function" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">PotRegistry::get</a>().<a class="code hl_function" href="classeonc_1_1PotRegistry.html#a6ffd8adea58bf8682dc74e73ad97c17b">total_force_calls</a>(), <span class="keyword">false</span>, 0.0);</div>
-<div class="line"><span class="lineno"> 1157</span>  env.job_type = <span class="stringliteral">&quot;instanton&quot;</span>;</div>
-<div class="line"><span class="lineno"> 1158</span>  env.extras.emplace_back(<span class="stringliteral">&quot;force_calls&quot;</span>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(env.force_calls));</div>
-<div class="line"><span class="lineno"> 1159</span>  env.extras.emplace_back(<span class="stringliteral">&quot;instanton_iterations&quot;</span>,</div>
-<div class="line"><span class="lineno"> 1160</span>                          <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(inst.iterations));</div>
-<div class="line"><span class="lineno"> 1161</span>  env.extras.emplace_back(<span class="stringliteral">&quot;instanton_action&quot;</span>, inst.action);</div>
-<div class="line"><span class="lineno"> 1162</span>  env.extras.emplace_back(<span class="stringliteral">&quot;instanton_temperature_K&quot;</span>, kelvin);</div>
-<div class="line"><span class="lineno"> 1163</span>  env.extras.emplace_back(<span class="stringliteral">&quot;tunnel_asymmetry&quot;</span>, inst.asymmetry);</div>
-<div class="line"><span class="lineno"> 1164</span>  env.extras.emplace_back(<span class="stringliteral">&quot;instanton_beta_asymmetry&quot;</span>, betaAsymmetry);</div>
-<div class="line"><span class="lineno"> 1165</span>  env.extras.emplace_back(<span class="stringliteral">&quot;instanton_symmetric&quot;</span>,</div>
-<div class="line"><span class="lineno"> 1166</span>                          inst.symmetricEnough ? 1.0 : 0.0);</div>
-<div class="line"><span class="lineno"> 1167</span>  <span class="keywordflow">if</span> (splitOk) {</div>
-<div class="line"><span class="lineno"> 1168</span>    env.extras.emplace_back(<span class="stringliteral">&quot;tunnel_splitting_instanton&quot;</span>, inst.delta0);</div>
-<div class="line"><span class="lineno"> 1169</span>    env.extras.emplace_back(<span class="stringliteral">&quot;instanton_mode_separation&quot;</span>, inst.modeSeparation);</div>
-<div class="line"><span class="lineno"> 1170</span>  }</div>
-<div class="line"><span class="lineno"> 1171</span>  env.writeResultsDat(resultsFile);</div>
-<div class="line"><span class="lineno"> 1172</span>  <span class="keywordflow">return</span> returnFiles;</div>
-<div class="line"><span class="lineno"> 1173</span>}</div>
+<div class="line"><span class="lineno"> 1038</span>    <span class="keywordflow">return</span> hessianWith(q, <span class="keyword">false</span>);</div>
+<div class="line"><span class="lineno"> 1039</span>  };</div>
+<div class="line"><span class="lineno"> 1040</span> </div>
+<div class="line"><span class="lineno"> 1041</span>  <span class="keywordflow">if</span> (o.mode == <span class="stringliteral">&quot;rate&quot;</span>) {</div>
+<div class="line"><span class="lineno"> 1042</span>    <span class="keywordflow">return</span> runRate(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, *reactant, mw, evaluate, hessianAt,</div>
+<div class="line"><span class="lineno"> 1043</span>                   beadHessianAt, rotationZero, rotationResidual);</div>
+<div class="line"><span class="lineno"> 1044</span>  }</div>
+<div class="line"><span class="lineno"> 1045</span> </div>
+<div class="line"><span class="lineno"> 1046</span>  <span class="keyword">auto</span> product = std::make_unique&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno"> 1047</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">io::io_ok</a>(product-&gt;con2matter(o.product_filename))) {</div>
+<div class="line"><span class="lineno"> 1048</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;instanton: cannot read &quot;</span> + o.product_filename);</div>
+<div class="line"><span class="lineno"> 1049</span>  }</div>
+<div class="line"><span class="lineno"> 1050</span>  <span class="keywordflow">if</span> (reactant-&gt;numberOfAtoms() != product-&gt;numberOfAtoms()) {</div>
+<div class="line"><span class="lineno"> 1051</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;instanton: the minima differ in atom count&quot;</span>);</div>
+<div class="line"><span class="lineno"> 1052</span>  }</div>
+<div class="line"><span class="lineno"> 1053</span>  alignRigid(*reactant, *product);</div>
+<div class="line"><span class="lineno"> 1054</span>  <span class="keyword">const</span> VectorXd qEnd = mw.toQ(*product);</div>
+<div class="line"><span class="lineno"> 1055</span> </div>
+<div class="line"><span class="lineno"> 1056</span>  <span class="comment">// Starting path: a band from file, else the straight line.</span></div>
+<div class="line"><span class="lineno"> 1057</span>  std::vector&lt;VectorXd&gt; guess;</div>
+<div class="line"><span class="lineno"> 1058</span>  <span class="keywordflow">if</span> (!o.initial_path.empty()) {</div>
+<div class="line"><span class="lineno"> 1059</span>    <span class="keyword">const</span> <span class="keyword">auto</span> frames = readcon::read_all_frames(o.initial_path);</div>
+<div class="line"><span class="lineno"> 1060</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;frame : frames) {</div>
+<div class="line"><span class="lineno"> 1061</span>      Matter m(*reactant);</div>
+<div class="line"><span class="lineno"> 1062</span>      <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">io::io_ok</a>(<a class="code hl_function" href="namespaceeonc_1_1io.html#a6f13ca53e923b1a8dbb98436987c984c">io::con2matter</a>(m, frame))) {</div>
+<div class="line"><span class="lineno"> 1063</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;instanton: cannot read &quot;</span> + o.initial_path);</div>
+<div class="line"><span class="lineno"> 1064</span>      }</div>
+<div class="line"><span class="lineno"> 1065</span>      alignRigid(*reactant, m);</div>
+<div class="line"><span class="lineno"> 1066</span>      guess.push_back(mw.toQ(m));</div>
+<div class="line"><span class="lineno"> 1067</span>    }</div>
+<div class="line"><span class="lineno"> 1068</span>    <span class="keywordflow">if</span> (guess.size() &gt;= 2) {</div>
+<div class="line"><span class="lineno"> 1069</span>      guess.front() = qStart;</div>
+<div class="line"><span class="lineno"> 1070</span>      guess.back() = qEnd;</div>
+<div class="line"><span class="lineno"> 1071</span>    }</div>
+<div class="line"><span class="lineno"> 1072</span>  }</div>
+<div class="line"><span class="lineno"> 1073</span> </div>
+<div class="line"><span class="lineno"> 1074</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> hStart = hessianAt(qStart);</div>
+<div class="line"><span class="lineno"> 1075</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> hEnd = hessianAt(qEnd);</div>
+<div class="line"><span class="lineno"> 1076</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> omega = <a class="code hl_function" href="namespaceeonc_1_1tunneling.html#a62a61c2cba5bda32d9ee6b1e2d7034bd">tunneling::pathOmega</a>(hStart, hEnd, qStart, qEnd);</div>
+<div class="line"><span class="lineno"> 1077</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> betaHbar = o.beta_hbar_omega / omega;</div>
+<div class="line"><span class="lineno"> 1078</span>  tunneling::InstantonOptions opt;</div>
+<div class="line"><span class="lineno"> 1079</span>  opt.beads = o.beads;</div>
+<div class="line"><span class="lineno"> 1080</span>  opt.betaHbarOmega = o.beta_hbar_omega;</div>
+<div class="line"><span class="lineno"> 1081</span>  opt.maxIterations = o.max_iterations;</div>
+<div class="line"><span class="lineno"> 1082</span>  opt.forceTolerance = o.force_tolerance;</div>
+<div class="line"><span class="lineno"> 1083</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;[Instanton] {} beads over beta hbar = {:.4f} fs, {} degrees &quot;</span></div>
+<div class="line"><span class="lineno"> 1084</span>                <span class="stringliteral">&quot;of freedom&quot;</span>,</div>
+<div class="line"><span class="lineno"> 1085</span>                o.beads, betaHbar * kTimeUnitFs, n);</div>
+<div class="line"><span class="lineno"> 1086</span> </div>
+<div class="line"><span class="lineno"> 1087</span>  tunneling::Instanton inst = <a class="code hl_function" href="namespaceeonc_1_1tunneling.html#af0ee54cc399a779b8b15819aab321aa5">tunneling::optimizeInstanton</a>(</div>
+<div class="line"><span class="lineno"> 1088</span>      qStart, qEnd, betaHbar, guess, evaluate, opt);</div>
+<div class="line"><span class="lineno"> 1089</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;[Instanton] action {:.6f} after {} iterations{}&quot;</span>, inst.action,</div>
+<div class="line"><span class="lineno"> 1090</span>                inst.iterations, inst.converged ? <span class="stringliteral">&quot;&quot;</span> : <span class="stringliteral">&quot; (not converged)&quot;</span>);</div>
+<div class="line"><span class="lineno"> 1091</span> </div>
+<div class="line"><span class="lineno"> 1092</span>  <span class="keywordtype">bool</span> splitOk = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno"> 1093</span>  std::string failure;</div>
+<div class="line"><span class="lineno"> 1094</span>  <span class="comment">// beta |delta|: the propagator ratio reads delta0 only when the wells</span></div>
+<div class="line"><span class="lineno"> 1095</span>  <span class="comment">// lie within a small fraction of kB T of each other.</span></div>
+<div class="line"><span class="lineno"> 1096</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> betaAsymmetry =</div>
+<div class="line"><span class="lineno"> 1097</span>      std::abs(inst.asymmetry) * betaHbar / <a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#a9226451a02d96e8651470ee1fb21eaa9">tunneling::kHbar</a>;</div>
+<div class="line"><span class="lineno"> 1098</span>  <span class="keywordflow">if</span> (inst.converged &amp;&amp; !inst.symmetricEnough) {</div>
+<div class="line"><span class="lineno"> 1099</span>    <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;[Instanton] beta |delta| = {:.3g}: the wells differ by &quot;</span></div>
+<div class="line"><span class="lineno"> 1100</span>                     <span class="stringliteral">&quot;{:.4g} eV, too far for the splitting; the path and &quot;</span></div>
+<div class="line"><span class="lineno"> 1101</span>                     <span class="stringliteral">&quot;action are written, the splitting is not&quot;</span>,</div>
+<div class="line"><span class="lineno"> 1102</span>                     betaAsymmetry, inst.asymmetry);</div>
+<div class="line"><span class="lineno"> 1103</span>  }</div>
+<div class="line"><span class="lineno"> 1104</span>  <span class="keywordflow">if</span> (inst.converged &amp;&amp; inst.symmetricEnough) {</div>
+<div class="line"><span class="lineno"> 1105</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> stride = std::max&lt;long&gt;(1, o.hessian_stride);</div>
+<div class="line"><span class="lineno"> 1106</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> P = o.beads;</div>
+<div class="line"><span class="lineno"> 1107</span>    std::map&lt;long, MatrixXd&gt; anchors;</div>
+<div class="line"><span class="lineno"> 1108</span>    <span class="keyword">auto</span> anchor = [&amp;](<span class="keywordtype">long</span> j) -&gt; <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> &amp; {</div>
+<div class="line"><span class="lineno"> 1109</span>      <span class="keyword">auto</span> it = anchors.find(j);</div>
+<div class="line"><span class="lineno"> 1110</span>      <span class="keywordflow">if</span> (it == anchors.end()) {</div>
+<div class="line"><span class="lineno"> 1111</span>        it = anchors.emplace(j, hessianAt(inst.path[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)]))</div>
+<div class="line"><span class="lineno"> 1112</span>                 .first;</div>
+<div class="line"><span class="lineno"> 1113</span>      }</div>
+<div class="line"><span class="lineno"> 1114</span>      <span class="keywordflow">return</span> it-&gt;second;</div>
+<div class="line"><span class="lineno"> 1115</span>    };</div>
+<div class="line"><span class="lineno"> 1116</span>    <span class="keyword">auto</span> beadHessian = [&amp;](<span class="keywordtype">long</span> j, <span class="keyword">const</span> VectorXd &amp;) -&gt; <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> {</div>
+<div class="line"><span class="lineno"> 1117</span>      <span class="keywordflow">if</span> (stride == 1) {</div>
+<div class="line"><span class="lineno"> 1118</span>        <span class="keywordflow">return</span> anchor(j);</div>
+<div class="line"><span class="lineno"> 1119</span>      }</div>
+<div class="line"><span class="lineno"> 1120</span>      <span class="keyword">const</span> <span class="keywordtype">long</span> lo = 1 + ((j - 1) / stride) * stride;</div>
+<div class="line"><span class="lineno"> 1121</span>      <span class="keyword">const</span> <span class="keywordtype">long</span> hi = std::min(lo + stride, P - 1);</div>
+<div class="line"><span class="lineno"> 1122</span>      <span class="keywordflow">if</span> (j == lo || hi == lo) {</div>
+<div class="line"><span class="lineno"> 1123</span>        <span class="keywordflow">return</span> anchor(lo);</div>
+<div class="line"><span class="lineno"> 1124</span>      }</div>
+<div class="line"><span class="lineno"> 1125</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> t =</div>
+<div class="line"><span class="lineno"> 1126</span>          <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(j - lo) / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(hi - lo);</div>
+<div class="line"><span class="lineno"> 1127</span>      <span class="keywordflow">return</span> (1.0 - t) * anchor(lo) + t * anchor(hi);</div>
+<div class="line"><span class="lineno"> 1128</span>    };</div>
+<div class="line"><span class="lineno"> 1129</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno"> 1130</span>      <a class="code hl_function" href="namespaceeonc_1_1tunneling.html#a4656ac9701b42c731f9f7c84a635f57c">tunneling::instantonSplitting</a>(inst, beadHessian, hStart, hEnd);</div>
+<div class="line"><span class="lineno"> 1131</span>      splitOk = std::isfinite(inst.delta0);</div>
+<div class="line"><span class="lineno"> 1132</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::runtime_error &amp;ex) {</div>
+<div class="line"><span class="lineno"> 1133</span>      failure = ex.what();</div>
+<div class="line"><span class="lineno"> 1134</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;[Instanton] {}&quot;</span>, failure);</div>
+<div class="line"><span class="lineno"> 1135</span>    }</div>
+<div class="line"><span class="lineno"> 1136</span>  }</div>
+<div class="line"><span class="lineno"> 1137</span> </div>
+<div class="line"><span class="lineno"> 1138</span>  <span class="comment">// The path, one frame per bead; the splitting on the first frame.</span></div>
+<div class="line"><span class="lineno"> 1139</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> kelvin = <a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#a9226451a02d96e8651470ee1fb21eaa9">tunneling::kHbar</a> / (<a class="code hl_variable" href="namespaceeonc_1_1tunneling.html#af7d7cff7a86f5d8ade50e485b3b184e9">tunneling::kBoltzmann</a> * betaHbar);</div>
+<div class="line"><span class="lineno"> 1140</span>  Matter frame(*reactant);</div>
+<div class="line"><span class="lineno"> 1141</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; inst.path.size(); ++j) {</div>
+<div class="line"><span class="lineno"> 1142</span>    mw.place(inst.path[j], frame);</div>
+<div class="line"><span class="lineno"> 1143</span>    io::ConFrameMetadata meta;</div>
+<div class="line"><span class="lineno"> 1144</span>    meta.frame_index = <span class="keyword">static_cast&lt;</span>uint64_t<span class="keyword">&gt;</span>(j);</div>
+<div class="line"><span class="lineno"> 1145</span>    meta.energy = inst.energies[j];</div>
+<div class="line"><span class="lineno"> 1146</span>    meta.write_con_forces = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno"> 1147</span>    meta.scalars = {{<span class="stringliteral">&quot;imaginary_time_fs&quot;</span>,</div>
+<div class="line"><span class="lineno"> 1148</span>                     <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(j) * inst.dtau * kTimeUnitFs}};</div>
+<div class="line"><span class="lineno"> 1149</span>    <span class="keywordflow">if</span> (j == 0) {</div>
+<div class="line"><span class="lineno"> 1150</span>      meta.scalars.push_back({<span class="stringliteral">&quot;instanton_action&quot;</span>, inst.action});</div>
+<div class="line"><span class="lineno"> 1151</span>      meta.scalars.push_back(</div>
+<div class="line"><span class="lineno"> 1152</span>          {<span class="stringliteral">&quot;instanton_beta_hbar_fs&quot;</span>, betaHbar * kTimeUnitFs});</div>
+<div class="line"><span class="lineno"> 1153</span>      meta.scalars.push_back({<span class="stringliteral">&quot;instanton_temperature_K&quot;</span>, kelvin});</div>
+<div class="line"><span class="lineno"> 1154</span>      meta.scalars.push_back(</div>
+<div class="line"><span class="lineno"> 1155</span>          {<span class="stringliteral">&quot;instanton_converged&quot;</span>, inst.converged ? 1.0 : 0.0});</div>
+<div class="line"><span class="lineno"> 1156</span>      meta.scalars.push_back({<span class="stringliteral">&quot;tunnel_asymmetry&quot;</span>, inst.asymmetry});</div>
+<div class="line"><span class="lineno"> 1157</span>      <span class="keywordflow">if</span> (splitOk) {</div>
+<div class="line"><span class="lineno"> 1158</span>        meta.scalars.push_back({<span class="stringliteral">&quot;tunnel_splitting_instanton&quot;</span>, inst.delta0});</div>
+<div class="line"><span class="lineno"> 1159</span>        meta.scalars.push_back(</div>
+<div class="line"><span class="lineno"> 1160</span>            {<span class="stringliteral">&quot;tls_energy_instanton&quot;</span>, std::hypot(inst.asymmetry, inst.delta0)});</div>
+<div class="line"><span class="lineno"> 1161</span>        meta.scalars.push_back({<span class="stringliteral">&quot;instanton_zero_mode&quot;</span>, inst.zeroMode});</div>
+<div class="line"><span class="lineno"> 1162</span>        meta.scalars.push_back(</div>
+<div class="line"><span class="lineno"> 1163</span>            {<span class="stringliteral">&quot;instanton_mode_separation&quot;</span>, inst.modeSeparation});</div>
+<div class="line"><span class="lineno"> 1164</span>        meta.scalars.push_back(</div>
+<div class="line"><span class="lineno"> 1165</span>            {<span class="stringliteral">&quot;instanton_symmetric&quot;</span>, inst.symmetricEnough ? 1.0 : 0.0});</div>
+<div class="line"><span class="lineno"> 1166</span>      }</div>
+<div class="line"><span class="lineno"> 1167</span>    }</div>
+<div class="line"><span class="lineno"> 1168</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">io::io_ok</a>(frame.matter2con(pathFile, j &gt; 0, &amp;meta))) {</div>
+<div class="line"><span class="lineno"> 1169</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;instanton: cannot write &quot;</span> + pathFile);</div>
+<div class="line"><span class="lineno"> 1170</span>    }</div>
+<div class="line"><span class="lineno"> 1171</span>  }</div>
+<div class="line"><span class="lineno"> 1172</span>  returnFiles.push_back(pathFile);</div>
+<div class="line"><span class="lineno"> 1173</span>  writeCentroid(<span class="stringliteral">&quot;instanton_centroid.con&quot;</span>, inst.path, mw, *reactant,</div>
+<div class="line"><span class="lineno"> 1174</span>                {{<span class="stringliteral">&quot;instanton_temperature_K&quot;</span>, kelvin},</div>
+<div class="line"><span class="lineno"> 1175</span>                 {<span class="stringliteral">&quot;instanton_converged&quot;</span>, inst.converged ? 1.0 : 0.0}});</div>
+<div class="line"><span class="lineno"> 1176</span>  returnFiles.push_back(<span class="stringliteral">&quot;instanton_centroid.con&quot;</span>);</div>
+<div class="line"><span class="lineno"> 1177</span> </div>
+<div class="line"><span class="lineno"> 1178</span>  <span class="comment">// A converged path between wells too far apart is a result, not a</span></div>
+<div class="line"><span class="lineno"> 1179</span>  <span class="comment">// failure: the flags say why no splitting was written.</span></div>
+<div class="line"><span class="lineno"> 1180</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> good = splitOk || (inst.converged &amp;&amp; !inst.symmetricEnough);</div>
+<div class="line"><span class="lineno"> 1181</span>  <span class="keyword">const</span> <span class="keyword">auto</span> status = good ? <a class="code hl_enumvalue" href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459a45802158e78dd9584161629098018fe8">RunStatus::GOOD</a></div>
+<div class="line"><span class="lineno"> 1182</span>                           : (inst.converged ? <a class="code hl_enumvalue" href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459ad0a9f0540a833cc97bd3921d0de2d9b5">RunStatus::FAIL_POTENTIAL_FAILED</a></div>
+<div class="line"><span class="lineno"> 1183</span>                                             : <a class="code hl_enumvalue" href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459a9d50412b69404284d20de2af7e4206dc">RunStatus::FAIL_MAX_ITERATIONS</a>);</div>
+<div class="line"><span class="lineno"> 1184</span>  <span class="keyword">auto</span> env = <a class="code hl_function" href="structeonc_1_1JobResultEnvelope.html#adcc250879257d0fb4823bb0c799a3510">JobResultEnvelope::fromMinimization</a>(</div>
+<div class="line"><span class="lineno"> 1185</span>      status, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.potential_options().potential,</div>
+<div class="line"><span class="lineno"> 1186</span>      <a class="code hl_function" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">PotRegistry::get</a>().<a class="code hl_function" href="classeonc_1_1PotRegistry.html#a6ffd8adea58bf8682dc74e73ad97c17b">total_force_calls</a>(), <span class="keyword">false</span>, 0.0);</div>
+<div class="line"><span class="lineno"> 1187</span>  env.job_type = <span class="stringliteral">&quot;instanton&quot;</span>;</div>
+<div class="line"><span class="lineno"> 1188</span>  env.extras.emplace_back(<span class="stringliteral">&quot;force_calls&quot;</span>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(env.force_calls));</div>
+<div class="line"><span class="lineno"> 1189</span>  env.extras.emplace_back(<span class="stringliteral">&quot;instanton_iterations&quot;</span>,</div>
+<div class="line"><span class="lineno"> 1190</span>                          <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(inst.iterations));</div>
+<div class="line"><span class="lineno"> 1191</span>  env.extras.emplace_back(<span class="stringliteral">&quot;instanton_action&quot;</span>, inst.action);</div>
+<div class="line"><span class="lineno"> 1192</span>  env.extras.emplace_back(<span class="stringliteral">&quot;instanton_temperature_K&quot;</span>, kelvin);</div>
+<div class="line"><span class="lineno"> 1193</span>  env.extras.emplace_back(<span class="stringliteral">&quot;tunnel_asymmetry&quot;</span>, inst.asymmetry);</div>
+<div class="line"><span class="lineno"> 1194</span>  env.extras.emplace_back(<span class="stringliteral">&quot;instanton_beta_asymmetry&quot;</span>, betaAsymmetry);</div>
+<div class="line"><span class="lineno"> 1195</span>  env.extras.emplace_back(<span class="stringliteral">&quot;instanton_symmetric&quot;</span>,</div>
+<div class="line"><span class="lineno"> 1196</span>                          inst.symmetricEnough ? 1.0 : 0.0);</div>
+<div class="line"><span class="lineno"> 1197</span>  <span class="keywordflow">if</span> (splitOk) {</div>
+<div class="line"><span class="lineno"> 1198</span>    env.extras.emplace_back(<span class="stringliteral">&quot;tunnel_splitting_instanton&quot;</span>, inst.delta0);</div>
+<div class="line"><span class="lineno"> 1199</span>    env.extras.emplace_back(<span class="stringliteral">&quot;instanton_mode_separation&quot;</span>, inst.modeSeparation);</div>
+<div class="line"><span class="lineno"> 1200</span>  }</div>
+<div class="line"><span class="lineno"> 1201</span>  env.writeResultsDat(resultsFile);</div>
+<div class="line"><span class="lineno"> 1202</span>  <span class="keywordflow">return</span> returnFiles;</div>
+<div class="line"><span class="lineno"> 1203</span>}</div>
 <div class="ttc" id="aEigen_8h_html_a45bb4cbce093fca4dfb193d3f649da30"><div class="ttname"><a href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, eOnStorageOrder &gt; MatrixXd</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00033">Eigen.h:33</a></div></div>
-<div class="ttc" id="aEonLogger_8h_html_a4cf9b473cf6a1d850b3725fca6805f86"><div class="ttname"><a href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a></div><div class="ttdeci">#define EONC_LOG_ERROR(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00261">EonLogger.h:261</a></div></div>
-<div class="ttc" id="aEonLogger_8h_html_a85fddaf0620c36ee3fcf865df53a9327"><div class="ttname"><a href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a></div><div class="ttdeci">#define EONC_LOG_WARNING(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00255">EonLogger.h:255</a></div></div>
-<div class="ttc" id="aEonLogger_8h_html_afba240899b90f3996875577cc095dc00"><div class="ttname"><a href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a></div><div class="ttdeci">#define EONC_LOG_INFO(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00249">EonLogger.h:249</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Job_html_a948da0de6ec2575bd6ac975fedaad0c9"><div class="ttname"><a href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">eonc::Job::pot</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; pot</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00063">Job.h:63</a></div></div>
+<div class="ttc" id="aEonLogger_8h_html_a4cf9b473cf6a1d850b3725fca6805f86"><div class="ttname"><a href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a></div><div class="ttdeci">#define EONC_LOG_ERROR(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00323">EonLogger.h:323</a></div></div>
+<div class="ttc" id="aEonLogger_8h_html_a85fddaf0620c36ee3fcf865df53a9327"><div class="ttname"><a href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a></div><div class="ttdeci">#define EONC_LOG_WARNING(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00317">EonLogger.h:317</a></div></div>
+<div class="ttc" id="aEonLogger_8h_html_afba240899b90f3996875577cc095dc00"><div class="ttname"><a href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a></div><div class="ttdeci">#define EONC_LOG_INFO(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00311">EonLogger.h:311</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Job_html_a948da0de6ec2575bd6ac975fedaad0c9"><div class="ttname"><a href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">eonc::Job::pot</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; pot</div><div class="ttdoc">Set when one Potential is shared across Matters, images, or a caller.</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00066">Job.h:66</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Job_html_a9f0bfab75a98f383ba58f1c592fd2500"><div class="ttname"><a href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">eonc::Job::params</a></div><div class="ttdeci">Parameters params</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00058">Job.h:58</a></div></div>
 <div class="ttc" id="aclasseonc_1_1PotRegistry_html_a5d307a4845d9c0d6d16031a5a637e23b"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">eonc::PotRegistry::get</a></div><div class="ttdeci">static PotRegistry &amp; get() noexcept</div><div class="ttdoc">Process-lifetime singleton.</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00050">PotRegistry.cpp:50</a></div></div>
 <div class="ttc" id="aclasseonc_1_1PotRegistry_html_a6ffd8adea58bf8682dc74e73ad97c17b"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a6ffd8adea58bf8682dc74e73ad97c17b">eonc::PotRegistry::total_force_calls</a></div><div class="ttdeci">size_t total_force_calls() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00098">PotRegistry.cpp:98</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_a6f13ca53e923b1a8dbb98436987c984c"><div class="ttname"><a href="namespaceeonc_1_1io.html#a6f13ca53e923b1a8dbb98436987c984c">eonc::io::con2matter</a></div><div class="ttdeci">IoStatus con2matter(Matter &amp;m, std::string filename)</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8cpp_source.html#l00622">ConFileIO.cpp:622</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1io_html_af66b2723d892a4095754f9b0354b4f78"><div class="ttname"><a href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a></div><div class="ttdeci">constexpr bool io_ok(IoStatus s) noexcept</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00038">ConFileIO.h:38</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1pathintegral_html_ab31c49e76d72cce0ead85959bcc2fa62"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#ab31c49e76d72cce0ead85959bcc2fa62">eonc::pathintegral::requireTrotterSprings</a></div><div class="ttdeci">void requireTrotterSprings(const std::string &amp;springs, const char *use)</div><div class="ttdoc">Economised springs and a normal-mode GLE are refused.</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00252">PathIntegral.cpp:252</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1tunneling_html_a4656ac9701b42c731f9f7c84a635f57c"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#a4656ac9701b42c731f9f7c84a635f57c">eonc::tunneling::instantonSplitting</a></div><div class="ttdeci">void instantonSplitting(Instanton &amp;inst, const BeadHessian &amp;hessian, const MatrixXd &amp;hessStart, const MatrixXd &amp;hessEnd)</div><div class="ttdoc">Fills delta0, zeroMode and modeSeparation from the bead Hessians and the Hessians of the two minima.</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8cpp_source.html#l00781">Tunneling.cpp:781</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1tunneling_html_a62a61c2cba5bda32d9ee6b1e2d7034bd"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#a62a61c2cba5bda32d9ee6b1e2d7034bd">eonc::tunneling::pathOmega</a></div><div class="ttdeci">double pathOmega(const MatrixXd &amp;hessStart, const MatrixXd &amp;hessEnd, const VectorXd &amp;start, const VectorXd &amp;end)</div><div class="ttdoc">omega along the straight line between the minima from the curvature of each well there,...</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8cpp_source.html#l00622">Tunneling.cpp:622</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pathintegral_html_ab31c49e76d72cce0ead85959bcc2fa62"><div class="ttname"><a href="namespaceeonc_1_1pathintegral.html#ab31c49e76d72cce0ead85959bcc2fa62">eonc::pathintegral::requireTrotterSprings</a></div><div class="ttdeci">void requireTrotterSprings(const std::string &amp;springs, const char *use)</div><div class="ttdoc">Economised springs and a normal-mode GLE are refused.</div><div class="ttdef"><b>Definition</b> <a href="PathIntegral_8cpp_source.html#l00307">PathIntegral.cpp:307</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1tunneling_html_a4656ac9701b42c731f9f7c84a635f57c"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#a4656ac9701b42c731f9f7c84a635f57c">eonc::tunneling::instantonSplitting</a></div><div class="ttdeci">void instantonSplitting(Instanton &amp;inst, const BeadHessian &amp;hessian, const MatrixXd &amp;hessStart, const MatrixXd &amp;hessEnd)</div><div class="ttdoc">Fills delta0, zeroMode and modeSeparation from the bead Hessians and the Hessians of the two minima.</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8cpp_source.html#l00887">Tunneling.cpp:887</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1tunneling_html_a62a61c2cba5bda32d9ee6b1e2d7034bd"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#a62a61c2cba5bda32d9ee6b1e2d7034bd">eonc::tunneling::pathOmega</a></div><div class="ttdeci">double pathOmega(const MatrixXd &amp;hessStart, const MatrixXd &amp;hessEnd, const VectorXd &amp;start, const VectorXd &amp;end)</div><div class="ttdoc">omega along the straight line between the minima from the curvature of each well there,...</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8cpp_source.html#l00728">Tunneling.cpp:728</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1tunneling_html_a9226451a02d96e8651470ee1fb21eaa9"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#a9226451a02d96e8651470ee1fb21eaa9">eonc::tunneling::kHbar</a></div><div class="ttdeci">constexpr double kHbar</div><div class="ttdoc">hbar in eV^0.5 amu^0.5 Angstrom, correctly rounded from the exact SI values (h = 6....</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8h_source.html#l00037">Tunneling.h:37</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1tunneling_html_af0ee54cc399a779b8b15819aab321aa5"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#af0ee54cc399a779b8b15819aab321aa5">eonc::tunneling::optimizeInstanton</a></div><div class="ttdeci">Instanton optimizeInstanton(const VectorXd &amp;start, const VectorXd &amp;end, double betaHbar, std::vector&lt; VectorXd &gt; guess, const BatchPotential &amp;potential, const InstantonOptions &amp;options)</div><div class="ttdoc">Minimises the action from guess (P + 1 beads, ends at the minima, or empty for a tanh kink along the ...</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8cpp_source.html#l00633">Tunneling.cpp:633</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1tunneling_html_af0ee54cc399a779b8b15819aab321aa5"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#af0ee54cc399a779b8b15819aab321aa5">eonc::tunneling::optimizeInstanton</a></div><div class="ttdeci">Instanton optimizeInstanton(const VectorXd &amp;start, const VectorXd &amp;end, double betaHbar, std::vector&lt; VectorXd &gt; guess, const BatchPotential &amp;potential, const InstantonOptions &amp;options)</div><div class="ttdoc">Minimises the action from guess (P + 1 beads, ends at the minima, or empty for a tanh kink along the ...</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8cpp_source.html#l00739">Tunneling.cpp:739</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1tunneling_html_af7d7cff7a86f5d8ade50e485b3b184e9"><div class="ttname"><a href="namespaceeonc_1_1tunneling.html#af7d7cff7a86f5d8ade50e485b3b184e9">eonc::tunneling::kBoltzmann</a></div><div class="ttdeci">constexpr double kBoltzmann</div><div class="ttdoc">Boltzmann constant in eV / K, correctly rounded from the exact 1.380649e-23 J / K.</div><div class="ttdef"><b>Definition</b> <a href="Tunneling_8h_source.html#l00041">Tunneling.h:41</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a848a1af56249f0cafd872ca8b59fc459a45802158e78dd9584161629098018fe8"><div class="ttname"><a href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459a45802158e78dd9584161629098018fe8">eonc::RunStatus::GOOD</a></div><div class="ttdeci">@ GOOD</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00117">BaseStructures.h:117</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a848a1af56249f0cafd872ca8b59fc459a9d50412b69404284d20de2af7e4206dc"><div class="ttname"><a href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459a9d50412b69404284d20de2af7e4206dc">eonc::RunStatus::FAIL_MAX_ITERATIONS</a></div><div class="ttdeci">@ FAIL_MAX_ITERATIONS</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00117">BaseStructures.h:117</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a848a1af56249f0cafd872ca8b59fc459ad0a9f0540a833cc97bd3921d0de2d9b5"><div class="ttname"><a href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459ad0a9f0540a833cc97bd3921d0de2d9b5">eonc::RunStatus::FAIL_POTENTIAL_FAILED</a></div><div class="ttdeci">@ FAIL_POTENTIAL_FAILED</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00117">BaseStructures.h:117</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379ac05b513f4ff7ad2680f4528f5c8136b9"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ac05b513f4ff7ad2680f4528f5c8136b9">eonc::JobType::Hessian</a></div><div class="ttdeci">@ Hessian</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00089">BaseStructures.h:89</a></div></div>
-<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_adcc250879257d0fb4823bb0c799a3510"><div class="ttname"><a href="structeonc_1_1JobResultEnvelope.html#adcc250879257d0fb4823bb0c799a3510">eonc::JobResultEnvelope::fromMinimization</a></div><div class="ttdeci">static JobResultEnvelope fromMinimization(RunStatus status, PotType pot, std::uint64_t fcalls, bool hasE, double energy)</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00101">JobResult.h:101</a></div></div>
+<div class="ttc" id="astructeonc_1_1JobResultEnvelope_html_adcc250879257d0fb4823bb0c799a3510"><div class="ttname"><a href="structeonc_1_1JobResultEnvelope.html#adcc250879257d0fb4823bb0c799a3510">eonc::JobResultEnvelope::fromMinimization</a></div><div class="ttdeci">static JobResultEnvelope fromMinimization(RunStatus status, PotType pot, std::uint64_t fcalls, bool hasE, double energy)</div><div class="ttdef"><b>Definition</b> <a href="JobResult_8h_source.html#l00244">JobResult.h:244</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>

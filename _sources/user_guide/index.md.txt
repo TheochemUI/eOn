@@ -24,7 +24,7 @@ pyeonclient
 neighbor_lists
 ```
 
-See also the [API reference](../apidocs/pyeonclient.md) and the
+See also the {doc}`API reference <pyeonclient>` and the
 [atomistic-cookbook PET-MAD NEB example](https://atomistic-cookbook.org/examples/eon-pet-neb/eon-pet-neb.html).
 
 ## AiiDA (`aiida-eon`)
@@ -61,6 +61,21 @@ configuration file would include the lines:
 job = process_search
 ```
 
+In the configuration, the server runs `akmc`, `parallel_replica`,
+`unbiased_parallel_replica`, `basin_hopping`, and `escape_rate` itself. The
+server accepts those names as written. Any other `job` the server accepts is
+one client job. The client matches that `job` to `JobType` without regard to
+case. A name outside the enumeration stops the client with `No known job could
+be constructed`.
+
+Spellings that do not match a client job are `finite_differences` (use
+<project:finite_difference.md>), `molecular_dynamics` (use `dynamics`),
+`displacement_sampling`, `akmc`, and `hyperdynamics` (use
+`safe_hyperdynamics`). `escape_rate` runs on the server, and the schema marks
+that entry TODO. <project:oh_tst.md> is a client job and is absent from the
+schema list. <project:global_optimization.md> is minima hopping, not basin
+hopping. These method options share the `job` key.
+
 There are specific options for each method, and a set of general options which
 are shared between methods. Examples of these general options include
 specification of the interatomic potential and the parameters for doing structural
@@ -71,12 +86,10 @@ Parameters can also be loaded from JSON strings for programmatic usage.
 See {doc}`/devdocs/design/client/parameters` for the JSON schema.
 ```
 
-````{margin}
 ```{note}
 From 2.0 on, prefer a workflow manager over eOn-generated submit
-scripts. AiiDA: {doc}`aiida`. Snakemake and FireWorks also work.
+scripts. AiiDA: {doc}`aiida`.
 ```
-````
 
 eOn is designed to run in serial on one computer or in parallel using a
 communicator to send jobs from a server to clients and receive the results back.
@@ -134,6 +147,7 @@ dimer
 lanczos
 artn
 hessian
+finite_difference
 instanton
 prefactor
 ```
@@ -145,6 +159,9 @@ prefactor
 akmc
 saddle_search
 basin_hopping
+global_optimization
+monte_carlo
+replica_exchange
 process_search
 recycling
 coarse_graining
@@ -157,6 +174,8 @@ coarse_graining
 dynamics
 parallel_replica
 hyperdynamics
+tad
+oh_tst
 ```
 
 ```{toctree}

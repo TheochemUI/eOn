@@ -28,6 +28,7 @@ var namespaceeonc_1_1neb =
     [ "computeTangent", "namespaceeonc_1_1neb.html#ab9e323dba881c69b1672e9922072d749", null ],
     [ "findSplineExtrema", "namespaceeonc_1_1neb.html#ae2bcb7440c5a7c56b5f545f1b3a18dd2", null ],
     [ "finiteDifferenceCauchyStress", "namespaceeonc_1_1neb.html#ae5b588a41a2cca2ae99609d6fe8e6e11", null ],
+    [ "finiteDifferenceCauchyStresses", "namespaceeonc_1_1neb.html#a5c7063d07b10a060f0f5bc13565dd7e4", null ],
     [ "forcePerp", "namespaceeonc_1_1neb.html#ad4e735e3316d7c7c1adee860f3092b45", null ],
     [ "interpolatedPeakMode", "namespaceeonc_1_1neb.html#a7ce2fa2921058fefa4c8580e5d23a6e1", null ],
     [ "interpolateSolidStateLinear", "namespaceeonc_1_1neb.html#a1cd6aa7232d2706d28750e8487bb1873", null ],

@@ -353,26 +353,26 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00273">273</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  273</span>                                                  {</div>
-<div class="line"><span class="lineno">  274</span>  <span class="keywordflow">if</span> (nBeads &lt; 1) {</div>
-<div class="line"><span class="lineno">  275</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;bead count must be positive&quot;</span>);</div>
-<div class="line"><span class="lineno">  276</span>  }</div>
-<div class="line"><span class="lineno">  277</span>  VectorXd eva = VectorXd::Zero(nBeads);</div>
-<div class="line"><span class="lineno">  278</span>  <span class="keywordflow">if</span> (nBeads == 1) {</div>
-<div class="line"><span class="lineno">  279</span>    <span class="keywordflow">return</span> eva;</div>
-<div class="line"><span class="lineno">  280</span>  }</div>
-<div class="line"><span class="lineno">  281</span>  <span class="keywordflow">if</span> (!(xmax &gt; 0.0)) {</div>
-<div class="line"><span class="lineno">  282</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
-<div class="line"><span class="lineno">  283</span>        <span class="stringliteral">&quot;economised springs need a positive maximum frequency&quot;</span>);</div>
-<div class="line"><span class="lineno">  284</span>  }</div>
-<div class="line"><span class="lineno">  285</span>  <span class="keyword">const</span> VectorXd y = ecoFit(nBeads, xmax);</div>
-<div class="line"><span class="lineno">  286</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 1; k &lt; nBeads; ++k) {</div>
-<div class="line"><span class="lineno">  287</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> pair = std::min(k, nBeads - k) - 1;</div>
-<div class="line"><span class="lineno">  288</span>    eva[k] = y[pair] / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nBeads);</div>
-<div class="line"><span class="lineno">  289</span>  }</div>
-<div class="line"><span class="lineno">  290</span>  <span class="keywordflow">return</span> eva;</div>
-<div class="line"><span class="lineno">  291</span>}</div>
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00328">328</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  328</span>                                                  {</div>
+<div class="line"><span class="lineno">  329</span>  <span class="keywordflow">if</span> (nBeads &lt; 1) {</div>
+<div class="line"><span class="lineno">  330</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;bead count must be positive&quot;</span>);</div>
+<div class="line"><span class="lineno">  331</span>  }</div>
+<div class="line"><span class="lineno">  332</span>  VectorXd eva = VectorXd::Zero(nBeads);</div>
+<div class="line"><span class="lineno">  333</span>  <span class="keywordflow">if</span> (nBeads == 1) {</div>
+<div class="line"><span class="lineno">  334</span>    <span class="keywordflow">return</span> eva;</div>
+<div class="line"><span class="lineno">  335</span>  }</div>
+<div class="line"><span class="lineno">  336</span>  <span class="keywordflow">if</span> (!(xmax &gt; 0.0)) {</div>
+<div class="line"><span class="lineno">  337</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">  338</span>        <span class="stringliteral">&quot;economised springs need a positive maximum frequency&quot;</span>);</div>
+<div class="line"><span class="lineno">  339</span>  }</div>
+<div class="line"><span class="lineno">  340</span>  <span class="keyword">const</span> VectorXd y = ecoFit(nBeads, xmax);</div>
+<div class="line"><span class="lineno">  341</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 1; k &lt; nBeads; ++k) {</div>
+<div class="line"><span class="lineno">  342</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> pair = std::min(k, nBeads - k) - 1;</div>
+<div class="line"><span class="lineno">  343</span>    eva[k] = y[pair] / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nBeads);</div>
+<div class="line"><span class="lineno">  344</span>  }</div>
+<div class="line"><span class="lineno">  345</span>  <span class="keywordflow">return</span> eva;</div>
+<div class="line"><span class="lineno">  346</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -393,33 +393,33 @@ Functions</h2></td></tr>
 
 <p>Orthogonal bead-to-normal-mode matrix. Row k is mode k. </p>
 
-<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00293">293</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  293</span>                                       {</div>
-<div class="line"><span class="lineno">  294</span>  <span class="keywordflow">if</span> (nBeads &lt; 1) {</div>
-<div class="line"><span class="lineno">  295</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;bead count must be positive&quot;</span>);</div>
-<div class="line"><span class="lineno">  296</span>  }</div>
-<div class="line"><span class="lineno">  297</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> b = MatrixXd::Zero(nBeads, nBeads);</div>
-<div class="line"><span class="lineno">  298</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> n = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nBeads);</div>
-<div class="line"><span class="lineno">  299</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nBeads; ++j) {</div>
-<div class="line"><span class="lineno">  300</span>    b(0, j) = 1.0;</div>
-<div class="line"><span class="lineno">  301</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 1; i &lt;= nBeads / 2; ++i) {</div>
-<div class="line"><span class="lineno">  302</span>      b(i, j) = std::sqrt(2.0) * std::cos(2.0 * kPi * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(j) *</div>
-<div class="line"><span class="lineno">  303</span>                                          <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(i) / n);</div>
-<div class="line"><span class="lineno">  304</span>    }</div>
-<div class="line"><span class="lineno">  305</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = nBeads / 2 + 1; i &lt; nBeads; ++i) {</div>
-<div class="line"><span class="lineno">  306</span>      b(i, j) = std::sqrt(2.0) * std::sin(2.0 * kPi * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(j) *</div>
-<div class="line"><span class="lineno">  307</span>                                          <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(i) / n);</div>
-<div class="line"><span class="lineno">  308</span>    }</div>
-<div class="line"><span class="lineno">  309</span>  }</div>
-<div class="line"><span class="lineno">  310</span>  <span class="keywordflow">if</span> (nBeads % 2 == 0) {</div>
-<div class="line"><span class="lineno">  311</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> mid = nBeads / 2;</div>
-<div class="line"><span class="lineno">  312</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nBeads; ++j) {</div>
-<div class="line"><span class="lineno">  313</span>      b(mid, j) = (j % 2 == 0) ? 1.0 : -1.0;</div>
-<div class="line"><span class="lineno">  314</span>    }</div>
-<div class="line"><span class="lineno">  315</span>  }</div>
-<div class="line"><span class="lineno">  316</span>  b /= std::sqrt(n);</div>
-<div class="line"><span class="lineno">  317</span>  <span class="keywordflow">return</span> b;</div>
-<div class="line"><span class="lineno">  318</span>}</div>
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00348">348</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  348</span>                                       {</div>
+<div class="line"><span class="lineno">  349</span>  <span class="keywordflow">if</span> (nBeads &lt; 1) {</div>
+<div class="line"><span class="lineno">  350</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;bead count must be positive&quot;</span>);</div>
+<div class="line"><span class="lineno">  351</span>  }</div>
+<div class="line"><span class="lineno">  352</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> b = MatrixXd::Zero(nBeads, nBeads);</div>
+<div class="line"><span class="lineno">  353</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> n = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nBeads);</div>
+<div class="line"><span class="lineno">  354</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nBeads; ++j) {</div>
+<div class="line"><span class="lineno">  355</span>    b(0, j) = 1.0;</div>
+<div class="line"><span class="lineno">  356</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 1; i &lt;= nBeads / 2; ++i) {</div>
+<div class="line"><span class="lineno">  357</span>      b(i, j) = std::sqrt(2.0) * std::cos(2.0 * kPi * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(j) *</div>
+<div class="line"><span class="lineno">  358</span>                                          <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(i) / n);</div>
+<div class="line"><span class="lineno">  359</span>    }</div>
+<div class="line"><span class="lineno">  360</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = nBeads / 2 + 1; i &lt; nBeads; ++i) {</div>
+<div class="line"><span class="lineno">  361</span>      b(i, j) = std::sqrt(2.0) * std::sin(2.0 * kPi * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(j) *</div>
+<div class="line"><span class="lineno">  362</span>                                          <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(i) / n);</div>
+<div class="line"><span class="lineno">  363</span>    }</div>
+<div class="line"><span class="lineno">  364</span>  }</div>
+<div class="line"><span class="lineno">  365</span>  <span class="keywordflow">if</span> (nBeads % 2 == 0) {</div>
+<div class="line"><span class="lineno">  366</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> mid = nBeads / 2;</div>
+<div class="line"><span class="lineno">  367</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nBeads; ++j) {</div>
+<div class="line"><span class="lineno">  368</span>      b(mid, j) = (j % 2 == 0) ? 1.0 : -1.0;</div>
+<div class="line"><span class="lineno">  369</span>    }</div>
+<div class="line"><span class="lineno">  370</span>  }</div>
+<div class="line"><span class="lineno">  371</span>  b /= std::sqrt(n);</div>
+<div class="line"><span class="lineno">  372</span>  <span class="keywordflow">return</span> b;</div>
+<div class="line"><span class="lineno">  373</span>}</div>
 <div class="ttc" id="aEigen_8h_html_a45bb4cbce093fca4dfb193d3f649da30"><div class="ttname"><a href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, eOnStorageOrder &gt; MatrixXd</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00033">Eigen.h:33</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -446,15 +446,15 @@ Functions</h2></td></tr>
 <p>Economised springs and a normal-mode GLE are refused. </p>
 <p>The instanton assumes Trotter springs and is refused the same way. </p>
 
-<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00252">252</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  252</span>                                                                      {</div>
-<div class="line"><span class="lineno">  253</span>  <span class="keyword">const</span> std::string s = lower(springs);</div>
-<div class="line"><span class="lineno">  254</span>  <span class="keywordflow">if</span> (s == <span class="stringliteral">&quot;eco&quot;</span> || s == <span class="stringliteral">&quot;economised&quot;</span>) {</div>
-<div class="line"><span class="lineno">  255</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
-<div class="line"><span class="lineno">  256</span>        std::string(use) +</div>
-<div class="line"><span class="lineno">  257</span>        <span class="stringliteral">&quot; requires Trotter springs; economised springs are refused&quot;</span>);</div>
-<div class="line"><span class="lineno">  258</span>  }</div>
-<div class="line"><span class="lineno">  259</span>}</div>
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00307">307</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  307</span>                                                                      {</div>
+<div class="line"><span class="lineno">  308</span>  <span class="keyword">const</span> std::string s = lower(springs);</div>
+<div class="line"><span class="lineno">  309</span>  <span class="keywordflow">if</span> (s == <span class="stringliteral">&quot;eco&quot;</span> || s == <span class="stringliteral">&quot;economised&quot;</span>) {</div>
+<div class="line"><span class="lineno">  310</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">  311</span>        std::string(use) +</div>
+<div class="line"><span class="lineno">  312</span>        <span class="stringliteral">&quot; requires Trotter springs; economised springs are refused&quot;</span>);</div>
+<div class="line"><span class="lineno">  313</span>  }</div>
+<div class="line"><span class="lineno">  314</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -476,18 +476,18 @@ Functions</h2></td></tr>
 <p>Dimensionless free-ring eigenvalues, mode 0 equal to 0. </p>
 <p>Physical frequencies are omegan times these values, with omegan = beads * kB * T / hbar. </p>
 
-<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00261">261</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  261</span>                                         {</div>
-<div class="line"><span class="lineno">  262</span>  <span class="keywordflow">if</span> (nBeads &lt; 1) {</div>
-<div class="line"><span class="lineno">  263</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;bead count must be positive&quot;</span>);</div>
-<div class="line"><span class="lineno">  264</span>  }</div>
-<div class="line"><span class="lineno">  265</span>  VectorXd eva(nBeads);</div>
-<div class="line"><span class="lineno">  266</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt; nBeads; ++k) {</div>
-<div class="line"><span class="lineno">  267</span>    eva[k] = 2.0 * std::sin(kPi * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(k) /</div>
-<div class="line"><span class="lineno">  268</span>                            <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nBeads));</div>
-<div class="line"><span class="lineno">  269</span>  }</div>
-<div class="line"><span class="lineno">  270</span>  <span class="keywordflow">return</span> eva;</div>
-<div class="line"><span class="lineno">  271</span>}</div>
+<p class="definition">Definition at line <a class="el" href="PathIntegral_8cpp_source.html#l00316">316</a> of file <a class="el" href="PathIntegral_8cpp_source.html">PathIntegral.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  316</span>                                         {</div>
+<div class="line"><span class="lineno">  317</span>  <span class="keywordflow">if</span> (nBeads &lt; 1) {</div>
+<div class="line"><span class="lineno">  318</span>    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;bead count must be positive&quot;</span>);</div>
+<div class="line"><span class="lineno">  319</span>  }</div>
+<div class="line"><span class="lineno">  320</span>  VectorXd eva(nBeads);</div>
+<div class="line"><span class="lineno">  321</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt; nBeads; ++k) {</div>
+<div class="line"><span class="lineno">  322</span>    eva[k] = 2.0 * std::sin(kPi * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(k) /</div>
+<div class="line"><span class="lineno">  323</span>                            <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nBeads));</div>
+<div class="line"><span class="lineno">  324</span>  }</div>
+<div class="line"><span class="lineno">  325</span>  <span class="keywordflow">return</span> eva;</div>
+<div class="line"><span class="lineno">  326</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

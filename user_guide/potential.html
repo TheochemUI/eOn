@@ -36,8 +36,8 @@
   <div class="sy-head-blur"></div>
   <div class="sy-head-inner sy-container mx-auto">
     <a class="sy-head-brand" href="../index.html">
-      
-      
+      <img class="light-logo" src="../logo/eon_v3_light.svg" alt="eOn" height="28" loading="lazy" />
+      <img class="dark-logo" src="../logo/eon_v3_dark.svg" alt="eOn" height="28" loading="lazy" />
       <strong>eOn</strong>
     </a>
     <div class="sy-head-nav" id="head-nav">
@@ -86,6 +86,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../team.html">eOn team</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../install/eessi.html">Build develop on EESSI</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../install/lammps.html">LAMMPS</a></li>
 </ul>
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html#obtaining-sources">Obtaining sources</a></li>
@@ -130,17 +131,23 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="lanczos.html">Lanczos</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="finite_difference.html">Finite-difference curvature</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="akmc.html">Adaptive kinetic Monte Carlo</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="saddle_search.html">Saddle search</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="basin_hopping.html">Basin hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="global_optimization.html">Minima hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="monte_carlo.html">Monte Carlo</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="replica_exchange.html">Replica exchange</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="process_search.html">Process search</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="recycling.html">Recycling</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="coarse_graining.html">Coarse graining</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="dynamics.html">Dynamics</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="parallel_replica.html">Parallel replica</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="tad.html">Temperature accelerated dynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="oh_tst.html">Optimal hyperplane transition state theory</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="communicator.html">Communicator</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="debug.html">Debug</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="paths.html">Paths</a></li>
@@ -166,6 +173,14 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/svn-migration.html">Migrating from SVN</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/tracking-changes.html">Tracking changes</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/release.html">Release workflow</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/design/client/index.html">Client design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/types.html">Type system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/parameters.html">Parameters system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/neb-modularization.html">NEB modularization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../devdocs/design/client/confile.html">CON file I/O via readcon-core</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/pyeonclient.html">pyeonclient (nanobind client bindings)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/eon-schema.html">eon-schema (shared parameter package)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/pyeonclient-pypi.html">pyeonclient on PyPI</a></li>
@@ -174,7 +189,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../apidocs/index.html">API Reference</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
 </ul>
 </li>
@@ -196,6 +210,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.cancel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.cancel</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.job_result.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.job_result</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
@@ -249,6 +264,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../releases/v3.2.0/release-notes.html">eOn 3.2.0</a></li>
 </ul>
 </li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.17.0/release-notes.html">eOn 2.17.0</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.16.0/index.html">[v2.16.0] - 2026-07-03</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.16.0/release-notes.html">Release notes</a></li>
 </ul>
@@ -314,6 +330,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 </ul>
 </li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../glossary.html">Glossary</a></li>
 </ul>
         </div>
       </div>
@@ -554,7 +571,9 @@ libraries and others via interfaces.</p>
 <p>Some of these require compile-time flags, detailed in the <a class="reference internal" href="../install/index.html"><span class="std std-doc">installation instructions</span></a>.
 The <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> package (<code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">eon</span></code>) includes
 <strong>Metatomic</strong>, <strong>XTB</strong>, <strong>EXT_POT</strong>, and the vendored potentials.
-LAMMPS, ASE, VASP, AMS, and MPI potentials require building from source with
+The client always compiles the LAMMPS interface and loads <code class="docutils literal notranslate"><span class="pre">liblammps</span></code> with <code class="docutils literal notranslate"><span class="pre">dlopen</span></code>.
+The option <code class="docutils literal notranslate"><span class="pre">-Dwith_lammps</span></code> does not exist.
+ASE, VASP, AMS, and MPI potentials require building from source with
 the corresponding <code class="docutils literal notranslate"><span class="pre">-Dwith_*</span></code> flags.</p>
 </div>
 <section id="supported-potentials">
@@ -562,9 +581,9 @@ the corresponding <code class="docutils literal notranslate"><span class="pre">-
 <section id="external">
 <h3>External<a class="headerlink" href="#external" title="Link to this heading">¶</a></h3>
 <dl class="simple myst">
-<dt>VASP <span id="id1">[<a class="reference internal" href="#id67" title="G. Kresse and J. Furthmüller. Efficient iterative schemes for ab initio total-energy calculations using a plane-wave basis set. Physical Review B, 54(16):11169–11186, October 1996. doi:10.1103/PhysRevB.54.11169.">POT_KFurthmuller96</a>]</span></dt><dd><p>Vienna Ab-Initio Simulation Program (VASP) I/O interface. <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">source build</span></p>
+<dt>VASP <span id="id1">[<a class="reference internal" href="#id67" title="G. Kresse and J. Furthmüller. Efficient iterative schemes for ab initio total-energy calculations using a plane-wave basis set. Physical Review B, 54(16):11169–11186, October 1996. doi:10.1103/PhysRevB.54.11169.">POT_KFurthmuller96</a>]</span></dt><dd><p>Vienna Ab-Initio Simulation Program (VASP) I/O interface. <code class="docutils literal notranslate"><span class="pre">-Dwith_vasp</span></code> defaults false. <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">source build</span></p>
 </dd>
-<dt>LAMMPS <span id="id2">[<a class="reference internal" href="#id91" title="Steve Plimpton. Fast Parallel Algorithms for Short-Range Molecular Dynamics. Journal of Computational Physics, 117(1):1–19, March 1995. doi:10.1006/jcph.1995.1039.">POT_Pli95</a>, <a class="reference internal" href="#id104" title="Aidan P. Thompson, H. Metin Aktulga, Richard Berger, Dan S. Bolintineanu, W. Michael Brown, Paul S. Crozier, Pieter J. In 'T Veld, Axel Kohlmeyer, Stan G. Moore, Trung Dac Nguyen, Ray Shan, Mark J. Stevens, Julien Tranchida, Christian Trott, and Steven J. Plimpton. LAMMPS - a flexible simulation tool for particle-based materials modeling at the atomic, meso, and continuum scales. Computer Physics Communications, 271:108171, February 2022. doi:10.1016/j.cpc.2021.108171.">POT_TAB+22</a>]</span></dt><dd><p>Library interface, detailed <a class="reference internal" href="lammps_pot.html"><span class="std std-doc">documentation here</span></a>. <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">source build</span></p>
+<dt>LAMMPS <span id="id2">[<a class="reference internal" href="#id91" title="Steve Plimpton. Fast Parallel Algorithms for Short-Range Molecular Dynamics. Journal of Computational Physics, 117(1):1–19, March 1995. doi:10.1006/jcph.1995.1039.">POT_Pli95</a>, <a class="reference internal" href="#id104" title="Aidan P. Thompson, H. Metin Aktulga, Richard Berger, Dan S. Bolintineanu, W. Michael Brown, Paul S. Crozier, Pieter J. In 'T Veld, Axel Kohlmeyer, Stan G. Moore, Trung Dac Nguyen, Ray Shan, Mark J. Stevens, Julien Tranchida, Christian Trott, and Steven J. Plimpton. LAMMPS - a flexible simulation tool for particle-based materials modeling at the atomic, meso, and continuum scales. Computer Physics Communications, 271:108171, February 2022. doi:10.1016/j.cpc.2021.108171.">POT_TAB+22</a>]</span></dt><dd><p>Library interface, detailed <a class="reference internal" href="lammps_pot.html"><span class="std std-doc">documentation here</span></a>. <code class="docutils literal notranslate"><span class="pre">in.lammps</span></code> must be in the working directory, or the potential raises an error. <span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">conda-forge</span></p>
 </dd>
 <dt>EXT_POT</dt><dd><p>File-based interface to any external calculator. Detailed <a class="reference internal" href="ext_pot.html"><span class="std std-doc">documentation here</span></a>. <span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">conda-forge</span></p>
 </dd>
@@ -581,10 +600,10 @@ ASE_NWChem</p>
 <dd><p>Atomic simulation environment <span id="id6">[<a class="reference internal" href="#id70" title="Ask Hjorth Larsen, Jens Jørgen Mortensen, Jakob Blomqvist, Ivano E. Castelli, Rune Christensen, Marcin Du\lak, Jesper Friis, Michael N. Groves, Bjørk Hammer, Cory Hargus, Eric D. Hermes, Paul C. Jennings, Peter Bjerre Jensen, James Kermode, John R. Kitchin, Esben Leonhard Kolsbjerg, Joseph Kubal, Kristen Kaasbjerg, Steen Lysgaard, Jón Bergmann Maronsson, Tristan Maxson, Thomas Olsen, Lars Pastewka, Andrew Peterson, Carsten Rostgaard, Jakob Schiøtz, Ole Schütt, Mikkel Strange, Kristian S. Thygesen, Tejs Vegge, Lasse Vilhelmsen, Michael Walter, Zhenhua Zeng, and Karsten W. Jacobsen. The atomic simulation environment—a Python library for working with atoms. Journal of Physics: Condensed Matter, 29(27):273002, June 2017. doi:10.1088/1361-648X/aa680e.">POT_LMB+17</a>]</span> interface to NWChem <span id="id7">[<a class="reference internal" href="#id21" title="E. Aprà, E. J. Bylaska, W. A. De Jong, N. Govind, K. Kowalski, T. P. Straatsma, M. Valiev, H. J. J. Van Dam, Y. Alexeev, J. Anchell, V. Anisimov, F. W. Aquino, R. Atta-Fynn, J. Autschbach, N. P. Bauman, J. C. Becca, D. E. Bernholdt, K. Bhaskaran-Nair, S. Bogatko, P. Borowski, J. Boschen, J. Brabec, A. Bruner, E. Cauët, Y. Chen, G. N. Chuev, C. J. Cramer, J. Daily, M. J. O. Deegan, T. H. Dunning, M. Dupuis, K. G. Dyall, G. I. Fann, S. A. Fischer, A. Fonari, H. Früchtl, L. Gagliardi, J. Garza, N. Gawande, S. Ghosh, K. Glaesemann, A. W. Götz, J. Hammond, V. Helms, E. D. Hermes, K. Hirao, S. Hirata, M. Jacquelin, L. Jensen, B. G. Johnson, H. Jónsson, R. A. Kendall, M. Klemm, R. Kobayashi, V. Konkov, S. Krishnamoorthy, M. Krishnan, Z. Lin, R. D. Lins, R. J. Littlefield, A. J. Logsdail, K. Lopata, W. Ma, A. V. Marenich, J. Martin Del Campo, D. Mejia-Rodriguez, J. E. Moore, J. M. Mullin, T. Nakajima, D. R. Nascimento, J. A. Nichols, P. J. Nichols, J. Nieplocha, A. Otero-de-la-Roza, B. Palmer, A. Panyala, T. Pirojsirikul, B. Peng, R. Peverati, J. Pittner, L. Pollack, R. M. Richard, P. Sadayappan, G. C. Schatz, W. A. Shelton, D. W. Silverstein, D. M. A. Smith, T. A. Soares, D. Song, M. Swart, H. L. Taylor, G. S. Thomas, V. Tipparaju, D. G. Truhlar, K. Tsemekhman, T. Van Voorhis, Á. Vázquez-Mayagoitia, P. Verma, O. Villa, A. Vishnu, K. D. Vogiatzis, D. Wang, J. H. Weare, M. J. Williamson, T. L. Windus, K. Woliński, A. T. Wong, Q. Wu, C. Yang, Q. Yu, M. Zacharias, Z. Zhang, Y. Zhao, and R. J. Harrison. NWChem: past, present, and future. Journal of Chemical Physics, 152(18):184102, May 2020. doi:10.1063/5.0004997.">POT_ApraBDJ+20</a>]</span>. <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">source build</span>
 XTB</p>
 </dd>
-<dd><p>Extended Tight binding models via native Fortran-C interfce <span id="id8">[<a class="reference internal" href="#id26" title="Christoph Bannwarth, Eike Caldeweyher, Sebastian Ehlert, Andreas Hansen, Philipp Pracht, Jakob Seibert, Sebastian Spicher, and Stefan Grimme. Extended tight-binding quantum chemistry methods. WIREs Computational Molecular Science, 11(2):e1493, 2021. doi:10.1002/wcms.1493.">POT_BCE+21</a>]</span>. <span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">conda-forge</span>
+<dd><p>Extended Tight binding models via native Fortran-C interfce <span id="id8">[<a class="reference internal" href="#id26" title="Christoph Bannwarth, Eike Caldeweyher, Sebastian Ehlert, Andreas Hansen, Philipp Pracht, Jakob Seibert, Sebastian Spicher, and Stefan Grimme. Extended tight-binding quantum chemistry methods. WIREs Computational Molecular Science, 11(2):e1493, 2021. doi:10.1002/wcms.1493.">POT_BCE+21</a>]</span>. <code class="docutils literal notranslate"><span class="pre">-Dwith_xtb</span></code> defaults false. Prefer <code class="docutils literal notranslate"><span class="pre">potential</span> <span class="pre">=</span> <span class="pre">rgpot</span></code> in <code class="docutils literal notranslate"><span class="pre">[Potential]</span></code> and <code class="docutils literal notranslate"><span class="pre">backend</span> <span class="pre">=</span> <span class="pre">xtb</span></code> in <code class="docutils literal notranslate"><span class="pre">[RgpotPot]</span></code>. <span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">conda-forge</span>
 Metatomic</p>
 </dd>
-<dd><p>Common interface to atomistic machine learning models. <span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">conda-forge</span>
+<dd><p>Common interface to atomistic machine learning models. <code class="docutils literal notranslate"><span class="pre">-Dwith_metatomic</span></code> defaults false. <span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">conda-forge</span>
 SocketNWChem</p>
 </dd>
 <dd><p>Socket oriented communicator for efficient integration with NWChem <span id="id9">[<a class="reference internal" href="#id21" title="E. Aprà, E. J. Bylaska, W. A. De Jong, N. Govind, K. Kowalski, T. P. Straatsma, M. Valiev, H. J. J. Van Dam, Y. Alexeev, J. Anchell, V. Anisimov, F. W. Aquino, R. Atta-Fynn, J. Autschbach, N. P. Bauman, J. C. Becca, D. E. Bernholdt, K. Bhaskaran-Nair, S. Bogatko, P. Borowski, J. Boschen, J. Brabec, A. Bruner, E. Cauët, Y. Chen, G. N. Chuev, C. J. Cramer, J. Daily, M. J. O. Deegan, T. H. Dunning, M. Dupuis, K. G. Dyall, G. I. Fann, S. A. Fischer, A. Fonari, H. Früchtl, L. Gagliardi, J. Garza, N. Gawande, S. Ghosh, K. Glaesemann, A. W. Götz, J. Hammond, V. Helms, E. D. Hermes, K. Hirao, S. Hirata, M. Jacquelin, L. Jensen, B. G. Johnson, H. Jónsson, R. A. Kendall, M. Klemm, R. Kobayashi, V. Konkov, S. Krishnamoorthy, M. Krishnan, Z. Lin, R. D. Lins, R. J. Littlefield, A. J. Logsdail, K. Lopata, W. Ma, A. V. Marenich, J. Martin Del Campo, D. Mejia-Rodriguez, J. E. Moore, J. M. Mullin, T. Nakajima, D. R. Nascimento, J. A. Nichols, P. J. Nichols, J. Nieplocha, A. Otero-de-la-Roza, B. Palmer, A. Panyala, T. Pirojsirikul, B. Peng, R. Peverati, J. Pittner, L. Pollack, R. M. Richard, P. Sadayappan, G. C. Schatz, W. A. Shelton, D. W. Silverstein, D. M. A. Smith, T. A. Soares, D. Song, M. Swart, H. L. Taylor, G. S. Thomas, V. Tipparaju, D. G. Truhlar, K. Tsemekhman, T. Van Voorhis, Á. Vázquez-Mayagoitia, P. Verma, O. Villa, A. Vishnu, K. D. Vogiatzis, D. Wang, J. H. Weare, M. J. Williamson, T. L. Windus, K. Woliński, A. T. Wong, Q. Wu, C. Yang, Q. Yu, M. Zacharias, Z. Zhang, Y. Zhao, and R. J. Harrison. NWChem: past, present, and future. Journal of Chemical Physics, 152(18):184102, May 2020. doi:10.1063/5.0004997.">POT_ApraBDJ+20</a>]</span>. <span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">conda-forge</span></p>
@@ -620,8 +639,8 @@ saddle / NEB Morse fixtures.</p>
 <p><span class="versionmodified added">Added in version 3.2.1: </span></p>
 <dl class="simple myst">
 <dt>DFTD3 / DFTD4</dt><dd><p>Grimme DFT-D via rgpot 3.2 (<code class="docutils literal notranslate"><span class="pre">potential</span> <span class="pre">=</span> <span class="pre">dftd3</span></code> / <code class="docutils literal notranslate"><span class="pre">dftd4</span></code>,
-<code class="docutils literal notranslate"><span class="pre">[D3Pot]</span></code> / <code class="docutils literal notranslate"><span class="pre">[D4Pot]</span></code>). Enable the wraps at meson configure time
-(<code class="docutils literal notranslate"><span class="pre">-Dwith_dftd3=true</span></code>).</p>
+<code class="docutils literal notranslate"><span class="pre">[D3Pot]</span></code> / <code class="docutils literal notranslate"><span class="pre">[D4Pot]</span></code>). The option <code class="docutils literal notranslate"><span class="pre">-Dwith_dftd3</span></code> does not exist.
+The client compiles these pots when <code class="docutils literal notranslate"><span class="pre">RGPOT_HAS_DFTD3</span></code> or <code class="docutils literal notranslate"><span class="pre">RGPOT_HAS_DFTD4</span></code> is defined.</p>
 </dd>
 <dt>EXPR</dt><dd><p>rgpot ExprPot. <code class="docutils literal notranslate"><span class="pre">potential</span> <span class="pre">=</span> <span class="pre">expr</span></code> with <code class="docutils literal notranslate"><span class="pre">[ExprPot]</span></code> <code class="docutils literal notranslate"><span class="pre">expression</span></code> and
 comma-separated <code class="docutils literal notranslate"><span class="pre">terms</span></code> (<code class="docutils literal notranslate"><span class="pre">0.5*lj</span> <span class="pre">+</span> <span class="pre">d3</span></code>). Terms: <code class="docutils literal notranslate"><span class="pre">lj</span></code>, <code class="docutils literal notranslate"><span class="pre">ljcluster</span></code>,
@@ -641,9 +660,9 @@ comma-separated <code class="docutils literal notranslate"><span class="pre">ter
 </dd>
 <dt>EDIP <span id="id15">[<a class="reference internal" href="#id59" title="João F. Justo, Martin Z. Bazant, Efthimios Kaxiras, V. V. Bulatov, and Sidney Yip. Interatomic potential for silicon defects and disordered phases. Physical Review B, 58(5):2539–2550, August 1998. doi:10.1103/PhysRevB.58.2539.">POT_JBK+98</a>]</span></dt><dd><p>Environment-Dependent Interatomic Potential, for carbon.</p>
 </dd>
-<dt>TIP4P <span id="id16">[<a class="reference internal" href="#id58" title="William L. Jorgensen, Jayaraman Chandrasekhar, Jeffry D. Madura, Roger W. Impey, and Michael L. Klein. Comparison of simple potential functions for simulating liquid water. The Journal of Chemical Physics, 79(2):926–935, July 1983. doi:10.1063/1.445869.">POT_JCM+83</a>]</span></dt><dd><p>Point charge model for water, also for water-hydrogen and water on platinum.</p>
+<dt>TIP4P <span id="id16">[<a class="reference internal" href="#id58" title="William L. Jorgensen, Jayaraman Chandrasekhar, Jeffry D. Madura, Roger W. Impey, and Michael L. Klein. Comparison of simple potential functions for simulating liquid water. The Journal of Chemical Physics, 79(2):926–935, July 1983. doi:10.1063/1.445869.">POT_JCM+83</a>]</span></dt><dd><p>Point charge model for water, also for water-hydrogen and water on platinum. Source builds need <code class="docutils literal notranslate"><span class="pre">-Dwith_water=true</span></code> because <code class="docutils literal notranslate"><span class="pre">with_water</span></code> defaults false.</p>
 </dd>
-<dt>SPCE <span id="id17">[<a class="reference internal" href="#id28" title="H. J. C. Berendsen, J. R. Grigera, and T. P. Straatsma. The missing term in effective pair potentials. The Journal of Physical Chemistry, 91(24):6269–6271, November 1987. doi:10.1021/j100308a038.">POT_BGS87</a>]</span></dt><dd><p>Extended simple point charge model for water</p>
+<dt>SPCE <span id="id17">[<a class="reference internal" href="#id28" title="H. J. C. Berendsen, J. R. Grigera, and T. P. Straatsma. The missing term in effective pair potentials. The Journal of Physical Chemistry, 91(24):6269–6271, November 1987. doi:10.1021/j100308a038.">POT_BGS87</a>]</span></dt><dd><p>Extended simple point charge model for water. Source builds need <code class="docutils literal notranslate"><span class="pre">-Dwith_water=true</span></code> because <code class="docutils literal notranslate"><span class="pre">with_water</span></code> defaults false.</p>
 </dd>
 </dl>
 </section>

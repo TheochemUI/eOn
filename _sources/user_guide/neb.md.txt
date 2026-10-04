@@ -54,8 +54,8 @@ figures (full history, 1:1 reaction-valley panel, structure strip), see
 
 ## Dimer seeds from every band peak
 
-After the band is written, eOn walks **all** spline maxima (not only the
-climbing image). Each interior maximum more than `mmf_peak_tolerance` above
+After the band is written, eOn walks every spline maximum. Each interior
+maximum more than `mmf_peak_tolerance` above
 the reactant is written as `peakNN_pos.con` plus `peakNN_mode.dat` (the
 interpolated tangent). That is the native gen-dimer seed: run a
 `saddle_search` from each pair. `setup_mmf_peaks` defaults to true; set it
@@ -72,6 +72,8 @@ interpolation with `match_endpoints = true` (default off). The `ira`
 method rigid-rotates and permutes the reactant onto the product via
 IRACompare. Hungarian assignment is not in-tree; `match_method =
 hungarian` currently uses IRA.
+`match_endpoints` and `match_method` are client keys.
+Neither key is in `eon/config.yaml`, and the server exits on the unknown option.
 
 ```{note}
 `eOn`, like many other codes after {cite:t}`neb-sheppardOptimizationMethodsFinding2008` uses one optimizer instance for moving the whole band of images.
@@ -84,7 +86,7 @@ Via the surrogate potential interface, a native C++ implementation of the Gaussi
 ```{versionadded} 2.12
 - Onsager-Machlup action-based NEB for minimum action paths.
 - OCINEB (Off-Path Climbing Image NEB) {cite:t}`neb-goswamiEnhancedClimbingImage2026`: hybrid CI-NEB + Min-Mode Following with hessian eigenmode alignment for automated saddle point refinement.
-- Parallel image force evaluation (`[Main] parallel = true`). In 2.12 it required TBB and `-Dwith_parallel_neb=true`; see the note under Parallel evaluation.
+- Parallel image force evaluation (`[Main] parallel` on the client). In 2.12 it required TBB and `-Dwith_parallel_neb=true`; see the note under Parallel evaluation.
 - IDPP (Image Dependent Pair Potential) path initialization.
 - Modular strategy pattern for tangent, projection, and spring force components.
 ```
@@ -122,13 +124,26 @@ stationary artifact while the rest of the band is still at 2 eV/Å.
 `climbing_image_band_slack` (default 10) refuses that report. The job is
 not converged while any image exceeds slack times the tolerance. SIDPP
 itself throws if adjacent images collapse below \(10^{-6}\) Å.
+That key is not in `eon/config.yaml`.
+The client reads it.
+A file the server loads that sets the key exits on the unknown option.
 
 ```{code-block} ini
 [Nudged Elastic Band]
 climbing_image_method = true
 climbing_image_converged_only = true
-climbing_image_band_slack = 10.0
 ```
+
+The client sets the climb flag only when climbing is active and the highest
+interior image is strictly above the higher endpoint.
+A fixed-cell band compares potential energy.
+A solid-state band compares enthalpy.
+A monotonic band keeps the spring on every interior image.
+With `climbing_image_method` on, either force test activates climbing.
+One test requires the band force to be under the initial force times `ci_after_rel`.
+The other requires it to be under `ci_after`.
+`ci_after` is a server option.
+`ci_after_rel` is not in `eon/config.yaml`, so the server rejects a file that sets it.
 
 ### Zoom-NEB
 
@@ -181,8 +196,13 @@ potential-energy surface.
 
 The cell force is the stress tensor. A potential that implements the Cauchy
 stress, with the sign `sigma = (1/V) dE/dε` for the right strain
-`h <- h (I+ε)` at fixed fractional coordinates, is used directly. Any other
-potential is differentiated on the six lower strain components.
+`h <- h (I+ε)` at fixed fractional coordinates, is used directly: the band
+reads the stress the potential returned with each image's force call, so an
+iteration costs one call per moved image. Any other potential is
+differentiated on the six lower strain components with a central difference
+of step 1e-5. That costs 12 extra energy calls per image and iteration; they
+go to the potential as one batch over the band, which calculator groups or a
+batched model evaluate together.
 
 `ci_mmf`, `zoom_neb`, `onsager_machlup`, `neb_doubly_nudged`, and
 `neb_elastic_band` are refused. The climbing image itself is the joint-space
@@ -202,12 +222,20 @@ The image pool is plain `std::thread`, so GCC and Clang builds need no TBB.
 `-Dwith_parallel_neb` is deprecated and has no effect.
 ```
 
-With `parallel = true`, dirty-image force calls run on at most
-`std::thread::hardware_concurrency()` threads, each taking the next image,
-so a 20-image band on 8 cores keeps 8 threads busy. An error in one image is
-reported after the other images finish. No extra library is needed.
+`[Main] parallel` is a client key and defaults to true.
+`eon/config.yaml` has no `parallel` key in `[Main]`.
+Setting that key makes the server exit before the client runs.
+With `parallel = true`, a band that reaches the projection step projects
+each image's tangent, spring, and projected force on one pool. Dirty-image
+force calls use that pool too. The pool starts once and stays for the
+process. On Linux the pool sizes itself to the affinity mask, so a Slurm
+or taskset limit sets the thread count. Other systems take the size from
+`std::thread::hardware_concurrency()`. The caller is one of those workers,
+so a 20-image band on 8 allowed cores keeps 8 threads busy. The pool
+reports an error in one image after the other images finish. The pool
+needs no extra library.
 nvc++ builds with `-Dstdpar=cpu` / `-Dstdpar=gpu` use
-`std::execution::par` instead; see {doc}`stdpar`. Python-based potentials fall back to serial
+`std::execution::par` for those force calls instead; see {doc}`stdpar`. Python-based potentials fall back to serial
 evaluation unless they report thread-safe shared instances or per-image
 copies. Morse and other host potentials stay on the CPU.
 
@@ -277,6 +305,7 @@ later. The `[Refine]` section does that switch.
 
 ```{eval-rst}
 .. autopydantic_model:: eon.schema.RefineConfig
+   :no-index:
 ```
 
 ## References

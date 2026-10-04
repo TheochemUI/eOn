@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn v2.8.2, release, uncertainty"
 ---
 
-## [v2.8.2] - 2025-12-01
+# [v2.8.2] - 2025-12-01
 
 This release adds per-atom energy uncertainty quantification and variance
 estimation to the [Metatomic](https://docs.metatensor.org/metatomic/latest/index.html)

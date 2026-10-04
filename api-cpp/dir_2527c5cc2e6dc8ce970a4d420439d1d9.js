@@ -13,6 +13,8 @@ var dir_2527c5cc2e6dc8ce970a4d420439d1d9 =
     [ "BiasedGradientSquaredDescent.h", "BiasedGradientSquaredDescent_8h.html", "BiasedGradientSquaredDescent_8h" ],
     [ "BondBoost.h", "BondBoost_8h.html", "BondBoost_8h" ],
     [ "Bundling.h", "Bundling_8h.html", "Bundling_8h" ],
+    [ "CalculatorGroupUse.h", "CalculatorGroupUse_8h.html", "CalculatorGroupUse_8h" ],
+    [ "CancelToken.h", "CancelToken_8h.html", "CancelToken_8h" ],
     [ "CommandLine.h", "CommandLine_8h.html", "CommandLine_8h" ],
     [ "ConFileIO.h", "ConFileIO_8h.html", "ConFileIO_8h" ],
     [ "ConjugateGradients.h", "ConjugateGradients_8h.html", "ConjugateGradients_8h" ],
@@ -116,6 +118,8 @@ var dir_2527c5cc2e6dc8ce970a4d420439d1d9 =
     [ "TestJob.h", "TestJob_8h.html", "TestJob_8h" ],
     [ "Tunneling.h", "Tunneling_8h.html", "Tunneling_8h" ],
     [ "VesinNeighbors.h", "VesinNeighbors_8h.html", "VesinNeighbors_8h" ],
+    [ "XtsciBand.h", "XtsciBand_8h.html", "XtsciBand_8h" ],
     [ "XtsciEindir.h", "XtsciEindir_8h.html", "XtsciEindir_8h" ],
+    [ "XtsciMinMode.h", "XtsciMinMode_8h.html", "XtsciMinMode_8h" ],
     [ "XtsciOptimizer.h", "XtsciOptimizer_8h.html", "XtsciOptimizer_8h" ]
 ];

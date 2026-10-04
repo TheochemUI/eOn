@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classeonc_1_1Q
  <div class="center">
   <img src="classeonc_1_1Quickmin.png" usemap="#eonc_3A_3AQuickmin_map" alt=""/>
   <map id="eonc_3A_3AQuickmin_map" name="eonc_3A_3AQuickmin_map">
-<area href="classeonc_1_1Optimizer.html" alt="eonc::Optimizer" shape="rect" coords="0,0,99,24"/>
+<area href="classeonc_1_1Optimizer.html" title="Abstract base of the structure optimizers." alt="eonc::Optimizer" shape="rect" coords="0,0,99,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -318,7 +318,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">   31</span>        <a class="code hl_variable" href="#a32194b31d7c716310b473a12dcbe5ed4">m_vel</a>{Eigen::VectorXd::Zero(a_objf-&gt;degreesOfFreedom())},</div>
 <div class="line"><span class="lineno">   32</span>        <a class="code hl_variable" href="#aa26f05207cf4d21b5fb13c9915f61311">m_iteration</a>{0},</div>
 <div class="line"><span class="lineno">   33</span>        <a class="code hl_variable" href="#a468889abddcfe80e844b210b221183e0">m_max_iter</a>{a_params.optimizer_options().max_iterations} {}</div>
-<div class="ttc" id="aclasseonc_1_1Optimizer_html_a51ef8ef5f774fa7125131d8a5dd72710"><div class="ttname"><a href="classeonc_1_1Optimizer.html#a51ef8ef5f774fa7125131d8a5dd72710">eonc::Optimizer::Optimizer</a></div><div class="ttdeci">Optimizer(std::shared_ptr&lt; ObjectiveFunction &gt; a_objf, const OptimizerConfig &amp;a_config)</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00073">Optimizer.h:73</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Optimizer_html_a51ef8ef5f774fa7125131d8a5dd72710"><div class="ttname"><a href="classeonc_1_1Optimizer.html#a51ef8ef5f774fa7125131d8a5dd72710">eonc::Optimizer::Optimizer</a></div><div class="ttdeci">Optimizer(std::shared_ptr&lt; ObjectiveFunction &gt; a_objf, const OptimizerConfig &amp;a_config)</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00074">Optimizer.h:74</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Quickmin_html_a20c9239afea0d5ef032e370f875573fc"><div class="ttname"><a href="#a20c9239afea0d5ef032e370f875573fc">eonc::Quickmin::m_dt</a></div><div class="ttdeci">double m_dt</div><div class="ttdef"><b>Definition</b> <a href="Quickmin_8h_source.html#l00040">Quickmin.h:40</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Quickmin_html_a32194b31d7c716310b473a12dcbe5ed4"><div class="ttname"><a href="#a32194b31d7c716310b473a12dcbe5ed4">eonc::Quickmin::m_vel</a></div><div class="ttdeci">Eigen::VectorXd m_vel</div><div class="ttdef"><b>Definition</b> <a href="Quickmin_8h_source.html#l00041">Quickmin.h:41</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Quickmin_html_a468889abddcfe80e844b210b221183e0"><div class="ttname"><a href="#a468889abddcfe80e844b210b221183e0">eonc::Quickmin::m_max_iter</a></div><div class="ttdeci">size_t m_max_iter</div><div class="ttdef"><b>Definition</b> <a href="Quickmin_8h_source.html#l00042">Quickmin.h:42</a></div></div>
@@ -392,7 +392,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">   50</span>  }</div>
 <div class="line"><span class="lineno">   51</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
 <div class="line"><span class="lineno">   52</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Optimizer_html_ac396cbda1caadf57ff9df7eda4db1822"><div class="ttname"><a href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">eonc::Optimizer::m_objf</a></div><div class="ttdeci">std::shared_ptr&lt; ObjectiveFunction &gt; m_objf</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00070">Optimizer.h:70</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Optimizer_html_ac396cbda1caadf57ff9df7eda4db1822"><div class="ttname"><a href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">eonc::Optimizer::m_objf</a></div><div class="ttdeci">std::shared_ptr&lt; ObjectiveFunction &gt; m_objf</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00071">Optimizer.h:71</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Quickmin_html_ac942fb24ad8b7d97641dfbc63a7ab670"><div class="ttname"><a href="#ac942fb24ad8b7d97641dfbc63a7ab670">eonc::Quickmin::step</a></div><div class="ttdeci">int step(double a_maxMove) override</div><div class="ttdef"><b>Definition</b> <a href="Quickmin_8cpp_source.html#l00019">Quickmin.cpp:19</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -450,7 +450,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">   43</span>  <a class="code hl_variable" href="#aa26f05207cf4d21b5fb13c9915f61311">m_iteration</a>++;</div>
 <div class="line"><span class="lineno">   44</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
 <div class="line"><span class="lineno">   45</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Optimizer_html_a3bfcee12036bd655e29a065e8e1c1f4d"><div class="ttname"><a href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">eonc::Optimizer::m_optConfig</a></div><div class="ttdeci">const OptimizerConfig m_optConfig</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00069">Optimizer.h:69</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Optimizer_html_a3bfcee12036bd655e29a065e8e1c1f4d"><div class="ttname"><a href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">eonc::Optimizer::m_optConfig</a></div><div class="ttdeci">const OptimizerConfig m_optConfig</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00070">Optimizer.h:70</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Quickmin_html_a3545af5c8f5ad2acb48d791966a63402"><div class="ttname"><a href="#a3545af5c8f5ad2acb48d791966a63402">eonc::Quickmin::m_log</a></div><div class="ttdeci">eonc::log::FileScoped m_log</div><div class="ttdef"><b>Definition</b> <a href="Quickmin_8h_source.html#l00043">Quickmin.h:43</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1geometry_html_acbf42a1f91c3c4317451f0c12a60aeee"><div class="ttname"><a href="namespaceeonc_1_1geometry.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::geometry::maxAtomMotionAppliedV</a></div><div class="ttdeci">VectorXd maxAtomMotionAppliedV(const VectorXd v1, double maxMotion)</div><div class="ttdef"><b>Definition</b> <a href="GeometryAnalysis_8cpp_source.html#l00319">GeometryAnalysis.cpp:319</a></div></div>
 </div><!-- fragment -->

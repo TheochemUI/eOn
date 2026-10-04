@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn v2.10.1, release, bug fix"
 ---
 
-## [v2.10.1] - 2026-02-18
+# [v2.10.1] - 2026-02-18
 
 Patch release that fixes a critical NEB convergence regression introduced in
 v2.10.0, where removing the `EIGEN_DEFAULT_TO_ROW_MAJOR` macro left bare

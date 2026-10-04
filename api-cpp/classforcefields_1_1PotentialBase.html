@@ -272,9 +272,22 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ab4a0946f1a33688584a184665c481c94" id="r_ab4a0946f1a33688584a184665c481c94"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="#ab4a0946f1a33688584a184665c481c94">~PotentialBase</a> ()</td></tr>
 <tr class="memitem:a9f9dba6eb645ccb76d17345338de5dd9" id="r_a9f9dba6eb645ccb76d17345338de5dd9"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a9f9dba6eb645ccb76d17345338de5dd9">getCutoff</a> () const</td></tr>
 <tr class="memitem:a9b5d01c20e7b9127aeca269c9d8f72d0" id="r_a9b5d01c20e7b9127aeca269c9d8f72d0"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a9b5d01c20e7b9127aeca269c9d8f72d0">setCutoff</a> (double cutoff)</td></tr>
+<tr id="pub-methods-0" class="groupHeader"><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr class="memitem:a3e28d111b296526628fa0fdffe831eb7" id="r_a3e28d111b296526628fa0fdffe831eb7"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a3e28d111b296526628fa0fdffe831eb7">getSwitchingWidth</a> () const</td></tr>
+<tr class="memdesc:a3e28d111b296526628fa0fdffe831eb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Width of the switching zone.  <br /></td></tr>
+<tr class="memitem:a74e7b9dda7ff3bc45006c00ac388b828" id="r_a74e7b9dda7ff3bc45006c00ac388b828"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a74e7b9dda7ff3bc45006c00ac388b828">setSwitchingWidth</a> (double width)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a8481070b1b338862c8877acf770bf941" id="r_a8481070b1b338862c8877acf770bf941"><td class="memItemLeft">static double&#160;</td><td class="memItemRight"><a class="el" href="#a8481070b1b338862c8877acf770bf941">applyPeriodicity0</a> (double r, double const period)</td></tr>
+<tr class="memdesc:a8481070b1b338862c8877acf770bf941"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum image representation.  <br /></td></tr>
+<tr class="memitem:a7f3749ba10ad064f3f38742223012eed" id="r_a7f3749ba10ad064f3f38742223012eed"><td class="memItemLeft">static void&#160;</td><td class="memItemRight"><a class="el" href="#a7f3749ba10ad064f3f38742223012eed">applyPeriodicity0</a> (double r[], double const periods[])</td></tr>
+<tr class="memdesc:a7f3749ba10ad064f3f38742223012eed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum image representation.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
+<tr class="memitem:a1e471a9d26e41e03a5dd844858bbe111" id="r_a1e471a9d26e41e03a5dd844858bbe111"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a1e471a9d26e41e03a5dd844858bbe111">computePt</a> (int const nAtoms, double positions[], double forces[], double &amp;energy, double const periods[], bool const fixed[])</td></tr>
+<tr class="memdesc:a1e471a9d26e41e03a5dd844858bbe111"><td class="mdescLeft">&#160;</td><td class="mdescRight">Potential for Platinum.  <br /></td></tr>
 <tr id="pro-methods-0" class="groupHeader"><td colspan="2"><div class="groupHeader">Angle</div></td></tr>
 <tr class="memitem:ad12651437f8cc8e5454906672fa2abd8" id="r_ad12651437f8cc8e5454906672fa2abd8"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ad12651437f8cc8e5454906672fa2abd8">restrainAngle</a> (double const r1[], double const r2[], double const r3[], double f1[], double f2[], double f3[], double &amp;u, const double k, const double aeq)</td></tr>
 <tr class="memdesc:ad12651437f8cc8e5454906672fa2abd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Angular quadratic restraints.  <br /></td></tr>
@@ -299,6 +312,13 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:acc1769baf153eb0acb5758c5803aa72c" id="r_acc1769baf153eb0acb5758c5803aa72c"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#acc1769baf153eb0acb5758c5803aa72c">cutoff_</a></td></tr>
 <tr class="memitem:a91206cd71c4c2b41735ca990c7c44441" id="r_a91206cd71c4c2b41735ca990c7c44441"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a91206cd71c4c2b41735ca990c7c44441">periods_</a> [3]</td></tr>
 <tr class="memitem:a6fc0ca510d01a8053262afb747b751c0" id="r_a6fc0ca510d01a8053262afb747b751c0"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a6fc0ca510d01a8053262afb747b751c0">switchingWidth_</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-static-attribs" class="groupheader"><a id="pro-static-attribs" name="pro-static-attribs"></a>
+Static Protected Attributes</h2></td></tr>
+<tr id="pro-static-attribs-0" class="groupHeader"><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr class="memitem:ab9c23adf3a29d08beb5e3591691bbdde" id="r_ab9c23adf3a29d08beb5e3591691bbdde"><td class="memItemLeft">static const double&#160;</td><td class="memItemRight"><a class="el" href="#ab9c23adf3a29d08beb5e3591691bbdde">EPSILON_PT</a> = 0.68165797577788501</td></tr>
+<tr class="memdesc:ab9c23adf3a29d08beb5e3591691bbdde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Platinum Lennard-Jones.  <br /></td></tr>
+<tr class="memitem:aad8a44f481eca162aa85c5e7f9d0fb54" id="r_aad8a44f481eca162aa85c5e7f9d0fb54"><td class="memItemLeft">static const double&#160;</td><td class="memItemRight"><a class="el" href="#aad8a44f481eca162aa85c5e7f9d0fb54">SIGMA_PT</a> = 2.54</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-member-group" class="groupheader"><a id="member-group" name="member-group"></a>
 Coulomb</h2></td></tr>
@@ -326,18 +346,6 @@ Coulomb</h2></td></tr>
 <tr class="memdesc:a866d5d81f2440152a6fd1b0efa588eb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Increment forces.  <br /></td></tr>
 <tr class="memitem:a1bebbf9c9cdf48986383f06b8881f84a" id="r_a1bebbf9c9cdf48986383f06b8881f84a"><td class="memTemplParams" colspan="2">template&lt;int N, class R, class F&gt; </td></tr>
 <tr class="memitem:a1bebbf9c9cdf48986383f06b8881f84a template"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a1bebbf9c9cdf48986383f06b8881f84a">switching</a> (<a class="el" href="structforcefields_1_1PotentialBase_1_1ChargeGroup.html">ChargeGroup</a>&lt; N, R, F &gt; &amp;g1, <a class="el" href="structforcefields_1_1PotentialBase_1_1ChargeGroup.html">ChargeGroup</a>&lt; N, R, F &gt; &amp;g2, double &amp;energy, double cutoff, double switchingWidth)</td></tr>
-<tr class="memitem:ab9c23adf3a29d08beb5e3591691bbdde" id="r_ab9c23adf3a29d08beb5e3591691bbdde"><td class="memItemLeft">static const double&#160;</td><td class="memItemRight"><a class="el" href="#ab9c23adf3a29d08beb5e3591691bbdde">EPSILON_PT</a> = 0.68165797577788501</td></tr>
-<tr class="memdesc:ab9c23adf3a29d08beb5e3591691bbdde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Platinum Lennard-Jones.  <br /></td></tr>
-<tr class="memitem:aad8a44f481eca162aa85c5e7f9d0fb54" id="r_aad8a44f481eca162aa85c5e7f9d0fb54"><td class="memItemLeft">static const double&#160;</td><td class="memItemRight"><a class="el" href="#aad8a44f481eca162aa85c5e7f9d0fb54">SIGMA_PT</a> = 2.54</td></tr>
-<tr class="memitem:a3e28d111b296526628fa0fdffe831eb7" id="r_a3e28d111b296526628fa0fdffe831eb7"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a3e28d111b296526628fa0fdffe831eb7">getSwitchingWidth</a> () const</td></tr>
-<tr class="memdesc:a3e28d111b296526628fa0fdffe831eb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Width of the switching zone.  <br /></td></tr>
-<tr class="memitem:a74e7b9dda7ff3bc45006c00ac388b828" id="r_a74e7b9dda7ff3bc45006c00ac388b828"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a74e7b9dda7ff3bc45006c00ac388b828">setSwitchingWidth</a> (double width)</td></tr>
-<tr class="memitem:a8481070b1b338862c8877acf770bf941" id="r_a8481070b1b338862c8877acf770bf941"><td class="memItemLeft">static double&#160;</td><td class="memItemRight"><a class="el" href="#a8481070b1b338862c8877acf770bf941">applyPeriodicity0</a> (double r, double const period)</td></tr>
-<tr class="memdesc:a8481070b1b338862c8877acf770bf941"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum image representation.  <br /></td></tr>
-<tr class="memitem:a7f3749ba10ad064f3f38742223012eed" id="r_a7f3749ba10ad064f3f38742223012eed"><td class="memItemLeft">static void&#160;</td><td class="memItemRight"><a class="el" href="#a7f3749ba10ad064f3f38742223012eed">applyPeriodicity0</a> (double r[], double const periods[])</td></tr>
-<tr class="memdesc:a7f3749ba10ad064f3f38742223012eed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum image representation.  <br /></td></tr>
-<tr class="memitem:a1e471a9d26e41e03a5dd844858bbe111" id="r_a1e471a9d26e41e03a5dd844858bbe111"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a1e471a9d26e41e03a5dd844858bbe111">computePt</a> (int const nAtoms, double positions[], double forces[], double &amp;energy, double const periods[], bool const fixed[])</td></tr>
-<tr class="memdesc:a1e471a9d26e41e03a5dd844858bbe111"><td class="mdescLeft">&#160;</td><td class="mdescRight">Potential for Platinum.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-member-group" class="groupheader"><a id="member-group" name="member-group"></a>
 Bond Interactions</h2></td></tr>
@@ -615,10 +623,9 @@ template&lt;int N, class R, class F&gt; </div>
 </div><div class="memdoc">
 
 <p>Minimum image representation. </p>
-<dl class="section return"><dt>Returns</dt><dd>Minimum image representation of <em class="arg">r</em>. The value returned is  \(\frac{-period}{2} \le r \le \frac{period}{2} \). </dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Writes the minimum image of <em class="arg">r</em> in place. Each component satisfies  \(\frac{-period}{2} \le r_i \le \frac{period}{2} \). </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">r</td><td>Three-dimension vector. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">r</td><td>Three-dimension vector. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">periods</td><td>Three-dimension vector containing periods along each of the axes. </td></tr>
   </table>
   </dd>
@@ -702,10 +709,9 @@ template&lt;int N, class R, class F&gt; </div>
 </div><div class="memdoc">
 
 <p>Minimum image representation. </p>
-<dl class="section return"><dt>Returns</dt><dd>Minimum image representation of <em class="arg">r</em>. The value returned is  \(\frac{-period}{2} \le r \le \frac{period}{2} \). The periods should be set with <a class="el" href="#a253c3fc3a173fc9d94253fdc67616a2b" title="Set periodicity.">setPeriodicity()</a>; </dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Writes the minimum image of <em class="arg">r</em> in place. Each component satisfies  \(\frac{-period}{2} \le r_i \le \frac{period}{2} \). The periods should be set with <a class="el" href="#a253c3fc3a173fc9d94253fdc67616a2b" title="Set periodicity.">setPeriodicity()</a>; </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">r</td><td>Three-dimension vector. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">r</td><td>Three-dimension vector. </td></tr>
   </table>
   </dd>
 </dl>

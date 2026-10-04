@@ -36,8 +36,8 @@
   <div class="sy-head-blur"></div>
   <div class="sy-head-inner sy-container mx-auto">
     <a class="sy-head-brand" href="../../index.html">
-      
-      
+      <img class="light-logo" src="../../logo/eon_v3_light.svg" alt="eOn" height="28" loading="lazy" />
+      <img class="dark-logo" src="../../logo/eon_v3_dark.svg" alt="eOn" height="28" loading="lazy" />
       <strong>eOn</strong>
     </a>
     <div class="sy-head-nav" id="head-nav">
@@ -86,6 +86,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../team.html">eOn team</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../install/index.html">Installation</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../install/eessi.html">Build develop on EESSI</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../install/lammps.html">LAMMPS</a></li>
 </ul>
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../install/index.html#obtaining-sources">Obtaining sources</a></li>
@@ -130,17 +131,23 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lanczos.html">Lanczos</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/finite_difference.html">Finite-difference curvature</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/instanton.html">Tunnelling splittings</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/akmc.html">Adaptive kinetic Monte Carlo</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/saddle_search.html">Saddle search</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/basin_hopping.html">Basin hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/global_optimization.html">Minima hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/monte_carlo.html">Monte Carlo</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/replica_exchange.html">Replica exchange</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/process_search.html">Process search</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/recycling.html">Recycling</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/coarse_graining.html">Coarse graining</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/dynamics.html">Dynamics</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/parallel_replica.html">Parallel replica</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/tad.html">Temperature accelerated dynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/oh_tst.html">Optimal hyperplane transition state theory</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/communicator.html">Communicator</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/debug.html">Debug</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/paths.html">Paths</a></li>
@@ -166,6 +173,14 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/svn-migration.html">Migrating from SVN</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/tracking-changes.html">Tracking changes</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/release.html">Release workflow</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/design/client/index.html">Client design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/types.html">Type system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/safemath.html">SafeMath utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/parameters.html">Parameters system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/neb-modularization.html">NEB modularization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../devdocs/design/client/confile.html">CON file I/O via readcon-core</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/pyeonclient.html">pyeonclient (nanobind client bindings)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/eon-schema.html">eon-schema (shared parameter package)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/pyeonclient-pypi.html">pyeonclient on PyPI</a></li>
@@ -174,7 +189,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
 </ul>
 </li>
@@ -196,6 +210,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.cancel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.cancel</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.job_result.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.job_result</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
@@ -249,6 +264,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v3.2.0/release-notes.html">eOn 3.2.0</a></li>
 </ul>
 </li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.17.0/release-notes.html">eOn 2.17.0</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.16.0/index.html">[v2.16.0] - 2026-07-03</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v2.16.0/release-notes.html">Release notes</a></li>
 </ul>
@@ -314,6 +330,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 </ul>
 </li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../glossary.html">Glossary</a></li>
 </ul>
         </div>
       </div>
@@ -337,6 +354,8 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#eon.concorpus.load_frame_text"><code class="docutils literal notranslate"><span class="pre">load_frame_text()</span></code></a></li>
 <li><a class="reference internal" href="#eon.concorpus.stored_frame_text"><code class="docutils literal notranslate"><span class="pre">stored_frame_text()</span></code></a></li>
 <li><a class="reference internal" href="#eon.concorpus.mirror_con_path"><code class="docutils literal notranslate"><span class="pre">mirror_con_path()</span></code></a></li>
+<li><a class="reference internal" href="#eon.concorpus.directories_with_con"><code class="docutils literal notranslate"><span class="pre">directories_with_con()</span></code></a></li>
+<li><a class="reference internal" href="#eon.concorpus.frame_texts_for_paths"><code class="docutils literal notranslate"><span class="pre">frame_texts_for_paths()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -407,6 +426,9 @@ data-aria-dark="Switch to auto color mode">
 trajectory per distinct path plus blob, next to the run when <code class="docutils literal notranslate"><span class="pre">config.ini</span></code>
 is at most eight directories up, otherwise beside the con file. A missing
 <code class="docutils literal notranslate"><span class="pre">readcon_db</span></code> install leaves the con file as the only copy.</p>
+<p>A dynamics movie can also ingest each directory of a simulation tree and
+read those frames back with one read-only <code class="docutils literal notranslate"><span class="pre">get_frame_texts</span></code> call. The
+<code class="docutils literal notranslate"><span class="pre">.con</span></code> files remain the store.</p>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
 <section id="functions">
@@ -434,6 +456,12 @@ is at most eight directories up, otherwise beside the con file. A missing
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#eon.concorpus.mirror_con_path" title="eon.concorpus.mirror_con_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mirror_con_path</span></code></a></p></td>
 <td><p>Insert the con file’s current bytes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.concorpus.directories_with_con" title="eon.concorpus.directories_with_con"><code class="xref py py-obj docutils literal notranslate"><span class="pre">directories_with_con</span></code></a></p></td>
+<td><p>Directories under <code class="docutils literal notranslate"><span class="pre">tree</span></code> that directly contain <code class="docutils literal notranslate"><span class="pre">.con</span></code> or <code class="docutils literal notranslate"><span class="pre">.convel</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.concorpus.frame_texts_for_paths" title="eon.concorpus.frame_texts_for_paths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">frame_texts_for_paths</span></code></a></p></td>
+<td><p>Ingest <code class="docutils literal notranslate"><span class="pre">tree</span></code> and return frame 0 text for each path, in order.</p></td>
 </tr>
 </tbody>
 </table>
@@ -481,8 +509,9 @@ is at most eight directories up, otherwise beside the con file. A missing
 <dt class="sig sig-object py" id="eon.concorpus.store_frame_text">
 <span class="sig-prename descclassname"><span class="pre">eon.concorpus.</span></span><span class="sig-name descname"><span class="pre">store_frame_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/eon/concorpus.html#store_frame_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.concorpus.store_frame_text" title="Link to this definition">¶</a></dt>
 <dd><p>Store one con blob. Returns <code class="docutils literal notranslate"><span class="pre">(traj_id,</span> <span class="pre">0)</span></code> for a single frame.</p>
-<p>The corpus takes the con text only. A barrier or a mode is not an
-argument: those stay on the process row.</p>
+<p>The corpus takes the con text only. A barrier is not an argument.
+A mode is not an argument either: it rides in the saddle frame as
+the displacements section.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -501,6 +530,20 @@ argument: those stay on the process row.</p>
 <dt class="sig sig-object py" id="eon.concorpus.mirror_con_path">
 <span class="sig-prename descclassname"><span class="pre">eon.concorpus.</span></span><span class="sig-name descname"><span class="pre">mirror_con_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/eon/concorpus.html#mirror_con_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.concorpus.mirror_con_path" title="Link to this definition">¶</a></dt>
 <dd><p>Insert the con file’s current bytes.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.concorpus.directories_with_con">
+<span class="sig-prename descclassname"><span class="pre">eon.concorpus.</span></span><span class="sig-name descname"><span class="pre">directories_with_con</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">pathlib.Path</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">pathlib.Path</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/eon/concorpus.html#directories_with_con"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.concorpus.directories_with_con" title="Link to this definition">¶</a></dt>
+<dd><p>Directories under <code class="docutils literal notranslate"><span class="pre">tree</span></code> that directly contain <code class="docutils literal notranslate"><span class="pre">.con</span></code> or <code class="docutils literal notranslate"><span class="pre">.convel</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.concorpus.frame_texts_for_paths">
+<span class="sig-prename descclassname"><span class="pre">eon.concorpus.</span></span><span class="sig-name descname"><span class="pre">frame_texts_for_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">con_paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corpus_cls</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/eon/concorpus.html#frame_texts_for_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.concorpus.frame_texts_for_paths" title="Link to this definition">¶</a></dt>
+<dd><p>Ingest <code class="docutils literal notranslate"><span class="pre">tree</span></code> and return frame 0 text for each path, in order.</p>
+<p><code class="docutils literal notranslate"><span class="pre">corpus_cls</span></code> defaults to <code class="docutils literal notranslate"><span class="pre">readcon_db.ConCorpus</span></code>. Tests pass a stand-in
+with the same constructor, <code class="docutils literal notranslate"><span class="pre">ingest_directory</span></code>, and <code class="docutils literal notranslate"><span class="pre">get_frame_texts</span></code>.</p>
 </dd></dl>
 
 </section>

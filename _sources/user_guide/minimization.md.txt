@@ -49,11 +49,15 @@ convergence panels. For two endpoints, use **separate** landscape plots (one
 
 | Optimizer | Best for | Key parameter |
 |---|---|---|
-| **LBFGS** (default) | Most minimizations, fast convergence near minima | `lbfgs_memory` (default 20); optional `lbfgs_secant` / `lbfgs_precon` / `lbfgs_curvature` |
+| **LBFGS** | Most minimizations, fast convergence near minima | `lbfgs_memory` (default 20); optional `lbfgs_secant` / `lbfgs_precon` / `lbfgs_curvature` |
 | **FIRE** | Systems far from equilibrium, tolerant of bad initial guesses | `time_step` |
-| **CG** | Large systems where LBFGS memory is a concern | `cg_line_search` |
-| **QuickMin** | Simple dynamics-based relaxation | `time_step` |
+| **CG** (default) | Large systems where LBFGS memory is a concern | `cg_line_search` |
+| **QuickMin** (token `qm`) | Simple dynamics-based relaxation | `time_step` |
 | **SD** | Debugging, guaranteed descent direction | `sd_alpha` |
+
+The default `opt_method` is `cg`.
+The QuickMin token is `qm`.
+`quickmin` is not a token.
 
 ## Convergence
 
@@ -152,6 +156,8 @@ engine also runs the other xtsci-optimize methods (`lbfgs`, `bfgs`,
 For paths far from the minimum, a two-stage optimization can be faster: start
 with QuickMin or FIRE and switch to LBFGS after the forces
 drop below a threshold.
+The client reads `[Refine]` only when that section is present.
+`[Refine]` is absent from `eon/config.yaml`, so a file the server loads exits before the client runs.
 
 ```{code-block} ini
 [Optimizer]
@@ -182,10 +188,12 @@ Set `write_deprecated_outs = true` in `[Debug]` to also emit the legacy
 ## Configuration
 
 The minimization job reads `[Optimizer]`.
-An optional `[Refine]` block switches method once the maximum force drops below its threshold.
+Its `opt_method` defaults to `cg`.
+An optional `[Refine]` block is client-only: the client reads it when the section is present, and the server exits on the unknown section before the client runs.
 
 ```{eval-rst}
 .. autopydantic_model:: eon.schema.OptimizerConfig
+   :no-index:
 ```
 
 ```{eval-rst}

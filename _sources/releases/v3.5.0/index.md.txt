@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn v3.5.0, instanton, ring polymer, PI-QTST, RPMD, tunnelling, solid-state NEB, CPMD, rgpot, release"
 ---
 
-## [v3.5.0] - 2026-10-01
+# [v3.5.0] - 2026-10-01
 
 Minor release on `v3.4.0`. `job = instanton` computes tunnelling
 splittings and thermal rates from the ring-polymer instanton, and

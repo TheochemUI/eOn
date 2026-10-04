@@ -78,12 +78,19 @@ thermostat = langevin
 langevin_friction = 0.01
 ```
 
+Langevin and Nose-Hoover treat each Cartesian component on its own. A
+fixed component is stored with zero velocity, so the Nose-Hoover step
+leaves it in place, and the chain counts only the free components.
+Langevin draws no random force on a fixed component and writes no step
+there.
+
 ## Path-integral sampling
 
 `pile` and `piglet` integrate a ring polymer. The velocity Verlet step
 above stays the classical update and does not move the beads. Each step
 evaluates every bead in one force batch, so calculator groups carry the
-beads together.
+beads together. A fixed component is left out of that update: its force
+and its momentum stay zero, and the bead step skips it.
 
 `path_beads` is the bead count. `path_springs = trotter` uses the
 primitive ring-polymer frequencies. `path_springs = eco` uses economised
@@ -110,10 +117,19 @@ Langevin thermostat.
 when the thermostat is `pile`. `path_seed` seeds the path-integral
 random numbers.
 
-The sampler can hold the centroid on a hyperplane and average the
-Cartesian force along the normal. That average is the mean force for
-thermodynamic integration along a band. Its negative is the derivative
-of the potential of mean force.
+The ring starts from `pos.con` with momenta drawn at the ring
+temperature. The first half of the steps equilibrates it; over the second
+half the job averages the centroid-virial kinetic energy, the quantum
+kinetic energy of the N-bead ring, and writes it to the log beside the
+classical nFree kB T / 2. `final.con` holds the ring's centroid and its
+velocity.
+
+Through the library (`eonc::pathintegral::RingPolymer`), the sampler can
+also hold the centroid on a hyperplane and average the Cartesian force
+along the normal. That average is the mean force for thermodynamic
+integration along a band, and its negative is the derivative of the
+potential of mean force; the instanton job's PI-QTST planes use it. The
+dynamics job does not set a hyperplane.
 
 ## Time parameters
 

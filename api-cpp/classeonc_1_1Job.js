@@ -1,5 +1,7 @@
 var classeonc_1_1Job =
 [
+    [ "ExclusivePotential", "structeonc_1_1Job_1_1ExclusivePotential.html", null ],
+    [ "Job", "classeonc_1_1Job.html#a40423b75b9614f0fc81797a5d817948d", null ],
     [ "Job", "classeonc_1_1Job.html#a048903796c5d81f4425e1392e1bcea8d", null ],
     [ "Job", "classeonc_1_1Job.html#a2481fd95219c1c47a79e44e34d482207", null ],
     [ "Job", "classeonc_1_1Job.html#a4e0abe180a33539a0e8d264775f34a42", null ],
@@ -12,6 +14,7 @@ var classeonc_1_1Job =
     [ "run", "classeonc_1_1Job.html#ac23db10c6a90d5c6cc8a3a49d7b0dace", null ],
     [ "jtype", "classeonc_1_1Job.html#a90e97e92096c7c2ea7dec3d9c49f485f", null ],
     [ "owned_runtime_", "classeonc_1_1Job.html#a79f4bf70ec1c7e3e08a0a5c0ff5ee965", null ],
+    [ "ownedPot", "classeonc_1_1Job.html#ae11b351685b8b2ca364f1877636328ca", null ],
     [ "params", "classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500", null ],
     [ "pot", "classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9", null ],
     [ "runtime_", "classeonc_1_1Job.html#add247a8d4ae4bb5e59ec85ecfcf1bd37", null ]

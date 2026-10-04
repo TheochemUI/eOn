@@ -278,277 +278,281 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('ServeMode_8cpp
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;Creating potential: {}&quot;</span>,</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                std::string(magic_enum::enum_name(pot_type)));</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>  <span class="keyword">auto</span> eon_pot = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">eonc::helpers::makePotential</a>(params);</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>  <span class="keywordflow">if</span> (!eon_pot) {</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Failed to create potential of type {}&quot;</span>,</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                   std::string(magic_enum::enum_name(pot_type)));</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>  }</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>  <span class="keyword">auto</span> callback = makeForceCallback(std::move(eon_pot));</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>  <span class="comment">// Blocks until killed (runs Cap&#39;n Proto event loop)</span></div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>  <a class="code hl_function" href="namespaceeonc.html#ae73698d7590f300d12636be26b8e0ea7">startRpcServer</a>(std::move(callback), host, port);</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>}</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>  <span class="keyword">auto</span> eon_pot =</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>      <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a67ab5cb7bee60443753fcae864fd27e4">eonc::helpers::sharePotential</a>(<a class="code hl_function" href="namespaceeonc_1_1helpers.html#a5f1e0c7a3fbf2324d5e6c2b84c0ddb86">eonc::helpers::makePotential</a>(params));</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>  <span class="keywordflow">if</span> (!eon_pot) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Failed to create potential of type {}&quot;</span>,</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                   std::string(magic_enum::enum_name(pot_type)));</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>  }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>  <span class="keyword">auto</span> callback = makeForceCallback(std::move(eon_pot));</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>  <span class="comment">// Blocks until killed (runs Cap&#39;n Proto event loop)</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>  <a class="code hl_function" href="namespaceeonc.html#ae73698d7590f300d12636be26b8e0ea7">startRpcServer</a>(std::move(callback), host, port);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>}</div>
 </div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="comment">// Multi-model concurrent serve</span></div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
-<div class="foldopen" id="foldopen00081" data-start="{" data-end="}">
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="namespaceeonc.html#abdfc4b8250c5a7d87d4eaa5030194b44">   81</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeonc.html#abdfc4b8250c5a7d87d4eaa5030194b44">serveMultiple</a>(<span class="keyword">const</span> std::vector&lt;ServeEndpoint&gt; &amp;endpoints,</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                   <span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Parameters.html">Parameters</a> &amp;base_params) {</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>  <span class="keywordflow">if</span> (endpoints.empty()) {</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;No serve endpoints specified&quot;</span>);</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>  }</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>  <span class="comment">// Single endpoint: run in the main thread (no extra overhead)</span></div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>  <span class="keywordflow">if</span> (endpoints.size() == 1) {</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keyword">auto</span> params = base_params;</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <a class="code hl_function" href="structeonc_1_1ParametersLoadAccess.html#ae8e06ef73a4c38f90ef029f06c32d8ab">ParametersLoadAccess::potential_options</a>(params).<a class="code hl_variable" href="structeonc_1_1potential__options__t.html#a9cdc33bdbae47475f3a71c8e39c0ee78">potential</a> =</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        endpoints[0].potential;</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <a class="code hl_function" href="namespaceeonc.html#a41eef310a4da8b94a072259e75816c36">serveMode</a>(params, endpoints[0].host, endpoints[0].port);</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>  }</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>  <span class="comment">// Multiple endpoints: one thread per server</span></div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;Starting {} concurrent RPC servers&quot;</span>, endpoints.size());</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>  std::vector&lt;std::thread&gt; threads;</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>  threads.reserve(endpoints.size());</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;ep : endpoints) {</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    threads.emplace_back([&amp;base_params, ep]() {</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>      <span class="keyword">auto</span> params = base_params;</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>      <a class="code hl_function" href="structeonc_1_1ParametersLoadAccess.html#ae8e06ef73a4c38f90ef029f06c32d8ab">ParametersLoadAccess::potential_options</a>(params).<a class="code hl_variable" href="structeonc_1_1potential__options__t.html#a9cdc33bdbae47475f3a71c8e39c0ee78">potential</a> = ep.potential;</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>      <span class="keyword">auto</span> pot_name = std::string(magic_enum::enum_name(ep.potential));</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>      <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;[{}:{}] Creating potential: {}&quot;</span>, ep.host, ep.port,</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                    pot_name);</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>      <span class="keyword">auto</span> eon_pot = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">eonc::helpers::makePotential</a>(params);</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>      <span class="keywordflow">if</span> (!eon_pot) {</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;[{}:{}] Failed to create potential {}&quot;</span>, ep.host,</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                       ep.port, pot_name);</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>      }</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>      <span class="keyword">auto</span> callback = makeForceCallback(std::move(eon_pot));</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>      <a class="code hl_function" href="namespaceeonc.html#ae73698d7590f300d12636be26b8e0ea7">startRpcServer</a>(std::move(callback), ep.host, ep.port);</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    });</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>  }</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>  <span class="comment">// Wait for all threads (they block until killed)</span></div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;t : threads) {</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordflow">if</span> (t.joinable()) {</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>      t.join();</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    }</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>  }</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>}</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="comment">// Multi-model concurrent serve</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="foldopen" id="foldopen00082" data-start="{" data-end="}">
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="namespaceeonc.html#abdfc4b8250c5a7d87d4eaa5030194b44">   82</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeonc.html#abdfc4b8250c5a7d87d4eaa5030194b44">serveMultiple</a>(<span class="keyword">const</span> std::vector&lt;ServeEndpoint&gt; &amp;endpoints,</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                   <span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Parameters.html">Parameters</a> &amp;base_params) {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>  <span class="keywordflow">if</span> (endpoints.empty()) {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;No serve endpoints specified&quot;</span>);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>  }</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>  <span class="comment">// Single endpoint: run in the main thread (no extra overhead)</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>  <span class="keywordflow">if</span> (endpoints.size() == 1) {</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keyword">auto</span> params = base_params;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <a class="code hl_function" href="structeonc_1_1ParametersLoadAccess.html#ae8e06ef73a4c38f90ef029f06c32d8ab">ParametersLoadAccess::potential_options</a>(params).<a class="code hl_variable" href="structeonc_1_1potential__options__t.html#a9cdc33bdbae47475f3a71c8e39c0ee78">potential</a> =</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        endpoints[0].potential;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <a class="code hl_function" href="namespaceeonc.html#a41eef310a4da8b94a072259e75816c36">serveMode</a>(params, endpoints[0].host, endpoints[0].port);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>  }</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>  <span class="comment">// Multiple endpoints: one thread per server</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;Starting {} concurrent RPC servers&quot;</span>, endpoints.size());</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>  std::vector&lt;std::thread&gt; threads;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>  threads.reserve(endpoints.size());</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;ep : endpoints) {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    threads.emplace_back([&amp;base_params, ep]() {</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>      <span class="keyword">auto</span> params = base_params;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>      <a class="code hl_function" href="structeonc_1_1ParametersLoadAccess.html#ae8e06ef73a4c38f90ef029f06c32d8ab">ParametersLoadAccess::potential_options</a>(params).<a class="code hl_variable" href="structeonc_1_1potential__options__t.html#a9cdc33bdbae47475f3a71c8e39c0ee78">potential</a> = ep.potential;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>      <span class="keyword">auto</span> pot_name = std::string(magic_enum::enum_name(ep.potential));</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>      <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;[{}:{}] Creating potential: {}&quot;</span>, ep.host, ep.port,</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>                    pot_name);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>      <span class="keyword">auto</span> eon_pot =</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>          <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a67ab5cb7bee60443753fcae864fd27e4">eonc::helpers::sharePotential</a>(<a class="code hl_function" href="namespaceeonc_1_1helpers.html#a5f1e0c7a3fbf2324d5e6c2b84c0ddb86">eonc::helpers::makePotential</a>(params));</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>      <span class="keywordflow">if</span> (!eon_pot) {</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;[{}:{}] Failed to create potential {}&quot;</span>, ep.host,</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                       ep.port, pot_name);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>      }</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>      <span class="keyword">auto</span> callback = makeForceCallback(std::move(eon_pot));</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>      <a class="code hl_function" href="namespaceeonc.html#ae73698d7590f300d12636be26b8e0ea7">startRpcServer</a>(std::move(callback), ep.host, ep.port);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    });</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>  }</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>  <span class="comment">// Wait for all threads (they block until killed)</span></div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;t : threads) {</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordflow">if</span> (t.joinable()) {</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>      t.join();</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    }</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>  }</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>}</div>
 </div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span><span class="comment">// Replicated serve: N copies of same potential on sequential ports</span></div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
 <div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
-<div class="foldopen" id="foldopen00136" data-start="{" data-end="}">
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno"><a class="line" href="namespaceeonc.html#addbe99ddcc2a13a67797e7a9f0625197">  136</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeonc.html#addbe99ddcc2a13a67797e7a9f0625197">serveReplicated</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Parameters.html">Parameters</a> &amp;params, <span class="keyword">const</span> std::string &amp;host,</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>                     uint16_t base_port, <span class="keywordtype">size_t</span> replicas) {</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>  <span class="keywordflow">if</span> (replicas == 0) {</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Replicas must be &gt;= 1&quot;</span>);</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>  }</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>  <span class="keywordflow">if</span> (replicas == 1) {</div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <a class="code hl_function" href="namespaceeonc.html#a41eef310a4da8b94a072259e75816c36">serveMode</a>(params, host, base_port);</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>  }</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;Starting {} replicated servers on ports {}-{}&quot;</span>, replicas,</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>                base_port, base_port + replicas - 1);</div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>  std::vector&lt;std::thread&gt; threads;</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>  threads.reserve(replicas);</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; replicas; ++i) {</div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    uint16_t port = <span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(base_port + i);</div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    threads.emplace_back(</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        [&amp;params, &amp;host, port]() { <a class="code hl_function" href="namespaceeonc.html#a41eef310a4da8b94a072259e75816c36">serveMode</a>(params, host, port); });</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>  }</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;t : threads) {</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="keywordflow">if</span> (t.joinable()) {</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>      t.join();</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    }</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>  }</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>}</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span><span class="comment">// Replicated serve: N copies of same potential on sequential ports</span></div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="foldopen" id="foldopen00138" data-start="{" data-end="}">
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno"><a class="line" href="namespaceeonc.html#addbe99ddcc2a13a67797e7a9f0625197">  138</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeonc.html#addbe99ddcc2a13a67797e7a9f0625197">serveReplicated</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Parameters.html">Parameters</a> &amp;params, <span class="keyword">const</span> std::string &amp;host,</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>                     uint16_t base_port, <span class="keywordtype">size_t</span> replicas) {</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>  <span class="keywordflow">if</span> (replicas == 0) {</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Replicas must be &gt;= 1&quot;</span>);</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>  }</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>  <span class="keywordflow">if</span> (replicas == 1) {</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <a class="code hl_function" href="namespaceeonc.html#a41eef310a4da8b94a072259e75816c36">serveMode</a>(params, host, base_port);</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>  }</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;Starting {} replicated servers on ports {}-{}&quot;</span>, replicas,</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>                base_port, base_port + replicas - 1);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>  std::vector&lt;std::thread&gt; threads;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>  threads.reserve(replicas);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; replicas; ++i) {</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    uint16_t port = <span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(base_port + i);</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    threads.emplace_back(</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        [&amp;params, &amp;host, port]() { <a class="code hl_function" href="namespaceeonc.html#a41eef310a4da8b94a072259e75816c36">serveMode</a>(params, host, port); });</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>  }</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;t : threads) {</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keywordflow">if</span> (t.joinable()) {</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>      t.join();</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    }</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>  }</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>}</div>
 </div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span><span class="comment">// Gateway serve: single port backed by a pool of potential instances</span></div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
 <div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
-<div class="foldopen" id="foldopen00170" data-start="{" data-end="}">
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a2d44293d95714634795621498031536d">  170</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeonc.html#a2d44293d95714634795621498031536d">serveGateway</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Parameters.html">Parameters</a> &amp;params, <span class="keyword">const</span> std::string &amp;host,</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>                  uint16_t port, <span class="keywordtype">size_t</span> pool_size) {</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>  <span class="keywordflow">if</span> (pool_size == 0) {</div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Pool size must be &gt;= 1&quot;</span>);</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>  }</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>  <span class="keyword">auto</span> pot_type = params.<a class="code hl_function" href="classeonc_1_1Parameters.html#a55e84b61b311cb38897a55eb0d2b39ae">potential_options</a>().<a class="code hl_variable" href="structeonc_1_1potential__options__t.html#a9cdc33bdbae47475f3a71c8e39c0ee78">potential</a>;</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;Creating pool of {} {} instances for gateway on {}:{}&quot;</span>,</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>                pool_size, std::string(magic_enum::enum_name(pot_type)), host,</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>                port);</div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span> </div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>  std::vector&lt;ForceCallback&gt; pool;</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>  pool.reserve(pool_size);</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; pool_size; ++i) {</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keyword">auto</span> eon_pot = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">eonc::helpers::makePotential</a>(params);</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="keywordflow">if</span> (!eon_pot) {</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Failed to create potential instance {}/{}&quot;</span>, i + 1,</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>                     pool_size);</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>      <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    }</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    pool.push_back(makeForceCallback(std::move(eon_pot)));</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>  }</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;Pool ready, starting gateway server&quot;</span>);</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>  <a class="code hl_function" href="namespaceeonc.html#abde34b2d6455f233f19867a3e220b56c">startPooledRpcServer</a>(std::move(pool), host, port);</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>}</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span><span class="comment">// Gateway serve: single port backed by a pool of potential instances</span></div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="foldopen" id="foldopen00172" data-start="{" data-end="}">
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a2d44293d95714634795621498031536d">  172</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeonc.html#a2d44293d95714634795621498031536d">serveGateway</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Parameters.html">Parameters</a> &amp;params, <span class="keyword">const</span> std::string &amp;host,</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>                  uint16_t port, <span class="keywordtype">size_t</span> pool_size) {</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>  <span class="keywordflow">if</span> (pool_size == 0) {</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Pool size must be &gt;= 1&quot;</span>);</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>  }</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>  <span class="keyword">auto</span> pot_type = params.<a class="code hl_function" href="classeonc_1_1Parameters.html#a55e84b61b311cb38897a55eb0d2b39ae">potential_options</a>().<a class="code hl_variable" href="structeonc_1_1potential__options__t.html#a9cdc33bdbae47475f3a71c8e39c0ee78">potential</a>;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;Creating pool of {} {} instances for gateway on {}:{}&quot;</span>,</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>                pool_size, std::string(magic_enum::enum_name(pot_type)), host,</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>                port);</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span> </div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>  std::vector&lt;ForceCallback&gt; pool;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>  pool.reserve(pool_size);</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; pool_size; ++i) {</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    <span class="keyword">auto</span> eon_pot =</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a67ab5cb7bee60443753fcae864fd27e4">eonc::helpers::sharePotential</a>(<a class="code hl_function" href="namespaceeonc_1_1helpers.html#a5f1e0c7a3fbf2324d5e6c2b84c0ddb86">eonc::helpers::makePotential</a>(params));</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    <span class="keywordflow">if</span> (!eon_pot) {</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Failed to create potential instance {}/{}&quot;</span>, i + 1,</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>                     pool_size);</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>      <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    }</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    pool.push_back(makeForceCallback(std::move(eon_pot)));</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>  }</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;Pool ready, starting gateway server&quot;</span>);</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>  <a class="code hl_function" href="namespaceeonc.html#abde34b2d6455f233f19867a3e220b56c">startPooledRpcServer</a>(std::move(pool), host, port);</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>}</div>
 </div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span><span class="comment">// Config-driven dispatch</span></div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
-<div class="foldopen" id="foldopen00203" data-start="{" data-end="}">
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a5e925ddd7fb3c6c11346cf97429c5c27">  203</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeonc.html#a5e925ddd7fb3c6c11346cf97429c5c27">serveFromConfig</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Parameters.html">Parameters</a> &amp;params) {</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;opts = params.<a class="code hl_function" href="classeonc_1_1Parameters.html#aab6831465cd702f19496c30f990a6374">serve_options</a>();</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span> </div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span><span class="comment">// Config-driven dispatch</span></div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
 <div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>  <span class="comment">// Multi-model endpoints take priority</span></div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>  <span class="keywordflow">if</span> (!opts.endpoints.empty()) {</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    <span class="keyword">auto</span> endpoints = <a class="code hl_function" href="namespaceeonc.html#a0bab3b9bafa3fca028a6c31adac24447">parseServeSpec</a>(opts.endpoints);</div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <span class="keywordflow">if</span> (endpoints.empty()) {</div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;No valid endpoints in spec: {}&quot;</span>, opts.endpoints);</div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>      <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    }</div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <a class="code hl_function" href="namespaceeonc.html#abdfc4b8250c5a7d87d4eaa5030194b44">serveMultiple</a>(endpoints, params);</div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>  }</div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span> </div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>  <span class="comment">// Gateway mode</span></div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>  <span class="keywordflow">if</span> (opts.gateway_port &gt; 0) {</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    <span class="keywordtype">size_t</span> pool = (opts.replicas &gt; 0) ? opts.replicas : 1;</div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    <a class="code hl_function" href="namespaceeonc.html#a2d44293d95714634795621498031536d">serveGateway</a>(params, opts.host, opts.gateway_port, pool);</div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>  }</div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span> </div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>  <span class="comment">// Replicated mode (default)</span></div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>  <a class="code hl_function" href="namespaceeonc.html#addbe99ddcc2a13a67797e7a9f0625197">serveReplicated</a>(params, opts.host, opts.port, opts.replicas);</div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>}</div>
+<div class="foldopen" id="foldopen00206" data-start="{" data-end="}">
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a5e925ddd7fb3c6c11346cf97429c5c27">  206</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeonc.html#a5e925ddd7fb3c6c11346cf97429c5c27">serveFromConfig</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Parameters.html">Parameters</a> &amp;params) {</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;opts = params.<a class="code hl_function" href="classeonc_1_1Parameters.html#aab6831465cd702f19496c30f990a6374">serve_options</a>();</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>  <span class="comment">// Multi-model endpoints take priority</span></div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>  <span class="keywordflow">if</span> (!opts.endpoints.empty()) {</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keyword">auto</span> endpoints = <a class="code hl_function" href="namespaceeonc.html#a0bab3b9bafa3fca028a6c31adac24447">parseServeSpec</a>(opts.endpoints);</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    <span class="keywordflow">if</span> (endpoints.empty()) {</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;No valid endpoints in spec: {}&quot;</span>, opts.endpoints);</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>      <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    }</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <a class="code hl_function" href="namespaceeonc.html#abdfc4b8250c5a7d87d4eaa5030194b44">serveMultiple</a>(endpoints, params);</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>  }</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span> </div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>  <span class="comment">// Gateway mode</span></div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>  <span class="keywordflow">if</span> (opts.gateway_port &gt; 0) {</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <span class="keywordtype">size_t</span> pool = (opts.replicas &gt; 0) ? opts.replicas : 1;</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    <a class="code hl_function" href="namespaceeonc.html#a2d44293d95714634795621498031536d">serveGateway</a>(params, opts.host, opts.gateway_port, pool);</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>  }</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span> </div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>  <span class="comment">// Replicated mode (default)</span></div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>  <a class="code hl_function" href="namespaceeonc.html#addbe99ddcc2a13a67797e7a9f0625197">serveReplicated</a>(params, opts.host, opts.port, opts.replicas);</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>}</div>
 </div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span> </div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span><span class="comment">// Spec parser: &quot;pot:port,pot:host:port,...&quot;</span></div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span> </div>
-<div class="foldopen" id="foldopen00232" data-start="{" data-end="}">
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a0bab3b9bafa3fca028a6c31adac24447">  232</a></span>std::vector&lt;ServeEndpoint&gt; <a class="code hl_function" href="namespaceeonc.html#a0bab3b9bafa3fca028a6c31adac24447">parseServeSpec</a>(<span class="keyword">const</span> std::string &amp;spec) {</div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>  std::vector&lt;ServeEndpoint&gt; endpoints;</div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>  std::istringstream stream(spec);</div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>  std::string token;</div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span> </div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>  <span class="keywordflow">while</span> (std::getline(stream, token, <span class="charliteral">&#39;,&#39;</span>)) {</div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    <span class="comment">// Trim whitespace</span></div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    token.erase(0, token.find_first_not_of(<span class="stringliteral">&quot; \t&quot;</span>));</div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    token.erase(token.find_last_not_of(<span class="stringliteral">&quot; \t&quot;</span>) + 1);</div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    <span class="keywordflow">if</span> (token.empty())</div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>      <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span> </div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    <span class="comment">// Parse &quot;potential:port&quot; or &quot;potential:host:port&quot;</span></div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    <span class="keywordtype">size_t</span> first_colon = token.find(<span class="charliteral">&#39;:&#39;</span>);</div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    <span class="keywordflow">if</span> (first_colon == std::string::npos) {</div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Invalid serve spec &#39;{}&#39;: expected &#39;potential:port&#39;&quot;</span>,</div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>                     token);</div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>      <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    }</div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span> </div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    std::string pot_str = token.substr(0, first_colon);</div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    std::string rest = token.substr(first_colon + 1);</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span> </div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span><span class="comment">// Spec parser: &quot;pot:port,pot:host:port,...&quot;</span></div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
+<div class="foldopen" id="foldopen00235" data-start="{" data-end="}">
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a0bab3b9bafa3fca028a6c31adac24447">  235</a></span>std::vector&lt;ServeEndpoint&gt; <a class="code hl_function" href="namespaceeonc.html#a0bab3b9bafa3fca028a6c31adac24447">parseServeSpec</a>(<span class="keyword">const</span> std::string &amp;spec) {</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>  std::vector&lt;ServeEndpoint&gt; endpoints;</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>  std::istringstream stream(spec);</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>  std::string token;</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span> </div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>  <span class="keywordflow">while</span> (std::getline(stream, token, <span class="charliteral">&#39;,&#39;</span>)) {</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    <span class="comment">// Trim whitespace</span></div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    token.erase(0, token.find_first_not_of(<span class="stringliteral">&quot; \t&quot;</span>));</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    token.erase(token.find_last_not_of(<span class="stringliteral">&quot; \t&quot;</span>) + 1);</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    <span class="keywordflow">if</span> (token.empty())</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>      <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span> </div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    <span class="comment">// Parse &quot;potential:port&quot; or &quot;potential:host:port&quot;</span></div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    <span class="keywordtype">size_t</span> first_colon = token.find(<span class="charliteral">&#39;:&#39;</span>);</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    <span class="keywordflow">if</span> (first_colon == std::string::npos) {</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Invalid serve spec &#39;{}&#39;: expected &#39;potential:port&#39;&quot;</span>,</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>                     token);</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>      <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    }</div>
 <div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span> </div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    <span class="comment">// Trim parts after colon split</span></div>
-<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    pot_str.erase(0, pot_str.find_first_not_of(<span class="stringliteral">&quot; \t&quot;</span>));</div>
-<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    pot_str.erase(pot_str.find_last_not_of(<span class="stringliteral">&quot; \t&quot;</span>) + 1);</div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    rest.erase(0, rest.find_first_not_of(<span class="stringliteral">&quot; \t&quot;</span>));</div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>    rest.erase(rest.find_last_not_of(<span class="stringliteral">&quot; \t&quot;</span>) + 1);</div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span> </div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    <span class="comment">// Lowercase the potential name</span></div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>    std::ranges::transform(pot_str, pot_str.begin(), [](<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> c) {</div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>      return static_cast&lt;char&gt;(std::tolower(c));</div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>    });</div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span> </div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>    <a class="code hl_struct" href="structeonc_1_1ServeEndpoint.html">ServeEndpoint</a> ep;</div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#a21fbca84657edd560b9c2d1946642a53">potential</a> =</div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>        magic_enum::enum_cast&lt;PotType&gt;(pot_str, magic_enum::case_insensitive)</div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>            .value_or(<a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a696b031073e74bf2cb98e5ef201d4aa3">PotType::UNKNOWN</a>);</div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span> </div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>    <span class="keywordflow">if</span> (ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#a21fbca84657edd560b9c2d1946642a53">potential</a> == <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a696b031073e74bf2cb98e5ef201d4aa3">PotType::UNKNOWN</a>) {</div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Unknown potential type &#39;{}&#39;&quot;</span>, pot_str);</div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>      <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    }</div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span> </div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    <span class="keywordtype">size_t</span> second_colon = rest.find(<span class="charliteral">&#39;:&#39;</span>);</div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    <span class="keywordflow">if</span> (second_colon != std::string::npos) {</div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>      <span class="comment">// &quot;host:port&quot; format</span></div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>      ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#ae70904e198b82a6e9d6c2244534844b0">host</a> = rest.substr(0, second_colon);</div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>      ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#ae70904e198b82a6e9d6c2244534844b0">host</a>.erase(0, ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#ae70904e198b82a6e9d6c2244534844b0">host</a>.find_first_not_of(<span class="stringliteral">&quot; \t&quot;</span>));</div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>      ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#ae70904e198b82a6e9d6c2244534844b0">host</a>.erase(ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#ae70904e198b82a6e9d6c2244534844b0">host</a>.find_last_not_of(<span class="stringliteral">&quot; \t&quot;</span>) + 1);</div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>      std::string port_str = rest.substr(second_colon + 1);</div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>      port_str.erase(0, port_str.find_first_not_of(<span class="stringliteral">&quot; \t&quot;</span>));</div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>      port_str.erase(port_str.find_last_not_of(<span class="stringliteral">&quot; \t&quot;</span>) + 1);</div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>      ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#a955e4c2fcc853eae9ae76a6892953c0a">port</a> = <span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(std::stoi(port_str));</div>
-<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>      <span class="comment">// &quot;port&quot; only</span></div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>      ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#ae70904e198b82a6e9d6c2244534844b0">host</a> = <span class="stringliteral">&quot;localhost&quot;</span>;</div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>      ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#a955e4c2fcc853eae9ae76a6892953c0a">port</a> = <span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(std::stoi(rest));</div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>    }</div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span> </div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    QUILL_LOG_INFO(<a class="code hl_function" href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a>(), <span class="stringliteral">&quot;Parsed endpoint: {} on {}:{}&quot;</span>,</div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>                   std::string(magic_enum::enum_name(ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#a21fbca84657edd560b9c2d1946642a53">potential</a>)), ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#ae70904e198b82a6e9d6c2244534844b0">host</a>,</div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>                   ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#a955e4c2fcc853eae9ae76a6892953c0a">port</a>);</div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>    endpoints.push_back(ep);</div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>  }</div>
-<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span> </div>
-<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>  <span class="keywordflow">return</span> endpoints;</div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>}</div>
-</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    std::string pot_str = token.substr(0, first_colon);</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    std::string rest = token.substr(first_colon + 1);</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span> </div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    <span class="comment">// Trim parts after colon split</span></div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>    pot_str.erase(0, pot_str.find_first_not_of(<span class="stringliteral">&quot; \t&quot;</span>));</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>    pot_str.erase(pot_str.find_last_not_of(<span class="stringliteral">&quot; \t&quot;</span>) + 1);</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    rest.erase(0, rest.find_first_not_of(<span class="stringliteral">&quot; \t&quot;</span>));</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>    rest.erase(rest.find_last_not_of(<span class="stringliteral">&quot; \t&quot;</span>) + 1);</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span> </div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>    <span class="comment">// Lowercase the potential name</span></div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>    std::ranges::transform(pot_str, pot_str.begin(), [](<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> c) {</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>      return static_cast&lt;char&gt;(std::tolower(c));</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    });</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span> </div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>    <a class="code hl_struct" href="structeonc_1_1ServeEndpoint.html">ServeEndpoint</a> ep;</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>    ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#a21fbca84657edd560b9c2d1946642a53">potential</a> =</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>        magic_enum::enum_cast&lt;PotType&gt;(pot_str, magic_enum::case_insensitive)</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>            .value_or(<a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a696b031073e74bf2cb98e5ef201d4aa3">PotType::UNKNOWN</a>);</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span> </div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    <span class="keywordflow">if</span> (ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#a21fbca84657edd560b9c2d1946642a53">potential</a> == <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a696b031073e74bf2cb98e5ef201d4aa3">PotType::UNKNOWN</a>) {</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Unknown potential type &#39;{}&#39;&quot;</span>, pot_str);</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>      <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    }</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span> </div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>    <span class="keywordtype">size_t</span> second_colon = rest.find(<span class="charliteral">&#39;:&#39;</span>);</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>    <span class="keywordflow">if</span> (second_colon != std::string::npos) {</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>      <span class="comment">// &quot;host:port&quot; format</span></div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>      ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#ae70904e198b82a6e9d6c2244534844b0">host</a> = rest.substr(0, second_colon);</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>      ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#ae70904e198b82a6e9d6c2244534844b0">host</a>.erase(0, ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#ae70904e198b82a6e9d6c2244534844b0">host</a>.find_first_not_of(<span class="stringliteral">&quot; \t&quot;</span>));</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>      ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#ae70904e198b82a6e9d6c2244534844b0">host</a>.erase(ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#ae70904e198b82a6e9d6c2244534844b0">host</a>.find_last_not_of(<span class="stringliteral">&quot; \t&quot;</span>) + 1);</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>      std::string port_str = rest.substr(second_colon + 1);</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>      port_str.erase(0, port_str.find_first_not_of(<span class="stringliteral">&quot; \t&quot;</span>));</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>      port_str.erase(port_str.find_last_not_of(<span class="stringliteral">&quot; \t&quot;</span>) + 1);</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>      ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#a955e4c2fcc853eae9ae76a6892953c0a">port</a> = <span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(std::stoi(port_str));</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>      <span class="comment">// &quot;port&quot; only</span></div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>      ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#ae70904e198b82a6e9d6c2244534844b0">host</a> = <span class="stringliteral">&quot;localhost&quot;</span>;</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>      ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#a955e4c2fcc853eae9ae76a6892953c0a">port</a> = <span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(std::stoi(rest));</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>    }</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span> </div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>    QUILL_LOG_INFO(<a class="code hl_function" href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a>(), <span class="stringliteral">&quot;Parsed endpoint: {} on {}:{}&quot;</span>,</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>                   std::string(magic_enum::enum_name(ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#a21fbca84657edd560b9c2d1946642a53">potential</a>)), ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#ae70904e198b82a6e9d6c2244534844b0">host</a>,</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>                   ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#a955e4c2fcc853eae9ae76a6892953c0a">port</a>);</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>    endpoints.push_back(ep);</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>  }</div>
 <div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span> </div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>} <span class="comment">// namespace eonc</span></div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>  <span class="keywordflow">return</span> endpoints;</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>}</div>
+</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span> </div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>} <span class="comment">// namespace eonc</span></div>
 <div class="ttc" id="aEonLogger_8h_html"><div class="ttname"><a href="EonLogger_8h.html">EonLogger.h</a></div></div>
-<div class="ttc" id="aEonLogger_8h_html_a4cf9b473cf6a1d850b3725fca6805f86"><div class="ttname"><a href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a></div><div class="ttdeci">#define EONC_LOG_ERROR(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00261">EonLogger.h:261</a></div></div>
-<div class="ttc" id="aEonLogger_8h_html_afba240899b90f3996875577cc095dc00"><div class="ttname"><a href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a></div><div class="ttdeci">#define EONC_LOG_INFO(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00249">EonLogger.h:249</a></div></div>
+<div class="ttc" id="aEonLogger_8h_html_a4cf9b473cf6a1d850b3725fca6805f86"><div class="ttname"><a href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a></div><div class="ttdeci">#define EONC_LOG_ERROR(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00323">EonLogger.h:323</a></div></div>
+<div class="ttc" id="aEonLogger_8h_html_afba240899b90f3996875577cc095dc00"><div class="ttname"><a href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a></div><div class="ttdeci">#define EONC_LOG_INFO(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00311">EonLogger.h:311</a></div></div>
 <div class="ttc" id="aPotential_8h_html"><div class="ttname"><a href="Potential_8h.html">Potential.h</a></div></div>
 <div class="ttc" id="aServeMode_8h_html"><div class="ttname"><a href="ServeMode_8h.html">ServeMode.h</a></div></div>
 <div class="ttc" id="aServeRpcServer_8h_html"><div class="ttname"><a href="ServeRpcServer_8h.html">ServeRpcServer.h</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Parameters_html"><div class="ttname"><a href="classeonc_1_1Parameters.html">eonc::Parameters</a></div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00035">Parameters.h:35</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Parameters_html_a55e84b61b311cb38897a55eb0d2b39ae"><div class="ttname"><a href="classeonc_1_1Parameters.html#a55e84b61b311cb38897a55eb0d2b39ae">eonc::Parameters::potential_options</a></div><div class="ttdeci">const potential_options_t &amp; potential_options() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00079">ParametersAccess.cpp:79</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Parameters_html_aab6831465cd702f19496c30f990a6374"><div class="ttname"><a href="classeonc_1_1Parameters.html#aab6831465cd702f19496c30f990a6374">eonc::Parameters::serve_options</a></div><div class="ttdeci">const serve_options_t &amp; serve_options() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00230">ParametersAccess.cpp:230</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1helpers_html_ad3c8668c89bd3ffae898307b0890f1ff"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">eonc::helpers::makePotential</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; makePotential(const Parameters &amp;params)</div><div class="ttdef"><b>Definition</b> <a href="Potential_8cpp_source.html#l00246">Potential.cpp:246</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1log_html_a4e7c8b5e4189cf657384f1c4bbf14dab"><div class="ttname"><a href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a></div><div class="ttdeci">quill::Logger * get() noexcept</div><div class="ttdoc">Get or create the default &quot;combi&quot; logger.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00044">EonLogger.h:44</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_a5f1e0c7a3fbf2324d5e6c2b84c0ddb86"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a5f1e0c7a3fbf2324d5e6c2b84c0ddb86">eonc::helpers::makePotential</a></div><div class="ttdeci">std::unique_ptr&lt; Potential &gt; makePotential(const Parameters &amp;params)</div><div class="ttdoc">Exclusive ownership.</div><div class="ttdef"><b>Definition</b> <a href="Potential_8cpp_source.html#l00246">Potential.cpp:246</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_a67ab5cb7bee60443753fcae864fd27e4"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a67ab5cb7bee60443753fcae864fd27e4">eonc::helpers::sharePotential</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; sharePotential(std::unique_ptr&lt; Potential &gt; pot)</div><div class="ttdoc">Multi-owner boundary: one instance observed by several Matters, images, or a binding.</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00228">Potential.h:228</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1log_html_a4e7c8b5e4189cf657384f1c4bbf14dab"><div class="ttname"><a href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a></div><div class="ttdeci">quill::Logger * get() noexcept</div><div class="ttdoc">Get or create the default &quot;combi&quot; logger.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00106">EonLogger.h:106</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1pot_html"><div class="ttname"><a href="namespaceeonc_1_1pot.html">eonc::pot</a></div><div class="ttdef"><b>Definition</b> <a href="ExternalCommand_8h_source.html#l00022">ExternalCommand.h:22</a></div></div>
 <div class="ttc" id="anamespaceeonc_html"><div class="ttname"><a href="namespaceeonc.html">eonc</a></div><div class="ttdoc">RAII resource manager for the ARTn C library with global synchronization.</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00023">ARTnSaddleSearch.cpp:23</a></div></div>
-<div class="ttc" id="anamespaceeonc_html_a0bab3b9bafa3fca028a6c31adac24447"><div class="ttname"><a href="namespaceeonc.html#a0bab3b9bafa3fca028a6c31adac24447">eonc::parseServeSpec</a></div><div class="ttdeci">std::vector&lt; ServeEndpoint &gt; parseServeSpec(const std::string &amp;spec)</div><div class="ttdoc">Parse a serve configuration string into endpoints.</div><div class="ttdef"><b>Definition</b> <a href="#l00232">ServeMode.cpp:232</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a0bab3b9bafa3fca028a6c31adac24447"><div class="ttname"><a href="namespaceeonc.html#a0bab3b9bafa3fca028a6c31adac24447">eonc::parseServeSpec</a></div><div class="ttdeci">std::vector&lt; ServeEndpoint &gt; parseServeSpec(const std::string &amp;spec)</div><div class="ttdoc">Parse a serve configuration string into endpoints.</div><div class="ttdef"><b>Definition</b> <a href="#l00235">ServeMode.cpp:235</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a696b031073e74bf2cb98e5ef201d4aa3"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a696b031073e74bf2cb98e5ef201d4aa3">eonc::PotType::UNKNOWN</a></div><div class="ttdeci">@ UNKNOWN</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00038">BaseStructures.h:38</a></div></div>
-<div class="ttc" id="anamespaceeonc_html_a2d44293d95714634795621498031536d"><div class="ttname"><a href="namespaceeonc.html#a2d44293d95714634795621498031536d">eonc::serveGateway</a></div><div class="ttdeci">void serveGateway(const Parameters &amp;params, const std::string &amp;host, uint16_t port, size_t pool_size)</div><div class="ttdoc">Start a gateway server backed by a pool of potential instances.</div><div class="ttdef"><b>Definition</b> <a href="#l00170">ServeMode.cpp:170</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a2d44293d95714634795621498031536d"><div class="ttname"><a href="namespaceeonc.html#a2d44293d95714634795621498031536d">eonc::serveGateway</a></div><div class="ttdeci">void serveGateway(const Parameters &amp;params, const std::string &amp;host, uint16_t port, size_t pool_size)</div><div class="ttdoc">Start a gateway server backed by a pool of potential instances.</div><div class="ttdef"><b>Definition</b> <a href="#l00172">ServeMode.cpp:172</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_a41eef310a4da8b94a072259e75816c36"><div class="ttname"><a href="namespaceeonc.html#a41eef310a4da8b94a072259e75816c36">eonc::serveMode</a></div><div class="ttdeci">void serveMode(const Parameters &amp;params, const std::string &amp;host, uint16_t port)</div><div class="ttdoc">Start a single rgpot-compatible Cap&#39;n Proto RPC server.</div><div class="ttdef"><b>Definition</b> <a href="#l00058">ServeMode.cpp:58</a></div></div>
-<div class="ttc" id="anamespaceeonc_html_a5e925ddd7fb3c6c11346cf97429c5c27"><div class="ttname"><a href="namespaceeonc.html#a5e925ddd7fb3c6c11346cf97429c5c27">eonc::serveFromConfig</a></div><div class="ttdeci">void serveFromConfig(const Parameters &amp;params)</div><div class="ttdoc">Start serve mode from config-file parameters.</div><div class="ttdef"><b>Definition</b> <a href="#l00203">ServeMode.cpp:203</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a5e925ddd7fb3c6c11346cf97429c5c27"><div class="ttname"><a href="namespaceeonc.html#a5e925ddd7fb3c6c11346cf97429c5c27">eonc::serveFromConfig</a></div><div class="ttdeci">void serveFromConfig(const Parameters &amp;params)</div><div class="ttdoc">Start serve mode from config-file parameters.</div><div class="ttdef"><b>Definition</b> <a href="#l00206">ServeMode.cpp:206</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_ab88f72c22b1653b9d6d3068512d0aa6f"><div class="ttname"><a href="namespaceeonc.html#ab88f72c22b1653b9d6d3068512d0aa6f">eonc::ForceCallback</a></div><div class="ttdeci">std::function&lt; void(long nAtoms, const double *positions, const int *atomicNrs, double *forces, double *energy, const double *box)&gt; ForceCallback</div><div class="ttdoc">Callback type for potential energy/force evaluation.</div><div class="ttdef"><b>Definition</b> <a href="ServeRpcServer_8h_source.html#l00036">ServeRpcServer.h:36</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_abde34b2d6455f233f19867a3e220b56c"><div class="ttname"><a href="namespaceeonc.html#abde34b2d6455f233f19867a3e220b56c">eonc::startPooledRpcServer</a></div><div class="ttdeci">void startPooledRpcServer(std::vector&lt; ForceCallback &gt; pool, const std::string &amp;host, uint16_t port)</div><div class="ttdoc">Start a blocking Cap&#39;n Proto RPC server backed by a pool of force callbacks dispatched round-robin.</div><div class="ttdef"><b>Definition</b> <a href="ServeRpcServer_8cpp_source.html#l00187">ServeRpcServer.cpp:187</a></div></div>
-<div class="ttc" id="anamespaceeonc_html_abdfc4b8250c5a7d87d4eaa5030194b44"><div class="ttname"><a href="namespaceeonc.html#abdfc4b8250c5a7d87d4eaa5030194b44">eonc::serveMultiple</a></div><div class="ttdeci">void serveMultiple(const std::vector&lt; ServeEndpoint &gt; &amp;endpoints, const Parameters &amp;base_params)</div><div class="ttdoc">Serve multiple potentials concurrently on different ports.</div><div class="ttdef"><b>Definition</b> <a href="#l00081">ServeMode.cpp:81</a></div></div>
-<div class="ttc" id="anamespaceeonc_html_addbe99ddcc2a13a67797e7a9f0625197"><div class="ttname"><a href="namespaceeonc.html#addbe99ddcc2a13a67797e7a9f0625197">eonc::serveReplicated</a></div><div class="ttdeci">void serveReplicated(const Parameters &amp;params, const std::string &amp;host, uint16_t base_port, size_t replicas)</div><div class="ttdoc">Serve N replicas of the same potential across sequential ports.</div><div class="ttdef"><b>Definition</b> <a href="#l00136">ServeMode.cpp:136</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_abdfc4b8250c5a7d87d4eaa5030194b44"><div class="ttname"><a href="namespaceeonc.html#abdfc4b8250c5a7d87d4eaa5030194b44">eonc::serveMultiple</a></div><div class="ttdeci">void serveMultiple(const std::vector&lt; ServeEndpoint &gt; &amp;endpoints, const Parameters &amp;base_params)</div><div class="ttdoc">Serve multiple potentials concurrently on different ports.</div><div class="ttdef"><b>Definition</b> <a href="#l00082">ServeMode.cpp:82</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_addbe99ddcc2a13a67797e7a9f0625197"><div class="ttname"><a href="namespaceeonc.html#addbe99ddcc2a13a67797e7a9f0625197">eonc::serveReplicated</a></div><div class="ttdeci">void serveReplicated(const Parameters &amp;params, const std::string &amp;host, uint16_t base_port, size_t replicas)</div><div class="ttdoc">Serve N replicas of the same potential across sequential ports.</div><div class="ttdef"><b>Definition</b> <a href="#l00138">ServeMode.cpp:138</a></div></div>
 <div class="ttc" id="anamespaceeonc_html_ae73698d7590f300d12636be26b8e0ea7"><div class="ttname"><a href="namespaceeonc.html#ae73698d7590f300d12636be26b8e0ea7">eonc::startRpcServer</a></div><div class="ttdeci">void startRpcServer(ForceCallback callback, const std::string &amp;host, uint16_t port)</div><div class="ttdoc">Start a blocking Cap&#39;n Proto RPC server using a force callback.</div><div class="ttdef"><b>Definition</b> <a href="ServeRpcServer_8cpp_source.html#l00105">ServeRpcServer.cpp:105</a></div></div>
 <div class="ttc" id="astructeonc_1_1ParametersLoadAccess_html_ae8e06ef73a4c38f90ef029f06c32d8ab"><div class="ttname"><a href="structeonc_1_1ParametersLoadAccess.html#ae8e06ef73a4c38f90ef029f06c32d8ab">eonc::ParametersLoadAccess::potential_options</a></div><div class="ttdeci">static potential_options_t &amp; potential_options(Parameters &amp;p)</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00282">ParametersAccess.cpp:282</a></div></div>
 <div class="ttc" id="astructeonc_1_1ServeEndpoint_html"><div class="ttname"><a href="structeonc_1_1ServeEndpoint.html">eonc::ServeEndpoint</a></div><div class="ttdoc">Configuration for a single serve endpoint.</div><div class="ttdef"><b>Definition</b> <a href="ServeMode_8h_source.html#l00027">ServeMode.h:27</a></div></div>

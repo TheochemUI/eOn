@@ -11,5 +11,6 @@ var searchData=
   ['gpr_5fdimer_5foptions_5ft_8',['gpr_dimer_options_t',['../structeonc_1_1gpr__dimer__options__t.html',1,'eonc']]],
   ['gpr_5fparams_5ft_9',['gpr_params_t',['../structeonc_1_1gpr__dimer__options__t_1_1gpr__params__t.html',1,'eonc::gpr_dimer_options_t']]],
   ['gprpotential_10',['GPRPotential',['../classGPRPotential.html',1,'']]],
-  ['gpsurrogatejob_11',['GPSurrogateJob',['../classeonc_1_1GPSurrogateJob.html',1,'eonc']]]
+  ['gpsurrogatejob_11',['GPSurrogateJob',['../classeonc_1_1GPSurrogateJob.html',1,'eonc']]],
+  ['groupschedule_12',['GroupSchedule',['../classeonc_1_1GroupSchedule.html',1,'eonc']]]
 ];
