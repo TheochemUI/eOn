@@ -2909,3 +2909,29 @@ TEST_CASE("Bead counts at which the Al-like double well has an index-1 ring",
     }
   }
 }
+
+// A secant pair whose gradient difference points against the step reads as
+// negative curvature: on the identity block, dq = e1 and dg = -e1 make the
+// plain Bofill update negative along e1. A block whose exact version had no
+// negative curvature keeps none, with the secant's magnitude.
+TEST_CASE("The bead-block update keeps the inertia of the last exact block",
+          "[Tunneling][Instanton]") {
+  VectorXd dq = VectorXd::Zero(3);
+  dq(0) = 1e-3;
+  const VectorXd dg = -dq;
+  MatrixXd plain = MatrixXd::Identity(3, 3);
+  bofillKeepingInertia(plain, dq, dg, -1);
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> ep(plain);
+  REQUIRE(ep.eigenvalues()(0) < 0.0);
+  MatrixXd kept = MatrixXd::Identity(3, 3);
+  bofillKeepingInertia(kept, dq, dg, 0);
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> ek(kept);
+  CAPTURE(ek.eigenvalues().transpose());
+  REQUIRE(ek.eigenvalues()(0) > 0.0);
+  REQUIRE_THAT(ek.eigenvalues()(0),
+               WithinRel(std::abs(ep.eigenvalues()(0)), 1e-12));
+  // One allowed negative keeps the plain update.
+  MatrixXd one = MatrixXd::Identity(3, 3);
+  bofillKeepingInertia(one, dq, dg, 1);
+  REQUIRE((one - plain).norm() < 1e-14);
+}

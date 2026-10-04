@@ -152,10 +152,10 @@ public:
   /// softest vibration, not whether the cell is periodic (a cluster in a box
   /// is periodic and still free to rotate).
   void markRotationZeroModes(const MatrixXd &hess, const MatrixXd &generators,
-                             std::array<bool, 3> &keep,
+                             double fraction, std::array<bool, 3> &keep,
                              std::array<double, 3> &residual) const {
     const tunneling::RotationZeroModes z =
-        tunneling::rotationZeroModes(hess, generators);
+        tunneling::rotationZeroModes(hess, generators, fraction);
     keep = z.zero;
     residual = z.residual;
   }
@@ -551,7 +551,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   EONC_LOG_INFO("[Instanton] rotation curvatures over the softest vibration "
                 "{:.3g}, {:.3g}, {:.3g} (zero modes at or below {:.3g})",
                 rotationResidual[0], rotationResidual[1], rotationResidual[2],
-                tunneling::kRotationZeroFraction);
+                o.rotation_zero_fraction);
 
   std::vector<std::pair<std::string, double>> extras{
       {"instanton_crossover_K", tc},
@@ -818,6 +818,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     ro.frictionExplicit = o.friction == "explicit";
     ro.frictionEta = o.friction_eta;
     ro.frictionEtaBeads = o.friction_eta_beads;
+    ro.collapseFraction = o.collapse_fraction;
     if (static_cast<long>(mw.sqrtMasses().size()) == reactant.numberOfAtoms()) {
       ro.rigidSqrtMasses = mw.sqrtMasses();
       ro.rigidReference = mw.referenceFree();
@@ -1202,8 +1203,10 @@ std::vector<std::string> InstantonJob::run(void) {
       throw std::runtime_error("instanton: a bead Hessian failed");
     }
     if (!rotationsKnown) {
-      mw.markRotationZeroModes(out, mw.rigidGenerators(m), rotationZero,
-                               rotationResidual);
+      mw.markRotationZeroModes(
+          out, mw.rigidGenerators(m),
+          params.instanton_options().rotation_zero_fraction, rotationZero,
+          rotationResidual);
       rotationsKnown = true;
     }
     // A finite-difference Hessian of a free structure has small nonzero

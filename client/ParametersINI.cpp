@@ -1862,6 +1862,18 @@ int load_ini(const INIReader &ini, Parameters &params) {
         start = comma + 1;
       }
     }
+    o.collapse_fraction =
+        ini.GetReal("Instanton", "collapse_fraction", o.collapse_fraction);
+    if (!(o.collapse_fraction >= 0.0 && o.collapse_fraction < 1.0)) {
+      throw std::invalid_argument(
+          "[Instanton] collapse_fraction must be in [0, 1)");
+    }
+    o.rotation_zero_fraction = ini.GetReal(
+        "Instanton", "rotation_zero_fraction", o.rotation_zero_fraction);
+    if (!(o.rotation_zero_fraction > 0.0)) {
+      throw std::invalid_argument(
+          "[Instanton] rotation_zero_fraction must be positive");
+    }
     o.bead_ladder = ini.GetBoolean("Instanton", "bead_ladder", o.bead_ladder);
     o.hessian_final = ini.Get("Instanton", "hessian_final", o.hessian_final);
     o.springs = toLowerCase(ini.Get("Instanton", "springs", o.springs));

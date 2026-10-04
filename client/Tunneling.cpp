@@ -1771,6 +1771,54 @@ void bofillUpdate(MatrixXd &h, const VectorXd &dq, const VectorXd &dg) {
   h = (0.5 * (h + h.transpose())).eval();
 }
 
+// Eigenvalues below -1e-6 of the largest |lambda|. Rigid-body directions
+// sit at zero to round-off, and their sign carries no curvature; counting
+// it would make the allowed count, and with it the update below, depend on
+// noise in the last digits of the geometry.
+long clearlyNegative(const VectorXd &lam) {
+  if (lam.size() == 0) {
+    return 0;
+  }
+  const double span = lam.cwiseAbs().maxCoeff();
+  return (lam.array() < -1e-6 * span).count();
+}
+
+long negativeEigenvalues(const MatrixXd &h) {
+  const ColMajorXd sym = 0.5 * (h + h.transpose());
+  const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(sym,
+                                                     Eigen::EigenvaluesOnly);
+  return clearlyNegative(es.eigenvalues());
+}
+
+// A Bofill update that keeps the block's count of negative curvatures at
+// `allowed`, the count the last exact (finite-difference) block had. A
+// secant pair carries curvature along one direction only; on a block of
+// many coordinates with noisy gradient differences it can open new
+// negative directions the surface does not have, and those then steer the
+// ring's index-1 step. Extra negative eigenvalues, the least negative
+// first, are mirrored to |lambda|. A negative `allowed` leaves the update
+// alone.
+void inertiaKeepingUpdate(MatrixXd &h, const VectorXd &dq, const VectorXd &dg,
+                          long allowed) {
+  bofillUpdate(h, dq, dg);
+  if (allowed < 0) {
+    return;
+  }
+  const ColMajorXd sym = 0.5 * (h + h.transpose());
+  const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(sym);
+  const VectorXd lam = es.eigenvalues();
+  const long negative = clearlyNegative(lam);
+  if (negative <= allowed) {
+    return;
+  }
+  VectorXd fixed = lam;
+  // Ascending order: indices allowed .. negative - 1 are the extra ones.
+  for (long i = allowed; i < negative; ++i) {
+    fixed(i) = std::abs(lam(i));
+  }
+  h = es.eigenvectors() * fixed.asDiagonal() * es.eigenvectors().transpose();
+}
+
 VectorXd packBeads(const std::vector<VectorXd> &x) {
   const long f = x.front().size();
   VectorXd flat(static_cast<long>(x.size()) * f);
@@ -2175,15 +2223,12 @@ struct NewtonOut {
   // Half ring, stationary, and not index 1. The odd-mode probe decides
   // whether the search continues on the whole ring.
   bool stalledHalf = false;
-  // The beads fell together: B_N dropped below kCollapse of the starting
-  // ring, so the search left the bounce for a stationary point of V.
+  // The beads fell together: B_N dropped below collapseFraction of the
+  // starting ring, so the search left the bounce for a stationary point of
+  // V.
   bool collapsed = false;
 };
 
-/// A ring whose B_N falls below this fraction of its starting value has
-/// collapsed onto one point; no instanton is that much shorter than its
-/// seed at the same temperature.
-constexpr double kCollapse = 1e-4;
 
 // Index-1 Newton on one ring. `x` holds N beads. A half ring optimises beads
 // 0..N/2 and mirrors them. Trust is the largest bead displacement.
@@ -2254,6 +2299,17 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       physical[j] = fdPhysicalHessian(x[j], potential, eps);
     }
   }
+  // Negative curvatures each bead block may carry between exact rebuilds.
+  std::vector<long> allowedNegatives(x.size(), -1);
+  auto recountNegatives = [&]() {
+    if (f == 1) {
+      return;
+    }
+    for (size_t j = 0; j < x.size(); ++j) {
+      allowedNegatives[j] = negativeEigenvalues(physical[j]);
+    }
+  };
+  recountNegatives();
 
   struct Obj {
     std::vector<VectorXd> grad;
@@ -2633,7 +2689,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   for (long it = 0; it < options.maxIterations; ++it) {
     ++entries;
     const double length = ringLength(x);
-    if (startLength > 0.0 && length < kCollapse * startLength) {
+    if (startLength > 0.0 && length < options.collapseFraction * startLength) {
       collapsed = true;
       break;
     }
@@ -2668,6 +2724,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
         for (size_t j = 0; j < x.size(); ++j) {
           physical[j] = fdPhysicalHessian(x[j], potential, eps);
         }
+        recountNegatives();
         exactAtX = true;
         EONC_LOG_DEBUG("[Instanton] Newton {}: {} negative curvatures in the "
                        "Bofill blocks, rebuilt from finite differences",
@@ -2754,8 +2811,9 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
         return false;
       }
       for (size_t k = 0; k < x.size(); ++k) {
-        bofillUpdate(physical[k], trial[k] - x[k],
-                     next.gradPot[k] - cur.gradPot[k]);
+        inertiaKeepingUpdate(physical[k], trial[k] - x[k],
+                             next.gradPot[k] - cur.gradPot[k],
+                             allowedNegatives[k]);
       }
       x = std::move(trial);
       cur = std::move(next);
@@ -2778,6 +2836,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       for (size_t j = 0; j < x.size(); ++j) {
         physical[j] = fdPhysicalHessian(x[j], potential, eps);
       }
+      recountNegatives();
       exactAtX = true;
       continue;
     }
@@ -2845,6 +2904,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
         for (size_t j = 0; j < x.size(); ++j) {
           physical[j] = fdPhysicalHessian(x[j], potential, eps);
         }
+        recountNegatives();
         trust = options.maxStep;
       }
     }
@@ -4254,7 +4314,8 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
 }
 
 RotationZeroModes rotationZeroModes(const MatrixXd &hess,
-                                    const MatrixXd &generators) {
+                                    const MatrixXd &generators,
+                                    double fraction) {
   RotationZeroModes out;
   const long n = hess.rows();
   if (hess.cols() != n || generators.rows() != n || generators.cols() != 6) {
@@ -4284,13 +4345,18 @@ RotationZeroModes rotationZeroModes(const MatrixXd &hess,
     if (out.softestVibration > 0.0) {
       out.residual[static_cast<size_t>(c)] = rq / out.softestVibration;
       out.zero[static_cast<size_t>(c)] =
-          std::abs(rq) <= kRotationZeroFraction * out.softestVibration;
+          std::abs(rq) <= fraction * out.softestVibration;
     } else {
       out.residual[static_cast<size_t>(c)] =
           std::numeric_limits<double>::infinity();
     }
   }
   return out;
+}
+
+void bofillKeepingInertia(MatrixXd &h, const VectorXd &dq, const VectorXd &dg,
+                          long allowedNegatives) {
+  inertiaKeepingUpdate(h, dq, dg, allowedNegatives);
 }
 
 RingChannel ringChannel(const std::vector<VectorXd> &beads,

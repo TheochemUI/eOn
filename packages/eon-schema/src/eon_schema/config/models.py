@@ -2761,6 +2761,25 @@ class InstantonConfig(BaseModel):
             " Values stay fixed while differentiating the quadratic bead operator."
         ),
     )
+    collapse_fraction: float = Field(
+        default=1e-4,
+        ge=0.0,
+        lt=1.0,
+        description=(
+            "Mode rate: the search stops, with instanton_collapsed = 1, when"
+            " B_N falls below this fraction of the starting ring's. 0 never"
+            " stops."
+        ),
+    )
+    rotation_zero_fraction: float = Field(
+        default=0.1,
+        gt=0.0,
+        description=(
+            "A reactant rotation is a zero mode when its curvature"
+            " r^T H r / r^T r is at most this fraction of the softest"
+            " vibration."
+        ),
+    )
     bead_ladder: bool = Field(
         default=False,
         description=(

@@ -1298,6 +1298,18 @@ Instanton:
             kind: string
             default: ""
 
+        # Mode rate: the search stops, with instanton_collapsed = 1, when B_N
+        # falls below this fraction of the starting ring's. 0 never stops.
+        collapse_fraction:
+            kind: float
+            default: 0.0001
+
+        # A reactant rotation is a zero mode when its curvature r^T H r /
+        # r^T r is at most this fraction of the softest vibration.
+        rotation_zero_fraction:
+            kind: float
+            default: 0.1
+
         # Start at a quarter of the beads and double up to the requested
         # count. Off searches the requested count directly.
         bead_ladder:

@@ -280,9 +280,16 @@ floor. Known rigid motions enter an explicit quotient and solve
 stabilization. A small saddle curvature alone does not identify a rigid
 motion and is retained in the physical ring inertia. `initial_hessians = finite_difference` takes
 {math}`2f` gradient calls per
-bead first. The rate uses the bead Hessians chosen by `hessian_final`, not
+bead first. Between rebuilds each block keeps the number of negative
+curvatures its last finite-difference version had: a Bofill update that
+opens another one has its sign flipped, and when the
+ring model still shows more negative curvatures than the last exact
+blocks, the blocks are rebuilt (at most four times). The search stops
+when {math}`B_N` falls below `collapse_fraction` (default 1e-4) of the
+starting ring's, since the beads have then fallen onto one point; the
+job writes `instanton_collapsed = 1` and no rate. The rate uses the bead Hessians chosen by `hessian_final`, not
 that update. On the one-dimensional Eckart barrier the search converges
-in 4 to 7 steps from either seed.
+in 9 to 12 steps from the cosine seed and in 3 from a seed on the path.
 
 An unexpected negative-mode count can also trigger a complete physical
 Hessian refresh during optimization, including at iteration zero.
@@ -362,7 +369,8 @@ With no atom fixed, both the reactant and the instanton omit the three
 translations. A
 rotation is omitted when it is a zero mode of the reactant Hessian, which a
 free cluster has and a crystal does not: when its curvature r^T H r / r^T r
-is at most 0.1 of the softest vibration, the lowest eigenvalue of the
+is at most `rotation_zero_fraction` (default 0.1) of the softest
+vibration, the lowest eigenvalue of the
 Hessian once the translations and rotations are projected out. Both sides
 scale with the Hessian and neither grows with the atom count. A cluster in a large periodic cell
 is told apart by that Hessian, not by the periodic flag. The springs along
@@ -391,7 +399,7 @@ the change in the moments of inertia along the ring.
 | `instanton_zero_mode` | the eigenvalue left out |
 | `instanton_s_min`, `instanton_s_max` | the turning points along the saddle's unstable mode, amu^0.5 Angstrom from the saddle |
 | `instanton_chord_overlap` | cosine of the angle between the chord joining the turning points and the unstable mode |
-| `instanton_collapsed` | 1 when the search stopped because the beads fell onto one point (B_N below 1e-4 of the starting ring's) |
+| `instanton_collapsed` | 1 when the search stopped because the beads fell onto one point (B_N below `collapse_fraction` of the starting ring's) |
 | `instanton_crossing_offset` | largest distance from the saddle, across the mode, at which the ring crosses the dividing plane |
 
 A converged ring is given a rate only when it belongs to the seeded saddle:
