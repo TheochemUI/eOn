@@ -184,6 +184,15 @@ out the cyclic zero mode and the rigid translations and rotations.
 {math}`Z_r` is the harmonic ring-polymer partition function of the reactant.
 {math}`U_N` is the ring-polymer potential, the bead potentials plus the springs.
 
+A ring of up to 4096 coordinates ({math}`N f`) uses the dense ring
+Hessian, with the cycle and the rigid modes lifted. Its eigenvalues give
+{math}`\det'`, the count of negative modes and the lowest eigenvalue.
+The block-chain determinant must agree with them; otherwise the log says
+so and that temperature gets no rate. A larger ring takes the determinant
+and the inertia from the block chain, and the lowest eigenvalue from
+Lanczos. A 16-bead ring of a 254-atom cell with every atom free has
+12192 coordinates.
+
 The crossover temperature is {math}`T_c = \hbar \omega_b / (2\pi k_B)`, with
 {math}`\omega_b` the imaginary frequency at the saddle. At or above {math}`T_c`
 the ring collapses onto the saddle. Above {math}`T_c` the rate is the
@@ -270,13 +279,13 @@ tridiagonal in the beads, and every solve, determinant and inertia count
 goes through a block LU of the open chain plus a low-rank Woodbury
 correction for the closure, the cycle, the rigid modes and each
 eigenvector-following flip: {math}`O(N f^3)` for {math}`f` degrees of
-freedom, and the {math}`Nf \times Nf` matrix is never formed, so the same
+freedom, and the search never forms the {math}`Nf \times Nf` matrix, so the same
 step serves a seven-atom cluster and a 254-atom cell. The lowest ring
 modes come from Lanczos on matrix-vector products. The bead curvature
 blocks start from the saddle Hessian (`initial_hessians = saddle`, no force
-calls) and follow accepted moves with a Bofill update, rebuilt from
-finite differences up to three times when the trust radius reaches its
-floor. Known rigid motions enter an explicit quotient and solve
+calls) and follow accepted moves with a Bofill update. Finite differences
+rebuild them up to three times when the trust radius reaches its floor.
+Known rigid motions enter an explicit quotient and solve
 stabilization. A small saddle curvature alone does not identify a rigid
 motion and is retained in the physical ring inertia. `initial_hessians = finite_difference` takes
 {math}`2f` gradient calls per
@@ -401,6 +410,12 @@ the change in the moments of inertia along the ring.
 | `instanton_chord_overlap` | cosine of the angle between the chord joining the turning points and the unstable mode |
 | `instanton_collapsed` | 1 when the search stopped because the beads fell onto one point (B_N below `collapse_fraction` of the starting ring's) |
 | `instanton_crossing_offset` | largest distance from the saddle, across the mode, at which the ring crosses the dividing plane |
+
+A search stops at once when its beads fall onto one point, with
+{math}`B_N` below `collapse_fraction` of the starting ring's. That ring gets no rate.
+`results.dat` records `instanton_collapsed` 1 and `termination_reason` 1
+(`FAIL_MAX_ITERATIONS`). The log names where along the unstable mode the
+beads fell.
 
 A converged ring is given a rate only when it belongs to the seeded saddle:
 it straddles the plane through the saddle normal to the unstable mode,

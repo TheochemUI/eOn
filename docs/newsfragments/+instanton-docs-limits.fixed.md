@@ -1,0 +1,1 @@
+The instanton page states three limits. The rate reads the dense ring spectrum up to 4096 ring coordinates. Finite differences rebuild drifting Bofill bead blocks at most four times. A collapsed search writes `instanton_collapsed` 1 and `termination_reason` 1, and no rate. The page no longer says the rate never forms the ring Hessian.
