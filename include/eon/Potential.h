@@ -104,6 +104,14 @@ public:
 
   [[nodiscard]] PotType getType() const { return this->ptype; }
 
+  /// Host-visible surface generation. A learning host increments this on
+  /// every refit; Matter keys its energy and variance caches on the value
+  /// so identical positions after a refit cannot return a stale energy or
+  /// variance. Static pots stay 0.
+  [[nodiscard]] virtual unsigned long long surfaceEpoch() const noexcept {
+    return 0;
+  }
+
   /// Finite interaction range in position length units.
   /// 0 means the potential is not finite-cutoff; the FD Hessian then
   /// stays one column per coordinate.

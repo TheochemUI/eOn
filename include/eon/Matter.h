@@ -213,8 +213,18 @@ public:
   /// belongs to this image. The potential must report stress.
   Matrix3d cauchyStress();
 
-  /// Whether forces need recomputation (positions changed since last eval).
-  [[nodiscard]] bool needsForceUpdate() const { return recomputePotential; }
+  /// Whether forces need recomputation (positions or surface epoch changed).
+  [[nodiscard]] bool needsForceUpdate() const {
+    return recomputePotential || epochDirty();
+  }
+
+  /// Host surface generation. A GP refit increments this; identical
+  /// positions then miss the energy and variance caches. Combined with
+  /// Potential::surfaceEpoch() as the other half of the cache key.
+  void setSurfaceEpoch(unsigned long long epoch);
+  [[nodiscard]] unsigned long long getSurfaceEpoch() const noexcept {
+    return surfaceEpoch_;
+  }
 
   /// Mutable access to force storage for batched potential evaluation.
   /// Caller must also call setComputedPotential() after writing forces.
@@ -358,6 +368,8 @@ private:
   // CON file header lines (indices 0-4 map to old headerCon1,2,4,5,6)
   std::array<std::string, 5> headerCon;
 
+  [[nodiscard]] bool epochDirty() const;
+  void stampSurfaceEpoch() const;
   void computePotential() const;
   void captureStress() const;
   void applyPeriodicBoundary();
@@ -385,6 +397,9 @@ private:
   mutable double energyVariance;
   std::vector<readcon::ConFrame> movie_frames_;
   mutable double potentialEnergy;
+  unsigned long long surfaceEpoch_{0};
+  mutable unsigned long long cachedHostEpoch_{0};
+  mutable unsigned long long cachedPotEpoch_{0};
   CancelToken cancel_token_;
 };
 

@@ -62,7 +62,10 @@ Matter::Matter(std::shared_ptr<Potential> pot, const Parameters &params)
       impl_{std::make_unique<Impl>()},
       biasPotential{nullptr},
       energyVariance{0.0},
-      potentialEnergy{0.0} {}
+      potentialEnergy{0.0},
+      surfaceEpoch_{0},
+      cachedHostEpoch_{0},
+      cachedPotEpoch_{0} {}
 
 bool Matter::getWriteConForces() const noexcept {
   return parameters != nullptr && parameters->main_options().writeConForces;
@@ -118,6 +121,9 @@ const Matter &Matter::operator=(const Matter &matter) {
   energyVariance = matter.energyVariance;
   forceCalls = matter.forceCalls;
   recomputePotential = matter.recomputePotential;
+  surfaceEpoch_ = matter.surfaceEpoch_;
+  cachedHostEpoch_ = matter.cachedHostEpoch_;
+  cachedPotEpoch_ = matter.cachedPotEpoch_;
   // Both caches describe the forces this object held before the assignment.
   // resize() above already raises them; state it here alongside the members
   // this function owns.
@@ -182,6 +188,9 @@ Matter &Matter::operator=(Matter &&other) noexcept {
   movie_frames_ = std::move(other.movie_frames_);
   potentialEnergy = other.potentialEnergy;
   cancel_token_ = std::move(other.cancel_token_);
+  surfaceEpoch_ = other.surfaceEpoch_;
+  cachedHostEpoch_ = other.cachedHostEpoch_;
+  cachedPotEpoch_ = other.cachedPotEpoch_;
 
   other.nAtoms = 0;
   other.recomputePotential = true;
@@ -612,9 +621,27 @@ void Matter::assertIsolatedMoleculeLayoutSafe() const {
   }
 }
 
+bool Matter::epochDirty() const {
+  const unsigned long long pe = potential ? potential->surfaceEpoch() : 0ULL;
+  return cachedHostEpoch_ != surfaceEpoch_ || cachedPotEpoch_ != pe;
+}
+
+void Matter::stampSurfaceEpoch() const {
+  cachedHostEpoch_ = surfaceEpoch_;
+  cachedPotEpoch_ = potential ? potential->surfaceEpoch() : 0ULL;
+}
+
+void Matter::setSurfaceEpoch(unsigned long long epoch) {
+  if (epoch != surfaceEpoch_) {
+    surfaceEpoch_ = epoch;
+    recomputePotential = true;
+    recomputeMaskedForces = true;
+  }
+}
+
 void Matter::computePotential() const {
   cancel_token_.poll("force");
-  if (recomputePotential) {
+  if (recomputePotential || epochDirty()) {
     if (!potential) {
       throw std::runtime_error(
           "Matter::computePotential called without a potential");
@@ -650,6 +677,7 @@ void Matter::computePotential() const {
                        std::span<double>(impl_->forces.data(), n * 3),
                        &potentialEnergy, &var,
                        std::span<const double>(force_cell.data(), 9));
+      this->energyVariance = var;
       potential->forceCallCounter++;
       PotRegistry::get().on_force_call(potential->getType());
       captureStress();
@@ -660,6 +688,7 @@ void Matter::computePotential() const {
     }
     forceCalls = forceCalls + 1;
     recomputePotential = false;
+    stampSurfaceEpoch();
 
     // One free atom: subtracting the mean force is identically zero,
     // and NEB would then report immediate GOOD.
@@ -788,6 +817,7 @@ void Matter::setComputedPotential(double energy, double variance) {
   // A batch leaves at most the last system's stress on the potential.
   impl_->haveStress = false;
   recomputePotential = false;
+  stampSurfaceEpoch();
   recomputeMaskedForces = true;
   forceCalls++;
 
@@ -804,7 +834,12 @@ size_t Matter::getPotentialCalls() const {
   return this->potential->forceCallCounter;
 }
 
-double Matter::getEnergyVariance() const { return this->energyVariance; }
+double Matter::getEnergyVariance() const {
+  if (nAtoms > 0) {
+    computePotential();
+  }
+  return this->energyVariance;
+}
 
 void Matter::captureStress() const {
   impl_->haveStress = false;
