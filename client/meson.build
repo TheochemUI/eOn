@@ -1763,7 +1763,27 @@ if get_option('with_serve')
     if ptlrpc_dep.found() == false
         error('with_serve requires Cap\'n Proto / rgpot ptlrpc_dep')
     endif
-    _args += ['-DWITH_SERVE_MODE']
+    _eon_build_revision = ''
+    _git_exe = find_program('git', required: false)
+    if _git_exe.found()
+        _eon_rev = run_command(
+            _git_exe,
+            '-C',
+            meson.project_source_root(),
+            'rev-parse',
+            '--short=12',
+            'HEAD',
+            check: false,
+        )
+        if _eon_rev.returncode() == 0
+            _eon_build_revision = _eon_rev.stdout().strip()
+        endif
+    endif
+    _args += [
+        '-DWITH_SERVE_MODE',
+        '-DEON_BUILD_VERSION="' + meson.project_version() + '"',
+        '-DEON_BUILD_REVISION="' + _eon_build_revision + '"',
+    ]
     eonclib_sources += ['ServeMode.cpp', 'ServeRpcServer.cpp']
     _deps += [serve_capnp_dep, ptlrpc_dep]
 endif
@@ -2145,6 +2165,7 @@ if get_option('with_tests')
     endif
     if get_option('with_serve')
         test_array += [['test_serve_spec', 'ServeSpecParseTest.cpp', '']]
+        test_array += [['test_rpc_capabilities', 'RpcCapabilitiesTest.cpp', '']]
     endif
     if get_option('with_artn')
         test_array += [['test_artn', 'ARTnTest.cpp', 'neb_morse']]

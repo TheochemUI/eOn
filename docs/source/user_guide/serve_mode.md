@@ -238,6 +238,21 @@ Each response returns:
 - **energy**: total potential energy (eV)
 - **forces**: flat array matching positions layout (eV/Angstrom)
 
+A client calls `getCapabilities` before `calculate`. The reply contains:
+
+- **protocolFamily**: `rgpot.potentials`
+- **protocolMajor**: 1
+- **schemaId**: `0xbd1f89fa17369103`
+- **bridgeAbiMajor** / **bridgeAbiMinor**: 1 / 0
+- **bridgeLayout**: 1
+- **dlpackMajor** / **dlpackMinor**: 1 / 0
+- **bridgeFeatures**: 0 (energy and forces over RPC; no eindir feature bits)
+- **operations**: energy and forces
+- **buildVersion**: the eOn project version
+- **buildRevision**: `git rev-parse --short=12`, or empty when git cannot name the commit
+
+A client refuses the server when `getCapabilities` is left unimplemented.
+
 ## Integration with ChemGP
 
 ChemGP connects to serve mode via its `RpcPotential` oracle:

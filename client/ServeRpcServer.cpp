@@ -22,12 +22,15 @@
  * eOn's Eigen-based AtomMatrix and rgpot's custom AtomMatrix.
  */
 
-#include "eon/ServeRpcServer.h"
+#include "RpcCapabilitiesProbe.h"
 #include "eon/BaseStructures.h"
 #include "eon/EonLogger.h"
+#include "eon/ServeRpcServer.h"
 
 #include <atomic>
 #include <capnp/ez-rpc.h>
+#include <capnp/rpc-twoparty.h>
+#include <kj/async-io.h>
 #include <kj/debug.h>
 #include <mutex>
 
@@ -36,7 +39,88 @@
 // hence the separate translation unit.
 #include "rgpot/rpc/Potentials.capnp.h"
 
+#ifndef EON_BUILD_VERSION
+#define EON_BUILD_VERSION ""
+#endif
+#ifndef EON_BUILD_REVISION
+#define EON_BUILD_REVISION ""
+#endif
+
 namespace eonc {
+
+namespace {
+
+/**
+ * Fill the handshake a client reads before calculate.
+ *
+ * The numeric bridge and DLPack revisions are the stamp that client accepts.
+ * bridgeFeatures stays 0: this server returns energy and forces over RPC and
+ * does not advertise eindir bridge feature bits. Empty build strings are
+ * unknown, not a mismatch.
+ */
+void fillServerCapabilities(::Capabilities::Builder caps) {
+  caps.setProtocolFamily("rgpot.potentials");
+  caps.setProtocolMajor(1);
+  caps.setProtocolMinor(0);
+  caps.setSchemaId("0xbd1f89fa17369103");
+  caps.setBridgeAbiMajor(1);
+  caps.setBridgeAbiMinor(0);
+  caps.setBridgeLayout(1);
+  caps.setDlpackMajor(1);
+  caps.setDlpackMinor(0);
+  caps.setBridgeFeatures(0);
+  caps.setBackendName("eon");
+  caps.setBackendVersion(EON_BUILD_VERSION);
+  caps.setAvailable(true);
+  caps.setBuildVersion(EON_BUILD_VERSION);
+  caps.setBuildRevision(EON_BUILD_REVISION);
+  auto ops = caps.initOperations(2);
+  ops.set(0, ::Capabilities::Operation::ENERGY);
+  ops.set(1, ::Capabilities::Operation::FORCES);
+}
+
+ForceCallback noopCallback() {
+  return [](long, const double *, const int *, double *, double *,
+            const double *) {};
+}
+
+RpcCapabilitiesView readOne(kj::AsyncIoContext &io,
+                            capnp::Capability::Client bootstrap) {
+  auto pipe = io.provider->newTwoWayPipe();
+  capnp::TwoPartyClient serverSide(*pipe.ends[0], kj::mv(bootstrap),
+                                   capnp::rpc::twoparty::Side::SERVER);
+  capnp::TwoPartyClient clientSide(*pipe.ends[1]);
+  auto pot = clientSide.bootstrap().castAs<Potential>();
+  auto response = pot.getCapabilitiesRequest().send().wait(io.waitScope);
+  auto caps = response.getCapabilities();
+
+  RpcCapabilitiesView view;
+  view.protocolFamily = caps.getProtocolFamily().cStr();
+  view.protocolMajor = caps.getProtocolMajor();
+  view.protocolMinor = caps.getProtocolMinor();
+  view.schemaId = caps.getSchemaId().cStr();
+  view.bridgeAbiMajor = caps.getBridgeAbiMajor();
+  view.bridgeAbiMinor = caps.getBridgeAbiMinor();
+  view.bridgeLayout = caps.getBridgeLayout();
+  view.dlpackMajor = caps.getDlpackMajor();
+  view.dlpackMinor = caps.getDlpackMinor();
+  view.bridgeFeatures = caps.getBridgeFeatures();
+  view.backendName = caps.getBackendName().cStr();
+  view.available = caps.getAvailable();
+  view.buildVersion = caps.getBuildVersion().cStr();
+  view.buildRevision = caps.getBuildRevision().cStr();
+  for (auto op : caps.getOperations()) {
+    if (op == ::Capabilities::Operation::ENERGY) {
+      view.servesEnergy = true;
+    }
+    if (op == ::Capabilities::Operation::FORCES) {
+      view.servesForces = true;
+    }
+  }
+  return view;
+}
+
+} // namespace
 
 namespace {
 
@@ -51,6 +135,11 @@ class CallbackPotImpl final : public Potential::Server {
 public:
   explicit CallbackPotImpl(ForceCallback cb)
       : m_callback(std::move(cb)) {}
+
+  kj::Promise<void> getCapabilities(GetCapabilitiesContext context) override {
+    fillServerCapabilities(context.getResults().initCapabilities());
+    return kj::READY_NOW;
+  }
 
   kj::Promise<void> calculate(CalculateContext context) override {
     auto fip = context.getParams().getFip();
@@ -131,6 +220,11 @@ public:
         m_mutexes(m_pool.size()),
         m_next(0) {}
 
+  kj::Promise<void> getCapabilities(GetCapabilitiesContext context) override {
+    fillServerCapabilities(context.getResults().initCapabilities());
+    return kj::READY_NOW;
+  }
+
   kj::Promise<void> calculate(CalculateContext context) override {
     size_t idx = m_next.fetch_add(1, std::memory_order_relaxed) % m_pool.size();
 
@@ -195,6 +289,17 @@ void startPooledRpcServer(std::vector<ForceCallback> pool,
   auto &waitScope = server.getWaitScope();
   EONC_LOG_INFO("Gateway ready on port {}. Ctrl+C to stop.", port);
   kj::NEVER_DONE.wait(waitScope);
+}
+
+RpcServerCapabilitiesPair readRpcServerCapabilities() {
+  auto io = kj::setupAsyncIo();
+  RpcServerCapabilitiesPair out;
+  out.callbackServer = readOne(io, kj::heap<CallbackPotImpl>(noopCallback()));
+  std::vector<ForceCallback> pool;
+  pool.push_back(noopCallback());
+  out.pooledServer =
+      readOne(io, kj::heap<PooledCallbackPotImpl>(std::move(pool)));
+  return out;
 }
 
 } // namespace eonc
