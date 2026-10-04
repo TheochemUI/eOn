@@ -846,6 +846,10 @@ class RgpotPot(BaseModel):
     model_path: str = Field(
         default="", description="Metatomic model path when backend=metatomic."
     )
+    task_name: str = Field(
+        default="omol",
+        description="UMA task head when backend=uma.",
+    )
     device: str = Field(
         default="cpu", description="Metatomic device when backend=metatomic."
     )
