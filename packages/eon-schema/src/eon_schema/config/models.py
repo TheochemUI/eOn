@@ -2168,11 +2168,19 @@ class DimerConfig(BaseModel):
 
     converged_angle: float = Field(
         default=5.0,
-        description="The dimer is considered converged if it will be rotated fewer degrees than this angle.",
+        description=(
+            "The dimer is considered converged if it will be rotated fewer"
+            " degrees than this angle. min_mode_method = xtsci passes it to"
+            " rgsaddle as rotation_angle_tol, in radians."
+        ),
     )
     rotations_max: int = Field(
         default=10,
-        description="This is the maximum number of rotations allowed for the dimer for each minimum mode estimation.",
+        description=(
+            "This is the maximum number of rotations allowed for the dimer for"
+            " each minimum mode estimation, and the rotation budget of"
+            " min_mode_method = xtsci."
+        ),
     )
 
     finite_angle: float = Field(
@@ -2189,7 +2197,11 @@ class DimerConfig(BaseModel):
         description="Minimum number of rotations for the dimer. [not improved]",
     )
     dimer_torque_min: float = Field(
-        default=0.1, description="Minimum torque for the dimer. [not improved]"
+        default=0.1,
+        description=(
+            "Minimum torque for the dimer. [not improved] min_mode_method ="
+            " xtsci passes it to rgsaddle as rotation_tol."
+        ),
     )
     dimer_torque_max: float = Field(
         default=1.0, description="Maximum torque for the dimer. [not improved]"
@@ -2612,6 +2624,18 @@ class HessianConfig(BaseModel):
     )
     zero_freq_value: float = Field(
         default=1e-6, description="The value assigned to zero frequencies."
+    )
+    fd_scheme: Literal[
+        "one_sided", "central", "fourth", "fourth_order", "central4"
+    ] = Field(
+        default="one_sided",
+        description=(
+            "Finite-difference stencil of the assembled Hessian and of the"
+            " Lanczos and Davidson Hessian-vector products: one_sided,"
+            " central, or fourth (fourth_order, central4). min_mode_method ="
+            " xtsci takes forward differences for one_sided and central"
+            " differences for central and fourth."
+        ),
     )
     write_modes: bool = Field(
         default=True,

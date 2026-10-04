@@ -161,3 +161,27 @@ another move outside the session.
 with a zero translation cap. The min-mode callback reads the centre
 from its cached evaluation and runs a displaced probe on a copy. The
 min-mode saddle search still climbs with the selected optimizer.
+In a build with ``-Dwith_rgsaddle=true``, ``min_mode_method = dimer``
+and ``lanczos`` rotate in the same session, ``lanczos`` as a Lanczos
+session. Davidson and the GP dimer keep their own solvers.
+Against rgsaddle ABI minor 5 or newer one session serves every step of the
+search: the client moves it to each new centre with the gradient it
+already has, so the centre costs no extra call, and the previous
+mode seeds the next rotation.
+
+The session takes its settings from the dimer and Hessian keys:
+
+| rgsaddle setting | eOn key | Conversion |
+|---|---|---|
+| ``dr`` | ``[Main] finite_difference`` | Angstrom; 0.001 when not positive |
+| ``rotation_tol`` | ``[Dimer] torque_min`` | none |
+| ``rotation_angle_tol`` | ``[Dimer] converged_angle`` | degrees to radians (ABI minor 5) |
+| ``max_rotations`` | ``[Dimer] rotations_max`` | at least 1 |
+| ``difference`` | ``[Hessian] fd_scheme`` | ``one_sided`` is forward; ``central`` and ``fourth`` are central (ABI minor 5) |
+| ``method`` | ``[Xtsci] method`` | ``lbfgs`` gives L-BFGS; any other gives FIRE, the fast inertial relaxation engine |
+| ``krylov_dim`` | none | 12 |
+
+rgsaddle has no fourth-order stencil, so ``fd_scheme = fourth`` gives
+central differences here. ``[Dimer] rotation_angle`` is a trial angle
+of the host dimer and does not reach the session.
+
