@@ -1849,6 +1849,9 @@ if get_option('with_tests')
     endif
     if with_gprd
         test_array += [['test_gpr_helpers', 'GPRHelpersTest.cpp', '']]
+        # Frozen GprMeanPotential fixed-point parity between the eonclient
+        # LBFGS and the gpr band engine.
+        test_array += [['test_gprmean_fixedpoint', 'GprMeanFixedPointTest.cpp', '']]
     endif
     # Build the Fortran potential library search path for tests.
     # Each Fortran shared lib lives in its subdir of the build tree,
