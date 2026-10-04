@@ -139,6 +139,7 @@ interior image is strictly above the higher endpoint.
 A fixed-cell band compares potential energy.
 A solid-state band compares enthalpy.
 A monotonic band keeps the spring on every interior image.
+While climbing is on, that image stays put while its energy is above both neighbours, and it moves to the highest interior image when the local-maximum test fails.
 With `climbing_image_method` on, either force test activates climbing.
 One test requires the band force to be under the initial force times `ci_after_rel`.
 The other requires it to be under `ci_after`.
