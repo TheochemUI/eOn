@@ -18,6 +18,7 @@ py.install_sources(
         'escaperate.py',
         'explorer.py',
         'fileio.py',
+        'job_result.py',
         '__init__.py',
         '__main__.py',
         'locking.py',
