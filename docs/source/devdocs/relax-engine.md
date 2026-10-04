@@ -4,7 +4,10 @@
 Gaussian-process model, run eOn's nudged elastic band or saddle search
 against that surface. The host supplies energies, forces and variances
 for a batch of images. eOn owns the band, the optimizer and the
-convergence logic.
+convergence logic. Each image's cell is passed back in row-major order,
+the same layout the host stored, including when the image is not
+periodic. `eon_relax_run` reports `MAX_UNCERTAINTY` when any image
+variance is above the uncertainty limit (`0.05` for a NULL config).
 
 The C header is `include/eon/relax/eon_relax_engine.h`. It is the
 reverse of `engine_c_abi.h` used for rgpot engines: there eOn calls the

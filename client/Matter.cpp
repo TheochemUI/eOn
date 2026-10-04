@@ -671,7 +671,9 @@ void Matter::computePotential() const {
       // Isolated molecules still store a box for I/O. Pots that infer PBC
       // from a non-zero cell (GFN2) must see a zero box here.
       const Matrix3d force_cell =
-          usePeriodicBoundaries ? impl_->cell : Matrix3d::Zero();
+          (usePeriodicBoundaries || potential->forwardsStoredCell())
+              ? impl_->cell
+              : Matrix3d::Zero();
       potential->force(std::span<const double>(impl_->positions.data(), n * 3),
                        std::span<const int>(impl_->atomicNrs.data(), n),
                        std::span<double>(impl_->forces.data(), n * 3),
@@ -951,8 +953,10 @@ void evaluateTogether(Potential &pot, std::span<Matter *const> systems) {
     }
     nrs[j] = m->getAtomicNrs();
     // A non-periodic system hands the potential a zero box, as
-    // computePotential does.
-    boxes[j] = m->getPeriodic() ? m->getCell() : Matrix3d::Zero().eval();
+    // computePotential does. A host that owns the cell still sees it.
+    boxes[j] = (m->getPeriodic() || pot.forwardsStoredCell())
+                   ? m->getCell()
+                   : Matrix3d::Zero().eval();
   }
   for (long j = 0; j < n; ++j) {
     posPtr.push_back(dirty[j]->getPositions().data());

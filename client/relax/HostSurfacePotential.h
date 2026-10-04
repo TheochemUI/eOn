@@ -48,6 +48,12 @@ public:
   void bindPath(const std::vector<std::shared_ptr<Matter>> &path) {
     path_ = path;
   }
+  void bindBand(const std::vector<std::shared_ptr<Matter>> &path) override {
+    bindPath(path);
+  }
+  [[nodiscard]] bool forwardsStoredCell() const noexcept override {
+    return true;
+  }
 
   void force(long nAtoms, const double *positions, const int *atomicNrs,
              double *forces, double *energy, double *variance,

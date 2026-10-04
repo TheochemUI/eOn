@@ -19,9 +19,11 @@
 #include <span>
 #include <stdexcept>
 #include <utility>
+#include <vector>
 
 namespace eonc {
 
+class Matter;
 class Parameters;
 class Runtime;
 
@@ -173,6 +175,17 @@ public:
   /// single call. When true, callers (NEB, Dimer) should use forceBatch()
   /// instead of N individual force() calls for better GPU utilization.
   [[nodiscard]] virtual bool supportsBatchEvaluation() const noexcept {
+    return false;
+  }
+
+  /// NEB calls this with the finished band before the first force
+  /// evaluation, so a host surface can name each image.
+  virtual void bindBand(const std::vector<std::shared_ptr<Matter>> &) {}
+
+  /// A host that owns the cell reads the stored matrix. Pots that infer
+  /// periodic boundaries from a non-zero box keep seeing a zero box when
+  /// the image is not periodic.
+  [[nodiscard]] virtual bool forwardsStoredCell() const noexcept {
     return false;
   }
 

@@ -406,6 +406,10 @@ int eon_relax_run(EonRelaxEngine *eng, eon_relax_band_t *band,
         return stamp_rc(eng, EON_RELAX_UNKNOWN_STATUS);
       }
       out->status = neb_status(st);
+      NEBObjectiveFunction ranked(neb.get(), eng->params);
+      if (ranked.isUncertain()) {
+        out->status = EON_RELAX_NEB_MAX_UNCERTAINTY;
+      }
       out->iterations = neb->lastIteration();
       out->climbing_image = neb->climbingImage;
       out->max_force = neb->convergenceForce();

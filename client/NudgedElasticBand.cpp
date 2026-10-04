@@ -253,6 +253,11 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
   // Common final setup
   movedAfterForceCall = true;
   prepareSolidState();
+  // Name images before the endpoint evaluation. The host matches a
+  // system to a band index by the position pointer.
+  if (pot) {
+    pot->bindBand(path);
+  }
   // Both endpoints in one call, so two calculator groups take one each.
   {
     Matter *const ends[] = {path[0].get(), path[numImages + 1].get()};
@@ -701,8 +706,10 @@ void NudgedElasticBand::updateForces(bool ci_active) {
         // Isolated molecules still store a box for I/O. Pots that infer
         // PBC from a non-zero cell must see a zero box, as
         // Matter::computePotential does on the endpoints.
-        boxStore.push_back(path[idx]->getPeriodic() ? path[idx]->getCell()
-                                                    : Matrix3d::Zero());
+        boxStore.push_back(
+            (path[idx]->getPeriodic() || pot->forwardsStoredCell())
+                ? path[idx]->getCell()
+                : Matrix3d::Zero());
       }
       for (long j = 0; j < nDirty; j++) {
         auto idx = dirty[static_cast<size_t>(j)];
