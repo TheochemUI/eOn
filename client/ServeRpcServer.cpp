@@ -23,6 +23,7 @@
  */
 
 #include "RpcCapabilitiesProbe.h"
+#include "RpcServerHandshake.h"
 #include "eon/BaseStructures.h"
 #include "eon/EonLogger.h"
 #include "eon/ServeRpcServer.h"
@@ -59,17 +60,17 @@ namespace {
  * unknown, not a mismatch.
  */
 void fillServerCapabilities(::Capabilities::Builder caps) {
-  caps.setProtocolFamily("rgpot.potentials");
-  caps.setProtocolMajor(1);
-  caps.setProtocolMinor(0);
-  caps.setSchemaId("0xbd1f89fa17369103");
-  caps.setBridgeAbiMajor(1);
-  caps.setBridgeAbiMinor(0);
-  caps.setBridgeLayout(1);
-  caps.setDlpackMajor(1);
-  caps.setDlpackMinor(0);
-  caps.setBridgeFeatures(0);
-  caps.setBackendName("eon");
+  caps.setProtocolFamily(eonc::rpc::kProtocolFamily);
+  caps.setProtocolMajor(eonc::rpc::kProtocolMajor);
+  caps.setProtocolMinor(eonc::rpc::kProtocolMinor);
+  caps.setSchemaId(eonc::rpc::kSchemaId);
+  caps.setBridgeAbiMajor(eonc::rpc::kBridgeAbiMajor);
+  caps.setBridgeAbiMinor(eonc::rpc::kBridgeAbiMinor);
+  caps.setBridgeLayout(eonc::rpc::kBridgeLayout);
+  caps.setDlpackMajor(eonc::rpc::kDlpackMajor);
+  caps.setDlpackMinor(eonc::rpc::kDlpackMinor);
+  caps.setBridgeFeatures(eonc::rpc::kBridgeFeatures);
+  caps.setBackendName(eonc::rpc::kBackendName);
   caps.setBackendVersion(EON_BUILD_VERSION);
   caps.setAvailable(true);
   caps.setBuildVersion(EON_BUILD_VERSION);

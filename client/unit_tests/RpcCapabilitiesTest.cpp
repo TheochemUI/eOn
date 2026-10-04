@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "../RpcCapabilitiesProbe.h"
+#include "../RpcServerHandshake.h"
 #include "catch2/catch_amalgamated.hpp"
 
 #ifndef EON_BUILD_VERSION
@@ -22,17 +23,17 @@
 namespace {
 
 void requireHandshake(const eonc::RpcCapabilitiesView &caps) {
-  REQUIRE(caps.protocolFamily == "rgpot.potentials");
-  REQUIRE(caps.protocolMajor == 1);
-  REQUIRE(caps.protocolMinor == 0);
-  REQUIRE(caps.schemaId == "0xbd1f89fa17369103");
-  REQUIRE(caps.bridgeAbiMajor == 1);
-  REQUIRE(caps.bridgeAbiMinor == 0);
-  REQUIRE(caps.bridgeLayout == 1);
-  REQUIRE(caps.dlpackMajor == 1);
-  REQUIRE(caps.dlpackMinor == 0);
-  REQUIRE(caps.bridgeFeatures == 0);
-  REQUIRE(caps.backendName == "eon");
+  REQUIRE(caps.protocolFamily == eonc::rpc::kProtocolFamily);
+  REQUIRE(caps.protocolMajor == eonc::rpc::kProtocolMajor);
+  REQUIRE(caps.protocolMinor == eonc::rpc::kProtocolMinor);
+  REQUIRE(caps.schemaId == eonc::rpc::kSchemaId);
+  REQUIRE(caps.bridgeAbiMajor == eonc::rpc::kBridgeAbiMajor);
+  REQUIRE(caps.bridgeAbiMinor == eonc::rpc::kBridgeAbiMinor);
+  REQUIRE(caps.bridgeLayout == eonc::rpc::kBridgeLayout);
+  REQUIRE(caps.dlpackMajor == eonc::rpc::kDlpackMajor);
+  REQUIRE(caps.dlpackMinor == eonc::rpc::kDlpackMinor);
+  REQUIRE(caps.bridgeFeatures == eonc::rpc::kBridgeFeatures);
+  REQUIRE(caps.backendName == eonc::rpc::kBackendName);
   REQUIRE(caps.available);
   REQUIRE(caps.buildVersion == EON_BUILD_VERSION);
   REQUIRE(caps.buildRevision == EON_BUILD_REVISION);
