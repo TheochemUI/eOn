@@ -137,6 +137,8 @@ public:
   bool isUncertain();
   double getConvergence();
   VectorXd difference(const VectorXd &a, const VectorXd &b);
+  // One mass per free atom on each interior image, in band order.
+  VectorXd getMasses() const override;
   // The band residual rotates with its tangent and is not a PES gradient.
   bool supportsFiniteDifferenceCurvature() const override { return false; }
   NudgedElasticBand::NEBStatus status;

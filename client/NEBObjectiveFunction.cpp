@@ -119,6 +119,32 @@ double NEBObjectiveFunction::getConvergence() {
   return neb->convergenceForce();
 }
 
+VectorXd NEBObjectiveFunction::getMasses() const {
+  long count = 0;
+  for (long i = 1; i <= neb->numImages; ++i) {
+    const Matter &image = *neb->path[static_cast<size_t>(i)];
+    const AtomMatrix mask = image.getFree();
+    for (long atom = 0; atom < image.numberOfAtoms(); ++atom) {
+      if (mask.row(atom).sum() > 0.5) {
+        ++count;
+      }
+    }
+  }
+  VectorXd masses(count);
+  long written = 0;
+  for (long i = 1; i <= neb->numImages; ++i) {
+    const Matter &image = *neb->path[static_cast<size_t>(i)];
+    const auto all = image.getMasses();
+    const AtomMatrix mask = image.getFree();
+    for (long atom = 0; atom < image.numberOfAtoms(); ++atom) {
+      if (mask.row(atom).sum() > 0.5) {
+        masses(written++) = all(atom);
+      }
+    }
+  }
+  return masses;
+}
+
 VectorXd NEBObjectiveFunction::difference(const VectorXd &a,
                                           const VectorXd &b) {
   const long seg = nebSegment(*neb);
