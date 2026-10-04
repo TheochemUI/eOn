@@ -10,7 +10,7 @@ dependencies = [
     "readcon>=0.15.0",
     "readcon-db>=0.1.6",
     "vesin>=0.6.1",
-    "eon-schema>=0.2.0",
+    "eon-schema>=0.2.4",
     "xxhash>=3.4.0",
     "pyyaml>=6.0",
 ]

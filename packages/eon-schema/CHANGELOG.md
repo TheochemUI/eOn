@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.4] — 2026-10-04
+
+### Added
+
+- ``eon_schema.jobs.job_result_legacy_dict`` and ``job_result_to_results_dat``
+  map a ``JobResult`` onto the legacy ``results.dat`` keys. ``eon.job_result``
+  imports them, so eOn develop needs this release.
+- ``JobResult`` records optimizer provenance: the optimizer and its settings,
+  the rgpot version and engine identity, and an engine-compatibility stamp.
+- The parameter catalog projects the ``[RgpotPot]`` adapter keys, so
+  ``write_ini`` accepts them.
+- ``min_mode_method`` accepts ``xtsci``, the rgsaddle lowest-mode rotation.
+
 ## [0.2.3] — 2026-10-01
 
 ### Added

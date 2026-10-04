@@ -1,6 +1,6 @@
 [project]
 name = "eon-schema"
-version = "0.2.3"
+version = "0.2.4"
 description = "Shared eOn L0 Cap'n Proto SSoT, L1 job-config pydantic models, and L2 API specs for eon-akmc + pyeonclient"
 readme = "README.md"
 license = {text = "BSD-3-Clause"}
