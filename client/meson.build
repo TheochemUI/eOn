@@ -257,6 +257,22 @@ version_bits = version_output.split(',')
 version = version_bits[0]
 build_date = version_bits[1]
 git_hash = version_bits[2]
+git_hash_full = run_command(
+    'git',
+    '-C',
+    meson.project_source_root(),
+    'rev-parse',
+    'HEAD',
+    check: false,
+).stdout().strip()
+# 40 hex: substring(40) is empty and index 39 exists.
+hash_is_40 = git_hash_full.substring(40) == '' and git_hash_full.substring(39) != ''
+if not hash_is_40
+    if fs.is_dir(meson.project_source_root() / '.git')
+        error('libeon_relax_engine identity needs git rev-parse HEAD (40 hex)')
+    endif
+    git_hash_full = git_hash
+endif
 
 # Parse semver into components
 version_parts = version.split('.')
@@ -1505,6 +1521,7 @@ configure_file(
         'OS_INFO': host_system,
         'ARCH': architecture,
         'GIT_HASH': git_hash,
+        'GIT_HASH_FULL': git_hash_full,
         'FEATURES': features_string,
     },
 )
@@ -1543,6 +1560,44 @@ eclib = library(
 # MSVC scans static libraries once, left to right. eonclib references
 # the potential archives, so it has to precede them.
 _linkto = [eclib] + _linkto
+
+capnp_prog = find_program('capnp', required: true)
+capnp_dep = dependency('capnp', required: true)
+# pixi global exposes ~/.pixi/bin/capnp; parent(parent(that))/include
+# is ~/.pixi/include and does not exist. pkg-config includedir is the
+# env that actually owns /capnp/c++.capnp.
+_capnp_import_path = capnp_dep.get_variable('includedir', default_value: '')
+if _capnp_import_path == ''
+    _capnp_import_path = fs.parent(fs.parent(capnp_prog.full_path())) / 'include'
+endif
+eon_relax_capnp = custom_target(
+    'eon_relax_capnp',
+    input: meson.project_source_root() / 'schema' / 'eon_relax_engine.capnp',
+    output: ['eon_relax_engine.capnp.h', 'eon_relax_engine.capnp.c++'],
+    command: [
+        capnp_prog,
+        'compile',
+        '-oc++:@OUTDIR@',
+        '--import-path=' + _capnp_import_path,
+        '--src-prefix=' + meson.project_source_root() / 'schema',
+        '@INPUT@',
+    ],
+)
+
+# Tier-2 plugin: dlopen'ed by a learning host (gpr_optim) to run an NEB or
+# a saddle search against the host's surface.
+eon_relax_engine = library(
+    'eon_relax_engine',
+    ['relax/RelaxEngineAbi.cpp', eon_relax_capnp],
+    dependencies: _deps + _gprd_extra_deps + [capnp_dep],
+    cpp_args: _args + ['-DEON_RELAX_ENGINE_BUILD'],
+    link_with: _linkto,
+    include_directories: _incdirs + [include_directories('.')],
+    build_rpath: ':'.join(_runtime_rpath),
+    install_rpath: _lib_install_rpath,
+    install: true,
+    gnu_symbol_visibility: 'inlineshidden',
+)
 
 # RGPOT-metatomic engine (slow path); fat pot already in potentials above.
 if get_option('with_metatomic')
@@ -1730,6 +1785,7 @@ if get_option('with_tests')
         ['test_runtime', 'RuntimeTest.cpp', ''],
         ['test_metatomic_loader', 'MetatomicLoaderTest.cpp', ''],
         ['test_neb_lj', 'NEBMorseTest.cpp', 'neb_morse'],
+        ['test_relax_engine', 'RelaxEngineAbiTest.cpp', 'neb_morse'],
         ['test_solid_state_neb', 'SolidStateNEBTest.cpp', ''],
         ['test_neb_regression', 'NEBRegressionTest.cpp', 'neb_lj13'],
         ['test_dimer', 'DimerTest.cpp', 'neb_morse'],
@@ -1819,6 +1875,7 @@ if get_option('with_tests')
     )
     _test_env.set('EON_TEST_SYSTEMS_DIR', _systems_dir)
     _test_env.set('EONCLIENT', ec.full_path())
+    _test_env.set('EON_RELAX_ENGINE', eon_relax_engine.full_path())
     if _fortran_pot_dirs.length() > 0
         # FortranPotLoader splits on ';' on Windows (drive letters break ':').
         # Same pathsep rule as PATH: win=';' unix=':'.
@@ -1851,13 +1908,19 @@ if get_option('with_tests')
                     'unit_tests/' + test.get(1),
                     'thirdparty/catch2/catch_amalgamated.cpp',
                 ],
-                dependencies: test_deps,
-                include_directories: _incdirs,
+                dependencies: test.get(0) == 'test_relax_engine'
+                ? test_deps + [capnp_dep]
+                : test_deps,
+                include_directories: test.get(0) == 'test_relax_engine'
+                ? _incdirs + [include_directories('.')]
+                : _incdirs,
                 cpp_args: test_args,
                 # Include /STACK:16M (Windows) so EAM Al Fortran pots do not
                 # SIGSEGV with STATUS_STACK_OVERFLOW (default stack is 1 MB).
                 link_args: _linkargs,
-                link_with: test_link,
+                link_with: test.get(0) == 'test_relax_engine'
+                ? test_link + [eon_relax_engine]
+                : test_link,
                 build_rpath: ':'.join(_runtime_rpath),
             ),
             workdir: meson.project_source_root() + '/client/unit_tests/data/systems/' + test.get(
