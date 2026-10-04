@@ -5,7 +5,11 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from eon.geometry.neighbors import neighbor_list, neighbor_list_linkcell
+from eon.geometry.neighbors import (
+    neighbor_list,
+    neighbor_list_linkcell,
+    neighbor_list_pairs,
+)
 from eon.geometry.pbc import _pbc_numpy, pbc
 from eon.structure import Structure
 
@@ -56,3 +60,15 @@ def test_linkcell_neighbors_match_vesin_on_wrap():
     assert vesin == lc
     assert vesin[0] == [1]
     assert vesin[1] == [0]
+
+
+def test_periodic_pair_shift_is_minus_one_along_x():
+    p = _pair()
+    i, j, shift = neighbor_list_pairs(p, cutoff=1.0)
+    rows = {
+        (int(a), int(b), (int(s[0]), int(s[1]), int(s[2])))
+        for a, b, s in zip(i, j, shift)
+    }
+    assert (0, 1, (-1, 0, 0)) in rows
+    disp = p.r[j] - p.r[i] + shift.astype(float) @ p.box
+    assert np.all(np.abs(np.sum(disp * disp, axis=1) - 0.64) < 1e-12)

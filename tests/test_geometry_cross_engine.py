@@ -85,7 +85,8 @@ def test_gromacs_walk_matches_fractional_on_mild_shear():
     np.testing.assert_allclose(gmx, eon, atol=1e-12)
 
 
-def test_linkcell_knn_matches_vesin_sorted_by_minimage():
+def test_linkcell_knearest_matches_minimage_order():
+    """``knearest`` stays the k-nearest list. The cutoff list does not cap it."""
     rng = np.random.default_rng(0)
     n = 24
     box = _ortho_box(12.0, 12.0, 12.0)
@@ -100,15 +101,23 @@ def test_linkcell_knn_matches_vesin_sorted_by_minimage():
     k = 4
     cutoff = 20.0
     vesin = neighbor_list(p, cutoff)
-    lc = neighbor_list_linkcell(p, cutoff=cutoff, k=k)
+    linked = neighbor_list_linkcell(p, cutoff)
+    assert linked == vesin
+    xyz = np.ascontiguousarray(r, dtype=np.float64)
+    cell_box = np.ascontiguousarray(box, dtype=np.float64)
+    nn, _d2 = linkcell.knearest(xyz, cell_box, k)
+    nn = np.from_dlpack(nn)
     cell = minimage.Cell.ortho(12.0, 12.0, 12.0)
     for i in range(n):
-        d2 = []
-        for j in vesin[i]:
-            d2.append((float(cell.dist2(r[i].tolist(), r[j].tolist())), j))
-        d2.sort()
-        expect = [j for _d, j in d2[:k]]
-        assert set(expect) == set(lc[i])
+        ranked = []
+        for j in range(n):
+            if j == i:
+                continue
+            ranked.append((float(cell.dist2(r[i].tolist(), r[j].tolist())), j))
+        ranked.sort()
+        expect = [j for _d, j in ranked[:k]]
+        got = [int(nn[i, slot]) for slot in range(k)]
+        assert got == expect
 
 
 def test_linkcell_wrap_pair_matches_vesin():

@@ -3,7 +3,7 @@
 - :mod:`eon.geometry.cell` — cell length/angle transforms
 - :mod:`eon.geometry.pbc` — minimum-image PBC and per-atom norms
 - :mod:`eon.geometry.neighbors` — neighbor lists via **vesin**
-  (optional :func:`neighbor_list_linkcell` for linkcell/minimage checks)
+  (periodic cutoff lists from linkcell, open axes from vesin)
 - :mod:`eon.geometry.process` — process-atom selection for recycling
 """
 
