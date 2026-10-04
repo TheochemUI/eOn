@@ -1673,6 +1673,19 @@ if get_option('with_tests')
         dependencies: _exe_deps,
         link_with: _linkto,
     )
+
+    # An MPI client reads its flags unless an eOn server launched it, so
+    # --version exits 0 outside a server and when standalone.
+    if get_option('with_mpi').enabled()
+        test('eonclient_mpi_version', ec, args: ['--version'], suite: ['eon'])
+        test(
+            'eonclient_mpi_version_standalone',
+            ec,
+            args: ['--version'],
+            env: ['EON_CLIENT_STANDALONE=1'],
+            suite: ['eon'],
+        )
+    endif
 endif
 # ------------------------ Tests
 

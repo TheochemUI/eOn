@@ -133,15 +133,23 @@ void printSystemInfo() {
 static int eonClientMain(int argc, char **argv) {
   eonc::Parameters parameters;
 
-#ifndef EONMPI
   // Help, version, and one-shot argv jobs must not pay logger setup first.
   // commandLine starts the backend only after the flag parse commits to work.
-  if (argc > 1) {
+  // In an MPI build only a rank an eOn server launched (EON_SERVER_PATH set,
+  // EON_CLIENT_STANDALONE unset) skips the parse: the server passes it no
+  // flags. A standalone or hand-started MPI client reads its flags like the
+  // serial client; rgpot initialises MPI if a calculator group needs it.
+#ifdef EONMPI
+  const bool serverRank = getenv("EON_CLIENT_STANDALONE") == nullptr &&
+                          getenv("EON_SERVER_PATH") != nullptr;
+#else
+  const bool serverRank = false;
+#endif
+  if (argc > 1 && !serverRank) {
     eonc::commandLine(argc, argv);
     quill::Backend::stop();
     return 0;
   }
-#endif
 
   // Quill backend, file sinks, and the combi logger. Deferred until a job
   // path actually runs so process start is not dominated by the log thread.
