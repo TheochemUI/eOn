@@ -397,6 +397,7 @@ settings from the environment:
 | `CPMD_CONVERGENCE` | `CONVERGENCE ORBITALS` | `1e-6` |
 | `CPMD_MAXITER` | `MAXITER` | `300` |
 | `CPMD_RESTART_POOL` | shared directory of converged `RESTART.1` files that seed a job's first call | unset |
+| `CPMDC_RESTART` | path to the `cpmdc-restart` tool; a pooled `RESTART.1` seeds a call only when `cpmdc-restart info` reports the same atom count, species counts and cutoff | unset, no check |
 
 A single point, a minimization or a nudged elastic band on one machine
 needs nothing else than the script as `ext_pot_path`:
