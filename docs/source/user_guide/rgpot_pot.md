@@ -355,53 +355,54 @@ runs on group 0. The product runs on group 1.
 
 Seven groups of 4 ranks need 28 ranks. Intermediate image 1 runs on
 group 0, and image 7 runs on group 6. Every image keeps its group from
-one iteration to the next, because the group holds that image's
-orbitals.
+one iteration to the next. That group stores the image's orbitals.
 
 A batch puts at most ceil(M / G) of its M systems on one group. An
-update of only some images, which would stack them on the groups that
-own them, moves the excess to the least-loaded groups, and a moved image
-stays on its new group. A group with fewer systems than the busiest
-waits for the others at the result exchange; rgpot keeps the engine's
-error agreement inside each calculator, so no group has to repeat a
-system to match the others' engine calls.
+update of some images can stack them on the groups that own them. The
+excess then moves to the least-loaded groups, and a moved image stays on
+its new group. A group with fewer systems waits at the result exchange.
+rgpot keeps the engine's error agreement inside each calculator, so no
+group repeats a system to match the engine calls of another.
 
 With `ci_mmf = true` the climbing image takes improved-dimer steps on its
 own. Each step evaluates the moved centre and its forward image as one
-batch. A rotation trial depends on the previous one and runs alone, on
-the group that last evaluated the geometry nearest to it, while the other
-groups wait. A saddle search does the same, and
-with `min_mode_method = lanczos` the second system of that batch is the
-first Krylov product's displaced image.
+batch. A rotation trial depends on the previous one and runs alone. It
+runs on the group that last evaluated the geometry nearest to it, and the
+other groups wait. A saddle search does the same. With
+`min_mode_method = lanczos` the second system of that batch is the first
+Krylov product's displaced image.
 
 A Hessian or a prefactor with an empty `checkpoint_path` sends its
 displaced structures through these groups the same way.
 
-Each group keeps the converged orbitals of every system it evaluates,
-under that system's key: the image index for a band, the bead index for a
-ring polymer, the position in the batch otherwise, and one key for every
-single request. The next SCF of an image or a bead starts from its own
-orbitals of the previous step rather than from those of whichever system
-the group evaluated last. One group (`ranks_per_image = 0`) batches as
-well, so the keys hold there too. The engine needs
-`cpmdc_session_select_orbitals`; an older libcpmdc keeps one stored copy
-per group, and so does an rgpot without `CPMDPot::selectOrbitals` (3.4.0
-and older).
+Each group stores the converged orbitals of every system it evaluates.
+The key is the image index for a band and the bead index for a ring
+polymer. A system without an owner uses its position in the batch, and
+every single request shares one key. The next self-consistent field
+(SCF) cycle of an image or a bead starts from its own orbitals of the
+previous step. One group (`ranks_per_image = 0`) batches as well, so the
+keys apply there too. The engine needs `cpmdc_session_select_orbitals`.
+An older libcpmdc keeps one stored copy per group, and so does rgpot
+3.4.0 or older, which lacks `CPMDPot::selectOrbitals`. On a 16-bead water
+ring the keys cut the SCF steps per bead from 16.8 to 14.4.
 
 ### Choosing the number of groups
 
-A batch of M systems on G groups takes ceil(M / G) rounds, so its load
-balance is M / (G ceil(M / G)). Pick G to divide the systems of the
-batch that repeats: the interior images of a band (`images`), or the
+A batch of M systems on G groups takes ceil(M / G) rounds. Its load
+balance is M / (G ceil(M / G)). Pick G to divide the batch that
+repeats. That batch is the interior images of a band (`images`) or the
 beads of a ring (`path_beads`, `pi_beads`). Seven images run evenly on 1
 or 7 groups; on 2 groups the second round leaves one group idle and the
 load balance is 7/8. Sixteen beads run evenly on 1, 2, 4, 8 or 16 groups.
-Past that, fewer groups of more ranks often win: a CPMD SCF step of a
-small cell scales over the ranks of one group better than the groups
-share a node. For the Si3N4 Geo1 cell of this page, one group of 28
-ranks took 141.7 s for 9 force calls against 160.6 s for 7 groups of 4.
-Those figures are wall times. The minimized energy of that cell is
-`potential_energy` in `results.dat`, and this page does not quote it.
+Past that, fewer groups of more ranks often win. A CPMD SCF step of a
+small cell scales over the ranks of one group. Many groups instead
+compete for the same cores and memory. For the Si3N4 Geo1 cell of this
+page, one group of 28 ranks took 141.7 s for 9 force calls. Seven groups
+of 4 took 160.6 s. For a 16-bead water ring on 8 ranks, 2 groups of 4
+took 556 s for 12 steps, 4 groups of 2 took 643 s, and one group of 4
+took 800 s. Those figures are wall times. The minimized energy of the
+Si3N4 cell is `potential_energy` in `results.dat`, and this page does
+not quote it.
 Keep to one rank per physical core.
 
 The run reads `reactant.con` and `product.con`.
