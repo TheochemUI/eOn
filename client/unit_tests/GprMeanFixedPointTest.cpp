@@ -68,7 +68,9 @@ gpr::AtomsConfiguration twoAtomConfig() {
   cfg.atoms_mov.type.setZero();
   cfg.pairtype.resize(1, 1);
   cfg.pairtype(0, 0) = 0;
-  cfg.n_pt = 1;
+  // The joint covariance takes one positive length per pair type.
+  // fitCholesky stores two lengths, so the configuration declares both.
+  cfg.n_pt = 2;
   cfg.atoms_mov.positions.resize(1, 6);
   cfg.atoms_mov.positions = cfg.positions;
   return cfg;
