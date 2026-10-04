@@ -790,6 +790,7 @@ void NudgedElasticBand::updateForces(bool ci_active) {
   const double endpointEnergy = std::max(path.front()->getPotentialEnergy(),
                                          path.back()->getPotentialEnergy());
   const bool climb = ci_active && maxEnergy > endpointEnergy;
+  const long previousCI = static_cast<long>(climbingImage);
   climbingImage = 0;
 
   // Spring strategy must be rebuilt each iteration (depends on maxEnergy,
@@ -802,8 +803,19 @@ void NudgedElasticBand::updateForces(bool ci_active) {
   }
   // The climbing image, chosen before the per-image work so that work
   // writes nothing outside its own image.
+  // Re-picking the highest image every call hops the climber onto a
+  // shoulder, so the current one stays while it is a strict interior
+  // local maximum.
+  long ciTarget = static_cast<long>(maxEnergyImage);
+  if (climb && previousCI > 0 && previousCI <= numImages) {
+    const double eCI = path[previousCI]->getPotentialEnergy();
+    if (eCI > path[previousCI - 1]->getPotentialEnergy() &&
+        eCI > path[previousCI + 1]->getPotentialEnergy()) {
+      ciTarget = previousCI;
+    }
+  }
   if (climb) {
-    climbingImage = maxEnergyImage;
+    climbingImage = static_cast<size_t>(ciTarget);
   }
 
   // Each image reads its neighbours' positions and energies and writes
@@ -849,7 +861,7 @@ void NudgedElasticBand::updateForces(bool ci_active) {
         spring);
 
     // Climbing image or projected force
-    if (climb && i == static_cast<long>(maxEnergyImage)) {
+    if (climb && i == ciTarget) {
       // CI force: F - 2*(F.t)*t, plus DNEB correction if active
       AtomMatrix forceDNEB = AtomMatrix::Zero(atoms, 3);
       if (const auto *dnebProj =
