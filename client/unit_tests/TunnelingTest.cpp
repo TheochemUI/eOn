@@ -2842,3 +2842,70 @@ TEST_CASE("a stationary ring with a soft transverse negative direction is not "
   CAPTURE(result.converged, result.iterations, residual, transverse);
   REQUIRE_FALSE(result.converged);
 }
+
+
+// A validation run, not part of the suite:
+//   test_tunneling "[validation]"
+// The quartic double well V0 (q^2 / a^2 - 1)^2 with the barrier (0.2057 eV)
+// and well curvature (0.00965 eV / (amu A^2)) of the Al adatom path of
+// examples/neb-al, unit mass in mass-weighted coordinates: a = 13.06, a
+// barrier curvature of -0.00483 and T_c = 8.30 K. At 0.6 and 0.85 T_c it
+// reports, for each bead count, whether a converged ring with one
+// negative mode appears, its cycle eigenvalue and its rate.
+TEST_CASE("Bead counts at which the Al-like double well has an index-1 ring",
+          "[.][validation][Tunneling]") {
+  const double v0 = 0.2057;
+  const double a = std::sqrt(8.0 * v0 / 0.00965);
+  const BatchPotential well = [&](const std::vector<VectorXd> &q,
+                                  std::vector<double> &v,
+                                  std::vector<VectorXd> &g) {
+    v.resize(q.size());
+    g.resize(q.size());
+    for (size_t j = 0; j < q.size(); ++j) {
+      const double x = q[j](0);
+      const double u = x * x / (a * a) - 1.0;
+      v[j] = v0 * u * u;
+      g[j] = VectorXd::Constant(1, 4.0 * v0 * u * x / (a * a));
+    }
+  };
+  auto hess = [&](long, const VectorXd &q) {
+    const double x = q(0);
+    return MatrixXd::Constant(
+        1, 1, 4.0 * v0 * (3.0 * x * x / (a * a) - 1.0) / (a * a));
+  };
+  const VectorXd saddle = VectorXd::Zero(1);
+  const MatrixXd hs = hess(0, saddle);
+  const MatrixXd hr = hess(0, VectorXd::Constant(1, -a));
+  const double tc = crossoverTemperature(hs);
+  for (const double frac : {0.85, 0.6}) {
+    const double beta = 1.0 / (kBoltzmann * frac * tc);
+    for (const long n : {8L, 16L, 32L, 64L, 128L, 256L}) {
+      RateInstantonOptions opt;
+      opt.beads = n;
+      opt.forceTolerance = 1e-8;
+      opt.maxIterations = 3000;
+      RateInstanton inst =
+          optimizeRateInstanton(saddle, hs, beta, {}, well, opt);
+      double lo = 0.0, hi = 0.0;
+      for (const auto &q : inst.beads) {
+        lo = std::min(lo, q(0));
+        hi = std::max(hi, q(0));
+      }
+      std::string rate = "no rate";
+      if (inst.converged) {
+        try {
+          instantonRate(inst, hess, hr, 0.0, hs, v0);
+          rate = std::to_string(inst.logRate);
+        } catch (const std::exception &ex) {
+          rate = ex.what();
+        }
+      }
+      WARN("T/Tc " << frac << " (T_c " << tc << " K), N " << n
+                   << ": converged " << inst.converged << ", iterations "
+                   << inst.iterations << ", turning points " << lo << " "
+                   << hi << " (minima at +-" << a << "), negative modes "
+                   << inst.negativeModes << ", cycle eigenvalue "
+                   << inst.zeroEigenvalue << ", ln k " << rate);
+    }
+  }
+}
