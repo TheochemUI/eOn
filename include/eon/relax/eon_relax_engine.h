@@ -56,7 +56,9 @@ extern "C" {
 #endif
 
 #ifdef _WIN32
-#ifdef EON_RELAX_ENGINE_BUILD
+#if defined(EON_RELAX_STATIC)
+#define EON_RELAX_API
+#elif defined(EON_RELAX_ENGINE_BUILD)
 #define EON_RELAX_API __declspec(dllexport)
 #else
 #define EON_RELAX_API __declspec(dllimport)
