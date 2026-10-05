@@ -59,7 +59,7 @@ def test_import_table_lists_the_dll_and_skips_kernel32(tmp_path: Path):
 def test_libomp_comes_from_the_first_search_directory(tmp_path: Path):
     mod = _mod()
     pe = tmp_path / "engine.dll"
-    pe.write_bytes(_pe(b"KERNEL32.dll"))
+    pe.write_bytes(_pe(b"libomp.dll"))
     first = tmp_path / "prefix"
     second = tmp_path / "plugin"
     first.mkdir()
@@ -68,3 +68,30 @@ def test_libomp_comes_from_the_first_search_directory(tmp_path: Path):
     (second / "libomp.dll").write_bytes(b"other")
     mod.stage(pe, [first, second], tmp_path / "stamp.txt")
     assert (tmp_path / "libomp.dll").read_bytes() == b"llvm"
+
+
+def test_a_copied_dll_pulls_its_sibling_before_the_prefix(tmp_path: Path):
+    mod = _mod()
+    pe = tmp_path / "engine.dll"
+    pe.write_bytes(_pe(b"plugin.dll"))
+    prefix = tmp_path / "prefix"
+    plugin = tmp_path / "plugin"
+    prefix.mkdir()
+    plugin.mkdir()
+    (plugin / "plugin.dll").write_bytes(_pe(b"helper.dll"))
+    (plugin / "helper.dll").write_bytes(b"sibling")
+    (prefix / "helper.dll").write_bytes(b"prefix")
+    mod.stage(pe, [prefix, plugin], tmp_path / "stamp.txt")
+    assert (tmp_path / "helper.dll").read_bytes() == b"sibling"
+
+
+def test_an_existing_dll_is_scanned_for_imports(tmp_path: Path):
+    mod = _mod()
+    pe = tmp_path / "engine.dll"
+    pe.write_bytes(_pe(b"helper.dll"))
+    (tmp_path / "helper.dll").write_bytes(_pe(b"extra.dll"))
+    prefix = tmp_path / "prefix"
+    prefix.mkdir()
+    (prefix / "extra.dll").write_bytes(b"extra")
+    mod.stage(pe, [prefix], tmp_path / "stamp.txt")
+    assert (tmp_path / "extra.dll").read_bytes() == b"extra"

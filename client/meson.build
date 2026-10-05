@@ -1301,8 +1301,10 @@ endif
 # Torch's Windows wheel ships DLLs whose names also exist in the pixi
 # prefix (OpenMP, zlib, and others). The loader returns 0xC0000139 when
 # it binds one of those names and the export the engine was linked
-# against is missing. test_relax_engine does not get that directory.
+# against is missing. The wheel bins are where those DLLs actually sit
+# (metatensor and metatomic use bin, torch uses lib).
 _win_torch_dirs = []
+_win_wheel_bins = []
 
 if get_option('with_metatomic')
     if get_option('torch_path') != ''
@@ -1404,6 +1406,13 @@ for name in ("metatensor", "metatensor_torch", "metatomic", "vesin"):
         ]
         if is_windows
             _win_torch_dirs = pip_metatomic_runtime_dirs
+            foreach _wheel_dir : pip_metatomic_runtime_dirs
+                _win_wheel_bins += _wheel_dir
+                _wheel_bin = fs.parent(_wheel_dir) / 'bin'
+                if _wheel_bin != _wheel_dir and fs.is_dir(_wheel_bin)
+                    _win_wheel_bins += _wheel_bin
+                endif
+            endforeach
         else
             _runtime_rpath += pip_metatomic_runtime_dirs
         endif
@@ -2113,11 +2122,19 @@ if get_option('with_tests')
     _have_staged_engine_imports = false
     if is_windows
         # The loader searches the executable directory before PATH.
-        # The first directory that contains a DLL name is the copy
-        # placed there. The prefix and the flang resource dir are the
-        # libraries the engine linked. readcon comes last so it cannot
-        # supply a same-named OpenMP or runtime DLL.
+        # Prefix before the wheel: a name that exists in both is the one
+        # the flang and capnp link used. Wheel bins fill torch and
+        # metatensor, which the prefix does not ship. readcon is last so
+        # its build directory cannot supply libomp.dll.
         _stage_search = []
+        _lbin = get_option('prefix') / 'Library' / 'bin'
+        _pbin = get_option('prefix') / 'bin'
+        if fs.is_dir(_lbin)
+            _stage_search += _lbin
+        endif
+        if fs.is_dir(_pbin)
+            _stage_search += _pbin
+        endif
         _flang_new = find_program('flang-new', required: false)
         if _flang_new.found()
             _flang_res = run_command(
@@ -2132,16 +2149,17 @@ if get_option('with_tests')
                 endif
             endif
         endif
-        _lbin = get_option('prefix') / 'Library' / 'bin'
-        _pbin = get_option('prefix') / 'bin'
-        if fs.is_dir(_lbin)
-            _stage_search += _lbin
-        endif
-        if fs.is_dir(_pbin)
-            _stage_search += _pbin
-        endif
+        foreach _wheel_dir : _win_wheel_bins
+            if fs.is_dir(_wheel_dir)
+                _stage_search += _wheel_dir
+            endif
+        endforeach
         if _readcon_runtime_dir != ''
             _stage_search += _readcon_runtime_dir
+        endif
+        _stage_depends = []
+        if _have_readcon_dll_beside
+            _stage_depends += _readcon_dll_beside
         endif
         _stage_engine_imports = custom_target(
             'stage-engine-dll-imports',
@@ -2153,6 +2171,7 @@ if get_option('with_tests')
                 '@INPUT@',
                 '@OUTPUT@',
             ] + _stage_search,
+            depends: _stage_depends,
             build_by_default: true,
         )
         _have_staged_engine_imports = true
@@ -2216,36 +2235,56 @@ if get_option('with_tests')
             _case_env.set('EONCLIENT', ec.full_path())
             _case_depends = [ec]
         endif
-        test(
+        _test_exe = executable(
             test.get(0),
-            executable(
-                test.get(0),
-                sources: [
-                    'unit_tests/' + test.get(1),
-                    'thirdparty/catch2/catch_amalgamated.cpp',
-                ],
-                include_directories: test.get(0) == 'test_relax_engine'
-                ? _incdirs + [include_directories('.')]
-                : _incdirs,
-                cpp_args: test_args,
-                # Include /STACK:16M (Windows) so EAM Al Fortran pots do not
-                # SIGSEGV with STATUS_STACK_OVERFLOW (default stack is 1 MB).
-                link_args: _linkargs,
-                dependencies: test.get(0) == 'test_relax_engine'
-                ? test_deps + [capnp_dep]
-                : test_deps,
-                link_with: test.get(0) == 'test_relax_engine'
-                ? test_link + [eon_relax_engine]
-                : test_link,
-                build_rpath: ':'.join(_runtime_rpath),
-            ),
-            workdir: meson.project_source_root() + '/client/unit_tests/data/systems/' + test.get(
-                2,
-            ),
-            timeout: test_timeout,
-            env: _case_env,
-            depends: _case_depends,
+            sources: [
+                'unit_tests/' + test.get(1),
+                'thirdparty/catch2/catch_amalgamated.cpp',
+            ],
+            include_directories: test.get(0) == 'test_relax_engine'
+            ? _incdirs + [include_directories('.')]
+            : _incdirs,
+            cpp_args: test_args,
+            # Include /STACK:16M (Windows) so EAM Al Fortran pots do not
+            # SIGSEGV with STATUS_STACK_OVERFLOW (default stack is 1 MB).
+            link_args: _linkargs,
+            dependencies: test.get(0) == 'test_relax_engine'
+            ? test_deps + [capnp_dep]
+            : test_deps,
+            link_with: test.get(0) == 'test_relax_engine'
+            ? test_link + [eon_relax_engine]
+            : test_link,
+            build_rpath: ':'.join(_runtime_rpath),
         )
+        _test_workdir = meson.project_source_root() + '/client/unit_tests/data/systems/' + test.get(
+            2,
+        )
+        # Meson puts every linked DLL directory on PATH ahead of the
+        # prefix. The launcher rebuilds PATH from the stage search list
+        # so the prefix and the wheel that provided each DLL come first.
+        if is_windows and test.get(0) == 'test_relax_engine'
+            test(
+                test.get(0),
+                py,
+                args: [
+                    meson.project_source_root() / 'scripts' / 'ci' / 'win_relax_launch.py',
+                    _test_exe.full_path(),
+                ] + _stage_search,
+                workdir: _test_workdir,
+                timeout: test_timeout,
+                env: _case_env,
+                depends: _case_depends + [_test_exe],
+            )
+        else
+            test(
+                test.get(0),
+                _test_exe,
+                workdir: _test_workdir,
+                timeout: test_timeout,
+                env: _case_env,
+                depends: _case_depends,
+            )
+        endif
     endforeach
     # potential_base.cpp is enough for computePt. The rest of the water
     # library is not part of the default build.
