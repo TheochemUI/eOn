@@ -1974,10 +1974,6 @@ if get_option('with_tests')
         _fortran_pot_dirs += meson.project_build_root() / 'client'
         _fortran_pot_dirs += meson.project_build_root() / 'client' / 'potentials' / 'Metatomic'
     endif
-    _delayimp_dep = []
-    if is_windows
-        _delayimp_dep = [cppc.find_library('delayimp', required: true)]
-    endif
     _test_env = environment()
     _systems_dir = join_paths(
         meson.project_source_root(),
@@ -2007,24 +2003,38 @@ if get_option('with_tests')
     if _readcon_runtime_dir != ''
         _test_env.prepend('PATH', _readcon_runtime_dir)
     endif
-    # Delay-load reads EON_WIN_DLL_DIRS before the first eon_relax_* call.
-    # Semicolon-separated, Windows only. The prefix bins are the DLLs
-    # the engine was linked against.
-    _win_dll_dirs = []
+    # Windows loads a DLL's imports from the executable directory before
+    # PATH. Stage the engine's non-system imports beside the test, the
+    # same place the Fortran pot DLLs sit. Torch on PATH cannot shadow
+    # them.
+    _stage_engine_imports = []
+    _have_staged_engine_imports = false
     if is_windows
+        _stage_search = []
         if _readcon_runtime_dir != ''
-            _win_dll_dirs += _readcon_runtime_dir
+            _stage_search += _readcon_runtime_dir
         endif
         _lbin = get_option('prefix') / 'Library' / 'bin'
         _pbin = get_option('prefix') / 'bin'
         if fs.is_dir(_lbin)
-            _win_dll_dirs += _lbin
+            _stage_search += _lbin
         endif
         if fs.is_dir(_pbin)
-            _win_dll_dirs += _pbin
+            _stage_search += _pbin
         endif
-        _win_dll_dirs += fs.parent(eon_relax_engine.full_path())
-        _test_env.set('EON_WIN_DLL_DIRS', ';'.join(_win_dll_dirs))
+        _stage_engine_imports = custom_target(
+            'stage-engine-dll-imports',
+            input: eon_relax_engine,
+            output: 'engine-dll-imports.stamp',
+            command: [
+                py,
+                meson.project_source_root() / 'scripts' / 'ci' / 'win_stage_imports.py',
+                '@INPUT@',
+                '@OUTPUT@',
+            ] + _stage_search,
+            build_by_default: true,
+        )
+        _have_staged_engine_imports = true
     endif
     if _fortran_pot_dirs.length() > 0
         # FortranPotLoader splits on ';' on Windows (drive letters break ':').
@@ -2042,6 +2052,9 @@ if get_option('with_tests')
         _case_depends = []
         if _have_readcon_dll_beside
             _case_depends += [_readcon_dll_beside]
+        endif
+        if _have_staged_engine_imports
+            _case_depends += [_stage_engine_imports]
         endif
         if test.get(0) == 'test_client_timing'
             _case_depends += [ec]
@@ -2067,15 +2080,9 @@ if get_option('with_tests')
                 cpp_args: test_args,
                 # Include /STACK:16M (Windows) so EAM Al Fortran pots do not
                 # SIGSEGV with STATUS_STACK_OVERFLOW (default stack is 1 MB).
-                # Delay-load the engine so EngineDllSearch runs before the
-                # loader binds capnp, kj, and readcon.
-                link_args: (
-                    test.get(0) == 'test_relax_engine' and is_windows
-                )
-                ? _linkargs + ['/DELAYLOAD:eon_relax_engine.dll']
-                : _linkargs,
+                link_args: _linkargs,
                 dependencies: test.get(0) == 'test_relax_engine'
-                ? test_deps + [capnp_dep] + _delayimp_dep
+                ? test_deps + [capnp_dep]
                 : test_deps,
                 link_with: test.get(0) == 'test_relax_engine'
                 ? test_link + [eon_relax_engine]
