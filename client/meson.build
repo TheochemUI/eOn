@@ -2271,7 +2271,10 @@ if get_option('with_tests')
                     _test_exe.full_path(),
                 ] + _stage_search,
                 workdir: _test_workdir,
-                timeout: test_timeout,
+                # The launcher reads the import tables of the wheel DLLs
+                # before the test. That is more than the default 30s on a
+                # cold runner disk.
+                timeout: 180,
                 env: _case_env,
                 depends: _case_depends + [_test_exe],
             )
