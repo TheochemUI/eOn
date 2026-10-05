@@ -657,6 +657,7 @@ readcon_order_srcs = []
 # another readcon_core.dll earlier on PATH; Windows then starts the
 # test with STATUS_ENTRYPOINT_NOT_FOUND (0xC0000139).
 _readcon_runtime_dir = ''
+_have_readcon_dll_beside = false
 if not readcon_dep.found()
     readcon_proj = subproject(
         'readcon-core',
@@ -673,9 +674,26 @@ if not readcon_dep.found()
     # readcon-core without the stamp contributes no sources.
     readcon_order_srcs += readcon_proj.get_variable('readcon_order', [])
     if is_windows
-        _readcon_runtime_dir = fs.parent(
-            readcon_proj.get_variable('readcon_cargo')[0].full_path(),
+        _readcon_dll = readcon_proj.get_variable('readcon_cargo')[0]
+        _readcon_runtime_dir = fs.parent(_readcon_dll.full_path())
+        # The loader searches the executable directory before PATH.
+        # A pixi readcon_core.dll on PATH is a different build and the
+        # process exits 0xC0000139 before main. The copy sits next to
+        # test_relax_engine.exe and eon_relax_engine.dll.
+        _readcon_dll_beside = custom_target(
+            'readcon-dll-beside-tests',
+            input: _readcon_dll,
+            output: 'readcon_core.dll',
+            command: [
+                py,
+                '-c',
+                'import shutil, sys; shutil.copyfile(sys.argv[1], sys.argv[2])',
+                '@INPUT@',
+                '@OUTPUT@',
+            ],
+            build_by_default: true,
         )
+        _have_readcon_dll_beside = true
     endif
 endif
 if is_windows
@@ -1984,6 +2002,9 @@ if get_option('with_tests')
         test_timeout = test.get(3, 30)
         _case_env = _test_env
         _case_depends = []
+        if _have_readcon_dll_beside
+            _case_depends += [_readcon_dll_beside]
+        endif
         if test.get(0) == 'test_client_timing'
             _case_depends += [ec]
         elif test.get(0) == 'test_serve_spec'

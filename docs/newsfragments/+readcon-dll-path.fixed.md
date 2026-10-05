@@ -1,1 +1,1 @@
-Windows tests load the readcon DLL this build produced, not another one on PATH.
+Windows tests load the readcon DLL from the executable directory, not another build on PATH.
