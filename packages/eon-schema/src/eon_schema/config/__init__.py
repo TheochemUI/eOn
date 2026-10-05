@@ -10,6 +10,7 @@ Import paths (equivalent)::
     from eon.schema import MainConfig, Config  # re-export in eon-akmc
 
 L2 request models (``DimerSpec``, ``NebSpec``) stay under ``eon_schema.api``.
+config.ini JSON Schema is ``eon_schema.config.jsonschema``.
 """
 
 from __future__ import annotations

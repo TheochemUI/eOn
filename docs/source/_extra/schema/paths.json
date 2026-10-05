@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/paths.json",
+  "title": "Paths",
+  "description": "config.ini [Paths] section (PathsConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "main_directory": {
+      "default": "./",
+      "description": "This is the root directory of the simulation. Configuration files and the initial reactant are here and by default all of the simulation data will be stored under this directory.",
+      "type": "string"
+    },
+    "jobs_out": {
+      "default": "jobs/out/",
+      "description": "Directory for job outputs.",
+      "type": "string"
+    },
+    "jobs_in": {
+      "default": "jobs/in/",
+      "description": "Directory for job inputs.",
+      "type": "string"
+    },
+    "incomplete": {
+      "default": "jobs/incomplete/",
+      "description": "Directory for incomplete jobs.",
+      "type": "string"
+    },
+    "states": {
+      "default": "states/",
+      "description": "Directory where all of the information about individual states is located.",
+      "type": "string"
+    },
+    "results": {
+      "default": "./",
+      "description": "Directory for storing results.",
+      "type": "string"
+    },
+    "potential_files": {
+      "default": "potfiles",
+      "description": "Directory for extra files needed by the client for the potential.",
+      "type": "string"
+    },
+    "bh_minima": {
+      "default": "minima",
+      "description": "Directory for BH minima.",
+      "type": "string"
+    },
+    "kdb_scratch": {
+      "default": "kdbscratch/",
+      "description": "Directory for KDB scratch files.",
+      "type": "string"
+    },
+    "kdb": {
+      "default": "kdb/",
+      "description": "Directory for KDB files.",
+      "type": "string"
+    },
+    "superbasins": {
+      "default": "superbasins/",
+      "description": "Directory for superbasins.",
+      "type": "string"
+    },
+    "superbasin_recycling": {
+      "default": "SB_recycling",
+      "description": "Directory for superbasin recycling.",
+      "type": "string"
+    },
+    "scratch": {
+      "default": "jobs/scratch/",
+      "description": "Directory for scratch files.",
+      "type": "string"
+    }
+  }
+}

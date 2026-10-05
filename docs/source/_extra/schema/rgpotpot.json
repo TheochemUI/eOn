@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/rgpotpot.json",
+  "title": "RgpotPot",
+  "description": "config.ini [RgpotPot] section (RgpotPot). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "backend": {
+      "default": "nwchemc",
+      "description": "rgpot backend: 'nwchemc', 'cpmdc', 'metatomic', or 'xtb' (aliases: nwchem/cpmd/mta/gfn). metatomic/xtb dlopen libmetatomic_engine.so / libxtb_engine.so for packaging.",
+      "type": "string"
+    },
+    "basis": {
+      "default": "sto-3g",
+      "description": "Basis set for the NWChem backend.",
+      "type": "string"
+    },
+    "theory": {
+      "default": "scf",
+      "description": "Theory level for the NWChem backend.",
+      "type": "string"
+    },
+    "scf_type": {
+      "default": "rhf",
+      "description": "SCF type for the NWChem backend.",
+      "type": "string"
+    },
+    "functional": {
+      "default": "BLYP",
+      "description": "XC functional for the CPMD backend.",
+      "type": "string"
+    },
+    "cutoff_ry": {
+      "default": 70.0,
+      "description": "Plane-wave cutoff (Ry) for the CPMD backend.",
+      "type": "number"
+    },
+    "charge": {
+      "default": 0,
+      "description": "Total charge.",
+      "type": "integer"
+    },
+    "multiplicity": {
+      "default": 1,
+      "description": "Spin multiplicity.",
+      "type": "integer"
+    },
+    "engine_path": {
+      "default": "",
+      "description": "Engine .so path (libnwchemc / libcpmdc / libmetatomic_engine / libxtb_engine).",
+      "type": "string"
+    },
+    "engine_library": {
+      "default": "",
+      "description": "Alias for engine_path; used when engine_path is empty.",
+      "type": "string"
+    },
+    "model_path": {
+      "default": "",
+      "description": "Metatomic model path when backend=metatomic.",
+      "type": "string"
+    },
+    "device": {
+      "default": "cpu",
+      "description": "Metatomic device when backend=metatomic.",
+      "type": "string"
+    },
+    "length_unit": {
+      "default": "angstrom",
+      "description": "Metatomic length unit when backend=metatomic.",
+      "type": "string"
+    },
+    "extensions_directory": {
+      "default": "",
+      "description": "Metatomic extensions directory when backend=metatomic.",
+      "type": "string"
+    },
+    "check_consistency": {
+      "default": false,
+      "description": "Metatomic consistency checks when backend=metatomic.",
+      "type": "boolean"
+    },
+    "uncertainty_threshold": {
+      "default": -1.0,
+      "description": "Metatomic uncertainty threshold when backend=metatomic.",
+      "type": "number"
+    },
+    "torch_determinism_strict": {
+      "default": false,
+      "description": "Strict Torch determinism when backend=metatomic.",
+      "type": "boolean"
+    },
+    "paramset": {
+      "default": "GFN2xTB",
+      "description": "XTB paramset when backend=xtb.",
+      "enum": [
+        "GFNFF",
+        "GFN0xTB",
+        "GFN1xTB",
+        "GFN2xTB"
+      ],
+      "type": "string"
+    },
+    "accuracy": {
+      "default": 1.0,
+      "description": "XTB accuracy when backend=xtb.",
+      "type": "number"
+    },
+    "electronic_temperature": {
+      "default": 300.0,
+      "description": "XTB electronic temperature (K) when backend=xtb.",
+      "type": "number"
+    },
+    "max_iterations": {
+      "default": 250,
+      "description": "XTB max iterations when backend=xtb.",
+      "type": "integer"
+    },
+    "uhf": {
+      "default": 0,
+      "description": "XTB unpaired electrons when backend=xtb.",
+      "type": "integer"
+    },
+    "engine_root": {
+      "default": "",
+      "description": "Engine installation root (NWCHEM_ROOT / CPMD_ROOT).",
+      "type": "string"
+    },
+    "title": {
+      "default": "",
+      "description": "Job title passed to the engine.",
+      "type": "string"
+    },
+    "memory_mb": {
+      "default": 0,
+      "description": "Engine memory limit in MB (0 uses the engine default).",
+      "type": "integer"
+    },
+    "scratch_dir": {
+      "default": "",
+      "description": "Engine scratch directory.",
+      "type": "string"
+    },
+    "input_block": {
+      "default": "",
+      "description": "Verbatim input block for the engine: NWChem inputBlocks, or CPMD &SECTION text placed ahead of the sections cpmdc generates.",
+      "type": "string"
+    },
+    "permanent_dir": {
+      "default": "",
+      "description": "CPMD FILEPATH directory for RESTART files (backend=cpmdc).",
+      "type": "string"
+    }
+  }
+}

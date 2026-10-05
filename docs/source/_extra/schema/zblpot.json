@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/zblpot.json",
+  "title": "ZBLPot",
+  "description": "config.ini [ZBLPot] section (ZBLPot). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "cut_inner": {
+      "default": 2.0,
+      "description": "Distance where switching function begins.",
+      "type": "number"
+    },
+    "cut_global": {
+      "default": 2.5,
+      "description": "Global cutoff for the ZBL interaction.",
+      "type": "number"
+    }
+  }
+}

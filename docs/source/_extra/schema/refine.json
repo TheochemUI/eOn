@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/refine.json",
+  "title": "Refine",
+  "description": "config.ini [Refine] section (RefineConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "refine_opt_method": {
+      "default": "none",
+      "description": "The optimization method to use for refinement.\n\nOptions:\n  - ``none``: No refinement optimization\n  - ``cg``: Conjugate gradient\n  - ``lbfgs``: Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton optimizer\n  - ``fire``: Fast inertial relaxation engine\n  - ``box``: Optimizes the atom positions and box using quickmin\n  - ``qm``: Quickmin",
+      "enum": [
+        "none",
+        "cg",
+        "lbfgs",
+        "fire",
+        "box",
+        "qm"
+      ],
+      "type": "string"
+    },
+    "refine_threshold": {
+      "default": 0.5,
+      "description": "Threshold for refinement optimization.",
+      "type": "number"
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/prefactor.json",
+  "title": "Prefactor",
+  "description": "config.ini [Prefactor] section (PrefactorConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "all_free_atoms": {
+      "default": false,
+      "description": "Account for all free atoms when determining the prefactor.",
+      "type": "boolean"
+    },
+    "filter_scheme": {
+      "default": "fraction",
+      "description": "Determines how to filter the atoms for use in the prefactor calculation.\n\nOptions:\n- ``cutoff``: includes atoms that move more than :any:`eon.schema.PrefactorConfig.min_displacement`\n- ``fraction``: includes atoms that make up :any:`eon.schema.PrefactorConfig.filter_fraction` of the total motion, prioritizing the atoms that move the most",
+      "enum": [
+        "cutoff",
+        "fraction"
+      ],
+      "type": "string"
+    },
+    "filter_fraction": {
+      "default": 0.9,
+      "description": "When using filter_scheme ``fraction``, includes the atoms that move the most, limited to the number that make up ``filter_fraction`` of the total motion.",
+      "type": "number"
+    },
+    "min_displacement": {
+      "default": 0.25,
+      "description": "Minimum displacement for an atom to be included in the Hessian calculation. Used only with filter_scheme 'cutoff'.",
+      "type": "number"
+    },
+    "within_radius": {
+      "default": 3.3,
+      "description": "Atoms within this radius of moving atoms are included in the Hessian. Used only with filter_scheme 'cutoff'.",
+      "type": "number"
+    },
+    "default_value": {
+      "default": 0.0,
+      "description": "Calculate prefactor if zero, otherwise use given value instead of doing a full prefactor calculation.",
+      "type": "number"
+    },
+    "min_value": {
+      "default": 1000000000.0,
+      "description": "Minimum value for a reasonable prefactor.",
+      "type": "number"
+    },
+    "max_value": {
+      "default": 1e+21,
+      "description": "Maximum value for a reasonable prefactor.",
+      "type": "number"
+    },
+    "configuration": {
+      "default": "reactant",
+      "description": "Configuration for which the eigenfrequencies will be determined in a prefactor job.\n\nOptions:\n - ``reactant``\n - ``saddle``\n - ``product``.",
+      "enum": [
+        "reactant",
+        "saddle",
+        "product"
+      ],
+      "type": "string"
+    },
+    "rate_estimation": {
+      "default": "htst",
+      "description": "Rate estimation method used for the prefactor calculation.",
+      "type": "string"
+    }
+  }
+}

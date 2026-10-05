@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/bgsd.json",
+  "title": "BGSD",
+  "description": "config.ini [BGSD] section (BGSDConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "alpha": {
+      "default": 10.0,
+      "description": "Bias prefactor for the BGSD objective.",
+      "type": "number"
+    },
+    "beta": {
+      "default": 0.2,
+      "description": "Energy offset used in the BGSD bias term.",
+      "type": "number"
+    },
+    "gradientfinitedifference": {
+      "default": 1e-06,
+      "description": "Finite-difference step used to estimate the BGSD gradient.",
+      "type": "number"
+    },
+    "Hforceconvergence": {
+      "default": 0.01,
+      "description": "Convergence threshold for the Hessian-like force component.",
+      "type": "number"
+    },
+    "grad2energyconvergence": {
+      "default": 1e-06,
+      "description": "Convergence threshold for the squared-gradient energy criterion.",
+      "type": "number"
+    },
+    "grad2forceconvergence": {
+      "default": 0.0001,
+      "description": "Convergence threshold for the squared-gradient force criterion.",
+      "type": "number"
+    }
+  }
+}

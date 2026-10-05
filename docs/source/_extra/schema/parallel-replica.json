@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/parallel-replica.json",
+  "title": "Parallel Replica",
+  "description": "config.ini [Parallel Replica] section (ParallelReplicaConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "dephase_time": {
+      "default": 1000.0,
+      "description": "Time (in fs) to decorrelate the replica trajectories.\n\nThe momenta will be inverted when reaching the dividing surface to prevent\ntransitions occurring during this time.",
+      "type": "number"
+    },
+    "state_check_interval": {
+      "default": 1000.0,
+      "description": "Frequency (in fs) to check the system state.\n\nEvery ``state_check_interval``, the current configuration is minimized and\ncompared to the initial state minimum to decide if a transition to a new\nstate has occurred. When :any:`refine_transition` is set to true, the code\nwill keep a buffer of configurations so that the transition time can be\ndetermined to more precision than ``state_check_interval``.",
+      "type": "number"
+    },
+    "refine_transition": {
+      "default": true,
+      "description": "Whether the transition time is refined.\n\nWhen this option is true, an array of (:any:`state_check_interval`/\n:any:`state_save_interval`) configurations along the history of the\ntrajectory is saved. A binary search is then used to determine the\ntransition time. When this option is false, the transition time is taken to\nbe when the new state was found. This function reduces the need for small\nvalues of :any:`state_check_interval`; the precision of the transition time\nis :any:`state_save_interval` * :any:`dynamics time_step\n<eon.schema.DynamicsConfig.time_step>`.",
+      "type": "boolean"
+    },
+    "state_save_interval": {
+      "default": 100.0,
+      "description": "Frequency to record system state.\n\nHow often the system is recorded to the buffer array when the\n:any:`refine_transition` option is\nactivated. Increasing the value of\n:any:`state_save_interval` lowers the\nprecision of the transition time estimate but also reduces memory usage and\nspeeds up refinement of the transition step.",
+      "type": "number"
+    },
+    "post_transition_time": {
+      "default": 1000.0,
+      "description": "Additional time (in fs) after a new state is found.\n\nA state check will be employed after this post_transition_time to confirm\nthat the state is stable. This additional check helps avoid meta-stable\nstates. A value similar to\n:any:`dephase_time` is recommended.",
+      "type": "number"
+    },
+    "stop_after_transition": {
+      "default": false,
+      "description": "Whether to stop the job when a new state is found.",
+      "type": "boolean"
+    },
+    "dephase_loop_stop": {
+      "default": false,
+      "description": "Whether to stop the dephase loop.",
+      "type": "boolean"
+    },
+    "dephase_loop_max": {
+      "default": 5,
+      "description": "Maximum number of dephase loops.",
+      "type": "integer"
+    }
+  }
+}

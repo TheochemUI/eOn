@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/serve.json",
+  "title": "Serve",
+  "description": "config.ini [Serve] section (ServeConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "host": {
+      "default": "localhost",
+      "description": "Hostname to bind serve mode RPC servers to.",
+      "type": "string"
+    },
+    "port": {
+      "default": 12345,
+      "description": "TCP port for single-potential or replicated serve mode.",
+      "type": "integer"
+    },
+    "replicas": {
+      "default": 1,
+      "description": "Number of replicated server instances. In gateway mode, this is the pool size.",
+      "type": "integer"
+    },
+    "gateway_port": {
+      "default": 0,
+      "description": "If > 0, start a single gateway on this port backed by a pool of 'replicas' potential instances dispatched round-robin. Set to 0 to disable gateway mode.",
+      "type": "integer"
+    },
+    "endpoints": {
+      "default": "",
+      "description": "Multi-model serve spec: comma-separated 'potential:port' or 'potential:host:port' entries. When set, overrides single-potential serve.",
+      "type": "string"
+    }
+  }
+}

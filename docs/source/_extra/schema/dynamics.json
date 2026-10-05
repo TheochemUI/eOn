@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/dynamics.json",
+  "title": "Dynamics",
+  "description": "config.ini [Dynamics] section (DynamicsConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "time_step": {
+      "default": 1.0,
+      "description": "The duration of each MD step, in femtoseconds.",
+      "type": "number"
+    },
+    "time": {
+      "default": 1000.0,
+      "description": "Total MD time, in femtoseconds.",
+      "type": "number"
+    },
+    "thermostat": {
+      "default": "none",
+      "description": "Thermostat to use for the dynamics simulation.\n\nOptions:\n- ``none``: NVE dynamics with the verlet algorithm. Initial velocities set by temperature.\n- ``andersen``: Andersen thermostat with the Verlet algorithm.\n- ``langevin``: Langevin thermostat with the Verlet algorithm.\n- ``nose_hoover``: Nosé-Hoover thermostat with the Verlet algorithm.",
+      "enum": [
+        "none",
+        "andersen",
+        "langevin",
+        "nose_hoover"
+      ],
+      "type": "string"
+    },
+    "andersen_collision_period": {
+      "default": 100.0,
+      "description": "The collision period (in fs) for the Andersen thermostat.",
+      "type": "number"
+    },
+    "andersen_alpha": {
+      "default": 1.0,
+      "description": "The collision strength in the Andersen thermostat.",
+      "type": "number"
+    },
+    "nose_mass": {
+      "default": 1.0,
+      "description": "The effective mass of the additional degree of freedom in the Nosé-Hoover thermostat, which determines the coupling frequency of the thermostat.",
+      "type": "number"
+    },
+    "langevin_friction": {
+      "default": 0.01,
+      "description": "The damping coefficient for Langevin dynamics (1/fs).",
+      "type": "number"
+    }
+  }
+}

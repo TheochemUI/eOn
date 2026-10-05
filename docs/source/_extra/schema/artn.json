@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/artn.json",
+  "title": "ARTn",
+  "description": "config.ini [ARTn] section (ARTnConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "push_step_size": {
+      "default": 0.3,
+      "description": "Step size for the initial push away from the minimum, in Angstroms.",
+      "type": "number"
+    },
+    "force_threshold": {
+      "default": 0.05,
+      "description": "Force convergence criterion for saddle point, in eV/Angstrom. Maps to pARTn's forc_thr.",
+      "type": "number"
+    },
+    "max_iterations": {
+      "default": 500,
+      "description": "Maximum number of ARTn iterations.",
+      "type": "integer"
+    },
+    "ninit": {
+      "default": -1,
+      "description": "Number of initial push steps before Lanczos eigenmode estimation. -1 keeps pARTn's built-in default. 0 skips the push phase and goes directly to Lanczos (appropriate when eOn supplies the displacement). Larger values let ARTn explore further from the minimum.",
+      "type": "integer"
+    },
+    "nperp_limitation": {
+      "default": "default",
+      "description": "Comma-separated ints controlling max perp-relax steps per Lanczos cycle. 'default' uses pARTn defaults. '-1' for unlimited (smooth potentials). '20,30' for ML potentials.",
+      "type": "string"
+    },
+    "lanczos_min_size": {
+      "default": -1,
+      "description": "Minimum Lanczos iterations before convergence check. -1 uses pARTn default (3). Set to 1 for refinement near a known saddle.",
+      "type": "integer"
+    },
+    "nsmooth": {
+      "default": -1,
+      "description": "Number of smooth interpolation steps between push and eigenvector. -1 uses pARTn default. 0 disables smoothing.",
+      "type": "integer"
+    },
+    "filin": {
+      "default": "",
+      "description": "Path to an artn.in style input file. Empty keeps pARTn's post-artn_create NAN_STR sentinel ('BBBB'), so no file is read and all parameters come from this [ARTn] section. A non-empty value must name a file on disk; eOn checks before pARTn setup and aborts with a clear error when missing.",
+      "type": "string"
+    }
+  }
+}

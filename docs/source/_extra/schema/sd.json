@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/sd.json",
+  "title": "SD",
+  "description": "config.ini [SD] section (SDConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "sd_alpha": {
+      "default": 0.1,
+      "description": "Alpha value for SD.",
+      "type": "number"
+    },
+    "sd_two_point": {
+      "default": false,
+      "description": "If true, use the two-point method in SD.",
+      "type": "boolean"
+    }
+  }
+}

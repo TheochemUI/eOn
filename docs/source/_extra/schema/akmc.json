@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/akmc.json",
+  "title": "AKMC",
+  "description": "config.ini [AKMC] section (AKMCConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "confidence": {
+      "default": 0.99,
+      "description": "The confidence (out of 1.0) criterion for moving to the next state.",
+      "type": "number"
+    },
+    "server_side_process_search": {
+      "default": false,
+      "description": "If true, the server does not send out \"process_search\" jobs. Instead, it manages individual dimer, minimization, and Hessian calculations. This option is usually used when a single \"process_search\" job will take a long time (hours or longer).",
+      "type": "boolean"
+    },
+    "thermally_accessible_window": {
+      "default": 20.0,
+      "description": "Processes with barriers within this number of kT above the lowest barrier will be used in the rate table and for confidence calculations.",
+      "type": "number"
+    },
+    "thermally_accessible_buffer": {
+      "default": 0.0,
+      "description": "Processes with barriers of thermally_accessible_window + thermally_accessible_buffer will be stored, in the event that they are thermally accessible later, but are not used in the rate table or for the confidence calculations. Processes with barriers higher than the sum of these two values will be discarded.",
+      "type": "number"
+    },
+    "max_kmc_steps": {
+      "default": 0,
+      "description": "The maximum number of KMC transitions in a row. In MPI or continuous mode, eOn will exit after performing this many KMC steps. If this is set to 0, eOn will run forever.",
+      "type": "integer"
+    },
+    "confidence_scheme": {
+      "default": "new",
+      "description": "The scheme used for confidence calculation.\n\nOptions:\n- ``old``: Traditional confidence scheme based on the number of unique processes (:math:`Nf`) and the number of searches (:math:`Ns`).\n- ``new``: Enhanced confidence scheme using a mathematical function to account for the ratio of :math:`Nf` to :math:`Ns`.\n- ``sampling``: Confidence based on sampling probabilities derived from the repeat counts of processes.\n- ``dynamics``: Confidence derived from molecular dynamics, considering time extrapolation and rates at different temperatures.",
+      "enum": [
+        "old",
+        "new",
+        "sampling",
+        "dynamics"
+      ],
+      "type": "string"
+    },
+    "confidence_correction": {
+      "default": false,
+      "description": "If true, applies a correction to the confidence calculation.",
+      "type": "boolean"
+    },
+    "max_rate": {
+      "default": 0.0,
+      "description": "Sets the maximum allowable rate for a process. If a calculated rate exceeds this value, it is capped to prevent exceedingly high rates from dominating the simulation. This helps in maintaining numerical stability and realistic dynamics in the simulation.",
+      "type": "number"
+    },
+    "eq_rate": {
+      "default": 0.0,
+      "description": "Sets the equilibrium rate. If the forward and reverse rates exceed this value, they are adjusted to maintain equilibrium conditions. This prevents exceedingly high rates from dominating the simulation and ensures that both forward and reverse processes are considered symmetrically.",
+      "type": "number"
+    }
+  }
+}

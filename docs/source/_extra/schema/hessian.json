@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/hessian.json",
+  "title": "Hessian",
+  "description": "config.ini [Hessian] section (HessianConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "phva_atoms": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        }
+      ],
+      "default": "All",
+      "description": "PHVA mobile/active atoms displaced in the Hessian FD (not free/fixed): comma-delimited indices, e.g. 0,1,2, or 'All' for every free atom."
+    },
+    "zero_freq_value": {
+      "default": 1e-06,
+      "description": "The value assigned to zero frequencies.",
+      "type": "number"
+    }
+  }
+}

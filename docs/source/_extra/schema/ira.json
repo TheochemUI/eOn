@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/ira.json",
+  "title": "IRA",
+  "description": "config.ini [IRA] section (IRAConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "distance_threshold": {
+      "default": 0.3,
+      "description": "Distance threshold for atom matching in structure comparison.",
+      "type": "number"
+    },
+    "symmetry_threshold": {
+      "default": 0.1,
+      "description": "Threshold for symmetry detection (SOFI algorithm).",
+      "type": "number"
+    },
+    "use_pbc": {
+      "default": false,
+      "description": "Use periodic boundary conditions for structure comparison.",
+      "type": "boolean"
+    }
+  }
+}

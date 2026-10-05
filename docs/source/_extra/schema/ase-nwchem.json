@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/ase-nwchem.json",
+  "title": "ASE_NWCHEM",
+  "description": "config.ini [ASE_NWCHEM] section (ASE_NWCHEM). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "nwchem_path": {
+      "default": "NONE",
+      "description": "Path to the NWChem executable.",
+      "type": "string"
+    },
+    "nproc": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "const": "auto",
+          "type": "string"
+        }
+      ],
+      "default": "auto",
+      "description": "Number of processors to use for NWChem. Can be 'auto' or an integer string."
+    },
+    "mpi_launcher": {
+      "default": "mpirun",
+      "description": "MPI launcher for NWChem (mpirun default, or srun on Slurm).",
+      "type": "string"
+    },
+    "multiplicity": {
+      "default": "1",
+      "description": "Spin multiplicity for the NWChem calculation.",
+      "type": "string"
+    },
+    "scf_thresh": {
+      "default": 1e-05,
+      "description": "SCF convergence threshold for NWChem.",
+      "type": "number"
+    },
+    "scf_maxiter": {
+      "default": 200,
+      "description": "Maximum number of SCF iterations for NWChem.",
+      "type": "integer"
+    },
+    "basis": {
+      "default": "3-21G",
+      "description": "NWChem basis set passed to the ASE calculator.",
+      "type": "string"
+    },
+    "memory": {
+      "default": "2 gb",
+      "description": "NWChem memory string passed to the ASE calculator.",
+      "type": "string"
+    }
+  }
+}

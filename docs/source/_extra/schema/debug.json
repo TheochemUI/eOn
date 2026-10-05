@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/debug.json",
+  "title": "Debug",
+  "description": "config.ini [Debug] section (DebugConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "save_stdout": {
+      "default": false,
+      "description": "Save the standard output from the client to a file named stdout_0.dat.",
+      "type": "boolean"
+    },
+    "interactive_shell": {
+      "default": true,
+      "description": "Enable or disable the interactive shell.",
+      "type": "boolean"
+    },
+    "result_files_path": {
+      "default": "./debug_results/",
+      "description": "Where to store all result files.",
+      "type": "string"
+    },
+    "use_mean_time": {
+      "default": false,
+      "description": "Select transition times from the mean of the exponential distribution of escape times.",
+      "type": "boolean"
+    },
+    "register_extra_results": {
+      "default": false,
+      "description": "Register processes found for a state after leaving that state.",
+      "type": "boolean"
+    },
+    "target_trajectory": {
+      "default": false,
+      "description": "Follow the state-to-state trajectory of another AKMC simulation.",
+      "type": "boolean"
+    },
+    "keep_bad_saddles": {
+      "default": false,
+      "description": "Keep data about bad saddles. If true, the result files for failed saddle searches are kept in the badprocdata directory within the state directory for that search.",
+      "type": "boolean"
+    },
+    "keep_all_result_files": {
+      "default": false,
+      "description": "Stores all result files in main_directory/results.",
+      "type": "boolean"
+    },
+    "estimate_neb_eigenvalues": {
+      "default": false,
+      "description": "Write out the estimated lowest eigenvalue for each image of the NEB. This can significantly slow down the calculation!",
+      "type": "boolean"
+    },
+    "neb_mmf_estimator": {
+      "default": "dimer",
+      "description": "Estimator used to get the lowest eigenvalue, only used if estimate_neb_eigenvalues is true.",
+      "enum": [
+        "dimer",
+        "lanczos"
+      ],
+      "type": "string"
+    },
+    "write_movies": {
+      "default": false,
+      "description": "Output a movie of the calculation.",
+      "type": "boolean"
+    },
+    "write_movies_interval": {
+      "default": 1,
+      "description": "Write a movie frame every write_movies_interval steps.",
+      "type": "integer"
+    },
+    "write_deprecated_outs": {
+      "default": false,
+      "description": "Temporarily also write deprecated sidecar outputs such as minimization.dat and climb.dat alongside the new metadata-rich .con movies.",
+      "type": "boolean"
+    },
+    "stop_criterion": {
+      "default": 100000000.0,
+      "description": "Criterion to stop the calculation.",
+      "type": "number"
+    }
+  }
+}

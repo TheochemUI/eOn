@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/quickmin.json",
+  "title": "QuickMin",
+  "description": "config.ini [QuickMin] section (QuickMinConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "time_step": {
+      "default": 1.0,
+      "description": "Time step for QuickMin, in femtoseconds.",
+      "type": "number"
+    },
+    "qm_steepest_descent": {
+      "default": false,
+      "description": "If true, use the steepest descent method for QuickMin.",
+      "type": "boolean"
+    }
+  }
+}

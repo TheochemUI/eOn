@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/fire.json",
+  "title": "FIRE",
+  "description": "config.ini [FIRE] section (FIREConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "time_step": {
+      "default": 1.0,
+      "description": "Time step for FIRE, in femtoseconds.",
+      "type": "number"
+    },
+    "time_step_max": {
+      "default": 1.0,
+      "description": "Maximum time step for FIRE, in femtoseconds.",
+      "type": "number"
+    }
+  }
+}

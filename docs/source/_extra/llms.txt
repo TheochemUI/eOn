@@ -1,0 +1,99 @@
+# eOn
+
+> User guide for the eOn algorithms and job types, and the config.ini section schemas.
+
+The pages below are the user guide. Each JSON Schema file is the copy of record
+for one config.ini section: keys, defaults, and allowed values.
+
+## User guide
+
+- [User guide](https://eondocs.org/user_guide/index.html): User guide for eOn: algorithms, configuration settings, and job types. Schema: [Main](https://eondocs.org/schema/main.json).
+- [pyeonclient](https://eondocs.org/user_guide/pyeonclient.html): pyeonclient Python API: Matter, min-mode (Dimer/Lanczos/Davidson), MinModeSaddleSearch, NEB, Hessian, Prefactor.
+- [Neighbor lists (vesin)](https://eondocs.org/user_guide/neighbor_lists.html): Neighbor lists in eOn: vesin as the geometry backend; performance via the ASV eonclient suite.
+- [AiiDA (`aiida-eon`)](https://eondocs.org/user_guide/aiida.html): Run eonclient jobs under AiiDA with the aiida-eon plugin.
+- [External Potential](https://eondocs.org/user_guide/ext_pot.html): Guide to using the external potential (ext_pot) interface in eOn for wrapping arbitrary calculators via file-based communication. Schema: [Potential](https://eondocs.org/schema/potential.json).
+- [LAMMPS Potential](https://eondocs.org/user_guide/lammps_pot.html): Using LAMMPS potentials with eOn via runtime dynamic loading.
+- [ASE interface](https://eondocs.org/user_guide/ase_pot.html): Guide to using the Atomic Simulation Environment (ASE) interface in eOn, allowing the use of any ASE calculator as a potential. Schema: [Potential](https://eondocs.org/schema/potential.json).
+- [Metatomic interface](https://eondocs.org/user_guide/metatomic_pot.html): Learn how to set up and use the Metatomic interface in eOn for machine learning potentials with metatensor and PyTorch. Schema: [Potential](https://eondocs.org/schema/potential.json), [Metatomic](https://eondocs.org/schema/metatomic.json), [Main](https://eondocs.org/schema/main.json).
+- [QUIP with LAMMPS](https://eondocs.org/user_guide/quip.html): Guide on how to use QUIP (QUantum mechanics and Interatomic Potentials) with LAMMPS as a potential within eOn.
+- [MPI potential](https://eondocs.org/user_guide/mpi_potential.html): Instructions for using a modified version of VASP with eOn via the MPI Potential interface for parallel calculations.
+- [Choosing an algorithm](https://eondocs.org/user_guide/algorithm_selection.html): Guide to selecting the appropriate algorithm in eOn for your simulation task.
+- [General simulation parameters](https://eondocs.org/user_guide/main.html): Guide to the general simulation parameters in eOn's main configuration section, covering job types, temperature, and other shared settings. Schema: [Main](https://eondocs.org/schema/main.json).
+- [Potential](https://eondocs.org/user_guide/potential.html): A list and description of interatomic potentials supported by eOn, including vendored potentials and interfaces to external codes like VASP, LAMMPS, and ASE. Schema: [Potential](https://eondocs.org/schema/potential.json), [Metatomic](https://eondocs.org/schema/metatomic.json), [XTBPot](https://eondocs.org/schema/xtbpot.json), [ZBLPot](https://eondocs.org/schema/zblpot.json), [SocketNWChemPot](https://eondocs.org/schema/socketnwchempot.json), [ASE_NWCHEM](https://eondocs.org/schema/ase-nwchem.json), [ASE_ORCA](https://eondocs.org/schema/ase-orca.json), [AMS](https://eondocs.org/schema/ams.json), [AMS_IO](https://eondocs.org/schema/ams-io.json), [AMSEnv](https://eondocs.org/schema/amsenv.json).
+- [Structure comparison](https://eondocs.org/user_guide/structure_comparison.html): Documentation for the structure comparison settings in eOn, used to configure similarity measures and equivalence cutoffs. Schema: [Structure Comparison](https://eondocs.org/schema/structure-comparison.json).
+- [Optimizer](https://eondocs.org/user_guide/optimizer.html): Configuration options for the various geometry optimizers in eOn, including LBFGS, QuickMin, FIRE, CG, SD, and xtsci. Schema: [Optimizer](https://eondocs.org/schema/optimizer.json), [LBFGS](https://eondocs.org/schema/lbfgs.json), [QuickMin](https://eondocs.org/schema/quickmin.json), [FIRE](https://eondocs.org/schema/fire.json), [CG](https://eondocs.org/schema/cg.json), [SD](https://eondocs.org/schema/sd.json), [Xtsci](https://eondocs.org/schema/xtsci.json).
+- [Minimization](https://eondocs.org/user_guide/minimization.html): Instructions for running a local energy minimization calculation in eOn to find the nearest stable structure. Schema: [Main](https://eondocs.org/schema/main.json), [Optimizer](https://eondocs.org/schema/optimizer.json), [Xtsci](https://eondocs.org/schema/xtsci.json), [LBFGS](https://eondocs.org/schema/lbfgs.json), [Refine](https://eondocs.org/schema/refine.json).
+- [Nudged elastic band](https://eondocs.org/user_guide/neb.html): Guide to the Nudged Elastic Band (NEB) method in eOn for finding saddle points and minimum energy paths between known reactants and products. Schema: [Nudged Elastic Band](https://eondocs.org/schema/nudged-elastic-band.json), [Refine](https://eondocs.org/schema/refine.json).
+- [Dimer method](https://eondocs.org/user_guide/dimer.html): Documentation for the Dimer method in eOn, used for finding transition states and lowest eigenmodes using only first derivatives. Schema: [Dimer](https://eondocs.org/schema/dimer.json).
+- [Lanczos](https://eondocs.org/user_guide/lanczos.html): Guide to the Lanczos eigenmode method in eOn for saddle point searches. Schema: [Saddle Search](https://eondocs.org/schema/saddle-search.json), [Lanczos](https://eondocs.org/schema/lanczos.json).
+- [ARTn (Activation-Relaxation Technique nouveau)](https://eondocs.org/user_guide/artn.html): Guide to the ARTn (Activation-Relaxation Technique nouveau) saddle search method in eOn. Schema: [Saddle Search](https://eondocs.org/schema/saddle-search.json), [ARTn](https://eondocs.org/schema/artn.json).
+- [Hessian](https://eondocs.org/user_guide/hessian.html): Guide to Hessian matrix calculation in eOn for vibrational analysis and hTST rate prefactors. Schema: [Main](https://eondocs.org/schema/main.json), [Hessian](https://eondocs.org/schema/hessian.json), [Lanczos](https://eondocs.org/schema/lanczos.json), [Davidson](https://eondocs.org/schema/davidson.json).
+- [Prefactor](https://eondocs.org/user_guide/prefactor.html): Guide to harmonic transition state theory (hTST) prefactor calculation in eOn. Schema: [Main](https://eondocs.org/schema/main.json), [Prefactor](https://eondocs.org/schema/prefactor.json).
+- [Adaptive kinetic Monte Carlo](https://eondocs.org/user_guide/akmc.html): User guide for the Adaptive Kinetic Monte Carlo (aKMC) method in eOn. Learn how to coarse-grain molecular dynamics for rare event systems. Schema: [AKMC](https://eondocs.org/schema/akmc.json).
+- [Saddle search](https://eondocs.org/user_guide/saddle_search.html): Configuration for initiating saddle searches in eOn by displacing atoms from a minimum energy state. Schema: [Saddle Search](https://eondocs.org/schema/saddle-search.json).
+- [Basin hopping](https://eondocs.org/user_guide/basin_hopping.html): Guide to the Basin Hopping global optimization method in eOn for exploring potential energy surfaces. Schema: [Basin Hopping](https://eondocs.org/schema/basin-hopping.json).
+- [Process search](https://eondocs.org/user_guide/process_search.html): Configuration options for the Process Search job type in eOn, used within the aKMC method to find saddle points and connecting minima. Schema: [Process Search](https://eondocs.org/schema/process-search.json).
+- [Recycling](https://eondocs.org/user_guide/recycling.html): Documentation for the saddle point recycling method in eOn, which significantly reduces the computational cost of aKMC simulations. Schema: [Recycling](https://eondocs.org/schema/recycling.json).
+- [Coarse graining](https://eondocs.org/user_guide/coarse_graining.html): Guide to coarse-graining methods in eOn, such as MCAMC and AS-KMC, for accelerating simulations with vastly different timescales. Schema: [Coarse Graining](https://eondocs.org/schema/coarse-graining.json).
+- [Dynamics](https://eondocs.org/user_guide/dynamics.html): Configuration for running classical molecular dynamics (MD) simulations in eOn based on Newton's equations of motion. Schema: [Main](https://eondocs.org/schema/main.json), [Dynamics](https://eondocs.org/schema/dynamics.json).
+- [Parallel replica](https://eondocs.org/user_guide/parallel_replica.html): Guide to Parallel Replica Dynamics (PRD) in eOn, a method to accelerate molecular dynamics simulations by running multiple independent replicas. Schema: [Parallel Replica](https://eondocs.org/schema/parallel-replica.json).
+- [Hyperdynamics](https://eondocs.org/user_guide/hyperdynamics.html): Documentation for the Hyperdynamics method in eOn, which uses a bias potential to accelerate the rate of transitions in MD simulations. Schema: [Hyperdynamics](https://eondocs.org/schema/hyperdynamics.json).
+- [Communicator](https://eondocs.org/user_guide/communicator.html): Guide to eOn's server-client architecture and communication options for running parallel calculations locally, via MPI, or on a cluster. Schema: [Communicator](https://eondocs.org/schema/communicator.json).
+- [Debug](https://eondocs.org/user_guide/debug.html): Information on debug options in eOn for aiding in method development and bug reporting. Schema: [Debug](https://eondocs.org/schema/debug.json).
+- [Paths](https://eondocs.org/user_guide/paths.html): Configuration for specifying the directory paths for calculations and output in eOn. Schema: [Paths](https://eondocs.org/schema/paths.json).
+- [nvc++ stdpar (NEB image forces)](https://eondocs.org/user_guide/stdpar.html)
+- [Kinetic database](https://eondocs.org/user_guide/kdb.html): Guide to using the Kinetic Database (KDB) in eOn to store and reuse information about kinetic processes, speeding up aKMC simulations. Schema: [KDB](https://eondocs.org/schema/kdb.json).
+- [rgpot integration (three roles)](https://eondocs.org/user_guide/rgpot_integration.html): How eOn relates to rgpot: in-process engines, RPC serve mode, and optional potserv clients.
+- [RgpotPot (direct in-process rgpot)](https://eondocs.org/user_guide/rgpot_pot.html): eOn RGPOT potential: in-process rgpot NWChemPot/CPMDPot via dlopen. Schema: [Main](https://eondocs.org/schema/main.json), [Potential](https://eondocs.org/schema/potential.json), [RgpotPot](https://eondocs.org/schema/rgpotpot.json).
+- [Metatomic backends (fat, RGPOT, ASE)](https://eondocs.org/user_guide/rgpot_metatomic.html): Fat Metatomic, RGPOT dlopen engine, and ASE MetatomicCalculator backends in eOn / pyeonclient: same science, different packaging paths. Schema: [Potential](https://eondocs.org/schema/potential.json), [Metatomic](https://eondocs.org/schema/metatomic.json), [RgpotPot](https://eondocs.org/schema/rgpotpot.json).
+- [Serve mode](https://eondocs.org/user_guide/serve_mode.html): Guide to using eonclient serve mode to expose any eOn potential over RPC for integration with external tools like ChemGP. Schema: [Metatomic](https://eondocs.org/schema/metatomic.json), [XTBPot](https://eondocs.org/schema/xtbpot.json), [Potential](https://eondocs.org/schema/potential.json), [Serve](https://eondocs.org/schema/serve.json).
+
+## config.ini schema
+
+- [Section index](https://eondocs.org/schema/index.json): one JSON Schema file per config.ini section
+- [Main](https://eondocs.org/schema/main.json): MainConfig
+- [Potential](https://eondocs.org/schema/potential.json): PotentialConfig
+- [Optimizer](https://eondocs.org/schema/optimizer.json): OptimizerConfig
+- [Structure Comparison](https://eondocs.org/schema/structure-comparison.json): StructureComparisonConfig
+- [Process Search](https://eondocs.org/schema/process-search.json): ProcessSearchConfig
+- [Saddle Search](https://eondocs.org/schema/saddle-search.json): SaddleSearchConfig
+- [Dimer](https://eondocs.org/schema/dimer.json): DimerConfig
+- [Nudged Elastic Band](https://eondocs.org/schema/nudged-elastic-band.json): NudgedElasticBandConfig
+- [Lanczos](https://eondocs.org/schema/lanczos.json): LanczosConfig
+- [Davidson](https://eondocs.org/schema/davidson.json): DavidsonConfig
+- [ARTn](https://eondocs.org/schema/artn.json): ARTnConfig
+- [IRA](https://eondocs.org/schema/ira.json): IRAConfig
+- [Prefactor](https://eondocs.org/schema/prefactor.json): PrefactorConfig
+- [Dynamics](https://eondocs.org/schema/dynamics.json): DynamicsConfig
+- [Parallel Replica](https://eondocs.org/schema/parallel-replica.json): ParallelReplicaConfig
+- [Hyperdynamics](https://eondocs.org/schema/hyperdynamics.json): HyperdynamicsConfig
+- [AKMC](https://eondocs.org/schema/akmc.json): AKMCConfig
+- [Basin Hopping](https://eondocs.org/schema/basin-hopping.json): BasinHoppingConfig
+- [Communicator](https://eondocs.org/schema/communicator.json): CommunicatorConfig
+- [Paths](https://eondocs.org/schema/paths.json): PathsConfig
+- [Debug](https://eondocs.org/schema/debug.json): DebugConfig
+- [KDB](https://eondocs.org/schema/kdb.json): KDBConfig
+- [Recycling](https://eondocs.org/schema/recycling.json): RecyclingConfig
+- [Coarse Graining](https://eondocs.org/schema/coarse-graining.json): CoarseGrainingConfig
+- [Hessian](https://eondocs.org/schema/hessian.json): HessianConfig
+- [Serve](https://eondocs.org/schema/serve.json): ServeConfig
+- [Refine](https://eondocs.org/schema/refine.json): RefineConfig
+- [Metatomic](https://eondocs.org/schema/metatomic.json): Metatomic
+- [XTBPot](https://eondocs.org/schema/xtbpot.json): XTBPot
+- [ZBLPot](https://eondocs.org/schema/zblpot.json): ZBLPot
+- [SocketNWChemPot](https://eondocs.org/schema/socketnwchempot.json): SocketNWChemPot
+- [RgpotPot](https://eondocs.org/schema/rgpotpot.json): RgpotPot
+- [ASE_NWCHEM](https://eondocs.org/schema/ase-nwchem.json): ASE_NWCHEM
+- [ASE_ORCA](https://eondocs.org/schema/ase-orca.json): ASE_ORCA
+- [LBFGS](https://eondocs.org/schema/lbfgs.json): LBFGSConfig
+- [CG](https://eondocs.org/schema/cg.json): CGConfig
+- [FIRE](https://eondocs.org/schema/fire.json): FIREConfig
+- [QuickMin](https://eondocs.org/schema/quickmin.json): QuickMinConfig
+- [SD](https://eondocs.org/schema/sd.json): SDConfig
+- [Xtsci](https://eondocs.org/schema/xtsci.json): XtsciConfig
+- [GPR Dimer](https://eondocs.org/schema/gpr-dimer.json): GPRDimerConfig
+- [BGSD](https://eondocs.org/schema/bgsd.json): BGSDConfig
+- [Distributed Replica](https://eondocs.org/schema/distributed-replica.json): DistributedReplicaConfig
+- [AMS](https://eondocs.org/schema/ams.json): AMSConfig
+- [AMS_IO](https://eondocs.org/schema/ams-io.json): AMSIOConfig
+- [AMSEnv](https://eondocs.org/schema/amsenv.json): AMSEnvConfig

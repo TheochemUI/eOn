@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/amsenv.json",
+  "title": "AMSEnv",
+  "description": "config.ini [AMSEnv] section (AMSEnvConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "amshome": {
+      "default": "",
+      "description": "Path to AMS home directory (e.g., '/some/path/to/amshome/').",
+      "type": "string"
+    },
+    "scm_tmpdir": {
+      "default": "",
+      "description": "Temporary directory for SCM (e.g., '/tmp').",
+      "type": "string"
+    },
+    "scm_pythondir": {
+      "default": "",
+      "description": "Python directory for SCM (e.g., '/.scm/python').",
+      "type": "string"
+    },
+    "amsbin": {
+      "default": "",
+      "description": "Path to AMS binary directory (will be appended to amshome).",
+      "type": "string"
+    },
+    "scmlicense": {
+      "default": "",
+      "description": "Path to SCM license file (will be appended to amshome).",
+      "type": "string"
+    },
+    "amsresources": {
+      "default": "",
+      "description": "Path to AMS atomic data resources (will be appended to amshome).",
+      "type": "string"
+    }
+  }
+}

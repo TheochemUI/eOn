@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/metatomic.json",
+  "title": "Metatomic",
+  "description": "config.ini [Metatomic] section (Metatomic). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "model_path": {
+      "default": "",
+      "description": "Path to the Metatomic model.",
+      "type": "string"
+    },
+    "device": {
+      "default": "auto",
+      "description": "Device to use for Metatomic calculations (e.g., 'cpu', 'cuda', 'auto').",
+      "type": "string"
+    },
+    "length_unit": {
+      "default": "Angstrom",
+      "description": "Length unit used by the Metatomic model.",
+      "type": "string"
+    },
+    "extensions_directory": {
+      "default": "",
+      "description": "Directory for Metatomic extensions.",
+      "type": "string"
+    },
+    "check_consistency": {
+      "default": false,
+      "description": "Whether to check consistency of the Metatomic model.",
+      "type": "boolean"
+    },
+    "uncertainty_threshold": {
+      "default": -1,
+      "description": "Threshold to report per-atom uncertainties, if positive. Also used to populate the variance.",
+      "type": "number"
+    },
+    "variant_base": {
+      "default": "",
+      "description": "Default variant suffix for energy, uncertainty, and non_conservative_force unless overridden.",
+      "type": "string"
+    },
+    "variant_energy": {
+      "default": "",
+      "description": "Override variant for energy (use 'off' for the base key).",
+      "type": "string"
+    },
+    "variant_energy_uncertainty": {
+      "default": "",
+      "description": "Override variant for energy_uncertainty.",
+      "type": "string"
+    },
+    "energy_output": {
+      "default": "",
+      "description": "Literal model energy output key; empty uses variant resolution.",
+      "type": "string"
+    },
+    "energy_uncertainty_output": {
+      "default": "",
+      "description": "Literal energy uncertainty output key; empty uses variant resolution.",
+      "type": "string"
+    },
+    "force_output": {
+      "default": "",
+      "description": "Literal non-conservative force output key; empty uses pick_output.",
+      "type": "string"
+    },
+    "non_conservative": {
+      "default": false,
+      "description": "Read forces from non_conservative_force instead of energy gradients.",
+      "type": "boolean"
+    },
+    "random_rotation": {
+      "default": false,
+      "description": "Apply a random SO(3) rotation per evaluation and rotate forces back.",
+      "type": "boolean"
+    },
+    "n_symmetry_rotations": {
+      "default": 0,
+      "description": "If >0, average over this many random rotations (O(3) symmetrization).",
+      "type": "integer"
+    },
+    "variant_force": {
+      "default": "",
+      "description": "Override variant for non_conservative_force (defaults to energy variant).",
+      "type": "string"
+    },
+    "deterministic": {
+      "default": true,
+      "description": "Disable JIT profiling and enable PyTorch deterministic algorithms (reproducible NEB / multi-image forces).",
+      "type": "boolean"
+    },
+    "deterministic_strict": {
+      "default": false,
+      "description": "Fail on nondeterministic CUDA ops; requires CUBLAS_WORKSPACE_CONFIG (e.g. :4096:8).",
+      "type": "boolean"
+    }
+  }
+}

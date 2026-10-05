@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/xtbpot.json",
+  "title": "XTBPot",
+  "description": "config.ini [XTBPot] section (XTBPot). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "paramset": {
+      "default": "GFNFF",
+      "description": "Parameter set for XTB potential.",
+      "enum": [
+        "GFNFF",
+        "GFN0xTB",
+        "GFN1xTB",
+        "GFN2xTB"
+      ],
+      "type": "string"
+    },
+    "accuracy": {
+      "default": 1.0,
+      "description": "Accuracy of the XTB calculation.",
+      "type": "number"
+    },
+    "electronic_temperature": {
+      "default": 0.0,
+      "description": "Electronic temperature for XTB.",
+      "type": "number"
+    },
+    "max_iterations": {
+      "default": 250,
+      "description": "Maximum number of XTB iterations.",
+      "type": "integer"
+    },
+    "uhf": {
+      "default": 0,
+      "description": "Multiplicity",
+      "type": "integer"
+    },
+    "charge": {
+      "default": 0.0,
+      "description": "Total charge",
+      "type": "number"
+    }
+  }
+}

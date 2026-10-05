@@ -1,0 +1,305 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/saddle-search.json",
+  "title": "Saddle Search",
+  "description": "config.ini [Saddle Search] section (SaddleSearchConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "method": {
+      "default": "min_mode",
+      "description": "Method to locate the saddle point.\n\nOptions:\n - ``min_mode``: Use a min-mode following scheme to locate the saddle\n   point.\n - ``dynamics``: Experimental method that uses molecular dynamics to find\n   new states and then runs a climbing image NEB calculation to find the\n   saddle and a dimer calculation to estimate the eigenmode at the saddle.\n - ``basin_hopping``: Use basin hopping as the saddle search backend\n   within a process search workflow.\n - ``bgsd``: Use biased gradient squared descent within a process search\n   workflow.\n - ``artn``: Use the Activation-Relaxation Technique nouveau. ARTn\n   starts from ``pos.con``, ignores ``displacement.con``, and performs\n   its own push, Lanczos eigenmode estimation, and perpendicular\n   relaxation internally. ``direction.dat`` is optional and only biases\n   the initial push when present.",
+      "enum": [
+        "min_mode",
+        "dynamics",
+        "basin_hopping",
+        "bgsd",
+        "artn"
+      ],
+      "type": "string"
+    },
+    "min_mode_method": {
+      "default": "dimer",
+      "description": "Min-mode method to use.\n\nOptions:\n - ``dimer``: Use the dimer min-mode method from :cite:t:`ss-henkelmanDimerMethodFinding1999`\n - ``lanczos``: Use the Lanczos min-mode method from :cite:t:`ss-malekDynamicsLennardJonesClusters2000`\n - ``davidson``: Davidson Ritz subspace with FD Hessian-vector products (alternative to dimer rotation).\n - ``gprdimer``: Use the GP accelerated dimer method.\n - ``artn``: Use ARTn as a drop-in for min-mode search. eOn's displacement\n   seeds the initial mode; ARTn takes over from the displaced structure.",
+      "enum": [
+        "dimer",
+        "lanczos",
+        "davidson",
+        "gprdimer",
+        "artn"
+      ],
+      "type": "string"
+    },
+    "disp_at_random": {
+      "default": 1,
+      "description": "Legacy displacement control flag used by the client.",
+      "type": "integer"
+    },
+    "max_energy": {
+      "default": 20.0,
+      "description": "The energy at which a saddle search is considered bad and terminated.",
+      "type": "number"
+    },
+    "max_step_size": {
+      "default": 0.2,
+      "description": "Maximum step size for saddle-search displacement updates.",
+      "type": "number"
+    },
+    "displace_radius": {
+      "default": 5.0,
+      "description": "Atoms within this distance of the epicenter will be displaced.",
+      "type": "number"
+    },
+    "displace_magnitude": {
+      "default": 0.1,
+      "description": "The standard deviation of the Gaussian displacement in each degree of freedom for the selected atoms.",
+      "type": "number"
+    },
+    "displace_min_norm": {
+      "default": 0.0,
+      "description": "Minimum displacement norm enforced for the initial perturbation.",
+      "type": "number"
+    },
+    "displace_random_weight": {
+      "default": 0.0,
+      "description": "Relative probability to displace with a random epicenter.",
+      "type": "number"
+    },
+    "displace_not_FCC_HCP_weight": {
+      "default": 0.0,
+      "description": "Relative probability to displace with an epicenter that is not FCC or HCP coordinated.",
+      "type": "number"
+    },
+    "displace_not_TCP_BCC_weight": {
+      "default": 0.0,
+      "description": "Relative probability to displace with an epicenter that is not TCP or BCC coordinated.",
+      "type": "number"
+    },
+    "displace_not_TCP_weight": {
+      "default": 0.0,
+      "description": "Relative probability to displace with an epicenter that is not TCP coordinated.",
+      "type": "number"
+    },
+    "displace_water_weight": {
+      "default": 0.0,
+      "description": "Relative probability to displace with an epicenter selected by the water heuristic.",
+      "type": "number"
+    },
+    "displace_least_coordinated_weight": {
+      "default": 0.0,
+      "description": "Relative probability to displace with an epicenter that has a coordination number equal to the least-coordinated atom in the configuration.",
+      "type": "number"
+    },
+    "displace_under_coordinated_weight": {
+      "default": 0.0,
+      "description": "Relative probability to displace with an epicenter with a coordination equal to or less than displace_max_coordination.",
+      "type": "number"
+    },
+    "displace_listed_atom_weight": {
+      "default": 0.0,
+      "description": "Relative probability to displace with an epicenter listed in displace_atom_list.",
+      "type": "number"
+    },
+    "displace_atom_list": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        },
+        {
+          "type": "integer"
+        }
+      ],
+      "default": "0",
+      "description": "CON file-order rows (the order atoms appear in the .con) used as displacement epicenters, comma-separated. After load, Structure/Matter sort unique atom_ids; the list is remapped through that sort. Lone -1 (int, [-1], or \"-1\") means every free atom. A mixed list does not treat -1 as the last atom or as a wrap. Example: 0, 1, 2 is the first three file rows. When displace_atom_kmc_state_script is set, the script prints Structure-row indices of the temp .con (atom_id order); those are not remapped as original file-order."
+    },
+    "displace_atom_kmc_state_script": {
+      "default": "",
+      "description": "Path to a Python script that determines which atoms to displace. The script receives a temp .con written by savecon(Structure) (atom_id / Structure order) and must print a comma-separated list of 0-based Structure-row indices of that file to stdout. Those indices are not remapped as original user .con file-order. It is executed once per new AKMC state; the result is cached in state.info. The path can be relative (resolved against the eOn root directory) or absolute. See the displacement scripts tutorial for worked examples.",
+      "type": "string"
+    },
+    "displace_listed_type_weight": {
+      "default": 0.0,
+      "description": "Relative probability to displace with an epicenter listed in displace_type_list.",
+      "type": "number"
+    },
+    "displace_type_list": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      ],
+      "default": "0",
+      "description": "The atom types should be separated by a comma."
+    },
+    "molecule_list": {
+      "default": "[]",
+      "description": "Legacy molecule list used by molecular displacement logic.",
+      "type": "string"
+    },
+    "displace_all_listed": {
+      "default": false,
+      "description": "If true, displace all atoms in displace_atom_list (or displace_type_list) simultaneously. If false, one atom is chosen at random from the list per saddle search. In either case, atoms within displace_radius of any displaced atom are also included. Set displace_radius to 0 to restrict displacement strictly to listed atoms.\n\nThis can be disabled by setting `displace_radius` to 0. Otherwise:\n\n- If true, each displacement will include all of the degrees of freedom of all of the listed atoms in `displace_atom_list` or `displace_type_list`.\n- If false, one of the atoms in `displace_atom_list` or `displace_type_list` will be selected at random for each displacement.\n- In either case, all atoms up to `displace_radius` distance away from any displaced atom will be included in the displacement.",
+      "type": "boolean"
+    },
+    "displace_max_coordination": {
+      "default": 11,
+      "description": "When using under_coordinated as the displacement type, choose only atoms with a coordination equal to or less than this.",
+      "type": "integer"
+    },
+    "displace_1d": {
+      "default": false,
+      "description": "Restrict the initial displacement to a single dimension.",
+      "type": "boolean"
+    },
+    "converged_force": {
+      "default": 0.01,
+      "description": "When the maximum force (in eV/A) on any one atom is smaller than this value, the structure is considered converged onto a saddle point.",
+      "type": "number"
+    },
+    "max_iterations": {
+      "default": 1000,
+      "description": "The maximum number of translation steps to be taken.",
+      "type": "integer"
+    },
+    "nonlocal_count_abort": {
+      "default": 0,
+      "description": "If this is not zero, the saddle search will abort when this many atoms have moved more than nonlocal_distance_abort from the initial displacement.",
+      "type": "integer"
+    },
+    "nonlocal_distance_abort": {
+      "default": 0.0,
+      "description": "If nonlocal_count_abort is not zero, the saddle search will abort when nonlocal_count_abort atoms have moved more than this distance.",
+      "type": "number"
+    },
+    "client_displace_type": {
+      "default": "random",
+      "description": "Epicenter selection method used by the C++ client. 'random': uniform random atom. 'last_atom': the last atom in the configuration. 'least_coordinated': the atom with the fewest neighbours. 'not_fcc_hcp_coordinated': an atom whose local structure is neither FCC nor HCP. 'listed_atoms': pick a free atom from displace_atom_list and apply a client-side radius/magnitude displacement (no server displacement file). 'load': read a displacement vector from a file written by the server.",
+      "enum": [
+        "load",
+        "random",
+        "last_atom",
+        "least_coordinated",
+        "not_fcc_hcp_coordinated",
+        "listed_atoms"
+      ],
+      "type": "string"
+    },
+    "stdev_translation": {
+      "default": 0.2,
+      "description": "Standard deviation for translational displacement components.",
+      "type": "number"
+    },
+    "stdev_rotation": {
+      "default": 1.0,
+      "description": "Standard deviation for rotational displacement components.",
+      "type": "number"
+    },
+    "void_bias_fraction": {
+      "default": 0.0,
+      "description": "Bias fraction applied to the void-based displacement heuristic.",
+      "type": "number"
+    },
+    "random_mode": {
+      "default": true,
+      "description": "Enable randomized initial-mode generation.",
+      "type": "boolean"
+    },
+    "zero_mode_abort_curvature": {
+      "default": 0.0,
+      "description": "The saddle search will abort when the magnitude of the minmode curvature is less than this value.",
+      "type": "number"
+    },
+    "confine_positive": {
+      "default": false,
+      "description": "Activates a confinement scheme when the search is within a positive region of the PES.",
+      "type": "boolean"
+    },
+    "bowl_breakout": {
+      "default": false,
+      "description": "When activated, the search within positive regions of PES is confined to a subset of atoms.\n\nDetermines :any:`bowl_active_atoms` that are subject to the largest forces.\nTo activate, :any:`confine_positive` must also be true. Method of\n:cite:t:`ss-pedersenBowlBreakoutEscaping2014`.",
+      "type": "boolean"
+    },
+    "bowl_active_atoms": {
+      "default": 20,
+      "description": "Size of the applied confinement in the bowl breakout scheme.",
+      "type": "integer"
+    },
+    "dynamics_temperature": {
+      "default": 300.0,
+      "description": "The temperature, in Kelvin, for the molecular dynamics run.\n\nA good initial choice might be near the melting temperature of the material.",
+      "type": "number"
+    },
+    "dynamics_state_check_interval": {
+      "default": 100.0,
+      "description": "The time interval, in femtoseconds, to minimize the geometry and check if the system has left the initial state.",
+      "type": "number"
+    },
+    "dynamics_record_interval": {
+      "default": 10.0,
+      "description": "The time interval, in femtoseconds, between snapshots of the molecular dynamics trajectory.\n\nSnapshots of MD trajectories are used to locate when the system first left\nthe initial state. A binary search is used to locate the first snapshot that\nminimizes to a new geometry.",
+      "type": "number"
+    },
+    "dynamics_linear_interpolation": {
+      "default": false,
+      "description": "- If true, then the band connecting the initial and final states will be\n  initialized using a linear interpolation.\n- If false, then the band is interpolated through the first snapshot that\n  minimizes to the final state.",
+      "type": "boolean"
+    },
+    "dynamics_max_init_curvature": {
+      "default": 0.0,
+      "description": "The maximum initial curvature for the dynamics method in eV/Å^2.",
+      "type": "number"
+    },
+    "nonnegative_displacement_abort": {
+      "default": false,
+      "description": "Abort the search if a non-negative displacement is detected.",
+      "type": "boolean"
+    },
+    "max_single_displace": {
+      "default": 10.0,
+      "description": "The maximum single displacement value.",
+      "type": "number"
+    },
+    "remove_rotation": {
+      "default": false,
+      "description": "Remove rotational components from the displacement.",
+      "type": "boolean"
+    },
+    "perp_force_ratio": {
+      "default": 0.0,
+      "description": "The ratio of perpendicular force, undocumented.",
+      "type": "number"
+    },
+    "confine_positive_min_force": {
+      "default": 0.5,
+      "description": "The minimum force for confining the positive region of the PES, undocumented.",
+      "type": "number"
+    },
+    "confine_positive_scale_ratio": {
+      "default": 0.9,
+      "description": "The scaling ratio for confining the positive region of the PES, undocumented.",
+      "type": "number"
+    },
+    "confine_positive_boost": {
+      "default": 10.0,
+      "description": "The boost factor for confining the positive region of the PES, undocumented.",
+      "type": "number"
+    },
+    "confine_positive_min_active": {
+      "default": 30,
+      "description": "The minimum number of active atoms for confining the positive region of the PES, undocumented.",
+      "type": "integer"
+    }
+  }
+}

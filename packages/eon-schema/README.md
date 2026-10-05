@@ -85,7 +85,7 @@ from pyeonclient.models import DimerSpec, NebSpec  # re-export
 src/eon_schema/
   ssot/          # L0 vendored params Cap'n Proto + catalog
   jobs/          # L0 JobRequest/JobResult schema + results.dat adapters
-  config/        # L1 job-config models (models.py)
+  config/        # L1 job-config models (models.py) and config.ini JSON Schema
   fields/        # enums
   api/           # L2 DimerSpec, NebSpec
   _deps.py
@@ -126,3 +126,18 @@ print(defaults_from_catalog("Main")["job"])
 
 Downstream: **rgpycrumbs** should depend on ``eon-schema`` for
 ``write_eon_config`` / seed_dimers / MLflow log_params instead of full eon-akmc.
+
+## config.ini JSON Schema
+
+`eon_schema.config.jsonschema` writes one JSON Schema per
+`MODEL_INI_SECTION` entry, plus `index.json`. Property names are the
+config.ini keys (`improved`, not `dimer_improved`). Defaults and `enum`
+values come from the L1 models.
+
+```bash
+python -m eon_schema.config.jsonschema
+```
+
+In the monorepo that writes `docs/source/_extra/schema/` and
+`docs/source/_extra/llms.txt`. Sphinx `html_extra_path` publishes them at
+`/schema/` and `/llms.txt`.

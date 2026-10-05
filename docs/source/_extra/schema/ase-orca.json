@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/ase-orca.json",
+  "title": "ASE_ORCA",
+  "description": "config.ini [ASE_ORCA] section (ASE_ORCA). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "orca_path": {
+      "default": "NONE",
+      "description": "Path to the ORCA executable.",
+      "type": "string"
+    },
+    "nproc": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "const": "auto",
+          "type": "string"
+        }
+      ],
+      "default": "auto",
+      "description": "Number of processors to use for ORCA. Can be 'auto' or an integer string."
+    },
+    "simpleinput": {
+      "default": "ENGRAD HF-3c",
+      "description": "Simple input string for ORCA, specifying method and basis set.",
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/recycling.json",
+  "title": "Recycling",
+  "description": "config.ini [Recycling] section (RecyclingConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "use_recycling": {
+      "default": true,
+      "description": "Turn recycling on and off.",
+      "type": "boolean"
+    },
+    "move_distance": {
+      "default": 0.2,
+      "description": "The distance an atom must move to be considered in the 'hole'.",
+      "type": "number"
+    },
+    "displace_moved_only": {
+      "default": false,
+      "description": "When performing saddle search displacements, only use atoms in the vicinity of the hole as displacement epicenters.",
+      "type": "boolean"
+    },
+    "save_suggestions": {
+      "default": false,
+      "description": "If True, the suggestions made by saddle recycling are saved to the 'saddle_suggestions' directory of the state directory for which the saddles are being suggested.",
+      "type": "boolean"
+    },
+    "active_region": {
+      "default": 1.0,
+      "description": "Defines a region around the atoms that moved in the previous KMC step to target new saddle searches in the current state.\n\nFor dynamics-based saddle searches, atoms in the active region will have\nmass weighting applied; for min-mode following saddle searches, only these\natoms will be selected for displacements. Represents a multiple of\n:any:`eon.schema.StructureComparisonConfig.neighbor_cutoff`.",
+      "type": "number"
+    },
+    "mass_weight_factor": {
+      "default": 1000.0,
+      "description": "Atoms that are not within the active region have their atomic masses multiplied by this factor.",
+      "type": "number"
+    },
+    "use_sb_recycling": {
+      "default": false,
+      "description": "Turn superbasin recycling on and off.",
+      "type": "boolean"
+    }
+  }
+}

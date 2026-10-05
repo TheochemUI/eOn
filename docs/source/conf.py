@@ -93,6 +93,8 @@ exclude_patterns = [
 html_theme = "shibuya"
 html_title = "eOn"
 html_static_path = ["_static"]
+# llms.txt and config.ini JSON Schema, copied to the HTML root.
+html_extra_path = ["_extra"]
 html_css_files = ["custom.css"]
 html_baseurl = "https://eondocs.org/"
 

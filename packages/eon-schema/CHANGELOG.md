@@ -17,6 +17,10 @@
 
 ### Added
 
+- ``eon_schema.config.jsonschema`` writes one JSON Schema per config.ini
+  section (``MODEL_INI_SECTION``) plus ``index.json``. Option names follow
+  the INI aliases (``improved``, not ``dimer_improved``).
+
 - ``eon_schema.jobs.trajectory_manifest`` emits an ``eon.trajectory.v1``
   manifest with exact geometry and frame digests and an ``eon.rgpot.v1``
   potential identity. ``landfold_consume`` verifies the digests and returns
