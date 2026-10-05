@@ -447,12 +447,20 @@ endif
 _deps += nlohmann_json_dep
 
 # Highway SIMD (optional, for vectorized potentials).
-# A /usr pkg-config result is not used and the wrap is. A real prefix
-# (conda, EasyBuild) is kept. cmake.subproject imports hwy_list_targets.
-# Meson PGICompiler (nvc++) has no get_pie_args, so that exe dies
+# highway.wrap provides the dependency name hwy (cmake target hwy).
+# --force-fallback-for=hwy and --force-fallback-for=highway select that
+# wrap. dependency('libhwy') does not: pkg-config can find libhwy and
+# the wrap is never configured. A found hwy whose prefix is /usr is
+# rejected. cmake.subproject imports hwy_list_targets. Meson
+# PGICompiler (nvc++) has no get_pie_args, so that exe dies
 # ninja-write. The cmake subproject's .a archives are not readable by
-# MSVC link.exe, so Windows skips the wrap too.
-hwy_dep = dependency('libhwy', required: false)
+# MSVC link.exe, so Windows does not fall back to the wrap.
+_cxx_id = cppc.get_id()
+_hwy_wrap_ok = (
+    host_machine.system() != 'windows'
+    and _cxx_id not in ['nvidia_hpc', 'pgi']
+)
+hwy_dep = dependency('hwy', allow_fallback: _hwy_wrap_ok, required: false)
 _hwy_prefix = ''
 _hwy_inc = ''
 if hwy_dep.found()
@@ -468,18 +476,13 @@ _hwy_usr = (
     or _hwy_inc == '/usr/include'
 )
 _hwy_use = hwy_dep.found() and not _hwy_usr
-_cxx_id = cppc.get_id()
-if (
-    not _hwy_use
-    and host_machine.system() != 'windows'
-    and _cxx_id not in ['nvidia_hpc', 'pgi']
-)
+if not _hwy_use and _hwy_wrap_ok
     if _hwy_usr
         message(
             'Highway: a /usr pkg-config result is not used; the wrap is',
         )
     else
-        message('Highway: system libhwy not found, trying cmake subproject...')
+        message('Highway: system hwy not found, trying cmake subproject...')
     endif
     hwy_opts = cmake.subproject_options()
     hwy_opts.add_cmake_defines({
