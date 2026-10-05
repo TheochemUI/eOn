@@ -31,7 +31,7 @@ pixi add eon
 micromamba install -c conda-forge eon
 ```
 
-Those commands install the conda-forge release package. They do not check out `develop`. A source build of `develop` is the section below. The examples in this book run against the release package. `pixi.toml` on `develop` records version 3.5.0, and the conda-forge package can be an older release.
+Those commands install the conda-forge release package. They do not check out `develop`. A source build of `develop` is the section below. The examples in this book run against the release package. `pixi.toml` on `develop` records version 3.6.0. The conda-forge package is built without `-Drgpot:with_mpi=enabled`, so it does not ship calculator groups or in-process CPMD.
 
 The conda package is a maximalist build with the following potentials and
 features enabled:
@@ -39,7 +39,7 @@ features enabled:
 - [Metatomic](project:../user_guide/metatomic_pot.md) (machine-learned potentials via libtorch)
 - [xTB](https://xtb-docs.readthedocs.io/) (semi-empirical tight-binding)
 - [rgpot integration](project:../user_guide/rgpot_integration.md) (direct dlopen vs serve vs potserv client)
-- [RgpotPot / RGPOT](project:../user_guide/rgpot_pot.md) (in-process NWChemPot/CPMDPot; always linked except on Windows)
+- [RgpotPot / RGPOT](project:../user_guide/rgpot_pot.md) (in-process NWChemPot/CPMDPot on a source build; the conda-forge package does not enable calculator groups)
 - [Serve mode](project:../user_guide/serve_mode.md) (`-Dwith_serve`: eOn as an rgpot-compatible remote procedure call server)
 
 The server is accessed through `python -m eon.server`, and the `eonclient`
@@ -87,11 +87,14 @@ This is the installation path that fails least often:
 # $CONDA_PREFIX/lib/x86_64-linux-gnu
 # without --libdir
 meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype=release \
-  --force-fallback-for=nlohmann_json,hwy
+  --force-fallback-for=nlohmann_json,hwy \
+  -Drgpot:with_mpi=enabled
 meson compile -C bbdir
 meson test -C bbdir --suite eon
 meson install -C bbdir
 ```
+
+`-Drgpot:with_mpi=enabled` turns on calculator groups. eOn's own `-Dwith_mpi` is the AKMC client, not those groups. In-process CPMD also needs `libcpmdc` on the loader path. The client tests skip that engine when the library is absent.
 
 `min_mode_method = gprdimer` links the GP dimer from a checkout of
 [gpr_optim](https://github.com/TheochemUI/gpr_optim) in

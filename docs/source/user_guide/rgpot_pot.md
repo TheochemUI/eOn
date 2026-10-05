@@ -372,6 +372,8 @@ Past that, fewer groups of more ranks often win: a CPMD SCF step of a
 small cell scales over the ranks of one group better than the groups
 share a node. For the Si3N4 Geo1 cell of this page, one group of 28
 ranks took 141.7 s for 9 force calls against 160.6 s for 7 groups of 4.
+Those figures are wall times. The minimized energy of that cell is
+`potential_energy` in `results.dat`, and this page does not quote it.
 Keep to one rank per physical core.
 
 The run reads `reactant.con` and `product.con`.
