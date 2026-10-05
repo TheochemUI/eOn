@@ -30,4 +30,3 @@ struct RelaxEngineParams {
   randomSeed @4 :Int64 = -1;
   uncertainty @5 :Float64 = 0.05;
 }
-

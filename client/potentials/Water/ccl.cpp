@@ -60,7 +60,7 @@ double const ro1_ro2_theta_2_ = 3.05e-12 * unit_system::ERGS_PER_ANGSTROM2;
 // ro_theta_3 = 0
 double const theta_4_ = -0.0318e-12 * unit_system::ERGS_PER_ANGSTROM2;
 #else
-double const reEq_ = 0.9572;                  // ANGSTROM
+double const reEq_ = 0.9572;                 // ANGSTROM
 double const thetaEq_ = 1.82421813418447321; // RADIANS
 
 double const re2_ = 0.91623184; // ANGSTROM^2
