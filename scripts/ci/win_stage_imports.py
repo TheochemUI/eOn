@@ -1,32 +1,20 @@
 """Copy a Windows DLL's non-system imports beside it.
 
-The loader searches the executable directory before PATH
-(SafeDllSearchMode does not change that). A same-named DLL from
-torch, libiomp5md.dll or libomp.dll, is missing the entry point the
-engine linked and the process exits 0xC0000139. The first search
-directory that contains a name is the copy placed beside the engine.
-That directory must be the prefix or the flang resource dir, not a
-plugin directory that happens to ship the same file name.
+The loader searches the executable directory before PATH. A same-named
+DLL from another prefix is missing the entry point the engine linked,
+and the process exits 0xC0000139. The directory that supplied a DLL is
+searched first for that DLL's own imports, then the caller search list.
+An existing copy is kept and still scanned, so a DLL placed by an
+earlier target is not replaced and its imports are not skipped.
 """
 
 from __future__ import annotations
 
+import os
 import shutil
 import struct
 import sys
 from pathlib import Path
-
-# LLVM libomp is what Flang links. Intel libiomp5md.dll, the copy in
-# torch/lib, does not export the same symbols. conda-forge/openmp-feedstock#8
-# and numpy-feedstock#308. Copy the LLVM names from the first search
-# directory so the executable directory wins over PATH.
-_ALSO = (
-    "libomp.dll",
-    "libomp140.x86_64.dll",
-    "flang_rt.runtime.dll",
-    "FortranRuntime.dll",
-    "FortranDecimal.dll",
-)
 
 _SYSTEM = {
     "kernel32.dll",
@@ -36,6 +24,7 @@ _SYSTEM = {
     "advapi32.dll",
     "ws2_32.dll",
     "bcrypt.dll",
+    "bcryptprimitives.dll",
     "crypt32.dll",
     "ole32.dll",
     "oleaut32.dll",
@@ -44,7 +33,6 @@ _SYSTEM = {
     "gdi32.dll",
     "msvcrt.dll",
     "ucrtbase.dll",
-    "ntdll.dll",
 }
 
 
@@ -64,77 +52,209 @@ def _rva_to_off(data: bytes, sections: list[tuple[int, int, int]], rva: int) -> 
     raise ValueError(f"RVA 0x{rva:x} is not in a section")
 
 
-def imported_dlls(path: Path) -> list[str]:
-    data = path.read_bytes()
-    if data[:2] != b"MZ":
-        return []
+def _pe_sections(data: bytes) -> tuple[int, list[tuple[int, int, int]], int] | None:
+    if len(data) < 0x40 or data[:2] != b"MZ":
+        return None
     pe = struct.unpack_from("<I", data, 0x3C)[0]
-    if data[pe : pe + 4] != b"PE\0\0":
-        return []
+    if pe + 24 > len(data) or data[pe : pe + 4] != b"PE\0\0":
+        return None
     nsect = struct.unpack_from("<H", data, pe + 6)[0]
     opt_size = struct.unpack_from("<H", data, pe + 20)[0]
     opt = pe + 24
+    if opt + opt_size > len(data):
+        return None
     magic = struct.unpack_from("<H", data, opt)[0]
     dd = opt + (112 if magic == 0x20B else 96)
-    import_rva = struct.unpack_from("<I", data, dd + 8)[0]
-    if import_rva == 0:
-        return []
     sect_off = opt + opt_size
     sections: list[tuple[int, int, int]] = []
     for i in range(nsect):
         off = sect_off + i * 40
+        if off + 24 > len(data):
+            return None
         vsize, va, rawsize, raw = struct.unpack_from("<IIII", data, off + 8)
         sections.append((va, max(vsize, rawsize), raw))
-    names: list[str] = []
+    return dd, sections, magic
+
+
+def _cstring(data: bytes, off: int) -> str:
+    end = data.index(b"\0", off)
+    return data[off:end].decode("ascii")
+
+
+def imported_dlls(path: Path) -> list[str]:
+    return [name for name, _syms in imported_symbols(path)]
+
+
+def imported_symbols(path: Path) -> list[tuple[str, list[str]]]:
+    data = path.read_bytes()
+    parsed = _pe_sections(data)
+    if parsed is None:
+        return []
+    dd, sections, magic = parsed
+    if dd + 16 > len(data):
+        return []
+    import_rva = struct.unpack_from("<I", data, dd + 8)[0]
+    if import_rva == 0:
+        return []
+    names: list[tuple[str, list[str]]] = []
     desc = _rva_to_off(data, sections, import_rva)
-    while True:
+    wide = magic == 0x20B
+    while desc + 20 <= len(data):
+        ilt_rva = struct.unpack_from("<I", data, desc)[0]
         name_rva = struct.unpack_from("<I", data, desc + 12)[0]
+        iat_rva = struct.unpack_from("<I", data, desc + 16)[0]
         if name_rva == 0:
             break
         name_off = _rva_to_off(data, sections, name_rva)
-        end = data.index(b"\0", name_off)
-        names.append(data[name_off:end].decode("ascii"))
+        dll = _cstring(data, name_off)
+        thunk_rva = ilt_rva or iat_rva
+        symbols: list[str] = []
+        if thunk_rva:
+            thunk = _rva_to_off(data, sections, thunk_rva)
+            step = 8 if wide else 4
+            top = 1 << (63 if wide else 31)
+            while thunk + step <= len(data):
+                word = struct.unpack_from("<Q" if wide else "<I", data, thunk)[0]
+                if word == 0:
+                    break
+                if word & top:
+                    symbols.append(f"#{word & 0xFFFF}")
+                else:
+                    hint_off = _rva_to_off(data, sections, word & 0x7FFFFFFF)
+                    symbols.append(_cstring(data, hint_off + 2))
+                thunk += step
+        names.append((dll, symbols))
         desc += 20
     return names
+
+
+def _find(name: str, dirs: list[Path]) -> Path | None:
+    for directory in dirs:
+        candidate = directory / name
+        if candidate.is_file():
+            return candidate
+    return None
 
 
 def stage(dll: Path, search: list[Path], stamp: Path) -> None:
     dest = dll.parent
     seen: set[str] = set()
-    queue = [dll]
+    queue: list[tuple[Path, list[Path]]] = [(dll, [])]
     copied: list[str] = []
     while queue:
-        current = queue.pop(0)
-        key = str(current.resolve()).lower()
+        current, siblings = queue.pop(0)
+        try:
+            key = str(current.resolve()).lower()
+        except OSError:
+            continue
         if key in seen or not current.is_file():
             continue
         seen.add(key)
-        for name in imported_dlls(current):
+        dirs = siblings + search
+        try:
+            imports = imported_symbols(current)
+        except (ValueError, UnicodeDecodeError, IndexError):
+            print(f"win_stage_imports: {current.name} has no import table", file=sys.stderr)
+            continue
+        for name, _symbols in imports:
             if _system(name):
                 continue
             target = dest / name
             if target.is_file():
+                queue.append((target, [target.parent]))
                 continue
-            source = next(
-                (d / name for d in search if (d / name).is_file()),
-                None,
-            )
+            source = _find(name, dirs)
             if source is None:
                 print(f"win_stage_imports: {name} not in search path", file=sys.stderr)
                 continue
             shutil.copy2(source, target)
-            copied.append(name)
-            queue.append(target)
-    for name in _ALSO:
-        target = dest / name
-        if target.is_file():
-            continue
-        source = next((d / name for d in search if (d / name).is_file()), None)
-        if source is None:
-            continue
-        shutil.copy2(source, target)
-        copied.append(name)
+            copied.append(f"{name} <- {source}")
+            queue.append((target, [source.parent]))
     stamp.write_text("\n".join(copied) + "\n", encoding="utf-8")
+
+
+def exported_names(path: Path) -> set[str]:
+    data = path.read_bytes()
+    parsed = _pe_sections(data)
+    if parsed is None:
+        return set()
+    dd, sections, _magic = parsed
+    if dd + 8 > len(data):
+        return set()
+    export_rva, export_size = struct.unpack_from("<II", data, dd)
+    if export_rva == 0 or export_size == 0:
+        return set()
+    exp = _rva_to_off(data, sections, export_rva)
+    if exp + 40 > len(data):
+        return set()
+    nnames = struct.unpack_from("<I", data, exp + 24)[0]
+    names_rva = struct.unpack_from("<I", data, exp + 32)[0]
+    if nnames == 0 or names_rva == 0:
+        return set()
+    table = _rva_to_off(data, sections, names_rva)
+    found: set[str] = set()
+    for i in range(nnames):
+        slot = table + i * 4
+        if slot + 4 > len(data):
+            break
+        name_rva = struct.unpack_from("<I", data, slot)[0]
+        found.add(_cstring(data, _rva_to_off(data, sections, name_rva)))
+    return found
+
+
+def _system_dirs() -> list[Path]:
+    root = os.environ.get("SystemRoot", r"C:\Windows")
+    return [Path(root) / "System32", Path(root) / "SysWOW64", Path(root)]
+
+
+def audit_missing(root: Path, search: list[Path]) -> list[str]:
+    """Return lines for imports whose DLL or named symbol is absent."""
+    problems: list[str] = []
+    seen: set[str] = set()
+    queue = [root]
+    system_dirs = _system_dirs()
+    while queue:
+        current = queue.pop(0)
+        try:
+            key = str(current.resolve()).lower()
+        except OSError:
+            continue
+        if key in seen or not current.is_file():
+            continue
+        seen.add(key)
+        try:
+            imports = imported_symbols(current)
+        except (ValueError, UnicodeDecodeError, IndexError):
+            problems.append(f"{current.name}: import table is unreadable")
+            continue
+        for name, symbols in imports:
+            if _system(name):
+                continue
+            source = _find(name, [current.parent] + search)
+            if source is None:
+                if _find(name, system_dirs) is not None:
+                    continue
+                problems.append(f"{current.name}: {name} not in search path")
+                continue
+            if symbols:
+                try:
+                    have = exported_names(source)
+                except (ValueError, UnicodeDecodeError, IndexError):
+                    problems.append(f"{name}: export table is unreadable ({source})")
+                    continue
+                if have:
+                    missing = [
+                        symbol
+                        for symbol in symbols
+                        if not symbol.startswith("#") and symbol not in have
+                    ]
+                    if missing:
+                        shown = ", ".join(missing[:8])
+                        problems.append(
+                            f"{current.name}: {name} from {source} missing {shown}"
+                        )
+            queue.append(source)
+    return problems
 
 
 def main(argv: list[str]) -> int:
