@@ -176,7 +176,8 @@ matterToConFrame(Matter &m, const ConFrameMetadata *metadata = nullptr);
  * Build NEB band ConFrames without writing (clone builder path of
  * writeNebPath). Empty vector on invalid input.
  *
- * @param path length must equal metadata_per_image (endpoints included)
+ * @param path images, endpoints included
+ * @param metadata_per_image one record per image; length must equal path
  */
 [[nodiscard]] std::vector<readcon::ConFrame>
 buildNebPathFrames(const std::vector<std::shared_ptr<Matter>> &path,
@@ -198,6 +199,7 @@ writeConFrames(std::string filename,
  * NEB band invariant); heterogeneous multi-frame movies should not use this.
  * Avoids re-reading the output file per image (legacy append path).
  *
+ * @param filename output path
  * @param path length must be numImages+2 (endpoints included)
  * @param metadata_per_image length must equal path.size()
  */

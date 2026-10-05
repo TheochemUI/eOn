@@ -4,11 +4,18 @@ readcon still parses every frame. The corpus is a second copy: one
 trajectory per distinct path plus blob, next to the run when ``config.ini``
 is at most eight directories up, otherwise beside the con file. A missing
 ``readcon_db`` install leaves the con file as the only copy.
+
+A dynamics movie can also ingest each directory of a simulation tree and
+read those frames back with one read-only ``get_frame_texts`` call. The
+``.con`` files remain the store.
 """
 
 from __future__ import annotations
 
+import gc
 import logging
+import os
+import tempfile
 from pathlib import Path
 
 logger = logging.getLogger("eon.concorpus")
@@ -89,8 +96,9 @@ def mirror_con_text(path, text: str) -> None:
 def store_frame_text(path, text: str) -> tuple[int, int] | None:
     """Store one con blob. Returns ``(traj_id, 0)`` for a single frame.
 
-    The corpus takes the con text only. A barrier or a mode is not an
-    argument: those stay on the process row.
+    The corpus takes the con text only. A barrier is not an argument.
+    A mode is not an argument either: it rides in the saddle frame as
+    the displacements section.
     """
     if not text or not text.strip():
         return None
@@ -155,3 +163,54 @@ def mirror_con_path(path) -> None:
     except OSError:
         return
     mirror_con_text(con_path, text)
+
+
+def directories_with_con(tree: Path) -> list[Path]:
+    """Directories under ``tree`` that directly contain ``.con`` or ``.convel``."""
+    found: list[Path] = []
+    for dirpath, dirnames, filenames in os.walk(tree):
+        dirnames.sort()
+        if any(name.endswith(".con") or name.endswith(".convel") for name in filenames):
+            found.append(Path(dirpath))
+    return found
+
+
+def _index_tree(db, tree: Path) -> dict[str, tuple[int, int]]:
+    index: dict[str, tuple[int, int]] = {}
+    next_id = 1
+    for directory in directories_with_con(tree):
+        rows = db.ingest_directory(str(directory), start_traj_id=next_id)
+        for traj_id, _nframes, path in rows:
+            index[str(Path(path).resolve())] = (int(traj_id), 0)
+            next_id = max(next_id, int(traj_id) + 1)
+    return index
+
+
+def frame_texts_for_paths(tree, con_paths, corpus_cls=None) -> list[str]:
+    """Ingest ``tree`` and return frame 0 text for each path, in order.
+
+    ``corpus_cls`` defaults to ``readcon_db.ConCorpus``. Tests pass a stand-in
+    with the same constructor, ``ingest_directory``, and ``get_frame_texts``.
+    """
+    if corpus_cls is None:
+        from readcon_db import ConCorpus
+
+        corpus_cls = ConCorpus
+    tree = Path(tree)
+    with tempfile.TemporaryDirectory(prefix="eon-concorpus-") as corpus_dir:
+        writer = corpus_cls(corpus_dir)
+        index = _index_tree(writer, tree)
+        # One LMDB environment per path. Drop the writer before the read-only open.
+        close = getattr(writer, "close", None)
+        if close is not None:
+            close()
+        del writer
+        gc.collect()
+        keys = []
+        for path in con_paths:
+            resolved = str(Path(path).resolve())
+            if resolved not in index:
+                raise FileNotFoundError(f"{path} was not ingested from {tree}")
+            keys.append(index[resolved])
+        reader = corpus_cls(corpus_dir, readonly=True)
+        return list(reader.get_frame_texts(keys))

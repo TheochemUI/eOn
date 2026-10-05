@@ -14,6 +14,14 @@ Settings come from the environment of the client job:
                   e.g. "14:Si_MT_BLYP.psp:LMAX=P"
   CPMD_CUTOFF     plane-wave cutoff in Ry, default 30
   CPMD_FUNCTIONAL default BLYP
+  CPMD_CONVERGENCE orbital convergence (CONVERGENCE ORBITALS), default 1e-6
+  CPMD_MAXITER    wavefunction optimisation steps, default 300
+
+Units: eOn passes Angstrom and the deck says ANGSTROM, so CPMD converts with
+its own Bohr (cnst.mod: 0.529177210859 A). CPMD answers in Hartree and
+Hartree/Bohr; the script converts with CODATA 2018 (27.211386245988 eV,
+0.529177210903 A), as rgpot and cpmdc do for the in-process route. The two
+Bohr values differ by 8.3e-11 relative.
 
 The wavefunction of the previous call stays in RESTART.1 in the exchange
 directory, so every call after the first starts from it. With
@@ -46,6 +54,11 @@ def read_input(path: Path):
     rows = [line.split() for line in path.read_text().splitlines() if line.strip()]
     cell = [[float(v) for v in rows[i][:3]] for i in range(3)]
     atoms = [(int(r[0]), float(r[1]), float(r[2]), float(r[3])) for r in rows[3:]]
+    # eOn sends a zero box for a system that is not periodic. CPMD needs a
+    # cell, and an invented one would change the energy without a word.
+    if all(abs(v) < 1e-12 for row in cell for v in row):
+        raise RuntimeError("from_eon_to_extpot has a zero cell; CPMD needs a "
+                           "periodic box (give the system a cell in pos.con)")
     return cell, atoms
 
 
@@ -67,7 +80,8 @@ def species_order(atoms):
 
 def write_input(path: Path, cell, atoms, pps, restart: bool, pcg: bool = False):
     order = species_order(atoms)
-    lines = ["&CPMD", " OPTIMIZE WAVEFUNCTION", " CONVERGENCE ORBITALS", "  1.0D-6",
+    conv = float(os.environ.get("CPMD_CONVERGENCE", "1e-6"))
+    lines = ["&CPMD", " OPTIMIZE WAVEFUNCTION", " CONVERGENCE ORBITALS", f"  {conv:.3E}",
              " MAXITER", f"  {int(os.environ.get('CPMD_MAXITER', '300'))}",
              " PRINT FORCES ON", " STORE", "  1"]
     if pcg:

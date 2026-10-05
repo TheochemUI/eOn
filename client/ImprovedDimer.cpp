@@ -32,13 +32,15 @@ ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
                              const Parameters &params,
                              std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
-  // Each dimer image gets its own potential for lock-free parallel evaluation
+  // Each dimer image gets its own potential for lock-free parallel evaluation.
   // A clone keeps the caller's potential; makePotential rebuilds from the
   // configuration and is the fallback for backends that cannot clone.
   std::shared_ptr<Potential> x1Pot = pot;
   if (pot->needsPerImageInstance() && params.main_options().parallel) {
     auto cloned = pot->clonePotential();
-    x1Pot = cloned ? cloned : eonc::helpers::makePotential(params);
+    x1Pot = cloned ? cloned
+                   : eonc::helpers::sharePotential(
+                         eonc::helpers::makePotential(params));
   }
   x0 = std::make_shared<Matter>(pot, params);
   x1 = std::make_shared<Matter>(x1Pot, params);
@@ -66,6 +68,42 @@ void ImprovedDimer::setReferenceMode(const VectorXd &ref) {
 
 void ImprovedDimer::clearReferenceMode() { hasFixedReference = false; }
 
+VectorXd ImprovedDimer::dimerDirection(const Matter &matter,
+                                       const AtomMatrix &direction) const {
+  VectorXd t =
+      VectorXd::Map(direction.data(), 3 * matter.numberOfAtoms()).array() *
+      matter.getFreeV().array();
+  if (t.norm() > 1e-10) {
+    eonc::safemath::safe_normalize_inplace(t);
+  } else {
+    t.resize(0);
+  }
+  return t;
+}
+
+void ImprovedDimer::evaluateWithProbe(const std::shared_ptr<Matter> &matter,
+                                      const AtomMatrix &direction) {
+  forward_.reset();
+  if (!matter->needsForceUpdate() || !pot->supportsBatchEvaluation() ||
+      usesAlternativeRotation(params.dimer_options().rotation_backend) ||
+      params.dimer_options().remove_rotation) {
+    return;
+  }
+  const VectorXd t = dimerDirection(*matter, direction);
+  if (t.size() == 0) {
+    return;
+  }
+  // The same expression compute() uses for x1, so the positions agree
+  // bit for bit when compute() runs on this centre and direction.
+  auto fwd = std::make_unique<Matter>(*matter);
+  fwd->setPotential(x1->getPotential());
+  fwd->setPositionsV(matter->getPositionsV() +
+                     params.main_options().finiteDifference * t);
+  Matter *const both[] = {matter.get(), fwd.get()};
+  eonc::evaluateTogether(*pot, both);
+  forward_ = std::move(fwd);
+}
+
 void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
                             AtomMatrix initialDirectionAtomMatrix) {
 
@@ -74,6 +112,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   tau = initialDirection.array() * matter->getFreeV().array();
   rotationDidConverge = true;
   foundNegativeCurvature = false;
+  // A forward image from evaluateWithProbe() serves this call only.
+  const std::unique_ptr<Matter> forward = std::move(forward_);
   if (tau.norm() > 1e-10) {
     eonc::safemath::safe_normalize_inplace(tau);
   } else {
@@ -104,6 +144,10 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
 
   double delta = params.main_options().finiteDifference;
   x1->setPositionsV(x0_r + delta * tau);
+  if (forward && !forward->needsForceUpdate() &&
+      forward->getPositions() == x1->getPositions()) {
+    x1->setEvaluation(forward->getForcesRaw(), forward->getPotentialEnergy());
+  }
 
   // x0 and x1 in one call when both need one, so two calculator groups
   // take one each; a cached x0 costs nothing.
@@ -131,10 +175,10 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     statsRotations = alt->rotations;
     tau = tau.array() * matter->getFreeV().array();
     eonc::safemath::safe_normalize_inplace(tau);
+    // The rotation moves neither matter nor its copy x0, so both keep
+    // the centre's evaluation; only the forward image follows the mode.
     x0_r = matter->getPositionsV();
-    x0->setPositionsV(x0_r);
     x1->setPositionsV(x0_r + delta * tau);
-    *matter = *x0;
     rotationDidConverge = alt->converged;
     foundNegativeCurvature = (C_tau < 0.0);
     return;
@@ -451,9 +495,13 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
         // Restore the best negative curvature state
         C_tau = bestNegativeCurvature;
         tau = bestTau;
-        x0->setPositionsV(bestX0Positions);
+        // The rotation never moves the centre; reassigning it only when it
+        // differs keeps the evaluation the caller already paid for.
+        if (x0->getPositionsV() != bestX0Positions) {
+          x0->setPositionsV(bestX0Positions);
+          *matter = *x0;
+        }
         x1->setPositionsV(bestX0Positions + delta * bestTau);
-        *matter = *x0;
         QUILL_LOG_DEBUG(
             log, "Restored best negative curvature state: C_tau={:.4f}", C_tau);
         throw eonc::DimerModeRestoredException();

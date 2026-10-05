@@ -51,7 +51,8 @@ protected:
     ParametersLoadAccess::saddle_search_options(params).converged_force = 0.05;
     ParametersLoadAccess::saddle_search_options(params).max_energy = 20.0;
 
-    pot = eonc::helpers::makePotential(PotType::LJ, params);
+    pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, params));
     matter = std::make_shared<Matter>(pot, params);
     matter->con2matter(std::string("reactant.con"));
 
@@ -464,7 +465,8 @@ TEST_CASE("basin hopping dimer direction uses the minimum image",
           "[saddle_search][basin_hopping][pbc]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter image(pot, params);
   image.resize(2);
   image.setAtomicNr(0, 1);

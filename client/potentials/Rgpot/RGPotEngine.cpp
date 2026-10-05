@@ -25,14 +25,12 @@
 #if !defined(_WIN32)
 #include <dlfcn.h>
 #endif
-#if defined(__linux__) && defined(EON_RGPOT_MPI)
-#include <mpi.h>
-#include <stdlib.h>
-#endif
+#include "eon/potentials/Rgpot/RgpotGroupMpi.h"
 
 #include <capnp/message.h>
 #include <capnp/serialize.h>
 
+#include "eon/potentials/Rgpot/GenericEngineLoader.h"
 #include "eon/potentials/Rgpot/MetatomicEngineLoader.h"
 #include "eon/potentials/Rgpot/XTBEngineLoader.h"
 #include "rgpot/CPMDPot/CPMDPot.hpp"
@@ -41,28 +39,6 @@
 #include "rgpot/rpc/Potentials.capnp.h"
 
 using rgpot::types::AtomMatrix;
-
-#if defined(__linux__) && defined(EON_RGPOT_MPI)
-// Runs before rgpot's atexit handler and ends in _Exit, so rgpot's handler
-// never runs. It honours rgpot's abort request itself: after a failed
-// engine call the peers can sit in a collective, and MPI_Finalize would
-// wait for them until the walltime kill.
-extern "C" void eon_rgpot_hard_exit(int status, void *) {
-  int inited = 0;
-  int finalized = 0;
-  MPI_Initialized(&inited);
-  MPI_Finalized(&finalized);
-  if (inited && !finalized) {
-    if (::rgpot::mpiAbortRequested()) {
-      std::fflush(nullptr);
-      MPI_Abort(MPI_COMM_WORLD, status != 0 ? status : 1);
-    }
-    MPI_Finalize();
-  }
-  std::fflush(nullptr);
-  std::_Exit(status);
-}
-#endif
 
 namespace {
 
@@ -151,42 +127,55 @@ void pin_cpmd_library(const std::string &path) {
 #endif
 }
 
-#if defined(__linux__) && defined(EON_RGPOT_MPI)
-// Every rank calls this. A rank that failed locally still enters, so nobody
-// is left in MPI_Comm_split. The shared message is the lowest failing rank's
-// text. Returns false when any rank failed.
+// librgpot_pot_mpi, the MPI half of the calculator groups, or nullptr.
+// Loaded on first use only, so a process started without an MPI launcher
+// never maps libmpi. Search: EON_RGPOT_MPI_LIBRARY, the file next to this
+// library, then the linker path.
+const EonRgpotGroupMpi *group_mpi() {
+#if defined(__linux__)
+  static const EonRgpotGroupMpi *api = [] {
+    std::vector<std::string> candidates;
+    if (const char *e = std::getenv("EON_RGPOT_MPI_LIBRARY"); e && *e)
+      candidates.emplace_back(e);
+    Dl_info info{};
+    if (dladdr(reinterpret_cast<void *>(&group_mpi), &info) != 0 &&
+        info.dli_fname != nullptr) {
+      std::string self(info.dli_fname);
+      const auto slash = self.rfind('/');
+      if (slash != std::string::npos)
+        candidates.push_back(self.substr(0, slash + 1) + "librgpot_pot_mpi.so");
+    }
+    candidates.emplace_back("librgpot_pot_mpi.so");
+    for (const auto &path : candidates) {
+      void *h = dlopen(path.c_str(), RTLD_NOW | RTLD_GLOBAL);
+      if (h == nullptr)
+        continue;
+      using Entry = const EonRgpotGroupMpi *(*)();
+      auto entry = reinterpret_cast<Entry>(dlsym(h, "eon_rgpot_group_mpi_v1"));
+      const EonRgpotGroupMpi *table = entry ? entry() : nullptr;
+      if (table != nullptr && table->version == EON_RGPOT_GROUP_MPI_VERSION)
+        return table;
+    }
+    return static_cast<const EonRgpotGroupMpi *>(nullptr);
+  }();
+  return api;
+#else
+  return nullptr;
+#endif
+}
+
+// Every rank calls this when started under an MPI launcher. False when any
+// rank failed; message is then the lowest failing rank's text.
 bool agree_construction(std::string &message) {
-  int inited = 0;
-  MPI_Initialized(&inited);
-  if (!inited)
-    MPI_Init(nullptr, nullptr);
-  ::rgpot::finalizeMpiAtExit();
-  const int ok = message.empty() ? 1 : 0;
-  int all_ok = 0;
-  MPI_Allreduce(&ok, &all_ok, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
-  if (all_ok)
+  const EonRgpotGroupMpi *api = group_mpi();
+  if (api == nullptr)
+    return message.empty();
+  std::array<char, 4096> shared{};
+  if (api->agree(message.c_str(), shared.data(), shared.size()) != 0)
     return true;
-  int rank = 0;
-  int size = 1;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
-  const int mine = ok ? size : rank;
-  int owner = 0;
-  MPI_Allreduce(&mine, &owner, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
-  int len = 0;
-  if (rank == owner)
-    len = static_cast<int>(
-        std::min(message.size(), static_cast<std::size_t>(4095)));
-  MPI_Bcast(&len, 1, MPI_INT, owner, MPI_COMM_WORLD);
-  std::vector<char> buf(static_cast<std::size_t>(len) + 1, '\0');
-  if (rank == owner && len > 0)
-    std::memcpy(buf.data(), message.data(), static_cast<std::size_t>(len));
-  if (len > 0)
-    MPI_Bcast(buf.data(), len, MPI_CHAR, owner, MPI_COMM_WORLD);
-  message.assign(buf.data(), static_cast<std::size_t>(len));
+  message.assign(shared.data());
   return false;
 }
-#endif
 
 } // namespace
 
@@ -244,11 +233,12 @@ namespace eon {
 } // namespace eon
 
 struct RGPotEngine::Impl {
-  enum class Backend { Nwchemc, Cpmdc, Metatomic, Xtb };
+  enum class Backend { Nwchemc, Cpmdc, Metatomic, Uma, Xtb };
   Backend backend{Backend::Nwchemc};
   std::unique_ptr<rgpot::NWChemPot> nwchem;
   std::unique_ptr<rgpot::CPMDPot> cpmd;
   std::unique_ptr<MetatomicEngineLoader> metatomic;
+  std::unique_ptr<GenericEngineLoader> uma;
   std::unique_ptr<XTBEngineLoader> xtb;
   // Calculator groups (cpmdc, ranks_per_image > 0). One group when off.
   int groups{1};
@@ -328,7 +318,6 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
     // read params_path must not leave the others inside the split.
     if (mpi_world_hint() <= 1 && !local_error.empty())
       throw std::runtime_error(local_error);
-#if defined(__linux__) && defined(EON_RGPOT_MPI)
     // rgpot reports MPI only once MPI_Init has run, and agree_construction
     // is what initialises it, so the agreement keys on the launch size.
     if (mpi_world_hint() > 1 && !agree_construction(local_error)) {
@@ -339,7 +328,6 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
                     "RGPOT(cpmdc): a rank failed before the calculator split")
               : local_error);
     }
-#endif
     if (!local_error.empty())
       throw std::runtime_error(local_error);
     if (::rgpot::calculatorsUseMpi()) {
@@ -382,7 +370,33 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
     if (!impl_->metatomic->available())
       throw std::runtime_error(
           "RGPOT(metatomic): engine not available (set RGPOT_METATOMIC_ENGINE "
-          "or [RgpotPot] engine_path to libmetatomic_engine.so)");
+          "or [RgpotPot] engine_path to librgpot_metatomic_engine.so)");
+  } else if (backend_ == "uma" || backend_ == "omol" || backend_ == "umapot") {
+    backend_ = "uma";
+    impl_->backend = Impl::Backend::Uma;
+    GenericEngineOptions gopt;
+    gopt.library = "libuma_engine.so";
+    gopt.env_var = "RGPOT_UMA_ENGINE";
+    gopt.engine_path =
+        !opt.engine_path.empty() ? opt.engine_path : opt.engine_library;
+    gopt.tag = "uma";
+    {
+      ::capnp::MallocMessageBuilder msg;
+      auto params = msg.initRoot<::UmaParams>();
+      params.setModelPath(opt.model_path);
+      params.setTaskName(opt.task_name);
+      params.setDevice(opt.device);
+      params.setCharge(opt.charge);
+      params.setSpin(opt.multiplicity);
+      const auto words = ::capnp::messageToFlatArray(msg);
+      const auto bytes = words.asBytes();
+      gopt.config.assign(bytes.begin(), bytes.end());
+    }
+    impl_->uma = std::make_unique<GenericEngineLoader>(gopt);
+    if (!impl_->uma->available())
+      throw std::runtime_error(
+          "RGPOT(uma): engine not available (set RGPOT_UMA_ENGINE or "
+          "[RgpotPot] engine_path to libuma_engine.so)");
   } else if (backend_ == "xtb" || backend_ == "xtbpot" || backend_ == "gfn" ||
              backend_ == "gfnxtb") {
     backend_ = "xtb";
@@ -400,10 +414,11 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
     if (!impl_->xtb->available())
       throw std::runtime_error(
           "RGPOT(xtb): engine not available (set RGPOT_XTB_ENGINE or "
-          "[RgpotPot] engine_path to libxtb_engine.so)");
+          "[RgpotPot] engine_path to librgpot_xtb_engine.so)");
   } else {
-    throw std::runtime_error("RGPOT: unknown backend '" + opt.backend +
-                             "' (expected nwchemc, cpmdc, metatomic, or xtb)");
+    throw std::runtime_error(
+        "RGPOT: unknown backend '" + opt.backend +
+        "' (expected nwchemc, cpmdc, metatomic, uma, or xtb)");
   }
 }
 
@@ -438,11 +453,14 @@ bool RGPotEngine::mpiAbortRequested() noexcept {
 }
 
 void RGPotEngine::armGroupedExit() const {
-#if defined(__linux__) && defined(EON_RGPOT_MPI)
+#if defined(__linux__)
   if (mpi_world_hint() <= 1)
     return;
+  const EonRgpotGroupMpi *api = group_mpi();
+  if (api == nullptr)
+    return;
   static std::once_flag once;
-  std::call_once(once, [] { ::on_exit(eon_rgpot_hard_exit, nullptr); });
+  std::call_once(once, [api] { ::on_exit(api->hard_exit, nullptr); });
 #else
   (void)this;
 #endif
@@ -510,19 +528,54 @@ bool RGPotEngine::available() const {
     return impl_->cpmd->available();
   if (impl_->backend == Impl::Backend::Metatomic && impl_->metatomic)
     return impl_->metatomic->available();
+  if (impl_->backend == Impl::Backend::Uma && impl_->uma)
+    return impl_->uma->available();
   if (impl_->backend == Impl::Backend::Xtb && impl_->xtb)
     return impl_->xtb->available();
   return false;
 }
 
+namespace {
+// rgpot gained per-key orbitals after 3.4.0; an older rgpot has neither
+// call, and its CPMD session keeps one stored copy.
+template <class Pot> void select_orbitals(Pot &pot, std::int64_t key) {
+  if constexpr (requires { pot.selectOrbitals(key); })
+    pot.selectOrbitals(key);
+}
+
+template <class Pot> bool keeps_orbitals_per_key(const Pot &pot) {
+  if constexpr (requires { pot.keepsOrbitalsPerKey(); })
+    return pot.keepsOrbitalsPerKey();
+  else
+    return false;
+}
+} // namespace
+
+void RGPotEngine::selectOrbitals(std::int64_t key) const {
+  if (impl_ && impl_->backend == Impl::Backend::Cpmdc && impl_->cpmd)
+    select_orbitals(*impl_->cpmd, key);
+}
+
+bool RGPotEngine::keepsOrbitalsPerKey() const {
+  return impl_ && impl_->backend == Impl::Backend::Cpmdc && impl_->cpmd &&
+         keeps_orbitals_per_key(*impl_->cpmd);
+}
+
 void RGPotEngine::force(long N, const double *R, const int *atomicNrs,
                         double *F, double *U, const double *box) const {
+  forceEngine(N, R, atomicNrs, F, U, box);
   // Set on one rank by the multi-rank failure test. The text is the
-  // engine error that rank has to deliver to rank 0.
+  // engine error that rank has to deliver to rank 0. It is raised after
+  // the engine call, where an engine error surfaces, so the rank has
+  // already taken part in every collective the engine runs.
   if (const char *fail = std::getenv("RGPOT_FORCE_FAIL")) {
     if (fail[0] != '\0')
       throw std::runtime_error(fail);
   }
+}
+
+void RGPotEngine::forceEngine(long N, const double *R, const int *atomicNrs,
+                              double *F, double *U, const double *box) const {
   if (N <= 0)
     throw std::runtime_error("RGPotEngine::force called with N <= 0");
 
@@ -538,6 +591,19 @@ void RGPotEngine::force(long N, const double *R, const int *atomicNrs,
 
   if (impl_->backend == Impl::Backend::Metatomic) {
     impl_->metatomic->force(N, R, atomicNrs, F, U, nullptr, box);
+    return;
+  }
+  if (impl_->backend == Impl::Backend::Uma) {
+    // A molecular .con may omit the cell. A 25 A diagonal stands in, so
+    // a singular box does not reach the neighbor list.
+    const bool got_cell = box && box[0] > 0.0 && box[4] > 0.0 && box[8] > 0.0;
+    std::array<double, 9> cell_sub{};
+    const double *effective_box = box;
+    if (!got_cell) {
+      cell_sub[0] = cell_sub[4] = cell_sub[8] = 25.0;
+      effective_box = cell_sub.data();
+    }
+    impl_->uma->force(N, R, atomicNrs, F, U, nullptr, effective_box);
     return;
   }
   if (impl_->backend == Impl::Backend::Xtb) {

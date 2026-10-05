@@ -80,6 +80,34 @@ struct ScalarExtra {
 }
 
 # Engine stamp carried with an analysis artifact. Ordinals are append-only.
+
+struct EindirAbi {
+  abiMajor @0 :UInt32 = 0;
+  abiMinor @1 :UInt32 = 0;
+  objectiveLayout @2 :UInt32 = 0;
+  objectiveSize @3 :UInt64 = 0;
+  objectiveAlign @4 :UInt64 = 0;
+  dlpackMajor @5 :UInt32 = 0;
+  dlpackMinor @6 :UInt32 = 0;
+  features @7 :UInt64 = 0;
+}
+
+struct RgpotIdentity {
+  schema @0 :Text;
+  name @1 :Text;
+  version @2 :Text;
+}
+
+struct OptimizerProvenance {
+  schema @0 :Text;
+  backend @1 :Text;
+  xtsAbiMajor @2 :UInt16 = 0;
+  xtsAbiMinor @3 :UInt16 = 0;
+  xtsAbiLayout @4 :UInt16 = 0;
+  hasEindir @5 :Bool = false;
+  eindir @6 :EindirAbi;
+}
+
 struct EngineCompatibility {
   schema @0 :Text;
   engineId @1 :Text;
@@ -90,6 +118,13 @@ struct EngineCompatibility {
   abiMinor @6 :UInt16 = 0;
   layoutRevision @7 :UInt32 = 0;
   buildIdentity @8 :Text;
+  readconSpecVersion @9 :UInt16 = 0;
+  readconMinVersion @10 :Text;
+  eonSchemaMinVersion @11 :Text;
+  rgpycrumbsMinVersion @12 :Text;
+  chemparseplotMinVersion @13 :Text;
+  rgpotName @14 :Text;
+  rgpotVersion @15 :Text;
 }
 
 # Reference to a Landfold analysis product. The geometry stays on JobResult;
@@ -180,6 +215,9 @@ struct JobResult {
   }
   # Append-only. @31-@34 belong to the body union.
   landfoldArtifacts @35 :List(LandfoldArtifact);
+  optimizer @36 :OptimizerProvenance;
+  compatibility @37 :EngineCompatibility;
+  rgpot @38 :RgpotIdentity;
 }
 
 struct MinimizationBody {

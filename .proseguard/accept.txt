@@ -1,0 +1,49 @@
+# Terms defined in docs/source/glossary.md.
+# NEW is the English word in the release notes.
+# PET and MAD are the two pieces of the single model name PET-MAD.
+# GNU appears inside the GPG entry.
+AKMC
+AMS
+BFGS
+CNA
+CON
+COSMO
+CPMD
+DFT
+EAM
+FIRE
+FPE
+GHA
+GPG
+GNU
+GPR
+IDPP
+INI
+IRA
+JOTA
+LBFGS
+MAD
+MLIP
+MPI
+NEB
+NEW
+NLCG
+OIDC
+ORCA
+PBC
+PDM
+PET
+QTST
+RFO
+RMS
+RPC
+RPMD
+RTDB
+SCF
+SIDPP
+SIAM
+SIMD
+SOFI
+VASP
+XTB
+ZBL

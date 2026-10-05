@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn v2.10.0, release"
 ---
 
-## [v2.10.0] - 2026-02-15
+# [v2.10.0] - 2026-02-15
 
 This release focuses on documentation, developer tooling, and performance. It
 adds user-facing documentation for the displacement atom list and

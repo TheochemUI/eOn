@@ -15,7 +15,7 @@ Physical constants, unit conversion.
 @author Jean-Claude C. Berthet
 @date 2006-2007
 University of Iceland
-@section introduction Introduction
+@section xtb_introduction Introduction
 This file contains constants to convert between different units and also to
 choose a default system of units. There are two types of constants, those in @em
 lowercase letters and those in @em capital letters. Constants in lowercase
@@ -25,12 +25,12 @@ of unit chosen. The content of constants is capital letters depends on the
 default system. Those latter are further devided into two subgroups: unit name
 constants and converters.
 
-@section Default system of units:
+@section xtb_default system of units:
 The default system of units is selected at compilation by setting the macro
 #FORCEFIELDS_UNIT_SYSTEM_HPP .
 
-The content of the constants called @ref units "unit name constants" and @ref
-converters "converters" depends on the system chosen. \n The default system like
+The content of the constants called @ref xtb_units "unit name constants" and @ref
+xtb_converters "converters" depends on the system chosen. \n The default system like
 the SI is based on the four dimensions distance, mass, time, electric current.
 All other units are extracted from the four units chosen for these four
 dimensions. For example if the default system is SI, the unit of energy will be
@@ -40,7 +40,7 @@ dimensions are always expressed with the same units. For instance the
 temperature has the dimension of the energy, therefore is default unit is the
 unit of the energy (Joule if SI is the default system).
 
-@section units Default unit names:
+@section xtb_units Default unit names:
 A unit constant is a constant string of characters named after a quantity (e.g.
 ENERGY, PRESSURE, etc). It contains the name of the default unit used for that
 quantity (e.g. @em kJ , @em eV , etc for an energy). These constants can be used
@@ -52,7 +52,7 @@ default system of unit. We shall write the following code:
 cout << energy << ' ' << ENERGY << endl;
 @endcode
 
-@section converters Converters: converting quantities.
+@section xtb_converters Converters: converting quantities.
 A converter is a double constant which has the name of a unit (e.g. PASCAL,
 KELVIN, ANGSTROM...). The constant contains the value of one quantity of the
 unit espressed in the default system of unit. Here is an example on how to use

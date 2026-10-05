@@ -257,6 +257,22 @@ version_bits = version_output.split(',')
 version = version_bits[0]
 build_date = version_bits[1]
 git_hash = version_bits[2]
+git_hash_full = run_command(
+    'git',
+    '-C',
+    meson.project_source_root(),
+    'rev-parse',
+    'HEAD',
+    check: false,
+).stdout().strip()
+# 40 hex: substring(40) is empty and index 39 exists.
+hash_is_40 = git_hash_full.substring(40) == '' and git_hash_full.substring(39) != ''
+if not hash_is_40
+    if fs.is_dir(meson.project_source_root() / '.git')
+        error('libeon_relax_engine identity needs git rev-parse HEAD (40 hex)')
+    endif
+    git_hash_full = git_hash
+endif
 
 # Parse semver into components
 version_parts = version.split('.')
@@ -289,6 +305,7 @@ features_list = [
     ['WITH_RGPOT', 'RGPOT direct in-process (NWChemPot/CPMDPot dlopen)'],
     ['EMBED_PYTHON', 'Embedded Python'],
     ['WITH_XTSCI', 'xtsci-optimize backend'],
+    ['WITH_RGSADDLE', 'rgsaddle band and min-mode'],
 ]
 
 # features_string + version.h are assembled AFTER optional with_* blocks append
@@ -324,6 +341,18 @@ if get_option('with_xtsci')
         _deps += eindir_dep
         _args += ['-DWITH_EINDIR']
     endif
+endif
+
+if get_option('with_rgsaddle')
+    # 0.2.0: typed surface callback, interior-only band requests.
+    rgsaddle_dep = dependency(
+        'rgsaddle',
+        version: '>=0.2.0',
+        method: 'pkg-config',
+        required: true,
+    )
+    _deps += rgsaddle_dep
+    _args += ['-DWITH_RGSADDLE']
 endif
 
 eigen_dep = dependency('eigen3', required: false)
@@ -381,30 +410,80 @@ if not inireader_dep.found()
 endif
 _deps += inireader_dep
 
-# Prefer installed nlohmann_json (EasyBuild/system pkg-config or cmake
-# module — same pattern as readcon). Wrap fallback for hermetic/pixi builds.
-# Conda rolling-distro isolation: if system CMake configs inject -I/usr/include
-# into the conda sysroot, pass --force-fallback-for=nlohmann_json.
-nlohmann_json_dep = dependency(
-    'nlohmann_json',
-    fallback: ['nlohmann_json', 'nlohmann_json_dep'],
-    required: true,
-    default_options: ['default_library=static'],
+# A /usr pkg-config result is not used and the wrap is. That result is a
+# pkg-config prefix of /usr, or an includedir of /usr or /usr/include.
+# A real prefix (conda, EasyBuild) is kept. dependency() caches a found
+# result, so the wrap is taken with subproject(), not another
+# dependency() call.
+nlohmann_json_dep = dependency('nlohmann_json', required: false)
+_nlohmann_prefix = ''
+_nlohmann_inc = ''
+if nlohmann_json_dep.found()
+    _nlohmann_prefix = nlohmann_json_dep.get_variable(
+        pkgconfig: 'prefix',
+        default_value: '',
+    )
+    _nlohmann_inc = nlohmann_json_dep.get_variable(
+        pkgconfig: 'includedir',
+        default_value: '',
+    )
+endif
+_nlohmann_usr = (
+    _nlohmann_prefix == '/usr'
+    or _nlohmann_inc == '/usr'
+    or _nlohmann_inc == '/usr/include'
 )
+if not nlohmann_json_dep.found() or _nlohmann_usr
+    if _nlohmann_usr
+        message(
+            'nlohmann_json: a /usr pkg-config result is not used; the wrap is',
+        )
+    endif
+    nlohmann_json_dep = subproject(
+        'nlohmann_json',
+        default_options: ['default_library=static'],
+    ).get_variable('nlohmann_json_dep')
+endif
 _deps += nlohmann_json_dep
 
-# Highway SIMD (optional, for vectorized potentials)
-hwy_dep = dependency('libhwy', required: false)
-# cmake.subproject imports hwy_list_targets. Meson PGICompiler (nvc++)
-# has no get_pie_args, so that exe dies ninja-write.
+# Highway SIMD (optional, for vectorized potentials).
+# highway.wrap provides the dependency name hwy (cmake target hwy).
+# --force-fallback-for=hwy and --force-fallback-for=highway select that
+# wrap. dependency('libhwy') does not: pkg-config can find libhwy and
+# the wrap is never configured. A found hwy whose prefix is /usr is
+# rejected. cmake.subproject imports hwy_list_targets. Meson
+# PGICompiler (nvc++) has no get_pie_args, so that exe dies
+# ninja-write. The cmake subproject's .a archives are not readable by
+# MSVC link.exe, so Windows does not fall back to the wrap.
 _cxx_id = cppc.get_id()
-if (
-    not hwy_dep.found()
-    and host_machine.system() != 'windows'
+_hwy_wrap_ok = (
+    host_machine.system() != 'windows'
     and _cxx_id not in ['nvidia_hpc', 'pgi']
 )
-    # cmake subproject produces .a archives that MSVC link.exe cannot read
-    message('Highway: system libhwy not found, trying cmake subproject...')
+hwy_dep = dependency('hwy', allow_fallback: _hwy_wrap_ok, required: false)
+_hwy_prefix = ''
+_hwy_inc = ''
+if hwy_dep.found()
+    _hwy_prefix = hwy_dep.get_variable(pkgconfig: 'prefix', default_value: '')
+    _hwy_inc = hwy_dep.get_variable(
+        pkgconfig: 'includedir',
+        default_value: '',
+    )
+endif
+_hwy_usr = (
+    _hwy_prefix == '/usr'
+    or _hwy_inc == '/usr'
+    or _hwy_inc == '/usr/include'
+)
+_hwy_use = hwy_dep.found() and not _hwy_usr
+if not _hwy_use and _hwy_wrap_ok
+    if _hwy_usr
+        message(
+            'Highway: a /usr pkg-config result is not used; the wrap is',
+        )
+    else
+        message('Highway: system hwy not found, trying cmake subproject...')
+    endif
     hwy_opts = cmake.subproject_options()
     hwy_opts.add_cmake_defines({
         'HWY_ENABLE_TESTS': 'OFF',
@@ -417,9 +496,10 @@ if (
     hwy_proj = cmake.subproject('highway', required: false, options: hwy_opts)
     if hwy_proj.found()
         hwy_dep = hwy_proj.dependency('hwy')
+        _hwy_use = true
     endif
 endif
-if hwy_dep.found()
+if _hwy_use
     _deps += hwy_dep
     _args += ['-DWITH_HIGHWAY']
     message('Highway SIMD: enabled')
@@ -456,8 +536,9 @@ if not _rgpot_pkg.found()
         'pure_lib': true,
         'with_tests': false,
         'with_examples': false,
-        # engines stay runtime dlopen; do not force fat metatomic/xtb link
-        'with_xtb': false,
+        # engines stay runtime dlopen. Linked XTBPot is on only when eOn
+        # itself asked for -Dwith_xtb=true (the factory arm is rgpot::XTBPot).
+        'with_xtb': get_option('with_xtb'),
         'with_metatomic': false,
         # ExprPot is a separate option. The basic build must compile it
         # or PotType.EXPR falls through to the generic terminating error.
@@ -572,6 +653,11 @@ readcon_dep = dependency(
     required: false,
 )
 readcon_order_srcs = []
+# Directory of the readcon DLL this build linked. A pixi env can put
+# another readcon_core.dll earlier on PATH; Windows then starts the
+# test with STATUS_ENTRYPOINT_NOT_FOUND (0xC0000139).
+_readcon_runtime_dir = ''
+_have_readcon_dll_beside = false
 if not readcon_dep.found()
     readcon_proj = subproject(
         'readcon-core',
@@ -584,8 +670,31 @@ if not readcon_dep.found()
     )
     readcon_dep = readcon_proj.get_variable('readcon_dep')
     # Order stamp: cargo still emits cdylib+staticlib. partial_dependency
-    # drops declare_dependency.sources, so attach the stamp here.
-    readcon_order_srcs += readcon_proj.get_variable('readcon_order')
+    # drops declare_dependency.sources, so attach the stamp here. A
+    # readcon-core without the stamp contributes no sources.
+    readcon_order_srcs += readcon_proj.get_variable('readcon_order', [])
+    if is_windows
+        _readcon_dll = readcon_proj.get_variable('readcon_cargo')[0]
+        _readcon_runtime_dir = fs.parent(_readcon_dll.full_path())
+        # The loader searches the executable directory before PATH.
+        # A pixi readcon_core.dll on PATH is a different build and the
+        # process exits 0xC0000139 before main. The copy sits next to
+        # test_relax_engine.exe and eon_relax_engine.dll.
+        _readcon_dll_beside = custom_target(
+            'readcon-dll-beside-tests',
+            input: _readcon_dll,
+            output: 'readcon_core.dll',
+            command: [
+                py,
+                '-c',
+                'import shutil, sys; shutil.copyfile(sys.argv[1], sys.argv[2])',
+                '@INPUT@',
+                '@OUTPUT@',
+            ],
+            build_by_default: true,
+        )
+        _have_readcon_dll_beside = true
+    endif
 endif
 if is_windows
     # On Windows, do not put cargo .lib/.dll on eonclib: llvm-ar treats
@@ -819,6 +928,10 @@ if get_option('with_xtsci')
     eonclib_sources += ['XtsciOptimizer.cpp']
 endif
 
+if get_option('with_rgsaddle')
+    eonclib_sources += ['XtsciBand.cpp', 'XtsciMinMode.cpp']
+endif
+
 eonclient_sources = ['ClientEON.cpp', 'CommandLine.cpp']
 
 # C ABI host always compiled so Catch2 can inject IMetatomicLoader without
@@ -943,9 +1056,10 @@ if get_option('with_ams')
 endif
 
 if get_option('with_xtb')
-    # Try finding system 'xtb' via pkg-config or cmake.
-    # Users who need to build xtb from source can place it in subprojects/
-    # and Meson's implicit fallback will find it.
+    # Headers for rgpot/XTBPot/XTBPot.hpp. The kernel itself is inside
+    # librgpot (rgpot -Dwith_xtb=true); eOn does not compile a second one.
+    # conda-forge win-64 xtb is MinGW and ships no xtb.lib. MSVC still
+    # needs an import library written from the DLL.
     if host_machine.system() == 'windows' and cppc.get_id() == 'msvc'
         # conda-forge win-64 xtb is MinGW: libxtb-6.dll and libxtb.dll.a.
         # dependency('xtb') asks link.exe for xtb.lib, which that package
@@ -987,6 +1101,11 @@ if get_option('with_xtb')
         )
         xtb_dep = declare_dependency(
             compile_args: ['-I' + _xtb_pc.get_variable(pkgconfig: 'includedir')],
+            # rgpot's xtb dependency still contributes a bare xtb.lib.
+            # link.exe searches LIBPATH and the build root, not this
+            # directory, so the generated import library is invisible
+            # unless its directory is on the link line.
+            link_args: ['/LIBPATH:' + meson.current_build_dir()],
             dependencies: cppc.find_library(
                 'xtb',
                 dirs: [meson.current_build_dir()],
@@ -999,8 +1118,22 @@ if get_option('with_xtb')
     endif
 
     _deps += [xtb_dep]
-    subdir('potentials/XTBPot')
-    potentials += xtb_eon
+    if _rgpot_pkg.found()
+        if cppc.get_define('RGPOT_HAS_XTB_POT', dependencies: _rgpot_pkg) == ''
+            error(
+                'installed rgpot was built without XTBPot '
+                + '(rgpot.pc does not define RGPOT_HAS_XTB_POT). '
+                + 'Rebuild rgpot with -Dwith_xtb=true, or point '
+                + 'PKG_CONFIG_PATH at one that has it.',
+            )
+        endif
+    elif not _rgpot_proj.get_variable('has_xtb')
+        error(
+            'rgpot subproject built without XTBPot. '
+            + 'Reconfigure with -Drgpot:with_xtb=true, '
+            + 'or wipe the build directory.',
+        )
+    endif
     _args += ['-DWITH_XTB']
 endif
 
@@ -1472,6 +1605,7 @@ configure_file(
         'OS_INFO': host_system,
         'ARCH': architecture,
         'GIT_HASH': git_hash,
+        'GIT_HASH_FULL': git_hash_full,
         'FEATURES': features_string,
     },
 )
@@ -1508,13 +1642,73 @@ eclib = library(
 )
 
 # MSVC scans static libraries once, left to right. eonclib references
-# XTBPot and the other potentials, so it has to precede them.
+# the potential archives, so it has to precede them.
 _linkto = [eclib] + _linkto
+
+capnp_prog = find_program('capnp', required: true)
+capnp_dep = dependency('capnp', required: true)
+# pixi global exposes ~/.pixi/bin/capnp; parent(parent(that))/include
+# is ~/.pixi/include and does not exist. pkg-config includedir is the
+# env that actually owns /capnp/c++.capnp.
+_capnp_import_path = capnp_dep.get_variable('includedir', default_value: '')
+if _capnp_import_path == ''
+    _capnp_import_path = fs.parent(fs.parent(capnp_prog.full_path())) / 'include'
+endif
+# capnp writes <schema>.c++. MSVC cl ignores that extension (D9024,
+# D9027), and the librarian then fails with LNK1181 on the missing
+# object. The script republishes the translation unit as .cpp.
+eon_relax_capnp = custom_target(
+    'eon_relax_capnp',
+    input: meson.project_source_root() / 'schema' / 'eon_relax_engine.capnp',
+    output: ['eon_relax_engine.capnp.h', 'eon_relax_engine.capnp.cpp'],
+    command: [
+        py.full_path(),
+        meson.project_source_root() / 'scripts' / 'capnp_cpp_unit.py',
+        '--capnp', capnp_prog.full_path(),
+        '--import-path', _capnp_import_path,
+        '--src-prefix', meson.project_source_root() / 'schema',
+        '--schema', '@INPUT@',
+        '--header', '@OUTPUT0@',
+        '--source', '@OUTPUT1@',
+    ],
+)
+
+# Tier-2 plugin: dlopen'ed by a learning host (gpr_optim) to run an NEB or
+# a saddle search against the host's surface.
+# Always a shared library. The learning host and the ABI test load it
+# with dlopen/LoadLibrary. A static archive is not a loadable module:
+# Windows CI sets EON_RELAX_ENGINE to libeon_relax_engine.a and
+# LoadLibrary returns null. default_library=static must not apply here.
+# Windows puts only readcon headers on _deps. The import library stays
+# off eonclib because llvm-ar and link reject the cargo DLL. This DLL
+# pulls eonclib in, so it needs the same import library the executables
+# get, without the cargo sources that contain the DLL.
+_engine_deps = _deps + _gprd_extra_deps + [capnp_dep]
+if is_windows
+    _engine_deps += readcon_dep.partial_dependency(
+        includes: true,
+        compile_args: true,
+        link_args: true,
+        links: true,
+    )
+endif
+eon_relax_engine = shared_library(
+    'eon_relax_engine',
+    ['relax/RelaxEngineAbi.cpp', eon_relax_capnp],
+    dependencies: _engine_deps,
+    cpp_args: _args + ['-DEON_RELAX_ENGINE_BUILD'],
+    link_with: _linkto,
+    include_directories: _incdirs + [include_directories('.')],
+    build_rpath: ':'.join(_runtime_rpath),
+    install_rpath: _lib_install_rpath,
+    install: true,
+    gnu_symbol_visibility: 'inlineshidden',
+)
 
 # RGPOT-metatomic engine (slow path); fat pot already in potentials above.
 if get_option('with_metatomic')
     metatomic_engine = library(
-        'metatomic_engine',
+        'rgpot_metatomic_engine',
         [
             'potentials/Metatomic/MetatomicPotential.cpp',
             'potentials/Metatomic/MetatomicEngineAbi.cpp',
@@ -1529,6 +1723,31 @@ if get_option('with_metatomic')
         install: true,
         gnu_symbol_visibility: 'default',
     )
+
+    # One-release compat: callers and older wheels still open the previous soname.
+    _engine_real = fs.name(metatomic_engine.full_path())
+    _engine_compat = ['libmetatomic_engine.so']
+    if host_system == 'darwin'
+        _engine_compat = ['libmetatomic_engine.dylib']
+    elif host_system == 'windows'
+        _engine_compat = ['metatomic_engine.dll', 'libmetatomic_engine.dll']
+    endif
+    if host_system != 'windows'
+        foreach compat : _engine_compat
+            install_symlink(
+                compat,
+                install_dir: get_option('libdir'),
+                pointing_to: _engine_real,
+            )
+            custom_target(
+                'metatomic_engine_compat_' + compat,
+                output: compat,
+                command: ['ln', '-sfn', _engine_real, '@OUTPUT@'],
+                depends: metatomic_engine,
+                build_by_default: true,
+            )
+        endforeach
+    endif
 endif
 
 # Full deps including readcon link_args (for executables and tests only)
@@ -1615,6 +1834,19 @@ if get_option('with_tests')
         dependencies: _exe_deps,
         link_with: _linkto,
     )
+
+    # An MPI client reads its flags unless an eOn server launched it, so
+    # --version exits 0 outside a server and when standalone.
+    if get_option('with_mpi').enabled()
+        test('eonclient_mpi_version', ec, args: ['--version'], suite: ['eon'])
+        test(
+            'eonclient_mpi_version_standalone',
+            ec,
+            args: ['--version'],
+            env: ['EON_CLIENT_STANDALONE=1'],
+            suite: ['eon'],
+        )
+    endif
 endif
 # ------------------------ Tests
 
@@ -1659,6 +1891,7 @@ if get_option('with_tests')
         ['test_runtime', 'RuntimeTest.cpp', ''],
         ['test_metatomic_loader', 'MetatomicLoaderTest.cpp', ''],
         ['test_neb_lj', 'NEBMorseTest.cpp', 'neb_morse'],
+        ['test_relax_engine', 'RelaxEngineAbiTest.cpp', 'neb_morse'],
         ['test_solid_state_neb', 'SolidStateNEBTest.cpp', ''],
         ['test_neb_regression', 'NEBRegressionTest.cpp', 'neb_lj13'],
         ['test_dimer', 'DimerTest.cpp', 'neb_morse'],
@@ -1677,6 +1910,9 @@ if get_option('with_tests')
         ['test_params_json', 'ParametersJSONTest.cpp', ''],
         ['test_params_ssot', 'ParametersSSOTTest.cpp', ''],
         ['test_bondboost', 'BondBoostTest.cpp', 'neb_morse'],
+        ['test_job_result', 'JobResultProvenanceTest.cpp', ''],
+        ['test_prefactor', 'PrefactorTest.cpp', 'neb_morse'],
+        ['test_job_runners', 'JobRunnerCoverageTest.cpp', 'neb_morse'],
         ['test_emt_cu', 'EMTCuTest.cpp', 'cu_fcc'],
         ['test_neb_subsystem', 'NEBSubsystemTest.cpp', ''],
         ['test_neb_zoom', 'NEBZoomTest.cpp', ''],
@@ -1711,11 +1947,17 @@ if get_option('with_tests')
     if get_option('with_artn')
         test_array += [['test_artn', 'ARTnTest.cpp', 'neb_morse']]
     endif
+    if get_option('with_rgsaddle')
+        test_array += [['test_rgsaddle_band', 'RgsaddleBandTest.cpp', 'neb_morse']]
+    endif
     if get_option('with_ira')
         test_array += [['test_ira', 'IRATest.cpp', 'saddle_search']]
     endif
     if with_gprd
         test_array += [['test_gpr_helpers', 'GPRHelpersTest.cpp', '']]
+        # Frozen GprMeanPotential fixed-point parity between the eonclient
+        # LBFGS and the gpr band engine.
+        test_array += [['test_gprmean_fixedpoint', 'GprMeanFixedPointTest.cpp', '']]
     endif
     # Build the Fortran potential library search path for tests.
     # Each Fortran shared lib lives in its subdir of the build tree,
@@ -1742,6 +1984,58 @@ if get_option('with_tests')
     )
     _test_env.set('EON_TEST_SYSTEMS_DIR', _systems_dir)
     _test_env.set('EONCLIENT', ec.full_path())
+    _test_env.set('EON_RELAX_ENGINE', eon_relax_engine.full_path())
+    # The Metatomic job puts torch/lib ahead of the pixi prefix. The
+    # engine DLL was linked against the prefix's capnp, kj, and flang
+    # runtimes. A same-named DLL from torch is missing those entry
+    # points and the process exits 0xC0000139. The prefix bins, then
+    # the built readcon DLL, come first.
+    if is_windows
+        _prefix_bin = get_option('prefix') / 'bin'
+        _prefix_lbin = get_option('prefix') / 'Library' / 'bin'
+        if fs.is_dir(_prefix_bin)
+            _test_env.prepend('PATH', _prefix_bin)
+        endif
+        if fs.is_dir(_prefix_lbin)
+            _test_env.prepend('PATH', _prefix_lbin)
+        endif
+    endif
+    if _readcon_runtime_dir != ''
+        _test_env.prepend('PATH', _readcon_runtime_dir)
+    endif
+    # Windows loads a DLL's imports from the executable directory before
+    # PATH. Stage the engine's non-system imports beside the test, the
+    # same place the Fortran pot DLLs sit. Torch on PATH cannot shadow
+    # them.
+    _stage_engine_imports = []
+    _have_staged_engine_imports = false
+    if is_windows
+        _stage_search = []
+        if _readcon_runtime_dir != ''
+            _stage_search += _readcon_runtime_dir
+        endif
+        _lbin = get_option('prefix') / 'Library' / 'bin'
+        _pbin = get_option('prefix') / 'bin'
+        if fs.is_dir(_lbin)
+            _stage_search += _lbin
+        endif
+        if fs.is_dir(_pbin)
+            _stage_search += _pbin
+        endif
+        _stage_engine_imports = custom_target(
+            'stage-engine-dll-imports',
+            input: eon_relax_engine,
+            output: 'engine-dll-imports.stamp',
+            command: [
+                py,
+                meson.project_source_root() / 'scripts' / 'ci' / 'win_stage_imports.py',
+                '@INPUT@',
+                '@OUTPUT@',
+            ] + _stage_search,
+            build_by_default: true,
+        )
+        _have_staged_engine_imports = true
+    endif
     if _fortran_pot_dirs.length() > 0
         # FortranPotLoader splits on ';' on Windows (drive letters break ':').
         # Same pathsep rule as PATH: win=';' unix=':'.
@@ -1756,6 +2050,12 @@ if get_option('with_tests')
         test_timeout = test.get(3, 30)
         _case_env = _test_env
         _case_depends = []
+        if _have_readcon_dll_beside
+            _case_depends += [_readcon_dll_beside]
+        endif
+        if _have_staged_engine_imports
+            _case_depends += [_stage_engine_imports]
+        endif
         if test.get(0) == 'test_client_timing'
             _case_depends += [ec]
         elif test.get(0) == 'test_serve_spec'
@@ -1774,13 +2074,19 @@ if get_option('with_tests')
                     'unit_tests/' + test.get(1),
                     'thirdparty/catch2/catch_amalgamated.cpp',
                 ],
-                dependencies: test_deps,
-                include_directories: _incdirs,
+                include_directories: test.get(0) == 'test_relax_engine'
+                ? _incdirs + [include_directories('.')]
+                : _incdirs,
                 cpp_args: test_args,
                 # Include /STACK:16M (Windows) so EAM Al Fortran pots do not
                 # SIGSEGV with STATUS_STACK_OVERFLOW (default stack is 1 MB).
                 link_args: _linkargs,
-                link_with: test_link,
+                dependencies: test.get(0) == 'test_relax_engine'
+                ? test_deps + [capnp_dep]
+                : test_deps,
+                link_with: test.get(0) == 'test_relax_engine'
+                ? test_link + [eon_relax_engine]
+                : test_link,
                 build_rpath: ':'.join(_runtime_rpath),
             ),
             workdir: meson.project_source_root() + '/client/unit_tests/data/systems/' + test.get(
@@ -1863,6 +2169,7 @@ if get_option('with_tests')
             sources: [
                 'unit_tests/RgpotPotTest.cpp',
                 'unit_tests/CpmdMessageTest.cpp',
+                'unit_tests/GroupScheduleTest.cpp',
                 'thirdparty/catch2/catch_amalgamated.cpp',
             ],
             dependencies: test_deps,
@@ -1894,9 +2201,29 @@ if get_option('with_tests')
             workdir: meson.project_source_root() +
                      '/client/unit_tests/data/systems/rgpot_nwchem_test',
         )
+        # librgpot and librgpot_pot are MPI-free; the MPI side loads on
+        # demand, so eonclient itself must not map libmpi or a transport.
+        if _rgpot_mpi_dep.found() and host_machine.system() == 'linux'
+            test(
+                'test_eonclient_no_mpi_at_load',
+                find_program('bash'),
+                args: [
+                    meson.project_source_root()
+                    / 'client'
+                    / 'unit_tests'
+                    / 'check_no_mpi_closure.sh',
+                    ec.full_path(),
+                ],
+                depends: [ec],
+                suite: ['eon', 'rgpot'],
+            )
+        endif
+        # The three cases call the calculator-group agreement. That code
+        # is compiled only when rgpot links MPI. mpirun on PATH is not
+        # that build, and the cases then fail closed.
         _rgpot_mpirun = find_program('mpirun', 'mpiexec', required: false)
         _rgpot_bash = find_program('bash', required: false)
-        if _rgpot_mpirun.found() and _rgpot_bash.found()
+        if _rgpot_mpi_dep.found() and _rgpot_mpirun.found() and _rgpot_bash.found()
             rgpot_mpi_exit = executable(
                 'rgpot_mpi_exit',
                 sources: ['unit_tests/rgpot_mpi_exit.cpp'],
@@ -1926,6 +2253,24 @@ if get_option('with_tests')
                 'test_rgpot_mpi_abort',
                 _rgpot_bash,
                 args: [_rgpot_mpi_script, rgpot_mpi_exit.full_path(), 'abort'],
+                timeout: 90,
+                suite: ['eon', 'rgpot'],
+                is_parallel: false,
+                env: _rgpot_test_env,
+            )
+            test(
+                'test_rgpot_mpi_single',
+                _rgpot_bash,
+                args: [_rgpot_mpi_script, rgpot_mpi_exit.full_path(), 'single'],
+                timeout: 90,
+                suite: ['eon', 'rgpot'],
+                is_parallel: false,
+                env: _rgpot_test_env,
+            )
+            test(
+                'test_rgpot_mpi_uneven',
+                _rgpot_bash,
+                args: [_rgpot_mpi_script, rgpot_mpi_exit.full_path(), 'uneven'],
                 timeout: 90,
                 suite: ['eon', 'rgpot'],
                 is_parallel: false,

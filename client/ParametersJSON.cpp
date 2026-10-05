@@ -47,6 +47,8 @@ template <typename E> static E enum_from_json(const json &j, E fallback) {
 
 namespace eonc::config {
 
+#include "eon/generated/ParametersSSOTJson.inc"
+
 json to_json(const Parameters &p) {
   json j;
 
@@ -360,6 +362,7 @@ json to_json(const Parameters &p) {
       {"endpoints", ParametersLoadAccess::serve_options(p).endpoints},
   };
 
+  project_ssot_json_write(j, p);
   return j;
 }
 
@@ -828,6 +831,8 @@ void from_json(const json &j, Parameters &p) {
     th.andersen_tcol = timeUnit > 0.0 ? th.andersen_tcol_input / timeUnit : 0.0;
     th.path_pile_tau = timeUnit > 0.0 ? th.path_pile_tau_input / timeUnit : 0.0;
   }
+
+  project_ssot_json_read(j, p);
 
   // Resolve computed fields
   validate_and_link(p);

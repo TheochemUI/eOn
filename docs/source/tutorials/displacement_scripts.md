@@ -45,8 +45,8 @@ A displacement script must satisfy these rules:
   `state.info` and reused for all saddle searches launched from that state.
 - The path in `displace_atom_kmc_state_script` can be **relative** (resolved
   against the eOn root directory) or **absolute**.
-- Scripts can use [PEP 723](https://peps.python.org/pep-0723/) inline metadata
-  so they are runnable with `uvx` without a separate virtual environment.
+- The server runs the script with Python and passes the `.con` path as its
+  only argument.
 
 ## Example 1: Vacancy Diffusion in Cu
 
@@ -105,10 +105,10 @@ Its core logic:
 You can run it standalone to inspect the output:
 
 ```{code-block} bash
-uvx ptmdisp.py pos.con
+python ptmdisp.py pos.con
 # Output: 42, 43, 51, 67, ...
 
-uvx ptmdisp.py pos.con --verbose
+python ptmdisp.py pos.con --verbose
 # Prints logging info to stderr, indices to stdout
 ```
 
@@ -150,7 +150,7 @@ The file `examples/akmc-cu-vacancy/adsorbate_region.py` implements this
 approach using only ASE (no OVITO dependency):
 
 ```{code-block} bash
-uvx adsorbate_region.py pos.con --adsorbate-elements C O --cutoff 4.0
+python adsorbate_region.py pos.con --adsorbate-elements C O --cutoff 4.0
 # Output: 0, 1, 23, 24, 31, ...
 ```
 
@@ -171,6 +171,15 @@ is useful when the adsorbate and surface share the same element. Pass
 
 ### Configuration
 
+The configuration value is a path. The server runs that file as
+`python <script> <confile>` and passes no flags. A value that also contains
+`--adsorbate-elements` is not a file, so the search stores an empty list.
+`adsorbate_region.py` exits when neither `--adsorbate-elements` nor
+`--z-above` is set, and that exit stops the server.
+
+`examples/akmc-cu-vacancy/co_on_pt.py` calls the adsorbate script with the
+element choice fixed. The key names `co_on_pt.py`.
+
 ```{code-block} ini
 :caption: config.ini (excerpt)
 
@@ -178,7 +187,7 @@ is useful when the adsorbate and surface share the same element. Pass
 displace_listed_atom_weight = 1.0
 displace_radius = 3.0
 displace_magnitude = 0.01
-displace_atom_kmc_state_script = adsorbate_region.py --adsorbate-elements C O --cutoff 4.0
+displace_atom_kmc_state_script = co_on_pt.py
 displace_all_listed = true
 ```
 

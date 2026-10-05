@@ -23,11 +23,9 @@ To run `pdm` without installing it globally,
 
 ## Building locally
 
-````{margin}
 ```{note}
 `uvx` simplifies running Python commands, and `pdm` handles version updates better, syncing nicely with the `pyproject.toml` so no Python dependencies not needed by the client should be in the `environment.yml`
 ```
-````
 
 ```{code-block} bash
 # Setup dependencies

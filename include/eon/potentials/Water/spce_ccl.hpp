@@ -25,7 +25,7 @@ potential CCL (for intramolecular interactions). The functions and parameters
 for the SPC/E are from @ref berendsen1987 "Berendsen, et al.". References for
 potential CCL can be found in in class Ccl 's documentation. The rules used to
 merge these two potentials were taken from @ref amira2004 "Amira, et al".
-@section references References
+@section spce_ccl_references References
 @anchor berendsen1987
 The Missing Term in Effective Pair Potentials. HJC Berendsen, JR Grigera et al.
 J. Phys. Chem. @b 1987, vol. 91, p. 6269-6271 \n

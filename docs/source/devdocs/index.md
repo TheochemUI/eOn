@@ -22,6 +22,7 @@ parallel-potentials
 library-api
 in-process
 abi-surface
+relax-engine
 rgpot-migration
 porting_potentials
 docbuild
@@ -29,7 +30,7 @@ svn
 svn-migration
 tracking-changes
 release
-design/client
+design/client/index
 ```
 
 ```{toctree}

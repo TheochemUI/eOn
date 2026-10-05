@@ -1,0 +1,1 @@
+The rate job gives a converged ring a rate only when it crosses the seeded saddle's dividing plane within its own span of the saddle and its turning points lie within 60 degrees of the unstable mode; straddling the plane alone let a ring around a neighbouring saddle through. `results.dat` reports the turning points along the mode, the chord overlap and the crossing offset.

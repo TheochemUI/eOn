@@ -22,7 +22,8 @@ TEST_CASE("FeHe potential returns finite energy on Fe BCC cluster",
           "[pot][fehe][fe]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::FEHE;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
 

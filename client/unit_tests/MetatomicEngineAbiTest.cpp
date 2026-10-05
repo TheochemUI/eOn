@@ -16,9 +16,13 @@ TEST_CASE("metatomic engine C ABI symbols present when engine is loadable",
     candidates.emplace_back(env);
   }
   // Platform default sonames / import names.
+  candidates.emplace_back("librgpot_metatomic_engine.so");
   candidates.emplace_back("libmetatomic_engine.so");
+  candidates.emplace_back("librgpot_metatomic_engine.dylib");
   candidates.emplace_back("libmetatomic_engine.dylib");
+  candidates.emplace_back("rgpot_metatomic_engine.dll");
   candidates.emplace_back("metatomic_engine.dll");
+  candidates.emplace_back("librgpot_metatomic_engine.dll");
   candidates.emplace_back("libmetatomic_engine.dll");
 
   // Build-tree relative path from test env (colon/semicolon separated).
@@ -37,9 +41,13 @@ TEST_CASE("metatomic engine C ABI symbols present when engine is loadable",
       d = d.substr(0, pos);
     if (!d.empty() && d.back() != '/' && d.back() != '\\')
       d += slash;
+    candidates.push_back(d + "librgpot_metatomic_engine.so");
     candidates.push_back(d + "libmetatomic_engine.so");
+    candidates.push_back(d + "librgpot_metatomic_engine.dylib");
     candidates.push_back(d + "libmetatomic_engine.dylib");
+    candidates.push_back(d + "rgpot_metatomic_engine.dll");
     candidates.push_back(d + "metatomic_engine.dll");
+    candidates.push_back(d + "librgpot_metatomic_engine.dll");
     candidates.push_back(d + "libmetatomic_engine.dll");
   }
 

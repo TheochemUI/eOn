@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn v3.3.0, Parameters accessors, Potential span, string_view, CNA"
 ---
 
-## [v3.3.0] - 2026-09-15
+# [v3.3.0] - 2026-09-15
 
 Minor on `v3.2.1`. Parameters option groups are private with const
 accessors. `Potential::force` has a size-checked `std::span` overload.

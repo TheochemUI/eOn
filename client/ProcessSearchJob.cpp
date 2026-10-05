@@ -26,13 +26,14 @@
 #include <filesystem>
 #include <thread>
 
-#include <format>
 #include <fstream>
 #include <memory>
 #include <stdexcept>
 #include <string>
 
+#include "eon/ConFileIO.h"
 #include "eon/EonLogger.h"
+#include "eon/JobResult.h"
 
 namespace eonc {
 
@@ -50,13 +51,15 @@ std::vector<std::string> ProcessSearchJob::run() {
     displacement = nullptr;
   }
   saddle = std::make_shared<Matter>(pot, params);
-  // Give min2 its own potential for parallel endpoint minimization
+  // Give min2 its own potential for parallel endpoint minimization.
   // A clone keeps this job's potential; makePotential rebuilds from the
   // configuration and is the fallback for backends that cannot clone.
   std::shared_ptr<Potential> min2Pot = pot;
   if (pot->needsPerImageInstance() && params.main_options().parallel) {
     auto cloned = pot->clonePotential();
-    min2Pot = cloned ? cloned : eonc::helpers::makePotential(params);
+    min2Pot = cloned ? cloned
+                     : eonc::helpers::sharePotential(
+                           eonc::helpers::makePotential(params));
   }
   min1 = std::make_shared<Matter>(pot, params);
   min2 = std::make_shared<Matter>(min2Pot, params);
@@ -192,7 +195,9 @@ ProcessSearchJob::runFromMatter(std::shared_ptr<Matter> seed) {
   std::shared_ptr<Potential> min2Pot = pot;
   if (pot->needsPerImageInstance() && params.main_options().parallel) {
     auto cloned = pot->clonePotential();
-    min2Pot = cloned ? cloned : eonc::helpers::makePotential(params);
+    min2Pot = cloned ? cloned
+                     : eonc::helpers::sharePotential(
+                           eonc::helpers::makePotential(params));
   }
   displacement = std::make_shared<Matter>(pot, params);
   saddle = std::make_shared<Matter>(pot, params);
@@ -433,48 +438,28 @@ void ProcessSearchJob::saveData(int status) {
   std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
 
-  std::ofstream out(resultsFilename, std::ios::binary);
-  if (out) {
-    out << std::format("{} termination_reason\n", status);
-    out << std::format("{} termination_reason_text\n",
-                       saddleSearch->describeStatus(status));
-    out << std::format("{} random_seed\n", params.main_options().randomSeed);
-    out << std::format(
-        "{} potential_type\n",
-        magic_enum::enum_name<PotType>(params.potential_options().potential));
-    out << std::format("{} total_force_calls\n",
-                       fCallsMin + fCallsSaddle + fCallsPrefactors);
-    out << std::format("{} force_calls_minimization\n", fCallsMin);
-    out << std::format("{} force_calls_saddle\n", fCallsSaddle);
-    out << std::format("{:.12e} potential_energy_saddle\n",
-                       saddle->getPotentialEnergy());
-    out << std::format("{:.12e} potential_energy_reactant\n",
-                       min1->getPotentialEnergy());
-    out << std::format("{:.12e} potential_energy_product\n",
-                       min2->getPotentialEnergy());
-    out << std::format("{:.12e} barrier_reactant_to_product\n",
-                       barriersValues[0]);
-    out << std::format("{:.12e} barrier_product_to_reactant\n",
-                       barriersValues[1]);
-    if (params.saddle_search_options().method == "min_mode") {
-      out << std::format("{:.12e} displacement_saddle_distance\n",
-                         displacement->perAtomNorm(*saddle));
-    } else {
-      out << std::format("{:.12e} displacement_saddle_distance\n", 0.0);
-    }
-    if (params.saddle_search_options().method == "dynamics") {
-      auto ds = dynamic_cast<DynamicsSaddleSearch &>(*saddleSearch);
-      out << std::format("{:.12e} simulation_time\n",
-                         ds.time * params.constants().timeUnit);
-      out << std::format("{:.12e} md_temperature\n",
-                         params.saddle_search_options().dynamics.temperature);
-    }
-    out << std::format("{} force_calls_prefactors\n", fCallsPrefactors);
-    out << std::format("{:.12e} prefactor_reactant_to_product\n",
-                       prefactorsValues[0]);
-    out << std::format("{:.12e} prefactor_product_to_reactant\n",
-                       prefactorsValues[1]);
+  const bool dynamics = params.saddle_search_options().method == "dynamics";
+  double simTime = 0.0;
+  double mdTemp = 0.0;
+  if (dynamics) {
+    auto ds = dynamic_cast<DynamicsSaddleSearch &>(*saddleSearch);
+    simTime = ds.time * params.constants().timeUnit;
+    mdTemp = params.saddle_search_options().dynamics.temperature;
   }
+  const double disp = params.saddle_search_options().method == "min_mode"
+                          ? displacement->perAtomNorm(*saddle)
+                          : 0.0;
+  auto env = JobResultEnvelope::fromProcessSearch(
+      status, std::string(saddleSearch->describeStatus(status)),
+      params.potential_options().potential, params.main_options().randomSeed,
+      fCallsMin, fCallsSaddle, fCallsPrefactors, saddle->getPotentialEnergy(),
+      min1->getPotentialEnergy(), min2->getPotentialEnergy(), barriersValues[0],
+      barriersValues[1], disp, prefactorsValues[0], prefactorsValues[1],
+      dynamics, simTime, mdTemp);
+  env.reactant_frame = eonc::io::matterToConFrame(*min1);
+  env.saddle_frame = eonc::io::matterToConFrame(*saddle);
+  env.product_frame = eonc::io::matterToConFrame(*min2);
+  env.writeResultsDat(resultsFilename);
 
   std::string reactantFilename("reactant.con");
   returnFiles.push_back(reactantFilename);

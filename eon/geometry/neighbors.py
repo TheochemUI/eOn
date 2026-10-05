@@ -1,9 +1,12 @@
-"""Neighbor lists via vesin (PBC-aware).
+"""Neighbor lists.
 
-Historically eOn used a Python sweep-and-prune or an O(N²) brute loop.
-Both paths now go through :class:`vesin.NeighborList`, which is the supported
-geometry kernel for pair finding. The *brute* flag is retained for API
-compatibility but no longer selects a different algorithm.
+A periodic cutoff list is :func:`linkcell.pairs_within`: one row per
+atom-image, the caller's shift ``S``, and a squared distance strictly
+below the cutoff squared. :func:`neighbor_list` unique-indexes those
+rows. An open axis stays on :class:`vesin.NeighborList`, which accepts
+per-axis periodicity. ``knearest`` is the k-nearest list, not a cutoff
+list. The *brute* flag is retained for API compatibility and does not
+select another algorithm.
 """
 
 from __future__ import annotations
@@ -48,7 +51,7 @@ def _pair_lists(n: int, i: np.ndarray, j: np.ndarray) -> List[List[int]]:
 
 
 def _periodic_flags(p: StructureLike, periodic: PeriodicSpec | None) -> PeriodicSpec:
-    """Resolve vesin ``periodic`` from the explicit argument or ``p.periodic``."""
+    """Resolve ``periodic`` from the explicit argument or ``p.periodic``."""
     if periodic is not None:
         return periodic
     flags = getattr(p, "periodic", None)
@@ -57,6 +60,36 @@ def _periodic_flags(p: StructureLike, periodic: PeriodicSpec | None) -> Periodic
     if flags is None:
         return True
     return flags
+
+
+def _all_periodic(flags: PeriodicSpec) -> bool:
+    """True when every axis wraps. ``pairs_within`` has no open axis."""
+    if isinstance(flags, (bool, np.bool_)):
+        return bool(flags)
+    arr = np.asarray(flags, dtype=bool).reshape(-1)
+    if arr.size == 1:
+        return bool(arr[0])
+    return arr.size == 3 and bool(arr.all())
+
+
+def _linkcell_pairs(r: np.ndarray, box: np.ndarray, cutoff: float, *, half: bool = False):
+    """``(i, j, S, dist2)`` from :func:`linkcell.pairs_within`, or ``None``."""
+    try:
+        import linkcell
+    except ImportError:
+        return None
+    pairs_within = getattr(linkcell, "pairs_within", None)
+    if pairs_within is None:
+        return None
+    xyz = np.ascontiguousarray(r, dtype=np.float64)
+    cell = np.ascontiguousarray(box, dtype=np.float64)
+    i, j, shift, dist2 = pairs_within(xyz, cell, float(cutoff), half=half)
+    return (
+        np.asarray(np.from_dlpack(i), dtype=np.int64),
+        np.asarray(np.from_dlpack(j), dtype=np.int64),
+        np.asarray(np.from_dlpack(shift), dtype=np.int32),
+        np.asarray(np.from_dlpack(dist2), dtype=np.float64),
+    )
 
 
 def neighbor_list(
@@ -78,8 +111,10 @@ def neighbor_list(
     brute
         Ignored; kept so callers using ``config.comp_brute_neighbors`` need no change.
     periodic
-        Passed to vesin. A single bool applies to all axes; a length-3
-        sequence is per-axis. Default is ``p.periodic`` or all-periodic.
+        A single bool applies to all axes; a length-3 sequence is
+        per-axis. Default is ``p.periodic`` or all-periodic. Fully
+        periodic cells use :func:`linkcell.pairs_within`. An open axis
+        uses vesin.
     """
     r, box = _positions_box(p)
     n = r.shape[0]
@@ -87,10 +122,13 @@ def neighbor_list(
         return []
     if cutoff <= 0:
         return [[] for _ in range(n)]
+    flags = _periodic_flags(p, periodic)
+    if _all_periodic(flags):
+        packed = _linkcell_pairs(r, box, cutoff, half=False)
+        if packed is not None:
+            return _pair_lists(n, packed[0], packed[1])
     calc = VesinNeighborList(cutoff=float(cutoff), full_list=True)
-    i, j = calc.compute(
-        r, box, periodic=_periodic_flags(p, periodic), quantities="ij"
-    )
+    i, j = calc.compute(r, box, periodic=flags, quantities="ij")
     return _pair_lists(n, np.asarray(i), np.asarray(j))
 
 
@@ -135,12 +173,14 @@ def neighbor_list_pairs(
     cutoff: float,
     periodic: PeriodicSpec | None = None,
 ):
-    """Vesin pair list with cell shifts (ASE/tonari ``ijS``).
+    """Cutoff pair list with cell shifts (ASE/tonari ``ijS``).
 
-    Returns ``(i, j, S)`` with one row per atom-image pair. Unlike
-    :func:`neighbor_list`, this does not unique-index or apply a
-    minimum-image reduction. Displacement is
-    ``r[j] - r[i] + S @ box``.
+    Returns ``(i, j, S)`` with one row per atom-image pair, ordered by
+    ``(i, j, S)``. Unlike :func:`neighbor_list`, this does not
+    unique-index or apply a minimum-image reduction. Displacement is
+    ``r[j] - r[i] + S @ box``. A fully periodic cell uses
+    :func:`linkcell.pairs_within`. An open axis uses vesin. A squared
+    distance on a linkcell row is strictly below the cutoff squared.
     """
     r, box = _positions_box(p)
     n = r.shape[0]
@@ -151,65 +191,46 @@ def neighbor_list_pairs(
     )
     if n == 0 or cutoff <= 0:
         return empty
+    flags = _periodic_flags(p, periodic)
+    if _all_periodic(flags):
+        packed = _linkcell_pairs(r, box, cutoff, half=False)
+        if packed is not None:
+            i, j, shift, _dist2 = packed
+            if i.size == 0:
+                return empty
+            order = np.lexsort((shift[:, 2], shift[:, 1], shift[:, 0], j, i))
+            return i[order], j[order], shift[order]
     calc = VesinNeighborList(cutoff=float(cutoff), full_list=True)
-    i, j, S = calc.compute(
-        r, box, periodic=_periodic_flags(p, periodic), quantities="ijS"
-    )
-    return np.asarray(i), np.asarray(j), np.asarray(S)
+    i, j, shift = calc.compute(r, box, periodic=flags, quantities="ijS")
+    i = np.asarray(i)
+    j = np.asarray(j)
+    shift = np.asarray(shift)
+    if i.size == 0:
+        return empty
+    order = np.lexsort((shift[:, 2], shift[:, 1], shift[:, 0], j, i))
+    return i[order], j[order], shift[order]
 
 
 def neighbor_list_linkcell(
     p: StructureLike,
     cutoff: float,
-    k: int | None = None,
 ) -> List[List[int]]:
-    """Neighbor list via :func:`linkcell.knearest`, filtered to *cutoff*.
+    """Unique-index adjacency from :func:`linkcell.pairs_within`.
 
-    Production :func:`neighbor_list` stays on vesin. This path exists so
-    the two kernels can be compared on the same Structure.
+    The cell is periodic. ``knearest`` is a different query and is not
+    called. An empty list is returned when linkcell has no
+    ``pairs_within``.
     """
-    import linkcell
-
     r, box = _positions_box(p)
     n = r.shape[0]
     if n == 0:
         return []
     if cutoff <= 0 or n == 1:
         return [[] for _ in range(n)]
-    kk = n - 1 if k is None else int(k)
-    if kk < 1:
+    packed = _linkcell_pairs(r, box, cutoff, half=False)
+    if packed is None:
         return [[] for _ in range(n)]
-    xyz = np.ascontiguousarray(r, dtype=np.float64)
-    cell = np.ascontiguousarray(box, dtype=np.float64)
-    raw = linkcell.knearest(xyz, cell, kk)
-    if isinstance(raw, tuple) and len(raw) == 2:
-        nn = np.from_dlpack(raw[0])
-        d2 = np.from_dlpack(raw[1])
-    else:
-        nn = np.from_dlpack(raw)
-        import minimage
-
-        mi = minimage.Cell.from_vesin(box.tolist())
-        d2 = np.empty(nn.shape, dtype=np.float64)
-        for i in range(n):
-            for j in range(kk):
-                idx = int(nn[i, j])
-                if idx < 0:
-                    d2[i, j] = np.nan
-                else:
-                    d2[i, j] = mi.dist2(r[i].tolist(), r[idx].tolist())
-    cut2 = float(cutoff) * float(cutoff)
-    out: List[List[int]] = []
-    for i in range(n):
-        neigh = []
-        for j in range(kk):
-            idx = int(nn[i, j])
-            if idx < 0 or idx == i:
-                continue
-            if float(d2[i, j]) <= cut2:
-                neigh.append(idx)
-        out.append(sorted(set(neigh)))
-    return out
+    return _pair_lists(n, packed[0], packed[1])
 
 
 def coordination_numbers(

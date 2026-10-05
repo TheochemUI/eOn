@@ -26,11 +26,16 @@ TEST_CASE("Parameters constructor applies Cap'n Proto SSoT defaults",
   REQUIRE(p.process_search_options().minimize_first == true);
   REQUIRE(p.structure_comparison_options().distance_difference ==
           Catch::Approx(0.1));
+  REQUIRE(p.rgpot_options().backend == "nwchemc");
+  REQUIRE(p.rgpot_options().cutoff_ry == Catch::Approx(70.0));
 }
 
 TEST_CASE("ssot_has_field knows covered catalog keys", "[params][ssot]") {
   REQUIRE(eonc::config::ssot_has_field("Main", "temperature"));
   REQUIRE(eonc::config::ssot_has_field("Potential", "potential"));
+  REQUIRE(eonc::config::ssot_has_field("RgpotPot", "cutoff_ry"));
+  REQUIRE(eonc::config::ssot_has_field("RgpotPot", "cutOffRy"));
+  REQUIRE(eonc::config::ssot_has_field("RgpotPot", "params_path"));
   REQUIRE_FALSE(eonc::config::ssot_has_field("Main", "not_a_real_field"));
   REQUIRE_FALSE(eonc::config::ssot_has_field("Dimer", "rotation_angle"));
 }

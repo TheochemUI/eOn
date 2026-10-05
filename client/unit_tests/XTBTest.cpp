@@ -21,7 +21,8 @@ public:
   ~PotTest() {}
 
   void SetUp() {
-    pot_default = eonc::helpers::makePotential(PotType::LJ, params);
+    pot_default = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, params));
     m1 = std::make_shared<Matter>(pot_default, params);
     std::string confile("pos.con");
     m1->con2matter(confile);
@@ -68,8 +69,8 @@ TEST_CASE_METHOD(PotTest, "XTB", "[PotTest]") {
   ParametersLoadAccess::xtb_options(params).maxiter = 250;
   ParametersLoadAccess::xtb_options(params).charge = 0.0;
   ParametersLoadAccess::xtb_options(params).uhf = 0;
-  auto pot = eonc::helpers::makePotential(params.potential_options().potential,
-                                          params);
+  auto pot = eonc::helpers::sharePotential(eonc::helpers::makePotential(
+      params.potential_options().potential, params));
   // GFN2 has no PBC multipoles. pos.con is a molecule; pass a vacuum box.
   const double vacuum_box[9]{};
   pot->force(m1->numberOfAtoms(), m1->getPositions().data(),

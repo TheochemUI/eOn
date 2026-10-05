@@ -40,7 +40,8 @@ protected:
         reactant{nullptr},
         product{nullptr} {
     ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-    pot = eonc::helpers::makePotential(PotType::LJ, params);
+    pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, params));
     reactant = std::make_shared<Matter>(pot, params);
     product = std::make_shared<Matter>(pot, params);
 

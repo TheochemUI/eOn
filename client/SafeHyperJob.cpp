@@ -168,7 +168,10 @@ int SafeHyperJob::dynamics() {
         transitionTime_current = timeBuffer[static_cast<size_t>(refineStep)];
         transitionPot = biasBuffer[static_cast<size_t>(refineStep)];
         const long prev = refineStep > 0 ? refineStep - 1 : 0;
-        *current = *mdBuffer[static_cast<size_t>(prev)];
+        // The loop keeps integrating from this frame. The bond boost stays
+        // on current: copy assignment would clear it, and the next step
+        // would keep the bias from before the move.
+        current->assignKeepingBias(*mdBuffer[static_cast<size_t>(prev)]);
       } else {
         refineStep = 0;
         transitionTime_current = time;

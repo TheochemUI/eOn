@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <string>
 
@@ -24,7 +25,7 @@ struct RGPotEngineOptions {
   std::string permanent_dir; // CPMD FILEPATH for RESTART files (cpmdc)
   // CPMDParams file. When set, scalar method keys are not written over it.
   std::string params_path;
-  int ranks_per_image{0};    // cpmdc: ranks per calculator group, 0 = off
+  int ranks_per_image{0}; // cpmdc: ranks per calculator group, 0 = off
   // Metatomic (backend=metatomic): dlopen libmetatomic_engine.so
   std::string model_path;
   std::string device{"cpu"};
@@ -40,9 +41,13 @@ struct RGPotEngineOptions {
   int xtb_max_iterations{250};
   double xtb_charge{0.0};
   int xtb_uhf{0};
+  // UMA (backend=uma): dlopen libuma_engine.so through the generic engine
+  // C ABI. model_path is the AOTI package; charge and multiplicity ride
+  // the shared fields.
+  std::string task_name{"omol"};
 };
 
-/** Opaque rgpot-backed engine (nwchemc / cpmdc / metatomic / xtb). */
+/** Opaque rgpot-backed engine (nwchemc / cpmdc / metatomic / uma / xtb). */
 class RGPotEngine {
 public:
   explicit RGPotEngine(const RGPotEngineOptions &opt);
@@ -54,6 +59,12 @@ public:
   [[nodiscard]] bool available() const;
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, const double *box) const;
+  /// Names the calculation the next force() belongs to (cpmdc: the engine
+  /// keeps converged orbitals per key, so each image or bead starts its
+  /// SCF from its own previous orbitals). Other backends ignore it.
+  void selectOrbitals(std::int64_t key) const;
+  /// True when the engine keeps converged orbitals per key.
+  [[nodiscard]] bool keepsOrbitalsPerKey() const;
 
   /// Number of calculator groups the MPI world is split into (1 when
   /// ranks_per_image is off) and the group this rank belongs to.
@@ -88,6 +99,9 @@ public:
                    std::string &error) const;
 
 private:
+  // The engine call itself; force() adds the test failure hook after it.
+  void forceEngine(long N, const double *R, const int *atomicNrs, double *F,
+                   double *U, const double *box) const;
   struct Impl;
   std::unique_ptr<Impl> impl_;
   std::string backend_;

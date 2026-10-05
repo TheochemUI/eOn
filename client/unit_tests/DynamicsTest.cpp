@@ -20,6 +20,7 @@
 
 #include <cmath>
 #include <filesystem>
+#include <stdexcept>
 
 namespace tests {
 
@@ -58,7 +59,8 @@ protected:
     ParametersLoadAccess::main_options(params).randomSeed = 42;
     eonc::rng::random(42);
 
-    pot = eonc::helpers::makePotential(PotType::LJ, params);
+    pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, params));
     matter = new Matter(pot, params);
     matter->con2matter(std::string("reactant.con"));
   }
@@ -210,7 +212,8 @@ TEST_CASE("Nose-Hoover targets unfixed axes of a partly fixed atom",
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   ParametersLoadAccess::main_options(params).temperature = 300.0;
   ParametersLoadAccess::thermostat_options(params).kind = Dynamics::NOSE_HOOVER;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter matter(pot, params);
   matter.resize(1);
   matter.setAtomicNr(0, 18);
@@ -437,4 +440,88 @@ TEST_CASE_METHOD(DynamicsFixture,
   REQUIRE(matter->getVelocities()(0, 2) == 0.0);
 }
 
+TEST_CASE_METHOD(DynamicsFixture,
+                 "Dynamics rescaleVelocity matches the target temperature",
+                 "[dynamics][rescale]") {
+  Dynamics dyn(matter, params);
+  dyn.setTemperature(300.0);
+  dyn.setThermalVelocity();
+  dyn.rescaleVelocity();
+  const double ke300 = matter->getKineticEnergy();
+  REQUIRE(ke300 > 0.0);
+  dyn.setTemperature(600.0);
+  dyn.rescaleVelocity();
+  REQUIRE(matter->getKineticEnergy() ==
+          Catch::Approx(2.0 * ke300).epsilon(1e-8));
+}
+
+TEST_CASE_METHOD(DynamicsFixture,
+                 "Dynamics Nose-Hoover rejects a nonpositive mass",
+                 "[dynamics][nose_hoover]") {
+  ParametersLoadAccess::thermostat_options(params).kind = "nose_hoover";
+  ParametersLoadAccess::thermostat_options(params).nose_mass = 0.0;
+  Dynamics dyn(matter, params);
+  dyn.setTemperature(300.0);
+  dyn.setThermalVelocity();
+  REQUIRE_THROWS_AS(dyn.oneStep(), std::invalid_argument);
+}
+
+TEST_CASE_METHOD(DynamicsFixture, "Dynamics run writes a movie when asked",
+                 "[dynamics][movie]") {
+  namespace fs = std::filesystem;
+  const auto original = fs::current_path();
+  const auto dir = fs::temp_directory_path() / "eon_dynamics_movie";
+  fs::remove_all(dir);
+  fs::create_directories(dir);
+  fs::copy_file(original / "reactant.con", dir / "reactant.con");
+  fs::current_path(dir);
+  ParametersLoadAccess::dynamics_options(params).steps = 1;
+  ParametersLoadAccess::dynamics_options(params).time_step = 1.0;
+  ParametersLoadAccess::debug_options(params).write_movies = true;
+  ParametersLoadAccess::debug_options(params).write_movies_interval = 1;
+  Dynamics dyn(matter, params);
+  dyn.setTemperature(300.0);
+  dyn.setThermalVelocity();
+  dyn.run();
+  const bool wrote = fs::exists(dir / "dynamics.con");
+  fs::current_path(original);
+  fs::remove_all(dir);
+  REQUIRE(wrote);
+}
+
 } /* namespace tests */
+
+namespace tests {
+
+// With no force the centroid-virial correction vanishes, so a ring of any
+// bead count reports the classical kinetic energy nFree kB T / 2 exactly.
+TEST_CASE_METHOD(DynamicsFixture,
+                 "Path-integral dynamics reports the ring kinetic energy",
+                 "[dynamics][path-integral]") {
+  auto flat = std::make_shared<FlatPot>();
+  Matter free(flat, params);
+  REQUIRE(eonc::io::io_ok(free.con2matter(std::string("reactant.con"))));
+  long nFree = 0;
+  for (long i = 0; i < free.numberOfAtoms(); ++i) {
+    for (int axis = 0; axis < 3; ++axis) {
+      nFree += free.getFixed(i, axis) ? 0 : 1;
+    }
+  }
+  REQUIRE(nFree > 0);
+  DynamicsConfig cfg;
+  cfg.time_step = 0.1;
+  cfg.steps = 40;
+  cfg.thermostat_kind = Dynamics::PILE;
+  cfg.temperature = 300.0;
+  cfg.path_beads = 6;
+  cfg.path_pile_tau = 10.0;
+  Dynamics dyn(&free, cfg);
+  REQUIRE(std::isnan(dyn.pathKineticEnergy()));
+  dyn.run();
+  REQUIRE_THAT(dyn.pathKineticEnergy(),
+               Catch::Matchers::WithinRel(0.5 * static_cast<double>(nFree) *
+                                              cfg.kB * cfg.temperature,
+                                          1e-12));
+}
+
+} // namespace tests

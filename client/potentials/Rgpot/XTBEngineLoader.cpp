@@ -45,6 +45,7 @@ XTBEngineLoader::XTBEngineLoader(const XTBEngineOptions &opt) {
   if (const char *e = std::getenv("XTB_ENGINE"))
     if (e && *e)
       paths.emplace_back(e);
+  paths.emplace_back("librgpot_xtb_engine.so");
   paths.emplace_back("libxtb_engine.so");
   auto add_dirs = [&](const char *env) {
     if (!env)
@@ -59,6 +60,7 @@ XTBEngineLoader::XTBEngineLoader(const XTBEngineOptions &opt) {
         std::string d = s.substr(i, j - i);
         if (!d.empty() && d.back() != '/')
           d += '/';
+        paths.push_back(d + "librgpot_xtb_engine.so");
         paths.push_back(d + "libxtb_engine.so");
       }
       i = j + 1;
@@ -78,7 +80,7 @@ XTBEngineLoader::XTBEngineLoader(const XTBEngineOptions &opt) {
 #endif
   }
   if (!m_lib) {
-    std::string msg = "RGPOT(xtb): libxtb_engine.so not found "
+    std::string msg = "RGPOT(xtb): librgpot_xtb_engine.so not found "
                       "(set RGPOT_XTB_ENGINE or [RgpotPot] engine_path)";
     if (!last_dlerr.empty())
       msg += std::string("; last dlerror: ") + last_dlerr;

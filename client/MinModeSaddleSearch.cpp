@@ -63,7 +63,21 @@ public:
     return -c;
   }
 
+  // A new centre and the mode solver's first displaced image along the
+  // current mode are independent evaluations; a batching potential takes
+  // them together, and compute() then finds the image evaluated.
+  // Finite-difference gradient probes never call compute(), so they
+  // evaluate the centre alone.
+  void evaluateCentre() {
+    if (matter->needsForceUpdate()) {
+      minModeMethod->evaluateWithProbe(matter, eigenvector);
+    }
+  }
+
   VectorXd getGradient(bool fdstep = false) {
+    if (!fdstep || iteration == 0) {
+      evaluateCentre();
+    }
     AtomMatrix force = matter->getForces();
 
     if (!fdstep || iteration == 0) {
@@ -167,6 +181,8 @@ public:
     return -forceV;
   }
 
+  // No prefetch here: an energy-accepting optimizer reads trial points
+  // that may be rejected.
   double getEnergy() { return matter->getPotentialEnergy(); }
   void setPositions(const VectorXd &x) { matter->setPositionsV(x); }
   VectorXd getPositions() { return matter->getPositionsV(); }
@@ -176,6 +192,7 @@ public:
   }
 
   double getConvergence() {
+    evaluateCentre();
     if (params.optimizer_options().convergence_metric == "norm") {
       return matter->getForcesFreeV().norm();
     } else if (params.optimizer_options().convergence_metric == "max_atom") {
@@ -366,6 +383,7 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
         objf, params.optimizer_options().method, params);
 
     while (!objf->isConverged() || iteration == 0) {
+      matter->pollCancel("saddle");
 
       if (!firstIteration) {
 

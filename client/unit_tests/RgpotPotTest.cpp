@@ -1,4 +1,5 @@
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/CalculatorGroupUse.h"
 #include "eon/MatrixHelpers.hpp"
 #include "eon/Matter.h"
 #include "eonc_test_aliases.hpp"
@@ -30,6 +31,34 @@ void clear_env(const char *name) {
 
 } // namespace
 
+TEST_CASE("Calculator-group use reports POP efficiencies", "[RGPOT][groups]") {
+  eonc::CalculatorGroupUse use;
+  // Four groups inside 100 s of driver wall: 80, 60, 60, 40 s busy.
+  use.busy = {80.0, 60.0, 60.0, 40.0};
+  use.systems = {10.0, 8.0, 8.0, 6.0};
+  use.wall = 100.0;
+  use.singleWall = 12.0;
+  use.batches = 6;
+  use.singles = 2;
+  REQUIRE(use.groups() == 4);
+  REQUIRE(use.meanBusy() == Catch::Approx(60.0));
+  REQUIRE(use.loadBalance() == Catch::Approx(0.75));
+  REQUIRE(use.communicationEfficiency() == Catch::Approx(0.8));
+  REQUIRE(use.parallelEfficiency() == Catch::Approx(0.6));
+  REQUIRE(use.idleFraction(0) == Catch::Approx(0.2));
+  REQUIRE(use.idleFraction(3) == Catch::Approx(0.6));
+  const std::string t = use.table();
+  REQUIRE_THAT(t, ContainsSubstring("4 groups, 6 batches and 2 single"));
+  REQUIRE_THAT(t, ContainsSubstring("load balance 0.750"));
+  REQUIRE_THAT(t, ContainsSubstring("parallel efficiency 0.600"));
+
+  // No grouped work: every ratio is the neutral 1.
+  eonc::CalculatorGroupUse idle;
+  REQUIRE(idle.loadBalance() == 1.0);
+  REQUIRE(idle.communicationEfficiency() == 1.0);
+  REQUIRE(idle.idleFraction(0) == 0.0);
+}
+
 TEST_CASE("RgpotPot in-process nwchemc force (no potserv)",
           "[PotTest][RGPOT][nwchemc]") {
 #ifndef WITH_RGPOT
@@ -53,8 +82,8 @@ TEST_CASE("RgpotPot in-process nwchemc force (no potserv)",
   ParametersLoadAccess::rgpot_options(params).charge = 0;
   ParametersLoadAccess::rgpot_options(params).multiplicity = 1;
 
-  auto pot = eonc::helpers::makePotential(params.potential_options().potential,
-                                          params);
+  auto pot = eonc::helpers::sharePotential(eonc::helpers::makePotential(
+      params.potential_options().potential, params));
   REQUIRE(pot != nullptr);
   REQUIRE(pot->getType() == PotType::RGPOT);
 
@@ -102,8 +131,8 @@ TEST_CASE("RgpotPot in-process cpmdc force (no potserv)",
   ParametersLoadAccess::rgpot_options(params).charge = 0;
   ParametersLoadAccess::rgpot_options(params).multiplicity = 1;
 
-  auto pot = eonc::helpers::makePotential(params.potential_options().potential,
-                                          params);
+  auto pot = eonc::helpers::sharePotential(eonc::helpers::makePotential(
+      params.potential_options().potential, params));
   REQUIRE(pot != nullptr);
   REQUIRE(pot->getType() == PotType::RGPOT);
 
@@ -185,6 +214,73 @@ TEST_CASE("nwchemc ignores the cpmd section", "[params][ini][RGPOT]") {
                           "input_block = SHOULD_NOT_APPLY\n") == 0);
   REQUIRE(p.rgpot_options().cutoff_ry == Catch::Approx(70.0));
   REQUIRE(p.rgpot_options().input_block.empty());
+}
+
+TEST_CASE("RgpotPot cutOffRy wins over cutoff_ry and cpmd_cut_off_ry",
+          "[params][ini][RGPOT]") {
+  Parameters p;
+  REQUIRE(p.load_ini_text("[Potential]\npotential = rgpot\n\n"
+                          "[RgpotPot]\nbackend = nwchemc\n"
+                          "cutOffRy = 22\n"
+                          "cutoff_ry = 11\n"
+                          "cpmd_cut_off_ry = 9\n") == 0);
+  REQUIRE(p.rgpot_options().cutoff_ry == Catch::Approx(22.0));
+}
+
+TEST_CASE("nwchem_basis fills basis when basis is absent",
+          "[params][ini][RGPOT]") {
+  Parameters filled;
+  REQUIRE(filled.load_ini_text("[Potential]\npotential = rgpot\n\n"
+                               "[RgpotPot]\nbackend = nwchemc\n"
+                               "nwchem_basis = 6-31g\n") == 0);
+  REQUIRE(filled.rgpot_options().basis == "6-31g");
+
+  Parameters both;
+  REQUIRE(both.load_ini_text("[Potential]\npotential = rgpot\n\n"
+                             "[RgpotPot]\nbackend = nwchemc\n"
+                             "basis = sto-3g\n"
+                             "nwchem_basis = 6-31g\n") == 0);
+  REQUIRE(both.rgpot_options().basis == "sto-3g");
+}
+
+TEST_CASE("xtb_charge follows charge for backend nwchemc",
+          "[params][ini][RGPOT]") {
+  Parameters p;
+  REQUIRE(p.load_ini_text("[Potential]\npotential = rgpot\n\n"
+                          "[RgpotPot]\nbackend = nwchemc\n"
+                          "charge = 4\n") == 0);
+  REQUIRE(p.rgpot_options().xtb_charge == Catch::Approx(4.0));
+
+  Parameters ignored;
+  REQUIRE(ignored.load_ini_text("[Potential]\npotential = rgpot\n\n"
+                                "[RgpotPot]\nbackend = nwchemc\n"
+                                "charge = 4\n\n"
+                                "[XTBPot]\ncharge = -2\n") == 0);
+  REQUIRE(ignored.rgpot_options().xtb_charge == Catch::Approx(4.0));
+}
+
+TEST_CASE("XTBPot charge overlays xtb_charge for an xtb backend",
+          "[params][ini][RGPOT]") {
+  Parameters fromCharge;
+  REQUIRE(fromCharge.load_ini_text("[Potential]\npotential = rgpot\n\n"
+                                   "[RgpotPot]\nbackend = xtb\n"
+                                   "charge = 3\n") == 0);
+  REQUIRE(fromCharge.rgpot_options().xtb_charge == Catch::Approx(3.0));
+
+  Parameters explicitKey;
+  REQUIRE(explicitKey.load_ini_text("[Potential]\npotential = rgpot\n\n"
+                                    "[RgpotPot]\nbackend = xtb\n"
+                                    "charge = 3\n"
+                                    "xtb_charge = 1.5\n") == 0);
+  REQUIRE(explicitKey.rgpot_options().xtb_charge == Catch::Approx(1.5));
+
+  Parameters overlay;
+  REQUIRE(overlay.load_ini_text("[Potential]\npotential = rgpot\n\n"
+                                "[RgpotPot]\nbackend = xtb\n"
+                                "charge = 3\n"
+                                "xtb_charge = 1.5\n\n"
+                                "[XTBPot]\ncharge = -2\n") == 0);
+  REQUIRE(overlay.rgpot_options().xtb_charge == Catch::Approx(-2.0));
 }
 
 TEST_CASE("RgpotPot cpmdc refuses a params_path it cannot read",

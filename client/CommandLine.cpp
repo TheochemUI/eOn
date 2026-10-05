@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/CommandLine.h"
+#include "eon/EonLogger.h"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
@@ -247,6 +248,10 @@ void commandLine(int argc, char **argv) {
     std::exit(EXIT_FAILURE);
   }
 
+  // Help, version, and features exit inside parse. Logger setup waits until
+  // a flag set commits to a potential, a compare, or a config load.
+  eonc::log::init_client();
+
   if (sflag && mflag) {
     std::cerr << colorizer.error(
         "Cannot specify both minimization and single point\n");
@@ -363,7 +368,8 @@ void commandLine(int argc, char **argv) {
         .check_rotation = true;
   }
 
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   auto matter = std::make_unique<Matter>(pot, params);
   auto matter2 = std::make_unique<Matter>(pot, params);
   if (!eonc::io::io_ok(matter->con2matter(confile))) {

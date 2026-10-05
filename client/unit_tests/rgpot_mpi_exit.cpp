@@ -12,6 +12,13 @@
 //           call does, and exits while rank 1 waits in the worker
 //           broadcast. The exit handler must abort the world; an
 //           MPI_Finalize there waits for rank 1 until the timeout.
+//   single: one structure through force() on two calculators. The
+//           engine agrees on errors across the world after every call,
+//           so both calculators must call it; a calculator left out
+//           holds the other in that agreement until the timeout.
+//   uneven: three structures through forceBatchOwned on two
+//           calculators, two owned by one and one by the other. Both
+//           calculators must make the same number of engine calls.
 
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
@@ -19,6 +26,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <span>
 #include <string>
 
 namespace {
@@ -43,7 +51,8 @@ int main(int argc, char **argv) {
   if (argc != 2)
     return 2;
   const std::string mode = argv[1];
-  if (mode != "params" && mode != "fault" && mode != "abort")
+  if (mode != "params" && mode != "fault" && mode != "abort" &&
+      mode != "single" && mode != "uneven")
     return 2;
   if (!(env_nonempty("CPMDC_LIBRARY") || env_nonempty("RGPOT_CPMDC_ENGINE") ||
         env_nonempty("RGPOT_CPMD_ENGINE"))) {
@@ -71,7 +80,11 @@ int main(int argc, char **argv) {
       eonc::PotType::RGPOT;
   eonc::ParametersLoadAccess::rgpot_options(params).backend = "cpmdc";
   eonc::ParametersLoadAccess::rgpot_options(params).functional = "BLYP";
-  eonc::ParametersLoadAccess::rgpot_options(params).cutoff_ry = 70.0;
+  // single, uneven and fault run real SCFs, so a small cell at a low
+  // cutoff keeps each call to seconds.
+  const bool scf = mode == "single" || mode == "uneven" || mode == "fault";
+  eonc::ParametersLoadAccess::rgpot_options(params).cutoff_ry =
+      scf ? 30.0 : 70.0;
   eonc::ParametersLoadAccess::rgpot_options(params).charge = 0;
   eonc::ParametersLoadAccess::rgpot_options(params).multiplicity = 1;
   if (env_nonempty("CPMDC_LIBRARY"))
@@ -82,7 +95,8 @@ int main(int argc, char **argv) {
       mode == "params" ? 0 : 1;
 
   try {
-    auto pot = eonc::helpers::makePotential(eonc::PotType::RGPOT, params);
+    auto pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(eonc::PotType::RGPOT, params));
     if (mode == "abort") {
       // Only the driver returns from the grouped constructor. std::exit
       // keeps pot alive, so no stop message reaches rank 1.
@@ -90,22 +104,56 @@ int main(int argc, char **argv) {
       std::cerr << "rank=" << rank << " abort requested\n";
       std::exit(3);
     }
+    if (mode == "single" || mode == "uneven") {
+      // N2, closed shell, at three bond lengths: the SCF converges in a
+      // few iterations in a 6 A cell.
+      const long n = mode == "single" ? 1 : 3;
+      const double bond[3] = {1.10, 1.12, 1.08};
+      double R[3][6] = {};
+      int Z[3][2] = {{7, 7}, {7, 7}, {7, 7}};
+      double F[3][6] = {};
+      double U[3] = {};
+      double box[9] = {6, 0, 0, 0, 6, 0, 0, 0, 6};
+      for (long j = 0; j < 3; j++) {
+        R[j][0] = 2.6;
+        R[j][1] = R[j][2] = 3.0;
+        R[j][3] = 2.6 + bond[j];
+        R[j][4] = R[j][5] = 3.0;
+      }
+      if (mode == "single") {
+        double var = 0.0;
+        pot->force(std::span<const double>(R[0], 6),
+                   std::span<const int>(Z[0], 2), std::span<double>(F[0], 6), U,
+                   &var, std::span<const double>(box, 9));
+      } else {
+        const double *pos[3] = {R[0], R[1], R[2]};
+        const int *nrs[3] = {Z[0], Z[1], Z[2]};
+        double *frc[3] = {F[0], F[1], F[2]};
+        const double *bx[3] = {box, box, box};
+        long owners[3] = {0, 1, 2};
+        pot->forceBatchOwned(n, 2, pos, nrs, frc, U, nullptr, bx, owners);
+      }
+      std::cerr << "rank=" << rank << " " << mode << " done E0=" << U[0]
+                << "\n";
+      return 0;
+    }
     if (mode != "fault") {
       std::cerr << "rank=" << rank << " params constructed\n";
       return 1;
     }
-    double R[3] = {0.0, 0.0, 0.0};
-    int Z[1] = {14};
-    double F[3] = {};
+    // N2 in a 6 A cell, as in single and uneven.
+    double R[6] = {2.6, 3.0, 3.0, 3.7, 3.0, 3.0};
+    int Z[2] = {7, 7};
+    double F[6] = {};
     double U = 0.0;
-    double box[9] = {20, 0, 0, 0, 20, 0, 0, 0, 20};
+    double box[9] = {6, 0, 0, 0, 6, 0, 0, 0, 6};
     const double *pos = R;
     const int *nrs = Z;
     double *frc = F;
     const double *bx = box;
     long owner = 1;
     try {
-      pot->forceBatchOwned(1, 1, &pos, &nrs, &frc, &U, nullptr, &bx, &owner);
+      pot->forceBatchOwned(1, 2, &pos, &nrs, &frc, &U, nullptr, &bx, &owner);
     } catch (const std::exception &ex) {
       std::cerr << "rank=" << rank << " fault " << ex.what() << "\n";
       return 1;

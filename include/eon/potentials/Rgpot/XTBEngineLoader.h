@@ -1,7 +1,7 @@
 #pragma once
 /*
-** Thin RGPOT-xtb backend: dlopen libxtb_engine.so (ISO_C_BINDING engine).
-** Host does not link libxtb — same pattern as MetatomicEngineLoader.
+** Thin RGPOT-xtb backend: dlopen librgpot_xtb_engine.so
+** (compat: libxtb_engine.so). Host does not link libxtb.
 */
 #include "xtb_c_abi.h"
 #include <memory>

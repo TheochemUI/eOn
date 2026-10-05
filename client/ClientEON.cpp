@@ -11,7 +11,9 @@
 */
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
+#endif
 #include "eon/EonLogger.h"
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
@@ -21,10 +23,16 @@
 #include "eon/EpiCenters.h"
 #include "eon/HelperFunctions.h"
 #include "eon/Job.h"
+#include "eon/JobResult.h"
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
 #include "eon/Runtime.h"
 #include "version.h"
+#ifdef WITH_XTSCI
+#include <xts.h>
+#endif
+#include <algorithm>
+#include <cctype>
 #include <cstdlib>
 #include <exception>
 #include <format>
@@ -45,10 +53,6 @@
 #include <fcntl.h>
 #include <mpi.h>
 #include <sstream>
-#endif
-
-#if defined WITH_ASE_ORCA || EMBED_PYTHON || WITH_ASE_NWCHEM
-#include "eon/PyGuard.h"
 #endif
 
 // Includes for FPE trapping
@@ -127,74 +131,42 @@ void printSystemInfo() {
 }
 
 static int eonClientMain(int argc, char **argv) {
-  // --- Start Logging setup
-  // Configure backend for optimal performance (see BackendOptions.h)
-  quill::BackendOptions backend_options;
-  // Use 10us sleep for balanced performance (10x faster than 100us default)
-  backend_options.sleep_duration = std::chrono::microseconds{10};
-  // Larger initial buffer avoids reallocs in NEB (43 LOG calls/iter)
-  backend_options.transit_event_buffer_initial_capacity = 2048;
-  // eOn is single-threaded; SPSC queue guarantees ordering, no grace needed
-  backend_options.log_timestamp_ordering_grace_period =
-      std::chrono::microseconds{0};
-  // Flush more frequently for better responsiveness
-  backend_options.sink_min_flush_interval = std::chrono::milliseconds{100};
-  // Disable per-string printable char scan (eOn logs numeric data only)
-  backend_options.check_printable_char = {};
-  quill::Backend::start(backend_options);
-  auto console_sink =
-      quill::Frontend::create_or_get_sink<quill::ConsoleSink>("console");
-  auto file_sink = quill::Frontend::create_or_get_sink<quill::FileSink>(
-      "client_quill.log",
-      []() {
-        quill::FileSinkConfig cfg;
-        cfg.set_open_mode('w');
-        return cfg;
-      }(),
-      quill::FileEventNotifier{});
-  auto *logger = quill::Frontend::create_or_get_logger(
-      "combi", {std::move(console_sink), std::move(file_sink)},
-      quill::PatternFormatterOptions{"%(message)"},
-      quill::ClockSourceType::System);
-  logger->set_log_level(quill::LogLevel::TraceL3);
-  // Traceback logger
-  auto trace_csink =
-      quill::Frontend::create_or_get_sink<quill::ConsoleSink>("trace_console");
-  auto trace_fsink = quill::Frontend::create_or_get_sink<quill::FileSink>(
-      "client_traceback.log",
-      []() {
-        quill::FileSinkConfig cfg;
-        cfg.set_open_mode('w');
-        return cfg;
-      }(),
-      quill::FileEventNotifier{});
-  quill::Frontend::create_or_get_logger(
-      "_traceback", {std::move(trace_csink), std::move(trace_fsink)},
-      quill::PatternFormatterOptions{
-          " [%(log_level)] [%(source_location)] [%(caller_function)] \n "
-          "%(message)\n[end %(log_level)]"},
-      quill::ClockSourceType::System);
-  //--- End logging setup
-  // File sinks above open relative to this directory. MPI jobs chdir later.
-  const auto logHome = std::filesystem::current_path();
   eonc::Parameters parameters;
 
-#if defined WITH_ASE_ORCA || EMBED_PYTHON || WITH_ASE_NWCHEM
-  eonc::ensure_interpreter();
+  // Help, version, and one-shot argv jobs must not pay logger setup first.
+  // commandLine starts the backend only after the flag parse commits to work.
+  // In an MPI build only a rank an eOn server launched (EON_SERVER_PATH set,
+  // EON_CLIENT_STANDALONE unset) skips the parse: the server passes it no
+  // flags. A standalone or hand-started MPI client reads its flags like the
+  // serial client; rgpot initialises MPI if a calculator group needs it.
+#ifdef EONMPI
+  const bool serverRank = getenv("EON_CLIENT_STANDALONE") == nullptr &&
+                          getenv("EON_SERVER_PATH") != nullptr;
+#else
+  const bool serverRank = false;
 #endif
+  if (argc > 1 && !serverRank) {
+    eonc::commandLine(argc, argv);
+    quill::Backend::stop();
+    return 0;
+  }
+
+  // Quill backend, file sinks, and the combi logger. Deferred until a job
+  // path actually runs so process start is not dominated by the log thread.
+  auto *logger = eonc::log::init_client();
+  if (!logger) {
+    logger = eonc::log::get();
+  }
+  // File sinks open relative to this directory. MPI jobs chdir later.
+  const auto logHome = std::filesystem::current_path();
 
 #ifdef EONMPI
-  bool client_standalone = false;
-  if (getenv("EON_CLIENT_STANDALONE") != nullptr) {
-    client_standalone = true;
-  }
+  // The same rule as the flag parse above: only a rank an eOn server
+  // launched (EON_SERVER_PATH set, EON_CLIENT_STANDALONE unset) runs as a
+  // server-driven client. Any other MPI client runs config.ini standalone.
+  const bool client_standalone = !serverRank;
   int number_of_clients;
   if (!client_standalone) {
-    if (getenv("EON_SERVER_PATH") == nullptr) {
-      QUILL_LOG_ERROR(logger, "error: must set the env var EON_SERVER_PATH");
-      logger->flush_log();
-      return 1;
-    }
     if (getenv("EON_NUMBER_OF_CLIENTS") == nullptr) {
       QUILL_LOG_ERROR(logger,
                       "error: must set the env var EON_NUMBER_OF_CLIENTS");
@@ -357,13 +329,6 @@ static int eonClientMain(int argc, char **argv) {
       MPI_Finalize();
       return 0;
     }
-  }
-#endif
-
-#ifndef EONMPI
-  if (argc > 1) {
-    eonc::commandLine(argc, argv);
-    return 0;
   }
 #endif
 
@@ -536,6 +501,33 @@ static int eonClientMain(int argc, char **argv) {
         result_file << std::format("{:.12e} user_time\n", utime);
         result_file << std::format("{:.12e} system_time\n", stime);
 #endif
+        eonc::JobResultProvenance provenance;
+        provenance.backend = std::string(
+            magic_enum::enum_name(parameters.optimizer_options().method));
+        std::ranges::transform(
+            provenance.backend, provenance.backend.begin(),
+            [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+        provenance.engine_version = VERSION;
+        provenance.engine_build_identity = GIT_HASH;
+        provenance.rgpot_name = std::string(
+            magic_enum::enum_name(parameters.potential_options().potential));
+        std::ranges::transform(
+            provenance.rgpot_name, provenance.rgpot_name.begin(),
+            [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+#ifdef WITH_RGPOT
+        provenance.rgpot_version =
+            std::string(eonc::JobResultProvenance::rgpot_pin);
+#endif
+#ifdef WITH_XTSCI
+        if (parameters.optimizer_options().method == eonc::OptType::XTSCI) {
+          provenance.xtsci = true;
+          const auto stamp = xts_abi_stamp();
+          provenance.xts_abi_major = stamp.abi_major;
+          provenance.xts_abi_minor = stamp.abi_minor;
+          provenance.xts_abi_layout = stamp.layout_revision;
+        }
+#endif
+        result_file << provenance.text();
       } else {
         QUILL_LOG_ERROR(logger, "Failed to write timing to results.dat");
       }

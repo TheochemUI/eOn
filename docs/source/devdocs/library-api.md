@@ -18,7 +18,7 @@ builders, ImprovedDimer, Lanczos, and JobResult. Job implementations
 eonc::Parameters params;
 eonc::ParametersLoadAccess::potential_options(params).potential =
     eonc::PotType::LJ;
-auto pot = eonc::helpers::makePotential(params);
+auto pot = eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
 auto path = eonc::helpers::neb_paths::sidppPath(reactant, product, 5, params);
 eonc::NudgedElasticBand neb(path, params, pot);
 neb.compute();

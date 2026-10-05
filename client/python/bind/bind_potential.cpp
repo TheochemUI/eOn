@@ -466,7 +466,8 @@ void bind_potential(nb::module_ &m) {
   m.def(
       "make_potential",
       [](eonc::PotType ptype, eonc::Parameters &params) {
-        auto pot = eonc::helpers::makePotential(ptype, params);
+        auto pot = eonc::helpers::sharePotential(
+            eonc::helpers::makePotential(ptype, params));
         if (!pot) {
           throw std::runtime_error("make_potential returned null");
         }
@@ -479,7 +480,8 @@ void bind_potential(nb::module_ &m) {
       "make_potential",
       [](eonc::PotType ptype, eonc::Parameters &params,
          eonc::Runtime &session) {
-        auto pot = eonc::helpers::makePotential(ptype, params, session);
+        auto pot = eonc::helpers::sharePotential(
+            eonc::helpers::makePotential(ptype, params, session));
         if (!pot) {
           throw std::runtime_error("make_potential returned null");
         }
@@ -498,7 +500,8 @@ void bind_potential(nb::module_ &m) {
           throw std::invalid_argument("unknown PotType: " + name);
         }
         ParametersLoadAccess::potential_options(params).potential = *v;
-        auto pot = eonc::helpers::makePotential(*v, params);
+        auto pot = eonc::helpers::sharePotential(
+            eonc::helpers::makePotential(*v, params));
         if (!pot) {
           throw std::runtime_error("make_potential returned null for " + name);
         }
@@ -510,7 +513,8 @@ void bind_potential(nb::module_ &m) {
   m.def(
       "make_potential",
       [](eonc::Parameters &params) {
-        auto pot = eonc::helpers::makePotential(params);
+        auto pot =
+            eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
         if (!pot) {
           throw std::runtime_error("make_potential returned null");
         }
@@ -521,8 +525,8 @@ void bind_potential(nb::module_ &m) {
   m.def(
       "make_potential",
       [](eonc::Parameters &params, eonc::Runtime &session) {
-        auto pot = eonc::helpers::makePotential(
-            params.potential_options().potential, params, session);
+        auto pot = eonc::helpers::sharePotential(eonc::helpers::makePotential(
+            params.potential_options().potential, params, session));
         if (!pot) {
           throw std::runtime_error("make_potential returned null");
         }

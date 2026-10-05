@@ -35,7 +35,8 @@ protected:
     ParametersLoadAccess::optimizer_options(params).max_iterations = 500;
     ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
 
-    pot = eonc::helpers::makePotential(PotType::LJ, params);
+    pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, params));
     matter = std::make_shared<Matter>(pot, params);
     matter->con2matter(std::string("reactant.con"));
   }

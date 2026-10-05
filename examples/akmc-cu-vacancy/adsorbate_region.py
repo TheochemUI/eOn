@@ -12,17 +12,17 @@
 Identifies adsorbate atoms and nearby surface atoms in a structure file and
 prints their 0-based indices to standard output.
 
-This script is designed to be called by eOn's displacement atom list feature
-(``displace_atom_kmc_state_script``). It selects atoms based on element type
-and/or z-coordinate, then expands the selection to include all atoms within a
-cutoff radius of the initial selection. This is useful for targeting saddle
-search displacements at an adsorbate and its immediate surface environment.
+The script selects atoms by element and by height, then expands that set to
+every atom inside a cutoff of the selection. A direct run passes the flags
+below. The displacement hook does not: it runs the script with the structure
+path alone, so ``co_on_pt.py`` is the file to name in
+``displace_atom_kmc_state_script``.
 
 Usage::
 
-    uvx adsorbate_region.py pos.con --adsorbate-elements C O --cutoff 4.0
-    uvx adsorbate_region.py pos.con --z-above 12.5 --cutoff 3.5
-    uvx adsorbate_region.py pos.con --adsorbate-elements C O --z-above 10.0 --cutoff 4.0
+    python adsorbate_region.py pos.con --adsorbate-elements C O --cutoff 4.0
+    python adsorbate_region.py pos.con --z-above 12.5 --cutoff 3.5
+    python adsorbate_region.py pos.con --adsorbate-elements C O --z-above 10.0 --cutoff 4.0
 """
 
 import logging

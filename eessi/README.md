@@ -125,9 +125,11 @@ from passing `-Wl,-rpath` on the link line.
 
 Two host settings the module cannot fix:
 
-- cargo reads `.cargo/config.toml` from every parent of the build directory.
-  A linker or `rustc-wrapper` set in `~/.cargo/config.toml` then applies to
-  readcon-core's build. Build outside `$HOME`, or set `CARGO_HOME` to an empty
-  directory.
+- cargo reads `.cargo/config.toml` from every parent of the build directory
+  as well as from `$CARGO_HOME`. A linker or `rustc-wrapper` set in
+  `~/.cargo/config.toml` then applies to readcon-core's build for any checkout
+  under `$HOME`, whatever `CARGO_HOME` says. Build outside `$HOME`, and set
+  `CARGO_HOME` to an empty directory.
 - A git `url.<base>.insteadOf` rule that rewrites `https://github.com/` to SSH
-  applies to Meson's wrap downloads as well.
+  applies to Meson's wrap downloads as well. `GIT_CONFIG_GLOBAL` pointed at an
+  empty file drops it for one shell.

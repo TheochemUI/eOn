@@ -27,6 +27,11 @@ computation step:
 | Improved Dimer | 2 + N (N = rotations, up to 20) | Forward/backward FD + 1 per trial rotation |
 | ARTn | 1 per `artn_step` call | External force eval; internal Lanczos is implicit |
 
+A batching potential sends the moved centre with the first displaced
+image in one call for `[Hessian] fd_scheme = one_sided` and for
+`fd_scheme = central`. The fourth-order scheme keeps that first product
+on separate calls. Later Krylov products stay separate calls.
+
 The Lanczos method converges the lowest eigenmode in fewer force calls because
 the Krylov basis extracts more curvature information per evaluation than
 repeated dimer rotations.

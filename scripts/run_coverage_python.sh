@@ -26,6 +26,8 @@ echo "==> pytest eon package coverage"
 python3 -m pytest \
   tests/test_config_metadata.py \
   tests/test_displacement_atom_list.py \
+  tests/test_job_runners.py \
+  eon/tests/unit/test_config_di.py \
   -q --tb=short \
   --cov=eon \
   --cov-report=xml:"$ROOT/$OUT_XML" \

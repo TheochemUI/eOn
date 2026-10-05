@@ -11,6 +11,7 @@ myst:
 :hidden:
 
 eessi
+lammps
 ```
 
 eOn is divided up into two separate programs: a server and a client. The client
@@ -30,7 +31,7 @@ pixi add eon
 micromamba install -c conda-forge eon
 ```
 
-Those commands install the conda-forge release package. They do not check out `develop`. A source build of `develop` is the section below. The examples in this book run against the release package. `pixi.toml` on `develop` records version 3.4.0, and the conda-forge package can be an older release.
+Those commands install the conda-forge release package. They do not check out `develop`. A source build of `develop` is the section below. The examples in this book run against the release package. `pixi.toml` on `develop` records version 3.5.0, and the conda-forge package can be an older release.
 
 The conda package is a maximalist build with the following potentials and
 features enabled:
@@ -62,13 +63,10 @@ git clone -b develop https://github.com/TheochemUI/eOn.git
 cd eOn
 ```
 
-````{margin}
 ```{note}
-
 * Authentication is easier with the [command line tool](https://cli.github.com/).
 * [Pixi](https://pixi.sh/) is now recommended
 ```
-````
 
 ## Building from source
 
@@ -89,7 +87,7 @@ This is the installation path that fails least often:
 # $CONDA_PREFIX/lib/x86_64-linux-gnu
 # without --libdir
 meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype=release \
-  --force-fallback-for=nlohmann_json
+  --force-fallback-for=nlohmann_json,hwy
 meson compile -C bbdir
 meson test -C bbdir --suite eon
 meson install -C bbdir
@@ -114,7 +112,7 @@ A build configured with `-Dwith_gprd=disabled` has no GP dimer. Asking
 for `gprdimer` then stops, and the message names `-Dwith_gprd=enabled`
 and that `rsync`.
 
-The setup line already passes `--force-fallback-for=nlohmann_json`. The rolling distro section below says why a host `nlohmann_json` breaks the conda compiler. The test line should finish with a fail count of 0.
+The setup line already passes `--force-fallback-for=nlohmann_json,hwy`. The rolling distro section below says why a host `nlohmann_json` breaks the conda compiler, and why the Highway name is `hwy` rather than `libhwy`. The test line should finish with a fail count of 0.
 
 Some additional performance can be gained with `ccache` and `mold`, which can be
 passed with `--native-file`:
@@ -139,11 +137,12 @@ Force the wrap to keep that include path out of the build:
 
 ```{code-block} bash
 meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib \
-  --force-fallback-for=nlohmann_json
+  --force-fallback-for=nlohmann_json,hwy
 ```
 
-`client/meson.build` carries the same note beside the `nlohmann_json`
-dependency lookup.
+`hwy` is the dependency name `highway.wrap` provides. `--force-fallback-for=libhwy`
+does not select that wrap: pkg-config can find `libhwy` and the cmake
+subproject is never configured. `client/meson.build` looks up `hwy`.
 
 ### Troubleshooting: a global cargo linker setting
 

@@ -19,7 +19,7 @@
 
 namespace eonc {
 
-/** @defgroup Optimizers
+/** @defgroup Optimizers Structure optimizers
  *
  * \brief ClientEON methods for optimizing atomic structures
  *
@@ -61,6 +61,7 @@ struct OptimizerConfig {
   }
 };
 
+/** Abstract base of the structure optimizers. */
 class Optimizer {
 private:
   const OptType m_otype;

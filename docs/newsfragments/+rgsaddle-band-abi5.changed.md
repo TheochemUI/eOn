@@ -1,0 +1,1 @@
+Against rgsaddle ABI minor 5 the rgsaddle band resends the path every step (unchanged rows are free), restarts only the optimizer after a reparameterization or MMF, and takes the session's evaluation of the accepted band for any image it would otherwise evaluate again.

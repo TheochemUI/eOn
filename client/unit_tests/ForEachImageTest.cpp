@@ -1,8 +1,10 @@
 #include "../ForEachImage.h"
 #include "catch2/catch_amalgamated.hpp"
 
+#include <algorithm>
 #include <atomic>
 #include <chrono>
+#include <mutex>
 #include <stdexcept>
 #include <thread>
 #include <vector>
@@ -53,4 +55,36 @@ TEST_CASE("forEachImage rethrows an image's exception after the others finish",
   REQUIRE_THROWS_WITH(eonc::forEachImage(n, work), "image 7 failed");
   for (long i = 1; i <= n; i++)
     REQUIRE(calls[static_cast<size_t>(i)] == 1);
+}
+
+TEST_CASE("forEachImage keeps its threads across bands", "[neb][threads]") {
+  // Thread ids seen over many bands stay within the pool plus the caller:
+  // no band creates threads of its own.
+  const auto pool = eonc::detail::ImagePool::instance().threads();
+  std::mutex m;
+  std::vector<std::thread::id> ids;
+  for (int band = 0; band < 50; band++) {
+    eonc::forEachImage(8, [&](long) {
+      std::lock_guard<std::mutex> lock(m);
+      if (std::find(ids.begin(), ids.end(), std::this_thread::get_id()) ==
+          ids.end())
+        ids.push_back(std::this_thread::get_id());
+      std::this_thread::sleep_for(std::chrono::microseconds(50));
+    });
+  }
+  REQUIRE(ids.size() <= pool + 1);
+}
+
+TEST_CASE("forEachImage inside an image runs serially", "[neb][threads]") {
+  // A nested band must not wait on the pool that runs its caller.
+  std::atomic<long> inner{0};
+  eonc::forEachImage(
+      6, [&](long) { eonc::forEachImage(5, [&](long) { inner++; }); });
+  REQUIRE(inner.load() == 30);
+}
+
+TEST_CASE("forEachImage uses at most the cores this process may run on",
+          "[neb][threads]") {
+  REQUIRE(eonc::detail::ImagePool::instance().threads() + 1 <=
+          static_cast<size_t>(eonc::detail::usableCores()));
 }

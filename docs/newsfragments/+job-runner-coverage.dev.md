@@ -1,0 +1,1 @@
+Basin hopping, parallel replica, prefactor, bond boost, and dynamics tests cover job-runner branches that the coverage run was missing.

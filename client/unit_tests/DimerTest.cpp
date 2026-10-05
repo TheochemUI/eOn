@@ -29,6 +29,10 @@
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/MobileAtoms.h"
 #include "eon/Parameters.h"
+#ifdef WITH_RGSADDLE
+#include "eon/XtsciMinMode.h"
+#include <rgsaddle.h>
+#endif
 
 #include <algorithm>
 #include <cmath>
@@ -67,7 +71,8 @@ protected:
     ParametersLoadAccess::saddle_search_options(params).minmode_method =
         LowestEigenmode::MINMODE_DIMER;
 
-    pot = eonc::helpers::makePotential(PotType::LJ, params);
+    pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, params));
     matter = std::make_shared<Matter>(pot, params);
     matter->con2matter(std::string("reactant.con"));
 
@@ -370,7 +375,8 @@ protected:
     ParametersLoadAccess::saddle_search_options(params).minmode_method =
         LowestEigenmode::MINMODE_DIMER;
 
-    pot = eonc::helpers::makePotential(PotType::LJ, params);
+    pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, params));
     matter = std::make_shared<Matter>(pot, params);
     matter->con2matter(std::string("reactant.con"));
 
@@ -564,6 +570,27 @@ TEST_CASE_METHOD(DimerFixture,
   Davidson dav(matter, params, pot);
   dav.compute(matter, mode);
   REQUIRE(dav.totalForceCalls > 0);
+}
+
+TEST_CASE_METHOD(DimerFixture,
+                 "an alternative rotation keeps the centre's evaluation",
+                 "[dimer][lor][force_calls]") {
+  ParametersLoadAccess::dimer_options(params).improved = true;
+  ParametersLoadAccess::dimer_options(params).rotations_max = 20;
+  for (auto backend :
+       {DimerRotationBackend::Lanczos, DimerRotationBackend::Davidson,
+        DimerRotationBackend::LOR}) {
+    ParametersLoadAccess::dimer_options(params).rotation_backend = backend;
+    (void)matter->getForces();
+    REQUIRE_FALSE(matter->needsForceUpdate());
+    const double e0 = matter->getPotentialEnergy();
+    ImprovedDimer dimer(matter, params, pot);
+    dimer.compute(matter, mode);
+    // The rotation moves only its displaced images; the centre keeps its
+    // forces, so the optimizer's next read is no potential call.
+    REQUIRE_FALSE(matter->needsForceUpdate());
+    REQUIRE(matter->getPotentialEnergy() == e0);
+  }
 }
 
 TEST_CASE_METHOD(DimerFixture, "LOR residual convergence flag via dispatch",
@@ -916,5 +943,159 @@ TEST_CASE("Lanczos keeps the closed Krylov Ritz pair", "[lanczos][eigenmode]") {
   REQUIRE(std::fabs(ev(0, 1)) == Catch::Approx(0.0).margin(1e-6));
   REQUIRE(std::fabs(ev(0, 2)) == Catch::Approx(0.0).margin(1e-6));
 }
+
+namespace {
+
+// LJ through the batch interface, counting how many potential rounds
+// (single calls or batches) and how many systems a search asks for.
+struct CountingBatchLJ final : Potential {
+  std::shared_ptr<Potential> inner;
+  long rounds{0};
+  long systems{0};
+  long largestBatch{0};
+
+  explicit CountingBatchLJ(const Parameters &p)
+      : Potential(PotType::LJ),
+        inner{eonc::helpers::sharePotential(
+            eonc::helpers::makePotential(PotType::LJ, p))} {}
+
+  using Potential::force;
+  void force(long nAtoms, const double *positions, const int *atomicNrs,
+             double *forces, double *energy, double *variance,
+             const double *box) override {
+    rounds++;
+    systems++;
+    largestBatch = std::max(largestBatch, 1L);
+    inner->force(nAtoms, positions, atomicNrs, forces, energy, variance, box);
+  }
+
+  [[nodiscard]] bool supportsBatchEvaluation() const noexcept override {
+    return true;
+  }
+
+  void forceBatch(long nSystems, long nAtoms, const double *const *positions,
+                  const int *const *atomicNrs, double *const *forces,
+                  double *energies, double *variances,
+                  const double *const *boxes) override {
+    rounds++;
+    systems += nSystems;
+    largestBatch = std::max(largestBatch, nSystems);
+    for (long s = 0; s < nSystems; ++s) {
+      double var = 0.0;
+      inner->force(nAtoms, positions[s], atomicNrs[s], forces[s], &energies[s],
+                   &var, boxes[s]);
+      if (variances != nullptr) {
+        variances[s] = var;
+      }
+      forceCallCounter++;
+    }
+  }
+};
+
+} // namespace
+
+TEST_CASE_METHOD(DimerFixture,
+                 "a batching potential takes a min-mode centre with its "
+                 "first displaced image",
+                 "[dimer][lanczos][minmode][batch]") {
+  const auto method =
+      GENERATE(as<std::string>{}, LowestEigenmode::MINMODE_DIMER,
+               LowestEigenmode::MINMODE_LANCZOS);
+  CAPTURE(method);
+  ParametersLoadAccess::saddle_search_options(params).minmode_method = method;
+  ParametersLoadAccess::dimer_options(params).improved = true;
+  ParametersLoadAccess::dimer_options(params).rotations_max = 4;
+  ParametersLoadAccess::optimizer_options(params).max_move = 0.05;
+  const long steps = 6;
+  const AtomMatrix seed = softModeSeed(matter->numberOfAtoms());
+
+  // Lazy reference: every evaluation is its own potential call.
+  auto serialMatter = std::make_shared<Matter>(*matter);
+  const double serialE0 = serialMatter->getPotentialEnergy();
+  const size_t serialBefore = pot->forceCallCounter;
+  MinModeSaddleSearch serial(serialMatter, seed, serialE0, params, pot);
+  serial.run(steps);
+  const long serialCalls =
+      static_cast<long>(pot->forceCallCounter - serialBefore);
+
+  auto batchPot = std::make_shared<CountingBatchLJ>(params);
+  auto batchMatter = std::make_shared<Matter>(*matter);
+  batchMatter->setPotential(batchPot);
+  const double e0 = batchMatter->getPotentialEnergy();
+  batchPot->rounds = 0;
+  batchPot->systems = 0;
+  MinModeSaddleSearch batched(batchMatter, seed, e0, params, batchPot);
+  batched.run(steps);
+
+  // The same search: identical evaluations in a different grouping.
+  REQUIRE(batched.iteration == serial.iteration);
+  REQUIRE(batchMatter->getPositions().isApprox(serialMatter->getPositions(),
+                                               1e-12));
+  REQUIRE(batched.getEigenvalue() ==
+          Catch::Approx(serial.getEigenvalue()).margin(1e-10));
+  // Centre and first displaced image share a batch once per step, so there
+  // are fewer rounds than serial calls; at most the last image is spare.
+  REQUIRE(batchPot->largestBatch == 2);
+  REQUIRE(batchPot->rounds < serialCalls);
+  REQUIRE(batchPot->systems <= serialCalls + 1);
+}
+
+#ifdef WITH_RGSADDLE
+TEST_CASE_METHOD(DimerFixture, "XtsciMinMode returns a finite curvature",
+                 "[dimer][eigenmode][rgsaddle]") {
+  ParametersLoadAccess::saddle_search_options(params).minmode_method =
+      LowestEigenmode::MINMODE_XTSCI;
+  ParametersLoadAccess::optimizer_options(params).xtsci.method = "fire";
+  auto modeSolver = std::make_unique<XtsciMinMode>(matter, params, pot);
+  const auto before = matter->getPositions();
+  modeSolver->compute(matter, mode);
+  REQUIRE(std::isfinite(modeSolver->getEigenvalue()));
+  REQUIRE(modeSolver->getEigenvector().rows() == matter->numberOfAtoms());
+  // Rotation does not climb. The host saddle search owns the step.
+  REQUIRE(before.isApprox(matter->getPositions(), 0.0));
+}
+
+#if RGSADDLE_ABI_MINOR >= 5
+TEST_CASE_METHOD(DimerFixture, "XtsciMinMode keeps its session across a search",
+                 "[dimer][eigenmode][rgsaddle][force_calls]") {
+  ParametersLoadAccess::saddle_search_options(params).minmode_method =
+      LowestEigenmode::MINMODE_XTSCI;
+  ParametersLoadAccess::optimizer_options(params).xtsci.method = "fire";
+  // The fixture's 0.01 degree converged angle rotates to the cap every
+  // time; the default 5 degrees lets a mode that holds stop early.
+  ParametersLoadAccess::dimer_options(params).converged_angle = 5.0;
+  (void)matter->getForces();
+  XtsciMinMode modeSolver(matter, params, pot);
+  modeSolver.compute(matter, mode);
+  const long first = modeSolver.totalForceCalls;
+  // The refreshed mode seeds the next estimate at the same point, so a
+  // mode that still holds costs far fewer probes than the cold start.
+  modeSolver.compute(matter, modeSolver.getEigenvector());
+  const long second = modeSolver.totalForceCalls - first;
+  CAPTURE(first, second);
+  REQUIRE(first > 0);
+  REQUIRE(second < first);
+  REQUIRE(second <= 2);
+  REQUIRE(std::isfinite(modeSolver.getEigenvalue()));
+}
+#endif
+
+TEST_CASE_METHOD(DimerFixture, "XtsciMinMode keeps the centre's evaluation",
+                 "[dimer][eigenmode][rgsaddle][force_calls]") {
+  ParametersLoadAccess::saddle_search_options(params).minmode_method =
+      LowestEigenmode::MINMODE_XTSCI;
+  ParametersLoadAccess::optimizer_options(params).xtsci.method = "fire";
+  const double e0 = matter->getPotentialEnergy();
+  const size_t before = pot->forceCallCounter;
+  XtsciMinMode modeSolver(matter, params, pot);
+  modeSolver.compute(matter, mode);
+  // The centre is read from its cache and the probes run on a copy, so
+  // the host centre is still evaluated and no call went to it.
+  REQUIRE_FALSE(matter->needsForceUpdate());
+  REQUIRE(matter->getPotentialEnergy() == e0);
+  REQUIRE(modeSolver.totalForceCalls ==
+          static_cast<long>(pot->forceCallCounter - before));
+}
+#endif
 
 } /* namespace tests */

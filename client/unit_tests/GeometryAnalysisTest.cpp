@@ -30,7 +30,8 @@ protected:
 
   GeomFixture() {
     ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-    pot = eonc::helpers::makePotential(PotType::LJ, params);
+    pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, params));
     m1 = std::make_shared<Matter>(pot, params);
     m2 = std::make_shared<Matter>(pot, params);
     m1->con2matter(std::string("reactant.con"));
@@ -156,7 +157,8 @@ TEST_CASE_METHOD(GeomFixture, "pushApart separates overlapping atoms",
 TEST_CASE("pushApart separates a coincident pair", "[geometry][pushApart]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m = std::make_shared<Matter>(pot, params);
   m->resize(2);
   m->setAtomicNr(0, 1);
@@ -179,7 +181,8 @@ TEST_CASE("pushApart separates a coincident pair", "[geometry][pushApart]") {
 TEST_CASE("pushApart follows the minimum image", "[geometry][pushApart]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m = std::make_shared<Matter>(pot, params);
   m->resize(2);
   m->setAtomicNr(0, 1);

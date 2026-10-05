@@ -103,9 +103,20 @@ Splitting bandSplitting(const std::vector<std::shared_ptr<Matter>> &band,
 /// `betaHbar`. Bead 0 is the reactant-side turning point and bead N/2 the
 /// other; bead N - j repeats bead j. Throws when the path has no barrier,
 /// or when the period at the barrier top already exceeds `betaHbar`.
+/// What ringFromPath chose: the orbit energy, its period, and whether that
+/// period reaches betaHbar. When the path ends before a long enough orbit
+/// (its ends sit above the wells), the lowest orbit it holds is used and
+/// `reached` is false; that ring belongs to a higher temperature.
+struct RingSeed {
+  double energy = 0.0;
+  double period = 0.0;
+  double pathLow = 0.0; ///< the higher of the path's two end energies
+  bool reached = false;
+};
 std::vector<VectorXd> ringFromPath(const std::vector<VectorXd> &path,
                                    const std::vector<double> &energies,
-                                   double betaHbar, long beads);
+                                   double betaHbar, long beads,
+                                   RingSeed *seed = nullptr);
 
 /// ln(k), k in 1/time, for the one-dimensional thermal rate along `profile`.
 /// `hwReactant` is hbar omega of the reactant well, in eV. Below the barrier
@@ -327,6 +338,10 @@ struct RateInstanton {
   long negativeModes = 0;          ///< eigenvalues below the zero mode
   long iterations = 0;
   bool converged = false;
+  /// The search stopped because B_N fell below 1e-4 of the starting
+  /// ring's: the beads fell together onto one point (a minimum or the
+  /// saddle), which is no instanton.
+  bool collapsed = false;
   double logRateTimesZr = 0.0; ///< ln(k Z_r), k in 1 / time
   double logZr = 0.0;          ///< ln Z_r
   double logRate = 0.0;        ///< ln k, k in 1 / time
@@ -355,8 +370,60 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
                                     const BatchPotential &potential,
                                     const RateInstantonOptions &options);
 
+/// Where a ring sits against the saddle it was seeded from, in
+/// mass-weighted coordinates. s = (q - saddle) . mode along the unstable
+/// mode; the turning points are the beads of least and greatest s.
+struct RingChannel {
+  double sMin = 0.0; ///< least s over the beads, amu^0.5 Angstrom
+  double sMax = 0.0; ///< greatest s over the beads
+  /// |cos| of the angle between the chord joining the turning points and
+  /// the unstable mode.
+  double chordOverlap = 0.0;
+  /// Largest distance from the saddle, across the mode, of a point where
+  /// the ring crosses the dividing plane s = 0.
+  double crossingOffset = 0.0;
+  /// Beads on both sides of the dividing plane, the chord within 60 degrees
+  /// of the mode, and every crossing within sMax - sMin of the saddle. A
+  /// ring around a neighbouring saddle can still straddle the plane, but it
+  /// crosses it far from this saddle.
+  bool belongs = false;
+};
+
+/// The channel test above for a ring of beads, a saddle and its unstable
+/// mode (normalised inside).
+RingChannel ringChannel(const std::vector<VectorXd> &beads,
+                        const VectorXd &saddle, const VectorXd &mode);
+
+/// Which rotations of a structure are zero modes of its mass-weighted
+/// Hessian. `generators` holds three translations then three rotations as
+/// columns (a zero column for a rotation a linear molecule lacks). A
+/// rotation r is a zero mode when its Rayleigh quotient r^T H r / r^T r is
+/// at most kRotationZeroFraction of the softest vibration, the lowest
+/// eigenvalue of H on the complement of all six generators. Both sides
+/// scale with H and neither grows with the atom count, unlike a comparison
+/// with ||H||_F. The residual reported is that ratio; a structure with no
+/// positive vibration on the complement has no rotational zero modes.
+inline constexpr double kRotationZeroFraction = 0.1;
+struct RotationZeroModes {
+  std::array<bool, 3> zero{{false, false, false}};
+  std::array<double, 3> residual{{0.0, 0.0, 0.0}};
+  double softestVibration = 0.0; ///< lowest eigenvalue on the complement
+};
+RotationZeroModes rotationZeroModes(const MatrixXd &hess,
+                                    const MatrixXd &generators);
+
 /// The mass-weighted Hessian d2V/dq2 at ring bead j (0..N-1).
 using RingBeadHessian = std::function<MatrixXd(long j, const VectorXd &q)>;
+
+/// The atoms behind a ring's mass-weighted coordinates, for its rigid
+/// motions: sqrt(m) per atom, the Cartesian positions q is measured from
+/// (3 per atom), and which rotations are free. Empty masses: the rigid
+/// directions come from the reactant Hessian instead.
+struct RingRigidBodies {
+  std::vector<double> sqrtMasses;
+  VectorXd reference;
+  std::array<bool, 3> rotations{{false, false, false}};
+};
 
 /// Fills the rate from the bead Hessians, the reactant minimum's Hessian and
 /// energy, and optionally the saddle's Hessian and energy for the classical
@@ -365,16 +432,28 @@ using RingBeadHessian = std::function<MatrixXd(long j, const VectorXd &q)>;
 /// the reactant Hessian leaves it null (a free cluster has them, a crystal
 /// does not, and an atom held fixed has none). They leave the centroid
 /// factors, so the rotational and translational partition functions of
-/// reactant and instanton cancel. Up to denseLimit ring degrees of freedom
-/// the product is the dense eigenproduct, checked against the cyclic block
-/// determinant. Beyond that, and for a limit of 0, the block determinant is
-/// used and the eigenvalues nearest zero come from inverse iteration on that
-/// factorisation. A negative limit forces the dense product.
+/// reactant and instanton cancel; for rotations that is an approximation,
+/// since the ring's moments of inertia are not the reactant's. On the ring
+/// the omitted directions are its null vectors: with `rigidBodies` given,
+/// the translations and rotations of the beads themselves about the ring's
+/// centre of mass (a rotation moves each bead differently), otherwise the
+/// reactant Hessian's null vectors copied to every bead, which are exact
+/// only for a coordinate every bead shares. The bead Hessians must then
+/// keep their rotational part: projecting a rotation out of a bead that is
+/// not stationary removes the curvature that balances its springs.
+///
+/// Up to denseLimit ring degrees of freedom, and for any negative limit,
+/// the determinant, the negative-mode count and the lowest eigenvalue come
+/// from the dense eigenvalues of the lifted ring Hessian, and a block-chain
+/// determinant that disagrees with them throws. Beyond that, and for a
+/// limit of 0, the block chain gives the determinant and the inertia, and a
+/// Lanczos run on ring products the lowest eigenvalue.
 void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
                    const MatrixXd &hessReactant, double vReactant,
                    const MatrixXd &hessSaddle = MatrixXd(),
                    double vSaddle = 0.0, long rigidModes = 0,
-                   long denseLimit = 4096);
+                   long denseLimit = 4096,
+                   const RingRigidBodies &rigidBodies = {});
 
 /// log|det| of the cyclic block-tridiagonal ring Hessian. Each diag[j]
 /// already contains the bead Hessian plus 2 c I, and the neighbour coupling

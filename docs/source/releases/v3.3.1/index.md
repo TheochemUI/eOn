@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn v3.3.1, NEB, xtsci, basin hopping, saddle search, release"
 ---
 
-## [v3.3.1] - 2026-09-27
+# [v3.3.1] - 2026-09-27
 
 Patch on `v3.3.0`. The `v3.3.0` tag does not compile the client; this
 one does. It also carries 92 fixes, most of them in the nudged elastic

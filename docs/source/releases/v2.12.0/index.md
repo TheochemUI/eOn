@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn v2.12.0, release, quill, namespace, PotRegistry, SafeMath"
 ---
 
-## [v2.12.0] - 2026-03-08
+# [v2.12.0] - 2026-03-08
 
 This release is a major internal modernization. The logging stack moves from
 spdlog/fmt to quill (lock-free, async, lower latency). All client code is

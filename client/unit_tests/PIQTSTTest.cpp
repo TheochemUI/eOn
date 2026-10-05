@@ -593,3 +593,65 @@ TEST_CASE("PI-QTST recrossing options round-trip and are checked",
     REQUIRE_THROWS_AS(eonc::config::from_json(bad, q), std::invalid_argument);
   }
 }
+
+// Ring-polymer MD on the H + H2 model barrier of Craig and Manolopoulos
+// (J. Chem. Phys. 122, 084106 (2005)): V0 = 0.425 eV, a = 0.734 bohr,
+// m = 1061 electron masses, so a = 0.296329 amu^0.5 Angstrom in mass-weighted
+// coordinates and T_c = 371.5 K (kB beta_c = 2.69e-3 / K). The RPMD rate is
+// the PI-QTST rate on the centroid plane through the top times the
+// recrossing plateau; the reference is the exact quantum flux. RPMD lies
+// below the exact rate for a symmetric barrier (Richardson and Althorpe,
+// J. Chem. Phys. 131, 214106 (2009)); for the Eckart barrier with T_c =
+// 239 K the deviation runs from -10 percent at 1.6 T_c to -45 percent at
+// 0.53 T_c (Suleimanov, Aoiz and Guo, J. Phys. Chem. A 120, 8488 (2016),
+// table 1). A validation run, minutes long, not part of the suite:
+//   test_piqtst "[validation]"
+TEST_CASE("RPMD rates of the Craig-Manolopoulos Eckart barrier",
+          "[.][validation][PIQTST]") {
+  const double bohr = 0.529177210544;
+  const double me = 5.485799090441e-4;
+  const Eckart pes{0.425, 0.734 * bohr * std::sqrt(1061.0 * me)};
+  const double tc = tunneling::crossoverTemperature(pes.hessian_at_top());
+  REQUIRE_THAT(1.0 / tc, Catch::Matchers::WithinRel(2.69e-3, 2e-3));
+  EckartPot pot;
+  pot.pes = pes;
+  struct Case {
+    double kBeta; // 1e-3 / K
+    long beads;
+  };
+  // Every temperature, then 0.54 T_c (kB beta 5e-3 / K) at 16, 32, 64 and
+  // 128 beads for the convergence in N.
+  for (const Case cs :
+       {Case{2.0, 16}, Case{3.0, 32}, Case{5.0, 48}, Case{7.0, 64},
+        Case{5.0, 16}, Case{5.0, 32}, Case{5.0, 64}, Case{5.0, 128}}) {
+    const double t = 1e3 / cs.kBeta;
+    const double beta = 1.0 / (tunneling::kBoltzmann * t);
+    piqtst::ScanOptions so;
+    so.planes = planes(pes.a, 40);
+    so.equilibration = 200;
+    so.production = 4000;
+    so.blocks = 10;
+    so.ring = ring(t, cs.beads, 0.05);
+    so.ring.pileScale = 0.5;
+    const auto scan = piqtst::scan(pot, line(false), so);
+    const double barrier = scan.back().freeEnergy;
+    const double error = scan.back().freeEnergyError;
+    auto ro = recrossingAtTop(t, cs.beads, 200, 10);
+    ro.ring.dt = 0.05;
+    ro.steps = 200;
+    const auto k = piqtst::recrossing(pot, line(false), ro);
+    const double exact = pes.logExactFlux(beta);
+    const double qtst = std::exp(logFlux(barrier, beta) - exact);
+    const double rpmd = qtst * k.plateau;
+    const double rpmdError =
+        rpmd * std::hypot(beta * error, k.plateauError / k.plateau);
+    WARN("T = " << t << " K (T / T_c = " << t / tc << "), N = " << cs.beads
+                << ": F = " << barrier << " +- " << error
+                << " eV, PI-QTST / exact = " << qtst
+                << ", kappa = " << k.plateau << " +- " << k.plateauError
+                << ", RPMD / exact = " << rpmd << " +- " << rpmdError);
+    REQUIRE(k.plateau <= 1.0 + 3.0 * k.plateauError);
+    REQUIRE(rpmd < 1.0);
+    REQUIRE(rpmd > 0.3);
+  }
+}

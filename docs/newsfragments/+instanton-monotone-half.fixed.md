@@ -1,0 +1,1 @@
+A half-ring instanton keeps the reaction coordinate monotone between the turning points, so the search stays on one bounce. The index-1 step shortens inside the trust radius when the quadratic model is off.

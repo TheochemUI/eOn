@@ -21,7 +21,8 @@ TEST_F(CuH2Test, TestMatter) {
   string confile("pos.con");
   Parameters parameters;
   ParametersLoadAccess::potential_options(parameters).potential = PotType::CUH2;
-  auto pot = eonc::helpers::makePotential(parameters);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(parameters));
   auto matter = std::make_shared<Matter>(pot, parameters);
   matter->con2matter(confile);
   std::cout << matter->getPotentialEnergy();

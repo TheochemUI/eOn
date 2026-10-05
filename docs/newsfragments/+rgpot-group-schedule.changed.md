@@ -1,0 +1,1 @@
+RGPOT calculator groups schedule each batch so that no group takes more than ceil(M / G) of its M systems while every image or bead stays on the group that holds its orbitals, and send a single request to the group that last evaluated the nearest geometry instead of always to group 0. The RGPOT page explains how to choose the number of groups.

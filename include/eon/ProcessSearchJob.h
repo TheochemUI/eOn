@@ -26,7 +26,7 @@ namespace eonc {
  * \brief Finds possible escape mecahnisms from a state.
  *
  * The process search job implements one of the following types of saddle
- * searches, as well as an \ref Optimizer "optimizer", as defined by the
+ * searches, as well as an \ref eonc::Optimizer "optimizer", as defined by the
  * config.init file.
  *
  * <ul>
@@ -46,7 +46,8 @@ class ProcessSearchJob : public Job {
 public:
   //! Process Search job Constructor
   /*!
-   * \param *params defined by the config.init file
+   * \param parameters defined by the config.init file
+   * \param rt process runtime
    */
   ProcessSearchJob(std::unique_ptr<Parameters> parameters, Runtime &rt)
       : Job(std::move(parameters), rt),

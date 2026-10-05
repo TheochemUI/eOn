@@ -20,7 +20,9 @@ namespace helpers {
 /**
  * \brief Check two eigen objects for equality
  *
- * @param Eigen::MatrixBase the underlying base class
+ * @param lhs left-hand matrix
+ * @param rhs right-hand matrix
+ * @param threshold absolute tolerance passed to Eigen isApprox
  */
 template <typename T>
 bool eigenEquality(const Eigen::MatrixBase<T> &lhs,

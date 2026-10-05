@@ -240,7 +240,8 @@ TEST_CASE("Mass-weighted distance takes the masses and the minimum image",
           "[Tunneling]") {
   auto params = std::make_shared<Parameters>();
   ParametersLoadAccess::potential_options(*params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, *params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, *params));
   Matter a(pot, *params);
   a.resize(2);
   Matrix3d cell = Matrix3d::Identity() * 10.0;
@@ -1057,4 +1058,658 @@ TEST_CASE("Quantum harmonic TST has its closed form and the classical limit",
   REQUIRE_THAT(quantumHarmonicTstLogRate(hr, hs, hot, barrier, 0) -
                    harmonicTstLogRate(hr, hs, hot, barrier, 0),
                Catch::Matchers::WithinAbs(0.0, 1e-6));
+}
+
+// A soft barrier: the saddle's unstable curvature, -1e-8, lies closer to
+// zero than the finite-difference residue of its rigid mode, 1e-6. The
+// rigid mode is the one to leave, and the barrier mode leaves as the
+// unstable mode, so only the bound curvature 2 stays at the saddle.
+TEST_CASE("Harmonic TST never takes a soft barrier mode for a rigid mode",
+          "[Tunneling][Instanton]") {
+  MatrixXd hr = MatrixXd::Zero(3, 3);
+  hr(0, 0) = 2e-6;
+  hr(1, 1) = 4.0;
+  hr(2, 2) = 9.0;
+  MatrixXd hs = MatrixXd::Zero(3, 3);
+  hs(0, 0) = -1e-8;
+  hs(1, 1) = 1e-6;
+  hs(2, 2) = 2.0;
+  const double barrier = 0.3;
+  const double beta = 5.0;
+  const double classical = 0.5 * std::log(4.0 * 9.0 / 2.0) -
+                           std::log(2.0 * std::numbers::pi) - beta * barrier;
+  REQUIRE_THAT(harmonicTstLogRate(hr, hs, beta, barrier, 1),
+               WithinRel(classical, 1e-12));
+  const double bh = beta * kHbar;
+  auto twoSinh = [&](double w) { return 2.0 * std::sinh(0.5 * bh * w); };
+  const double quantum =
+      std::log(twoSinh(2.0) * twoSinh(3.0) / twoSinh(std::sqrt(2.0))) -
+      std::log(2.0 * std::numbers::pi * bh) - beta * barrier;
+  REQUIRE_THAT(quantumHarmonicTstLogRate(hr, hs, beta, barrier, 1),
+               WithinRel(quantum, 1e-12));
+}
+
+// Two beads in the wells given a curvature far below the spring's make two
+// negative modes of the action Hessian. The determinant keeps its sign, so
+// only the inertia shows that the path is not a minimum of the action.
+TEST_CASE("The instanton splitting refuses a path with two negative modes",
+          "[Tunneling][Instanton]") {
+  const CurvedValley pes{0.3, 4.0, 0.0};
+  Instanton inst = valleyInstanton(pes, 128, 40.0);
+  REQUIRE(inst.converged);
+  REQUIRE(inst.delta0 > 0.0);
+  const double big = 4.0 / (inst.dtau * inst.dtau) + 100.0;
+  auto twoDips = [&](long j, const VectorXd &q) -> MatrixXd {
+    MatrixXd h = pes.hessian(q);
+    if (j == 20 || j == 108) {
+      h(1, 1) -= big;
+    }
+    return h;
+  };
+  VectorXd a(2), b(2);
+  a << -1.0, 0.0;
+  b << 1.0, 0.0;
+  REQUIRE_THROWS_AS(
+      instantonSplitting(inst, twoDips, pes.hessian(a), pes.hessian(b)),
+      std::runtime_error);
+  // One such bead flips the determinant's sign and was refused before too.
+  auto oneDip = [&](long j, const VectorXd &q) -> MatrixXd {
+    MatrixXd h = pes.hessian(q);
+    if (j == 20) {
+      h(1, 1) -= big;
+    }
+    return h;
+  };
+  REQUIRE_THROWS_AS(
+      instantonSplitting(inst, oneDip, pes.hessian(a), pes.hessian(b)),
+      std::runtime_error);
+}
+
+namespace {
+
+// Two unit-mass atoms whose bond d = r - r_e decays from a cubic well,
+// V = K d^2 / 2 - G d^3 / 3: a free diatomic with three translations and
+// two rotations. Unit masses make q the Cartesian displacement from
+// `reference`.
+struct CubicBond {
+  double k = 1.0, g = std::sqrt(1.0 / 3.0), re = 2.0;
+  VectorXd reference() const {
+    VectorXd r = VectorXd::Zero(6);
+    r(3) = re;
+    return r;
+  }
+  double vd(double d) const { return 0.5 * k * d * d - g * d * d * d / 3.0; }
+  double dvd(double d) const { return k * d - g * d * d; }
+  double d2vd(double d) const { return k - 2.0 * g * d; }
+  Eigen::Vector3d bond(const VectorXd &q) const {
+    const VectorXd x = reference() + q;
+    return x.segment<3>(3) - x.segment<3>(0);
+  }
+  double value(const VectorXd &q) const { return vd(bond(q).norm() - re); }
+  VectorXd gradient(const VectorXd &q) const {
+    const Eigen::Vector3d b = bond(q);
+    const double r = b.norm();
+    const Eigen::Vector3d f = dvd(r - re) * b / r;
+    VectorXd out(6);
+    out << -f, f;
+    return out;
+  }
+  MatrixXd hessian(const VectorXd &q) const {
+    const Eigen::Vector3d b = bond(q);
+    const double r = b.norm();
+    const Eigen::Vector3d u = b / r;
+    const Eigen::Matrix3d a =
+        d2vd(r - re) * u * u.transpose() +
+        dvd(r - re) / r * (Eigen::Matrix3d::Identity() - u * u.transpose());
+    MatrixXd h(6, 6);
+    h << a, -a, -a, a;
+    return h;
+  }
+  BatchPotential batch() const {
+    return [this](const std::vector<VectorXd> &q, std::vector<double> &v,
+                  std::vector<VectorXd> &grad) {
+      v.resize(q.size());
+      grad.resize(q.size());
+      for (size_t j = 0; j < q.size(); ++j) {
+        v[j] = value(q[j]);
+        grad[j] = gradient(q[j]);
+      }
+    };
+  }
+};
+
+} // namespace
+
+// The rate's det' leaves out the ring's null vectors. For a rotation those
+// are e x (r_j - centre) at each bead, which a stretched bond makes differ
+// from bead to bead; the reactant's generator copied to every bead is not
+// one of them. The reference is the dense ring Hessian's spectrum with its
+// six eigenvalues nearest zero (the cycle, three translations, two
+// rotations) left out.
+TEST_CASE("The rate lifts the rotations of a free diatomic's ring",
+          "[Tunneling][Instanton]") {
+  const CubicBond pes;
+  const double db = pes.k / pes.g;
+  VectorXd saddle = VectorXd::Zero(6);
+  saddle(0) = -0.5 * db;
+  saddle(3) = 0.5 * db;
+  const MatrixXd hs = pes.hessian(saddle);
+  const MatrixXd hr = pes.hessian(VectorXd::Zero(6));
+  const double tc = crossoverTemperature(hs);
+  REQUIRE_THAT(tc, WithinRel(kHbar * std::sqrt(2.0 * pes.k) /
+                                 (2.0 * std::numbers::pi * kBoltzmann),
+                             1e-10));
+  const double beta = 1.0 / (kBoltzmann * 0.5 * tc);
+  RateInstantonOptions opt;
+  opt.beads = 24;
+  opt.forceTolerance = 1e-9;
+  opt.rigidSqrtMasses = {1.0, 1.0};
+  opt.rigidReference = pes.reference();
+  opt.rigidRotations = {true, true, true};
+  RateInstanton inst =
+      optimizeRateInstanton(saddle, hs, beta, {}, pes.batch(), opt);
+  CAPTURE(inst.iterations, inst.ringPotential);
+  REQUIRE(inst.converged);
+  // The bond stretches along the ring.
+  double rMin = 1e9, rMax = 0.0;
+  for (const auto &q : inst.beads) {
+    rMin = std::min(rMin, pes.bond(q).norm());
+    rMax = std::max(rMax, pes.bond(q).norm());
+  }
+  CAPTURE(rMin, rMax);
+  REQUIRE(rMax - rMin > 0.5);
+
+  const long n = opt.beads, f = 6;
+  const double bnh = inst.betaN * kHbar;
+  const double c = 1.0 / (bnh * bnh);
+  std::vector<MatrixXd> blocks;
+  for (const auto &q : inst.beads) {
+    blocks.push_back(pes.hessian(q));
+  }
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> es(denseRing(blocks, c),
+                                                   Eigen::EigenvaluesOnly);
+  std::vector<double> lam(es.eigenvalues().data(),
+                          es.eigenvalues().data() + n * f);
+  std::sort(lam.begin(), lam.end(),
+            [](double a, double b) { return std::abs(a) < std::abs(b); });
+  double logDetPrime = 0.0;
+  long negative = 0;
+  for (size_t i = 6; i < lam.size(); ++i) {
+    logDetPrime += std::log(std::abs(lam[i]));
+    negative += lam[i] < 0.0 ? 1 : 0;
+  }
+  REQUIRE(negative == 1);
+  const double expected =
+      -std::log(bnh) +
+      0.5 * std::log(inst.bN /
+                     (2.0 * std::numbers::pi * inst.betaN * kHbar * kHbar)) -
+      (static_cast<double>(n * f - 6) * std::log(bnh) + 0.5 * logDetPrime) -
+      inst.betaN * inst.ringPotential;
+
+  auto hessian = [&](long, const VectorXd &q) { return pes.hessian(q); };
+  RateInstanton ring = inst;
+  RingRigidBodies bodies;
+  bodies.sqrtMasses = {1.0, 1.0};
+  bodies.reference = pes.reference();
+  bodies.rotations = {true, true, true};
+  instantonRate(ring, hessian, hr, 0.0, MatrixXd(), 0.0, 5, 4096, bodies);
+  RateInstanton copied = inst;
+  instantonRate(copied, hessian, hr, 0.0, MatrixXd(), 0.0, 5);
+  CAPTURE(expected, ring.logRateTimesZr, copied.logRateTimesZr);
+  REQUIRE(ring.negativeModes == 1);
+  REQUIRE_THAT(ring.logRateTimesZr, Catch::Matchers::WithinAbs(expected, 1e-6));
+  // The reactant's rotation generators on every bead miss the ring's null
+  // space by a stretch-dependent angle.
+  REQUIRE(std::abs(copied.logRateTimesZr - expected) > 1e-3);
+}
+
+// Known answers independent of eOn, from
+// client/validation/instanton_references.py (mpmath, 40 digits).
+//
+// Symmetric Eckart V0 sech^2(x / a), V0 = 0.425 eV, a = 0.734, unit mass:
+// T_c = hbar sqrt(2 V0) / (2 pi kB a) = 149.98818880973 K. In one dimension
+// the N -> infinity ring-polymer instanton is the steepest-descent value of
+// (1 / 2 pi hbar) int exp(-theta(E) - beta E) dE with
+// theta = 2 sqrt(2) pi a (sqrt(V0) - sqrt(E)) / hbar, in closed form:
+// ln(k Z_r) = -50.7985982061252 at T_c / 2 (the exact flux, -50.7235175117,
+// is 7.8 percent above it). The discrete ring approaches it as 1 / N^2.
+// The reactant partition function, here a harmonic well of curvature 1,
+// approaches ln Z = -ln(2 sinh(u / 2)) with error u^3 coth(u / 2) / (48 N^2),
+// u = beta hbar omega.
+TEST_CASE("The Eckart ring converges to the analytic instanton at second "
+          "order",
+          "[Tunneling][Instanton]") {
+  const Eckart pes;
+  const MatrixXd hs = pes.hessian_at_top();
+  const double tc = crossoverTemperature(hs);
+  REQUIRE_THAT(tc, WithinRel(149.98818880973, 1e-11));
+  const double beta = 1.0 / (kBoltzmann * 0.5 * tc);
+  const double analytic = -50.7985982061252;
+  const double u = beta * kHbar;
+  const double logZ = -std::log(2.0 * std::sinh(0.5 * u));
+  RateInstantonOptions opt;
+  opt.forceTolerance = 1e-9;
+  std::vector<double> err, errZ;
+  const std::vector<long> sizes{16, 32, 64, 128};
+  for (const long n : sizes) {
+    opt.beads = n;
+    RateInstanton inst = optimizeRateInstanton(VectorXd::Zero(1), hs, beta, {},
+                                               pes.batch(), opt);
+    REQUIRE(inst.converged);
+    instantonRate(
+        inst, [&](long, const VectorXd &q) { return pes.hessian_at(q); },
+        MatrixXd::Identity(1, 1), 0.0);
+    REQUIRE(inst.negativeModes == 1);
+    // The ring belongs to the barrier: its turning points lie on either
+    // side of the top, mirror images of each other.
+    double lo = 0.0, hi = 0.0;
+    for (const auto &q : inst.beads) {
+      lo = std::min(lo, q(0));
+      hi = std::max(hi, q(0));
+    }
+    REQUIRE(lo < 0.0);
+    REQUIRE_THAT(hi, Catch::Matchers::WithinAbs(-lo, 1e-6));
+    err.push_back(inst.logRateTimesZr - analytic);
+    errZ.push_back(inst.logZr - logZ);
+    const double leading =
+        u * u * u / std::tanh(0.5 * u) / 48.0 / static_cast<double>(n * n);
+    CAPTURE(n, inst.logRateTimesZr, err.back(), errZ.back(), leading);
+    REQUIRE(errZ.back() > 0.0);
+    if (n >= 64) {
+      REQUIRE_THAT(errZ.back(), WithinRel(leading, 0.05));
+    }
+  }
+  for (size_t i = 1; i < sizes.size(); ++i) {
+    const double order = std::log2(err[i - 1] / err[i]);
+    const double orderZ = std::log2(errZ[i - 1] / errZ[i]);
+    CAPTURE(sizes[i], err[i], order, orderZ);
+    REQUIRE(err[i] * err[i - 1] > 0.0);
+    if (i + 1 == sizes.size()) {
+      REQUIRE(order > 1.9);
+      REQUIRE(order < 2.1);
+      REQUIRE(orderZ > 1.9);
+      REQUIRE(orderZ < 2.1);
+    }
+  }
+  // Richardson extrapolation from 64 and 128 beads lands on the analytic
+  // instanton.
+  const double extrapolated = (4.0 * err[3] - err[2]) / 3.0;
+  CAPTURE(extrapolated);
+  REQUIRE(std::abs(extrapolated) < 2e-3);
+}
+
+// The quartic double well V0 (x^2 - 1)^2 at unit mass, here with a
+// decoupled transverse mode that cancels between path and wells. The exact
+// splitting at V0 = 0.3 eV is 1.19539175e-7 eV (sinc DVR, converged to 5e-8
+// relative from 301 to 601 points over [-2.4, 2.4]); the continuum
+// instanton is 2 hbar omega sqrt(4 omega / (pi hbar)) exp(-2 omega /
+// (3 hbar)), omega^2 = 8 V0, = 1.2777723497e-7 eV, 6.9 percent above it,
+// the semiclassical error of order hbar omega / V0 (S0 / hbar = 16.0). The
+// discrete instanton converges to the continuum one as 1 / P^2 once
+// omega dtau = beta hbar omega / P is small: from 64 to 128 beads
+// (omega dtau 0.63 to 0.31) the observed order is still 1.43.
+TEST_CASE("The instanton splitting converges to the analytic continuum "
+          "value at second order",
+          "[Tunneling][Instanton]") {
+  const CurvedValley pes{0.3, 4.0, 0.0};
+  const double continuum = 1.2777723497e-7;
+  const double dvr = 1.19539175e-7;
+  std::vector<double> err;
+  const std::vector<long> sizes{128, 256, 512};
+  for (const long p : sizes) {
+    const Instanton inst = valleyInstanton(pes, p, 40.0);
+    REQUIRE(inst.converged);
+    REQUIRE(inst.modeSeparation > 1e3);
+    err.push_back(std::log(inst.delta0 / continuum));
+    CAPTURE(p, inst.delta0, err.back(), inst.delta0 / dvr);
+  }
+  for (size_t i = 1; i < sizes.size(); ++i) {
+    const double order = std::log2(err[i - 1] / err[i]);
+    CAPTURE(sizes[i], err[i], order);
+    REQUIRE(err[i] * err[i - 1] > 0.0);
+    REQUIRE(order > 1.8);
+    REQUIRE(order < 2.2);
+  }
+  const double extrapolated = (4.0 * err.back() - err[err.size() - 2]) / 3.0;
+  CAPTURE(extrapolated);
+  REQUIRE(std::abs(extrapolated) < 1e-3);
+  REQUIRE_THAT(continuum / dvr, WithinRel(1.0689151, 1e-6));
+}
+
+// A ring around the seeded saddle straddles its dividing plane close to the
+// saddle. A ring of the same shape moved across the mode to a neighbouring
+// saddle still straddles the plane, and that alone passed it, but it
+// crosses the plane far from this saddle; a ring turned across the mode
+// fails the chord test.
+TEST_CASE("A ring belongs to the saddle whose dividing plane it crosses "
+          "nearby",
+          "[Tunneling][Instanton]") {
+  VectorXd saddle = VectorXd::Zero(2);
+  VectorXd mode(2);
+  mode << 1.0, 0.0;
+  std::vector<VectorXd> ring;
+  for (int j = 0; j < 16; ++j) {
+    const double t = 2.0 * std::numbers::pi * j / 16.0;
+    VectorXd q(2);
+    q << -0.8 * std::cos(t), 0.1 * std::sin(t) + 0.05;
+    ring.push_back(q);
+  }
+  const RingChannel own = ringChannel(ring, saddle, mode);
+  CAPTURE(own.sMin, own.sMax, own.chordOverlap, own.crossingOffset);
+  REQUIRE(own.belongs);
+  REQUIRE_THAT(own.sMin, Catch::Matchers::WithinAbs(-0.8, 1e-12));
+  REQUIRE_THAT(own.sMax, Catch::Matchers::WithinAbs(0.8, 1e-12));
+  REQUIRE(own.chordOverlap > 0.99);
+  REQUIRE(own.crossingOffset < 0.2);
+
+  std::vector<VectorXd> shifted = ring;
+  for (auto &q : shifted) {
+    q(1) += 3.0;
+  }
+  const RingChannel other = ringChannel(shifted, saddle, mode);
+  CAPTURE(other.crossingOffset);
+  REQUIRE(other.sMin < 0.0);
+  REQUIRE(other.sMax > 0.0);
+  REQUIRE_FALSE(other.belongs);
+
+  // The same ellipse turned 70 degrees off the mode: it still straddles
+  // the plane near the saddle, but its turning points run across the mode.
+  std::vector<VectorXd> turned;
+  const double th = 70.0 * std::numbers::pi / 180.0;
+  for (int j = 0; j < 16; ++j) {
+    const double t = 2.0 * std::numbers::pi * j / 16.0;
+    const double x = 0.8 * std::cos(t), y = 0.1 * std::sin(t);
+    VectorXd r(2);
+    r << std::cos(th) * x - std::sin(th) * y,
+        std::sin(th) * x + std::cos(th) * y;
+    turned.push_back(r);
+  }
+  const RingChannel across = ringChannel(turned, saddle, mode);
+  CAPTURE(across.chordOverlap, across.crossingOffset);
+  REQUIRE(across.chordOverlap < 0.5);
+  REQUIRE(across.crossingOffset < across.sMax - across.sMin);
+  REQUIRE(across.sMin < 0.0);
+  REQUIRE(across.sMax > 0.0);
+  REQUIRE_FALSE(across.belongs);
+}
+
+// A soft bound mode, beta hbar omega = 1e-9 at the reactant and 2e-9 at the
+// saddle: the ratio of 2 sinh(x / 2) is 1/2 to 1e-18, which ln(1 - exp(-x))
+// loses to cancellation (3e-8 in each logarithm, mpmath reference in
+// instanton_references.py).
+TEST_CASE("Quantum harmonic TST keeps a soft mode's zero-point factor exact",
+          "[Tunneling][Instanton]") {
+  const double beta = 40.0;
+  const double bh = beta * kHbar;
+  const double xr = 1e-9, xs = 2e-9;
+  MatrixXd hr = MatrixXd::Zero(2, 2);
+  hr(0, 0) = std::pow(xr / bh, 2);
+  hr(1, 1) = 4.0;
+  MatrixXd hs = MatrixXd::Zero(2, 2);
+  hs(0, 0) = -2.0;
+  hs(1, 1) = std::pow(xs / bh, 2);
+  const double barrier = 0.3;
+  const double expected =
+      std::log(xr / xs) + std::log(2.0 * std::sinh(0.5 * bh * 2.0)) -
+      std::log(2.0 * std::numbers::pi * bh) - beta * barrier;
+  REQUIRE_THAT(quantumHarmonicTstLogRate(hr, hs, beta, barrier, 0),
+               Catch::Matchers::WithinAbs(expected, 1e-12));
+}
+
+// RA's prefactor runs over the eigenvalues of the ring Hessian with the
+// near-zero one left out. On a 12-bead ring the central difference along the
+// ring is not that eigenvalue's eigenvector, so lifting it leaves a factor
+// cos^2 of their angle in det'; the rate must match the dense spectrum with
+// its eigenvalue nearest zero removed.
+TEST_CASE("The rate leaves out the ring Hessian's near-zero eigenvalue",
+          "[Tunneling][Instanton]") {
+  const Eckart pes;
+  const MatrixXd hs = pes.hessian_at_top();
+  const double tc = crossoverTemperature(hs);
+  const double beta = 1.0 / (kBoltzmann * 0.5 * tc);
+  RateInstantonOptions opt;
+  opt.beads = 12;
+  opt.forceTolerance = 1e-10;
+  RateInstanton inst =
+      optimizeRateInstanton(VectorXd::Zero(1), hs, beta, {}, pes.batch(), opt);
+  REQUIRE(inst.converged);
+  const double bnh = inst.betaN * kHbar;
+  const double c = 1.0 / (bnh * bnh);
+  std::vector<MatrixXd> blocks;
+  for (const auto &q : inst.beads) {
+    blocks.push_back(pes.hessian_at(q));
+  }
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> es(denseRing(blocks, c),
+                                                   Eigen::EigenvaluesOnly);
+  std::vector<double> lam(es.eigenvalues().data(),
+                          es.eigenvalues().data() + opt.beads);
+  std::sort(lam.begin(), lam.end(),
+            [](double a, double b) { return std::abs(a) < std::abs(b); });
+  double logDetPrime = 0.0;
+  for (size_t i = 1; i < lam.size(); ++i) {
+    logDetPrime += std::log(std::abs(lam[i]));
+  }
+  const double expected =
+      -std::log(bnh) +
+      0.5 * std::log(inst.bN /
+                     (2.0 * std::numbers::pi * inst.betaN * kHbar * kHbar)) -
+      (static_cast<double>(opt.beads - 1) * std::log(bnh) + 0.5 * logDetPrime) -
+      inst.betaN * inst.ringPotential;
+  for (const long dense : {4096L, 0L}) {
+    RateInstanton ring = inst;
+    instantonRate(
+        ring, [&](long, const VectorXd &q) { return pes.hessian_at(q); },
+        MatrixXd::Identity(1, 1), 0.0, MatrixXd(), 0.0, 0, dense);
+    CAPTURE(dense, expected, ring.logRateTimesZr, lam[0], lam[1], lam[2],
+            lam[3], ring.zeroEigenvalue, ring.negativeEigenvalue,
+            ring.negativeModes, c);
+    REQUIRE(ring.negativeModes == 1);
+    REQUIRE_THAT(ring.logRateTimesZr,
+                 Catch::Matchers::WithinAbs(expected, 1e-9));
+    REQUIRE_THAT(ring.zeroEigenvalue,
+                 Catch::Matchers::WithinAbs(lam[0], 1e-9 * c));
+  }
+}
+
+// initial_hessians = finite_difference builds every bead block from 2 f
+// gradient calls before the first step; the search wrote those blocks into
+// an empty vector. The ring it finds is the one the saddle-copied blocks
+// find.
+TEST_CASE("Finite-difference initial bead Hessians find the same ring",
+          "[Tunneling][Instanton]") {
+  const CubicBond pes;
+  const double db = pes.k / pes.g;
+  VectorXd saddle = VectorXd::Zero(6);
+  saddle(0) = -0.5 * db;
+  saddle(3) = 0.5 * db;
+  const MatrixXd hs = pes.hessian(saddle);
+  const double beta = 1.0 / (kBoltzmann * 0.5 * crossoverTemperature(hs));
+  RateInstantonOptions opt;
+  opt.beads = 16;
+  opt.forceTolerance = 1e-9;
+  opt.rigidSqrtMasses = {1.0, 1.0};
+  opt.rigidReference = pes.reference();
+  opt.rigidRotations = {true, true, true};
+  const RateInstanton copied =
+      optimizeRateInstanton(saddle, hs, beta, {}, pes.batch(), opt);
+  opt.initialHessians = "finite_difference";
+  const RateInstanton fd =
+      optimizeRateInstanton(saddle, hs, beta, {}, pes.batch(), opt);
+  CAPTURE(copied.ringPotential, fd.ringPotential, copied.iterations,
+          fd.iterations);
+  REQUIRE(copied.converged);
+  REQUIRE(fd.converged);
+  REQUIRE_THAT(fd.ringPotential,
+               Catch::Matchers::WithinAbs(copied.ringPotential, 1e-8));
+  REQUIRE_THAT(fd.bN, WithinRel(copied.bN, 1e-6));
+}
+
+// A ring in a harmonic well, V = q^2 / 2, searched with a saddle Hessian
+// whose barrier curvature is -1: the well has no index-1 ring, the index-1
+// step climbs the centroid and takes exact Newton on every internal mode,
+// whose stationary point is a ring of zero size. The search must stop at
+// that collapse instead of spending its budget there.
+TEST_CASE("A ring that collapses onto one point stops early",
+          "[Tunneling][Instanton]") {
+  const BatchPotential well = [](const std::vector<VectorXd> &q,
+                                 std::vector<double> &v,
+                                 std::vector<VectorXd> &g) {
+    v.resize(q.size());
+    g.resize(q.size());
+    for (size_t j = 0; j < q.size(); ++j) {
+      v[j] = 0.5 * q[j].squaredNorm();
+      g[j] = q[j];
+    }
+  };
+  const VectorXd saddle = VectorXd::Zero(1);
+  const MatrixXd hs = MatrixXd::Constant(1, 1, -1.0);
+  const double beta = 1.0 / (kBoltzmann * 0.5 * crossoverTemperature(hs));
+  RateInstantonOptions opt;
+  opt.beads = 16;
+  opt.maxIterations = 500;
+  std::vector<VectorXd> guess;
+  for (long j = 0; j < opt.beads; ++j) {
+    guess.push_back(VectorXd::Constant(
+        1, 0.02 * std::cos(2.0 * std::numbers::pi * static_cast<double>(j) /
+                           static_cast<double>(opt.beads))));
+  }
+  const RateInstanton inst =
+      optimizeRateInstanton(saddle, hs, beta, guess, well, opt);
+  CAPTURE(inst.iterations, inst.bN, inst.converged, inst.ringPotential);
+  REQUIRE(inst.collapsed);
+  REQUIRE_FALSE(inst.converged);
+  REQUIRE(inst.iterations < 20);
+}
+
+namespace {
+
+// A periodic square slab of L x L unit-mass atoms with central springs to
+// the nearest (k) and next-nearest (k / 2) neighbours and a bending
+// stiffness across each bond, no atom fixed. A
+// rotation about the normal stretches the bonds across the cell boundary,
+// a real curvature that falls only as 1 / L.
+MatrixXd periodicSlabHessian(long l, MatrixXd &generators) {
+  const long n = l * l;
+  std::vector<Eigen::Vector3d> pos;
+  for (long i = 0; i < l; ++i) {
+    for (long j = 0; j < l; ++j) {
+      pos.emplace_back(static_cast<double>(i), static_cast<double>(j), 0.0);
+    }
+  }
+  const double box = static_cast<double>(l);
+  MatrixXd h = MatrixXd::Zero(3 * n, 3 * n);
+  auto add = [&](long p, long q, double k) {
+    Eigen::Vector3d d =
+        pos[static_cast<size_t>(q)] - pos[static_cast<size_t>(p)];
+    for (int a = 0; a < 2; ++a) {
+      d(a) -= box * std::round(d(a) / box);
+    }
+    const Eigen::Vector3d u = d.normalized();
+    const Eigen::Matrix3d b = k * u * u.transpose();
+    h.block(3 * p, 3 * p, 3, 3) += b;
+    h.block(3 * q, 3 * q, 3, 3) += b;
+    h.block(3 * p, 3 * q, 3, 3) -= b;
+    h.block(3 * q, 3 * p, 3, 3) -= b;
+    // A bending stiffness k_z (z_p - z_q)^2 / 2 keeps the slab flat.
+    const double kz = 0.3 * k;
+    h(3 * p + 2, 3 * p + 2) += kz;
+    h(3 * q + 2, 3 * q + 2) += kz;
+    h(3 * p + 2, 3 * q + 2) -= kz;
+    h(3 * q + 2, 3 * p + 2) -= kz;
+  };
+  auto idx = [&](long i, long j) { return ((i + l) % l) * l + ((j + l) % l); };
+  for (long i = 0; i < l; ++i) {
+    for (long j = 0; j < l; ++j) {
+      add(idx(i, j), idx(i + 1, j), 1.0);
+      add(idx(i, j), idx(i, j + 1), 1.0);
+      add(idx(i, j), idx(i + 1, j + 1), 0.5);
+      add(idx(i, j), idx(i + 1, j - 1), 0.5);
+    }
+  }
+  Eigen::Vector3d com = Eigen::Vector3d::Zero();
+  for (const auto &p : pos) {
+    com += p;
+  }
+  com /= static_cast<double>(n);
+  generators = MatrixXd::Zero(3 * n, 6);
+  for (long p = 0; p < n; ++p) {
+    for (int c = 0; c < 3; ++c) {
+      generators(3 * p + c, c) = 1.0;
+      Eigen::Vector3d e = Eigen::Vector3d::Zero();
+      e(c) = 1.0;
+      generators.block(3 * p, 3 + c, 3, 1) =
+          e.cross(pos[static_cast<size_t>(p)] - com);
+    }
+  }
+  return h;
+}
+
+} // namespace
+
+// The rotation of a 16 x 16 periodic slab about its normal has
+// ||H r|| / (||H||_F ||r||) = 0.008, under the 1e-2 that marked a rotation
+// as a zero mode, because ||H||_F grows as the square root of the
+// coordinates. Against the softest vibration it is no zero mode. A free
+// diatomic at its minimum keeps its two rotations as zero modes.
+TEST_CASE("Rotational zero modes are told apart on the Hessian's own scale",
+          "[Tunneling][Instanton]") {
+  MatrixXd gens;
+  const MatrixXd h = periodicSlabHessian(16, gens);
+  const VectorXd r = gens.col(5);
+  const double frobenius = (h * r).norm() / (h.norm() * r.norm());
+  CAPTURE(frobenius);
+  REQUIRE(frobenius < 1e-2);
+  const RotationZeroModes slab = rotationZeroModes(h, gens);
+  CAPTURE(slab.residual[2], slab.softestVibration);
+  REQUIRE(slab.softestVibration > 0.0);
+  REQUIRE_FALSE(slab.zero[2]);
+
+  const CubicBond pes;
+  const VectorXd x = pes.reference();
+  MatrixXd g = MatrixXd::Zero(6, 6);
+  Eigen::Vector3d com = 0.5 * (x.segment<3>(0) + x.segment<3>(3));
+  for (int atom = 0; atom < 2; ++atom) {
+    for (int c = 0; c < 3; ++c) {
+      g(3 * atom + c, c) = 1.0;
+      Eigen::Vector3d e = Eigen::Vector3d::Zero();
+      e(c) = 1.0;
+      g.block(3 * atom, 3 + c, 3, 1) = e.cross(x.segment<3>(3 * atom) - com);
+    }
+  }
+  const RotationZeroModes bond =
+      rotationZeroModes(pes.hessian(VectorXd::Zero(6)), g);
+  CAPTURE(bond.residual[0], bond.residual[1], bond.residual[2],
+          bond.softestVibration);
+  REQUIRE_FALSE(bond.zero[0]); // about the bond: no generator
+  REQUIRE(bond.zero[1]);
+  REQUIRE(bond.zero[2]);
+  REQUIRE(bond.softestVibration > 0.0);
+}
+
+// A double well with a small bump on the reactant slope: below the bump's
+// top the reactant turning point jumps across it, so the period jumps too.
+// A bisection over the whole energy range converged onto that jump, a ring
+// whose period is not beta hbar (on the Al slab of examples/neb-al: period
+// 103.8 for beta hbar 129.1 and 91.2 alike). Every requested period that a
+// continuous branch reaches must be met.
+TEST_CASE("The seed ring meets its period across a jump in the orbit",
+          "[Tunneling][Instanton]") {
+  std::vector<VectorXd> path;
+  std::vector<double> energies;
+  const int images = 2001;
+  for (int i = 0; i < images; ++i) {
+    const double x = -1.0 + 2.0 * static_cast<double>(i) / (images - 1);
+    path.push_back(VectorXd::Constant(1, x));
+    const double b = (x + 0.6) / 0.08;
+    energies.push_back((x * x - 1.0) * (x * x - 1.0) +
+                       0.25 * std::exp(-0.5 * b * b));
+  }
+  for (const double bh : {3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 5.0}) {
+    RingSeed seed;
+    const auto ring = ringFromPath(path, energies, bh, 32, &seed);
+    CAPTURE(bh, seed.energy, seed.period);
+    REQUIRE(ring.size() == 32);
+    REQUIRE(seed.reached);
+    REQUIRE_THAT(seed.period, WithinRel(bh, 1e-6));
+  }
 }

@@ -32,7 +32,7 @@ Finally, since most of machines are not configured with enough memory to run
 meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib
 # j1 means use one core only
 meson compile -j1 -C bbdir
-meson install bbdir
+meson install -C bbdir
 ```
 
 Then run the example:

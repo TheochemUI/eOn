@@ -108,7 +108,7 @@
 // Should respect Fortran availability
 
 #ifdef WITH_XTB
-#include "eon/potentials/XTBPot/XTBPot.h"
+#include "rgpot/XTBPot/XTBPot.hpp"
 #endif
 
 #include <cmath>
@@ -243,16 +243,16 @@ std::vector<rgpot::ExprPot::Term> parse_expr_terms(const Parameters &params) {
 
 } // namespace
 
-std::shared_ptr<Potential> makePotential(const Parameters &params) {
+std::unique_ptr<Potential> makePotential(const Parameters &params) {
   return makePotential(params.potential_options().potential, params);
 }
-std::shared_ptr<Potential>
+std::unique_ptr<Potential>
 makePotential(PotType ptype, const Parameters &params, Runtime &runtime) {
   PotentialConstructionScope scope(runtime.pots());
   runtime.plugins().add_config_paths(params.potential_options().potentialsPath);
   return makePotential(ptype, params);
 }
-std::shared_ptr<Potential> makePotential(PotType ptype,
+std::unique_ptr<Potential> makePotential(PotType ptype,
                                          const Parameters &params) {
   // Inject config-file path before any potential constructor runs.
   // Called on every code path including Job::Job which uses this overload.
@@ -261,11 +261,11 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   switch (ptype) {
   // TODO: Every potential must know their own type
   case PotType::EMT: {
-    return (std::make_shared<EffectiveMediumTheory>(params));
+    return (std::make_unique<EffectiveMediumTheory>(params));
     break;
   }
   case PotType::EXT_POT: {
-    return (std::make_shared<ExtPot>(params));
+    return (std::make_unique<ExtPot>(params));
     break;
   }
   case PotType::LJ: {
@@ -290,16 +290,16 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
 #endif
 #ifdef WITH_WATER
   case PotType::TIP4P: {
-    return (std::make_shared<Tip4p>(params));
+    return (std::make_unique<Tip4p>(params));
     break;
   }
   case PotType::SPCE: {
-    return (std::make_shared<SpceCcl>(params));
+    return (std::make_unique<SpceCcl>(params));
     break;
   }
 #ifdef WITH_FORTRAN
   case PotType::TIP4P_PT: {
-    return (std::make_shared<Tip4p_Pt>(params));
+    return (std::make_unique<Tip4p_Pt>(params));
     break;
   }
   case PotType::TIP4P_H: {
@@ -340,66 +340,90 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
 #ifndef _WIN32
 #ifdef WITH_VASP
   case PotType::VASP: {
-    return (std::make_shared<VASP>(params));
+    return (std::make_unique<VASP>(params));
     break;
   }
 #endif
 #endif
   case PotType::LAMMPS: {
-    return std::make_shared<LAMMPSPot>(params);
+    return std::make_unique<LAMMPSPot>(params);
   }
 #ifdef EONMPI
   case PotType::MPI: {
-    return (std::make_shared<MPIPot>(params));
+    return (std::make_unique<MPIPot>(params));
     break;
   }
 #endif
 #ifdef EMBED_PYTHON
 #ifdef WITH_ASE_POT
   case PotType::ASE_POT: {
-    return (std::make_shared<ASE>(params));
+    return (std::make_unique<ASE>(params));
     break;
   }
 #endif
 #endif
 #ifdef WITH_AMS
   case PotType::AMS: {
-    return (std::make_shared<AMS>(params));
+    return (std::make_unique<AMS>(params));
     break;
   }
   case PotType::AMS_IO: {
-    return (std::make_shared<AMS_IO>(params));
+    return (std::make_unique<AMS_IO>(params));
     break;
   }
 #endif
 #ifdef WITH_CATLEARN
   case PotType::CatLearn: {
-    return (std::make_shared<CatLearnPot>(params));
+    return (std::make_unique<CatLearnPot>(params));
     break;
   }
 #endif
 // TODO: Handle Fortran interaction
 #ifdef WITH_XTB
   case PotType::XTB: {
-    return (std::make_shared<XTBPot>(params));
+    const auto &o = params.xtb_options();
+    rgpot::GFNMethod method = rgpot::GFNMethod::GFN2xTB;
+    if (o.paramset == "GFNFF") {
+      method = rgpot::GFNMethod::GFNFF;
+    } else if (o.paramset == "GFN0xTB") {
+      method = rgpot::GFNMethod::GFN0xTB;
+    } else if (o.paramset == "GFN1xTB") {
+      method = rgpot::GFNMethod::GFN1xTB;
+    } else if (o.paramset == "GFN2xTB") {
+      method = rgpot::GFNMethod::GFN2xTB;
+    } else {
+      throw std::runtime_error(
+          "Parameter set for XTB must be one of GFNFF, GFN0xTB, GFN1xTB or "
+          "GFN2xTB.\n");
+    }
+    return makeRgpot<rgpot::XTBPot>(
+        PotType::XTB, params,
+        rgpot::XTBConfig{
+            .method = method,
+            .accuracy = o.acc,
+            .electronic_temperature = o.elec_temperature,
+            .max_iterations = static_cast<int>(o.maxiter),
+            .charge = o.charge,
+            .uhf = o.uhf,
+        });
     break;
   }
 #endif
 #ifdef WITH_ASE_ORCA
   case PotType::ASE_ORCA: {
-    return (std::make_shared<ASEOrcaPot>(params));
+    return (std::make_unique<ASEOrcaPot>(params));
     break;
   }
 #endif
 #ifdef WITH_ASE_NWCHEM
   case PotType::ASE_NWCHEM: {
-    return (std::make_shared<ASENwchemPot>(params));
+    return (std::make_unique<ASENwchemPot>(params));
     break;
   }
 #endif
 #ifdef WITH_METATOMIC
   case PotType::METATOMIC: {
-    return (std::make_shared<MetatomicPotential>(params));
+    return (std::make_unique<MetatomicPotential>(params));
     break;
   }
 #endif
@@ -442,13 +466,13 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   }
 #ifndef IS_WINDOWS
   case PotType::SocketNWChem: {
-    return (std::make_shared<SocketNWChemPot>(params));
+    return (std::make_unique<SocketNWChemPot>(params));
     break;
   }
 #endif
 #ifdef WITH_RGPOT
   case PotType::RGPOT: {
-    return (std::make_shared<RgpotPot>(params));
+    return (std::make_unique<RgpotPot>(params));
     break;
   }
 #endif
@@ -471,7 +495,7 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     }
     rgpot::ExprPot expr(params.expr_options().expression,
                         parse_expr_terms(params));
-    return std::make_shared<RgpotAdapter<rgpot::ExprPot>>(PotType::EXPR, params,
+    return std::make_unique<RgpotAdapter<rgpot::ExprPot>>(PotType::EXPR, params,
                                                           std::move(expr));
     break;
   }

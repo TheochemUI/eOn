@@ -27,8 +27,10 @@ from __future__ import annotations
 
 try:
     from pyeonclient._core import (  # type: ignore F401
+        CancelToken,
         IoStatus,
         Job,
+        JobCancelled,
         JobType,
         Matter,
         NEBInit,
@@ -186,8 +188,10 @@ to_ase = matter_to_ase
 from_ase = ase_to_matter
 
 __all__ = [
+    "CancelToken",
     "IoStatus",
     "Job",
+    "JobCancelled",
     "JobType",
     "Matter",
     "Parameters",

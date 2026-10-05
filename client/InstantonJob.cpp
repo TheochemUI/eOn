@@ -46,11 +46,6 @@ namespace {
 /// One unit of imaginary time, sqrt(amu Angstrom^2 / eV), in fs.
 constexpr double kTimeUnitFs = 10.180505717871193;
 
-/// ||H r|| / (||H||_F ||r||) at or below this is a rotational zero mode.
-/// A real curvature sits near the scale of ||H||; a finite-difference null
-/// vector does not.
-constexpr double kRotationZero = 1e-2;
-
 /// Mass-weighted coordinates over the free atoms, measured from a reference
 /// structure under its minimum image.
 class MassWeighted {
@@ -152,26 +147,17 @@ public:
     }
     return b;
   }
-  /// Which of the three rotation generators are zero modes of hess.
-  /// ||H r|| small against ||H||, not whether the cell is periodic: a
-  /// cluster in a box is periodic and still free to rotate.
+  /// Which of the three rotation generators are zero modes of hess, by
+  /// tunneling::rotationZeroModes: the rotation's curvature against the
+  /// softest vibration, not whether the cell is periodic (a cluster in a box
+  /// is periodic and still free to rotate).
   void markRotationZeroModes(const MatrixXd &hess, const MatrixXd &generators,
                              std::array<bool, 3> &keep,
                              std::array<double, 3> &residual) const {
-    const MatrixXd h = 0.5 * (hess + hess.transpose());
-    const double hn = h.norm();
-    for (int c = 0; c < 3; ++c) {
-      const VectorXd r = generators.col(3 + c);
-      const double rn = r.norm();
-      if (!(rn > 0.0)) {
-        keep[static_cast<size_t>(c)] = false;
-        residual[static_cast<size_t>(c)] = 0.0;
-        continue;
-      }
-      const double rel = hn > 0.0 ? (h * r).norm() / (hn * rn) : 0.0;
-      residual[static_cast<size_t>(c)] = rel;
-      keep[static_cast<size_t>(c)] = rel <= kRotationZero;
-    }
+    const tunneling::RotationZeroModes z =
+        tunneling::rotationZeroModes(hess, generators);
+    keep = z.zero;
+    residual = z.residual;
   }
   /// With no atom fixed, an orthonormal basis of the rigid motions of m:
   /// three translations, plus each rotation `rotations` marks as a zero
@@ -406,24 +392,6 @@ void steepestDescentPath(const VectorXd &qSaddle, double vSaddle,
   }
 }
 
-/// Whether the ring has beads on both sides of the saddle's dividing plane,
-/// the plane through the saddle normal to its unstable mode. A ring that
-/// converged off that plane belongs to another saddle.
-bool straddlesSaddle(const std::vector<VectorXd> &beads,
-                     const VectorXd &qSaddle, const MatrixXd &hSaddle) {
-  const Eigen::SelfAdjointEigenSolver<MatrixXd> es(
-      0.5 * (hSaddle + hSaddle.transpose()));
-  const VectorXd mode = es.eigenvectors().col(0);
-  double lo = std::numeric_limits<double>::infinity();
-  double hi = -lo;
-  for (const auto &b : beads) {
-    const double s = (b - qSaddle).dot(mode);
-    lo = std::min(lo, s);
-    hi = std::max(hi, s);
-  }
-  return lo < 0.0 && hi > 0.0;
-}
-
 /// Mode rate: the ring-polymer instanton through the saddle out of the
 /// reactant, and its thermal rate.
 std::vector<std::string>
@@ -431,6 +399,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         const Matter &reactant, const MassWeighted &mw,
         const tunneling::BatchPotential &evaluate,
         const std::function<MatrixXd(const VectorXd &)> &hessianAt,
+        const std::function<MatrixXd(const VectorXd &)> &beadHessianAt,
         const std::array<bool, 3> &rotationZero,
         const std::array<double, 3> &rotationResidual) {
   const auto &o = params.instanton_options();
@@ -469,6 +438,10 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   const double vSaddle = saddle.getPotentialEnergy();
   const MatrixXd hReactant = hessianAt(VectorXd::Zero(n));
   const MatrixXd hSaddle = hessianAt(qSaddle);
+  const VectorXd unstableMode = Eigen::SelfAdjointEigenSolver<MatrixXd>(
+                                    0.5 * (hSaddle + hSaddle.transpose()))
+                                    .eigenvectors()
+                                    .col(0);
   const double tc = tunneling::crossoverTemperature(hSaddle);
   const long rigidModes = mw.rigidBasis(reactant, rotationZero).cols();
   if (temperatures.size() == 1) {
@@ -483,8 +456,10 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
                   o.beads, temperatures.size(), temperatures.front(),
                   temperatures.back(), tc, vSaddle - vReactant, n, rigidModes);
   }
-  EONC_LOG_INFO("[Instanton] rotation residuals {:.3g}, {:.3g}, {:.3g}",
-                rotationResidual[0], rotationResidual[1], rotationResidual[2]);
+  EONC_LOG_INFO("[Instanton] rotation curvatures over the softest vibration "
+                "{:.3g}, {:.3g}, {:.3g} (zero modes at or below {:.3g})",
+                rotationResidual[0], rotationResidual[1], rotationResidual[2],
+                tunneling::kRotationZeroFraction);
 
   std::vector<std::pair<std::string, double>> extras{
       {"instanton_crossover_K", tc},
@@ -574,6 +549,10 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
                     "force calls",
                     pathQ.size(),
                     PotRegistry::get().total_force_calls() - before);
+      for (size_t k = 0; k < pathQ.size(); ++k) {
+        EONC_LOG_DEBUG("[Instanton] path {} s {:.6f} V - V_reactant {:.8f}", k,
+                       profile->s()[k], pathV[k] - vReactant);
+      }
     } catch (const std::exception &ex) {
       EONC_LOG_WARNING("[Instanton] steepest-descent path unusable: {}; "
                        "seeding from the saddle mode",
@@ -697,8 +676,14 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     std::vector<VectorXd> guess = ring;
     if (guess.empty() && profile) {
       try {
+        tunneling::RingSeed seed;
         guess = tunneling::ringFromPath(pathQ, pathV, beta * tunneling::kHbar,
-                                        o.beads);
+                                        o.beads, &seed);
+        EONC_LOG_INFO("[Instanton] seed orbit {:.6f} eV above the reactant, "
+                      "period {:.4g} against beta hbar {:.4g}; the path's "
+                      "higher end sits {:.6f} eV above the reactant",
+                      seed.energy - vReactant, seed.period,
+                      beta * tunneling::kHbar, seed.pathLow - vReactant);
         EONC_LOG_INFO("[Instanton] ring seeded from {} by the period condition",
                       o.initial_path.empty() ? "the steepest-descent path"
                                              : o.initial_path);
@@ -752,9 +737,29 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
                   temperature, inst.ringPotential, inst.iterations,
                   inst.converged ? "" : " (not converged)");
 
-    if (inst.converged && !straddlesSaddle(inst.beads, qSaddle, hSaddle)) {
-      EONC_LOG_ERROR("[Instanton] {:.4g} K: the ring converged off the "
-                     "saddle's dividing plane, onto another saddle; no rate",
+    if (inst.collapsed) {
+      EONC_LOG_ERROR("[Instanton] {:.4g} K: the ring collapsed after {} "
+                     "iterations (B_N {:.3e}, every bead at one point near "
+                     "s = {:.4f}); the search left the bounce for a "
+                     "stationary point of V, no rate",
+                     temperature, inst.iterations, inst.bN,
+                     inst.beads.empty()
+                         ? 0.0
+                         : (inst.beads.front() - qSaddle).dot(unstableMode));
+    }
+    const tunneling::RingChannel channel =
+        tunneling::ringChannel(inst.beads, qSaddle, unstableMode);
+    EONC_LOG_INFO("[Instanton] {:.4g} K: ring spans s = {:.4f} to {:.4f} "
+                  "amu^0.5 A along the unstable mode, chord overlap {:.3f}, "
+                  "dividing-plane crossing {:.4f} amu^0.5 A off the saddle",
+                  temperature, channel.sMin, channel.sMax, channel.chordOverlap,
+                  channel.crossingOffset);
+    if (inst.converged && !channel.belongs) {
+      EONC_LOG_ERROR("[Instanton] {:.4g} K: the ring does not pass through "
+                     "the seeded saddle's channel (it must straddle the "
+                     "dividing plane, cross it within its own span of the "
+                     "saddle, and run within 60 degrees of the unstable "
+                     "mode); it belongs to another saddle, no rate",
                      temperature);
       inst.converged = false;
     }
@@ -776,8 +781,10 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         }
         auto it = anchors.find(j);
         if (it == anchors.end()) {
-          it = anchors.emplace(j, hessianAt(inst.beads[static_cast<size_t>(j)]))
-                   .first;
+          it =
+              anchors
+                  .emplace(j, beadHessianAt(inst.beads[static_cast<size_t>(j)]))
+                  .first;
         }
         return it->second;
       };
@@ -793,9 +800,13 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         return (1.0 - t) * anchor(lo) + t * anchor(hi);
       };
       try {
-        tunneling::instantonRate(inst, beadHessian, hReactant,
-                                 vReactant - o.energy_shift, hSaddle,
-                                 vSaddle - o.energy_shift, rigidModes);
+        tunneling::RingRigidBodies bodies;
+        bodies.sqrtMasses = ro.rigidSqrtMasses;
+        bodies.reference = ro.rigidReference;
+        bodies.rotations = ro.rigidRotations;
+        tunneling::instantonRate(
+            inst, beadHessian, hReactant, vReactant - o.energy_shift, hSaddle,
+            vSaddle - o.energy_shift, rigidModes, 4096, bodies);
         rateOk = std::isfinite(inst.logRate) && inst.negativeModes == 1;
         if (inst.negativeModes != 1) {
           EONC_LOG_ERROR("[Instanton] the ring Hessian has {} negative modes, "
@@ -886,6 +897,11 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
                         static_cast<double>(inst.iterations));
     extras.emplace_back("instanton_ring_potential", inst.ringPotential);
     extras.emplace_back("instanton_bN", inst.bN);
+    extras.emplace_back("instanton_collapsed", inst.collapsed ? 1.0 : 0.0);
+    extras.emplace_back("instanton_s_min", channel.sMin);
+    extras.emplace_back("instanton_s_max", channel.sMax);
+    extras.emplace_back("instanton_chord_overlap", channel.chordOverlap);
+    extras.emplace_back("instanton_crossing_offset", channel.crossingOffset);
     if (std::isfinite(wkbLog)) {
       extras.emplace_back("rate_wkb_path_log", wkbLog);
     }
@@ -984,7 +1000,7 @@ std::vector<std::string> InstantonJob::run(void) {
   std::array<bool, 3> rotationZero{{false, false, false}};
   std::array<double, 3> rotationResidual{{0.0, 0.0, 0.0}};
   bool rotationsKnown = false;
-  auto hessianAt = [&](const VectorXd &q) {
+  auto hessianWith = [&](const VectorXd &q, bool projectRotations) {
     Matter m(*reactant);
     mw.place(q, m);
     Hessian h(params, &m);
@@ -999,18 +1015,30 @@ std::vector<std::string> InstantonJob::run(void) {
       rotationsKnown = true;
     }
     // A finite-difference Hessian of a free structure has small nonzero
-    // rigid eigenvalues of either sign; project them to zero.
-    const MatrixXd rigid = mw.rigidBasis(m, rotationZero);
+    // rigid eigenvalues of either sign; project them to zero. At a point
+    // that is not stationary, H r for a rotation r is the rotated gradient,
+    // which on a ring bead balances the springs; ring beads keep it and
+    // lose only their translations.
+    const std::array<bool, 3> none{{false, false, false}};
+    const MatrixXd rigid =
+        mw.rigidBasis(m, projectRotations ? rotationZero : none);
     if (rigid.cols() > 0) {
       const MatrixXd p = MatrixXd::Identity(n, n) - rigid * rigid.transpose();
       out = p * out * p;
     }
     return out;
   };
+  auto hessianAt = [&](const VectorXd &q) { return hessianWith(q, true); };
+  auto beadHessianAt = [&](const VectorXd &q) {
+    if (!rotationsKnown) {
+      hessianWith(VectorXd::Zero(n), true);
+    }
+    return hessianWith(q, false);
+  };
 
   if (o.mode == "rate") {
     return runRate(params, pot, *reactant, mw, evaluate, hessianAt,
-                   rotationZero, rotationResidual);
+                   beadHessianAt, rotationZero, rotationResidual);
   }
 
   auto product = std::make_unique<Matter>(pot, params);

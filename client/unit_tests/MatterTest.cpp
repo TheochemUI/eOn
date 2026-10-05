@@ -16,6 +16,7 @@
 #include "eon/MonteCarlo.h"
 #include "eon/OHTSTJob.h"
 #include "eon/Parameters.h"
+#include "eon/Potential.h"
 #include "eon/Prefactor.h"
 #include <algorithm>
 #include <cmath>
@@ -38,11 +39,31 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 static std::pair<std::shared_ptr<Matter>, Parameters> makeLJCluster() {
   auto params = std::make_shared<Parameters>();
   ParametersLoadAccess::potential_options(*params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, *params);
-  std::shared_ptr<Matter> m(new Matter(pot, *params),
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, *params));
+  std::shared_ptr<Matter> m(new Matter(std::move(pot), *params),
                             [params](Matter *owned) { delete owned; });
   m->con2matter(std::string("reactant.con"));
   return {m, *params};
+}
+
+TEST_CASE("Matter takes exclusive Potential ownership", "[MatterTest]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto owned = eonc::helpers::makePotential(PotType::LJ, params);
+  Potential *raw = owned.get();
+  REQUIRE(raw != nullptr);
+  Matter a(std::move(owned), params);
+  REQUIRE(owned == nullptr);
+  // use_count includes the temporary returned by getPotential().
+  REQUIRE(a.getPotential().get() == raw);
+  REQUIRE(a.getPotential().use_count() == 2);
+  {
+    Matter b(a);
+    REQUIRE(b.getPotential().get() == raw);
+    REQUIRE(a.getPotential().use_count() == 3);
+  }
+  REQUIRE(a.getPotential().use_count() == 2);
 }
 
 TEST_CASE("TestCell", "[MatterTest]") {
@@ -74,6 +95,94 @@ TEST_CASE("SetGetAtomicNrs", "[MatterTest]") {
   }
 }
 
+TEST_CASE("surface epoch busts energy cache at identical positions",
+          "[MatterTest][epoch]") {
+  auto [m1, params] = makeLJCluster();
+
+  const double e1 = m1->getPotentialEnergy();
+  const long c1 = m1->getForceCalls();
+  REQUIRE(std::isfinite(e1));
+  const double e2 = m1->getPotentialEnergy();
+  REQUIRE(m1->getForceCalls() == c1);
+  REQUIRE(e2 == e1);
+
+  m1->setSurfaceEpoch(1);
+  REQUIRE(m1->needsForceUpdate());
+  const double e3 = m1->getPotentialEnergy();
+  REQUIRE(m1->getForceCalls() == c1 + 1);
+  REQUIRE(e3 == e1);
+  REQUIRE_FALSE(m1->needsForceUpdate());
+
+  m1->setSurfaceEpoch(1);
+  REQUIRE(m1->getForceCalls() == c1 + 1);
+}
+
+class EpochBumpPot : public Potential {
+public:
+  EpochBumpPot()
+      : Potential(PotType::UNKNOWN) {}
+  void force(long nAtoms, const double *, const int *, double *forces,
+             double *energy, double *variance, const double *) override {
+    *energy = 1.0 + static_cast<double>(epoch_);
+    if (variance) {
+      *variance = 10.0 + static_cast<double>(epoch_);
+    }
+    if (forces) {
+      std::fill(forces, forces + 3 * nAtoms, 0.0);
+    }
+  }
+  [[nodiscard]] unsigned long long surfaceEpoch() const noexcept override {
+    return epoch_;
+  }
+  void bump() { ++epoch_; }
+
+private:
+  unsigned long long epoch_{0};
+};
+
+TEST_CASE("potential surfaceEpoch busts Matter cache at identical positions",
+          "[MatterTest][epoch]") {
+  Parameters params;
+  auto pot = std::make_shared<EpochBumpPot>();
+  Matter m(pot, params);
+  m.resize(1);
+  m.setAtomicNrs(Eigen::VectorXi::Constant(1, 1));
+  AtomMatrix pos = AtomMatrix::Zero(1, 3);
+  m.setPositions(pos);
+
+  const double e1 = m.getPotentialEnergy();
+  const long c1 = m.getForceCalls();
+  REQUIRE(e1 == 1.0);
+  REQUIRE(m.getPotentialEnergy() == e1);
+  REQUIRE(m.getForceCalls() == c1);
+
+  pot->bump();
+  REQUIRE(m.needsForceUpdate());
+  REQUIRE(m.getPotentialEnergy() == 2.0);
+  REQUIRE(m.getForceCalls() == c1 + 1);
+}
+
+TEST_CASE("potential surfaceEpoch busts Matter variance cache",
+          "[MatterTest][epoch][variance]") {
+  Parameters params;
+  auto pot = std::make_shared<EpochBumpPot>();
+  Matter m(pot, params);
+  m.resize(1);
+  m.setAtomicNrs(Eigen::VectorXi::Constant(1, 1));
+  m.setPositions(AtomMatrix::Zero(1, 3));
+
+  const double v1 = m.getEnergyVariance();
+  const long c1 = m.getForceCalls();
+  REQUIRE(v1 == 10.0);
+  REQUIRE(m.getEnergyVariance() == v1);
+  REQUIRE(m.getForceCalls() == c1);
+
+  pot->bump();
+  REQUIRE(m.needsForceUpdate());
+  REQUIRE(m.getEnergyVariance() == 11.0);
+  REQUIRE(m.getForceCalls() == c1 + 1);
+}
+
 TEST_CASE("SetPotential changes energy", "[MatterTest]") {
   auto [m1, params] = makeLJCluster();
 
@@ -82,7 +191,8 @@ TEST_CASE("SetPotential changes energy", "[MatterTest]") {
   REQUIRE(e_lj < 0.0); // LJ cluster has negative binding energy
 
   ParametersLoadAccess::potential_options(params).potential = PotType::MORSE_PT;
-  auto pot_morse = eonc::helpers::makePotential(PotType::MORSE_PT, params);
+  auto pot_morse = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::MORSE_PT, params));
   REQUIRE(m1->getPotential() != pot_morse);
   m1->setPotential(pot_morse);
 
@@ -126,7 +236,8 @@ TEST_CASE("Copy constructor preserves positions, cell, and atomic numbers",
 TEST_CASE("pbc is identity when periodic is off", "[MatterTest][acc]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter m(pot, params);
   m.resize(2);
   m.setAtomicNr(0, 1);
@@ -143,7 +254,8 @@ TEST_CASE("OH-TST symmetry products share rigid-drift removal",
           "[MatterTest][ohtst]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter m(pot, params);
   m.resize(3);
   m.setAtomicNr(0, 1);
@@ -181,7 +293,8 @@ TEST_CASE("removeNetForce is skipped for a single free atom",
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   ParametersLoadAccess::main_options(params).removeNetForce = true;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter one(pot, params);
   one.resize(1);
   one.setAtomicNr(0, 18);
@@ -347,7 +460,8 @@ TEST_CASE("PBC wrap matches floor and fmod on a wide matrix",
           "[MatterTest][pbc][simd]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter m(pot, params);
   constexpr long n = 67;
   m.resize(n);
@@ -486,7 +600,8 @@ TEST_CASE("relax converges LJ cluster", "[MatterTest][relax]") {
   ParametersLoadAccess::optimizer_options(params).converged_force = 0.001;
   ParametersLoadAccess::optimizer_options(params).max_iterations = 50;
   ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m1 = std::make_shared<Matter>(pot, params);
   m1->con2matter(std::string("reactant.con"));
 
@@ -510,7 +625,8 @@ TEST_CASE("setMasses and distanceTo reject size mismatch", "[MatterTest]") {
   shortMasses.setConstant(1.0);
   REQUIRE_THROWS_AS(m1->setMasses(shortMasses), std::invalid_argument);
 
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m2 = std::make_shared<Matter>(pot, params);
   m2->resize(2);
   REQUIRE_THROWS_AS(m1->distanceTo(*m2), std::invalid_argument);

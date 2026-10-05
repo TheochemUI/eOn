@@ -11,22 +11,6 @@ eOn and [rgpot](https://github.com/OmniPotentRPC/rgpot) meet in three
 independent roles: different Meson options, different binaries or symbols,
 and different runtime topologies.
 
-```{mermaid}
-flowchart LR
-  subgraph direct ["Direct in-process (always, except Windows)"]
-    E1[eOn RGPOT pot] --> NP[rgpot NWChemPot / CPMDPot]
-    NP -->|dlopen| L1[libnwchemc.so / libcpmdc.so]
-  end
-  subgraph serve ["eOn as RPC server (-Dwith_serve)"]
-    Client[External client e.g. ChemGP] -->|Cap'n Proto| E2[eonclient --serve]
-    E2 --> Any[Any eOn Potential]
-  end
-  subgraph rpccli ["Optional: RPC client to potserv"]
-    E3[External potserv client] -->|Cap'n Proto| PS[rgpot potserv]
-    PS -->|dlopen| L2[libnwchemc.so / …]
-  end
-```
-
 | Role | Meson option | What runs in eOn | Wire / load | Typical use |
 | --- | --- | --- | --- | --- |
 | Direct in-process | always, except Windows | Potential type `RGPOT`: links rgpot NWChemPot / CPMDPot | `dlopen` of `libnwchemc.so` / `libcpmdc.so` in the eOn address space | Production NWChem/CPMD forces in one process |

@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn v2.10.2, release, Windows, MSVC, Eigen, conda-forge"
 ---
 
-## [v2.10.2] - 2026-02-22
+# [v2.10.2] - 2026-02-22
 
 A patch release that absorbs the conda-forge Windows patches upstream,
 fixing MSVC compilation across several potentials and build-system modules.

@@ -79,17 +79,45 @@ def test_neighbor_list_vectors_pbc():
             assert v.shape == (3,)
 
 
+def _sorted_ijs(i, j, shift):
+    i = np.asarray(i)
+    j = np.asarray(j)
+    shift = np.asarray(shift)
+    if i.size == 0:
+        return i, j, shift
+    order = np.lexsort((shift[:, 2], shift[:, 1], shift[:, 0], j, i))
+    return i[order], j[order], shift[order]
+
+
+def test_wrap_pair_shift_is_minus_one_along_x():
+    p = Structure(2)
+    p.r = np.array([[0.2, 0.0, 0.0], [9.4, 0.0, 0.0]])
+    p.box = np.eye(3) * 10.0
+    p.free = np.ones(2)
+    p.names = ["Cu", "Cu"]
+    p.mass = np.full(2, 63.5)
+    i, j, shift = neighbor_list_pairs(p, 1.0)
+    rows = {
+        (int(a), int(b), (int(s[0]), int(s[1]), int(s[2])))
+        for a, b, s in zip(i, j, shift)
+    }
+    assert (0, 1, (-1, 0, 0)) in rows
+    disp = p.r[j] - p.r[i] + shift.astype(float) @ p.box
+    assert np.all(np.abs(np.sum(disp * disp, axis=1) - 0.64) < 1e-12)
+
+
 def test_neighbor_list_pairs_matches_vesin_ijs():
     p = _fcc(3, a=2.0)
     cutoff = 2.1
-    i, j, S = neighbor_list_pairs(p, cutoff)
+    i, j, shift = neighbor_list_pairs(p, cutoff)
     calc = VesinNL(cutoff=cutoff, full_list=True)
-    vi, vj, vS = calc.compute(p.r, p.box, periodic=True, quantities="ijS")
+    vi, vj, v_shift = calc.compute(p.r, p.box, periodic=True, quantities="ijS")
+    vi, vj, v_shift = _sorted_ijs(vi, vj, v_shift)
     np.testing.assert_array_equal(i, vi)
     np.testing.assert_array_equal(j, vj)
-    np.testing.assert_array_equal(S, vS)
-    D = p.r[j] - p.r[i] + S.astype(float) @ p.box
-    assert np.all(np.sum(D * D, axis=1) < cutoff * cutoff + 1e-12)
+    np.testing.assert_array_equal(shift, v_shift)
+    disp = p.r[j] - p.r[i] + shift.astype(float) @ p.box
+    assert np.all(np.sum(disp * disp, axis=1) < cutoff * cutoff + 1e-12)
 
 
 def test_pbc_packed_matches_rowwise_numpy():

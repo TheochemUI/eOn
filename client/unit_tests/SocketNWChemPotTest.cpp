@@ -23,8 +23,8 @@ public:
     ParametersLoadAccess::socket_nwchem_options(params).unix_socket_path =
         "eon_nwchem_test_socket";
 
-    pot_socket = eonc::helpers::makePotential(
-        params.potential_options().potential, params);
+    pot_socket = eonc::helpers::sharePotential(eonc::helpers::makePotential(
+        params.potential_options().potential, params));
     matter = std::make_shared<Matter>(pot_socket, params);
 
     const std::string confile("pos.con");

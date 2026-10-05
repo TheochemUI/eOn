@@ -1,20 +1,23 @@
 ---
 myst:
   html_meta:
-    "description": "Neighbor lists in eOn: vesin as the geometry backend; performance via the ASV eonclient suite."
-    "keywords": "eOn, vesin, neighbor list, ASV, Morse, LJ, rgpot"
+    "description": "Neighbor lists in eOn: linkcell cutoff pairs, vesin on an open axis, and the ASV eonclient suite."
+    "keywords": "eOn, linkcell, vesin, neighbor list, ASV, Morse, LJ, rgpot"
 ---
 
-# Neighbor lists (vesin)
+# Neighbor lists
 
-eOn uses [vesin](https://luthaf.fr/vesin/) for pair finding whenever the code
-owns that step. New pair finding goes through vesin.
+A periodic cutoff list is
+[linkcell](https://github.com/d-SEAMS/linkcell) `pairs_within`: one row
+per atom-image, with the caller's shift. An open axis uses
+[vesin](https://luthaf.fr/vesin/), which accepts per-axis periodicity.
+`knearest` is the k-nearest list.
 
 ## Layers
 
 | Layer | API | Backend |
 |-------|-----|---------|
-| Python server geometry | `eon.geometry.neighbors.neighbor_list` | `vesin.NeighborList` |
+| Python server geometry | `eon.geometry.neighbors.neighbor_list` | `linkcell.pairs_within` when every axis is periodic; vesin when one is open |
 | Process-atom shells / displace | `eon.atoms` / `get_process_atoms` | same |
 | Classical C++ pair pots (LJ, Morse, LJCluster, ZBL) | `rgpot::nlist::PairListCache` (Verlet-skin cache over vesin, in [rgpot](https://github.com/OmniPotentRPC/rgpot)) | `vesin_neighbors` (C) |
 | Metatomic | pot-local call into vesin C | same `libvesin` / vendored TU |
@@ -29,11 +32,12 @@ nl = neighbor_list(structure, cutoff=4.0)
 i, j, S = neighbor_list_pairs(structure, cutoff=4.0)
 ```
 
-`brute=True` exists for API compatibility. The production algorithm is
-always vesin. `neighbor_list` unique-indexes atoms (historical eOn
-adjacency). `neighbor_list_pairs` keeps every atom-image row
-(`i`, `j`, cell shift `S`), the vesin/tonari pair contract.
-Displacement is `r[j] - r[i] + S @ box`.
+`brute=True` exists for API compatibility. On a fully periodic cell the
+list is `linkcell.pairs_within`. `neighbor_list` unique-indexes atoms
+(historical eOn adjacency). `neighbor_list_pairs` keeps every
+atom-image row (`i`, `j`, cell shift `S`). Displacement is
+`r[j] - r[i] + S @ box`. A squared distance on a linkcell row is
+strictly below the cutoff squared.
 
 ### minimage
 
@@ -50,9 +54,9 @@ dr = pbc(r_j - r_i, box)
 
 ### linkcell
 
-`neighbor_list_linkcell` is the check path. It builds
-`linkcell.knearest` (which itself uses minimage) and compares pair
-sets to vesin. Production `neighbor_list` does not call it.
+`neighbor_list_linkcell` is the same periodic cutoff adjacency as
+`neighbor_list`, built only from `pairs_within`. `linkcell.knearest`
+is a separate call for the k nearest atoms.
 
 ```python
 from eon.geometry import neighbor_list_linkcell

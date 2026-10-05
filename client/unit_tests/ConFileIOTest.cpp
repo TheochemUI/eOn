@@ -41,7 +41,8 @@ protected:
         pot{nullptr},
         original{nullptr} {
     ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-    pot = eonc::helpers::makePotential(PotType::LJ, params);
+    pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, params));
     original = std::make_shared<Matter>(pot, params);
     original->con2matter(std::string("reactant.con"));
   }
@@ -160,7 +161,8 @@ TEST_CASE_METHOD(ConFileIOFixture,
 TEST_CASE("Con file preserves per-axis fixed mask", "[confileio][fixed]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter original(pot, params);
   original.resize(2);
   original.setCell(10.0 * Matrix3d::Identity());
@@ -210,7 +212,8 @@ TEST_CASE("Con file preserves per-axis fixed mask", "[confileio][fixed]") {
 TEST_CASE("Con write round-trips an x-only constraint", "[confileio][fixed]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter m(pot, params);
   m.resize(1);
   m.setCell(10.0 * Matrix3d::Identity());
@@ -235,7 +238,8 @@ TEST_CASE("Con write round-trips an x-only constraint", "[confileio][fixed]") {
 TEST_CASE("Con triclinic angles are alpha beta gamma", "[confileio][cell]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter original(pot, params);
   original.resize(1);
   original.setMass(0, 63.5);
@@ -464,7 +468,8 @@ TEST_CASE_METHOD(ConFileIOFixture,
 TEST_CASE("ConFileIO handles velocity data", "[confileio][velocity]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
 
@@ -490,7 +495,8 @@ TEST_CASE("ConFileIO multiple writes accumulate in append mode",
           "[confileio][append]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
 
@@ -512,7 +518,8 @@ TEST_CASE("ConFileIO embeds movie metadata in frame JSON",
           "[confileio][metadata]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
   m->setComputedPotential(-12.5, 0.0);
@@ -545,7 +552,8 @@ TEST_CASE("ConFileIO preserves metadata across append-mode movie frames",
           "[confileio][append][metadata]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m = std::make_shared<Matter>(pot, params);
   m->resize(1);
   m->setCell(10.0 * Matrix3d::Identity());
@@ -598,7 +606,8 @@ TEST_CASE("ConFileIO append mode rejects corrupt existing files",
           "[confileio][append][errors]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
 
@@ -634,7 +643,8 @@ TEST_CASE("ConFileIO appends .con based on basename extension",
           "[confileio][paths]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
 
@@ -653,7 +663,8 @@ TEST_CASE("NEB path writer embeds structured frame metadata",
           "[confileio][neb][metadata]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
 
   auto make_matter = [&]() {
     auto m = std::make_shared<Matter>(pot, params);
@@ -708,7 +719,8 @@ TEST_CASE("ConFileIO reads multi-component Pt system",
           "[confileio][multicomponent]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::MORSE_PT;
-  auto pot = eonc::helpers::makePotential(PotType::MORSE_PT, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::MORSE_PT, params));
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("../Pt_Heptamer_FrozenLayers/pos.con"));
 
@@ -740,7 +752,8 @@ TEST_CASE("ConFileIO reads multi-component Pt system",
 TEST_CASE("ConFileIO reads Si diamond system", "[confileio][si]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::SW_SI;
-  auto pot = eonc::helpers::makePotential(PotType::SW_SI, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::SW_SI, params));
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("../si_diamond/pos.con"));
 
@@ -752,7 +765,8 @@ TEST_CASE("ConFileIO convel round-trip preserves velocities",
           "[confileio][convel]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
 
@@ -786,7 +800,8 @@ TEST_CASE("ConFileIO writeTibble produces valid output",
           "[confileio][tibble]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
   // Trigger force computation so writeTibble can access forces
@@ -807,7 +822,8 @@ TEST_CASE("ConFileIO writeTibble uses atom ids and skips a dirty pot",
           "[confileio][tibble]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
   REQUIRE(m->needsForceUpdate());
@@ -845,7 +861,8 @@ TEST_CASE("ConFileIO force and energy sections round-trip via readcon API",
           "[confileio][forces]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
   const double E = m->getPotentialEnergy();
@@ -883,7 +900,8 @@ TEST_CASE("ConFileIO writes forces from Parameters without the process flag",
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   ParametersLoadAccess::main_options(params).writeConForces = true;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
   (void)m->getPotentialEnergy();
@@ -903,7 +921,8 @@ TEST_CASE("ConFileIO metadata.write_con_forces overrides process flag",
           "[confileio][forces]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
   (void)m->getPotentialEnergy();
@@ -940,7 +959,8 @@ TEST_CASE("ConFileIO metadata_from_frame exposes NEB and potential fields",
           "[confileio][metadata]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
   m->getPotentialEnergy();
@@ -984,7 +1004,8 @@ std::string read_file_text(const std::string &path) {
 std::shared_ptr<Matter> make_reactant(Parameters &params,
                                       std::shared_ptr<Potential> &pot) {
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  pot = eonc::helpers::makePotential(PotType::LJ, params);
+  pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
   return m;

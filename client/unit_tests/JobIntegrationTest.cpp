@@ -384,7 +384,8 @@ TEST_CASE_METHOD(JobIntegrationFixture,
     Parameters writeParams;
     ParametersLoadAccess::potential_options(writeParams).potential =
         PotType::LJ;
-    auto pot = eonc::helpers::makePotential(PotType::LJ, writeParams);
+    auto pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, writeParams));
     Matter m(pot, writeParams);
     m.resize(2);
     m.setCell(20.0 * Matrix3d::Identity());
@@ -417,8 +418,8 @@ neighbor_cutoff = 3.3
     std::filesystem::current_path(workdir);
     Parameters oracleParams;
     REQUIRE(oracleParams.load("config.ini") == 0);
-    auto pot = eonc::helpers::makePotential(
-        oracleParams.potential_options().potential, oracleParams);
+    auto pot = eonc::helpers::sharePotential(eonc::helpers::makePotential(
+        oracleParams.potential_options().potential, oracleParams));
     Matter matter(pot, oracleParams);
     REQUIRE(eonc::io::io_ok(matter.con2matter("pos.con")));
     REQUIRE(matter.getFixed(0) == 1);
@@ -963,7 +964,8 @@ TEST_CASE("BasinHoppingJob getElements keeps atomic number 118",
           "[job][basin_hopping][unit]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Runtime runtime;
 
   auto elements = [&](auto &&fill) {
@@ -1057,7 +1059,8 @@ max_iterations = 200
   std::filesystem::current_path(workdir);
   Parameters checkParams;
   REQUIRE(checkParams.load("config.ini") == 0);
-  auto pot = eonc::helpers::makePotential(checkParams);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(checkParams));
   Matter stored(pot, checkParams);
   REQUIRE(eonc::io::io_ok(stored.con2matter(std::string("min.con"))));
   const double storedEnergy = stored.getPotentialEnergy();
@@ -1396,7 +1399,8 @@ post_transition_time = 20.0
 // bond-boost pointer either put back after the trajectory copy or left null.
 static AtomMatrix replicaBiasPositions(const Parameters &spec, bool keepBias) {
   eonc::rng::random(spec.main_options().randomSeed);
-  auto pot = eonc::helpers::makePotential(PotType::LJ, spec);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, spec));
   auto matter = std::make_shared<Matter>(pot, spec);
   matter->con2matter(std::string("pos.con"));
   matter->relax();
@@ -1485,7 +1489,8 @@ bb_boost_atomlist = all
   REQUIRE((kept - dropped).norm() > 1e-4);
 
   eonc::rng::random(spec.main_options().randomSeed);
-  auto pot = eonc::helpers::makePotential(PotType::LJ, spec);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, spec));
   auto matter = std::make_shared<Matter>(pot, spec);
   matter->con2matter(std::string("pos.con"));
   ParallelReplicaJob job(pot, spec);
@@ -1508,7 +1513,8 @@ struct ReplicaTransitionRun {
 static ReplicaTransitionRun replicaTransitionRun(const Parameters &spec,
                                                  bool keepBiasAfterTransition) {
   eonc::rng::random(spec.main_options().randomSeed);
-  auto pot = eonc::helpers::makePotential(PotType::LJ, spec);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, spec));
   auto reactant = std::make_shared<Matter>(pot, spec);
   reactant->con2matter(std::string("pos.con"));
   reactant->relax();
@@ -1646,7 +1652,8 @@ bb_boost_atomlist = all
   REQUIRE(kept.transitionStep < spec.dynamics_options().steps);
 
   eonc::rng::random(spec.main_options().randomSeed);
-  auto pot = eonc::helpers::makePotential(PotType::LJ, spec);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, spec));
   auto matter = std::make_shared<Matter>(pot, spec);
   matter->con2matter(std::string("pos.con"));
   ParallelReplicaJob job(pot, spec);
@@ -2438,7 +2445,8 @@ TEST_CASE("ProcessSearchJob fixed-atom restore: displacement.con stale rows "
   // fixed-flags, never evaluate the potential.
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
 
   // initial = pos.con (the authoritative reference)
   auto initial = std::make_shared<Matter>(pot, params);

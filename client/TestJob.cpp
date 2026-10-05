@@ -83,7 +83,8 @@ double TestJob::getEnergyDiff(const std::string &potTag, double refEnergy) {
   }
   Parameters p = params;
   ParametersLoadAccess::potential_options(p).potential = *type;
-  auto potHandle = eonc::helpers::makePotential(*type, p);
+  auto potHandle =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(*type, p));
   Matter pos(potHandle, p);
   if (!eonc::io::io_ok(pos.con2matter(std::string("pos_test.con")))) {
     throw std::runtime_error("no pos_test.con");
@@ -99,7 +100,8 @@ double TestJob::getForceDiff(const std::string &potTag, double refForce) {
   }
   Parameters p = params;
   ParametersLoadAccess::potential_options(p).potential = *type;
-  auto potHandle = eonc::helpers::makePotential(*type, p);
+  auto potHandle =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(*type, p));
   Matter pos(potHandle, p);
   if (!eonc::io::io_ok(pos.con2matter(std::string("pos_test.con")))) {
     throw std::runtime_error("no pos_test.con");

@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn v2.11.0, release, serve mode, rgpot, RPC, asv-perch"
 ---
 
-## [v2.11.0] - 2026-02-24
+# [v2.11.0] - 2026-02-24
 
 This release adds a new serve mode that exposes any eOn potential over Cap'n
 Proto RPC via the rgpot protocol, enabling integration with external tools such

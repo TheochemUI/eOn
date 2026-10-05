@@ -75,6 +75,19 @@ struct Harmonic final : eonc::Potential {
     return true;
   }
 
+  std::vector<long> lastOwners;
+
+  void forceBatchOwned(long nSystems, long nAtoms,
+                       const double *const *positions,
+                       const int *const *atomicNrs, double *const *forces,
+                       double *energies, double *variances,
+                       const double *const *boxes,
+                       const long *owners) override {
+    lastOwners.assign(owners, owners + (owners != nullptr ? nSystems : 0));
+    forceBatch(nSystems, nAtoms, positions, atomicNrs, forces, energies,
+               variances, boxes);
+  }
+
   void forceBatch(long nSystems, long nAtoms, const double *const *positions,
                   const int *const * /*atomicNrs*/, double *const *forces,
                   double *energies, double *variances,
@@ -155,6 +168,7 @@ TEST_CASE("Economised eigenvalues match the fit", "[path-integral]") {
   }
   const Eigen::VectorXd wide = eonc::pathintegral::ecoEigenvalues(48, 20.0);
   REQUIRE(wide[1] == Catch::Approx(0.130893053639).epsilon(1e-5));
+  // Stationary Nyquist sample of the fit at 48 beads and xmax 20.
   REQUIRE(wide[24] == Catch::Approx(1.268436246082).epsilon(1e-5));
   REQUIRE(wide[47] == Catch::Approx(wide[1]).margin(1e-12));
 }
@@ -192,12 +206,32 @@ TEST_CASE("Centroid hyperplane mean force of a harmonic oscillator",
   ring.setHyperplane(normal, origin);
   const auto sample = ring.sample(pot, nullptr, 0, 8);
   REQUIRE(sample.meanForce == Catch::Approx(-1.0).margin(1e-8));
-  REQUIRE(sample.batches == 16);
-  REQUIRE(pot.calls == 16);
+  // One bead batch per step, plus the first step's.
+  REQUIRE(sample.batches == 9);
+  REQUIRE(pot.calls == 9);
   REQUIRE(pot.minSystems == 4);
   REQUIRE(pot.maxSystems == 4);
   REQUIRE_FALSE(pot.sawForce);
   REQUIRE(ring.centroid()[0] == Catch::Approx(s).margin(1e-10));
+}
+
+TEST_CASE("A ring names each bead as the owner of its system",
+          "[path-integral]") {
+  Options opt = baseOptions(5);
+  opt.seed = 3;
+  Harmonic pot;
+  RingPolymer ring = makePolymer(opt);
+  Eigen::VectorXd q = Eigen::VectorXd::Zero(3);
+  q[0] = 0.1;
+  ring.setAllBeads(q.data());
+  const std::vector<long> beads{0, 1, 2, 3, 4};
+  ring.step(pot, nullptr, false);
+  REQUIRE(pot.lastOwners == beads);
+  pot.lastOwners.clear();
+  ring.step(pot, nullptr, false);
+  REQUIRE(pot.lastOwners == beads);
+  REQUIRE(pot.minSystems == 5);
+  REQUIRE(pot.maxSystems == 5);
 }
 
 TEST_CASE(
@@ -229,7 +263,7 @@ TEST_CASE(
   const long production = 6000000;
   const auto sample = ring.sample(pot, nullptr, 200000, production);
   REQUIRE(sample.kineticCv == Catch::Approx(exact).epsilon(0.01));
-  REQUIRE(sample.batches == 2 * production);
+  REQUIRE(sample.batches == production);
   REQUIRE(pot.minSystems == beads);
   REQUIRE(pot.maxSystems == beads);
   REQUIRE_FALSE(pot.sawForce);
@@ -265,4 +299,63 @@ TEST_CASE("Economised springs reach the Trotter error at half the beads",
   REQUIRE(pot.minSystems == ecoBeads);
   REQUIRE(pot.maxSystems == ecoBeads);
   REQUIRE_FALSE(pot.sawForce);
+}
+
+// PILE sampling of a harmonic oscillator at beta hbar omega = 4: the
+// centroid-virial kinetic energy is an unbiased estimator of the N-bead
+// value 0.5 sum_k 1 / (1 + (omega_k / omega)^2), which itself tends to the
+// quantum (hbar omega / 4) coth(beta hbar omega / 2) as 1 / N^2. Twenty
+// blocks per bead count give the sampling error. The OBABO splitting biases
+// the ring's configurations at O(dt^2), most for the stiff internal modes:
+// at dt = 0.05 the 16-bead mean sat 0.007 (4 errors) above the N-bead value,
+// so the step here is 0.0125, where that bias is about 0.0004.
+TEST_CASE("PILE samples the N-bead kinetic energy of a harmonic oscillator",
+          "[path-integral]") {
+  const double x = 4.0;
+  const double exact = exactKinetic(x);
+  double previous = 0.0;
+  for (const long beads : {4L, 8L, 16L}) {
+    Options opt = baseOptions(beads);
+    opt.dt = 0.0125;
+    opt.pileTau = 0.5;
+    opt.seed = 1000 + static_cast<std::uint64_t>(beads);
+    Harmonic pot;
+    pot.omega = x;
+    RingPolymer ring = makePolymer(opt);
+    Eigen::VectorXd q = Eigen::VectorXd::Zero(3);
+    ring.setAllBeads(q.data());
+    ring.thermalMomenta();
+    ring.sample(pot, nullptr, 8000, 1);
+    const long blocks = 20;
+    std::vector<double> means;
+    for (long b = 0; b < blocks; ++b) {
+      means.push_back(ring.sample(pot, nullptr, 0, 40000).kineticCv);
+    }
+    double mean = 0.0;
+    for (const double m : means) {
+      mean += m;
+    }
+    mean /= static_cast<double>(blocks);
+    double var = 0.0;
+    for (const double m : means) {
+      var += (m - mean) * (m - mean);
+    }
+    const double error =
+        std::sqrt(var / static_cast<double>(blocks * (blocks - 1)));
+    const double nBead = trotterKinetic(beads, x);
+    CAPTURE(beads, mean, error, nBead, exact);
+    REQUIRE(error > 0.0);
+    REQUIRE(error < 0.01 * nBead);
+    REQUIRE(std::abs(mean - nBead) < 4.0 * error);
+    // The discretisation error of the N-bead value falls as 1 / N^2.
+    const double gap = exact - nBead;
+    REQUIRE(gap > 0.0);
+    if (previous > 0.0) {
+      const double order = std::log2(previous / gap);
+      CAPTURE(order);
+      REQUIRE(order > 1.6);
+      REQUIRE(order < 2.2);
+    }
+    previous = gap;
+  }
 }

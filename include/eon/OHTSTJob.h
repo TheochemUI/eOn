@@ -28,6 +28,13 @@ inline double pmfScanS(long plane, long nScan, double guideLen) {
   return static_cast<double>(plane) * guideLen / static_cast<double>(n - 1);
 }
 
+/// The reactant basin is force-free. A sign change is the ridge only
+/// after the reversible work has passed two kT.
+inline bool reversibleWorkPastRidge(double reversibleWork,
+                                    double thermalEnergy) {
+  return reversibleWork > 2.0 * thermalEnergy;
+}
+
 /**
  * @file
  * @ingroup Jobs
@@ -63,7 +70,7 @@ private:
     double fn{0.0};   //!< <F.n>
     VectorXd rotNorm; //!< <(n.F) R / (alpha |R|^2)>, drives rotation
     VectorXd rotRaw;  //!< <(n.F) R>, integrand of Eq 19
-    VectorXd pos;     //!< <r>, anchors Eq 18 and the Eq 12 restart
+    VectorXd pos;     //!< \f$\langle r\rangle\f$, anchors Eq 18 and the Eq 12 restart
   };
 
   // x is the unwrapped free configuration. It is not read back from

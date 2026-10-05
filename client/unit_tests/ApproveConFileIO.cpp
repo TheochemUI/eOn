@@ -73,7 +73,8 @@ std::shared_ptr<Matter> load_reactant() {
     ParametersLoadAccess::potential_options(p).potential = PotType::LJ;
     return p;
   }();
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m = std::make_shared<Matter>(pot, params);
   REQUIRE(eonc::io::io_ok(m->con2matter(std::string("reactant.con"))));
   return m;
@@ -107,7 +108,8 @@ TEST_CASE("VerifyGeometryOnlyRoundTrip", "[approval][confileio][compat]") {
 
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m2 = std::make_shared<Matter>(pot, params);
   REQUIRE(eonc::io::io_ok(m2->con2matter(tmp.string())));
   REQUIRE(
@@ -137,7 +139,8 @@ TEST_CASE("VerifyForceBearingWrite", "[approval][confileio][modern]") {
 
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m2 = std::make_shared<Matter>(pot, params);
   REQUIRE(eonc::io::io_ok(m2->con2matter(tmp.string())));
   fs::remove(tmp);
@@ -181,7 +184,8 @@ TEST_CASE("VerifyDefaultWriteHasNoForceSections",
 
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   auto m2 = std::make_shared<Matter>(pot, params);
   REQUIRE(eonc::io::io_ok(m2->con2matter(tmp.string())));
   fs::remove(tmp);

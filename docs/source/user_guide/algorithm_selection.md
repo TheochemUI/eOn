@@ -33,12 +33,15 @@ then minimizes from the saddle to identify the product.
 
 ## Accelerated dynamics
 
-| Method | Acceleration type | Use when |
-|---|---|---|
+| Method | Acceleration type | Use when | Page |
+|---|---|---|---|
 | **Parallel Replica** | Spatial parallelism | You have many replicas available | <project:parallel_replica.md> |
-| **TAD** | Temperature extrapolation | Barriers are known to follow Arrhenius | <project:saddle_search.md> |
+| **TAD** | Temperature extrapolation | Barriers are known to follow Arrhenius | <project:tad.md> |
 | **Hyperdynamics** | Bias potential | Barriers are localized (bond-boost) | <project:hyperdynamics.md> |
 | **AKMC** | Kinetic Monte Carlo | Long timescale evolution with rare events | <project:akmc.md> |
+
+The client job for hyperdynamics is `safe_hyperdynamics`. The server job for
+adaptive kinetic Monte Carlo is `akmc`.
 
 ## Optimization
 
@@ -58,8 +61,9 @@ See <project:optimizer.md> for configuration details.
 
 ## Global optimization
 
-| Method | Use when |
-|---|---|
+| Method | Use when | Page |
+|---|---|---|
 | **Basin Hopping** | Finding global minimum of a cluster or surface | <project:basin_hopping.md> |
-| **Monte Carlo** | Sampling configurations at finite temperature |
-| **Replica Exchange** | Overcoming barriers via temperature exchange |
+| **Minima hopping** | Short constant-energy escapes between minima | <project:global_optimization.md> |
+| **Monte Carlo** | Sampling configurations at finite temperature | <project:monte_carlo.md> |
+| **Replica Exchange** | Overcoming barriers via temperature exchange | <project:replica_exchange.md> |

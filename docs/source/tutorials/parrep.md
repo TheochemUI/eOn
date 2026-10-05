@@ -77,7 +77,7 @@ Information from the trajectory is written in the `dynamics.txt` file:
 More information is obtained by running a few more times:
 
 ```{code-block} bash
-➜ for i in {0..2}; python -m eon.server; done
+➜ for i in {0..2}; do python -m eon.server; done
 Eon version: 1321976b
 Simulation time: 5.000000e-12 s
 Registering results
@@ -126,7 +126,7 @@ Making: 0 searches
 Detailed information of the simulation is stored in the folder `states`. where
 the geometric and energy of the visited states are stored in the sub-folder
 labeled as state id. You can find the geometric of the prodcut in
-`states/1/reactant.con/`, a snapshot is shown below:
+`states/1/reactant.con`, a snapshot is shown below:
 
 ```{figure} ../fig/aladatom2.png
 ---

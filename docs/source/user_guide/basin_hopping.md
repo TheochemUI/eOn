@@ -19,6 +19,16 @@ At each basin hopping step the client will print out:
 - the acceptance ratio (`ar`),
 - and the current max displacement (`md`).
 
+## Acceptance
+
+The client minimizes each trial before the test. `de` is the quenched energy
+difference between that minimum and the current minimum. During `steps`, an
+uphill hop is accepted with probability `exp(-de/(kB*temperature))` when
+`temperature` and `kB` are positive. `kB` is in eV/K, and `temperature` is in
+kelvin. A temperature or `kB` that is not positive rejects the uphill hop.
+Other hops are accepted. `quenching_steps` reject an uphill hop and skip
+the factor.
+
 ## Notes
 
 - `eOn` defaults to letting displacements occur from minimized structures as per

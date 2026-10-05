@@ -42,6 +42,9 @@ struct Matter::Impl {
   mutable AtomMatrix maskedForces; // forces with fixed atoms zeroed
   Matrix3d cell{Matrix3d::Zero()};
   Matrix3d cellInverse{Matrix3d::Zero()};
+  // Cauchy stress the potential reported with the cached evaluation.
+  Matrix3d stress{Matrix3d::Zero()};
+  bool haveStress{false};
 };
 
 Matter::~Matter() = default;
@@ -59,7 +62,10 @@ Matter::Matter(std::shared_ptr<Potential> pot, const Parameters &params)
       impl_{std::make_unique<Impl>()},
       biasPotential{nullptr},
       energyVariance{0.0},
-      potentialEnergy{0.0} {}
+      potentialEnergy{0.0},
+      surfaceEpoch_{0},
+      cachedHostEpoch_{0},
+      cachedPotEpoch_{0} {}
 
 bool Matter::getWriteConForces() const noexcept {
   return parameters != nullptr && parameters->main_options().writeConForces;
@@ -99,6 +105,8 @@ const Matter &Matter::operator=(const Matter &matter) {
   fileToMatter = matter.fileToMatter;
   impl_->cell = matter.impl_->cell;
   impl_->cellInverse = matter.impl_->cellInverse;
+  impl_->stress = matter.impl_->stress;
+  impl_->haveStress = matter.impl_->haveStress;
   impl_->velocities = matter.impl_->velocities;
 
   removeNetForce = matter.removeNetForce;
@@ -113,6 +121,9 @@ const Matter &Matter::operator=(const Matter &matter) {
   energyVariance = matter.energyVariance;
   forceCalls = matter.forceCalls;
   recomputePotential = matter.recomputePotential;
+  surfaceEpoch_ = matter.surfaceEpoch_;
+  cachedHostEpoch_ = matter.cachedHostEpoch_;
+  cachedPotEpoch_ = matter.cachedPotEpoch_;
   // Both caches describe the forces this object held before the assignment.
   // resize() above already raises them; state it here alongside the members
   // this function owns.
@@ -127,6 +138,7 @@ const Matter &Matter::operator=(const Matter &matter) {
   biasPotential = nullptr;
 
   headerCon = matter.headerCon;
+  cancel_token_ = matter.cancel_token_;
   // ConFrame is move-only; copy does not retain movie trajectory.
   movie_frames_.clear();
 
@@ -170,9 +182,15 @@ Matter &Matter::operator=(Matter &&other) noexcept {
   recomputeMaskedForces = other.recomputeMaskedForces;
   impl_->cell = std::move(other.impl_->cell);
   impl_->cellInverse = std::move(other.impl_->cellInverse);
+  impl_->stress = other.impl_->stress;
+  impl_->haveStress = other.impl_->haveStress;
   energyVariance = other.energyVariance;
   movie_frames_ = std::move(other.movie_frames_);
   potentialEnergy = other.potentialEnergy;
+  cancel_token_ = std::move(other.cancel_token_);
+  surfaceEpoch_ = other.surfaceEpoch_;
+  cachedHostEpoch_ = other.cachedHostEpoch_;
+  cachedPotEpoch_ = other.cachedPotEpoch_;
 
   other.nAtoms = 0;
   other.recomputePotential = true;
@@ -603,8 +621,27 @@ void Matter::assertIsolatedMoleculeLayoutSafe() const {
   }
 }
 
+bool Matter::epochDirty() const {
+  const unsigned long long pe = potential ? potential->surfaceEpoch() : 0ULL;
+  return cachedHostEpoch_ != surfaceEpoch_ || cachedPotEpoch_ != pe;
+}
+
+void Matter::stampSurfaceEpoch() const {
+  cachedHostEpoch_ = surfaceEpoch_;
+  cachedPotEpoch_ = potential ? potential->surfaceEpoch() : 0ULL;
+}
+
+void Matter::setSurfaceEpoch(unsigned long long epoch) {
+  if (epoch != surfaceEpoch_) {
+    surfaceEpoch_ = epoch;
+    recomputePotential = true;
+    recomputeMaskedForces = true;
+  }
+}
+
 void Matter::computePotential() const {
-  if (recomputePotential) {
+  cancel_token_.poll("force");
+  if (recomputePotential || epochDirty()) {
     if (!potential) {
       throw std::runtime_error(
           "Matter::computePotential called without a potential");
@@ -618,6 +655,7 @@ void Matter::computePotential() const {
           this->getPositionsFree(), this->getAtomicNrsFree(), impl_->cell);
       this->potentialEnergy = freePE;
       this->energyVariance = vari;
+      impl_->haveStress = false;
       for (long idx{0}, jdx{0}; idx < nAtoms; idx++) {
         if (!getFixed(idx)) {
           impl_->forces.row(idx) = freeForces.row(jdx);
@@ -633,14 +671,18 @@ void Matter::computePotential() const {
       // Isolated molecules still store a box for I/O. Pots that infer PBC
       // from a non-zero cell (GFN2) must see a zero box here.
       const Matrix3d force_cell =
-          usePeriodicBoundaries ? impl_->cell : Matrix3d::Zero();
+          (usePeriodicBoundaries || potential->forwardsStoredCell())
+              ? impl_->cell
+              : Matrix3d::Zero();
       potential->force(std::span<const double>(impl_->positions.data(), n * 3),
                        std::span<const int>(impl_->atomicNrs.data(), n),
                        std::span<double>(impl_->forces.data(), n * 3),
                        &potentialEnergy, &var,
                        std::span<const double>(force_cell.data(), 9));
+      this->energyVariance = var;
       potential->forceCallCounter++;
       PotRegistry::get().on_force_call(potential->getType());
+      captureStress();
     }
     if (!std::isfinite(potentialEnergy) || !impl_->forces.allFinite()) {
       throw std::runtime_error(
@@ -648,6 +690,7 @@ void Matter::computePotential() const {
     }
     forceCalls = forceCalls + 1;
     recomputePotential = false;
+    stampSurfaceEpoch();
 
     // One free atom: subtracting the mean force is identically zero,
     // and NEB would then report immediate GOOD.
@@ -732,6 +775,7 @@ void Matter::setVelocities(const AtomMatrix &v) {
 void Matter::setForces(const AtomMatrix &f) {
   impl_->forces = f.array() * getFree().array();
   impl_->maskedForces = impl_->forces;
+  impl_->haveStress = false;
   recomputeMaskedForces = false;
   recomputePotential = false;
 }
@@ -772,7 +816,10 @@ void Matter::setPotential(std::shared_ptr<Potential> pot) {
 void Matter::setComputedPotential(double energy, double variance) {
   potentialEnergy = energy;
   energyVariance = variance;
+  // A batch leaves at most the last system's stress on the potential.
+  impl_->haveStress = false;
   recomputePotential = false;
+  stampSurfaceEpoch();
   recomputeMaskedForces = true;
   forceCalls++;
 
@@ -789,12 +836,42 @@ size_t Matter::getPotentialCalls() const {
   return this->potential->forceCallCounter;
 }
 
-double Matter::getEnergyVariance() const { return this->energyVariance; }
+double Matter::getEnergyVariance() const {
+  if (nAtoms > 0) {
+    computePotential();
+  }
+  return this->energyVariance;
+}
+
+void Matter::captureStress() const {
+  impl_->haveStress = false;
+  if (!potential->computesStress()) {
+    return;
+  }
+  // A potential instance holds the stress of its own last call. With
+  // [Main] parallel on, a thread-safe shared instance can serve another
+  // image between that call and this read, so it is not read here.
+  const bool threads = parameters && parameters->main_options().parallel;
+  if (threads && potential->isSharedInstanceThreadSafe() &&
+      !potential->needsPerImageInstance()) {
+    return;
+  }
+  try {
+    impl_->stress = potential->cauchyStress();
+    impl_->haveStress = impl_->stress.allFinite();
+  } catch (const std::logic_error &) {
+    impl_->haveStress = false;
+  }
+}
 
 Matrix3d Matter::cauchyStress() {
   if (!potential || !potential->computesStress()) {
     throw std::logic_error(
         "Matter::cauchyStress requires a potential that reports stress");
+  }
+  // The stress that came with the cached evaluation describes this image.
+  if (!recomputePotential && impl_->haveStress) {
+    return impl_->stress;
   }
   recomputePotential = true;
   computePotential();
@@ -834,6 +911,7 @@ void Matter::setAtomIndex(long int atom, std::int64_t index) {
 void Matter::restoreFileForces(const AtomMatrix &fileForces, bool trustEnergy,
                                double energy) {
   impl_->forces = fileForces;
+  impl_->haveStress = false;
   recomputeMaskedForces = true;
   if (trustEnergy) {
     potentialEnergy = energy;
@@ -875,8 +953,10 @@ void evaluateTogether(Potential &pot, std::span<Matter *const> systems) {
     }
     nrs[j] = m->getAtomicNrs();
     // A non-periodic system hands the potential a zero box, as
-    // computePotential does.
-    boxes[j] = m->getPeriodic() ? m->getCell() : Matrix3d::Zero().eval();
+    // computePotential does. A host that owns the cell still sees it.
+    boxes[j] = (m->getPeriodic() || pot.forwardsStoredCell())
+                   ? m->getCell()
+                   : Matrix3d::Zero().eval();
   }
   for (long j = 0; j < n; ++j) {
     posPtr.push_back(dirty[j]->getPositions().data());

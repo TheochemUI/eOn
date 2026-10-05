@@ -74,7 +74,7 @@ distance is getCutoff();
 double PotentialBase::getSwitchingWidth() const { return switchingWidth_; }
 
 void PotentialBase::setSwitchingWidth(double width) { switchingWidth_ = width; }
-// @}
+/// @}
 
 /** Minimum image representation.
 @return Minimum image representation of @a r. The value returned is @f$
@@ -95,9 +95,9 @@ double PotentialBase::applyPeriodicity0(double r, double const period) {
 }
 
 /** Minimum image representation.
-@return Minimum image representation of @a r. The value returned is @f$
-\frac{-period}{2} \le r \le \frac{period}{2} @f$.
-@param[in] r      Three-dimension vector.
+Writes the minimum image of @a r in place. Each component satisfies @f$
+\frac{-period}{2} \le r_i \le \frac{period}{2} @f$.
+@param[in,out] r      Three-dimension vector.
 @param[in] periods      Three-dimension vector containing periods along each of
 the axes.
 */
@@ -526,10 +526,10 @@ void PotentialBase::switching(double const r1[], double const r2[], double f1[],
 }
 
 /** Minimum image representation.
-@return Minimum image representation of @a r. The value returned is @f$
-\frac{-period}{2} \le r \le \frac{period}{2} @f$. The periods should be set with
-setPeriodicity();
-@param[in] r      Three-dimension vector.
+Writes the minimum image of @a r in place. Each component satisfies @f$
+\frac{-period}{2} \le r_i \le \frac{period}{2} @f$. The periods should be set
+with setPeriodicity();
+@param[in,out] r      Three-dimension vector.
 @see setPeriodicity().*/
 void PotentialBase::applyPeriodicity1(double r[]) {
   applyPeriodicity0(r, periods_);

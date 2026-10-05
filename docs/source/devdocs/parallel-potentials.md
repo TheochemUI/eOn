@@ -57,10 +57,9 @@ Examples:
 - **MetatomicPotential**: PyTorch model has internal caches. Same instance
   needs a mutex; separate instances run independently. Returns
   `needsPerImageInstance() = true`.
-- **XTBPot**: `isThreadSafe() = false` and `needsPerImageInstance() = false`.
-  `restart.f90` uses global Fortran unit numbers; two XTB environments
-  in one process collide. Parallel NEB with XTB stays serial until
-  upstream fixes unit management.
+- **XTB**: `RgpotAdapter` over `rgpot::XTBPot`. The kernel's caps are
+  per-instance, so `isThreadSafe()` is false and `needsPerImageInstance()`
+  is true. Each image owns its own xtb handles.
 
 When `needsPerImageInstance()` is `true`, NEB creates N+2 potential
 instances (one per image) at construction time. The parallel force

@@ -18,9 +18,12 @@
 #include <memory>
 #include <span>
 #include <stdexcept>
+#include <utility>
+#include <vector>
 
 namespace eonc {
 
+class Matter;
 class Parameters;
 class Runtime;
 
@@ -103,6 +106,14 @@ public:
 
   [[nodiscard]] PotType getType() const { return this->ptype; }
 
+  /// Host-visible surface generation. A learning host increments this on
+  /// every refit; Matter keys its energy and variance caches on the value
+  /// so identical positions after a refit cannot return a stale energy or
+  /// variance. Static pots stay 0.
+  [[nodiscard]] virtual unsigned long long surfaceEpoch() const noexcept {
+    return 0;
+  }
+
   /// Finite interaction range in position length units.
   /// 0 means the potential is not finite-cutoff; the FD Hessian then
   /// stays one column per coordinate.
@@ -167,6 +178,17 @@ public:
     return false;
   }
 
+  /// NEB calls this with the finished band before the first force
+  /// evaluation, so a host surface can name each image.
+  virtual void bindBand(const std::vector<std::shared_ptr<Matter>> &) {}
+
+  /// A host that owns the cell reads the stored matrix. Pots that infer
+  /// periodic boundaries from a non-zero box keep seeing a zero box when
+  /// the image is not periodic.
+  [[nodiscard]] virtual bool forwardsStoredCell() const noexcept {
+    return false;
+  }
+
   /// True when force() leaves a Cauchy stress that cauchyStress() can read
   /// until the next force() on this instance.
   [[nodiscard]] virtual bool computesStress() const noexcept { return false; }
@@ -213,11 +235,20 @@ public:
 };
 
 namespace helpers {
-std::shared_ptr<Potential> makePotential(const Parameters &params);
-std::shared_ptr<Potential> makePotential(PotType ptype,
-                                         const Parameters &params);
-std::shared_ptr<Potential>
+/// Exclusive ownership. Share only at a multi-owner boundary via
+/// sharePotential().
+[[nodiscard]] std::unique_ptr<Potential> makePotential(const Parameters &params);
+[[nodiscard]] std::unique_ptr<Potential>
+makePotential(PotType ptype, const Parameters &params);
+[[nodiscard]] std::unique_ptr<Potential>
 makePotential(PotType ptype, const Parameters &params, Runtime &runtime);
+
+/// Multi-owner boundary: one instance observed by several Matters, images, or a
+/// binding.
+[[nodiscard]] inline std::shared_ptr<Potential>
+sharePotential(std::unique_ptr<Potential> pot) {
+  return std::shared_ptr<Potential>(std::move(pot));
+}
 } // namespace helpers
 
 } // namespace eonc

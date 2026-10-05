@@ -48,7 +48,13 @@ inline void tie_lifetime(nb::handle nurse, nb::handle patient) {
     return;
   if (nurse.is_none() || patient.is_none() || nurse.ptr() == patient.ptr())
     return;
+  // Same hook nb::keep_alive<N,M> uses. The nanobind 3 split-mode build
+  // renames the PyObject* overload and threads the internals pointer.
+#if NB_VERSION_MAJOR >= 3
+  NB_CALL(keep_alive_py)(NB_CTX, nurse.ptr(), patient.ptr());
+#else
   nb::detail::keep_alive(nurse.ptr(), patient.ptr());
+#endif
 }
 
 /// Python object already wrapping `m`, or an invalid handle when Python has

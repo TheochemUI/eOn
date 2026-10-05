@@ -59,9 +59,23 @@ immediately once `liblammps` is on the library search path.
 
 ## Usage
 
-Set the potential to `lammps` in the configuration file and place a LAMMPS
-input file named `in.lammps` in the `potfiles` directory. This file specifies
-which LAMMPS potential to use. Example for the Morse potential:
+The client opens `in.lammps` in its working directory. A missing file
+raises `LAMMPS: in.lammps not found in working directory`.
+
+```{code-block} ini
+[Main]
+job = point
+
+[Potential]
+potential = lammps
+```
+
+`job = point` reads `pos.con`. Run it with `eonclient` from that directory.
+A server run copies each file from `[Paths] pot` into the job directory.
+The default directory is `potfiles`. The client then opens `in.lammps` there.
+A direct `eonclient` run does not copy `potfiles/`.
+
+The file selects the LAMMPS potential. Example for the Morse potential:
 
 ```ini
 pair_style morse 9.5 #morse potential with 9.5 Angstrom cutoff

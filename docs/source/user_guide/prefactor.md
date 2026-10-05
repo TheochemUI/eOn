@@ -18,7 +18,9 @@ a minimum and saddle point to determine the attempt frequency for a transition.
 
 The prefactor job requires pre-computed minimum and saddle point structures.
 It uses the [Hessian](project:hessian.md) to obtain vibrational frequencies
-at each stationary point.
+at each stationary point. With more than one calculator group and an empty
+`checkpoint_path`, that Hessian evaluates the displaced structures in one
+batch.
 
 ## Usage
 

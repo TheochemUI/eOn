@@ -100,4 +100,16 @@ meson install -C bbdir
 # LAMMPS is loaded at runtime -- liblammps.so must be on LD_LIBRARY_PATH
 ```
 
-At this point both `eonclient` examples and `eon` (e.g. AKMC) examples will run.
+`potential = lammps` is the eOn potential. Put `pair_style quip` in
+`in.lammps` in the client working directory. A server run copies `potfiles/`
+into that directory. The LAMMPS page states the same rule.
+
+```{code-block} ini
+[Main]
+job = point
+
+[Potential]
+potential = lammps
+```
+
+`eonclient` in that directory reads `pos.con` and `in.lammps`.

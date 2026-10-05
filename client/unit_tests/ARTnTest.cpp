@@ -43,7 +43,8 @@ protected:
       : params{},
         pot{nullptr} {
     ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-    pot = eonc::helpers::makePotential(PotType::LJ, params);
+    pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, params));
 
     matter_dimer = std::make_shared<Matter>(pot, params);
     matter_artn = std::make_shared<Matter>(pot, params);

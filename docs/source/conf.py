@@ -82,7 +82,10 @@ intersphinx_mapping = {
 }
 
 templates_path = ["_templates"]
-exclude_patterns = []
+exclude_patterns = [
+    ".jupyter_cache",
+    ".jupyter_cache/**",
+]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
@@ -130,10 +133,9 @@ html_theme_options = {
             ],
         },
     ],
-    "logo": {
-        "light": "_static/logo/eon_v3_light.svg",
-        "dark": "_static/logo/eon_v3_dark.svg",
-    },
+    # Paths are relative to html_static_path. A nested "logo" dict is not a theme option.
+    "light_logo": "logo/eon_v3_light.svg",
+    "dark_logo": "logo/eon_v3_dark.svg",
 }
 
 # Each configuration model is a field list, in class order, with its default.
@@ -210,11 +212,17 @@ autodoc2_render_plugin = "myst"
 autodoc2_packages = [
     {
         "path": f"../../{project.lower()}",
+        # `eon.version` is the version string on the package. The generated
+        # module uses that same full name, so a second record is a collision.
+        # Test scripts are not the Python API.
         "exclude_dirs": [
             "__pycache__",
+            "tests",
         ],
         "exclude_files": [
             "*schema*",
+            "version.py",
+            "test.py",
         ],
     }
 ]

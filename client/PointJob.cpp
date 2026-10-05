@@ -26,7 +26,7 @@ std::vector<std::string> PointJob::run() {
   std::string posInFilename = eonc::helpers::getRelevantFile("pos.con");
   std::string resultsFilename("results.dat");
 
-  auto pos = std::make_unique<Matter>(pot, params);
+  auto pos = std::make_unique<Matter>(std::move(ownedPot), params);
   if (!eonc::io::io_ok(pos->con2matter(posInFilename))) {
     QUILL_LOG_CRITICAL(log, "Failed to load {}", posInFilename);
     throw std::runtime_error("failed to load " + posInFilename);

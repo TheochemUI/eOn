@@ -34,6 +34,10 @@ def test_job_result_capnp_exists():
     assert "forces @8 :List(Float64);" in text
     assert "atomId @9 :List(UInt64);" in text
     assert "fixedAxes @10 :List(UInt8);" in text
+    assert "struct OptimizerProvenance" in text
+    assert "optimizer @36 :OptimizerProvenance;" in text
+    assert "struct EindirAbi" in text
+    assert "rgpot @38 :RgpotIdentity;" in text
 
 
 def test_results_dat_roundtrip_scalars():
@@ -133,3 +137,53 @@ def test_landfold_artifact_roundtrip():
     assert int(compat["abi_minor"]) == 4
     assert int(compat["layout_revision"]) == 9
     assert compat["build_identity"] == "eon-schema"
+
+
+def test_legacy_backend_omits_engine_compatibility():
+    parsed = job_result_scalars_from_results_dat(
+        "cg optimizer_backend\n"
+        "eon.optimizer.v1 optimizer_provenance_schema\n"
+        "eon.compatibility.v1 compatibility_schema\n"
+        "eon engine_id\n"
+    )
+    assert parsed["optimizer"]["backend"] == "cg"
+    assert parsed["optimizer"]["xts_abi"]["major"] == 0
+    assert "engine_compatibility" not in parsed["compatibility"]
+
+
+def test_xtsci_backend_round_trips_abi_fields():
+    parsed = job_result_scalars_from_results_dat(
+        "xtsci optimizer_backend\n"
+        "eon.optimizer.v1 optimizer_provenance_schema\n"
+        "eon.compatibility.v1 compatibility_schema\n"
+        "eon engine_id\n"
+        "eon.objective compatibility_engine_protocol_family\n"
+        "1 compatibility_engine_protocol_major\n"
+        "0 compatibility_engine_protocol_minor\n"
+        "1 compatibility_engine_abi_major\n"
+        "10 compatibility_engine_abi_minor\n"
+        "2 compatibility_engine_layout_revision\n"
+        "build engine_build_identity\n"
+        "1 optimizer_xts_abi_major\n"
+        "10 optimizer_xts_abi_minor\n"
+        "2 optimizer_xts_abi_layout\n"
+        "1 optimizer_eindir_abi_major\n"
+        "0 optimizer_eindir_abi_minor\n"
+        "1 optimizer_eindir_objective_layout\n"
+        "64 optimizer_eindir_objective_size\n"
+        "8 optimizer_eindir_objective_align\n"
+        "1 optimizer_eindir_dlpack_major\n"
+        "0 optimizer_eindir_dlpack_minor\n"
+        "1 optimizer_eindir_features\n"
+        "lj rgpot_name\n"
+        "3.2.0 rgpot_version\n"
+        "eon.rgpot.v1 rgpot_schema\n"
+    )
+    assert parsed["optimizer"]["xts_abi"] == {"major": 1, "minor": 10, "layout": 2}
+    assert parsed["optimizer"]["eindir"]["objective_layout"] == 1
+    assert parsed["compatibility"]["engine_compatibility"]["abiMinor"] == 10
+    assert parsed["rgpot"]["version"] == "3.2.0"
+    wire = job_result_to_wire({"optimizer": parsed["optimizer"], "rgpot": parsed["rgpot"]})
+    again = job_result_from_wire(wire)
+    assert again["optimizer"]["backend"] == "xtsci"
+    assert again["optimizer"]["has_eindir"] is True

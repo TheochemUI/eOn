@@ -5,8 +5,9 @@
 # Do not invent peer field lists in Parameters.h / eon/schema.py / config.yaml
 # for groups covered by this file without regenerating consumers.
 #
-# INI and JSON remain on-disk adapters into the runtime Parameters store;
-# users do not need to author Cap'n Proto binaries for ordinary runs.
+# A struct tagged `project` is read and written by the generated INI and
+# JSON adapters. Structs without that tag stay in the handwritten adapters.
+# Users do not author Cap'n Proto binaries for ordinary runs.
 #
 # Wire ordinals are API: never renumber existing fields.
 
@@ -162,6 +163,74 @@ struct OptimizerOptions {
 }
 
 # ---------------------------------------------------------------------
+# [RgpotPot]
+# Names are the C++ members. ini-order is the on-disk chain; the first
+# key present wins. overlay-order is the chain on [cpmd], which does not
+# read the nwchem_* spellings. The XTBPot and cpmd overlays run after the
+# [RgpotPot] read, and only when backend matches.
+# ---------------------------------------------------------------------
+
+# section: RgpotPot
+# accessor: rgpot_options
+# json: RgpotPot
+# project: ini,json
+# ini-when: potential=RGPOT
+# overlay: section=XTBPot when=backend:xtb,xtbpot,gfn,gfnxtb map=xtb_paramset:paramset,xtb_accuracy:accuracy,xtb_electronic_temperature:electronic_temperature,xtb_max_iterations:max_iterations,xtb_uhf:uhf,xtb_charge:charge
+# overlay: section=cpmd when=backend:cpmd,cpmdc,cpmdpot fields=functional,cutoff_ry,charge,multiplicity,title,memory_mb,input_block
+struct RgpotPotOptions {
+  backend @0 :Text = "nwchemc";
+  # ini-order: basis, nwchem_basis
+  basis @1 :Text = "sto-3g";
+  # ini-order: theory, nwchem_theory
+  theory @2 :Text = "scf";
+  # ini-order: scf_type, nwchem_scf_type
+  scf_type @3 :Text = "rhf";
+  # ini-order: functional, cpmd_functional
+  functional @4 :Text = "BLYP";
+  # ini-order: cutOffRy, cutoff_ry, cpmd_cut_off_ry
+  cutoff_ry @5 :Float64 = 70.0;
+  # ini-order: charge, nwchem_charge
+  # overlay-order: charge
+  charge @6 :Int32 = 0;
+  # ini-order: multiplicity, nwchem_multiplicity
+  # overlay-order: multiplicity
+  multiplicity @7 :Int32 = 1;
+  engine_path @8 :Text = "";
+  engine_library @9 :Text = "";
+  engine_root @10 :Text = "";
+  title @11 :Text = "";
+  memory_mb @12 :Int32 = 0;
+  scratch_dir @13 :Text = "";
+  input_block @14 :Text = "";
+  permanent_dir @15 :Text = "";
+  params_path @16 :Text = "";
+  ranks_per_image @17 :Int32 = 0;
+  model_path @18 :Text = "";
+  device @19 :Text = "cpu";
+  length_unit @20 :Text = "angstrom";
+  extensions_directory @21 :Text = "";
+  check_consistency @22 :Bool = false;
+  uncertainty_threshold @23 :Float64 = -1.0;
+  torch_determinism_strict @24 :Bool = false;
+  # ini-order: paramset, xtb_paramset
+  xtb_paramset @25 :Text = "GFN2xTB";
+  # ini-order: accuracy, xtb_accuracy
+  xtb_accuracy @26 :Float64 = 1.0;
+  # ini-order: electronic_temperature, xtb_electronic_temperature
+  xtb_electronic_temperature @27 :Float64 = 300.0;
+  # ini-order: max_iterations, xtb_max_iterations
+  # cxx-cast: static_cast<int>
+  xtb_max_iterations @28 :Int32 = 250;
+  # ini-fallback-member: charge
+  xtb_charge @29 :Float64 = 0.0;
+  # ini-order: uhf, xtb_uhf
+  # cxx-cast: static_cast<int>
+  xtb_uhf @30 :Int32 = 0;
+  # UMA (backend=uma): model task head of the AOTI package.
+  task_name @31 :Text = "omol";
+}
+
+# ---------------------------------------------------------------------
 # Root message: schema-backed parameters document
 # ---------------------------------------------------------------------
 struct EonParameters {
@@ -172,4 +241,5 @@ struct EonParameters {
   optimizer @4 :OptimizerOptions;
   # Schema format version for forward-compat loaders
   schemaVersion @5 :UInt32 = 1;
+  rgpot @6 :RgpotPotOptions;
 }

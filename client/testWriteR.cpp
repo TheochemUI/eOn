@@ -17,7 +17,8 @@
 int main() {
   std::string confile("pos.con");
   eonc::Parameters parameters;
-  auto pot = eonc::helpers::makePotential(parameters);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(parameters));
   eonc::Matter matter(pot, parameters);
   matter.con2matter(confile);
   matter.writeTibble("rSysdat.txt");

@@ -504,6 +504,7 @@ bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
 
   while (!objf->isConverged() &&
          iteration < params.optimizer_options().max_iterations) {
+    matter.pollCancel("relax");
 
     AtomMatrix pos = matter.getPositions();
 

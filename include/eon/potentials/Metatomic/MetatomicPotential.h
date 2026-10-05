@@ -87,6 +87,7 @@ private:
    * @param nAtoms The number of atoms in the system.
    * @param positions Pointer to the atomic positions array.
    * @param box Pointer to the simulation box matrix.
+   * @param periodic Periodicity flags for the three cell axes.
    * @return A metatensor_torch::TensorBlock containing the neighbor list.
    */
   metatensor_torch::TensorBlock

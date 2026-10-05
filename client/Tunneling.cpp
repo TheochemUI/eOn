@@ -15,6 +15,7 @@
 ** Algorithms implemented by Yair Litman and Mariana Rossi, 2017.
 */
 #include "eon/Tunneling.h"
+#include "eon/EonLogger.h"
 
 #include <Eigen/Eigenvalues>
 #include <Eigen/LU>
@@ -269,7 +270,8 @@ double halfPeriod(const Profile &p, double sMinus, double sPlus, double energy,
 
 std::vector<VectorXd> ringFromPath(const std::vector<VectorXd> &path,
                                    const std::vector<double> &energies,
-                                   double betaHbar, long beads) {
+                                   double betaHbar, long beads,
+                                   RingSeed *seed) {
   if (path.size() < 3 || path.size() != energies.size() || beads < 4 ||
       !(betaHbar > 0.0)) {
     throw std::invalid_argument(
@@ -333,28 +335,75 @@ std::vector<VectorXd> ringFromPath(const std::vector<VectorXd> &path,
           "this path");
     }
   }
-  // Bracket the orbit energy geometrically above the lower end: the period
-  // grows only logarithmically as E approaches a well bottom.
+  // Orbit energies on a geometric grid above the lower end: the period
+  // grows only logarithmically as E approaches a well bottom. The period
+  // need not fall monotonically with E: a shoulder on the path, where V'
+  // nearly vanishes away from a well, makes it spike, and a bisection over
+  // the whole range then converges onto the spike for every beta hbar it
+  // spans. Every crossing of beta hbar on the grid is refined, and the
+  // one kept minimises theta(E) + beta E, theta = 2 x the WKB action: it
+  // dominates the steepest-descent integral the instanton evaluates.
   const double span = vTop - vLow;
-  double eHi = vTop - 1e-9 * span;
-  double eLo = vLow + 1e-14 * span;
-  if (period(eLo) < betaHbar) {
-    // The path does not reach a long enough orbit. The lowest one it
-    // holds is the start.
-    eHi = eLo;
+  const double eBottom = vLow + 1e-14 * span;
+  // Geometric in the distance from the top over the upper half, where a
+  // flat-topped barrier keeps the crossing within a small fraction of the
+  // span, and geometric in the height above the lower end over the lower
+  // half, where the period diverges only logarithmically.
+  constexpr int kHalf = 200;
+  constexpr int kScan = 2 * kHalf + 1;
+  std::vector<double> levels(kScan + 1);
+  std::vector<double> gap(kScan + 1);
+  for (int k = 0; k <= kHalf; ++k) {
+    const double u = static_cast<double>(k) / kHalf;
+    levels[static_cast<size_t>(k)] =
+        vTop - span * std::pow(10.0, -9.0 + u * (9.0 + std::log10(0.5)));
+    levels[static_cast<size_t>(kScan - k)] =
+        vLow + span * std::pow(10.0, -14.0 + u * (14.0 + std::log10(0.5)));
   }
-  for (int k = 0; k < 200 && eHi > eLo; ++k) {
-    const double e = vLow + std::sqrt((eLo - vLow) * (eHi - vLow));
-    if (period(e) > betaHbar) {
-      eLo = e;
-    } else {
-      eHi = e;
+  for (int k = 0; k <= kScan; ++k) {
+    gap[static_cast<size_t>(k)] =
+        period(levels[static_cast<size_t>(k)]) - betaHbar;
+  }
+  const double beta = betaHbar / kHbar;
+  double energy = eBottom;
+  double best = std::numeric_limits<double>::infinity();
+  for (int k = 0; k < kScan; ++k) {
+    double a = levels[static_cast<size_t>(k)];
+    double b = levels[static_cast<size_t>(k + 1)];
+    double ga = gap[static_cast<size_t>(k)];
+    if ((ga > 0.0) == (gap[static_cast<size_t>(k + 1)] > 0.0)) {
+      continue;
     }
-    if (eHi - eLo < 1e-15 * span) {
-      break;
+    for (int it = 0; it < 200 && std::abs(a - b) > 1e-15 * span; ++it) {
+      const double m = vLow + std::sqrt((a - vLow) * (b - vLow));
+      const double gm = period(m) - betaHbar;
+      if ((gm > 0.0) == (ga > 0.0)) {
+        a = m;
+        ga = gm;
+      } else {
+        b = m;
+      }
+    }
+    const double root = 0.5 * (a + b);
+    // A bracket around a jump of the turning point refines onto the jump,
+    // where the period is not beta hbar.
+    if (!(std::abs(period(root) - betaHbar) <= 1e-6 * betaHbar)) {
+      continue;
+    }
+    const double w = 2.0 * wkbAction(profile, root) + beta * root;
+    if (w < best) {
+      best = w;
+      energy = root;
     }
   }
-  const double energy = 0.5 * (eLo + eHi);
+  // With no crossing the path does not reach a long enough orbit; the
+  // lowest one it holds is the start.
+  if (seed != nullptr) {
+    seed->energy = energy;
+    seed->period = period(energy);
+    seed->pathLow = vLow;
+    seed->reached = std::abs(seed->period - betaHbar) <= 1e-6 * betaHbar;
+  }
   const auto [sMinus, sPlus] = turningPoints(profile, sTop, energy);
   std::vector<double> tau;
   std::vector<double> pos;
@@ -544,6 +593,63 @@ private:
   std::vector<Eigen::PartialPivLU<ColMajorXd>> lu_;
   double logAbsDet_ = 0.0;
   int sign_ = 1;
+};
+
+// Block LU of an open block-tridiagonal chain with given diagonal blocks
+// and -c I between neighbours. Solves, and the inertia and log-determinant
+// from the Schur complements (Haynsworth: the inertia of the chain is the
+// sum over its Schur blocks).
+class HaynsworthChain {
+public:
+  HaynsworthChain(double c, const std::vector<MatrixXd> &diag, bool spectrum)
+      : c_(c) {
+    lu_.reserve(diag.size());
+    for (size_t k = 0; k < diag.size(); ++k) {
+      const long f = diag[k].rows();
+      MatrixXd d = 0.5 * (diag[k] + diag[k].transpose());
+      if (k > 0) {
+        const MatrixXd inv = lu_.back().inverse();
+        d -= c * c * 0.5 * (inv + inv.transpose());
+      }
+      if (spectrum) {
+        const ColMajorXd sym = d;
+        const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(
+            sym, Eigen::EigenvaluesOnly);
+        for (long i = 0; i < f; ++i) {
+          const double lam = es.eigenvalues()(i);
+          if (lam == 0.0) {
+            throw std::runtime_error("instanton: singular chain Hessian block");
+          }
+          if (lam < 0.0) {
+            ++negative_;
+          }
+          logAbsDet_ += std::log(std::abs(lam));
+        }
+      }
+      lu_.emplace_back(ColMajorXd(d));
+    }
+  }
+  double logAbsDet() const { return logAbsDet_; }
+  long negative() const { return negative_; }
+  std::vector<VectorXd> solve(const std::vector<VectorXd> &b) const {
+    const size_t m = b.size();
+    std::vector<VectorXd> y(m), x(m);
+    y[0] = b[0];
+    for (size_t k = 1; k < m; ++k) {
+      y[k] = b[k] + c_ * lu_[k - 1].solve(y[k - 1]);
+    }
+    x[m - 1] = lu_[m - 1].solve(y[m - 1]);
+    for (size_t k = m - 1; k-- > 0;) {
+      x[k] = lu_[k].solve(y[k] + c_ * x[k + 1]);
+    }
+    return x;
+  }
+
+private:
+  double c_;
+  std::vector<Eigen::PartialPivLU<ColMajorXd>> lu_;
+  double logAbsDet_ = 0.0;
+  long negative_ = 0;
 };
 
 double dot(const std::vector<VectorXd> &a, const std::vector<VectorXd> &b) {
@@ -798,13 +904,16 @@ void instantonSplitting(Instanton &inst, const BeadHessian &hessian,
     }
     diag.push_back(spring + dtau * 0.5 * (h + h.transpose()));
   }
-  const BlockChain chain(c, diag);
+  // The inertia comes from the Schur blocks (Haynsworth), so a path with
+  // two negative modes is not mistaken for a minimum by the determinant's
+  // sign.
+  const HaynsworthChain chain(c, diag, true);
 
   auto wellLogDet = [&](const MatrixXd &h) {
     const std::vector<MatrixXd> d(static_cast<size_t>(P - 1),
                                   spring + dtau * 0.5 * (h + h.transpose()));
-    const BlockChain well(c, d);
-    if (well.sign() < 0) {
+    const HaynsworthChain well(c, d, true);
+    if (well.negative() > 0) {
       throw std::runtime_error(
           "instantonSplitting: a well Hessian is not positive definite");
     }
@@ -821,8 +930,9 @@ void instantonSplitting(Instanton &inst, const BeadHessian &hessian,
   }
   scale(v, 1.0 / std::sqrt(dot(v, v)));
   const double vJv = dot(v, chain.solve(v));
-  const int signPrime = chain.sign() * (vJv < 0.0 ? -1 : 1);
-  if (signPrime < 0) {
+  // A zero mode just below zero is one negative eigenvalue the prime
+  // leaves out; any other negative eigenvalue is a second unstable mode.
+  if (chain.negative() - (vJv < 0.0 ? 1 : 0) != 0) {
     throw std::runtime_error(
         "instantonSplitting: the path is not a minimum of the action "
         "(a negative mode besides the kink's translation)");
@@ -1301,63 +1411,6 @@ struct CyclicFactor {
     }
     return y;
   }
-};
-
-// Block LU of an open block-tridiagonal chain with given diagonal blocks
-// and -c I between neighbours. Solves, and the inertia and log-determinant
-// from the Schur complements (Haynsworth: the inertia of the chain is the
-// sum over its Schur blocks).
-class HaynsworthChain {
-public:
-  HaynsworthChain(double c, const std::vector<MatrixXd> &diag, bool spectrum)
-      : c_(c) {
-    lu_.reserve(diag.size());
-    for (size_t k = 0; k < diag.size(); ++k) {
-      const long f = diag[k].rows();
-      MatrixXd d = 0.5 * (diag[k] + diag[k].transpose());
-      if (k > 0) {
-        const MatrixXd inv = lu_.back().inverse();
-        d -= c * c * 0.5 * (inv + inv.transpose());
-      }
-      if (spectrum) {
-        const ColMajorXd sym = d;
-        const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(
-            sym, Eigen::EigenvaluesOnly);
-        for (long i = 0; i < f; ++i) {
-          const double lam = es.eigenvalues()(i);
-          if (lam == 0.0) {
-            throw std::runtime_error("instanton: singular chain Hessian block");
-          }
-          if (lam < 0.0) {
-            ++negative_;
-          }
-          logAbsDet_ += std::log(std::abs(lam));
-        }
-      }
-      lu_.emplace_back(ColMajorXd(d));
-    }
-  }
-  double logAbsDet() const { return logAbsDet_; }
-  long negative() const { return negative_; }
-  std::vector<VectorXd> solve(const std::vector<VectorXd> &b) const {
-    const size_t m = b.size();
-    std::vector<VectorXd> y(m), x(m);
-    y[0] = b[0];
-    for (size_t k = 1; k < m; ++k) {
-      y[k] = b[k] + c_ * lu_[k - 1].solve(y[k - 1]);
-    }
-    x[m - 1] = lu_[m - 1].solve(y[m - 1]);
-    for (size_t k = m - 1; k-- > 0;) {
-      x[k] = lu_[k].solve(y[k] + c_ * x[k + 1]);
-    }
-    return x;
-  }
-
-private:
-  double c_;
-  std::vector<Eigen::PartialPivLU<ColMajorXd>> lu_;
-  double logAbsDet_ = 0.0;
-  long negative_ = 0;
 };
 
 // J = T + G K G^T over the chain T: the closure blocks (-c I between the
@@ -1913,6 +1966,145 @@ VectorXd chainIndexOneStep(const std::vector<RingMode> &ritz,
   return step;
 }
 
+// Non-increasing isotonic regression (pool adjacent violators).
+std::vector<double> pavaNonIncreasing(const std::vector<double> &values) {
+  const long n = static_cast<long>(values.size());
+  struct Block {
+    long start;
+    long end;
+    double average;
+    double weight;
+  };
+  std::vector<Block> blocks;
+  blocks.reserve(static_cast<size_t>(n));
+  for (long i = 0; i < n; ++i) {
+    blocks.push_back(Block{i, i, -values[static_cast<size_t>(i)], 1.0});
+    while (blocks.size() >= 2 &&
+           blocks[blocks.size() - 2].average > blocks.back().average) {
+      const Block b = blocks.back();
+      blocks.pop_back();
+      Block &a = blocks.back();
+      const double w = a.weight + b.weight;
+      a.average = (a.average * a.weight + b.average * b.weight) / w;
+      a.end = b.end;
+      a.weight = w;
+    }
+  }
+  std::vector<double> out(static_cast<size_t>(n));
+  for (const Block &b : blocks) {
+    for (long i = b.start; i <= b.end; ++i) {
+      out[static_cast<size_t>(i)] = -b.average;
+    }
+  }
+  return out;
+}
+
+// Beads 0..last move along the unit vector dir until that coordinate is
+// monotone.
+// The sense follows the two ends, so an arbitrary eigenvector sign is harmless.
+void projectMonotonePrefix(std::vector<VectorXd> &q, long last,
+                           const VectorXd &dir) {
+  if (last < 1 || q.empty() || dir.size() != q.front().size()) {
+    return;
+  }
+  const long m = last;
+  std::vector<double> s(static_cast<size_t>(m + 1));
+  for (long j = 0; j <= m; ++j) {
+    s[static_cast<size_t>(j)] = dir.dot(q[static_cast<size_t>(j)]);
+  }
+  std::vector<double> target;
+  if (s.front() >= s.back()) {
+    target = pavaNonIncreasing(s);
+  } else {
+    std::vector<double> flipped(s.size());
+    for (size_t j = 0; j < s.size(); ++j) {
+      flipped[j] = -s[j];
+    }
+    target = pavaNonIncreasing(flipped);
+    for (double &v : target) {
+      v = -v;
+    }
+  }
+  for (long j = 0; j <= m; ++j) {
+    q[static_cast<size_t>(j)] +=
+        (target[static_cast<size_t>(j)] - s[static_cast<size_t>(j)]) * dir;
+  }
+}
+
+/// The rigid motions of a whole ring: the three translations and each free
+/// rotation about the ring's centre of mass, built from the beads
+/// themselves and orthonormalised (rank-revealing, so a linear ring keeps
+/// two rotations). A rotation moves bead j along sqrt(m) e x (r_j - centre),
+/// which differs from bead to bead, so a single structure's generator copied
+/// to every bead is not a null vector of the ring Hessian.
+std::vector<std::vector<VectorXd>>
+ringRigidBasis(const std::vector<VectorXd> &q,
+               const std::vector<double> &sqrtMasses, const VectorXd &reference,
+               const std::array<bool, 3> &rotations) {
+  std::vector<std::vector<VectorXd>> out;
+  const long nAtoms = static_cast<long>(sqrtMasses.size());
+  if (nAtoms == 0 || q.empty() || reference.size() != 3 * nAtoms ||
+      q.front().size() != 3 * nAtoms) {
+    return out;
+  }
+  const long nb = static_cast<long>(q.size());
+  // Cartesian positions and the ring's centre of mass.
+  Eigen::Vector3d centre = Eigen::Vector3d::Zero();
+  double total = 0.0;
+  for (long j = 0; j < nb; ++j) {
+    for (long k = 0; k < nAtoms; ++k) {
+      const double sm = sqrtMasses[static_cast<size_t>(k)];
+      const Eigen::Vector3d r =
+          reference.segment<3>(3 * k) +
+          q[static_cast<size_t>(j)].segment<3>(3 * k) / sm;
+      centre += sm * sm * r;
+      total += sm * sm;
+    }
+  }
+  centre /= total;
+  std::vector<int> kinds{0, 1, 2};
+  for (int c = 0; c < 3; ++c) {
+    if (rotations[static_cast<size_t>(c)]) {
+      kinds.push_back(3 + c);
+    }
+  }
+  const long dim = nb * 3 * nAtoms;
+  MatrixXd g = MatrixXd::Zero(dim, static_cast<long>(kinds.size()));
+  for (size_t col = 0; col < kinds.size(); ++col) {
+    const int kind = kinds[col];
+    for (long j = 0; j < nb; ++j) {
+      for (long k = 0; k < nAtoms; ++k) {
+        const double sm = sqrtMasses[static_cast<size_t>(k)];
+        Eigen::Vector3d d = Eigen::Vector3d::Zero();
+        if (kind < 3) {
+          d(kind) = sm;
+        } else {
+          const Eigen::Vector3d r =
+              reference.segment<3>(3 * k) +
+              q[static_cast<size_t>(j)].segment<3>(3 * k) / sm;
+          Eigen::Vector3d e = Eigen::Vector3d::Zero();
+          e(kind - 3) = 1.0;
+          d = sm * e.cross(r - centre);
+        }
+        g.block(j * 3 * nAtoms + 3 * k, static_cast<long>(col), 3, 1) = d;
+      }
+    }
+  }
+  const ColMajorXd gc = g;
+  const Eigen::ColPivHouseholderQR<ColMajorXd> qr(gc);
+  const long rank = qr.rank();
+  const ColMajorXd basis = qr.householderQ() * ColMajorXd::Identity(dim, rank);
+  for (long r = 0; r < rank; ++r) {
+    std::vector<VectorXd> u(static_cast<size_t>(nb));
+    for (long j = 0; j < nb; ++j) {
+      u[static_cast<size_t>(j)] =
+          basis.col(r).segment(j * 3 * nAtoms, 3 * nAtoms);
+    }
+    out.push_back(std::move(u));
+  }
+  return out;
+}
+
 struct NewtonOut {
   std::vector<VectorXd> beads;
   std::vector<double> energies;
@@ -1923,7 +2115,15 @@ struct NewtonOut {
   // Half ring, stationary, and not index 1. The odd-mode probe decides
   // whether the search continues on the whole ring.
   bool stalledHalf = false;
+  // The beads fell together: B_N dropped below kCollapse of the starting
+  // ring, so the search left the bounce for a stationary point of V.
+  bool collapsed = false;
 };
+
+/// A ring whose B_N falls below this fraction of its starting value has
+/// collapsed onto one point; no instanton is that much shorter than its
+/// seed at the same temperature.
+constexpr double kCollapse = 1e-4;
 
 // Index-1 Newton on one ring. `x` holds N beads. A half ring optimises beads
 // 0..N/2 and mirrors them. Trust is the largest bead displacement.
@@ -1965,67 +2165,11 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   const bool quotient = nAtoms > 0 && 3 * nAtoms == hS.rows() &&
                         options.rigidReference.size() == 3 * nAtoms;
   auto ringRigid = [&](const std::vector<VectorXd> &q) {
-    std::vector<std::vector<VectorXd>> out;
     if (!quotient) {
-      return out;
+      return std::vector<std::vector<VectorXd>>{};
     }
-    const long nb = static_cast<long>(q.size());
-    // Cartesian positions and the ring's centre of mass.
-    Eigen::Vector3d centre = Eigen::Vector3d::Zero();
-    double total = 0.0;
-    for (long j = 0; j < nb; ++j) {
-      for (long k = 0; k < nAtoms; ++k) {
-        const double sm = options.rigidSqrtMasses[static_cast<size_t>(k)];
-        const Eigen::Vector3d r =
-            options.rigidReference.segment<3>(3 * k) +
-            q[static_cast<size_t>(j)].segment<3>(3 * k) / sm;
-        centre += sm * sm * r;
-        total += sm * sm;
-      }
-    }
-    centre /= total;
-    std::vector<int> kinds{0, 1, 2};
-    for (int c = 0; c < 3; ++c) {
-      if (options.rigidRotations[static_cast<size_t>(c)]) {
-        kinds.push_back(3 + c);
-      }
-    }
-    const long dim = nb * 3 * nAtoms;
-    MatrixXd g = MatrixXd::Zero(dim, static_cast<long>(kinds.size()));
-    for (size_t col = 0; col < kinds.size(); ++col) {
-      const int kind = kinds[col];
-      for (long j = 0; j < nb; ++j) {
-        for (long k = 0; k < nAtoms; ++k) {
-          const double sm = options.rigidSqrtMasses[static_cast<size_t>(k)];
-          Eigen::Vector3d d = Eigen::Vector3d::Zero();
-          if (kind < 3) {
-            d(kind) = sm;
-          } else {
-            const Eigen::Vector3d r =
-                options.rigidReference.segment<3>(3 * k) +
-                q[static_cast<size_t>(j)].segment<3>(3 * k) / sm;
-            Eigen::Vector3d e = Eigen::Vector3d::Zero();
-            e(kind - 3) = 1.0;
-            d = sm * e.cross(r - centre);
-          }
-          g.block(j * 3 * nAtoms + 3 * k, static_cast<long>(col), 3, 1) = d;
-        }
-      }
-    }
-    const ColMajorXd gc = g;
-    const Eigen::ColPivHouseholderQR<ColMajorXd> qr(gc);
-    const long rank = qr.rank();
-    const ColMajorXd basis =
-        qr.householderQ() * ColMajorXd::Identity(dim, rank);
-    for (long r = 0; r < rank; ++r) {
-      std::vector<VectorXd> u(static_cast<size_t>(nb));
-      for (long j = 0; j < nb; ++j) {
-        u[static_cast<size_t>(j)] =
-            basis.col(r).segment(j * 3 * nAtoms, 3 * nAtoms);
-      }
-      out.push_back(std::move(u));
-    }
-    return out;
+    return ringRigidBasis(q, options.rigidSqrtMasses, options.rigidReference,
+                          options.rigidRotations);
   };
   std::vector<std::vector<VectorXd>> nullRing;
   // A one-dimensional well is already the saddle curvature. In more
@@ -2039,6 +2183,22 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     physical.resize(x.size());
     for (size_t j = 0; j < x.size(); ++j) {
       physical[j] = fdPhysicalHessian(x[j], potential, eps);
+    }
+  }
+  // Exact zeros of the saddle Hessian are rigid displacements. The same
+  // vector on every bead is a null vector of the chain, and the block LU
+  // then returns an arbitrary step. Hold those directions at a
+  // spring-sized curvature for the solve only.
+  std::vector<VectorXd> rigid;
+  {
+    const Eigen::SelfAdjointEigenSolver<ColMajorXd> esRigid(hS);
+    const auto ev = esRigid.eigenvalues();
+    const double span = std::max(std::abs(ev(0)), std::abs(ev(ev.size() - 1)));
+    const double lim = 1e-6 * std::max(1.0, span);
+    for (long i = 0; i < ev.size(); ++i) {
+      if (std::abs(ev(i)) <= lim) {
+        rigid.push_back(VectorXd(esRigid.eigenvectors().col(i)));
+      }
     }
   }
 
@@ -2142,11 +2302,13 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   // Lowest modes of the ring Hessian from matrix-vector products alone,
   // started along the saddle's unstable direction on every bead.
   std::vector<VectorXd> ritzStart(x.size(), VectorXd::Zero(f));
+  VectorXd climbDir(f);
   {
     const ColMajorXd hs0 = hS;
     const Eigen::SelfAdjointEigenSolver<ColMajorXd> es0(hs0);
+    climbDir = es0.eigenvectors().col(0);
     for (auto &v : ritzStart) {
-      v = es0.eigenvectors().col(0);
+      v = climbDir;
     }
   }
   // The climb follows the mode that overlaps the last one, as in dimer and
@@ -2159,11 +2321,25 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       scale(track, 1.0 / n0);
     }
   }
+  // A half chain that folds back is a second bounce. The single instanton
+  // is monotone in the saddle's unstable direction.
+  if (half) {
+    projectMonotonePrefix(x, static_cast<long>(x.size()) - 1, climbDir);
+  }
   auto viewOf = [&](const Obj &ev) {
     nullRing = ringRigid(x);
     View v;
     v.tau = half ? VectorXd() : timeTranslation(x);
-    v.diag = ringDiagonal(physical, c, half);
+    std::vector<MatrixXd> pinned = physical;
+    if (!rigid.empty()) {
+      const double pin = std::max(1.0, c);
+      for (auto &block : pinned) {
+        for (const auto &r : rigid) {
+          block.noalias() += pin * (r * r.transpose());
+        }
+      }
+    }
+    v.diag = ringDiagonal(pinned, c, half);
     auto apply = [&](const std::vector<VectorXd> &vec) {
       return applyDiagonal(v.diag, c, !half, vec);
     };
@@ -2344,13 +2520,73 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   // Finite-difference rebuilds of the bead blocks when the search stalls.
   constexpr int kMaxHessianRefreshes = 3;
   int refreshes = 0;
-  bool exactAtX = false;
+  bool exactAtX = f > 1 && options.initialHessians == "finite_difference";
+  // Negative curvatures the last finite-difference blocks showed, and the
+  // rebuilds a growing Bofill count has asked for.
+  long exactNegatives = -1;
+  constexpr int kMaxDriftRefreshes = 4;
+  int driftRefreshes = 0;
+  // B_N of the closed ring the beads describe.
+  auto ringLength = [&](const std::vector<VectorXd> &q) {
+    double b = 0.0;
+    if (half) {
+      for (size_t j = 0; j + 1 < q.size(); ++j) {
+        b += 2.0 * (q[j + 1] - q[j]).squaredNorm();
+      }
+    } else {
+      for (size_t j = 0; j < q.size(); ++j) {
+        b += (q[(j + 1) % q.size()] - q[j]).squaredNorm();
+      }
+    }
+    return b;
+  };
+  const double startLength = ringLength(x);
+  bool collapsed = false;
   for (long it = 0; it < options.maxIterations; ++it) {
     ++entries;
+    const double length = ringLength(x);
+    if (startLength > 0.0 && length < kCollapse * startLength) {
+      collapsed = true;
+      break;
+    }
+    if (f == 1) {
+      const double eps = options.lanczosStep > 0.0 ? options.lanczosStep : 1e-4;
+      for (size_t j = 0; j < x.size(); ++j) {
+        physical[j] = fdPhysicalHessian(x[j], potential, eps);
+      }
+    }
     const View v = viewOf(cur);
+    EONC_LOG_DEBUG("[Instanton] Newton {}: U_N {:.10g} eV, largest residual "
+                   "{:.3e}, B_N {:.6e}, climb curvature {:.4e}, {} negative, "
+                   "trust {:.3e}",
+                   it, half ? 2.0 * cur.u : cur.u, v.gmax, length,
+                   v.climb.curvature, v.climb.negative, trust);
     if (done(v)) {
       converged = true;
       break;
+    }
+    // Bofill blocks copied from the saddle can grow negative curvatures the
+    // surface does not have: on a 1203-coordinate Al slab the model's count
+    // rose from 2 to 11 while every flip turned the ring downhill, and the
+    // ring collapsed onto a minimum. More negatives than the last exact
+    // blocks showed rebuild them from finite differences, a few times.
+    if (f > 1 && v.ok) {
+      if (exactAtX) {
+        exactNegatives = v.climb.negative;
+      } else if (v.climb.negative > std::max(1L, exactNegatives) &&
+                 driftRefreshes < kMaxDriftRefreshes) {
+        ++driftRefreshes;
+        const double eps =
+            options.lanczosStep > 0.0 ? options.lanczosStep : 1e-4;
+        for (size_t j = 0; j < x.size(); ++j) {
+          physical[j] = fdPhysicalHessian(x[j], potential, eps);
+        }
+        exactAtX = true;
+        EONC_LOG_DEBUG("[Instanton] Newton {}: {} negative curvatures in the "
+                       "Bofill blocks, rebuilt from finite differences",
+                       it, v.climb.negative);
+        continue;
+      }
     }
     // A shorter Newton step when the quadratic model does not match. A step
     // that only reduces the residual is a walk into a well.
@@ -2362,14 +2598,25 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       if (!(big > 0.0)) {
         return false;
       }
-      if (big > trust) {
-        dir *= trust / big;
-      }
       std::vector<VectorXd> trial = x;
       addPacked(trial, dir);
+      if (half) {
+        projectMonotonePrefix(trial, static_cast<long>(trial.size()) - 1,
+                              climbDir);
+      }
       if (!finiteBeads(trial)) {
         return false;
       }
+      VectorXd taken(dir.size());
+      for (size_t k = 0; k < x.size(); ++k) {
+        taken.segment(static_cast<long>(k) * f, f) =
+            trial[k] - x[static_cast<size_t>(k)];
+      }
+      if (!(packedBeadNorm(taken, f) > 0.0) ||
+          !taken.array().isFinite().all()) {
+        return false;
+      }
+      dir = taken;
       Obj next = objective(trial);
       if (!finiteBeads(next.grad) || !std::isfinite(next.u)) {
         return false;
@@ -2384,7 +2631,18 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
         }
         const VectorXd jd = packBeads(applyDiagonal(v.diag, c, !half, dirRing));
         const double pred = gflat.dot(dir) + 0.5 * dir.dot(jd);
-        ratio = std::abs(pred) > 1e-30 ? (next.u - cur.u) / pred : 1.0;
+        const double actual = next.u - cur.u;
+        // Predicted and actual changes below the energy resolution are
+        // roundoff. Their ratio is not a disagreement with the model,
+        // and rejecting it repeats one micro-step until the budget ends.
+        const double unresolved = 1e-12 * std::max(1.0, std::abs(cur.u));
+        if (std::abs(pred) <= unresolved) {
+          const bool quiet = std::abs(actual) <= unresolved &&
+                             packedBeadNorm(dir, f) <= trustFloor;
+          ratio = quiet ? 1.0 : 0.0;
+        } else {
+          ratio = actual / pred;
+        }
         ratioOk = std::isfinite(ratio) && ratio >= 0.1 && ratio <= 3.0;
         // Near the saddle the predicted change sits at the round-off of
         // U_N and the ratio is noise; there the step stands on the residual.
@@ -2471,7 +2729,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
                                             cur.grad, v.tau, nullRing);
     bool moved = false;
     VectorXd dir = step;
-    // Clip to the trust radius first, so each halving is a new trial point.
+    // Clip to the trust radius once, then halve that capped step.
     if (dir.size() > 0) {
       const double big0 = packedBeadNorm(dir, f);
       if (big0 > trust) {
@@ -2507,6 +2765,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   out.iterations = entries;
   out.converged = converged;
   out.stalledHalf = stalledHalf;
+  out.collapsed = collapsed;
   if (half) {
     const long m = static_cast<long>(x.size()) - 1;
     const long n = 2 * m;
@@ -2536,8 +2795,9 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   return out;
 }
 
-// Below 0.75 Tc an empty guess walks down from 0.85 Tc. Each stage passes a
-// full-length ring onward, so the walk is not repeated on the way back in.
+// A one-dimensional bead carries its own curvature, so the requested
+// temperature is solved first. Below 0.75 Tc an empty guess that does not
+// converge walks down from 0.85 Tc, and that walk replaces the first try.
 RateInstanton optimizeRateByNewton(const VectorXd &saddle,
                                    const MatrixXd &hessSaddle, double beta,
                                    std::vector<VectorXd> guess,
@@ -2564,6 +2824,31 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
 
   const bool cool = static_cast<long>(guess.size()) != nBeads &&
                     inst.temperature < 0.75 * inst.crossover;
+  // One dimension solves the requested temperature before any walk. A
+  // higher-dimensional empty guess below 0.75 Tc keeps the walk, which
+  // starts from a curvature copied off the saddle.
+  if (saddle.size() == 1 || !cool) {
+    if (static_cast<long>(guess.size()) != nBeads) {
+      const ColMajorXd hS = 0.5 * (hessSaddle + hessSaddle.transpose());
+      const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(hS);
+      guess = cosineSeed(saddle, es.eigenvectors().col(0), es.eigenvalues()(0),
+                         inst.temperature, inst.crossover, nBeads, potential);
+    }
+    const double bnh = inst.betaN * kHbar;
+    const double spring = 1.0 / (bnh * bnh);
+    const NewtonOut got = newtonInstanton(std::move(guess), spring, hessSaddle,
+                                          options, potential);
+    inst.beads = got.beads;
+    inst.energies = got.energies;
+    inst.ringPotential = got.ringPotential;
+    inst.bN = got.bN;
+    inst.iterations = got.iterations;
+    inst.converged = got.converged;
+    inst.collapsed = got.collapsed;
+    if (inst.converged || !cool) {
+      return inst;
+    }
+  }
   if (cool) {
     std::vector<double> temps;
     for (double t = 0.85 * inst.crossover; t > inst.temperature * 1.05;
@@ -2596,6 +2881,9 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
       last = optimizeRateInstanton(saddle, hessSaddle, betaStage,
                                    std::move(stageGuess), potential, opt);
       used += last.iterations;
+      if (last.collapsed) {
+        break;
+      }
       beads = last.beads;
       if (target) {
         targetRan = true;
@@ -2666,6 +2954,7 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
   inst.bN = got.bN;
   inst.iterations = got.iterations;
   inst.converged = got.converged;
+  inst.collapsed = got.collapsed;
   return inst;
 }
 
@@ -2814,7 +3103,20 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
       q[b] = mid;
     }
   };
+  // The mirror of an out-and-back bounce is symmetric too. A monotone
+  // reaction coordinate on beads 0..N/2 leaves that bounce out of the step.
+  auto projectFold = [&](std::vector<VectorXd> &q) {
+    if (!fold) {
+      return;
+    }
+    projectMonotonePrefix(q, N / 2, dir);
+    const long m = N / 2;
+    for (long j = 1; j < m; ++j) {
+      q[static_cast<size_t>(N - j)] = q[static_cast<size_t>(j)];
+    }
+  };
   symmetrize(x);
+  projectFold(x);
 
   RingEval cur = evaluateRing(x, c, evalPot, options.energyShift);
   // The unstable mode of the ring starts as every bead moving along the
@@ -2903,6 +3205,7 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
       trial[k] = x[k] - d[k];
     }
     symmetrize(trial);
+    projectFold(trial);
     RingEval next = evaluateRing(trial, c, evalPot, options.energyShift);
     const double prevCurv = curvature;
     const long restart = options.lanczosRestart;
@@ -2944,15 +3247,19 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
 
 namespace {
 
-/// Flags the count entries of lam nearest zero.
-std::vector<bool> nearestZero(const VectorXd &lam, long count) {
-  std::vector<long> order(static_cast<size_t>(lam.size()));
-  std::iota(order.begin(), order.end(), 0L);
+/// Flags the count entries of lam nearest zero, among the entries from
+/// index `first` on. A saddle passes first = 1 so that its unstable mode,
+/// eigenvalue 0 in ascending order, is never taken for a rigid mode however
+/// soft the barrier is.
+std::vector<bool> nearestZero(const VectorXd &lam, long count, long first = 0) {
+  std::vector<long> order(static_cast<size_t>(lam.size() - first));
+  std::iota(order.begin(), order.end(), first);
   std::sort(order.begin(), order.end(), [&](long a, long b) {
     return std::abs(lam(a)) < std::abs(lam(b));
   });
   std::vector<bool> out(static_cast<size_t>(lam.size()), false);
-  for (long k = 0; k < std::min<long>(count, lam.size()); ++k) {
+  for (long k = 0; k < std::min<long>(count, static_cast<long>(order.size()));
+       ++k) {
     out[static_cast<size_t>(order[static_cast<size_t>(k)])] = true;
   }
   return out;
@@ -2963,7 +3270,7 @@ std::vector<bool> nearestZero(const VectorXd &lam, long count) {
 void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
                    const MatrixXd &hessReactant, double vReactant,
                    const MatrixXd &hessSaddle, double vSaddle, long rigidModes,
-                   long denseLimit) {
+                   long denseLimit, const RingRigidBodies &rigidBodies) {
   const long N = static_cast<long>(inst.beads.size());
   if (N < 4 || !(inst.betaN > 0.0)) {
     throw std::invalid_argument("instantonRate: no optimised ring");
@@ -3023,15 +3330,79 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
         "instantonRate: the beads coincide, so the ring has collapsed");
   }
   scale(cycle, 1.0 / std::sqrt(cycleNorm));
+  // The rigid null vectors, orthonormal.
+  std::vector<std::vector<VectorXd>> rigid;
+  if (!rigidBodies.sqrtMasses.empty()) {
+    // The ring's own rigid motions; the lemma needs an orthonormal basis of
+    // the null space, not the generators themselves.
+    rigid = ringRigidBasis(inst.beads, rigidBodies.sqrtMasses,
+                           rigidBodies.reference, rigidBodies.rotations);
+    if (static_cast<long>(rigid.size()) != nullBasis.cols()) {
+      throw std::runtime_error("instantonRate: the ring has " +
+                               std::to_string(rigid.size()) +
+                               " rigid motions and the reactant " +
+                               std::to_string(nullBasis.cols()));
+    }
+  } else {
+    for (long r = 0; r < nullBasis.cols(); ++r) {
+      rigid.emplace_back(
+          static_cast<size_t>(N),
+          (nullBasis.col(r) / std::sqrt(static_cast<double>(N))).eval());
+    }
+  }
+  auto offRigid = [&](std::vector<VectorXd> &v) {
+    for (const auto &u : rigid) {
+      const double o = dot(u, v);
+      for (long j = 0; j < N; ++j) {
+        v[static_cast<size_t>(j)] -= o * u[static_cast<size_t>(j)];
+      }
+    }
+    const double vn = std::sqrt(dot(v, v));
+    if (!(vn > 1e-8)) {
+      throw std::runtime_error(
+          "instantonRate: a rigid motion of the ring lies along its cycle");
+    }
+    scale(v, 1.0 / vn);
+  };
+  offRigid(cycle);
+  // On a discrete ring the time shift is only nearly a symmetry, so the
+  // central difference tau is not quite the eigenvector of J's near-zero
+  // eigenvalue, and lifting tau would leave out cos^2 of their angle
+  // times that eigenvalue rather than the eigenvalue itself. Inverse
+  // iteration with the rigid modes lifted finds the eigenvector; tau stays
+  // when the iteration fails or wanders off it.
+  {
+    const std::vector<double> rigidKappas(rigid.size(), c);
+    const WoodburyRing lifted(c, diag, true, rigid, rigidKappas, false);
+    std::vector<VectorXd> v = cycle;
+    bool good = lifted.ok();
+    for (int it = 0; good && it < 12; ++it) {
+      std::vector<VectorXd> x = lifted.solve(v);
+      for (const auto &b : x) {
+        good = good && b.allFinite();
+      }
+      if (!good) {
+        break;
+      }
+      offRigid(x);
+      const double change = 1.0 - std::abs(dot(x, v));
+      v = std::move(x);
+      if (change < 1e-15) {
+        break;
+      }
+    }
+    if (good && std::abs(dot(v, cycle)) > 0.9) {
+      cycle = std::move(v);
+    }
+  }
   // Each omitted direction is lifted by a spring-sized curvature c, far
   // above any physical near-zero eigenvalue, and the lift comes off the
-  // log-determinant again: det(J + c u u^T) = c det' J when J u = 0.
+  // log-determinant again: det(J + c u u^T) = (c + lambda) det' J for u the
+  // eigenvector of lambda.
   std::vector<std::vector<VectorXd>> dropped{cycle};
   std::vector<double> kappas{c};
-  for (long r = 0; r < nullBasis.cols(); ++r) {
-    dropped.emplace_back(
-        static_cast<size_t>(N),
-        (nullBasis.col(r) / std::sqrt(static_cast<double>(N))).eval());
+  for (auto &u : rigid) {
+    dropped.push_back(std::move(u));
     kappas.push_back(c);
   }
   const WoodburyRing ring(c, diag, true, dropped, kappas, true);
@@ -3042,12 +3413,59 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
   }
   inst.zeroEigenvalue = dot(cycle, applyDiagonal(diag, c, true, cycle));
   inst.negativeModes = ring.negative();
-  // The lowest ring eigenvalue, for the report, from products alone.
-  {
+  double logAbsDet = ring.logAbsDet();
+  const long dim = N * f;
+  if (denseLimit < 0 || dim <= denseLimit) {
+    // The lifted ring Hessian, dense: its eigenvalues give the determinant,
+    // the inertia and the lowest mode directly, and check the block chain.
+    ColMajorXd full = ColMajorXd::Zero(dim, dim);
+    for (long j = 0; j < N; ++j) {
+      full.block(j * f, j * f, f, f) = diag[static_cast<size_t>(j)];
+      const long k = (j + 1) % N;
+      full.block(j * f, k * f, f, f) -= c * eye;
+      full.block(k * f, j * f, f, f) -= c * eye;
+    }
+    for (size_t d = 0; d < dropped.size(); ++d) {
+      VectorXd u(dim);
+      for (long j = 0; j < N; ++j) {
+        u.segment(j * f, f) = dropped[d][static_cast<size_t>(j)];
+      }
+      full += kappas[d] * u * u.transpose();
+    }
+    const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(full,
+                                                       Eigen::EigenvaluesOnly);
+    const VectorXd lam = es.eigenvalues();
+    double dense = 0.0, scaleSum = 0.0;
+    long negative = 0;
+    for (long i = 0; i < dim; ++i) {
+      const double l = std::abs(lam(i));
+      dense += std::log(l);
+      scaleSum += std::abs(std::log(l));
+      negative += lam(i) < 0.0 ? 1 : 0;
+    }
+    if (!(std::abs(dense - logAbsDet) <= 1e-6 * std::max(1.0, scaleSum))) {
+      throw std::runtime_error(
+          "instantonRate: the block-chain determinant disagrees with the "
+          "dense ring Hessian");
+    }
+    logAbsDet = dense;
+    inst.negativeEigenvalue = std::min(0.0, lam(0));
+    // A numerical null eigenvalue can sit just below zero off the lifted
+    // directions; it is not a second unstable mode when it is tiny next to
+    // the barrier curvature.
+    long tiny = 0;
+    for (long i = 1; i < dim && lam(i) < 0.0; ++i) {
+      if (lam(i) > 1e-3 * lam(0)) {
+        ++tiny;
+      }
+    }
+    inst.negativeModes =
+        negative > 1 ? std::max(1L, negative - tiny) : negative;
+  } else {
+    // The lowest ring eigenvalue, for the report, from products alone.
     auto applyFull = [&](const std::vector<VectorXd> &vec) {
       return applyDiagonal(diag, c, true, vec);
     };
-    const long dim = N * f;
     const long steps = std::min(dim, static_cast<long>(60));
     std::vector<VectorXd> start = cycle;
     std::uint64_t h = 0x9E3779B97F4A7C15ULL;
@@ -3083,8 +3501,12 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
     }
   }
   const long nDrop = 1 + nullBasis.cols();
-  const double logDetPrime =
-      ring.logAbsDet() - static_cast<double>(nDrop) * std::log(c);
+  // Along an eigenvector the lift adds c to its eigenvalue, so it comes off
+  // as c + lambda_0 for the cycle (lambda_0 is not zero on a discrete ring)
+  // and as c for the exact rigid zeros.
+  const double logDetPrime = logAbsDet -
+                             std::log(std::abs(c + inst.zeroEigenvalue)) -
+                             static_cast<double>(nDrop - 1) * std::log(c);
   const double logProd =
       static_cast<double>(N * f - nDrop) * std::log(bnh) + 0.5 * logDetPrime;
 
@@ -3126,6 +3548,89 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
         hessReactant, hessSaddle, inst.beta, vSaddle - vReactant, rigidModes);
     inst.classicalRate = std::exp(inst.classicalLogRate) / kTimeUnitSeconds;
   }
+}
+
+RotationZeroModes rotationZeroModes(const MatrixXd &hess,
+                                    const MatrixXd &generators) {
+  RotationZeroModes out;
+  const long n = hess.rows();
+  if (hess.cols() != n || generators.rows() != n || generators.cols() != 6) {
+    throw std::invalid_argument(
+        "rotationZeroModes: need a square Hessian and six generators");
+  }
+  const ColMajorXd h = 0.5 * (hess + hess.transpose());
+  const ColMajorXd g = generators;
+  const Eigen::ColPivHouseholderQR<ColMajorXd> qr(g);
+  const long rank = qr.rank();
+  if (rank >= n) {
+    return out;
+  }
+  const ColMajorXd q = qr.householderQ() * ColMajorXd::Identity(n, n);
+  const ColMajorXd z = q.rightCols(n - rank);
+  const ColMajorXd reduced = z.transpose() * h * z;
+  const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(
+      0.5 * (reduced + reduced.transpose()), Eigen::EigenvaluesOnly);
+  out.softestVibration = es.eigenvalues()(0);
+  for (int c = 0; c < 3; ++c) {
+    const VectorXd r = generators.col(3 + c);
+    const double rr = r.squaredNorm();
+    if (!(rr > 0.0)) {
+      continue;
+    }
+    const double rq = r.dot(h * r) / rr;
+    if (out.softestVibration > 0.0) {
+      out.residual[static_cast<size_t>(c)] = rq / out.softestVibration;
+      out.zero[static_cast<size_t>(c)] =
+          std::abs(rq) <= kRotationZeroFraction * out.softestVibration;
+    } else {
+      out.residual[static_cast<size_t>(c)] =
+          std::numeric_limits<double>::infinity();
+    }
+  }
+  return out;
+}
+
+RingChannel ringChannel(const std::vector<VectorXd> &beads,
+                        const VectorXd &saddle, const VectorXd &mode) {
+  RingChannel out;
+  const double mn = mode.norm();
+  if (beads.size() < 2 || !(mn > 0.0)) {
+    return out;
+  }
+  const VectorXd n = mode / mn;
+  const size_t nb = beads.size();
+  std::vector<double> s(nb);
+  size_t jLo = 0, jHi = 0;
+  for (size_t j = 0; j < nb; ++j) {
+    s[j] = (beads[j] - saddle).dot(n);
+    if (s[j] < s[jLo]) {
+      jLo = j;
+    }
+    if (s[j] > s[jHi]) {
+      jHi = j;
+    }
+  }
+  out.sMin = s[jLo];
+  out.sMax = s[jHi];
+  const VectorXd chord = beads[jHi] - beads[jLo];
+  const double cn = chord.norm();
+  out.chordOverlap = cn > 0.0 ? std::abs(chord.dot(n)) / cn : 0.0;
+  bool crossed = false;
+  for (size_t j = 0; j < nb; ++j) {
+    const size_t k = (j + 1) % nb;
+    if ((s[j] < 0.0) == (s[k] < 0.0)) {
+      continue;
+    }
+    const double t = s[j] / (s[j] - s[k]);
+    const VectorXd p = beads[j] + t * (beads[k] - beads[j]) - saddle;
+    const VectorXd across = p - p.dot(n) * n;
+    out.crossingOffset = std::max(out.crossingOffset, across.norm());
+    crossed = true;
+  }
+  out.belongs = crossed && out.sMin < 0.0 && out.sMax > 0.0 &&
+                out.chordOverlap >= 0.5 &&
+                out.crossingOffset <= out.sMax - out.sMin;
+  return out;
 }
 
 double parabolicFactor(double temperature, double crossover) {
@@ -3170,7 +3675,7 @@ double harmonicTstLogRate(const MatrixXd &hessReactant,
         "harmonicTstLogRate: the saddle Hessian has no negative eigenvalue");
   }
   const std::vector<bool> rigidR = nearestZero(lr, rigidModes);
-  const std::vector<bool> rigidS = nearestZero(ls, rigidModes);
+  const std::vector<bool> rigidS = nearestZero(ls, rigidModes, 1);
   double logRatio = 0.0;
   for (long m = 0; m < lr.size(); ++m) {
     if (!rigidR[static_cast<size_t>(m)]) {
@@ -3210,11 +3715,12 @@ double quantumHarmonicTstLogRate(const MatrixXd &hessReactant,
                                 "Hessian has no negative eigenvalue");
   }
   const std::vector<bool> rigidR = nearestZero(lr, rigidModes);
-  const std::vector<bool> rigidS = nearestZero(ls, rigidModes);
+  const std::vector<bool> rigidS = nearestZero(ls, rigidModes, 1);
   const double bh = beta * kHbar;
-  // ln(2 sinh(x / 2)) without overflow for large x.
+  // ln(2 sinh(x / 2)) without overflow for large x, and without the
+  // cancellation of 1 - exp(-x) for small x.
   auto logTwoSinhHalf = [](double x) {
-    return 0.5 * x + std::log1p(-std::exp(-x));
+    return 0.5 * x + std::log(-std::expm1(-x));
   };
   double logRatio = 0.0;
   for (long m = 0; m < lr.size(); ++m) {

@@ -21,7 +21,8 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 TEST_CASE("EMT energy matches SVN on Cu FCC cluster", "[pot][emt][cu]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::EMT;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
 
@@ -36,7 +37,8 @@ TEST_CASE("EMT energy matches SVN on Cu FCC cluster", "[pot][emt][cu]") {
 TEST_CASE("EMT forces are conservative on Cu FCC", "[pot][emt][cu]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::EMT;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
 
@@ -54,7 +56,8 @@ TEST_CASE("EMT minimization converges on Cu FCC", "[pot][emt][cu]") {
   ParametersLoadAccess::optimizer_options(params).method = OptType::LBFGS;
   ParametersLoadAccess::optimizer_options(params).converged_force = 0.01;
   ParametersLoadAccess::optimizer_options(params).max_iterations = 50;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
 
@@ -70,7 +73,8 @@ TEST_CASE("EMT opts out of shared-instance threading",
           "[pot][emt][cu][thread_safety][gjg]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::EMT;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   REQUIRE_FALSE(pot->isSharedInstanceThreadSafe());
 }
 

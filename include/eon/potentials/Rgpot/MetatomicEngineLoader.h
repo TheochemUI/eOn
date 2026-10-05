@@ -1,6 +1,7 @@
 #pragma once
 /*
-** Thin RGPOT-metatomic backend: dlopen libmetatomic_engine.so (no torch).
+** Thin RGPOT-metatomic backend: dlopen librgpot_metatomic_engine.so
+** (compat: libmetatomic_engine.so). No torch in the host.
 */
 #include "metatomic_c_abi.h"
 #include <memory>

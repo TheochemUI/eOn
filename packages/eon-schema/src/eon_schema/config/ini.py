@@ -220,8 +220,12 @@ def hydrate_ini(
 
 
 def allowed_keys(section: str) -> set[str]:
-    """Known option names for a covered L0 section (snake + flat aliases)."""
-    keys = {f["snake"] for f in _scalar_fields(section)}
+    """Known option names: snakes, ini_order aliases, and Optimizer flats."""
+    keys: set[str] = set()
+    for f in _scalar_fields(section):
+        keys.add(f["snake"])
+        for name in f.get("ini_order") or []:
+            keys.add(name)
     cat = load_catalog()
     if section == "Optimizer":
         for a in cat.get("flat_aliases", []):

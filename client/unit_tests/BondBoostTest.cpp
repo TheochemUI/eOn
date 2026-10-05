@@ -13,6 +13,7 @@
 #include "eon/BondBoost.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/Dynamics.h"
 #include "eon/DynamicsSaddleSearch.h"
 #include "eon/Matter.h"
 #include "eon/RandomNumbers.h"
@@ -20,6 +21,7 @@
 #include <cmath>
 #include <memory>
 #include <stdexcept>
+#include <utility>
 
 namespace tests {
 
@@ -33,7 +35,8 @@ TEST_CASE("BondBoost initializes on LJ cluster", "[bondboost]") {
   ParametersLoadAccess::hyperdynamics_options(params).prr = 0.95;
   ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list = "All";
 
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter matter(pot, params);
   matter.con2matter(std::string("reactant.con"));
 
@@ -54,7 +57,8 @@ TEST_CASE("assignKeepingBias copies the structure and keeps the bond boost",
   ParametersLoadAccess::hyperdynamics_options(params).prr = 0.95;
   ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list = "All";
 
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter trajectory(pot, params);
   trajectory.con2matter(std::string("reactant.con"));
   BondBoost bb(&trajectory, params);
@@ -88,7 +92,8 @@ TEST_CASE("BondBoost returns zero boost at equilibrium", "[bondboost]") {
   ParametersLoadAccess::hyperdynamics_options(params).prr = 0.95;
   ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list = "All";
 
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter matter(pot, params);
   matter.con2matter(std::string("reactant.con"));
 
@@ -113,7 +118,8 @@ TEST_CASE("BondBoost schedule advances only from advance(), not boost()",
   ParametersLoadAccess::hyperdynamics_options(params).prr = 0.95;
   ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list = "All";
 
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter matter(pot, params);
   matter.con2matter(std::string("reactant.con"));
 
@@ -143,7 +149,8 @@ TEST_CASE("BondBoost listed index out of range throws", "[bondboost][list]") {
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list =
       "999999";
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter matter(pot, params);
   matter.con2matter(std::string("reactant.con"));
   BondBoost bb(&matter, params);
@@ -190,7 +197,8 @@ TEST_CASE("BondBoost with no equilibration samples uses the current lengths",
   // SafeHyper and ParallelReplica call advance() once per step, then boost().
   {
     const Parameters params = zeroSampleParams();
-    auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+    auto pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, params));
     Matter matter(pot, params);
     matter.con2matter(std::string("reactant.con"));
     BondBoost bb(&matter, params);
@@ -204,7 +212,8 @@ TEST_CASE("BondBoost with no equilibration samples uses the current lengths",
   // A caller that never advance()s still has to measure before BondSelect.
   {
     const Parameters params = zeroSampleParams();
-    auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+    auto pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, params));
     Matter matter(pot, params);
     matter.con2matter(std::string("reactant.con"));
     BondBoost bb(&matter, params);
@@ -226,7 +235,8 @@ TEST_CASE("BondBoost bias force is the minimum-image bond gradient",
   ParametersLoadAccess::hyperdynamics_options(params).qcut = 3.0;
   ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list = "All";
 
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter matter(pot, params);
   matter.resize(2);
   matter.setAtomicNr(0, 1);
@@ -300,7 +310,8 @@ TEST_CASE("BondBoost garbage list is not treated as all", "[bondboost][list]") {
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list =
       "not-a-list";
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter matter(pot, params);
   matter.con2matter(std::string("reactant.con"));
   BondBoost bb(&matter, params);
@@ -330,7 +341,8 @@ TEST_CASE("Dynamics saddle search applies bond-boost forces",
   ParametersLoadAccess::hyperdynamics_options(base).prr = 0.95;
   ParametersLoadAccess::hyperdynamics_options(base).boost_atom_list = "All";
 
-  auto pot = eonc::helpers::makePotential(PotType::LJ, base);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, base));
 
   auto finalPositions = [&](const char *bias) {
     eonc::rng::random(42);
@@ -356,6 +368,126 @@ TEST_CASE("Dynamics saddle search applies bond-boost forces",
   REQUIRE(boosted.allFinite());
   REQUIRE((plain - plainAgain).norm() < 1e-10);
   REQUIRE((plain - boosted).norm() > 1e-4);
+}
+
+TEST_CASE("a dropped bond boost leaves the next Verlet step on stale bias",
+          "[bondboost][dynamics]") {
+  // Velocity Verlet evaluates the bias at the start of the step and
+  // again after the move. A cleared pointer leaves the second
+  // evaluation on the forces from before the move.
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::hyperdynamics_options(params).rmd_time = 0.0;
+  ParametersLoadAccess::hyperdynamics_options(params).dvmax = 5.0;
+  ParametersLoadAccess::hyperdynamics_options(params).qrr = 0.2;
+  ParametersLoadAccess::hyperdynamics_options(params).prr = 0.95;
+  ParametersLoadAccess::hyperdynamics_options(params).qcut = 3.0;
+  ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list = "All";
+  REQUIRE(params.dynamics_options().time_step > 0.0);
+
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+
+  auto afterMove = [&](bool keep) {
+    Matter matter(pot, params);
+    matter.con2matter(std::string("reactant.con"));
+    AtomMatrix velocity = AtomMatrix::Zero(matter.numberOfAtoms(), 3);
+    velocity(0, 0) = 1.0;
+    matter.setVelocities(velocity);
+    BondBoost bb(&matter, params);
+    bb.initialize();
+    bb.advance();
+    matter.setPosition(0, 0, matter.getPosition(0, 0) + 0.05);
+    matter.setBiasPotential(&bb);
+    const double bias = bb.boost();
+    REQUIRE(std::isfinite(bias));
+    const AtomMatrix before = matter.getBiasForces();
+    REQUIRE(before.squaredNorm() > 0.0);
+    if (!keep) {
+      matter.setBiasPotential(nullptr);
+    }
+    Dynamics dyn(&matter, DynamicsConfig::fromParams(params));
+    dyn.oneStep(1);
+    // getBiasForces recomputes only while the pointer is set. A cleared
+    // pointer returns the forces from before this step.
+    return std::pair<AtomMatrix, AtomMatrix>{before, matter.getBiasForces()};
+  };
+
+  const auto kept = afterMove(true);
+  const auto dropped = afterMove(false);
+  REQUIRE(kept.first.isApprox(dropped.first, 1e-12));
+  REQUIRE((kept.second - kept.first).norm() > 1e-4);
+  REQUIRE(dropped.second.isApprox(dropped.first, 1e-12));
+}
+
+TEST_CASE("BondBoost rejects a null Matter", "[bondboost]") {
+  Parameters params;
+  REQUIRE_THROWS_AS(BondBoost(nullptr, params), std::invalid_argument);
+}
+
+TEST_CASE("BondBoost skips fixed and duplicate list entries",
+          "[bondboost][list]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list = "0,0";
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  Matter matter(pot, params);
+  matter.con2matter(std::string("reactant.con"));
+  matter.setFixed(0, true);
+  BondBoost fixedOnly(&matter, params);
+  REQUIRE_THROWS_AS(fixedOnly.initialize(), std::runtime_error);
+
+  matter.setFixed(0, false);
+  BondBoost listed(&matter, params);
+  listed.initialize();
+  REQUIRE(std::isfinite(listed.boost()));
+}
+
+TEST_CASE("BondBoost bias is finite after one equilibration step",
+          "[bondboost][bias]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::dynamics_options(params).time_step = 1.0;
+  ParametersLoadAccess::hyperdynamics_options(params).rmd_time = 1.0;
+  ParametersLoadAccess::hyperdynamics_options(params).dvmax = 0.05;
+  ParametersLoadAccess::hyperdynamics_options(params).qrr = 0.3;
+  ParametersLoadAccess::hyperdynamics_options(params).prr = 0.9;
+  ParametersLoadAccess::hyperdynamics_options(params).qcut = 5.0;
+  ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list = "All";
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  Matter matter(pot, params);
+  matter.con2matter(std::string("reactant.con"));
+  BondBoost bb(&matter, params);
+  bb.initialize();
+  bb.advance();
+  double atEq = bb.boost();
+  REQUIRE(std::isfinite(atEq));
+  REQUIRE(atEq >= 0.0);
+
+  AtomMatrix pos = matter.getPositions();
+  pos.row(1) += Eigen::RowVector3d(2.5, 0.0, 0.0);
+  matter.setPositions(pos);
+  double stretched = bb.boost();
+  REQUIRE(std::isfinite(stretched));
+  REQUIRE(stretched >= 0.0);
+}
+
+TEST_CASE("BondBoost with a nonpositive qrr contributes no bias",
+          "[bondboost]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::dynamics_options(params).time_step = 0.0;
+  ParametersLoadAccess::hyperdynamics_options(params).qrr = 0.0;
+  ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list = "All";
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  Matter matter(pot, params);
+  matter.con2matter(std::string("reactant.con"));
+  BondBoost bb(&matter, params);
+  bb.initialize();
+  REQUIRE(bb.boost() == 0.0);
 }
 
 } /* namespace tests */

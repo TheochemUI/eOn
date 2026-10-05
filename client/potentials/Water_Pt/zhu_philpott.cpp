@@ -29,7 +29,7 @@ class SpceCcl).\n The potential uses Kong's rules to combine the Lennard-Jones
 parameters of platinum with oxygen and hydrogen. A @ref combinationReview
 "review of combination rules" including Kong's rule can be find on the web.\n
 The system of unit used by the class is (eV, Angstrom, fs, e).
-@section references References
+@section zhu_philpott_references References
 @anchor zhu1994
 Interaction of water with metal surfaces, S.-B. Zhu and M.R. Philpott J. Chem.
 Phys. (1994) vol. 100, No 9,  p. 6961.\n

@@ -57,6 +57,8 @@ public:
 
   NudgedElasticBand::NEBStatus compute(void);
   NudgedElasticBand::NEBStatus getStatus() { return this->status; };
+  /// Iteration count from the last compute(). Zero before compute() runs.
+  [[nodiscard]] long lastIteration() const noexcept { return iteration_; }
   [[nodiscard]] bool solidState() const noexcept { return solidState_; }
   [[nodiscard]] double solidJacobian() const noexcept { return solidJacobian_; }
   [[nodiscard]] const Matrix3d &cellForce(long image) const {
@@ -104,6 +106,7 @@ private:
   Parameters params;
   std::shared_ptr<Potential> pot;
   NEBStatus status;
+  long iteration_{0};
   eonc::log::Scoped log;
 
   // Cached strategies (constant across iterations)
@@ -134,6 +137,8 @@ public:
   bool isUncertain();
   double getConvergence();
   VectorXd difference(const VectorXd &a, const VectorXd &b);
+  // One mass per free atom on each interior image, in band order.
+  VectorXd getMasses() const override;
   // The band residual rotates with its tangent and is not a PES gradient.
   bool supportsFiniteDifferenceCurvature() const override { return false; }
   NudgedElasticBand::NEBStatus status;

@@ -48,11 +48,11 @@ and use its `min.con` as `pos.con`.
 
 ```bash
 export CPMD_BIN=/path/to/cpmd.x
-export CPMD_LAUNCH="mpirun -np 4"            # or "srun -n 4 --overlap"
+export CPMD_LAUNCH="mpirun -np 4 --bind-to none"  # or "srun -n 4 --overlap"
 export PP_LIBRARY_PATH=/path/to/pseudopotentials/
 export CPMD_PP="14:Si_MT_BLYP.psp:LMAX=P"    # Z:file:options, comma separated
 export CPMD_CUTOFF=20                        # Ry; raise for production
-export EON_SBATCH_ARGS="-p cpu -N 1 --ntasks=1 --cpus-per-task=4 -t 02:00:00"
+export EON_SBATCH_ARGS="-p cpu -N 1 --ntasks=4 --cpus-per-task=1 -t 02:00:00"
 export EON_CLIENT=$(command -v eonclient)
 # Set script_path in config.ini to eOn's tools/clusters/slurm.
 ./run_until_done.sh
@@ -60,9 +60,13 @@ export EON_CLIENT=$(command -v eonclient)
 
 The server runs on the login node, where it submits and harvests jobs; start
 it inside `tmux`. `sbatch` passes the exported variables into each job, where
-the wrapper reads them. Each job asks for one Slurm task with four CPUs: the
-client is one process and `mpirun` starts the four CPMD ranks inside the
-allocation.
+the wrapper reads them. Each job asks for four Slurm tasks: `sbatch --wrap`
+starts the client once, and `mpirun` (or `srun --overlap`) starts the four
+CPMD ranks on those task slots. One task with four CPUs gives `mpirun` a
+single slot, and OpenMPI 5 then refuses `-np 4` ("not enough slots"); the
+search fails and the server makes new ones without end. `--bind-to none`
+keeps OpenMPI from refusing to bind four ranks to cores when Slurm hands
+out hardware threads (four CPUs on two physical cores).
 
 ## Checked
 

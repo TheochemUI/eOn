@@ -1,0 +1,1 @@
+The Local communicator starts eonclient with `UCX_MEM_EVENTS=no` unless the environment sets it. An eonclient linked with MPI loads UCX in every run, and its memory hooks cost about 0.4 s per process with conda's OpenMPI against 0.02 s for a one-call job.

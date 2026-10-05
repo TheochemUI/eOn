@@ -48,7 +48,8 @@ protected:
         reactant{nullptr},
         product{nullptr} {
     ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-    pot = eonc::helpers::makePotential(PotType::LJ, params);
+    pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, params));
     reactant = std::make_shared<Matter>(pot, params);
     product = std::make_shared<Matter>(pot, params);
 
@@ -630,7 +631,8 @@ TEST_CASE_METHOD(NEBLJFixture,
 TEST_CASE("Potential isThreadSafe defaults to true",
           "[potential][thread_safety]") {
   Parameters params;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   REQUIRE(pot->isThreadSafe() == true);
   REQUIRE(pot->isSharedInstanceThreadSafe() == true);
   REQUIRE(eonc::potIsThreadSafe(*pot));
@@ -641,7 +643,8 @@ TEST_CASE("Potential thread_safe=false forces serial sharing",
           "[potential][thread_safety][gjg]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).thread_safe = false;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   REQUIRE(pot->isThreadSafe() == true);
   REQUIRE(pot->isSharedInstanceThreadSafe() == false);
 }
@@ -649,7 +652,8 @@ TEST_CASE("Potential thread_safe=false forces serial sharing",
 TEST_CASE("Potential forceCallCounter is atomic",
           "[potential][thread_safety]") {
   Parameters params;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   pot->forceCallCounter++;
   REQUIRE(pot->forceCallCounter.load() == 1);
   pot->forceCallCounter.store(42);
@@ -701,7 +705,8 @@ TEST_CASE_METHOD(
 TEST_CASE("Concurrent potential force calls preserve atomic counter",
           "[potential][parallel]") {
   Parameters params;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
 
   AtomMatrix pos(2, 3);
   pos << 0.0, 0.0, 0.0, 1.5, 0.0, 0.0;
@@ -757,7 +762,8 @@ TEST_CASE("PotRegistry write_summary empty when potential alive",
   PotRegistry::get().reset();
   Parameters params;
 
-  auto live_pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto live_pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
 
   AtomMatrix pos(2, 3);
   pos << 0.0, 0.0, 0.0, 1.5, 0.0, 0.0;
@@ -925,7 +931,8 @@ TEST_CASE("Collective IDPP lastMaxForce ignores frozen atoms",
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   ParametersLoadAccess::neb_options(params).spring.constant = 0.0;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
 
   auto makeImage = [&](double xFree) {
     Matter m(pot, params);

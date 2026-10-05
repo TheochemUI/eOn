@@ -1,12 +1,14 @@
 # A development environment for eOn on EESSI 2026.06: one module that loads
 # everything a meson build of an eOn checkout needs. Install it once into an
-# EESSI-extend prefix, then load it instead of the individual modules:
+# EESSI-extend prefix:
 #
 #   source /cvmfs/software.eessi.io/versions/2026.06/init/bash
+#   mkdir -p "${EESSI_USER_INSTALL:-$HOME/eessi}"
 #   module load EESSI-extend
-#   eb eessi/eOn-devel-2026.06-GCCcore-15.2.0.eb
-#   module load eOn-devel/2026.06-GCCcore-15.2.0
-#   meson setup bbdir -Dwith_tests=true && meson compile -C bbdir
+#   eb --umask=022 eessi/eOn-devel-2026.06-GCCcore-15.2.0.eb
+#
+# The configure, build and test commands, with foss/2026.1, CapnProto 1.4.0
+# and the run-path list, are in docs/source/install/eessi.md.
 #
 # quill, inih, nlohmann_json, Highway, rgpot and readcon-core come from the
 # wraps in subprojects/, so the build needs network the first time.

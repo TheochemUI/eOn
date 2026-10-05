@@ -212,14 +212,14 @@ private:
 /// Factory arm helper for kernels whose parameters are fixed tabulated
 /// data with no eOn-side configuration surface.
 template <class RPot>
-std::shared_ptr<eonc::Potential>
+std::unique_ptr<eonc::Potential>
 makeRgpotDefault(eonc::PotType ptype, const eonc::Parameters &params) {
-  return std::make_shared<RgpotAdapter<RPot>>(ptype, params);
+  return std::make_unique<RgpotAdapter<RPot>>(ptype, params);
 }
 
 /// Factory arm helper: construct the kernel from its config and wrap it.
 template <class RPot, class Cfg>
-std::shared_ptr<eonc::Potential>
+std::unique_ptr<eonc::Potential>
 makeRgpot(eonc::PotType ptype, const eonc::Parameters &params, const Cfg &cfg) {
-  return std::make_shared<RgpotAdapter<RPot>>(ptype, params, cfg);
+  return std::make_unique<RgpotAdapter<RPot>>(ptype, params, cfg);
 }

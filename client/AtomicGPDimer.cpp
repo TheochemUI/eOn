@@ -96,7 +96,8 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
   atomic_dimer.initialize(p, init_observations, init_middle_point, orient_init,
                           atoms_config);
 
-  auto potential = eonc::helpers::makePotential(params);
+  auto potential =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   pot::PotentialWrapper wrapper(
       [&potential](long N, const double *R, const int *atomicNrs, double *F,
                    double *U, double *variance, const double *box) {

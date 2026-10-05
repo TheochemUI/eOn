@@ -136,7 +136,9 @@ if [[ -z "$POS" || ! -f "$POS" ]]; then
 fi
 if [[ -z "$ENGINE" || ! -f "$ENGINE" ]]; then
   for cand in \
+    "$ROOT/$BUILD_FAT/client/librgpot_metatomic_engine.so" \
     "$ROOT/$BUILD_FAT/client/libmetatomic_engine.so" \
+    "$ROOT/bbdir/client/librgpot_metatomic_engine.so" \
     "$ROOT/bbdir/client/libmetatomic_engine.so"; do
     if [[ -f "$cand" ]]; then ENGINE="$cand"; break; fi
   done
@@ -151,7 +153,7 @@ if [[ -z "$POS" || ! -f "$POS" ]]; then
   exit 2
 fi
 if [[ -z "$ENGINE" || ! -f "$ENGINE" ]]; then
-  echo "error: libmetatomic_engine.so not found under $BUILD_FAT" >&2
+  echo "error: librgpot_metatomic_engine.so not found under $BUILD_FAT" >&2
   exit 2
 fi
 

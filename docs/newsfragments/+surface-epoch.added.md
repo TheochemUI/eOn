@@ -1,0 +1,1 @@
+`Potential::surfaceEpoch()` and `Matter::setSurfaceEpoch()` key the energy and variance caches on a surface generation, so identical positions after a surrogate refit recompute. `Matter::getEnergyVariance()` evaluates the potential when the cache is stale, and the variance of a direct `force()` call is kept.

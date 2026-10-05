@@ -40,8 +40,8 @@ public:
         pot{nullptr},
         matter{nullptr} {
     ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-    pot = eonc::helpers::makePotential(params.potential_options().potential,
-                                       params);
+    pot = eonc::helpers::sharePotential(eonc::helpers::makePotential(
+        params.potential_options().potential, params));
     matter = std::make_shared<Matter>(pot, params);
     const std::string confile("pos.con");
     const bool ok = eonc::io::io_ok(matter->con2matter(confile));
@@ -372,7 +372,8 @@ TEST_CASE("minCoordinatedEpiCenter returns a free atom index",
           "[epicenters][min_coordinated]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::MORSE_PT;
-  auto pot = eonc::helpers::makePotential(PotType::MORSE_PT, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::MORSE_PT, params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
 
@@ -386,7 +387,8 @@ TEST_CASE("randomFreeAtomEpiCenter returns a free atom",
           "[epicenters][random]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::MORSE_PT;
-  auto pot = eonc::helpers::makePotential(PotType::MORSE_PT, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::MORSE_PT, params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
 
@@ -412,7 +414,8 @@ TEST_CASE_METHOD(EpiCentersFixture,
 TEST_CASE("lastAtom returns last atom index", "[epicenters][last_atom]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::MORSE_PT;
-  auto pot = eonc::helpers::makePotential(PotType::MORSE_PT, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::MORSE_PT, params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
 
@@ -424,7 +427,8 @@ TEST_CASE("coordination returns finite values for all atoms",
           "[epicenters][coordination]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::MORSE_PT;
-  auto pot = eonc::helpers::makePotential(PotType::MORSE_PT, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::MORSE_PT, params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
 
@@ -441,7 +445,8 @@ TEST_CASE("minCoordination returns a valid atom index",
           "[epicenters][min_coordination]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::MORSE_PT;
-  auto pot = eonc::helpers::makePotential(PotType::MORSE_PT, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::MORSE_PT, params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
 
@@ -453,7 +458,8 @@ TEST_CASE("minCoordination returns a valid atom index",
 TEST_CASE("cnaEpiCenter returns a non-FCC/HCP atom", "[epicenters][cna]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::MORSE_PT;
-  auto pot = eonc::helpers::makePotential(PotType::MORSE_PT, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::MORSE_PT, params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
 
@@ -468,7 +474,8 @@ TEST_CASE("randomFreeAtomEpiCenter throws when every atom is fixed",
           "[epicenters][empty]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
   Matter matter(pot, params);
   matter.resize(2);
   AtomMatrix pos(2, 3);
@@ -484,7 +491,8 @@ TEST_CASE("coordinationLessOrEqual filters atoms correctly",
           "[epicenters][coordination_filter]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::MORSE_PT;
-  auto pot = eonc::helpers::makePotential(PotType::MORSE_PT, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::MORSE_PT, params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
 

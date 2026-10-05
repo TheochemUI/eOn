@@ -97,7 +97,8 @@ TEST_CASE("Zoom redistribution packs the band onto the window", "[neb][zoom]") {
   Parameters params;
   eonc::ParametersLoadAccess::potential_options(params).potential =
       eonc::PotType::LJ;
-  auto pot = eonc::helpers::makePotential(eonc::PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(eonc::PotType::LJ, params));
   auto path = linePath(pot, params, 11);
 
   eonc::neb::zoom::Window window;
@@ -121,7 +122,8 @@ TEST_CASE("Zoom linear and cubic agree on a straight window", "[neb][zoom]") {
   Parameters params;
   eonc::ParametersLoadAccess::potential_options(params).potential =
       eonc::PotType::LJ;
-  auto pot = eonc::helpers::makePotential(eonc::PotType::LJ, params);
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(eonc::PotType::LJ, params));
   auto cubic = linePath(pot, params, 11);
   auto linear = linePath(pot, params, 11);
   eonc::neb::zoom::Window window;

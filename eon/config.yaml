@@ -1664,6 +1664,7 @@ Saddle Search:
                 - davidson
                 - gprdimer
                 - artn
+                - xtsci
 
         displace_random_weight:
             kind: float
@@ -2384,6 +2385,10 @@ RgpotPot:
         model_path:
             kind: string
             default: ""
+
+        task_name:
+            kind: string
+            default: "omol"
 
         device:
             kind: string

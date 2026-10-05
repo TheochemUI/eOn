@@ -58,7 +58,7 @@ can be changed by setCutoff(). There is also and switching zone at the edge of
 the cutoff to cut off the interactions smoothly. The width of this switching
 zone is controlled by setSwitchingWidth().\n The unit system for this potential
 is eV (electron volt), Angstrom, e (e charge).
-@section references References
+@section tip4p_references References
 @anchor abascal2005
 A general purpose model for the condensed phases of water: TIP4P/2005, J.L.F.
 Abascal and C. Vega, J. Chem. Phys. (2005) vol. 123, p. 234505.*/

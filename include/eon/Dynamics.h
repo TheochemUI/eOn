@@ -20,6 +20,8 @@
 #include "Eigen.h"
 #include "EonLogger.h"
 
+#include <limits>
+
 namespace eonc {
 
 /// Configuration extracted from Parameters for Dynamics.
@@ -94,6 +96,9 @@ public:
   void rescaleVelocity();
   void noseHooverVerlet();
   void langevinVerlet();
+  /// After a pile or piglet run: the centroid-virial kinetic energy in eV,
+  /// averaged over the second half of the steps; NaN before.
+  [[nodiscard]] double pathKineticEnergy() const { return pathKineticEnergy_; }
 
 private:
   /// One Martyna-Klein-Tuckerman chain half-step. G2 is always
@@ -103,6 +108,7 @@ private:
   void runPathIntegral();
 
   long nAtoms{0}, nFreeCoords{0};
+  double pathKineticEnergy_{std::numeric_limits<double>::quiet_NaN()};
 
   Matter *matter;
   DynamicsConfig m_config;

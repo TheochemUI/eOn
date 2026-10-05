@@ -10,6 +10,7 @@ const std::string BUILD_DATE = "@BUILD_DATE@";
 const std::string OS_INFO = "@OS_INFO@";
 const std::string ARCH = "@ARCH@";
 const std::string GIT_HASH = "@GIT_HASH@";
+const std::string GIT_HASH_FULL = "@GIT_HASH_FULL@";
 
 // Formatted version string for cleaner output
 // Format: "2.11.1 (abc4bfa7)\ncompiled Wed Mar 04 05:46:31 PM GMT 2026"

@@ -88,7 +88,9 @@ ReplicaExchangeJob::runFromMatter(std::shared_ptr<Matter> initial) {
   // the potential requires it (e.g. ML potentials with internal state)
   const bool perImage = pot->needsPerImageInstance();
   for (long i = 0; i < nReplicas; i++) {
-    auto replicaPot = perImage ? eonc::helpers::makePotential(params) : pot;
+    auto replicaPot = perImage ? eonc::helpers::sharePotential(
+                                     eonc::helpers::makePotential(params))
+                               : pot;
     replica[i] = std::make_shared<Matter>(replicaPot, params);
     *replica[i] = *pos;
     replica[i]->setPotential(replicaPot);

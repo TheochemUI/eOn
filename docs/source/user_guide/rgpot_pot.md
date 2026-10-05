@@ -109,6 +109,28 @@ accuracy = 1.0
 `engine_path` may point at `libxtb_engine.so`. The client also reads
 `RGPOT_XTB_ENGINE` and `XTB_ENGINE`.
 
+### UMA
+
+The engine is `libuma_engine.so`, loaded at run time through the generic
+engine interface. `model_path` names the ahead-of-time compiled model,
+`task_name` selects its task head (default `omol`), and `charge` and
+`multiplicity` set the total charge and spin.
+
+```{code-block} ini
+[Potential]
+potential = rgpot
+
+[RgpotPot]
+backend = uma
+model_path = /path/to/uma.pt2
+task_name = omol
+device = cpu
+```
+
+`engine_path` may point at `libuma_engine.so`. The client also reads
+`RGPOT_UMA_ENGINE`. A molecule whose `.con` file carries no cell gets a
+25 angstrom diagonal box.
+
 ## CPMD
 
 `backend = cpmdc` runs one Car-Parrinello molecular dynamics (CPMD)
@@ -127,13 +149,18 @@ meson compile -C bbdir
 The flag configures the wrap. A `pkg-config` rgpot must already be an MPI
 build. If it is not, `ranks_per_image` greater than 0 raises.
 
-The construction agreement and the grouped exit handler below compile
-when rgpot links MPI: the wrap with `-Drgpot:with_mpi=enabled`, or an
-installed rgpot whose `rgpot.pc` defines `RGPOT_HAS_MPI`. Against an
-installed rgpot without that define, eOn's `-Dwith_mpi=enabled` turns
-them on. After a failed engine call rgpot asks for `MPI_Abort` at exit,
-and the exit handler aborts the world instead of waiting in
-`MPI_Finalize` for ranks left inside a CPMD collective.
+Neither `librgpot` nor eOn's `librgpot_pot` links MPI, so an `eonclient`
+started without `mpirun` loads no MPI library and pays no MPI start-up
+cost. The MPI side is loaded on demand: rgpot's `librgpot_mpi`, and
+eOn's `librgpot_pot_mpi`, which holds the construction agreement and the
+grouped exit handler below. eOn loads it only under an MPI launcher,
+from `EON_RGPOT_MPI_LIBRARY`, the directory of `librgpot_pot`, or the
+linker path. It builds when rgpot has MPI: the wrap with
+`-Drgpot:with_mpi=enabled`, or an installed rgpot whose `rgpot.pc`
+defines `RGPOT_HAS_MPI`; eOn's `-Dwith_mpi=enabled` also builds it.
+After a failed engine call rgpot asks for `MPI_Abort` at exit, and the
+exit handler aborts the world instead of waiting in `MPI_Finalize` for
+ranks left inside a CPMD collective.
 
 eOn's `-Dwith_mpi=enabled` option builds the client/server program. Calculator
 groups are this page's launch, `mpirun -np N eonclient`, with rgpot built
@@ -297,8 +324,55 @@ The reactant and the product are one batch at the start. The reactant
 runs on group 0. The product runs on group 1.
 
 Seven groups of 4 ranks need 28 ranks. Intermediate image 1 runs on
-group 0, and image 7 runs on group 6. An update that skips an image
-leaves the others on those groups.
+group 0, and image 7 runs on group 6. Every image keeps its group from
+one iteration to the next, because the group holds that image's
+orbitals.
+
+A batch puts at most ceil(M / G) of its M systems on one group. An
+update of only some images, which would stack them on the groups that
+own them, moves the excess to the least-loaded groups, and a moved image
+stays on its new group. Groups that own fewer systems than the busiest
+group repeat their last system into scratch, and an empty group repeats
+system 0 of that batch, so every group enters the engine the same number
+of times. A repeat of a group's last system is the stored result of its
+session and runs no SCF. The systems count omits those repeats.
+
+With `ci_mmf = true` the climbing image takes improved-dimer steps on its
+own. Each step evaluates the moved centre and its forward image as one
+batch. A rotation trial depends on the previous one and runs alone:
+every group evaluates that one structure, and the run keeps the result
+of the group that last evaluated the geometry nearest to it. The usage
+line counts the call on that group. A saddle search does the same, and
+with `min_mode_method = lanczos` the second system of that batch is the
+first Krylov product's displaced image.
+
+A Hessian or a prefactor with an empty `checkpoint_path` sends its
+displaced structures through these groups the same way.
+
+Each group keeps the converged orbitals of every system it evaluates,
+under that system's key: the image index for a band, the bead index for a
+ring polymer, the position in the batch otherwise, and one key for every
+single request. The next SCF of an image or a bead starts from its own
+orbitals of the previous step rather than from those of whichever system
+the group evaluated last. One group (`ranks_per_image = 0`) batches as
+well, so the keys hold there too. The engine needs
+`cpmdc_session_select_orbitals`; an older libcpmdc keeps one stored copy
+per group, and so does an rgpot without `CPMDPot::selectOrbitals` (3.4.0
+and older).
+
+### Choosing the number of groups
+
+A batch of M systems on G groups takes ceil(M / G) rounds, so its load
+balance is M / (G ceil(M / G)). Pick G to divide the systems of the
+batch that repeats: the interior images of a band (`images`), or the
+beads of a ring (`path_beads`, `pi_beads`). Seven images run evenly on 1
+or 7 groups; on 2 groups the second round leaves one group idle and the
+load balance is 7/8. Sixteen beads run evenly on 1, 2, 4, 8 or 16 groups.
+Past that, fewer groups of more ranks often win: a CPMD SCF step of a
+small cell scales over the ranks of one group better than the groups
+share a node. For the Si3N4 Geo1 cell of this page, one group of 28
+ranks took 141.7 s for 9 force calls against 160.6 s for 7 groups of 4.
+Keep to one rank per physical core.
 
 The run reads `reactant.con` and `product.con`.
 
@@ -329,7 +403,27 @@ mpirun -np 28 eonclient
 ```
 
 Rank 0 runs the job and writes the files. The other ranks serve force
-requests. At exit, rank 0 sends a stop. Every rank calls `cpmdc_finalize`
+requests. When rank 0 stops them it prints how the job used the groups:
+the systems each group evaluated, its seconds inside engine calls, and
+its idle share of the driver's wall time in grouped requests. The last
+line gives the POP ratios. Load balance is the mean busy time over the
+largest. Communication efficiency is the largest busy time over that
+wall time, so a wait for the slowest image of a batch, a serial request
+on group 0, or a result broadcast lowers it. Parallel efficiency is the
+product of the two.
+
+For the Si3N4 band of this page started from a nearly converged path,
+on 8 ranks as 2 groups of 4:
+
+```{code-block} text
+RgpotPot: calculator groups: 2 groups, 10 batches and 6 single requests, 1216.8 s grouped wall (109.3 s single)
+ group  systems     busy_s   idle
+     0       34    1187.44   2.4%
+     1       22     889.36  26.9%
+load balance 0.874, communication efficiency 0.976, parallel efficiency 0.853
+```
+
+At exit, rank 0 sends a stop. Every rank calls `cpmdc_finalize`
 while MPI is still up, then `MPI_Finalize`, then `_Exit`. `_Exit` returns
 to the kernel, and the dynamic linker does not run the CPMD or MPI
 library destructors on a finalized world. Worker ranks use status 0.

@@ -1,10 +1,12 @@
 """Process catalog for aKMC.
 
-Frames live in the run's readcon-db corpus. The barrier, the prefactor,
-the mode, and the frame keys live on ``amsel.KdbProcess``. A good saddle
-is stored when it is registered. The next search of a matching state
-refines from the stored saddle, then a random displacement follows when
-no suggestion remains.
+Frames live in the run's readcon-db corpus. The saddle frame carries the
+process mode as its readcon displacements section; the line-2 JSON names
+that section. The barrier, the prefactor, the same mode components, and
+the frame keys live on ``amsel.KdbProcess``. A good saddle is stored when
+it is registered. The next search of a matching state refines from the
+stored saddle, then a random displacement follows when no suggestion
+remains.
 
 ``kdb_nf`` is the neighbor fudge (a fraction). ``kdb_dc`` is the distance
 cutoff in angstroms. ``kdb_mac`` is the minimum absolute cosine at which
@@ -24,6 +26,7 @@ import numpy as np
 
 from eon import fileio as io
 from eon.concorpus import corpus_dir, store_frame_text
+from eon.structure import structure_order
 
 logger = logging.getLogger("kdb")
 
@@ -168,14 +171,71 @@ def _load_frame(corpus_directory: Path, key: bytes):
     return text, traj_id, frame_idx
 
 
-def _suggestion_mode(process, reactant, saddle, mac: float) -> np.ndarray:
+def _mode_in_structure_order(frame) -> np.ndarray | None:
+    """Displacements section in the same row order as ``Structure.r``.
+
+    The file groups atoms by species. ``mode_<id>.dat`` follows ``atom_id``
+    order, which is the order :meth:`Structure.from_conframe` restores.
+    """
+    disp = frame.disp
+    if disp is None:
+        return None
+    vec = np.asarray(disp, dtype=float)
+    ids = np.array([atom.atom_id for atom in frame.atoms], dtype=np.uint64)
+    return vec[structure_order(ids)]
+
+
+def _saddle_text_with_mode(saddle_text: str, mode) -> str:
+    """Return the saddle con with ``mode`` in the displacements section.
+
+    ``mode`` is Nx3 in ``atom_id`` order, the order of ``mode_<id>.dat``.
+    """
+    import readcon
+
+    frames = readcon.read_con_string(saddle_text)
+    if not frames:
+        raise ValueError("saddle con has no frame")
+    frame = frames[0]
+    vec = np.asarray(mode, dtype=float).reshape(-1, 3)
+    atoms = list(frame.atoms)
+    if len(atoms) != len(vec):
+        raise ValueError(
+            f"mode has {len(vec)} rows and the saddle has {len(atoms)} atoms"
+        )
+    ids = np.array([atom.atom_id for atom in atoms], dtype=np.uint64)
+    order = structure_order(ids)
+    for struct_i, file_i in enumerate(order):
+        atom = atoms[int(file_i)]
+        atom.dx = float(vec[struct_i, 0])
+        atom.dy = float(vec[struct_i, 1])
+        atom.dz = float(vec[struct_i, 2])
+    return readcon.write_con_string([frame], 17)
+
+
+def _suggestion_mode(
+    process,
+    reactant,
+    saddle,
+    mac: float,
+    saddle_text: str | None = None,
+) -> np.ndarray:
     """Direction for a refine.
 
-    The stored mode is used when its cosine with the reactant-to-saddle
-    vector is at least ``mac``. A negative cosine flips the mode. Below
-    ``mac`` the direction is that vector, so a curved path is still offered.
+    The mode in the saddle frame's displacements section is used when its
+    cosine with the reactant-to-saddle vector is at least ``mac``. A
+    negative cosine flips the mode. Below ``mac`` the direction is that
+    vector, so a curved path is still offered. A frame with no
+    displacements section uses the mode stored on the catalog row.
     """
-    stored = np.asarray(list(process.mode), dtype=float).reshape(-1, 3)
+    stored = None
+    if saddle_text:
+        import readcon
+
+        frames = readcon.read_con_string(saddle_text)
+        if frames:
+            stored = _mode_in_structure_order(frames[0])
+    if stored is None:
+        stored = np.asarray(list(process.mode), dtype=float).reshape(-1, 3)
     cosine = _mode_cosine(stored, reactant, saddle)
     if abs(cosine) >= float(mac) and float(np.linalg.norm(stored)) > 0.0:
         if cosine < 0.0:
@@ -235,6 +295,12 @@ def insert(state, process_id, config) -> bool:
     reactant_text = reactant_path.read_text()
     saddle_text = saddle_path.read_text()
     product_text = product_path.read_text()
+    mode = np.asarray(state.get_process_mode(process_id), dtype=float)
+    try:
+        saddle_text = _saddle_text_with_mode(saddle_text, mode)
+    except Exception:
+        logger.exception("saddle frame did not take the mode")
+        return False
     keys = []
     for path, text in (
         (reactant_path, reactant_text),
@@ -250,7 +316,6 @@ def insert(state, process_id, config) -> bool:
             return False
         keys.append(pack_frame_key(*key))
     reactant_key, saddle_key, product_key = keys
-    mode = np.asarray(state.get_process_mode(process_id), dtype=float)
     product = io.loadcon(str(product_path))
     store = _open_store(config)
     if store is None:
@@ -340,7 +405,9 @@ def _materialize(state, config, store) -> None:
         done_path = directory / f".done_{index}"
         if not saddle_path.is_file():
             saddle_path.write_text(saddle_text)
-            mode = _suggestion_mode(process, stored_reactant, stored_saddle, mac)
+            mode = _suggestion_mode(
+                process, stored_reactant, stored_saddle, mac, saddle_text
+            )
             io.save_mode(str(mode_path), mode)
             barrier_path.write_text(f"{float(process.barrier_ev):.10f}\n")
             (directory / f"KEY_{index}").write_text(f"{traj_id} {frame_idx}\n")

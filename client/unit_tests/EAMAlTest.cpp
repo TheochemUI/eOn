@@ -14,6 +14,8 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Matter.h"
 
+#include <thread>
+
 namespace tests {
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
@@ -22,7 +24,8 @@ TEST_CASE("EAM_AL potential returns finite energy on Al FCC cluster",
           "[pot][eam][al]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::EAM_AL;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
 
@@ -34,14 +37,67 @@ TEST_CASE("EAM_AL potential returns finite energy on Al FCC cluster",
   REQUIRE(maxForce == Catch::Approx(0.968647).epsilon(1e-3));
 }
 
-TEST_CASE("EAM_AL opts out of shared-instance threading",
+TEST_CASE("EAM_AL needs per-image instances, which run on threads",
           "[pot][eam][al][thread_safety]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::EAM_AL;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
 
+  // One instance is not shared across threads; each image gets its own,
+  // and each instance owns its neighbour workspace.
   REQUIRE_FALSE(pot->isSharedInstanceThreadSafe());
-  REQUIRE_FALSE(pot->needsPerImageInstance());
+  REQUIRE(pot->needsPerImageInstance());
+
+  auto instance = [&]() -> std::shared_ptr<Potential> {
+    auto cloned = pot->clonePotential();
+    return cloned ? cloned
+                  : eonc::helpers::sharePotential(
+                        eonc::helpers::makePotential(params));
+  };
+  Matter a(instance(), params);
+  Matter b(instance(), params);
+  a.con2matter(std::string("pos.con"));
+  b.con2matter(std::string("pos.con"));
+  REQUIRE(a.getPotential().get() != b.getPotential().get());
+  // Two geometries, so the instances hold different neighbour tables.
+  AtomMatrix moved = b.getPositions();
+  moved(0, 0) += 0.05;
+  b.setPositions(moved);
+
+  // Serial references, each on its own fresh instance.
+  Matter refA(instance(), params);
+  Matter refB(instance(), params);
+  refA.con2matter(std::string("pos.con"));
+  refB.con2matter(std::string("pos.con"));
+  refB.setPositions(moved);
+  const AtomMatrix fA = refA.getForces();
+  const AtomMatrix fB = refB.getForces();
+  const double eA = refA.getPotentialEnergy();
+  const double eB = refB.getPotentialEnergy();
+
+  // a and b are never evaluated, so each round's copies are, and a copy
+  // keeps its source's instance: both instances run at once, every round,
+  // and must give the serial values bit for bit.
+  REQUIRE(a.needsForceUpdate());
+  REQUIRE(b.needsForceUpdate());
+  for (int round = 0; round < 20; ++round) {
+    Matter ta(a);
+    Matter tb(b);
+    AtomMatrix ra;
+    double ea = 0.0;
+    std::thread worker([&] {
+      ra = ta.getForces();
+      ea = ta.getPotentialEnergy();
+    });
+    const AtomMatrix rb = tb.getForces();
+    const double eb = tb.getPotentialEnergy();
+    worker.join();
+    REQUIRE(ea == eA);
+    REQUIRE(eb == eB);
+    REQUIRE((ra.array() == fA.array()).all());
+    REQUIRE((rb.array() == fB.array()).all());
+  }
 }
 
 TEST_CASE("EAM_AL minimization converges on Al FCC",
@@ -51,7 +107,8 @@ TEST_CASE("EAM_AL minimization converges on Al FCC",
   ParametersLoadAccess::optimizer_options(params).method = OptType::LBFGS;
   ParametersLoadAccess::optimizer_options(params).converged_force = 0.01;
   ParametersLoadAccess::optimizer_options(params).max_iterations = 50;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
 
@@ -71,7 +128,8 @@ TEST_CASE("EAM_AL FIRE minimization matches SVN",
   ParametersLoadAccess::optimizer_options(params).method = OptType::FIRE;
   ParametersLoadAccess::optimizer_options(params).converged_force = 0.01;
   ParametersLoadAccess::optimizer_options(params).max_iterations = 200;
-  auto pot = eonc::helpers::makePotential(params);
+  auto pot =
+      eonc::helpers::sharePotential(eonc::helpers::makePotential(params));
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
 

@@ -1,0 +1,1 @@
+`-Dwith_rgsaddle=true` builds against rgsaddle 0.2: the band and min-mode surface callbacks return `rgsaddle_status_t`, and the band answers the interior-only and one-image requests rgsaddle sends after its first evaluation, evaluating the carried images as one batch. The rgsaddle floor is 0.2.0.
