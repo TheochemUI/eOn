@@ -33,6 +33,44 @@
 #include <string>
 #include <vector>
 
+#ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+namespace {
+// Implicit imports are resolved before main. Delay-load of
+// eon_relax_engine.dll waits until the first call, which is after
+// this initializer. AddDllDirectory then wins over a torch DLL that
+// has the same name and not the entry point.
+struct EngineDllSearch {
+  EngineDllSearch() {
+    SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_DEFAULT_DIRS |
+                             LOAD_LIBRARY_SEARCH_USER_DIRS);
+    const char *spec = std::getenv("EON_WIN_DLL_DIRS");
+    if (spec == nullptr || *spec == '\0') {
+      return;
+    }
+    std::string rest(spec);
+    while (!rest.empty()) {
+      const auto cut = rest.find(';');
+      const std::string dir =
+          cut == std::string::npos ? rest : rest.substr(0, cut);
+      if (!dir.empty()) {
+        const std::wstring wide(dir.begin(), dir.end());
+        AddDllDirectory(wide.c_str());
+      }
+      if (cut == std::string::npos) {
+        break;
+      }
+      rest.erase(0, cut + 1);
+    }
+  }
+};
+const EngineDllSearch engine_dll_search;
+}  // namespace
+#endif
+
 namespace tests {
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;

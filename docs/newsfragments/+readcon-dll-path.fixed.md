@@ -1,1 +1,1 @@
-Windows tests load the readcon DLL from the executable directory, and the pixi runtime DLLs ahead of torch.
+The Windows relax-engine test delay-loads the engine DLL and searches the pixi runtime before torch.
