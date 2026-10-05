@@ -1,1 +1,0 @@
-An improved-dimer saddle search or climbing-image MMF step on a batching potential (RgpotPot calculator groups, a batched model) evaluates the moved centre and its forward image in one batch instead of two serial calls. The trajectory is unchanged; a converged search can spend one extra forward image.

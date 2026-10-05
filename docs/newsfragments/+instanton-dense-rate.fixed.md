@@ -1,1 +1,0 @@
-Up to `denseLimit` ring coordinates (4096 by default) `instantonRate` takes the determinant, the negative-mode count and the lowest eigenvalue from the dense spectrum of the lifted ring Hessian and checks the block-chain determinant against it; the limit was documented but not read, so every ring used the block chain and a Lanczos estimate of the lowest mode.

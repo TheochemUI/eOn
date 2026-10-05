@@ -1,1 +1,0 @@
-The MPI potential example launches eight VASP ranks and one client with potential = mpi. Parallel-replica and basin-hopping MPI examples call eonclient through eon.server. A LAMMPS input is read from the client working directory, and a displacement script path takes no flags.

@@ -1,1 +1,0 @@
-The user guide now has pages for tad, monte_carlo, replica_exchange, global_optimization (minima hopping), finite_difference, and oh_tst. The hot temperature for temperature accelerated dynamics is the main temperature, and exchange_trials is replaced by the replica count after the file is read.

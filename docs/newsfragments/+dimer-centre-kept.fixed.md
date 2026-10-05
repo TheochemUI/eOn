@@ -1,1 +1,0 @@
-An ImprovedDimer compute() on a Lanczos, Davidson or LOR rotation backend, and a mode-loss restore, leave the dimer centre's evaluation in place, so a read of the centre before the next step (an energy-accepting optimizer, the nonnegative-displacement check) costs no force call.

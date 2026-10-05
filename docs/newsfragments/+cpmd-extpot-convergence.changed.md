@@ -1,1 +1,0 @@
-The CPMD ExtPot wrapper (`examples/akmc-cpmd-slurm/potfiles/cpmd_extpot.py`) takes the orbital convergence from `CPMD_CONVERGENCE`, refuses a zero cell instead of handing CPMD an invented one, and documents its unit chain; `tests/test_cpmd_extpot.py` checks energy, force sign, units, atom order and cell against a stand-in `cpmd.x`.

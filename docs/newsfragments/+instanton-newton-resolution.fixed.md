@@ -1,1 +1,0 @@
-A one-dimensional rate instanton uses each bead's own curvature and solves the requested temperature directly. An index-1 step is kept when its predicted and actual energy changes both sit under the energy resolution, and near-zero saddle modes are held at a spring-sized curvature so a rigid displacement does not singularize the chain.

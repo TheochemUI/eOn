@@ -2,6 +2,120 @@
 
 <!-- towncrier release notes start -->
 
+## [3.6.0](https://github.com/TheochemUI/eOn/tree/3.6.0) - 2026-10-05
+
+### Added
+
+- A per-image potential such as ext_pot keeps its own exchange directory on each dimer image and on each process-search product minimization. An empty checkpoint lets a finite-difference Hessian share RgpotPot calculator groups. In-process results carry job_result, and cancel_state stops only a running batch. An even half-ring instanton with an odd unstable mode continues on the full ring. Structure comparison pairs atoms one to one, and Langevin and Nose-Hoover leave a frozen Cartesian component fixed.
+- An RgpotPot run on calculator groups prints, when the driver stops the workers, each group's evaluated systems, busy seconds and idle share, with the POP load balance, communication efficiency and parallel efficiency of the run.
+- Dynamics movies load reactant frames from a read-only readcon-db corpus
+  built with ingest_directory. The simulation `.con` files stay the store.
+- In-process jobs return a ``JobResult`` (scalars plus ConFrame saddle and
+  product). ``results.dat`` is only the ``job_result_to_results_dat`` adapter
+  for cluster and HPC workers. ``parse_results`` still reads legacy files.
+- JobResult carries optimizer backend, xtsci ABI, eindir ABI, and rgpot identity. Legacy results.dat lines stay value-key records; the classic parser is unchanged.
+- Optional rgsaddle sessions step an NEB band and rotate a min-mode when built with `-Dwith_rgsaddle=true` and `opt_method` or `min_mode_method` set to `xtsci`.
+- Structure comparison removes a rigid minimum-image shift when remove_translation is on and check_rotation is off. No atom may be fully fixed. A Hessian drops eigenvalues at or below zero_freq_value. It warns when the dropped count is not 6, 5, 3, or 0.
+- The user guide has a glossary of method names and short forms, with links to the pages that use them.
+- The user guide now has pages for tad, monte_carlo, replica_exchange, global_optimization (minima hopping), finite_difference, and oh_tst. The hot temperature for temperature accelerated dynamics is the main temperature, and exchange_trials is replaced by the replica count after the file is read.
+- Tier-2 `libeon_relax_engine.so` exports `eon_relax_create` / `eon_relax_run` / `eon_relax_step` / `eon_relax_reset` / `eon_relax_destroy`. NULL create is NEB with Parameters NSDMI defaults. A Cap'n Proto RelaxEngineParams flat-array selects neb or saddle. Matter keys energy and variance caches on a surface epoch.
+- `Potential::surfaceEpoch()` and `Matter::setSurfaceEpoch()` key the energy and variance caches on a surface generation, so identical positions after a surrogate refit recompute. `Matter::getEnergyVariance()` evaluates the potential when the cache is stale, and the variance of a direct `force()` call is kept.
+- `[RgpotPot] backend = uma` loads `libuma_engine.so` through the generic rgpot engine interface (`engine_c_abi.h`), with `model_path`, `task_name`, `charge` and `multiplicity` as its configuration.
+
+### Developer
+
+- Basin hopping, parallel replica, prefactor, bond boost, and dynamics tests cover job-runner branches that the coverage run was missing.
+- The GP dimer links a checkout at `subprojects/gpr_optim`. That checkout and the `gpr_optim`, `rgmin` and `anneal` wraps stay untracked, so a clone of eOn carries no private wrap.
+- The rgpot suite runs the calculator-group cases only when that build links MPI. The launcher preloads `librgpot_pot.so` from the build tree only when the loader would otherwise pick another copy, such as one in the prefix libdir; an unneeded preload corrupted the heap before `main` under EESSI 2026.06. The `single` and `uneven` cases run real CPMD calls on N2 in a 6 Å cell and time out on a build where calculator groups make different numbers of engine calls.
+
+### Changed
+
+- A Lanczos saddle search on a batching potential evaluates the moved centre and the first Krylov product's displaced image in one batch, as the improved dimer does with its forward image.
+- Against rgsaddle ABI minor 5 the rgsaddle band resends the path every step (unchanged rows are free), restarts only the optimizer after a reparameterization or MMF, and takes the session's evaluation of the accepted band for any image it would otherwise evaluate again.
+- An improved-dimer saddle search or climbing-image MMF step on a batching potential (RgpotPot calculator groups, a batched model) evaluates the moved centre and its forward image in one batch instead of two serial calls. The trajectory is unchanged; a converged search can spend one extra forward image.
+- Periodic cutoff lists use linkcell `pairs_within` from v0.3.8 (atom index, image index, and the caller's shift). An open boundary stays on vesin. `knearest` is only the k-nearest list.
+- RGPOT calculator groups schedule each batch so that no group takes more than ceil(M / G) of its M systems while every image or bead stays on the group that holds its orbitals, and send a single request to the group that last evaluated the nearest geometry instead of always to group 0. The RGPOT page explains how to choose the number of groups.
+- RGPOT with `backend = cpmdc` names each system's key before its SCF (the NEB image, the ring-polymer bead, the batch position, or one key for single requests), so a libcpmdc that keeps orbitals per key starts each image or bead from its own orbitals of the previous step. One calculator group now batches too, so the keys hold with `ranks_per_image = 0`. Ring-polymer force calls pass the bead index as the owner of each system.
+- RgpotPot options are projected from the schema into the INI reader, the JSON codec, and the default assignment. Alias order and the cpmd and XTBPot overlays stay on that projection.
+- The CPMD ExtPot wrapper (`examples/akmc-cpmd-slurm/potfiles/cpmd_extpot.py`) takes the orbital convergence from `CPMD_CONVERGENCE`, refuses a zero cell instead of handing CPMD an invented one, and documents its unit chain; `tests/test_cpmd_extpot.py` checks energy, force sign, units, atom order and cell against a stand-in `cpmd.x`.
+- The NEB image pool keeps its threads for the life of the process and sizes itself to the cores the process may run on (the Slurm or taskset affinity mask) instead of every core of the node.
+- The finite-difference cell stress of a solid-state band sends the 12 strained copies of every image to the potential as one batch, so calculator groups or a batched model evaluate them together instead of 12 serial calls per image.
+- The rgpot wrap moves to rgpot main 0047072. librgpot no longer links MPI, and eOn's calculator-group MPI code is a separate `librgpot_pot_mpi` loaded only under an MPI launcher, so a plain `eonclient` maps no MPI library and skips its load-time cost (UCX memory hooks, PSM2). The same rgpot keeps a CPMD force call's collectives inside its calculator, so calculator groups with unequal work per group no longer deadlock.
+- The rgsaddle band (`opt_method = xtsci`) resends the band to its session only after a reparameterization, and the surface callback and the step read images that already hold the requested geometry from their own evaluation. A FIRE step on the LJ test band costs at most two evaluations of the interior images and none of the endpoints, against about 3.2 evaluations of the whole band.
+- The rgsaddle min-mode (`min_mode_method = xtsci`) passes the finite-difference length (`[Main] finite_difference`, Angstrom) as its displacement, not the dimer rotation angle in radians. With rgsaddle ABI minor 5 one session serves the whole search: the refreshed mode seeds the next estimate, the host's gradient spares the centre call, and the converged angle and the `[Hessian] fd_scheme` difference reach the session.
+- The rgsaddle min-mode rotation reads the centre from its cached evaluation and runs its displaced probes on a copy, so the host centre is neither re-evaluated inside the rotation nor after it.
+- With [Main] parallel on, the NEB projects its images (tangent, spring and projected force) on the image pool as it evaluates their forces.
+- `-Dwith_xtb=true` builds `potential = xtb` on rgpot `XTBPot` (`[XTBPot]` maps onto `XTBConfig`). The in-tree XTB kernel is gone. The metatomic engine installs as `librgpot_metatomic_engine`; `libmetatomic_engine` remains a compat symlink for this release, and the xtb/metatomic loaders try `librgpot_*` then the previous soname.
+- makePotential returns exclusive ownership. Point and minimization keep that
+  unique_ptr until one Matter takes it. Shared ownership is explicit via
+  sharePotential at multi-owner boundaries.
+- pyeonclient 0.4.2 publishes the client from the 3.5.0 tree.
+
+### Fixed
+
+- A /usr pkg-config nlohmann or Highway is not used; the wraps supply them.
+- A half-ring instanton keeps the reaction coordinate monotone between the turning points, so the search stays on one bounce. The index-1 step shortens inside the trust radius when the quadratic model is off.
+- A one-dimensional rate instanton uses each bead's own curvature and solves the requested temperature directly. An index-1 step is kept when its predicted and actual energy changes both sit under the energy resolution, and near-zero saddle modes are held at a spring-sized curvature so a rigid displacement does not singularize the chain.
+- A rate-instanton search stops as soon as B_N falls below 1e-4 of the starting ring's, since a ring of coincident beads is no instanton: `RateInstanton::collapsed` is set, the job logs where the beads fell and writes `instanton_collapsed` to results.dat. A 16-bead Al slab ring that slid onto a minimum ran 1749 Newton iterations and 3.5 h before this. Each Newton iteration is traced at debug level (U_N, residual, B_N, climb curvature, negative count, trust radius).
+- A readcon-core subproject that does not define `readcon_order` adds no order-stamp sources instead of failing configure.
+- A ring-polymer step evaluates the beads once: the forces at the end of one step serve the start of the next, which halves the force batches of `pile` and `piglet` dynamics and of the PI-QTST planes.
+- A safe-hyperdynamics run that continues after a transition keeps the bond boost on the trajectory, and dephasing keeps it too. The continued steps recompute the bias after each move.
+- A solid-state band on a potential that reports stress (LAMMPS, SocketNWChem, xTB through rgpot, RgpotAdapter) reads the stress that came with each image's force call instead of evaluating every image a second time.
+- An ImprovedDimer compute() on a Lanczos, Davidson or LOR rotation backend, and a mode-loss restore, leave the dimer centre's evaluation in place, so a read of the centre before the next step (an energy-accepting optimizer, the nonnegative-displacement check) costs no force call.
+- An MPI build of `eonclient` reads its command-line flags (`--version`, `--help`, one-shot jobs) unless an eOn server launched the rank. It used to ignore every flag and run as a client.
+- An MPI build of `eonclient` started outside an eOn server (no `EON_SERVER_PATH`) runs `config.ini` standalone instead of exiting with an error; `EON_CLIENT_STANDALONE` is no longer needed for that.
+- An uphill basin hop uses exp(-de/(kB*temperature)) only at a positive temperature in kelvin. Client replacements are finite_difference, dynamics, and safe_hyperdynamics for finite_differences, molecular_dynamics, and hyperdynamics, with displacement_sampling outside the client list and akmc on the server.
+- Client startup defers the Quill backend until a job path runs. Help and version return before the log thread starts.
+- Climbing image is applied only when it is active and the highest interior image is strictly above the higher endpoint.
+  A monotonic band keeps the spring.
+- Economised spring frequencies stop at the stationary fit. The Nyquist sample is that minimum, so the same bead count gives the same frequencies on every libm.
+- Harmonic TST and quantum harmonic TST choose the saddle's rigid modes among its bound modes, so a barrier softer than a rigid mode's finite-difference residue no longer leaves that rigid mode in the product.
+- Highway is looked up as `hwy`, the name `highway.wrap` provides, so `--force-fallback-for=hwy` selects the wrap.
+- In-process relax, NEB, and saddle search poll a CancelToken and stop when cancel_state is called during the batch.
+- OH-TST moves the guideline through the sampled average only after the reversible work has passed two kT. A force sign change in the reactant basin keeps the original reactant-to-product line.
+- Path-integral dynamics (`pile`, `piglet`) draws thermal ring momenta at the start, averages the centroid-virial kinetic energy over the second half of the run and logs it; `Dynamics::pathKineticEnergy` returns it. The run used to start the ring at rest and report nothing.
+- Quantum harmonic TST evaluates ln 2 sinh(x / 2) through expm1, so a soft mode no longer loses its zero-point factor to cancellation (3e-8 in ln k at beta hbar omega = 1e-9).
+- Rate searches with `initial_hessians = finite_difference` no longer write the bead blocks into an empty vector; on a multi-dimensional ring the option was undefined behaviour.
+- Release pages open on a title, and notes in the install and user guides stay on the page. C++ API sections use one label per potential.
+- Rotational zero modes of the reactant are classified by the rotation's curvature r^T H r / r^T r against the softest vibration of the Hessian once the rigid motions are projected out (zero at or below 0.1), instead of ||H r|| against the Frobenius norm, which grows with the atom count: a 16 x 16 periodic slab's in-plane rotation passed as a zero mode at 0.0074 of the Frobenius norm under the 1e-2 threshold. `tunneling::rotationZeroModes` is the classifier.
+- Runs with `[RgpotPot] ranks_per_image` above 0 no longer hang on their first single-structure force call. rgpot 3.4.0 agrees on engine errors across every MPI rank after each CPMD call; eOn ran a single structure on calculator group 0 alone, and a batch split unevenly gave groups different call counts. Every group now evaluates a single structure, and a group that owns fewer systems in a batch repeats one.
+- Samples name the client binary eonclient. The replica loop includes do, the install command passes -C, and Python runs the displacement scripts.
+- TIP4P uses the Carney-Curtiss-Langhoff equilibrium OH length and angle. The out-of-line members take those table values instead of initializing from their own names.
+- The Local communicator starts eonclient with `UCX_MEM_EVENTS=no` unless the environment sets it. An eonclient linked with MPI loads UCX in every run, and its memory hooks cost about 0.4 s per process with conda's OpenMPI against 0.02 s for a one-call job.
+- The MPI potential example launches eight VASP ranks and one client with potential = mpi. Parallel-replica and basin-hopping MPI examples call eonclient through eon.server. A LAMMPS input is read from the client working directory, and a displacement script path takes no flags.
+- The Python API reference keeps the version string and leaves out the generated version module and the test scripts. C++ parameter notes name the function arguments.
+- The Windows relax-engine DLL links the readcon import library.
+- The Windows xtb import library directory is on the linker search path.
+- The climbing image stays on its band index while it is a strict interior local maximum, instead of moving to the highest image at every force update.
+- The cutoff list sizes its row buffer from the pairs found. A shell denser than the ideal-gas estimate no longer writes past that buffer.
+- The docs build loads `libenchant-2.so` for spelling, and it stops when `sphinx-build` fails.
+- The guide records that `-Dwith_xtb`, `-Dwith_water`, `-Dwith_metatomic`, and `-Dwith_vasp` default false, and that `-Dwith_lammps` and `-Dwith_dftd3` are not eOn options.
+  MPI runs launch `eonclient` and read `EON_CLIENT_STANDALONE` plus `EON_NUMBER_OF_CLIENTS`; the version record is 3.5.0, and the metatomic extra depends on `rgpot>=3.2.0`.
+- The installed `eon` Python package includes `eon/job_result.py`. `eon.explorer` imports it, so the aKMC server failed to start from a meson install.
+- The instanton rate leaves the ring Hessian's near-zero eigenvalue out of det' exactly. It lifted the central difference along the ring and divided by the lift alone, which is det' only for an exact zero mode with that eigenvector; on a discrete ring the eigenvalue is not zero (-0.19 on a 12-bead Eckart ring at T_c / 2, 0.07 in ln k) and the central difference is not quite its eigenvector. Inverse iteration now finds the eigenvector and the determinant is divided by the lift plus the eigenvalue.
+- The instanton rate of a free cluster leaves out the ring's own rotations, built from its beads about the ring's centre of mass, instead of the reactant's rotations copied to every bead, and the ring's bead Hessians keep their rotational curvature. The reactant's rotations are null vectors of the ring Hessian only when no bead moves, so the rate of a cluster whose atoms move along the ring was off by the overlap of the two. `instantonRate` takes the atoms through `RingRigidBodies`.
+- The instanton splitting decides that the path minimises the action from the inertia of the action Hessian instead of its determinant's sign, so a path with two negative modes is refused.
+- The nudged elastic band objective reports one mass per free atom on each interior image.
+- The rate job gives a converged ring a rate only when it crosses the seeded saddle's dividing plane within its own span of the saddle and its turning points lie within 60 degrees of the unstable mode; straddling the plane alone let a ring around a neighbouring saddle through. `results.dat` reports the turning points along the mode, the chord overlap and the crossing offset.
+- The rate job seeds its ring at the requested period on flat-topped and kinked paths. The orbit energy was found by one bisection over the whole range, which assumed the period falls monotonically with energy and resolved the top only to the first of 400 geometric levels; on the Al slab of examples/neb-al it returned the same orbit (0.103 eV above the reactant, period 103.8) for beta hbar 129.1 and 91.2, a ring for neither temperature. The scan now resolves both ends of the range, refines every crossing of beta hbar, discards jumps of the turning points, and keeps the crossing that minimises theta(E) + beta E. The job logs the orbit energy, its period and the height of the path's ends; the path itself is traced at debug level.
+- The rate-instanton Newton search rebuilds its bead Hessian blocks from finite differences (at most four times) when the Bofill-updated blocks show more negative curvatures than the last exact blocks did. Blocks copied from the saddle and carried by Bofill updates grew from 2 to 11 spurious negative curvatures on a 1203-coordinate Al slab, and every flip then turned the ring downhill.
+- The relax engine is a shared library, so Windows can load it. The prefactor frequency test closes its file before deleting the directory.
+- The relax engine passes each image's stored cell to the host surface in row-major order, including when the image is not periodic.
+- The relax engine schema compiles as `.cpp`, so MSVC links `libeon_relax_engine`.
+- The saddle frame stored in `readcon.db` carries the process mode in its `displacements` section. A suggestion reads that section. `mode_<id>.dat` remains the client sidecar, and `amsel.KdbProcess.mode` keeps the same components.
+- The saddle-search catalog accepts `min_mode_method = xtsci`. That rotation runs in a rgsaddle session when the build enables rgsaddle.
+- The server reads `[AKMC]`, with `confidence_scheme` defaulting to `old`, and the default `opt_method` is `cg` (QuickMin is `qm`).
+  A file the server loads exits on `[Refine]` and on the unknown keys `parallel`, `climbing_image_band_slack`, `match_endpoints`, and `match_method`.
+- Up to `denseLimit` ring coordinates (4096 by default) `instantonRate` takes the determinant, the negative-mode count and the lowest eigenvalue from the dense spectrum of the lifted ring Hessian and checks the block-chain determinant against it; the limit was documented but not read, so every ring used the block chain and a Lanczos estimate of the lowest mode.
+- Windows copies the relax engine's imported DLLs beside the test, and the Metatomic job searches the pixi runtime before torch.
+- `-Dwith_rgsaddle=true` builds against rgsaddle 0.2: the band and min-mode surface callbacks return `rgsaddle_status_t`, and the band answers the interior-only and one-image requests rgsaddle sends after its first evaluation, evaluating the carried images as one batch. The rgsaddle floor is 0.2.0.
+- `[RgpotPot] task_name` is listed in `config.yaml` and on the schema model. The default is `omol`.
+- `eon_relax_run` returns MAX_UNCERTAINTY when any image variance is above the uncertainty limit.
+- `tie_lifetime` calls `keep_alive_py` on nanobind 3 and `nb::detail::keep_alive` on nanobind 2, so a returned path keeps the Parameters owner alive.
+- job_result_legacy_dict maps a JobResult onto the historical results.dat keys.
+  job_result_to_results_dat writes that dict for cluster and HPC adapters.
+
+
 ## [3.5.0](https://github.com/TheochemUI/eOn/tree/3.5.0) - 2026-10-01
 
 ### Removed

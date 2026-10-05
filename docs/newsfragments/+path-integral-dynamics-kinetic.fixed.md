@@ -1,1 +1,0 @@
-Path-integral dynamics (`pile`, `piglet`) draws thermal ring momenta at the start, averages the centroid-virial kinetic energy over the second half of the run and logs it; `Dynamics::pathKineticEnergy` returns it. The run used to start the ring at rest and report nothing.
