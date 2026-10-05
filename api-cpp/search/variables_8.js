@@ -19,15 +19,15 @@ var searchData=
   ['hasfixedreference_16',['hasFixedReference',['../classeonc_1_1ImprovedDimer.html#a8cde51b79e68515bb37fb19171aa4181',1,'eonc::ImprovedDimer']]],
   ['hausdorffdistance_17',['hausdorffDistance',['../structeonc_1_1IRACompare_1_1MatchResult.html#a7f91a8d8d0ee77b868d835105df8c6be',1,'eonc::IRACompare::MatchResult']]],
   ['haveforces_5f_18',['haveForces_',['../classeonc_1_1pathintegral_1_1RingPolymer.html#a1da753e22f7e9979ffc1d192f43c28d1',1,'eonc::pathintegral::RingPolymer']]],
-  ['havestress_19',['haveStress',['../structeonc_1_1Matter_1_1Impl.html#a6021881ee543e56988341030a039b9a7',1,'eonc::Matter::Impl']]],
+  ['havestress_19',['haveStress',['../structeonc_1_1Matter_1_1Impl.html#a6021881ee543e56988341030a039b9a7',1,'eonc::Matter::Impl::haveStress'],['../structMatter_1_1Impl.html#a6021881ee543e56988341030a039b9a7',1,'Matter::Impl::haveStress']]],
   ['havestress_5f_20',['haveStress_',['../classLAMMPSPot.html#aa6551fef8fcd195cce4be9cdc3442116',1,'LAMMPSPot::haveStress_'],['../classRgpotAdapter.html#afb92c950dd425fab76f1f81d76749be2',1,'RgpotAdapter::haveStress_'],['../classSocketNWChemPot.html#a7fc6b689f1c7b6e9cb280131b36f64f2',1,'SocketNWChemPot::haveStress_']]],
   ['hbar_21',['hbar',['../structeonc_1_1pathintegral_1_1Options.html#abfc70ee4f6ee8a424c931392f10c7de3',1,'eonc::pathintegral::Options']]],
-  ['headercon_22',['headerCon',['../classeonc_1_1Matter.html#aa325fdebfaf34c23fde537e5cb456e25',1,'eonc::Matter']]],
+  ['headercon_22',['headerCon',['../classeonc_1_1Matter.html#aa325fdebfaf34c23fde537e5cb456e25',1,'eonc::Matter::headerCon'],['../classMatter.html#aa325fdebfaf34c23fde537e5cb456e25',1,'Matter::headerCon']]],
   ['heights_23',['heights',['../classSuperCell.html#ab4c7d986c2e94dde9f0d58720304d2a1',1,'SuperCell']]],
   ['helpers_5f_24',['helpers_',['../classeonc_1_1detail_1_1ImagePool.html#a4159f9631ba3f7534cd460109a2b868f',1,'eonc::detail::ImagePool']]],
   ['hessian_25',['hessian',['../classeonc_1_1Hessian.html#acf831eb7b79fc751f052821994d9450f',1,'eonc::Hessian']]],
   ['hessian_5ffinal_26',['hessian_final',['../structeonc_1_1instanton__options__t.html#a6a9e76e47e07ccbf0789f0ad39e48bf7',1,'eonc::instanton_options_t']]],
-  ['hessian_5foptions_5f_27',['hessian_options_',['../structeonc_1_1Parameters_1_1Impl.html#ad74d4054e4684343f69bf89c09959d7c',1,'eonc::Parameters::Impl']]],
+  ['hessian_5foptions_5f_27',['hessian_options_',['../structeonc_1_1Parameters_1_1Impl.html#ad74d4054e4684343f69bf89c09959d7c',1,'eonc::Parameters::Impl::hessian_options_'],['../structParameters_1_1Impl.html#ad74d4054e4684343f69bf89c09959d7c',1,'Parameters::Impl::hessian_options_']]],
   ['hessian_5fstride_28',['hessian_stride',['../structeonc_1_1instanton__options__t.html#a10eae9decad91e8c8fdd47b2fff6135a',1,'eonc::instanton_options_t']]],
   ['hi_29',['hi',['../structeonc_1_1neb_1_1zoom_1_1Window.html#a985d46b80b5926fb1a4460e62a9f05ab',1,'eonc::neb::zoom::Window']]],
   ['highs_30',['highs',['../structeonc_1_1optimizer__options__t_1_1xtsci__t.html#a29e6da56c04dd8b12d72bf4edd344150',1,'eonc::optimizer_options_t::xtsci_t']]],
@@ -37,5 +37,5 @@ var searchData=
   ['hwproduct_34',['hwProduct',['../structeonc_1_1tunneling_1_1Splitting.html#a86fa07debfc789dbaacc0653acfd8cae',1,'eonc::tunneling::Splitting']]],
   ['hwreactant_35',['hwReactant',['../structeonc_1_1tunneling_1_1Splitting.html#a2d14237519ef9a43dc62118ee7c40774',1,'eonc::tunneling::Splitting']]],
   ['hyper_5fopt_5fmethod_36',['hyper_opt_method',['../structeonc_1_1gpr__dimer__options__t_1_1gpr__params__t.html#a1859ca830bed9e6f5b0491c413c45abe',1,'eonc::gpr_dimer_options_t::gpr_params_t']]],
-  ['hyperdynamics_5foptions_5f_37',['hyperdynamics_options_',['../structeonc_1_1Parameters_1_1Impl.html#a087a0c1af46dba1ee485d07f8257affa',1,'eonc::Parameters::Impl']]]
+  ['hyperdynamics_5foptions_5f_37',['hyperdynamics_options_',['../structeonc_1_1Parameters_1_1Impl.html#a087a0c1af46dba1ee485d07f8257affa',1,'eonc::Parameters::Impl::hyperdynamics_options_'],['../structParameters_1_1Impl.html#a087a0c1af46dba1ee485d07f8257affa',1,'Parameters::Impl::hyperdynamics_options_']]]
 ];

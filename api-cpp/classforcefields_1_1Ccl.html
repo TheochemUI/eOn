@@ -361,10 +361,8 @@ Protected Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-static-attribs" class="groupheader"><a id="pro-static-attribs" name="pro-static-attribs"></a>
 Static Protected Attributes</h2></td></tr>
-<tr class="memitem:aab38e7d85e79b4ee4aa86d30b16b4c22" id="r_aab38e7d85e79b4ee4aa86d30b16b4c22"><td class="memItemLeft">static double const&#160;</td><td class="memItemRight"><a class="el" href="#aab38e7d85e79b4ee4aa86d30b16b4c22">re_</a> = re_</td></tr>
-<tr class="memdesc:aab38e7d85e79b4ee4aa86d30b16b4c22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance OH at equilibrium.  <br /></td></tr>
-<tr class="memitem:a3223b0a9bee25570662ddd2fc857801d" id="r_a3223b0a9bee25570662ddd2fc857801d"><td class="memItemLeft">static double const&#160;</td><td class="memItemRight"><a class="el" href="#a3223b0a9bee25570662ddd2fc857801d">thetae_</a> = thetae_</td></tr>
-<tr class="memdesc:a3223b0a9bee25570662ddd2fc857801d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance OH at equilibrium.  <br /></td></tr>
+<tr class="memitem:aab38e7d85e79b4ee4aa86d30b16b4c22" id="r_aab38e7d85e79b4ee4aa86d30b16b4c22"><td class="memItemLeft">static double const&#160;</td><td class="memItemRight"><a class="el" href="#aab38e7d85e79b4ee4aa86d30b16b4c22">re_</a> = reEq_</td></tr>
+<tr class="memitem:a3223b0a9bee25570662ddd2fc857801d" id="r_a3223b0a9bee25570662ddd2fc857801d"><td class="memItemLeft">static double const&#160;</td><td class="memItemRight"><a class="el" href="#a3223b0a9bee25570662ddd2fc857801d">thetae_</a> = thetaEq_</td></tr>
 <tr class="inherit_header pro_static_attribs_classforcefields_1_1PotentialBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_static_attribs_classforcefields_1_1PotentialBase')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Static Protected Attributes inherited from <a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td></tr>
 <tr class="memitem:ab9c23adf3a29d08beb5e3591691bbdde inherit pro_static_attribs_classforcefields_1_1PotentialBase" id="r_ab9c23adf3a29d08beb5e3591691bbdde"><td class="memItemLeft">static const double&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#ab9c23adf3a29d08beb5e3591691bbdde">EPSILON_PT</a> = 0.68165797577788501</td></tr>
 <tr class="memdesc:ab9c23adf3a29d08beb5e3591691bbdde inherit pro_static_attribs_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Platinum Lennard-Jones.  <br /></td></tr>
@@ -881,7 +879,7 @@ Arrays ending in <em>h1</em> are for the hydrogen one of the molecules and those
 <div class="line"><span class="lineno">  199</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 3; ++i)</div>
 <div class="line"><span class="lineno">  200</span>    ro.n[i] = v.v[i] * d;</div>
 <div class="line"><span class="lineno">  201</span>}</div>
-<div class="ttc" id="aclassforcefields_1_1Ccl_html_aab38e7d85e79b4ee4aa86d30b16b4c22"><div class="ttname"><a href="#aab38e7d85e79b4ee4aa86d30b16b4c22">forcefields::Ccl::re_</a></div><div class="ttdeci">static double const re_</div><div class="ttdoc">Distance OH at equilibrium.</div><div class="ttdef"><b>Definition</b> <a href="ccl_8hpp_source.html#l00056">ccl.hpp:56</a></div></div>
+<div class="ttc" id="aclassforcefields_1_1Ccl_html_aab38e7d85e79b4ee4aa86d30b16b4c22"><div class="ttname"><a href="#aab38e7d85e79b4ee4aa86d30b16b4c22">forcefields::Ccl::re_</a></div><div class="ttdeci">static double const re_</div><div class="ttdef"><b>Definition</b> <a href="ccl_8hpp_source.html#l00056">ccl.hpp:56</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -964,7 +962,7 @@ Arrays ending in <em>h1</em> are for the hydrogen one of the molecules and those
 <div class="line"><span class="lineno">  247</span>  <a class="code hl_function" href="#a36011cd13cd75d0ee2ba18fa19931937">intramolecular</a>(ro1, ro2, dth, energy, fh1, fh2, fo);</div>
 <div class="line"><span class="lineno">  248</span>}</div>
 <div class="ttc" id="aclassforcefields_1_1Ccl_html_a2114d068d936b2a71ab82229575f5a78"><div class="ttname"><a href="#a2114d068d936b2a71ab82229575f5a78">forcefields::Ccl::initialiseRho</a></div><div class="ttdeci">void initialiseRho(Vector3 const &amp;v, Rho &amp;r)</div><div class="ttdoc">Initialise Rho.</div><div class="ttdef"><b>Definition</b> <a href="ccl_8cpp_source.html#l00194">ccl.cpp:194</a></div></div>
-<div class="ttc" id="aclassforcefields_1_1Ccl_html_a3223b0a9bee25570662ddd2fc857801d"><div class="ttname"><a href="#a3223b0a9bee25570662ddd2fc857801d">forcefields::Ccl::thetae_</a></div><div class="ttdeci">static double const thetae_</div><div class="ttdoc">Distance OH at equilibrium.</div><div class="ttdef"><b>Definition</b> <a href="ccl_8hpp_source.html#l00057">ccl.hpp:57</a></div></div>
+<div class="ttc" id="aclassforcefields_1_1Ccl_html_a3223b0a9bee25570662ddd2fc857801d"><div class="ttname"><a href="#a3223b0a9bee25570662ddd2fc857801d">forcefields::Ccl::thetae_</a></div><div class="ttdeci">static double const thetae_</div><div class="ttdef"><b>Definition</b> <a href="ccl_8hpp_source.html#l00057">ccl.hpp:57</a></div></div>
 <div class="ttc" id="aclassforcefields_1_1Ccl_html_a430665d98787da847c91617cd467a63f"><div class="ttname"><a href="#a430665d98787da847c91617cd467a63f">forcefields::Ccl::initialiseDtheta</a></div><div class="ttdeci">void initialiseDtheta(Vector3 const &amp;v1, Vector3 const &amp;v2, Dtheta &amp;dth, double const thetaEquilibrium)</div><div class="ttdoc">Initialise Dtheta.</div><div class="ttdef"><b>Definition</b> <a href="ccl_8cpp_source.html#l00204">ccl.cpp:204</a></div></div>
 <div class="ttc" id="aclassforcefields_1_1PotentialBase_html_a259f8b8b62c5dc78a8c38c5590f34e1b"><div class="ttname"><a href="classforcefields_1_1PotentialBase.html#a259f8b8b62c5dc78a8c38c5590f34e1b">forcefields::PotentialBase::distance</a></div><div class="ttdeci">void distance(const double x[], const double y[], double z[], double &amp;z1, double &amp;z2)</div><div class="ttdoc">Distance vector, norm and norm square.</div><div class="ttdef"><b>Definition</b> <a href="potential__base_8cpp_source.html#l00555">potential_base.cpp:555</a></div></div>
 <div class="ttc" id="astructforcefields_1_1Ccl_1_1Dtheta_html"><div class="ttname"><a href="structforcefields_1_1Ccl_1_1Dtheta.html">forcefields::Ccl::Dtheta</a></div><div class="ttdoc">parameter in paper.</div><div class="ttdef"><b>Definition</b> <a href="ccl_8hpp_source.html#l00043">ccl.hpp:43</a></div></div>
@@ -2107,7 +2105,7 @@ Arrays ending in <em>h1</em> are for the hydrogen one of the molecules and those
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">double const forcefields::Ccl::re_ = re_</td>
+          <td class="memname">double const forcefields::Ccl::re_ = reEq_</td>
         </tr>
       </table>
   </td>
@@ -2116,8 +2114,6 @@ Arrays ending in <em>h1</em> are for the hydrogen one of the molecules and those
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Distance OH at equilibrium. </p>
 
 <p class="definition">Definition at line <a class="el" href="ccl_8hpp_source.html#l00056">56</a> of file <a class="el" href="ccl_8hpp_source.html">ccl.hpp</a>.</p>
 
@@ -2133,7 +2129,7 @@ Arrays ending in <em>h1</em> are for the hydrogen one of the molecules and those
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">double const forcefields::Ccl::thetae_ = thetae_</td>
+          <td class="memname">double const forcefields::Ccl::thetae_ = thetaEq_</td>
         </tr>
       </table>
   </td>
@@ -2142,8 +2138,6 @@ Arrays ending in <em>h1</em> are for the hydrogen one of the molecules and those
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Distance OH at equilibrium. </p>
 
 <p class="definition">Definition at line <a class="el" href="ccl_8hpp_source.html#l00057">57</a> of file <a class="el" href="ccl_8hpp_source.html">ccl.hpp</a>.</p>
 

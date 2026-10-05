@@ -2,7 +2,7 @@ var searchData=
 [
   ['z_0',['Z',['../structEAM_1_1element__parameters.html#a2f87abd734a4140c030c4fce6a58100b',1,'EAM::element_parameters::Z'],['../structemt__parameters.html#aa16e46c8ff9594497136e61b7a85643a',1,'emt_parameters::Z']]],
   ['z_1',['z',['../structeonc_1_1geometry_1_1atom.html#abcd1bb0554d7f2bf13cf560608517615',1,'eonc::geometry::atom']]],
-  ['zbl_5foptions_5f_2',['zbl_options_',['../structeonc_1_1Parameters_1_1Impl.html#a0577eb652e687ef2078debeac4914a59',1,'eonc::Parameters::Impl']]],
+  ['zbl_5foptions_5f_2',['zbl_options_',['../structeonc_1_1Parameters_1_1Impl.html#a0577eb652e687ef2078debeac4914a59',1,'eonc::Parameters::Impl::zbl_options_'],['../structParameters_1_1Impl.html#a0577eb652e687ef2078debeac4914a59',1,'Parameters::Impl::zbl_options_']]],
   ['zbl_5fpot_3',['zbl_pot',['../classeonc_1_1ZBLRepulsiveIDPPObjective.html#a2a41964041904028d9406104f16625b7',1,'eonc::ZBLRepulsiveIDPPObjective']]],
   ['zbl_5fweight_4',['zbl_weight',['../classeonc_1_1ZBLRepulsiveIDPPObjective.html#aec7c934278d51458b09f51415adb911d',1,'eonc::ZBLRepulsiveIDPPObjective']]],
   ['zero_5',['zero',['../structeonc_1_1tunneling_1_1RotationZeroModes.html#a1d3c4500a805d1a47c077bf7e60d3e93',1,'eonc::tunneling::RotationZeroModes']]],

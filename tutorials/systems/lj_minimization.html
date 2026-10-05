@@ -112,7 +112,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../user_guide/index.html">User guide</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/pyeonclient.html">pyeonclient</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/neighbor_lists.html">Neighbor lists (vesin)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/neighbor_lists.html">Neighbor lists</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
@@ -166,6 +166,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/library-api.html">Library API</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/in-process.html">In-process jobs (no file IPC)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/abi-surface.html">Public C++ surface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/relax-engine.html">Relax engine library</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/rgpot-migration.html">rgpot kernel inventory</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/porting_potentials.html">Porting potentials</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/docbuild.html">Working with the documentation</a></li>
@@ -486,22 +487,22 @@ The landscape cell passes <code class="docutils literal notranslate"><span class
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">$ /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 -m rgpycrumbs.cli eon plt-min --job-dir /tmp/eon_lj_min_lr1nbpkk --label lj cluster --plot-type profile --dpi 150 -o /tmp/eon_lj_min_lr1nbpkk/plots/min_1d.png
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">$ /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 -m rgpycrumbs.cli eon plt-min --job-dir /tmp/eon_lj_min_rx243vp9 --label lj cluster --plot-type profile --dpi 150 -o /tmp/eon_lj_min_rx243vp9/plots/min_1d.png
 </span></pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">--&gt; Dispatching to: /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/plt_min.py --job-dir /tmp/eon_lj_min_lr1nbpkk --label lj cluster --plot-type profile --dpi 150 -o /tmp/eon_lj_min_lr1nbpkk/plots/min_1d.png
-</span><span data-line="2"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[10/04/26 08:59:27] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loading minimization trajectory from        
-</span><span data-line="3"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/</span>eon_lj_min_lr1nbpkk                           
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">--&gt; Dispatching to: /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/plt_min.py --job-dir /tmp/eon_lj_min_rx243vp9 --label lj cluster --plot-type profile --dpi 150 -o /tmp/eon_lj_min_rx243vp9/plots/min_1d.png
+</span><span data-line="2"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[10/05/26 15:42:39] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loading minimization trajectory from        
+</span><span data-line="3"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/</span>eon_lj_min_rx243vp9                           
 </span><span data-line="4"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Using minimization metrics from frame       
 </span><span data-line="5"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         metadata <span class=" -Color -Color-Bold">(</span><span class=" -Color -Color-Bold -Color-Bold-Cyan">7</span> rows<span class=" -Color -Color-Bold">)</span>                                  
 </span><span data-line="6"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loaded <span class=" -Color -Color-Bold -Color-Bold-Cyan">7</span> frames, <span class=" -Color -Color-Bold -Color-Bold-Cyan">7</span> data rows                
 </span><span data-line="7"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loaded minimization trajectory from         
-</span><span data-line="8"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/</span>eon_lj_min_lr1nbpkk <span class=" -Color -Color-Bold">(</span><span class=" -Color -Color-Bold -Color-Bold-Cyan">7</span> frames<span class=" -Color -Color-Bold">)</span>                
+</span><span data-line="8"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/</span>eon_lj_min_rx243vp9 <span class=" -Color -Color-Bold">(</span><span class=" -Color -Color-Bold -Color-Bold-Cyan">7</span> frames<span class=" -Color -Color-Bold">)</span>                
 </span><span data-line="9"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Setting global rcParams for ruhi theme      
 </span><span data-line="10"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Yellow">WARNING </span> WARNING - Font <span class=" -Color -Color-Green">&#39;Atkinson Hyperlegible&#39;</span> not found.  
 </span><span data-line="11"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         Falling back to <span class=" -Color -Color-Green">&#39;sans-serif&#39;</span>.                      
 </span><span data-line="12"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Saved                                       
-</span><span data-line="13"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/eon_lj_min_lr1nbpkk/plots/</span>min_1d.png          
+</span><span data-line="13"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/eon_lj_min_rx243vp9/plots/</span>min_1d.png          
 </span></pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">--&gt; Using active interpreter (readcon/plot stack present or --dev)
@@ -551,44 +552,44 @@ minimization</strong>; endpoints are labeled <strong>initial</strong> / <strong>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">$ /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 -m rgpycrumbs.cli eon plt-min --job-dir /tmp/eon_lj_min_lr1nbpkk --label lj cluster --ira-kmax 1.8 --plot-type landscape --project-path --surface-type grad_imq --plot-structures endpoints --strip-renderer xyzrender --strip-dividers --xyzrender-config paton --rotation 90x,0y,0z --dpi 150 -o /tmp/eon_lj_min_lr1nbpkk/plots/min_2d.png
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">$ /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 -m rgpycrumbs.cli eon plt-min --job-dir /tmp/eon_lj_min_rx243vp9 --label lj cluster --ira-kmax 1.8 --plot-type landscape --project-path --surface-type grad_imq --plot-structures endpoints --strip-renderer xyzrender --strip-dividers --xyzrender-config paton --rotation 90x,0y,0z --dpi 150 -o /tmp/eon_lj_min_rx243vp9/plots/min_2d.png
 </span></pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">--&gt; Dispatching to: /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/plt_min.py --job-dir /tmp/eon_lj_min_lr1nbpkk --label lj cluster --ira-kmax 1.8 --plot-type landscape --project-path --surface-type grad_imq --plot-structures endpoints --strip-renderer xyzrender --strip-dividers --xyzrender-config paton --rotation 90x,0y,0z --dpi 150 -o /tmp/eon_lj_min_lr1nbpkk/plots/min_2d.png
-</span><span data-line="2"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[10/04/26 08:59:29] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loading minimization trajectory from        
-</span><span data-line="3"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/</span>eon_lj_min_lr1nbpkk                           
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">--&gt; Dispatching to: /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/plt_min.py --job-dir /tmp/eon_lj_min_rx243vp9 --label lj cluster --ira-kmax 1.8 --plot-type landscape --project-path --surface-type grad_imq --plot-structures endpoints --strip-renderer xyzrender --strip-dividers --xyzrender-config paton --rotation 90x,0y,0z --dpi 150 -o /tmp/eon_lj_min_rx243vp9/plots/min_2d.png
+</span><span data-line="2"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[10/05/26 15:42:41] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loading minimization trajectory from        
+</span><span data-line="3"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/</span>eon_lj_min_rx243vp9                           
 </span><span data-line="4"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Using minimization metrics from frame       
 </span><span data-line="5"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         metadata <span class=" -Color -Color-Bold">(</span><span class=" -Color -Color-Bold -Color-Bold-Cyan">7</span> rows<span class=" -Color -Color-Bold">)</span>                                  
 </span><span data-line="6"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loaded <span class=" -Color -Color-Bold -Color-Bold-Cyan">7</span> frames, <span class=" -Color -Color-Bold -Color-Bold-Cyan">7</span> data rows                
 </span><span data-line="7"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loaded minimization trajectory from         
-</span><span data-line="8"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/</span>eon_lj_min_lr1nbpkk <span class=" -Color -Color-Bold">(</span><span class=" -Color -Color-Bold -Color-Bold-Cyan">7</span> frames<span class=" -Color -Color-Bold">)</span>                
+</span><span data-line="8"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/</span>eon_lj_min_rx243vp9 <span class=" -Color -Color-Bold">(</span><span class=" -Color -Color-Bold -Color-Bold-Cyan">7</span> frames<span class=" -Color -Color-Bold">)</span>                
 </span><span data-line="9"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Setting global rcParams for ruhi theme      
 </span><span data-line="10"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Yellow">WARNING </span> WARNING - Font <span class=" -Color -Color-Green">&#39;Atkinson Hyperlegible&#39;</span> not found.  
 </span><span data-line="11"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         Falling back to <span class=" -Color -Color-Green">&#39;sans-serif&#39;</span>.                      
-</span><span data-line="12"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[10/04/26 08:59:30] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Calculating landscape coordinates <span class=" -Color -Color-Bold">(</span>RMSD-A,  
+</span><span data-line="12"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Calculating landscape coordinates <span class=" -Color -Color-Bold">(</span>RMSD-A,  
 </span><span data-line="13"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         RMSD-B<span class=" -Color -Color-Bold">)</span><span class=" -Color -Color-Yellow">...</span>                                         
-</span><span data-line="14"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Generating 2D surface using grad_imq        
+</span><span data-line="14"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[10/05/26 15:42:42] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Generating 2D surface using grad_imq        
 </span><span data-line="15"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Bold">(</span>Projected: True<span class=" -Color -Color-Bold">)</span><span class=" -Color -Color-Yellow">...</span>                               
 </span><span data-line="16"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Unable to initialize backend <span class=" -Color -Color-Green">&#39;tpu&#39;</span>:         
 </span><span data-line="17"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         INTERNAL: Failed to open libtpu.so: libtpu.so:     
 </span><span data-line="18"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         cannot open shared object file: No such file or    
 </span><span data-line="19"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         directory                                          
-</span><span data-line="20"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[10/04/26 08:59:37] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loading <span class=" -Color -Color-Magenta">/tmp/</span>tmpwzmyod8x.xyz                
-</span><span data-line="21"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[10/04/26 08:59:42] </span><span class=" -Color -Color-Yellow">WARNING </span> WARNING - Stated charge +<span class=" -Color -Color-Bold -Color-Bold-Cyan">0</span>, but the bond orders    
+</span><span data-line="20"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[10/05/26 15:42:49] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loading <span class=" -Color -Color-Magenta">/tmp/</span>tmpaykf227o.xyz                
+</span><span data-line="21"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[10/05/26 15:42:52] </span><span class=" -Color -Color-Yellow">WARNING </span> WARNING - Stated charge +<span class=" -Color -Color-Bold -Color-Bold-Cyan">0</span>, but the bond orders    
 </span><span data-line="22"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         give <span class=" -Color -Color-Bold -Color-Bold-Cyan">-6594</span>; formal charges follow the structure    
 </span><span data-line="23"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Built graph: <span class=" -Color -Color-Bold -Color-Bold-Cyan">997</span> atoms, <span class=" -Color -Color-Bold -Color-Bold-Cyan">5291</span> bonds          
-</span><span data-line="24"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[10/04/26 08:59:44] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loading <span class=" -Color -Color-Magenta">/tmp/</span>tmp5wfz_ybg.xyz                
-</span><span data-line="25"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[10/04/26 08:59:49] </span><span class=" -Color -Color-Yellow">WARNING </span> WARNING - Stated charge +<span class=" -Color -Color-Bold -Color-Bold-Cyan">0</span>, but the bond orders    
+</span><span data-line="24"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[10/05/26 15:42:55] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loading <span class=" -Color -Color-Magenta">/tmp/</span>tmprwytlom0.xyz                
+</span><span data-line="25"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[10/05/26 15:42:58] </span><span class=" -Color -Color-Yellow">WARNING </span> WARNING - Stated charge +<span class=" -Color -Color-Bold -Color-Bold-Cyan">0</span>, but the bond orders    
 </span><span data-line="26"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         give <span class=" -Color -Color-Bold -Color-Bold-Cyan">-6594</span>; formal charges follow the structure    
 </span><span data-line="27"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Built graph: <span class=" -Color -Color-Bold -Color-Bold-Cyan">997</span> atoms, <span class=" -Color -Color-Bold -Color-Bold-Cyan">5291</span> bonds          
-</span><span data-line="28"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[10/04/26 08:59:52] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Saved                                       
-</span><span data-line="29"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/eon_lj_min_lr1nbpkk/plots/</span>min_2d.png          
+</span><span data-line="28"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[10/05/26 15:43:01] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Saved                                       
+</span><span data-line="29"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/eon_lj_min_rx243vp9/plots/</span>min_2d.png          
 </span></pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">--&gt; Using active interpreter (readcon/plot stack present or --dev)
 </span></pre></div>
 </div>
-<img alt="../../_images/d3ba416d94bc73f7440b971fc4df02e46acab5feb2ebc3916bca8f89322a806b.png" src="../../_images/d3ba416d94bc73f7440b971fc4df02e46acab5feb2ebc3916bca8f89322a806b.png" />
+<img alt="../../_images/5fc572b58d02527b0caf296eb193e990d7ef6bd0dc633810375512f089373fcc.png" src="../../_images/5fc572b58d02527b0caf296eb193e990d7ef6bd0dc633810375512f089373fcc.png" />
 </div>
 </div>
 </section>
@@ -616,22 +617,22 @@ minimization</strong>; endpoints are labeled <strong>initial</strong> / <strong>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">$ /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 -m rgpycrumbs.cli eon plt-min --job-dir /tmp/eon_lj_min_lr1nbpkk --label lj cluster --plot-type convergence --dpi 150 -o /tmp/eon_lj_min_lr1nbpkk/plots/min_conv.png
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">$ /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 -m rgpycrumbs.cli eon plt-min --job-dir /tmp/eon_lj_min_rx243vp9 --label lj cluster --plot-type convergence --dpi 150 -o /tmp/eon_lj_min_rx243vp9/plots/min_conv.png
 </span></pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">--&gt; Dispatching to: /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/plt_min.py --job-dir /tmp/eon_lj_min_lr1nbpkk --label lj cluster --plot-type convergence --dpi 150 -o /tmp/eon_lj_min_lr1nbpkk/plots/min_conv.png
-</span><span data-line="2"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[10/04/26 08:59:54] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loading minimization trajectory from        
-</span><span data-line="3"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/</span>eon_lj_min_lr1nbpkk                           
-</span><span data-line="4"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Using minimization metrics from frame       
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">--&gt; Dispatching to: /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/plt_min.py --job-dir /tmp/eon_lj_min_rx243vp9 --label lj cluster --plot-type convergence --dpi 150 -o /tmp/eon_lj_min_rx243vp9/plots/min_conv.png
+</span><span data-line="2"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[10/05/26 15:43:03] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loading minimization trajectory from        
+</span><span data-line="3"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/</span>eon_lj_min_rx243vp9                           
+</span><span data-line="4"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[10/05/26 15:43:04] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Using minimization metrics from frame       
 </span><span data-line="5"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         metadata <span class=" -Color -Color-Bold">(</span><span class=" -Color -Color-Bold -Color-Bold-Cyan">7</span> rows<span class=" -Color -Color-Bold">)</span>                                  
 </span><span data-line="6"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loaded <span class=" -Color -Color-Bold -Color-Bold-Cyan">7</span> frames, <span class=" -Color -Color-Bold -Color-Bold-Cyan">7</span> data rows                
 </span><span data-line="7"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loaded minimization trajectory from         
-</span><span data-line="8"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/</span>eon_lj_min_lr1nbpkk <span class=" -Color -Color-Bold">(</span><span class=" -Color -Color-Bold -Color-Bold-Cyan">7</span> frames<span class=" -Color -Color-Bold">)</span>                
+</span><span data-line="8"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/</span>eon_lj_min_rx243vp9 <span class=" -Color -Color-Bold">(</span><span class=" -Color -Color-Bold -Color-Bold-Cyan">7</span> frames<span class=" -Color -Color-Bold">)</span>                
 </span><span data-line="9"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Setting global rcParams for ruhi theme      
 </span><span data-line="10"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Yellow">WARNING </span> WARNING - Font <span class=" -Color -Color-Green">&#39;Atkinson Hyperlegible&#39;</span> not found.  
 </span><span data-line="11"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         Falling back to <span class=" -Color -Color-Green">&#39;sans-serif&#39;</span>.                      
-</span><span data-line="12"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[10/04/26 08:59:55] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Saved                                       
-</span><span data-line="13"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/eon_lj_min_lr1nbpkk/plots/</span>min_conv.png        
+</span><span data-line="12"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Saved                                       
+</span><span data-line="13"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/eon_lj_min_rx243vp9/plots/</span>min_conv.png        
 </span></pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">--&gt; Using active interpreter (readcon/plot stack present or --dev)
@@ -786,7 +787,7 @@ each). Overlay only the 1D profile / convergence panels:</p>
     </div>
   </div>
 </footer>
-      <script src="../../_static/documentation_options.js?v=c1362a89"></script>
+      <script src="../../_static/documentation_options.js?v=5349f462"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>

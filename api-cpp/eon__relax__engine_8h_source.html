@@ -1,0 +1,539 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: /home/runner/work/eOn/eOn/include/eon/relax/eon_relax_engine.h Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn 3.2.0</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('eon__relax__engine_8h_source.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">eon_relax_engine.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="eon__relax__engine_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">/*</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">** This file is part of eOn.</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">**</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">** SPDX-License-Identifier: BSD-3-Clause</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">**</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">** Copyright (c) 2010--present, eOn Development Team</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">** All rights reserved.</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">**</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">** Repo:</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">** https://github.com/TheochemUI/eOn</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">*/</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="preprocessor">#include &lt;stddef.h&gt;</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="preprocessor">#ifdef _WIN32</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="preprocessor">#if defined(EON_RELAX_STATIC)</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="preprocessor">#define EON_RELAX_API</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="preprocessor">#elif defined(EON_RELAX_ENGINE_BUILD)</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="preprocessor">#define EON_RELAX_API __declspec(dllexport)</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="preprocessor">#define EON_RELAX_API __declspec(dllimport)</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#a04c4b96dd6c6c65cab545021853e3998">   67</a></span><span class="preprocessor">#define EON_RELAX_API __attribute__((visibility(&quot;default&quot;)))</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#a0ef817f6430006d2e64a440d42ccb784">   70</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code hl_struct" href="structEonRelaxEngine.html">EonRelaxEngine</a> <a class="code hl_struct" href="structEonRelaxEngine.html">EonRelaxEngine</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#a1e9867c32d64e1dd587e9a06c33fd295">   72</a></span><span class="preprocessor">#define EON_RELAX_ABI_MAJOR 2u</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#a3163efec45bfa587d9219d3e6cc7b754">   73</a></span><span class="preprocessor">#define EON_RELAX_ABI_MINOR 1u</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span></div>
+<div class="foldopen" id="foldopen00076" data-start="{" data-end="};">
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="structeon__relax__version__t.html">   76</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="structeon__relax__version__t.html#a9f6cbd3a49305df9429b249187f6405c">   77</a></span>  uint32_t <a class="code hl_variable" href="structeon__relax__version__t.html#a9f6cbd3a49305df9429b249187f6405c">major</a>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="structeon__relax__version__t.html#ab7946b3cecc8c61fa72cde29ae794fca">   78</a></span>  uint32_t <a class="code hl_variable" href="structeon__relax__version__t.html#ab7946b3cecc8c61fa72cde29ae794fca">minor</a>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>} <a class="code hl_struct" href="structeon__relax__version__t.html">eon_relax_version_t</a>;</div>
+</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="foldopen" id="foldopen00081" data-start="" data-end="">
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#aa989610bccf0d72d7940d6ee4017dd71">   81</a></span><span class="preprocessor">#define EON_RELAX_VERSION_INIT                                                 \</span></div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="preprocessor">  { EON_RELAX_ABI_MAJOR, EON_RELAX_ABI_MINOR }</span></div>
+</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="foldopen" id="foldopen00084" data-start="{" data-end="};">
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#aea28da5234d6f1cdf2a179847a0ec1a1">   84</a></span><span class="keyword">typedef</span> <span class="keyword">enum</span> {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#aea28da5234d6f1cdf2a179847a0ec1a1a288a19d5807251ad00bdcedecb87af91">   85</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#aea28da5234d6f1cdf2a179847a0ec1a1a288a19d5807251ad00bdcedecb87af91">EON_RELAX_KIND_INVALID</a> = 0,</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#aea28da5234d6f1cdf2a179847a0ec1a1a8872ce122ec6d7d7da908a0eee7bcca3">   86</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#aea28da5234d6f1cdf2a179847a0ec1a1a8872ce122ec6d7d7da908a0eee7bcca3">EON_RELAX_KIND_NEB</a> = 1,</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#aea28da5234d6f1cdf2a179847a0ec1a1a5c21e41c13417a31dec47ab2e5ba2621">   87</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#aea28da5234d6f1cdf2a179847a0ec1a1a5c21e41c13417a31dec47ab2e5ba2621">EON_RELAX_KIND_SADDLE</a> = 2</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>} <a class="code hl_enumeration" href="eon__relax__engine_8h.html#aea28da5234d6f1cdf2a179847a0ec1a1">eon_relax_kind_t</a>;</div>
+</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="foldopen" id="foldopen00090" data-start="" data-end="">
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#a08b4e297608596b2249f1e91305f21bb">   90</a></span><span class="preprocessor">#define EON_RELAX_KIND_IS_KNOWN(k)                                             \</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><span class="preprocessor">  ((k) == EON_RELAX_KIND_NEB || (k) == EON_RELAX_KIND_SADDLE)</span></div>
+</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span></div>
+<div class="foldopen" id="foldopen00096" data-start="{" data-end="};">
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586">   96</a></span><span class="keyword">typedef</span> <span class="keyword">enum</span> {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a09f7e41d71d92bacf4cac866775218c7">   97</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a09f7e41d71d92bacf4cac866775218c7">EON_RELAX_OK</a> = 0,</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a2fb6848a9da66b1c933f25390b8497df">   98</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a2fb6848a9da66b1c933f25390b8497df">EON_RELAX_NULL_ENGINE</a> = -1,</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a01482e749e68825d78b440f1ce3479e4">   99</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a01482e749e68825d78b440f1ce3479e4">EON_RELAX_NULL_BAND</a> = -2,</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a690bf4d69c94866232d8e0aced420b40">  100</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a690bf4d69c94866232d8e0aced420b40">EON_RELAX_NULL_SURFACE</a> = -3,</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586abaeb9354dfe3163742128fbee734914e">  101</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586abaeb9354dfe3163742128fbee734914e">EON_RELAX_NULL_OUTCOME</a> = -4,</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a520d564e363765f53c156b643621bdd2">  102</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a520d564e363765f53c156b643621bdd2">EON_RELAX_NULL_POSITIONS</a> = -5,</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a3ec5d1b6686412c482ab75508a181c66">  103</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a3ec5d1b6686412c482ab75508a181c66">EON_RELAX_NULL_ATOMIC_NRS</a> = -6,</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a6100dcee869355dab087f4f40051cbe7">  104</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a6100dcee869355dab087f4f40051cbe7">EON_RELAX_NULL_BOXES</a> = -7,</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586af3f654473afab9f35a603c96165930bf">  105</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586af3f654473afab9f35a603c96165930bf">EON_RELAX_NULL_MODE</a> = -8,</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586ab4d259309574e2f632f48a9eae1abc64">  106</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586ab4d259309574e2f632f48a9eae1abc64">EON_RELAX_BAND_TOO_SHORT</a> = -9,</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586ac35f173d325fec884fb52adfd1a627da">  107</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586ac35f173d325fec884fb52adfd1a627da">EON_RELAX_NATOMS</a> = -10,</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586aa54b313ba784e14cac786964fefa09f5">  108</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586aa54b313ba784e14cac786964fefa09f5">EON_RELAX_UNKNOWN_KIND</a> = -11,</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a82ca5a9c258489ef920b0dc32967beda">  109</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a82ca5a9c258489ef920b0dc32967beda">EON_RELAX_UNKNOWN_STATUS</a> = -12,</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a8999b0f8933d03976d235d76e5e4cf5c">  110</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a8999b0f8933d03976d235d76e5e4cf5c">EON_RELAX_CAPNP_ROOT</a> = -13,</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a0eee6bfde85c398cf40d4cfc052d0ecf">  111</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a0eee6bfde85c398cf40d4cfc052d0ecf">EON_RELAX_SURFACE_FATAL</a> = -15,</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586aafc722beb8d42565ba59a2d05f3ed21c">  112</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586aafc722beb8d42565ba59a2d05f3ed21c">EON_RELAX_SADDLE_NIMAGES</a> = -17,</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a2ff5b05ab352251cff16a57f419152d4">  113</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a2ff5b05ab352251cff16a57f419152d4">EON_RELAX_BAND_SIZE</a> = -18,</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a079f96db294d93840fa00ef4dbcd87fd">  114</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a079f96db294d93840fa00ef4dbcd87fd">EON_RELAX_ALLOC</a> = -19,</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586ac90cdc1bc564814d7868346f1a02ac83">  115</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586ac90cdc1bc564814d7868346f1a02ac83">EON_RELAX_UNAVAILABLE</a> = -21,</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586abb34ada1d16b1799fb1bef08edb778e7">  116</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586abb34ada1d16b1799fb1bef08edb778e7">EON_RELAX_INVALID_PARAMETER</a> = -22,</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586aa4ecdefd27ce63be8605cada6b65f9b0">  117</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586aa4ecdefd27ce63be8605cada6b65f9b0">EON_RELAX_ABI_MISMATCH</a> = -23</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>} <a class="code hl_enumeration" href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586">eon_relax_rc_t</a>;</div>
+</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span></div>
+<div class="foldopen" id="foldopen00121" data-start="{" data-end="};">
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#a3dac274eaf5032ffb7b58e549274f2d4">  121</a></span><span class="keyword">typedef</span> <span class="keyword">enum</span> {</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#a3dac274eaf5032ffb7b58e549274f2d4a44ff59fa890003fbc92b535e389bbf97">  122</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#a3dac274eaf5032ffb7b58e549274f2d4a44ff59fa890003fbc92b535e389bbf97">EON_RELAX_NEB_GOOD</a> = 0,</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#a3dac274eaf5032ffb7b58e549274f2d4ac6925f9e70832cd4bc9533d178f42a15">  123</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#a3dac274eaf5032ffb7b58e549274f2d4ac6925f9e70832cd4bc9533d178f42a15">EON_RELAX_NEB_INIT</a> = 1,</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#a3dac274eaf5032ffb7b58e549274f2d4aa4858bb40eb18b8329c07673540e2184">  124</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#a3dac274eaf5032ffb7b58e549274f2d4aa4858bb40eb18b8329c07673540e2184">EON_RELAX_NEB_BAD_MAX_ITERATIONS</a> = 2,</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#a3dac274eaf5032ffb7b58e549274f2d4aba6d8317a33ea373cb7419263556b251">  125</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#a3dac274eaf5032ffb7b58e549274f2d4aba6d8317a33ea373cb7419263556b251">EON_RELAX_NEB_RUNNING</a> = 3,</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#a3dac274eaf5032ffb7b58e549274f2d4a6567d03eb5ee30a7c676b31927179183">  126</a></span>  <a class="code hl_enumvalue" href="eon__relax__engine_8h.html#a3dac274eaf5032ffb7b58e549274f2d4a6567d03eb5ee30a7c676b31927179183">EON_RELAX_NEB_MAX_UNCERTAINTY</a> = 4</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>} <a class="code hl_enumeration" href="eon__relax__engine_8h.html#a3dac274eaf5032ffb7b58e549274f2d4">eon_relax_neb_status_t</a>;</div>
+</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#aae23e442c0004571bf563ce41190554d">  129</a></span><span class="preprocessor">#define EON_RELAX_IMAGE_NONE INT64_C(-1)</span></div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span></div>
+<div class="foldopen" id="foldopen00147" data-start="{" data-end="};">
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="structeon__relax__band__t.html">  147</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno"><a class="line" href="structeon__relax__band__t.html#a2a569e1a63c7fcf1eed2d808305ce407">  148</a></span>  <a class="code hl_struct" href="structeon__relax__version__t.html">eon_relax_version_t</a> <a class="code hl_variable" href="structeon__relax__band__t.html#a2a569e1a63c7fcf1eed2d808305ce407">version</a>;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno"><a class="line" href="structeon__relax__band__t.html#a5d122431d3450d3c9126ef9f057e06cc">  149</a></span>  uint64_t <a class="code hl_variable" href="structeon__relax__band__t.html#a5d122431d3450d3c9126ef9f057e06cc">flags</a>;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno"><a class="line" href="structeon__relax__band__t.html#ab687e7ecd33c517a839a3745b42d1431">  150</a></span>  int64_t <a class="code hl_variable" href="structeon__relax__band__t.html#ab687e7ecd33c517a839a3745b42d1431">n_images</a>;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno"><a class="line" href="structeon__relax__band__t.html#a7e67435f7e1936c2c13e29a9d6ac9d44">  151</a></span>  int64_t <a class="code hl_variable" href="structeon__relax__band__t.html#a7e67435f7e1936c2c13e29a9d6ac9d44">n_atoms</a>;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="structeon__relax__band__t.html#a7efa7bed0577392414e2836f41ef2944">  152</a></span>  <span class="keywordtype">double</span> *<a class="code hl_variable" href="structeon__relax__band__t.html#a7efa7bed0577392414e2836f41ef2944">positions</a>;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno"><a class="line" href="structeon__relax__band__t.html#a2bb43a5a04c377b724f71ad2c0dfc5d3">  153</a></span>  <span class="keyword">const</span> int32_t *<a class="code hl_variable" href="structeon__relax__band__t.html#a2bb43a5a04c377b724f71ad2c0dfc5d3">atomic_nrs</a>;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno"><a class="line" href="structeon__relax__band__t.html#a5a1fd10c7e2a7e99c1c4e3d78be79439">  154</a></span>  <span class="keyword">const</span> <span class="keywordtype">double</span> *<a class="code hl_variable" href="structeon__relax__band__t.html#a5a1fd10c7e2a7e99c1c4e3d78be79439">boxes</a>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno"><a class="line" href="structeon__relax__band__t.html#a71445562225e6dc37a39bd93dcb178d2">  155</a></span>  <span class="keyword">const</span> int32_t *<a class="code hl_variable" href="structeon__relax__band__t.html#a71445562225e6dc37a39bd93dcb178d2">is_fixed</a>;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno"><a class="line" href="structeon__relax__band__t.html#ab698892f0fb7010e272025f75016d9be">  156</a></span>  <span class="keyword">const</span> <span class="keywordtype">double</span> *<a class="code hl_variable" href="structeon__relax__band__t.html#ab698892f0fb7010e272025f75016d9be">mode</a>;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno"><a class="line" href="structeon__relax__band__t.html#ac86d61fd242ab4bd76b9d2a675d526c7">  157</a></span>  <span class="keyword">const</span> int64_t *<a class="code hl_variable" href="structeon__relax__band__t.html#ac86d61fd242ab4bd76b9d2a675d526c7">image_ids</a>;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno"><a class="line" href="structeon__relax__band__t.html#a6e2daf78b5a54e68671bb5991fde0e28">  158</a></span>  <span class="keyword">const</span> <span class="keywordtype">double</span> *<a class="code hl_variable" href="structeon__relax__band__t.html#a6e2daf78b5a54e68671bb5991fde0e28">masses</a>;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>} <a class="code hl_struct" href="structeon__relax__band__t.html">eon_relax_band_t</a>;</div>
+</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span></div>
+<div class="foldopen" id="foldopen00162" data-start="{" data-end="};">
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno"><a class="line" href="structeon__relax__outcome__t.html">  162</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno"><a class="line" href="structeon__relax__outcome__t.html#abd28cf05156a8d08a2b80346860d0ac8">  163</a></span>  <a class="code hl_struct" href="structeon__relax__version__t.html">eon_relax_version_t</a> <a class="code hl_variable" href="structeon__relax__outcome__t.html#abd28cf05156a8d08a2b80346860d0ac8">version</a>;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno"><a class="line" href="structeon__relax__outcome__t.html#affbb19bf47cb48a58e07c6f1d3a5d4cc">  164</a></span>  uint64_t <a class="code hl_variable" href="structeon__relax__outcome__t.html#affbb19bf47cb48a58e07c6f1d3a5d4cc">flags</a>;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno"><a class="line" href="structeon__relax__outcome__t.html#a5ebfb71886ec08f318c3df4539d4f7ea">  165</a></span>  int32_t <a class="code hl_variable" href="structeon__relax__outcome__t.html#a5ebfb71886ec08f318c3df4539d4f7ea">kind</a>;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno"><a class="line" href="structeon__relax__outcome__t.html#ab403b19a21c6859b865d0f125d043d46">  166</a></span>  int32_t <a class="code hl_variable" href="structeon__relax__outcome__t.html#ab403b19a21c6859b865d0f125d043d46">status</a>;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="structeon__relax__outcome__t.html#a9aef73c1f1504b3eb788ef527cbd51f7">  167</a></span>  int64_t <a class="code hl_variable" href="structeon__relax__outcome__t.html#a9aef73c1f1504b3eb788ef527cbd51f7">iterations</a>;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno"><a class="line" href="structeon__relax__outcome__t.html#ad3b7a520241d309ba7ccdae89c821463">  168</a></span>  int64_t <a class="code hl_variable" href="structeon__relax__outcome__t.html#ad3b7a520241d309ba7ccdae89c821463">climbing_image</a>;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno"><a class="line" href="structeon__relax__outcome__t.html#a8b567933e15067b35da6ca460a3b9ec6">  169</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="structeon__relax__outcome__t.html#a8b567933e15067b35da6ca460a3b9ec6">max_force</a>;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno"><a class="line" href="structeon__relax__outcome__t.html#a21ef74136b610fedf81e5ab937315acc">  170</a></span>  uint64_t <a class="code hl_variable" href="structeon__relax__outcome__t.html#a21ef74136b610fedf81e5ab937315acc">version_hash</a>;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno"><a class="line" href="structeon__relax__outcome__t.html#a4dcf9f241d5e850797212bcda6547b9a">  171</a></span>  uint64_t <a class="code hl_variable" href="structeon__relax__outcome__t.html#a4dcf9f241d5e850797212bcda6547b9a">surface_epoch</a>;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>} <a class="code hl_struct" href="structeon__relax__outcome__t.html">eon_relax_outcome_t</a>;</div>
+</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span></div>
+<div class="foldopen" id="foldopen00183" data-start="{" data-end="};">
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno"><a class="line" href="structeon__relax__surface__request__t.html">  183</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno"><a class="line" href="structeon__relax__surface__request__t.html#ace59d8211cd9ba1a697dac42a7606391">  184</a></span>  <a class="code hl_struct" href="structeon__relax__version__t.html">eon_relax_version_t</a> <a class="code hl_variable" href="structeon__relax__surface__request__t.html#ace59d8211cd9ba1a697dac42a7606391">version</a>;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno"><a class="line" href="structeon__relax__surface__request__t.html#af71389a4880c9e8ab69a01293c47c521">  185</a></span>  uint64_t <a class="code hl_variable" href="structeon__relax__surface__request__t.html#af71389a4880c9e8ab69a01293c47c521">flags</a>;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno"><a class="line" href="structeon__relax__surface__request__t.html#ad49a64f9412c2b54a17dde151085af22">  186</a></span>  int64_t <a class="code hl_variable" href="structeon__relax__surface__request__t.html#ad49a64f9412c2b54a17dde151085af22">n_images</a>;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno"><a class="line" href="structeon__relax__surface__request__t.html#a2354a97e7d63b8387b1f97e94d953086">  187</a></span>  int64_t <a class="code hl_variable" href="structeon__relax__surface__request__t.html#a2354a97e7d63b8387b1f97e94d953086">n_atoms</a>;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno"><a class="line" href="structeon__relax__surface__request__t.html#a64be8b657424ea54d2180eb19543797c">  188</a></span>  <span class="keyword">const</span> <span class="keywordtype">double</span> *<a class="code hl_variable" href="structeon__relax__surface__request__t.html#a64be8b657424ea54d2180eb19543797c">positions</a>;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno"><a class="line" href="structeon__relax__surface__request__t.html#a05003afbd1679ad5748dd99eb4217a6e">  189</a></span>  <span class="keyword">const</span> int32_t *<a class="code hl_variable" href="structeon__relax__surface__request__t.html#a05003afbd1679ad5748dd99eb4217a6e">atomic_nrs</a>;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno"><a class="line" href="structeon__relax__surface__request__t.html#a47fb67a1d23faa8b8e92a2fc2e274cdb">  190</a></span>  <span class="keyword">const</span> <span class="keywordtype">double</span> *<a class="code hl_variable" href="structeon__relax__surface__request__t.html#a47fb67a1d23faa8b8e92a2fc2e274cdb">boxes</a>;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno"><a class="line" href="structeon__relax__surface__request__t.html#a53bef974126ebbc3d6478ad0ada57ebe">  191</a></span>  <span class="keyword">const</span> int64_t *<a class="code hl_variable" href="structeon__relax__surface__request__t.html#a53bef974126ebbc3d6478ad0ada57ebe">image_ids</a>;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno"><a class="line" href="structeon__relax__surface__request__t.html#a373428dbef371cc630ca12d69b88a85a">  192</a></span>  <span class="keywordtype">double</span> *<a class="code hl_variable" href="structeon__relax__surface__request__t.html#a373428dbef371cc630ca12d69b88a85a">energies</a>;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno"><a class="line" href="structeon__relax__surface__request__t.html#a041dfbff147c59389d3b0ecd928083c4">  193</a></span>  <span class="keywordtype">double</span> *<a class="code hl_variable" href="structeon__relax__surface__request__t.html#a041dfbff147c59389d3b0ecd928083c4">forces</a>;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno"><a class="line" href="structeon__relax__surface__request__t.html#a6351921b9c6d69ebc4256b0462724001">  194</a></span>  <span class="keywordtype">double</span> *<a class="code hl_variable" href="structeon__relax__surface__request__t.html#a6351921b9c6d69ebc4256b0462724001">variances</a>;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno"><a class="line" href="structeon__relax__surface__request__t.html#af6e552c91919ac5938bd2d80f3584c72">  195</a></span>  uint64_t *<a class="code hl_variable" href="structeon__relax__surface__request__t.html#af6e552c91919ac5938bd2d80f3584c72">epoch_out</a>;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>} <a class="code hl_struct" href="structeon__relax__surface__request__t.html">eon_relax_surface_request_t</a>;</div>
+</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span></div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno"><a class="line" href="eon__relax__engine_8h.html#add0438f9af1370ea3ae4a282bfd956ee">  199</a></span><span class="keyword">typedef</span> int (*<a class="code hl_typedef" href="eon__relax__engine_8h.html#add0438f9af1370ea3ae4a282bfd956ee">eon_relax_surface_fn</a>)(<span class="keywordtype">void</span> *user,</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>                                    <a class="code hl_struct" href="structeon__relax__surface__request__t.html">eon_relax_surface_request_t</a> *req);</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span></div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span><a class="code hl_define" href="eon__relax__engine_8h.html#a04c4b96dd6c6c65cab545021853e3998">EON_RELAX_API</a> <span class="keywordtype">int</span> <a class="code hl_function" href="eon__relax__engine_8h.html#ace884ed937a2b27d5d153e07b4b20ee8">eon_relax_abi_version</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span><a class="code hl_define" href="eon__relax__engine_8h.html#a04c4b96dd6c6c65cab545021853e3998">EON_RELAX_API</a> <span class="keywordtype">int</span> <a class="code hl_function" href="eon__relax__engine_8h.html#a2bcc92bc6045bf8b77905c6f391784f2">eon_relax_available</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span><a class="code hl_define" href="eon__relax__engine_8h.html#a04c4b96dd6c6c65cab545021853e3998">EON_RELAX_API</a> <span class="keywordtype">int</span> <a class="code hl_function" href="eon__relax__engine_8h.html#a88492ffc9dab97477d4260c8a47b5b77">eon_relax_abi_stamp</a>(<a class="code hl_struct" href="structeon__relax__version__t.html">eon_relax_version_t</a> *out);</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span><a class="code hl_define" href="eon__relax__engine_8h.html#a04c4b96dd6c6c65cab545021853e3998">EON_RELAX_API</a> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_function" href="eon__relax__engine_8h.html#afc64fc04ea043d0b0f7f152cf8827936">eon_relax_version_hash_str</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span><a class="code hl_define" href="eon__relax__engine_8h.html#a04c4b96dd6c6c65cab545021853e3998">EON_RELAX_API</a> uint64_t <a class="code hl_function" href="eon__relax__engine_8h.html#a055c8b6d5b4c7c74c5225efc8e6df98e">eon_relax_version_hash</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span></div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span><a class="code hl_define" href="eon__relax__engine_8h.html#a04c4b96dd6c6c65cab545021853e3998">EON_RELAX_API</a> <a class="code hl_struct" href="structEonRelaxEngine.html">EonRelaxEngine</a> *<a class="code hl_function" href="eon__relax__engine_8h.html#aa9640223fbe8545e2029b6380ad2e618">eon_relax_create</a>(<span class="keyword">const</span> <span class="keywordtype">void</span> *config,</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>                                               <span class="keywordtype">size_t</span> config_len, <span class="keywordtype">char</span> *errbuf,</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>                                               <span class="keywordtype">size_t</span> errlen);</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span> </div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span><a class="code hl_define" href="eon__relax__engine_8h.html#a04c4b96dd6c6c65cab545021853e3998">EON_RELAX_API</a> <span class="keywordtype">int</span> <a class="code hl_function" href="eon__relax__engine_8h.html#a1d3a96fea426d78a15a2c137205b0e2e">eon_relax_set_surface_epoch</a>(<a class="code hl_struct" href="structEonRelaxEngine.html">EonRelaxEngine</a> *eng,</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>                                              uint64_t epoch);</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span><a class="code hl_define" href="eon__relax__engine_8h.html#a04c4b96dd6c6c65cab545021853e3998">EON_RELAX_API</a> <span class="keywordtype">int</span> <a class="code hl_function" href="eon__relax__engine_8h.html#ade7439aeda8e3bb3fcfe6e32e609cee7">eon_relax_last_error</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structEonRelaxEngine.html">EonRelaxEngine</a> *eng);</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span></div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span><a class="code hl_define" href="eon__relax__engine_8h.html#a04c4b96dd6c6c65cab545021853e3998">EON_RELAX_API</a> <span class="keywordtype">int</span> <a class="code hl_function" href="eon__relax__engine_8h.html#a34d459c848ef4967d607015843f33b78">eon_relax_run</a>(<a class="code hl_struct" href="structEonRelaxEngine.html">EonRelaxEngine</a> *eng, <a class="code hl_struct" href="structeon__relax__band__t.html">eon_relax_band_t</a> *band,</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>                                <a class="code hl_typedef" href="eon__relax__engine_8h.html#add0438f9af1370ea3ae4a282bfd956ee">eon_relax_surface_fn</a> surface, <span class="keywordtype">void</span> *user,</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>                                <a class="code hl_struct" href="structeon__relax__outcome__t.html">eon_relax_outcome_t</a> *out);</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span></div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span><a class="code hl_define" href="eon__relax__engine_8h.html#a04c4b96dd6c6c65cab545021853e3998">EON_RELAX_API</a> <span class="keywordtype">int</span> <a class="code hl_function" href="eon__relax__engine_8h.html#a35c4634d633383d7de319855221983f0">eon_relax_step</a>(<a class="code hl_struct" href="structEonRelaxEngine.html">EonRelaxEngine</a> *eng, <a class="code hl_struct" href="structeon__relax__band__t.html">eon_relax_band_t</a> *band,</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>                                 <a class="code hl_typedef" href="eon__relax__engine_8h.html#add0438f9af1370ea3ae4a282bfd956ee">eon_relax_surface_fn</a> surface, <span class="keywordtype">void</span> *user,</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>                                 <a class="code hl_struct" href="structeon__relax__outcome__t.html">eon_relax_outcome_t</a> *out);</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span></div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span><a class="code hl_define" href="eon__relax__engine_8h.html#a04c4b96dd6c6c65cab545021853e3998">EON_RELAX_API</a> <span class="keywordtype">int</span> <a class="code hl_function" href="eon__relax__engine_8h.html#af18378bcacb1a4c310b635388dfc096d">eon_relax_reset</a>(<a class="code hl_struct" href="structEonRelaxEngine.html">EonRelaxEngine</a> *eng);</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span> </div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span><a class="code hl_define" href="eon__relax__engine_8h.html#a04c4b96dd6c6c65cab545021853e3998">EON_RELAX_API</a> <span class="keywordtype">void</span> <a class="code hl_function" href="eon__relax__engine_8h.html#ad9fdd91337b4bef1b782f0620805169e">eon_relax_destroy</a>(<a class="code hl_struct" href="structEonRelaxEngine.html">EonRelaxEngine</a> *eng);</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span></div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span><a class="code hl_define" href="eon__relax__engine_8h.html#a04c4b96dd6c6c65cab545021853e3998">EON_RELAX_API</a> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_function" href="eon__relax__engine_8h.html#ad0e6c6e0e029c2eeaddbfc255f2be151">eon_relax_status_name</a>(<a class="code hl_enumeration" href="eon__relax__engine_8h.html#aea28da5234d6f1cdf2a179847a0ec1a1">eon_relax_kind_t</a> kind,</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>                                                <span class="keywordtype">int</span> status);</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span> </div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span><span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>}</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_a04c4b96dd6c6c65cab545021853e3998"><div class="ttname"><a href="eon__relax__engine_8h.html#a04c4b96dd6c6c65cab545021853e3998">EON_RELAX_API</a></div><div class="ttdeci">#define EON_RELAX_API</div><div class="ttdef"><b>Definition</b> <a href="#l00067">eon_relax_engine.h:67</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_a055c8b6d5b4c7c74c5225efc8e6df98e"><div class="ttname"><a href="eon__relax__engine_8h.html#a055c8b6d5b4c7c74c5225efc8e6df98e">eon_relax_version_hash</a></div><div class="ttdeci">EON_RELAX_API uint64_t eon_relax_version_hash(void)</div><div class="ttdoc">64-bit FNV-1a hash of eon_relax_version_hash_str().</div><div class="ttdef"><b>Definition</b> <a href="RelaxEngineAbi_8cpp_source.html#l00278">RelaxEngineAbi.cpp:278</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_a1d3a96fea426d78a15a2c137205b0e2e"><div class="ttname"><a href="eon__relax__engine_8h.html#a1d3a96fea426d78a15a2c137205b0e2e">eon_relax_set_surface_epoch</a></div><div class="ttdeci">EON_RELAX_API int eon_relax_set_surface_epoch(EonRelaxEngine *eng, uint64_t epoch)</div><div class="ttdef"><b>Definition</b> <a href="RelaxEngineAbi_8cpp_source.html#l00311">RelaxEngineAbi.cpp:311</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_a2bcc92bc6045bf8b77905c6f391784f2"><div class="ttname"><a href="eon__relax__engine_8h.html#a2bcc92bc6045bf8b77905c6f391784f2">eon_relax_available</a></div><div class="ttdeci">EON_RELAX_API int eon_relax_available(void)</div><div class="ttdef"><b>Definition</b> <a href="RelaxEngineAbi_8cpp_source.html#l00260">RelaxEngineAbi.cpp:260</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_a34d459c848ef4967d607015843f33b78"><div class="ttname"><a href="eon__relax__engine_8h.html#a34d459c848ef4967d607015843f33b78">eon_relax_run</a></div><div class="ttdeci">EON_RELAX_API int eon_relax_run(EonRelaxEngine *eng, eon_relax_band_t *band, eon_relax_surface_fn surface, void *user, eon_relax_outcome_t *out)</div><div class="ttdoc">Run the bound engine to completion.</div><div class="ttdef"><b>Definition</b> <a href="RelaxEngineAbi_8cpp_source.html#l00333">RelaxEngineAbi.cpp:333</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_a35c4634d633383d7de319855221983f0"><div class="ttname"><a href="eon__relax__engine_8h.html#a35c4634d633383d7de319855221983f0">eon_relax_step</a></div><div class="ttdeci">EON_RELAX_API int eon_relax_step(EonRelaxEngine *eng, eon_relax_band_t *band, eon_relax_surface_fn surface, void *user, eon_relax_outcome_t *out)</div><div class="ttdoc">One band optimizer step (kind=NEB only).</div><div class="ttdef"><b>Definition</b> <a href="RelaxEngineAbi_8cpp_source.html#l00455">RelaxEngineAbi.cpp:455</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_a3dac274eaf5032ffb7b58e549274f2d4"><div class="ttname"><a href="eon__relax__engine_8h.html#a3dac274eaf5032ffb7b58e549274f2d4">eon_relax_neb_status_t</a></div><div class="ttdeci">eon_relax_neb_status_t</div><div class="ttdoc">NudgedElasticBand::NEBStatus integers.</div><div class="ttdef"><b>Definition</b> <a href="#l00121">eon_relax_engine.h:121</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_a3dac274eaf5032ffb7b58e549274f2d4a44ff59fa890003fbc92b535e389bbf97"><div class="ttname"><a href="eon__relax__engine_8h.html#a3dac274eaf5032ffb7b58e549274f2d4a44ff59fa890003fbc92b535e389bbf97">EON_RELAX_NEB_GOOD</a></div><div class="ttdeci">@ EON_RELAX_NEB_GOOD</div><div class="ttdef"><b>Definition</b> <a href="#l00122">eon_relax_engine.h:122</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_a3dac274eaf5032ffb7b58e549274f2d4a6567d03eb5ee30a7c676b31927179183"><div class="ttname"><a href="eon__relax__engine_8h.html#a3dac274eaf5032ffb7b58e549274f2d4a6567d03eb5ee30a7c676b31927179183">EON_RELAX_NEB_MAX_UNCERTAINTY</a></div><div class="ttdeci">@ EON_RELAX_NEB_MAX_UNCERTAINTY</div><div class="ttdef"><b>Definition</b> <a href="#l00126">eon_relax_engine.h:126</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_a3dac274eaf5032ffb7b58e549274f2d4aa4858bb40eb18b8329c07673540e2184"><div class="ttname"><a href="eon__relax__engine_8h.html#a3dac274eaf5032ffb7b58e549274f2d4aa4858bb40eb18b8329c07673540e2184">EON_RELAX_NEB_BAD_MAX_ITERATIONS</a></div><div class="ttdeci">@ EON_RELAX_NEB_BAD_MAX_ITERATIONS</div><div class="ttdef"><b>Definition</b> <a href="#l00124">eon_relax_engine.h:124</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_a3dac274eaf5032ffb7b58e549274f2d4aba6d8317a33ea373cb7419263556b251"><div class="ttname"><a href="eon__relax__engine_8h.html#a3dac274eaf5032ffb7b58e549274f2d4aba6d8317a33ea373cb7419263556b251">EON_RELAX_NEB_RUNNING</a></div><div class="ttdeci">@ EON_RELAX_NEB_RUNNING</div><div class="ttdef"><b>Definition</b> <a href="#l00125">eon_relax_engine.h:125</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_a3dac274eaf5032ffb7b58e549274f2d4ac6925f9e70832cd4bc9533d178f42a15"><div class="ttname"><a href="eon__relax__engine_8h.html#a3dac274eaf5032ffb7b58e549274f2d4ac6925f9e70832cd4bc9533d178f42a15">EON_RELAX_NEB_INIT</a></div><div class="ttdeci">@ EON_RELAX_NEB_INIT</div><div class="ttdef"><b>Definition</b> <a href="#l00123">eon_relax_engine.h:123</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_a88492ffc9dab97477d4260c8a47b5b77"><div class="ttname"><a href="eon__relax__engine_8h.html#a88492ffc9dab97477d4260c8a47b5b77">eon_relax_abi_stamp</a></div><div class="ttdeci">EON_RELAX_API int eon_relax_abi_stamp(eon_relax_version_t *out)</div><div class="ttdef"><b>Definition</b> <a href="RelaxEngineAbi_8cpp_source.html#l00262">RelaxEngineAbi.cpp:262</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_aa9640223fbe8545e2029b6380ad2e618"><div class="ttname"><a href="eon__relax__engine_8h.html#aa9640223fbe8545e2029b6380ad2e618">eon_relax_create</a></div><div class="ttdeci">EON_RELAX_API EonRelaxEngine * eon_relax_create(const void *config, size_t config_len, char *errbuf, size_t errlen)</div><div class="ttdoc">Create.</div><div class="ttdef"><b>Definition</b> <a href="RelaxEngineAbi_8cpp_source.html#l00282">RelaxEngineAbi.cpp:282</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_acc8df503008d9e3c1aa417ceeec97586"><div class="ttname"><a href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586">eon_relax_rc_t</a></div><div class="ttdeci">eon_relax_rc_t</div><div class="ttdoc">Call rc: 0 success (read outcome), positive recoverable, negative a named fail.</div><div class="ttdef"><b>Definition</b> <a href="#l00096">eon_relax_engine.h:96</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_acc8df503008d9e3c1aa417ceeec97586a01482e749e68825d78b440f1ce3479e4"><div class="ttname"><a href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a01482e749e68825d78b440f1ce3479e4">EON_RELAX_NULL_BAND</a></div><div class="ttdeci">@ EON_RELAX_NULL_BAND</div><div class="ttdef"><b>Definition</b> <a href="#l00099">eon_relax_engine.h:99</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_acc8df503008d9e3c1aa417ceeec97586a079f96db294d93840fa00ef4dbcd87fd"><div class="ttname"><a href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a079f96db294d93840fa00ef4dbcd87fd">EON_RELAX_ALLOC</a></div><div class="ttdeci">@ EON_RELAX_ALLOC</div><div class="ttdef"><b>Definition</b> <a href="#l00114">eon_relax_engine.h:114</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_acc8df503008d9e3c1aa417ceeec97586a09f7e41d71d92bacf4cac866775218c7"><div class="ttname"><a href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a09f7e41d71d92bacf4cac866775218c7">EON_RELAX_OK</a></div><div class="ttdeci">@ EON_RELAX_OK</div><div class="ttdef"><b>Definition</b> <a href="#l00097">eon_relax_engine.h:97</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_acc8df503008d9e3c1aa417ceeec97586a0eee6bfde85c398cf40d4cfc052d0ecf"><div class="ttname"><a href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a0eee6bfde85c398cf40d4cfc052d0ecf">EON_RELAX_SURFACE_FATAL</a></div><div class="ttdeci">@ EON_RELAX_SURFACE_FATAL</div><div class="ttdef"><b>Definition</b> <a href="#l00111">eon_relax_engine.h:111</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_acc8df503008d9e3c1aa417ceeec97586a2fb6848a9da66b1c933f25390b8497df"><div class="ttname"><a href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a2fb6848a9da66b1c933f25390b8497df">EON_RELAX_NULL_ENGINE</a></div><div class="ttdeci">@ EON_RELAX_NULL_ENGINE</div><div class="ttdef"><b>Definition</b> <a href="#l00098">eon_relax_engine.h:98</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_acc8df503008d9e3c1aa417ceeec97586a2ff5b05ab352251cff16a57f419152d4"><div class="ttname"><a href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a2ff5b05ab352251cff16a57f419152d4">EON_RELAX_BAND_SIZE</a></div><div class="ttdeci">@ EON_RELAX_BAND_SIZE</div><div class="ttdef"><b>Definition</b> <a href="#l00113">eon_relax_engine.h:113</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_acc8df503008d9e3c1aa417ceeec97586a3ec5d1b6686412c482ab75508a181c66"><div class="ttname"><a href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a3ec5d1b6686412c482ab75508a181c66">EON_RELAX_NULL_ATOMIC_NRS</a></div><div class="ttdeci">@ EON_RELAX_NULL_ATOMIC_NRS</div><div class="ttdef"><b>Definition</b> <a href="#l00103">eon_relax_engine.h:103</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_acc8df503008d9e3c1aa417ceeec97586a520d564e363765f53c156b643621bdd2"><div class="ttname"><a href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a520d564e363765f53c156b643621bdd2">EON_RELAX_NULL_POSITIONS</a></div><div class="ttdeci">@ EON_RELAX_NULL_POSITIONS</div><div class="ttdef"><b>Definition</b> <a href="#l00102">eon_relax_engine.h:102</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_acc8df503008d9e3c1aa417ceeec97586a6100dcee869355dab087f4f40051cbe7"><div class="ttname"><a href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a6100dcee869355dab087f4f40051cbe7">EON_RELAX_NULL_BOXES</a></div><div class="ttdeci">@ EON_RELAX_NULL_BOXES</div><div class="ttdef"><b>Definition</b> <a href="#l00104">eon_relax_engine.h:104</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_acc8df503008d9e3c1aa417ceeec97586a690bf4d69c94866232d8e0aced420b40"><div class="ttname"><a href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a690bf4d69c94866232d8e0aced420b40">EON_RELAX_NULL_SURFACE</a></div><div class="ttdeci">@ EON_RELAX_NULL_SURFACE</div><div class="ttdef"><b>Definition</b> <a href="#l00100">eon_relax_engine.h:100</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_acc8df503008d9e3c1aa417ceeec97586a82ca5a9c258489ef920b0dc32967beda"><div class="ttname"><a href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a82ca5a9c258489ef920b0dc32967beda">EON_RELAX_UNKNOWN_STATUS</a></div><div class="ttdeci">@ EON_RELAX_UNKNOWN_STATUS</div><div class="ttdef"><b>Definition</b> <a href="#l00109">eon_relax_engine.h:109</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_acc8df503008d9e3c1aa417ceeec97586a8999b0f8933d03976d235d76e5e4cf5c"><div class="ttname"><a href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586a8999b0f8933d03976d235d76e5e4cf5c">EON_RELAX_CAPNP_ROOT</a></div><div class="ttdeci">@ EON_RELAX_CAPNP_ROOT</div><div class="ttdef"><b>Definition</b> <a href="#l00110">eon_relax_engine.h:110</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_acc8df503008d9e3c1aa417ceeec97586aa4ecdefd27ce63be8605cada6b65f9b0"><div class="ttname"><a href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586aa4ecdefd27ce63be8605cada6b65f9b0">EON_RELAX_ABI_MISMATCH</a></div><div class="ttdeci">@ EON_RELAX_ABI_MISMATCH</div><div class="ttdef"><b>Definition</b> <a href="#l00117">eon_relax_engine.h:117</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_acc8df503008d9e3c1aa417ceeec97586aa54b313ba784e14cac786964fefa09f5"><div class="ttname"><a href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586aa54b313ba784e14cac786964fefa09f5">EON_RELAX_UNKNOWN_KIND</a></div><div class="ttdeci">@ EON_RELAX_UNKNOWN_KIND</div><div class="ttdef"><b>Definition</b> <a href="#l00108">eon_relax_engine.h:108</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_acc8df503008d9e3c1aa417ceeec97586aafc722beb8d42565ba59a2d05f3ed21c"><div class="ttname"><a href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586aafc722beb8d42565ba59a2d05f3ed21c">EON_RELAX_SADDLE_NIMAGES</a></div><div class="ttdeci">@ EON_RELAX_SADDLE_NIMAGES</div><div class="ttdef"><b>Definition</b> <a href="#l00112">eon_relax_engine.h:112</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_acc8df503008d9e3c1aa417ceeec97586ab4d259309574e2f632f48a9eae1abc64"><div class="ttname"><a href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586ab4d259309574e2f632f48a9eae1abc64">EON_RELAX_BAND_TOO_SHORT</a></div><div class="ttdeci">@ EON_RELAX_BAND_TOO_SHORT</div><div class="ttdef"><b>Definition</b> <a href="#l00106">eon_relax_engine.h:106</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_acc8df503008d9e3c1aa417ceeec97586abaeb9354dfe3163742128fbee734914e"><div class="ttname"><a href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586abaeb9354dfe3163742128fbee734914e">EON_RELAX_NULL_OUTCOME</a></div><div class="ttdeci">@ EON_RELAX_NULL_OUTCOME</div><div class="ttdef"><b>Definition</b> <a href="#l00101">eon_relax_engine.h:101</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_acc8df503008d9e3c1aa417ceeec97586abb34ada1d16b1799fb1bef08edb778e7"><div class="ttname"><a href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586abb34ada1d16b1799fb1bef08edb778e7">EON_RELAX_INVALID_PARAMETER</a></div><div class="ttdeci">@ EON_RELAX_INVALID_PARAMETER</div><div class="ttdef"><b>Definition</b> <a href="#l00116">eon_relax_engine.h:116</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_acc8df503008d9e3c1aa417ceeec97586ac35f173d325fec884fb52adfd1a627da"><div class="ttname"><a href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586ac35f173d325fec884fb52adfd1a627da">EON_RELAX_NATOMS</a></div><div class="ttdeci">@ EON_RELAX_NATOMS</div><div class="ttdef"><b>Definition</b> <a href="#l00107">eon_relax_engine.h:107</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_acc8df503008d9e3c1aa417ceeec97586ac90cdc1bc564814d7868346f1a02ac83"><div class="ttname"><a href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586ac90cdc1bc564814d7868346f1a02ac83">EON_RELAX_UNAVAILABLE</a></div><div class="ttdeci">@ EON_RELAX_UNAVAILABLE</div><div class="ttdef"><b>Definition</b> <a href="#l00115">eon_relax_engine.h:115</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_acc8df503008d9e3c1aa417ceeec97586af3f654473afab9f35a603c96165930bf"><div class="ttname"><a href="eon__relax__engine_8h.html#acc8df503008d9e3c1aa417ceeec97586af3f654473afab9f35a603c96165930bf">EON_RELAX_NULL_MODE</a></div><div class="ttdeci">@ EON_RELAX_NULL_MODE</div><div class="ttdef"><b>Definition</b> <a href="#l00105">eon_relax_engine.h:105</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_ace884ed937a2b27d5d153e07b4b20ee8"><div class="ttname"><a href="eon__relax__engine_8h.html#ace884ed937a2b27d5d153e07b4b20ee8">eon_relax_abi_version</a></div><div class="ttdeci">EON_RELAX_API int eon_relax_abi_version(void)</div><div class="ttdoc">(major &lt;&lt; 16) | minor.</div><div class="ttdef"><b>Definition</b> <a href="RelaxEngineAbi_8cpp_source.html#l00256">RelaxEngineAbi.cpp:256</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_ad0e6c6e0e029c2eeaddbfc255f2be151"><div class="ttname"><a href="eon__relax__engine_8h.html#ad0e6c6e0e029c2eeaddbfc255f2be151">eon_relax_status_name</a></div><div class="ttdeci">EON_RELAX_API const char * eon_relax_status_name(eon_relax_kind_t kind, int status)</div><div class="ttdoc">NULL if kind or status is unknown.</div><div class="ttdef"><b>Definition</b> <a href="RelaxEngineAbi_8cpp_source.html#l00634">RelaxEngineAbi.cpp:634</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_ad9fdd91337b4bef1b782f0620805169e"><div class="ttname"><a href="eon__relax__engine_8h.html#ad9fdd91337b4bef1b782f0620805169e">eon_relax_destroy</a></div><div class="ttdeci">EON_RELAX_API void eon_relax_destroy(EonRelaxEngine *eng)</div><div class="ttdef"><b>Definition</b> <a href="RelaxEngineAbi_8cpp_source.html#l00632">RelaxEngineAbi.cpp:632</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_add0438f9af1370ea3ae4a282bfd956ee"><div class="ttname"><a href="eon__relax__engine_8h.html#add0438f9af1370ea3ae4a282bfd956ee">eon_relax_surface_fn</a></div><div class="ttdeci">int(* eon_relax_surface_fn)(void *user, eon_relax_surface_request_t *req)</div><div class="ttdoc">Return 0 on success, positive recoverable, negative fatal.</div><div class="ttdef"><b>Definition</b> <a href="#l00199">eon_relax_engine.h:199</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_ade7439aeda8e3bb3fcfe6e32e609cee7"><div class="ttname"><a href="eon__relax__engine_8h.html#ade7439aeda8e3bb3fcfe6e32e609cee7">eon_relax_last_error</a></div><div class="ttdeci">EON_RELAX_API int eon_relax_last_error(const EonRelaxEngine *eng)</div><div class="ttdoc">Last named create/run/step/reset/set_epoch rc on this handle.</div><div class="ttdef"><b>Definition</b> <a href="RelaxEngineAbi_8cpp_source.html#l00326">RelaxEngineAbi.cpp:326</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_aea28da5234d6f1cdf2a179847a0ec1a1"><div class="ttname"><a href="eon__relax__engine_8h.html#aea28da5234d6f1cdf2a179847a0ec1a1">eon_relax_kind_t</a></div><div class="ttdeci">eon_relax_kind_t</div><div class="ttdef"><b>Definition</b> <a href="#l00084">eon_relax_engine.h:84</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_aea28da5234d6f1cdf2a179847a0ec1a1a288a19d5807251ad00bdcedecb87af91"><div class="ttname"><a href="eon__relax__engine_8h.html#aea28da5234d6f1cdf2a179847a0ec1a1a288a19d5807251ad00bdcedecb87af91">EON_RELAX_KIND_INVALID</a></div><div class="ttdeci">@ EON_RELAX_KIND_INVALID</div><div class="ttdef"><b>Definition</b> <a href="#l00085">eon_relax_engine.h:85</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_aea28da5234d6f1cdf2a179847a0ec1a1a5c21e41c13417a31dec47ab2e5ba2621"><div class="ttname"><a href="eon__relax__engine_8h.html#aea28da5234d6f1cdf2a179847a0ec1a1a5c21e41c13417a31dec47ab2e5ba2621">EON_RELAX_KIND_SADDLE</a></div><div class="ttdeci">@ EON_RELAX_KIND_SADDLE</div><div class="ttdef"><b>Definition</b> <a href="#l00087">eon_relax_engine.h:87</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_aea28da5234d6f1cdf2a179847a0ec1a1a8872ce122ec6d7d7da908a0eee7bcca3"><div class="ttname"><a href="eon__relax__engine_8h.html#aea28da5234d6f1cdf2a179847a0ec1a1a8872ce122ec6d7d7da908a0eee7bcca3">EON_RELAX_KIND_NEB</a></div><div class="ttdeci">@ EON_RELAX_KIND_NEB</div><div class="ttdef"><b>Definition</b> <a href="#l00086">eon_relax_engine.h:86</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_af18378bcacb1a4c310b635388dfc096d"><div class="ttname"><a href="eon__relax__engine_8h.html#af18378bcacb1a4c310b635388dfc096d">eon_relax_reset</a></div><div class="ttdeci">EON_RELAX_API int eon_relax_reset(EonRelaxEngine *eng)</div><div class="ttdoc">Drop the stepper&#39;s band state and optimizer history; the next eon_relax_step reinitializes from the c...</div><div class="ttdef"><b>Definition</b> <a href="RelaxEngineAbi_8cpp_source.html#l00620">RelaxEngineAbi.cpp:620</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_afc64fc04ea043d0b0f7f152cf8827936"><div class="ttname"><a href="eon__relax__engine_8h.html#afc64fc04ea043d0b0f7f152cf8827936">eon_relax_version_hash_str</a></div><div class="ttdeci">EON_RELAX_API const char * eon_relax_version_hash_str(void)</div><div class="ttdoc">Immortal dest identity string.</div><div class="ttdef"><b>Definition</b> <a href="RelaxEngineAbi_8cpp_source.html#l00271">RelaxEngineAbi.cpp:271</a></div></div>
+<div class="ttc" id="astructEonRelaxEngine_html"><div class="ttname"><a href="structEonRelaxEngine.html">EonRelaxEngine</a></div><div class="ttdef"><b>Definition</b> <a href="RelaxEngineAbi_8cpp_source.html#l00207">RelaxEngineAbi.cpp:207</a></div></div>
+<div class="ttc" id="astructeon__relax__band__t_html"><div class="ttname"><a href="structeon__relax__band__t.html">eon_relax_band_t</a></div><div class="ttdoc">Caller-owned band.</div><div class="ttdef"><b>Definition</b> <a href="#l00147">eon_relax_engine.h:147</a></div></div>
+<div class="ttc" id="astructeon__relax__band__t_html_a2a569e1a63c7fcf1eed2d808305ce407"><div class="ttname"><a href="structeon__relax__band__t.html#a2a569e1a63c7fcf1eed2d808305ce407">eon_relax_band_t::version</a></div><div class="ttdeci">eon_relax_version_t version</div><div class="ttdef"><b>Definition</b> <a href="#l00148">eon_relax_engine.h:148</a></div></div>
+<div class="ttc" id="astructeon__relax__band__t_html_a2bb43a5a04c377b724f71ad2c0dfc5d3"><div class="ttname"><a href="structeon__relax__band__t.html#a2bb43a5a04c377b724f71ad2c0dfc5d3">eon_relax_band_t::atomic_nrs</a></div><div class="ttdeci">const int32_t * atomic_nrs</div><div class="ttdef"><b>Definition</b> <a href="#l00153">eon_relax_engine.h:153</a></div></div>
+<div class="ttc" id="astructeon__relax__band__t_html_a5a1fd10c7e2a7e99c1c4e3d78be79439"><div class="ttname"><a href="structeon__relax__band__t.html#a5a1fd10c7e2a7e99c1c4e3d78be79439">eon_relax_band_t::boxes</a></div><div class="ttdeci">const double * boxes</div><div class="ttdef"><b>Definition</b> <a href="#l00154">eon_relax_engine.h:154</a></div></div>
+<div class="ttc" id="astructeon__relax__band__t_html_a5d122431d3450d3c9126ef9f057e06cc"><div class="ttname"><a href="structeon__relax__band__t.html#a5d122431d3450d3c9126ef9f057e06cc">eon_relax_band_t::flags</a></div><div class="ttdeci">uint64_t flags</div><div class="ttdef"><b>Definition</b> <a href="#l00149">eon_relax_engine.h:149</a></div></div>
+<div class="ttc" id="astructeon__relax__band__t_html_a6e2daf78b5a54e68671bb5991fde0e28"><div class="ttname"><a href="structeon__relax__band__t.html#a6e2daf78b5a54e68671bb5991fde0e28">eon_relax_band_t::masses</a></div><div class="ttdeci">const double * masses</div><div class="ttdef"><b>Definition</b> <a href="#l00158">eon_relax_engine.h:158</a></div></div>
+<div class="ttc" id="astructeon__relax__band__t_html_a71445562225e6dc37a39bd93dcb178d2"><div class="ttname"><a href="structeon__relax__band__t.html#a71445562225e6dc37a39bd93dcb178d2">eon_relax_band_t::is_fixed</a></div><div class="ttdeci">const int32_t * is_fixed</div><div class="ttdef"><b>Definition</b> <a href="#l00155">eon_relax_engine.h:155</a></div></div>
+<div class="ttc" id="astructeon__relax__band__t_html_a7e67435f7e1936c2c13e29a9d6ac9d44"><div class="ttname"><a href="structeon__relax__band__t.html#a7e67435f7e1936c2c13e29a9d6ac9d44">eon_relax_band_t::n_atoms</a></div><div class="ttdeci">int64_t n_atoms</div><div class="ttdef"><b>Definition</b> <a href="#l00151">eon_relax_engine.h:151</a></div></div>
+<div class="ttc" id="astructeon__relax__band__t_html_a7efa7bed0577392414e2836f41ef2944"><div class="ttname"><a href="structeon__relax__band__t.html#a7efa7bed0577392414e2836f41ef2944">eon_relax_band_t::positions</a></div><div class="ttdeci">double * positions</div><div class="ttdef"><b>Definition</b> <a href="#l00152">eon_relax_engine.h:152</a></div></div>
+<div class="ttc" id="astructeon__relax__band__t_html_ab687e7ecd33c517a839a3745b42d1431"><div class="ttname"><a href="structeon__relax__band__t.html#ab687e7ecd33c517a839a3745b42d1431">eon_relax_band_t::n_images</a></div><div class="ttdeci">int64_t n_images</div><div class="ttdef"><b>Definition</b> <a href="#l00150">eon_relax_engine.h:150</a></div></div>
+<div class="ttc" id="astructeon__relax__band__t_html_ab698892f0fb7010e272025f75016d9be"><div class="ttname"><a href="structeon__relax__band__t.html#ab698892f0fb7010e272025f75016d9be">eon_relax_band_t::mode</a></div><div class="ttdeci">const double * mode</div><div class="ttdef"><b>Definition</b> <a href="#l00156">eon_relax_engine.h:156</a></div></div>
+<div class="ttc" id="astructeon__relax__band__t_html_ac86d61fd242ab4bd76b9d2a675d526c7"><div class="ttname"><a href="structeon__relax__band__t.html#ac86d61fd242ab4bd76b9d2a675d526c7">eon_relax_band_t::image_ids</a></div><div class="ttdeci">const int64_t * image_ids</div><div class="ttdef"><b>Definition</b> <a href="#l00157">eon_relax_engine.h:157</a></div></div>
+<div class="ttc" id="astructeon__relax__outcome__t_html"><div class="ttname"><a href="structeon__relax__outcome__t.html">eon_relax_outcome_t</a></div><div class="ttdoc">Engine-written result.</div><div class="ttdef"><b>Definition</b> <a href="#l00162">eon_relax_engine.h:162</a></div></div>
+<div class="ttc" id="astructeon__relax__outcome__t_html_a21ef74136b610fedf81e5ab937315acc"><div class="ttname"><a href="structeon__relax__outcome__t.html#a21ef74136b610fedf81e5ab937315acc">eon_relax_outcome_t::version_hash</a></div><div class="ttdeci">uint64_t version_hash</div><div class="ttdef"><b>Definition</b> <a href="#l00170">eon_relax_engine.h:170</a></div></div>
+<div class="ttc" id="astructeon__relax__outcome__t_html_a4dcf9f241d5e850797212bcda6547b9a"><div class="ttname"><a href="structeon__relax__outcome__t.html#a4dcf9f241d5e850797212bcda6547b9a">eon_relax_outcome_t::surface_epoch</a></div><div class="ttdeci">uint64_t surface_epoch</div><div class="ttdef"><b>Definition</b> <a href="#l00171">eon_relax_engine.h:171</a></div></div>
+<div class="ttc" id="astructeon__relax__outcome__t_html_a5ebfb71886ec08f318c3df4539d4f7ea"><div class="ttname"><a href="structeon__relax__outcome__t.html#a5ebfb71886ec08f318c3df4539d4f7ea">eon_relax_outcome_t::kind</a></div><div class="ttdeci">int32_t kind</div><div class="ttdef"><b>Definition</b> <a href="#l00165">eon_relax_engine.h:165</a></div></div>
+<div class="ttc" id="astructeon__relax__outcome__t_html_a8b567933e15067b35da6ca460a3b9ec6"><div class="ttname"><a href="structeon__relax__outcome__t.html#a8b567933e15067b35da6ca460a3b9ec6">eon_relax_outcome_t::max_force</a></div><div class="ttdeci">double max_force</div><div class="ttdef"><b>Definition</b> <a href="#l00169">eon_relax_engine.h:169</a></div></div>
+<div class="ttc" id="astructeon__relax__outcome__t_html_a9aef73c1f1504b3eb788ef527cbd51f7"><div class="ttname"><a href="structeon__relax__outcome__t.html#a9aef73c1f1504b3eb788ef527cbd51f7">eon_relax_outcome_t::iterations</a></div><div class="ttdeci">int64_t iterations</div><div class="ttdef"><b>Definition</b> <a href="#l00167">eon_relax_engine.h:167</a></div></div>
+<div class="ttc" id="astructeon__relax__outcome__t_html_ab403b19a21c6859b865d0f125d043d46"><div class="ttname"><a href="structeon__relax__outcome__t.html#ab403b19a21c6859b865d0f125d043d46">eon_relax_outcome_t::status</a></div><div class="ttdeci">int32_t status</div><div class="ttdef"><b>Definition</b> <a href="#l00166">eon_relax_engine.h:166</a></div></div>
+<div class="ttc" id="astructeon__relax__outcome__t_html_abd28cf05156a8d08a2b80346860d0ac8"><div class="ttname"><a href="structeon__relax__outcome__t.html#abd28cf05156a8d08a2b80346860d0ac8">eon_relax_outcome_t::version</a></div><div class="ttdeci">eon_relax_version_t version</div><div class="ttdef"><b>Definition</b> <a href="#l00163">eon_relax_engine.h:163</a></div></div>
+<div class="ttc" id="astructeon__relax__outcome__t_html_ad3b7a520241d309ba7ccdae89c821463"><div class="ttname"><a href="structeon__relax__outcome__t.html#ad3b7a520241d309ba7ccdae89c821463">eon_relax_outcome_t::climbing_image</a></div><div class="ttdeci">int64_t climbing_image</div><div class="ttdef"><b>Definition</b> <a href="#l00168">eon_relax_engine.h:168</a></div></div>
+<div class="ttc" id="astructeon__relax__outcome__t_html_affbb19bf47cb48a58e07c6f1d3a5d4cc"><div class="ttname"><a href="structeon__relax__outcome__t.html#affbb19bf47cb48a58e07c6f1d3a5d4cc">eon_relax_outcome_t::flags</a></div><div class="ttdeci">uint64_t flags</div><div class="ttdef"><b>Definition</b> <a href="#l00164">eon_relax_engine.h:164</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html"><div class="ttname"><a href="structeon__relax__surface__request__t.html">eon_relax_surface_request_t</a></div><div class="ttdoc">Host-surface request: one struct, engine-stamped version, so the callback contract grows behind the v...</div><div class="ttdef"><b>Definition</b> <a href="#l00183">eon_relax_engine.h:183</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html_a041dfbff147c59389d3b0ecd928083c4"><div class="ttname"><a href="structeon__relax__surface__request__t.html#a041dfbff147c59389d3b0ecd928083c4">eon_relax_surface_request_t::forces</a></div><div class="ttdeci">double * forces</div><div class="ttdef"><b>Definition</b> <a href="#l00193">eon_relax_engine.h:193</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html_a05003afbd1679ad5748dd99eb4217a6e"><div class="ttname"><a href="structeon__relax__surface__request__t.html#a05003afbd1679ad5748dd99eb4217a6e">eon_relax_surface_request_t::atomic_nrs</a></div><div class="ttdeci">const int32_t * atomic_nrs</div><div class="ttdef"><b>Definition</b> <a href="#l00189">eon_relax_engine.h:189</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html_a2354a97e7d63b8387b1f97e94d953086"><div class="ttname"><a href="structeon__relax__surface__request__t.html#a2354a97e7d63b8387b1f97e94d953086">eon_relax_surface_request_t::n_atoms</a></div><div class="ttdeci">int64_t n_atoms</div><div class="ttdef"><b>Definition</b> <a href="#l00187">eon_relax_engine.h:187</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html_a373428dbef371cc630ca12d69b88a85a"><div class="ttname"><a href="structeon__relax__surface__request__t.html#a373428dbef371cc630ca12d69b88a85a">eon_relax_surface_request_t::energies</a></div><div class="ttdeci">double * energies</div><div class="ttdef"><b>Definition</b> <a href="#l00192">eon_relax_engine.h:192</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html_a47fb67a1d23faa8b8e92a2fc2e274cdb"><div class="ttname"><a href="structeon__relax__surface__request__t.html#a47fb67a1d23faa8b8e92a2fc2e274cdb">eon_relax_surface_request_t::boxes</a></div><div class="ttdeci">const double * boxes</div><div class="ttdef"><b>Definition</b> <a href="#l00190">eon_relax_engine.h:190</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html_a53bef974126ebbc3d6478ad0ada57ebe"><div class="ttname"><a href="structeon__relax__surface__request__t.html#a53bef974126ebbc3d6478ad0ada57ebe">eon_relax_surface_request_t::image_ids</a></div><div class="ttdeci">const int64_t * image_ids</div><div class="ttdef"><b>Definition</b> <a href="#l00191">eon_relax_engine.h:191</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html_a6351921b9c6d69ebc4256b0462724001"><div class="ttname"><a href="structeon__relax__surface__request__t.html#a6351921b9c6d69ebc4256b0462724001">eon_relax_surface_request_t::variances</a></div><div class="ttdeci">double * variances</div><div class="ttdef"><b>Definition</b> <a href="#l00194">eon_relax_engine.h:194</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html_a64be8b657424ea54d2180eb19543797c"><div class="ttname"><a href="structeon__relax__surface__request__t.html#a64be8b657424ea54d2180eb19543797c">eon_relax_surface_request_t::positions</a></div><div class="ttdeci">const double * positions</div><div class="ttdef"><b>Definition</b> <a href="#l00188">eon_relax_engine.h:188</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html_ace59d8211cd9ba1a697dac42a7606391"><div class="ttname"><a href="structeon__relax__surface__request__t.html#ace59d8211cd9ba1a697dac42a7606391">eon_relax_surface_request_t::version</a></div><div class="ttdeci">eon_relax_version_t version</div><div class="ttdef"><b>Definition</b> <a href="#l00184">eon_relax_engine.h:184</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html_ad49a64f9412c2b54a17dde151085af22"><div class="ttname"><a href="structeon__relax__surface__request__t.html#ad49a64f9412c2b54a17dde151085af22">eon_relax_surface_request_t::n_images</a></div><div class="ttdeci">int64_t n_images</div><div class="ttdef"><b>Definition</b> <a href="#l00186">eon_relax_engine.h:186</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html_af6e552c91919ac5938bd2d80f3584c72"><div class="ttname"><a href="structeon__relax__surface__request__t.html#af6e552c91919ac5938bd2d80f3584c72">eon_relax_surface_request_t::epoch_out</a></div><div class="ttdeci">uint64_t * epoch_out</div><div class="ttdef"><b>Definition</b> <a href="#l00195">eon_relax_engine.h:195</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html_af71389a4880c9e8ab69a01293c47c521"><div class="ttname"><a href="structeon__relax__surface__request__t.html#af71389a4880c9e8ab69a01293c47c521">eon_relax_surface_request_t::flags</a></div><div class="ttdeci">uint64_t flags</div><div class="ttdef"><b>Definition</b> <a href="#l00185">eon_relax_engine.h:185</a></div></div>
+<div class="ttc" id="astructeon__relax__version__t_html"><div class="ttname"><a href="structeon__relax__version__t.html">eon_relax_version_t</a></div><div class="ttdoc">Version head carried by every wire struct (dlpack DLPackVersion).</div><div class="ttdef"><b>Definition</b> <a href="#l00076">eon_relax_engine.h:76</a></div></div>
+<div class="ttc" id="astructeon__relax__version__t_html_a9f6cbd3a49305df9429b249187f6405c"><div class="ttname"><a href="structeon__relax__version__t.html#a9f6cbd3a49305df9429b249187f6405c">eon_relax_version_t::major</a></div><div class="ttdeci">uint32_t major</div><div class="ttdef"><b>Definition</b> <a href="#l00077">eon_relax_engine.h:77</a></div></div>
+<div class="ttc" id="astructeon__relax__version__t_html_ab7946b3cecc8c61fa72cde29ae794fca"><div class="ttname"><a href="structeon__relax__version__t.html#ab7946b3cecc8c61fa72cde29ae794fca">eon_relax_version_t::minor</a></div><div class="ttdeci">uint32_t minor</div><div class="ttdef"><b>Definition</b> <a href="#l00078">eon_relax_engine.h:78</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a href="dir_2527c5cc2e6dc8ce970a4d420439d1d9.html">eon</a></li><li class="navelem"><a href="dir_a8f1cfa64ff9bec0381a493ccdc93b11.html">relax</a></li><li class="navelem"><a href="eon__relax__engine_8h.html">eon_relax_engine.h</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

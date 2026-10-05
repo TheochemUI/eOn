@@ -2,7 +2,7 @@ var searchData=
 [
   ['main_5foptions_5ft_0',['main_options_t',['../structeonc_1_1main__options__t.html',1,'eonc']]],
   ['matchresult_1',['MatchResult',['../structeonc_1_1IRACompare_1_1MatchResult.html',1,'eonc::IRACompare']]],
-  ['matter_2',['Matter',['../classeonc_1_1Matter.html',1,'eonc']]],
+  ['matter_2',['Matter',['../classeonc_1_1Matter.html',1,'eonc::Matter'],['../classMatter.html',1,'Matter']]],
   ['metatomic_5foptions_5ft_3',['metatomic_options_t',['../structeonc_1_1metatomic__options__t.html',1,'eonc']]],
   ['metatomicdynpot_4',['MetatomicDynPot',['../classeonc_1_1MetatomicDynPot.html',1,'eonc']]],
   ['metatomicengineloader_5',['MetatomicEngineLoader',['../classMetatomicEngineLoader.html',1,'']]],
@@ -11,7 +11,7 @@ var searchData=
   ['metatomicpotential_8',['MetatomicPotential',['../classMetatomicPotential.html',1,'']]],
   ['minimizationjob_9',['MinimizationJob',['../classeonc_1_1MinimizationJob.html',1,'eonc']]],
   ['minmodeobjectivefunction_10',['MinModeObjectiveFunction',['../classeonc_1_1MinModeObjectiveFunction.html',1,'eonc']]],
-  ['minmodesaddlesearch_11',['MinModeSaddleSearch',['../classeonc_1_1MinModeSaddleSearch.html',1,'eonc']]],
+  ['minmodesaddlesearch_11',['MinModeSaddleSearch',['../classeonc_1_1MinModeSaddleSearch.html',1,'eonc::MinModeSaddleSearch'],['../classMinModeSaddleSearch.html',1,'MinModeSaddleSearch']]],
   ['mmf_5fpeak_5foptions_5ft_12',['mmf_peak_options_t',['../structeonc_1_1neb__options__t_1_1mmf__peak__options__t.html',1,'eonc::neb_options_t']]],
   ['mmfresult_13',['MMFResult',['../structeonc_1_1neb_1_1OCINEBController_1_1MMFResult.html',1,'eonc::neb::OCINEBController']]],
   ['modegle_14',['ModeGle',['../structeonc_1_1pathintegral_1_1RingPolymer_1_1ModeGle.html',1,'eonc::pathintegral::RingPolymer']]],

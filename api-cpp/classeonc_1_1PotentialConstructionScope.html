@@ -258,7 +258,7 @@ Private Attributes</h2></td></tr>
 <div class="textblock"><p>RAII: <a class="el" href="classeonc_1_1Potential.html">Potential</a> default construction records on this registry instead of <a class="el" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b" title="Process-lifetime singleton.">PotRegistry::get()</a>. </p>
 <p>Job/makePotential(<a class="el" href="classeonc_1_1Runtime.html" title="Move-only composition root for process resources (dlopen loaders and the potential registry).">Runtime</a>&amp;) uses this so the production path does not touch the process singleton. </p>
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00031">31</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00033">33</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a8d8f370745ba125060666a5f6a4a5efd" name="a8d8f370745ba125060666a5f6a4a5efd"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8d8f370745ba125060666a5f6a4a5efd">&#9670;&#160;</a></span>PotentialConstructionScope() <span class="overload">[1/2]</span></h2>
@@ -287,7 +287,7 @@ Private Attributes</h2></td></tr>
 <div class="fragment"><div class="line"><span class="lineno">   21</span>    : <a class="code hl_variable" href="#af675fa65b38b1bf4483c8b0861361641">prev_</a>(tls_construction_registry) {</div>
 <div class="line"><span class="lineno">   22</span>  tls_construction_registry = &amp;registry;</div>
 <div class="line"><span class="lineno">   23</span>}</div>
-<div class="ttc" id="aclasseonc_1_1PotentialConstructionScope_html_af675fa65b38b1bf4483c8b0861361641"><div class="ttname"><a href="#af675fa65b38b1bf4483c8b0861361641">eonc::PotentialConstructionScope::prev_</a></div><div class="ttdeci">IPotRegistry * prev_</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00040">Potential.h:40</a></div></div>
+<div class="ttc" id="aclasseonc_1_1PotentialConstructionScope_html_af675fa65b38b1bf4483c8b0861361641"><div class="ttname"><a href="#af675fa65b38b1bf4483c8b0861361641">eonc::PotentialConstructionScope::prev_</a></div><div class="ttdeci">IPotRegistry * prev_</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00042">Potential.h:42</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -385,7 +385,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00040">40</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Potential_8h_source.html#l00042">42</a> of file <a class="el" href="Potential_8h_source.html">Potential.h</a>.</p>
 
 </div>
 </div>

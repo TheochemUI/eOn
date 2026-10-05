@@ -21,6 +21,7 @@ var structRGPotEngineOptions =
     [ "ranks_per_image", "structRGPotEngineOptions.html#a4a902a596a803b78a6e51dd6225c822b", null ],
     [ "scf_type", "structRGPotEngineOptions.html#a06e36eb8ac4cb37ce9691971cfb9d08e", null ],
     [ "scratch_dir", "structRGPotEngineOptions.html#a464193c68f85bdf6ccecf730f959c505", null ],
+    [ "task_name", "structRGPotEngineOptions.html#ac1be0b6b290f5f1e81ef6c2e870c9a18", null ],
     [ "theory", "structRGPotEngineOptions.html#ad922d97dfdfdabc9cb828a45247eb81a", null ],
     [ "title", "structRGPotEngineOptions.html#a1bc5ed5c8b23207f381d0bf2fe34f3bd", null ],
     [ "torch_determinism_strict", "structRGPotEngineOptions.html#aadaadd6c54afcc8c57a879938761ac4f", null ],

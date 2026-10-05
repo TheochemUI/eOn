@@ -289,43 +289,43 @@ Functions</h2></td></tr>
 <tr class="memdesc:a181d5ae7297a2c055b2af52b4c41fb61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the doubly-nudged elastic band perpendicular spring force.  <br /></td></tr>
 <tr class="memitem:a321f9a64a7765a9c96e31a75f6fac665" id="r_a321f9a64a7765a9c96e31a75f6fac665"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a321f9a64a7765a9c96e31a75f6fac665">zeroTranslation</a> (<a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;projectedForce, int nFreeAtoms, int nAtoms)</td></tr>
 <tr class="memdesc:a321f9a64a7765a9c96e31a75f6fac665"><td class="mdescLeft">&#160;</td><td class="mdescRight">Zero net translational force for fully free systems.  <br /></td></tr>
-<tr class="memitem:a6081e9ea38254fc16c999cf2b3f5808e" id="r_a6081e9ea38254fc16c999cf2b3f5808e"><td class="memItemLeft"><a class="el" href="#a83e6ba13071b353a3873b151fb11119a">ProjectionStrategy</a>&#160;</td><td class="memItemRight"><a class="el" href="#a6081e9ea38254fc16c999cf2b3f5808e">buildProjectionStrategy</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;params)</td></tr>
+<tr class="memitem:a6081e9ea38254fc16c999cf2b3f5808e" id="r_a6081e9ea38254fc16c999cf2b3f5808e"><td class="memItemLeft"><a class="el" href="#a83e6ba13071b353a3873b151fb11119a">ProjectionStrategy</a>&#160;</td><td class="memItemRight"><a class="el" href="#a6081e9ea38254fc16c999cf2b3f5808e">buildProjectionStrategy</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;params)</td></tr>
 <tr class="memdesc:a6081e9ea38254fc16c999cf2b3f5808e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the projection strategy from parameters.  <br /></td></tr>
 <tr class="memitem:a219ac765ff3a73d04605b5711a5926a6" id="r_a219ac765ff3a73d04605b5711a5926a6"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>&#160;</td><td class="memItemRight"><a class="el" href="#a219ac765ff3a73d04605b5711a5926a6">computeDNEBComponent</a> (const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;forceSpring, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;tangent, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;forcePerp, bool useSwitching)</td></tr>
 <tr class="memdesc:a219ac765ff3a73d04605b5711a5926a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the DNEB force component for a given image.  <br /></td></tr>
-<tr class="memitem:ae2bcb7440c5a7c56b5f545f1b3a18dd2" id="r_ae2bcb7440c5a7c56b5f545f1b3a18dd2"><td class="memItemLeft"><a class="el" href="structeonc_1_1neb_1_1ExtremaResult.html">ExtremaResult</a>&#160;</td><td class="memItemRight"><a class="el" href="#ae2bcb7440c5a7c56b5f545f1b3a18dd2">findSplineExtrema</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt; &gt; &amp;tangent, long numImages)</td></tr>
+<tr class="memitem:ae2bcb7440c5a7c56b5f545f1b3a18dd2" id="r_ae2bcb7440c5a7c56b5f545f1b3a18dd2"><td class="memItemLeft"><a class="el" href="structeonc_1_1neb_1_1ExtremaResult.html">ExtremaResult</a>&#160;</td><td class="memItemRight"><a class="el" href="#ae2bcb7440c5a7c56b5f545f1b3a18dd2">findSplineExtrema</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt; &gt; &amp;tangent, long numImages)</td></tr>
 <tr class="memdesc:ae2bcb7440c5a7c56b5f545f1b3a18dd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find extrema along the MEP using cubic spline interpolation.  <br /></td></tr>
-<tr class="memitem:a7ce2fa2921058fefa4c8580e5d23a6e1" id="r_a7ce2fa2921058fefa4c8580e5d23a6e1"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>&#160;</td><td class="memItemRight"><a class="el" href="#a7ce2fa2921058fefa4c8580e5d23a6e1">interpolatedPeakMode</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt; &gt; &amp;tangent, long numImages, double posFraction)</td></tr>
+<tr class="memitem:a7ce2fa2921058fefa4c8580e5d23a6e1" id="r_a7ce2fa2921058fefa4c8580e5d23a6e1"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>&#160;</td><td class="memItemRight"><a class="el" href="#a7ce2fa2921058fefa4c8580e5d23a6e1">interpolatedPeakMode</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt; &gt; &amp;tangent, long numImages, double posFraction)</td></tr>
 <tr class="memdesc:a7ce2fa2921058fefa4c8580e5d23a6e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unit tangent at a fractional image index.  <br /></td></tr>
-<tr class="memitem:a8d42b1b31322ea1b17cc94c29905b20a" id="r_a8d42b1b31322ea1b17cc94c29905b20a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a8d42b1b31322ea1b17cc94c29905b20a">printImageData</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt; &gt; &amp;tangent, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="namespaceeonc.html#a2ccaf2c1835c240d5fff93174bd0a416">EigenmodeStrategy</a> &gt; &gt; &amp;eigenmode_solvers, long numImages, bool estimateEigenvalues, bool writeToFile, size_t idx, <a class="el" href="structeonc_1_1log_1_1Scoped.html">eonc::log::Scoped</a> log, double referenceEnergy=std::numeric_limits&lt; double &gt;::quiet_NaN())</td></tr>
+<tr class="memitem:a8d42b1b31322ea1b17cc94c29905b20a" id="r_a8d42b1b31322ea1b17cc94c29905b20a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a8d42b1b31322ea1b17cc94c29905b20a">printImageData</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt; &gt; &amp;tangent, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="namespaceeonc.html#a2ccaf2c1835c240d5fff93174bd0a416">EigenmodeStrategy</a> &gt; &gt; &amp;eigenmode_solvers, long numImages, bool estimateEigenvalues, bool writeToFile, size_t idx, <a class="el" href="structeonc_1_1log_1_1Scoped.html">eonc::log::Scoped</a> log, double referenceEnergy=std::numeric_limits&lt; double &gt;::quiet_NaN())</td></tr>
 <tr class="memdesc:a8d42b1b31322ea1b17cc94c29905b20a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print NEB image data to log and optionally to file.  <br /></td></tr>
-<tr class="memitem:a200b4ee42d165fca881ca1f3053c9634" id="r_a200b4ee42d165fca881ca1f3053c9634"><td class="memItemLeft">std::vector&lt; readcon::ConFrame &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a200b4ee42d165fca881ca1f3053c9634">pathToConFrames</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt; &gt; &amp;tangent, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="namespaceeonc.html#a2ccaf2c1835c240d5fff93174bd0a416">EigenmodeStrategy</a> &gt; &gt; &amp;eigenmode_solvers, long numImages, bool estimateEigenvalues, std::optional&lt; size_t &gt; bandIndex=std::nullopt, double referenceEnergy=std::numeric_limits&lt; double &gt;::quiet_NaN())</td></tr>
+<tr class="memitem:a200b4ee42d165fca881ca1f3053c9634" id="r_a200b4ee42d165fca881ca1f3053c9634"><td class="memItemLeft">std::vector&lt; readcon::ConFrame &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a200b4ee42d165fca881ca1f3053c9634">pathToConFrames</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt; &gt; &amp;tangent, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="namespaceeonc.html#a2ccaf2c1835c240d5fff93174bd0a416">EigenmodeStrategy</a> &gt; &gt; &amp;eigenmode_solvers, long numImages, bool estimateEigenvalues, std::optional&lt; size_t &gt; bandIndex=std::nullopt, double referenceEnergy=std::numeric_limits&lt; double &gt;::quiet_NaN())</td></tr>
 <tr class="memdesc:a200b4ee42d165fca881ca1f3053c9634"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build stamped ConFrames for a NEB band (same metadata as writePathCon).  <br /></td></tr>
-<tr class="memitem:a97a7096d08e3c06ae953526f3d794259" id="r_a97a7096d08e3c06ae953526f3d794259"><td class="memItemLeft"><a class="el" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">eonc::io::IoStatus</a>&#160;</td><td class="memItemRight"><a class="el" href="#a97a7096d08e3c06ae953526f3d794259">writePathCon</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt; &gt; &amp;tangent, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="namespaceeonc.html#a2ccaf2c1835c240d5fff93174bd0a416">EigenmodeStrategy</a> &gt; &gt; &amp;eigenmode_solvers, long numImages, bool estimateEigenvalues, std::string filename, std::optional&lt; size_t &gt; bandIndex=std::nullopt, double referenceEnergy=std::numeric_limits&lt; double &gt;::quiet_NaN())</td></tr>
+<tr class="memitem:a97a7096d08e3c06ae953526f3d794259" id="r_a97a7096d08e3c06ae953526f3d794259"><td class="memItemLeft"><a class="el" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">eonc::io::IoStatus</a>&#160;</td><td class="memItemRight"><a class="el" href="#a97a7096d08e3c06ae953526f3d794259">writePathCon</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt; &gt; &amp;tangent, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="namespaceeonc.html#a2ccaf2c1835c240d5fff93174bd0a416">EigenmodeStrategy</a> &gt; &gt; &amp;eigenmode_solvers, long numImages, bool estimateEigenvalues, std::string filename, std::optional&lt; size_t &gt; bandIndex=std::nullopt, double referenceEnergy=std::numeric_limits&lt; double &gt;::quiet_NaN())</td></tr>
 <tr class="memdesc:a97a7096d08e3c06ae953526f3d794259"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a NEB band as a multi-frame .con via readcon ConFrameBuilder::clone().  <br /></td></tr>
-<tr class="memitem:a377ee5e00739d25ad100873c536639fe" id="r_a377ee5e00739d25ad100873c536639fe"><td class="memItemLeft"><a class="el" href="#a62931aadc8e669c0d5e43769b70318a1">SpringStrategy</a>&#160;</td><td class="memItemRight"><a class="el" href="#a377ee5e00739d25ad100873c536639fe">buildSpringStrategy</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;params, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &gt; &amp;path, long numImages, int atoms, double maxEnergy, double E_ref)</td></tr>
+<tr class="memitem:a377ee5e00739d25ad100873c536639fe" id="r_a377ee5e00739d25ad100873c536639fe"><td class="memItemLeft"><a class="el" href="#a62931aadc8e669c0d5e43769b70318a1">SpringStrategy</a>&#160;</td><td class="memItemRight"><a class="el" href="#a377ee5e00739d25ad100873c536639fe">buildSpringStrategy</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;params, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;path, long numImages, int atoms, double maxEnergy, double E_ref)</td></tr>
 <tr class="memdesc:a377ee5e00739d25ad100873c536639fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the appropriate spring strategy from parameters and current path state.  <br /></td></tr>
-<tr class="memitem:a4ab91f7a0f596014d073cffbb2cb82b1" id="r_a4ab91f7a0f596014d073cffbb2cb82b1"><td class="memItemLeft"><a class="el" href="#af783a3d27fdfd2b4a612cad047051293">TangentStrategy</a>&#160;</td><td class="memItemRight"><a class="el" href="#a4ab91f7a0f596014d073cffbb2cb82b1">buildTangentStrategy</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;params)</td></tr>
+<tr class="memitem:a4ab91f7a0f596014d073cffbb2cb82b1" id="r_a4ab91f7a0f596014d073cffbb2cb82b1"><td class="memItemLeft"><a class="el" href="#af783a3d27fdfd2b4a612cad047051293">TangentStrategy</a>&#160;</td><td class="memItemRight"><a class="el" href="#a4ab91f7a0f596014d073cffbb2cb82b1">buildTangentStrategy</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;params)</td></tr>
 <tr class="memdesc:a4ab91f7a0f596014d073cffbb2cb82b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the tangent strategy from parameters.  <br /></td></tr>
 <tr class="memitem:aa3ea29e0e6174ad77125e59e76747c32" id="r_aa3ea29e0e6174ad77125e59e76747c32"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#aa3ea29e0e6174ad77125e59e76747c32">solidStateJacobian</a> (double meanVolume, int nAtoms, double weight)</td></tr>
 <tr class="memdesc:aa3ea29e0e6174ad77125e59e76747c32"><td class="mdescLeft">&#160;</td><td class="mdescRight">J = (V/N)^{1/3} * N^{1/2} * weight, with V the mean endpoint volume.  <br /></td></tr>
 <tr class="memitem:a079cbe0a04943b877c53b7566f6701cc" id="r_a079cbe0a04943b877c53b7566f6701cc"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a079cbe0a04943b877c53b7566f6701cc">orientCellLowerTriangular</a> (<a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;cell, <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;positions)</td></tr>
 <tr class="memdesc:a079cbe0a04943b877c53b7566f6701cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rotate the lab frame so the cell is lower triangular: the first lattice vector lies on x and the second lies in the xy plane.  <br /></td></tr>
-<tr class="memitem:adb3b7f2dddfe3c22643699b0bf849279" id="r_adb3b7f2dddfe3c22643699b0bf849279"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#adb3b7f2dddfe3c22643699b0bf849279">orientSolidStateMatter</a> (<a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;image)</td></tr>
-<tr class="memitem:a1cd6aa7232d2706d28750e8487bb1873" id="r_a1cd6aa7232d2706d28750e8487bb1873"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a1cd6aa7232d2706d28750e8487bb1873">interpolateSolidStateLinear</a> (std::vector&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &amp;images)</td></tr>
+<tr class="memitem:adb3b7f2dddfe3c22643699b0bf849279" id="r_adb3b7f2dddfe3c22643699b0bf849279"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#adb3b7f2dddfe3c22643699b0bf849279">orientSolidStateMatter</a> (<a class="el" href="classMatter.html">Matter</a> &amp;image)</td></tr>
+<tr class="memitem:a1cd6aa7232d2706d28750e8487bb1873" id="r_a1cd6aa7232d2706d28750e8487bb1873"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a1cd6aa7232d2706d28750e8487bb1873">interpolateSolidStateLinear</a> (std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &amp;images)</td></tr>
 <tr class="memdesc:a1cd6aa7232d2706d28750e8487bb1873"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace interior images by a fractional linear interpolation of the oriented endpoints.  <br /></td></tr>
-<tr class="memitem:a878bd9e04ba095d1b6a33b57d81ac6a9" id="r_a878bd9e04ba095d1b6a33b57d81ac6a9"><td class="memItemLeft"><a class="el" href="structeonc_1_1neb_1_1JointBlock.html">JointBlock</a>&#160;</td><td class="memItemRight"><a class="el" href="#a878bd9e04ba095d1b6a33b57d81ac6a9">jointDisplacement</a> (const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;from, const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;to, double jacobian)</td></tr>
+<tr class="memitem:a878bd9e04ba095d1b6a33b57d81ac6a9" id="r_a878bd9e04ba095d1b6a33b57d81ac6a9"><td class="memItemLeft"><a class="el" href="structeonc_1_1neb_1_1JointBlock.html">JointBlock</a>&#160;</td><td class="memItemRight"><a class="el" href="#a878bd9e04ba095d1b6a33b57d81ac6a9">jointDisplacement</a> (const <a class="el" href="classMatter.html">Matter</a> &amp;from, const <a class="el" href="classMatter.html">Matter</a> &amp;to, double jacobian)</td></tr>
 <tr class="memdesc:a878bd9e04ba095d1b6a33b57d81ac6a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Displacement of <span class="tt">to</span> relative to <span class="tt">from</span> in the joint metric.  <br /></td></tr>
 <tr class="memitem:a56f330ea1a8ea5dacb011eb0746f1990" id="r_a56f330ea1a8ea5dacb011eb0746f1990"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a56f330ea1a8ea5dacb011eb0746f1990">jointNorm</a> (const <a class="el" href="structeonc_1_1neb_1_1JointBlock.html">JointBlock</a> &amp;block)</td></tr>
 <tr class="memitem:aeb0fa4776bcb090f7256a095b0e1183f" id="r_aeb0fa4776bcb090f7256a095b0e1183f"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a>&#160;</td><td class="memItemRight"><a class="el" href="#aeb0fa4776bcb090f7256a095b0e1183f">cellNebForce</a> (const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;cauchy, double volume, double jacobian, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;externalStress)</td></tr>
 <tr class="memdesc:aeb0fa4776bcb090f7256a095b0e1183f"><td class="mdescLeft">&#160;</td><td class="mdescRight">NEB force on the Jacobian-scaled strain.  <br /></td></tr>
-<tr class="memitem:ae5b588a41a2cca2ae99609d6fe8e6e11" id="r_ae5b588a41a2cca2ae99609d6fe8e6e11"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a>&#160;</td><td class="memItemRight"><a class="el" href="#ae5b588a41a2cca2ae99609d6fe8e6e11">finiteDifferenceCauchyStress</a> (const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;image, double strainStep)</td></tr>
+<tr class="memitem:ae5b588a41a2cca2ae99609d6fe8e6e11" id="r_ae5b588a41a2cca2ae99609d6fe8e6e11"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a>&#160;</td><td class="memItemRight"><a class="el" href="#ae5b588a41a2cca2ae99609d6fe8e6e11">finiteDifferenceCauchyStress</a> (const <a class="el" href="classMatter.html">Matter</a> &amp;image, double strainStep)</td></tr>
 <tr class="memdesc:ae5b588a41a2cca2ae99609d6fe8e6e11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Central difference of the potential energy on the six lower strain components.  <br /></td></tr>
-<tr class="memitem:a5c7063d07b10a060f0f5bc13565dd7e4" id="r_a5c7063d07b10a060f0f5bc13565dd7e4"><td class="memItemLeft">std::vector&lt; <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a5c7063d07b10a060f0f5bc13565dd7e4">finiteDifferenceCauchyStresses</a> (std::span&lt; const <a class="el" href="classeonc_1_1Matter.html">Matter</a> *const  &gt; images, double strainStep)</td></tr>
+<tr class="memitem:a5c7063d07b10a060f0f5bc13565dd7e4" id="r_a5c7063d07b10a060f0f5bc13565dd7e4"><td class="memItemLeft">std::vector&lt; <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a5c7063d07b10a060f0f5bc13565dd7e4">finiteDifferenceCauchyStresses</a> (std::span&lt; const <a class="el" href="classMatter.html">Matter</a> *const  &gt; images, double strainStep)</td></tr>
 <tr class="memdesc:a5c7063d07b10a060f0f5bc13565dd7e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">The same central difference for several images at once.  <br /></td></tr>
-<tr class="memitem:a960b1702e269ca42e88a9240b352f749" id="r_a960b1702e269ca42e88a9240b352f749"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a960b1702e269ca42e88a9240b352f749">solidStateEnthalpy</a> (const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;image, const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;reference, double pressure)</td></tr>
+<tr class="memitem:a960b1702e269ca42e88a9240b352f749" id="r_a960b1702e269ca42e88a9240b352f749"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a960b1702e269ca42e88a9240b352f749">solidStateEnthalpy</a> (const <a class="el" href="classMatter.html">Matter</a> &amp;image, const <a class="el" href="classMatter.html">Matter</a> &amp;reference, double pressure)</td></tr>
 <tr class="memdesc:a960b1702e269ca42e88a9240b352f749"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeonc_1_1Potential.html">Potential</a> energy plus P : (h0^{-1} (h-h0)) * V0.  <br /></td></tr>
-<tr class="memitem:a3c6d7be8fb5777d625b17120e3e1c736" id="r_a3c6d7be8fb5777d625b17120e3e1c736"><td class="memItemLeft"><a class="el" href="structeonc_1_1neb_1_1CartesianStep.html">CartesianStep</a>&#160;</td><td class="memItemRight"><a class="el" href="#a3c6d7be8fb5777d625b17120e3e1c736">solidStateCartesianStep</a> (const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;image, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;atomicForce, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;cellForce, double jacobian)</td></tr>
+<tr class="memitem:a3c6d7be8fb5777d625b17120e3e1c736" id="r_a3c6d7be8fb5777d625b17120e3e1c736"><td class="memItemLeft"><a class="el" href="structeonc_1_1neb_1_1CartesianStep.html">CartesianStep</a>&#160;</td><td class="memItemRight"><a class="el" href="#a3c6d7be8fb5777d625b17120e3e1c736">solidStateCartesianStep</a> (const <a class="el" href="classMatter.html">Matter</a> &amp;image, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;atomicForce, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;cellForce, double jacobian)</td></tr>
 </table>
 <a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Typedef Documentation</h2>
 <a id="a83e6ba13071b353a3873b151fb11119a" name="a83e6ba13071b353a3873b151fb11119a"></a>
@@ -390,7 +390,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="#a83e6ba13071b353a3873b151fb11119a">ProjectionStrategy</a> eonc::neb::buildProjectionStrategy </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -417,13 +417,13 @@ Functions</h2></td></tr>
 <div class="ttc" id="aclasseonc_1_1Parameters_html_a2bbe0a1457405761938b27193a002c47"><div class="ttname"><a href="classeonc_1_1Parameters.html#a2bbe0a1457405761938b27193a002c47">eonc::Parameters::neb_options</a></div><div class="ttdeci">const neb_options_t &amp; neb_options() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00180">ParametersAccess.cpp:180</a></div></div>
 <div class="ttc" id="astructeonc_1_1neb_1_1NEB__Projection_html"><div class="ttname"><a href="structeonc_1_1neb_1_1NEB__Projection.html">eonc::neb::NEB_Projection</a></div><div class="ttdoc">Jonsson, Mills, Jacobsen 1998 (World Scientific).</div><div class="ttdef"><b>Definition</b> <a href="NEBProjection_8h_source.html#l00038">NEBProjection.h:38</a></div></div>
 <div class="ttc" id="astructeonc_1_1neb_1_1PlainEB_html"><div class="ttname"><a href="structeonc_1_1neb_1_1PlainEB.html">eonc::neb::PlainEB</a></div><div class="ttdoc">Mills, Jonsson, Schenter, Surf.</div><div class="ttdef"><b>Definition</b> <a href="NEBProjection_8h_source.html#l00032">NEBProjection.h:32</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t_html_a6e129b61f96db4ea97e2df22ed8ca8d4"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t.html#a6e129b61f96db4ea97e2df22ed8ca8d4">eonc::neb_options_t::spring_options_t::energy_weighting_t::enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00538">ParametersOptions.h:538</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t_html_ad792d2245bc517aced027a9283e9b21e"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html#ad792d2245bc517aced027a9283e9b21e">eonc::neb_options_t::spring_options_t::onsager_machlup_t::enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00544">ParametersOptions.h:544</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t_html_a6e129b61f96db4ea97e2df22ed8ca8d4"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t.html#a6e129b61f96db4ea97e2df22ed8ca8d4">eonc::neb_options_t::spring_options_t::energy_weighting_t::enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00539">ParametersOptions.h:539</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t_html_ad792d2245bc517aced027a9283e9b21e"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html#ad792d2245bc517aced027a9283e9b21e">eonc::neb_options_t::spring_options_t::onsager_machlup_t::enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00545">ParametersOptions.h:545</a></div></div>
 <div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_html_a3a84535f8056cb43b2023d970f6bb1a9"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t.html#a3a84535f8056cb43b2023d970f6bb1a9">eonc::neb_options_t::spring_options_t::weighting</a></div><div class="ttdeci">struct eonc::neb_options_t::spring_options_t::energy_weighting_t weighting</div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_html_ab305b24a7c65ef6483633bb218333b70"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t.html#ab305b24a7c65ef6483633bb218333b70">eonc::neb_options_t::spring_options_t::use_switching</a></div><div class="ttdeci">bool use_switching</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00535">ParametersOptions.h:535</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_html_ae70633a42496b3460dc29832951b3e6c"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t.html#ae70633a42496b3460dc29832951b3e6c">eonc::neb_options_t::spring_options_t::doubly_nudged</a></div><div class="ttdeci">bool doubly_nudged</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00534">ParametersOptions.h:534</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_html_ab305b24a7c65ef6483633bb218333b70"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t.html#ab305b24a7c65ef6483633bb218333b70">eonc::neb_options_t::spring_options_t::use_switching</a></div><div class="ttdeci">bool use_switching</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00536">ParametersOptions.h:536</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_html_ae70633a42496b3460dc29832951b3e6c"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t.html#ae70633a42496b3460dc29832951b3e6c">eonc::neb_options_t::spring_options_t::doubly_nudged</a></div><div class="ttdeci">bool doubly_nudged</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00535">ParametersOptions.h:535</a></div></div>
 <div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_html_aeeab2a722bc5d04279dc47f2b4d41f4a"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t.html#aeeab2a722bc5d04279dc47f2b4d41f4a">eonc::neb_options_t::spring_options_t::om</a></div><div class="ttdeci">struct eonc::neb_options_t::spring_options_t::onsager_machlup_t om</div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_html_afa6f029c670a20c2a6a5b2861710f48f"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t.html#afa6f029c670a20c2a6a5b2861710f48f">eonc::neb_options_t::spring_options_t::use_elastic_band</a></div><div class="ttdeci">bool use_elastic_band</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00533">ParametersOptions.h:533</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_html_afa6f029c670a20c2a6a5b2861710f48f"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t.html#afa6f029c670a20c2a6a5b2861710f48f">eonc::neb_options_t::spring_options_t::use_elastic_band</a></div><div class="ttdeci">bool use_elastic_band</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00534">ParametersOptions.h:534</a></div></div>
 <div class="ttc" id="astructeonc_1_1neb__options__t_html_a7ddcef2df030ddca7e0ee7b7aedfe2da"><div class="ttname"><a href="structeonc_1_1neb__options__t.html#a7ddcef2df030ddca7e0ee7b7aedfe2da">eonc::neb_options_t::spring</a></div><div class="ttdeci">struct eonc::neb_options_t::spring_options_t spring</div></div>
 </div><!-- fragment -->
 </div>
@@ -437,12 +437,12 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="#a62931aadc8e669c0d5e43769b70318a1">SpringStrategy</a> eonc::neb::buildSpringStrategy </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span>, </td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span>, </td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -546,13 +546,13 @@ Functions</h2></td></tr>
 <div class="ttc" id="astructeonc_1_1neb_1_1OnsagerMachlupSpring_html"><div class="ttname"><a href="structeonc_1_1neb_1_1OnsagerMachlupSpring.html">eonc::neb::OnsagerMachlupSpring</a></div><div class="ttdoc">Onsager-Machlup action-based springs (Mandelli &amp; Parrinello 2021).</div><div class="ttdef"><b>Definition</b> <a href="NEBSpringForce_8h_source.html#l00048">NEBSpringForce.h:48</a></div></div>
 <div class="ttc" id="astructeonc_1_1neb_1_1UniformSpring_html"><div class="ttname"><a href="structeonc_1_1neb_1_1UniformSpring.html">eonc::neb::UniformSpring</a></div><div class="ttdoc">Uniform spring constant for all images.</div><div class="ttdef"><b>Definition</b> <a href="NEBSpringForce_8h_source.html#l00030">NEBSpringForce.h:30</a></div></div>
 <div class="ttc" id="astructeonc_1_1neb_1_1WeightedSpring_html"><div class="ttname"><a href="structeonc_1_1neb_1_1WeightedSpring.html">eonc::neb::WeightedSpring</a></div><div class="ttdoc">Energy-weighted spring constants (variable per segment).</div><div class="ttdef"><b>Definition</b> <a href="NEBSpringForce_8h_source.html#l00040">NEBSpringForce.h:40</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t_html_a05a6d86fcf9e14184c9910dece0d7529"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t.html#a05a6d86fcf9e14184c9910dece0d7529">eonc::neb_options_t::spring_options_t::energy_weighting_t::k_min</a></div><div class="ttdeci">double k_min</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00540">ParametersOptions.h:540</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t_html_a98fbee2cdffc1b44e91ffc7b5f3971a5"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t.html#a98fbee2cdffc1b44e91ffc7b5f3971a5">eonc::neb_options_t::spring_options_t::energy_weighting_t::k_max</a></div><div class="ttdeci">double k_max</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00541">ParametersOptions.h:541</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t_html_a9c76a0bf6a3e9c749962bc545e9538b7"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html#a9c76a0bf6a3e9c749962bc545e9538b7">eonc::neb_options_t::spring_options_t::onsager_machlup_t::k_max</a></div><div class="ttdeci">double k_max</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00548">ParametersOptions.h:548</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t_html_aae5fcf0b0b1de662ed5a8053a3befba6"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html#aae5fcf0b0b1de662ed5a8053a3befba6">eonc::neb_options_t::spring_options_t::onsager_machlup_t::k_min</a></div><div class="ttdeci">double k_min</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00547">ParametersOptions.h:547</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t_html_abec902ef8bc5e123711b91a9e3a4cb11"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html#abec902ef8bc5e123711b91a9e3a4cb11">eonc::neb_options_t::spring_options_t::onsager_machlup_t::optimize_k</a></div><div class="ttdeci">bool optimize_k</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00545">ParametersOptions.h:545</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t_html_add9ff30ea6a38f7f935f45c1fd83c6c9"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html#add9ff30ea6a38f7f935f45c1fd83c6c9">eonc::neb_options_t::spring_options_t::onsager_machlup_t::k_scale</a></div><div class="ttdeci">double k_scale</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00546">ParametersOptions.h:546</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_html_ad5800582f276d39b756d9b90609ce6f4"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t.html#ad5800582f276d39b756d9b90609ce6f4">eonc::neb_options_t::spring_options_t::constant</a></div><div class="ttdeci">double constant</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00532">ParametersOptions.h:532</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t_html_a05a6d86fcf9e14184c9910dece0d7529"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t.html#a05a6d86fcf9e14184c9910dece0d7529">eonc::neb_options_t::spring_options_t::energy_weighting_t::k_min</a></div><div class="ttdeci">double k_min</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00541">ParametersOptions.h:541</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t_html_a98fbee2cdffc1b44e91ffc7b5f3971a5"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t.html#a98fbee2cdffc1b44e91ffc7b5f3971a5">eonc::neb_options_t::spring_options_t::energy_weighting_t::k_max</a></div><div class="ttdeci">double k_max</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00542">ParametersOptions.h:542</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t_html_a9c76a0bf6a3e9c749962bc545e9538b7"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html#a9c76a0bf6a3e9c749962bc545e9538b7">eonc::neb_options_t::spring_options_t::onsager_machlup_t::k_max</a></div><div class="ttdeci">double k_max</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00549">ParametersOptions.h:549</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t_html_aae5fcf0b0b1de662ed5a8053a3befba6"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html#aae5fcf0b0b1de662ed5a8053a3befba6">eonc::neb_options_t::spring_options_t::onsager_machlup_t::k_min</a></div><div class="ttdeci">double k_min</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00548">ParametersOptions.h:548</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t_html_abec902ef8bc5e123711b91a9e3a4cb11"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html#abec902ef8bc5e123711b91a9e3a4cb11">eonc::neb_options_t::spring_options_t::onsager_machlup_t::optimize_k</a></div><div class="ttdeci">bool optimize_k</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00546">ParametersOptions.h:546</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t_html_add9ff30ea6a38f7f935f45c1fd83c6c9"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html#add9ff30ea6a38f7f935f45c1fd83c6c9">eonc::neb_options_t::spring_options_t::onsager_machlup_t::k_scale</a></div><div class="ttdeci">double k_scale</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00547">ParametersOptions.h:547</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1spring__options__t_html_ad5800582f276d39b756d9b90609ce6f4"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1spring__options__t.html#ad5800582f276d39b756d9b90609ce6f4">eonc::neb_options_t::spring_options_t::constant</a></div><div class="ttdeci">double constant</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00533">ParametersOptions.h:533</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -565,7 +565,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="#af783a3d27fdfd2b4a612cad047051293">TangentStrategy</a> eonc::neb::buildTangentStrategy </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -581,7 +581,7 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">   76</span>  <span class="keywordflow">return</span> ImprovedTangent{};</div>
 <div class="line"><span class="lineno">   77</span>}</div>
 <div class="ttc" id="astructeonc_1_1neb_1_1SimpleTangent_html"><div class="ttname"><a href="structeonc_1_1neb_1_1SimpleTangent.html">eonc::neb::SimpleTangent</a></div><div class="ttdoc">Mills, Jonsson, Schenter, Surf.</div><div class="ttdef"><b>Definition</b> <a href="NEBTangent_8h_source.html#l00023">NEBTangent.h:23</a></div></div>
-<div class="ttc" id="astructeonc_1_1neb__options__t_1_1climbing__image__options__t_html_afa3aabadbb0e07512dbb67b4d58f71b3"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1climbing__image__options__t.html#afa3aabadbb0e07512dbb67b4d58f71b3">eonc::neb_options_t::climbing_image_options_t::use_old_tangent</a></div><div class="ttdeci">bool use_old_tangent</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00559">ParametersOptions.h:559</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb__options__t_1_1climbing__image__options__t_html_afa3aabadbb0e07512dbb67b4d58f71b3"><div class="ttname"><a href="structeonc_1_1neb__options__t_1_1climbing__image__options__t.html#afa3aabadbb0e07512dbb67b4d58f71b3">eonc::neb_options_t::climbing_image_options_t::use_old_tangent</a></div><div class="ttdeci">bool use_old_tangent</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00560">ParametersOptions.h:560</a></div></div>
 <div class="ttc" id="astructeonc_1_1neb__options__t_html_a20679cefe27a467bc74193b3f856886f"><div class="ttname"><a href="structeonc_1_1neb__options__t.html#a20679cefe27a467bc74193b3f856886f">eonc::neb_options_t::climbing_image</a></div><div class="ttdeci">struct eonc::neb_options_t::climbing_image_options_t climbing_image</div></div>
 </div><!-- fragment -->
 </div>
@@ -866,7 +866,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="structeonc_1_1neb_1_1ExtremaResult.html">ExtremaResult</a> eonc::neb::findSplineExtrema </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span>, </td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -993,7 +993,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> eonc::neb::finiteDifferenceCauchyStress </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>image</em></span>, </td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>image</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1025,7 +1025,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">std::vector&lt; <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &gt; eonc::neb::finiteDifferenceCauchyStresses </td>
           <td>(</td>
-          <td class="paramtype">std::span&lt; const <a class="el" href="classeonc_1_1Matter.html">Matter</a> *const &gt;</td>          <td class="paramname"><span class="paramname"><em>images</em></span>, </td>
+          <td class="paramtype">std::span&lt; const <a class="el" href="classMatter.html">Matter</a> *const &gt;</td>          <td class="paramname"><span class="paramname"><em>images</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1067,8 +1067,8 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">  189</span>           {<a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a>(Matrix3d::Identity() + strain),</div>
 <div class="line"><span class="lineno">  190</span>            <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a>(Matrix3d::Identity() - strain)}) {</div>
 <div class="line"><span class="lineno">  191</span>        Matter &amp;copy = strained.emplace_back(*image);</div>
-<div class="line"><span class="lineno">  192</span>        copy.setCell(cell * deformation);</div>
-<div class="line"><span class="lineno">  193</span>        copy.setPositions(positions * deformation);</div>
+<div class="line"><span class="lineno">  192</span>        copy.<a class="code hl_function" href="classMatter.html#a3c4002006e09f4e4b7fa2ffbf191db26">setCell</a>(cell * deformation);</div>
+<div class="line"><span class="lineno">  193</span>        copy.<a class="code hl_function" href="classMatter.html#a271f1a697333162ba3705bff86dfef06">setPositions</a>(positions * deformation);</div>
 <div class="line"><span class="lineno">  194</span>      }</div>
 <div class="line"><span class="lineno">  195</span>    }</div>
 <div class="line"><span class="lineno">  196</span>  }</div>
@@ -1086,14 +1086,17 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">  208</span>      <span class="keyword">const</span> Matter &amp;raised = strained[12 * k + 2 * comp];</div>
 <div class="line"><span class="lineno">  209</span>      <span class="keyword">const</span> Matter &amp;lowered = strained[12 * k + 2 * comp + 1];</div>
 <div class="line"><span class="lineno">  210</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> derivative =</div>
-<div class="line"><span class="lineno">  211</span>          (raised.getPotentialEnergy() - lowered.getPotentialEnergy()) /</div>
+<div class="line"><span class="lineno">  211</span>          (raised.<a class="code hl_function" href="classMatter.html#a991745c4fb760027221d419b8cf6fd8e">getPotentialEnergy</a>() - lowered.<a class="code hl_function" href="classMatter.html#a991745c4fb760027221d419b8cf6fd8e">getPotentialEnergy</a>()) /</div>
 <div class="line"><span class="lineno">  212</span>          (2.0 * strainStep);</div>
 <div class="line"><span class="lineno">  213</span>      sigma[k](rows[comp], cols[comp]) = derivative / volumes[k];</div>
 <div class="line"><span class="lineno">  214</span>    }</div>
 <div class="line"><span class="lineno">  215</span>  }</div>
 <div class="line"><span class="lineno">  216</span>  <span class="keywordflow">return</span> sigma;</div>
 <div class="line"><span class="lineno">  217</span>}</div>
-<div class="ttc" id="anamespaceeonc_html_a0a75f0d31324c1f054a663565625d66c"><div class="ttname"><a href="namespaceeonc.html#a0a75f0d31324c1f054a663565625d66c">eonc::evaluateTogether</a></div><div class="ttdeci">void evaluateTogether(Potential &amp;pot, std::span&lt; Matter *const &gt; systems)</div><div class="ttdoc">Evaluates every system that needs a force update.</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00888">Matter.cpp:888</a></div></div>
+<div class="ttc" id="aclassMatter_html_a271f1a697333162ba3705bff86dfef06"><div class="ttname"><a href="classMatter.html#a271f1a697333162ba3705bff86dfef06">Matter::setPositions</a></div><div class="ttdeci">void setPositions(const AtomMatrix &amp;pos)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00368">Matter.cpp:368</a></div></div>
+<div class="ttc" id="aclassMatter_html_a3c4002006e09f4e4b7fa2ffbf191db26"><div class="ttname"><a href="classMatter.html#a3c4002006e09f4e4b7fa2ffbf191db26">Matter::setCell</a></div><div class="ttdeci">void setCell(const Matrix3d &amp;newCell)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00295">Matter.cpp:295</a></div></div>
+<div class="ttc" id="aclassMatter_html_a991745c4fb760027221d419b8cf6fd8e"><div class="ttname"><a href="classMatter.html#a991745c4fb760027221d419b8cf6fd8e">Matter::getPotentialEnergy</a></div><div class="ttdeci">double getPotentialEnergy() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00572">Matter.cpp:572</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a0a75f0d31324c1f054a663565625d66c"><div class="ttname"><a href="namespaceeonc.html#a0a75f0d31324c1f054a663565625d66c">eonc::evaluateTogether</a></div><div class="ttdeci">void evaluateTogether(Potential &amp;pot, std::span&lt; Matter *const &gt; systems)</div><div class="ttdoc">Evaluates every system that needs a force update.</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00925">Matter.cpp:925</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1137,7 +1140,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> eonc::neb::interpolatedPeakMode </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span>, </td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1192,7 +1195,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void eonc::neb::interpolateSolidStateLinear </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>images</em></span></td><td>)</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>images</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -1239,12 +1242,12 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="structeonc_1_1neb_1_1JointBlock.html">JointBlock</a> eonc::neb::jointDisplacement </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>from</em></span>, </td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>from</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>to</em></span>, </td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>to</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1279,7 +1282,7 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">  138</span>  zeroUpper(out.cell);</div>
 <div class="line"><span class="lineno">  139</span>  <span class="keywordflow">return</span> out;</div>
 <div class="line"><span class="lineno">  140</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_a527727dfd88d55bc617c3633a1ca5776"><div class="ttname"><a href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">eonc::Matter::getCell</a></div><div class="ttdeci">Matrix3d getCell() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00284">Matter.cpp:284</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a527727dfd88d55bc617c3633a1ca5776"><div class="ttname"><a href="classeonc_1_1Matter.html#a527727dfd88d55bc617c3633a1ca5776">eonc::Matter::getCell</a></div><div class="ttdeci">Matrix3d getCell() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00293">Matter.cpp:293</a></div></div>
 <div class="ttc" id="astructeonc_1_1neb_1_1JointBlock_html"><div class="ttname"><a href="structeonc_1_1neb_1_1JointBlock.html">eonc::neb::JointBlock</a></div><div class="ttdef"><b>Definition</b> <a href="SolidStateNEB_8h_source.html#l00040">SolidStateNEB.h:40</a></div></div>
 <div class="ttc" id="astructeonc_1_1neb_1_1JointBlock_html_aee1093c3cc7abdb4996368d756396e4a"><div class="ttname"><a href="structeonc_1_1neb_1_1JointBlock.html#aee1093c3cc7abdb4996368d756396e4a">eonc::neb::JointBlock::atomic</a></div><div class="ttdeci">AtomMatrix atomic</div><div class="ttdef"><b>Definition</b> <a href="SolidStateNEB_8h_source.html#l00041">SolidStateNEB.h:41</a></div></div>
 </div><!-- fragment -->
@@ -1373,7 +1376,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void eonc::neb::orientSolidStateMatter </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>image</em></span></td><td>)</td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>image</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -1392,9 +1395,9 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">   89</span>    image.<a class="code hl_function" href="classeonc_1_1Matter.html#a271f1a697333162ba3705bff86dfef06">setPositions</a>(positions);</div>
 <div class="line"><span class="lineno">   90</span>  }</div>
 <div class="line"><span class="lineno">   91</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_a2472b3c954d101c0810da69ed442b244"><div class="ttname"><a href="classeonc_1_1Matter.html#a2472b3c954d101c0810da69ed442b244">eonc::Matter::getPositions</a></div><div class="ttdeci">const AtomMatrix &amp; getPositions() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00317">Matter.cpp:317</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_a271f1a697333162ba3705bff86dfef06"><div class="ttname"><a href="classeonc_1_1Matter.html#a271f1a697333162ba3705bff86dfef06">eonc::Matter::setPositions</a></div><div class="ttdeci">void setPositions(const AtomMatrix &amp;pos)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00359">Matter.cpp:359</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_a3c4002006e09f4e4b7fa2ffbf191db26"><div class="ttname"><a href="classeonc_1_1Matter.html#a3c4002006e09f4e4b7fa2ffbf191db26">eonc::Matter::setCell</a></div><div class="ttdeci">void setCell(const Matrix3d &amp;newCell)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00286">Matter.cpp:286</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a2472b3c954d101c0810da69ed442b244"><div class="ttname"><a href="classeonc_1_1Matter.html#a2472b3c954d101c0810da69ed442b244">eonc::Matter::getPositions</a></div><div class="ttdeci">const AtomMatrix &amp; getPositions() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00326">Matter.cpp:326</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a271f1a697333162ba3705bff86dfef06"><div class="ttname"><a href="classeonc_1_1Matter.html#a271f1a697333162ba3705bff86dfef06">eonc::Matter::setPositions</a></div><div class="ttdeci">void setPositions(const AtomMatrix &amp;pos)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00368">Matter.cpp:368</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a3c4002006e09f4e4b7fa2ffbf191db26"><div class="ttname"><a href="classeonc_1_1Matter.html#a3c4002006e09f4e4b7fa2ffbf191db26">eonc::Matter::setCell</a></div><div class="ttdeci">void setCell(const Matrix3d &amp;newCell)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00295">Matter.cpp:295</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1neb_html_a079cbe0a04943b877c53b7566f6701cc"><div class="ttname"><a href="#a079cbe0a04943b877c53b7566f6701cc">eonc::neb::orientCellLowerTriangular</a></div><div class="ttdeci">bool orientCellLowerTriangular(Matrix3d &amp;cell, AtomMatrix &amp;positions)</div><div class="ttdoc">Rotate the lab frame so the cell is lower triangular: the first lattice vector lies on x and the seco...</div><div class="ttdef"><b>Definition</b> <a href="SolidStateNEB_8cpp_source.html#l00049">SolidStateNEB.cpp:49</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -1411,7 +1414,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">std::vector&lt; readcon::ConFrame &gt; eonc::neb::pathToConFrames </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span>, </td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1528,7 +1531,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void eonc::neb::printImageData </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span>, </td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1669,7 +1672,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="structeonc_1_1neb_1_1CartesianStep.html">CartesianStep</a> eonc::neb::solidStateCartesianStep </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>image</em></span>, </td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>image</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1711,8 +1714,8 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">  252</span>  }</div>
 <div class="line"><span class="lineno">  253</span>  <span class="keywordflow">return</span> step;</div>
 <div class="line"><span class="lineno">  254</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_a5b678e80aa584c41d54e221d04bb729e"><div class="ttname"><a href="classeonc_1_1Matter.html#a5b678e80aa584c41d54e221d04bb729e">eonc::Matter::numberOfAtoms</a></div><div class="ttdeci">long int numberOfAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00282">Matter.cpp:282</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_aeccfa311325cb6f4fb520cf071fef679"><div class="ttname"><a href="classeonc_1_1Matter.html#aeccfa311325cb6f4fb520cf071fef679">eonc::Matter::getFixed</a></div><div class="ttdeci">int getFixed(long int atom) const</div><div class="ttdoc">1 if every Cartesian axis of the atom is fixed, else 0.</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00514">Matter.cpp:514</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a5b678e80aa584c41d54e221d04bb729e"><div class="ttname"><a href="classeonc_1_1Matter.html#a5b678e80aa584c41d54e221d04bb729e">eonc::Matter::numberOfAtoms</a></div><div class="ttdeci">long int numberOfAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00291">Matter.cpp:291</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_aeccfa311325cb6f4fb520cf071fef679"><div class="ttname"><a href="classeonc_1_1Matter.html#aeccfa311325cb6f4fb520cf071fef679">eonc::Matter::getFixed</a></div><div class="ttdeci">int getFixed(long int atom) const</div><div class="ttdoc">1 if every Cartesian axis of the atom is fixed, else 0.</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00523">Matter.cpp:523</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1725,12 +1728,12 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">double eonc::neb::solidStateEnthalpy </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>image</em></span>, </td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>image</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classeonc_1_1Matter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>reference</em></span>, </td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>reference</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1754,7 +1757,7 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">  227</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> volume = std::abs(h0.determinant());</div>
 <div class="line"><span class="lineno">  228</span>  <span class="keywordflow">return</span> energy + pressure * strain.trace() * volume;</div>
 <div class="line"><span class="lineno">  229</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_a991745c4fb760027221d419b8cf6fd8e"><div class="ttname"><a href="classeonc_1_1Matter.html#a991745c4fb760027221d419b8cf6fd8e">eonc::Matter::getPotentialEnergy</a></div><div class="ttdeci">double getPotentialEnergy() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00563">Matter.cpp:563</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a991745c4fb760027221d419b8cf6fd8e"><div class="ttname"><a href="classeonc_1_1Matter.html#a991745c4fb760027221d419b8cf6fd8e">eonc::Matter::getPotentialEnergy</a></div><div class="ttdeci">double getPotentialEnergy() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00572">Matter.cpp:572</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1809,7 +1812,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">eonc::io::IoStatus</a> eonc::neb::writePathCon </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classeonc_1_1Matter.html">Matter</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span>, </td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>

@@ -9,7 +9,7 @@ var searchData=
   ['imageforcedata_6',['ImageForceData',['../structeonc_1_1neb_1_1ImageForceData.html',1,'eonc::neb']]],
   ['imagepool_7',['ImagePool',['../classeonc_1_1detail_1_1ImagePool.html',1,'eonc::detail']]],
   ['imetatomicloader_8',['IMetatomicLoader',['../classeonc_1_1IMetatomicLoader.html',1,'eonc']]],
-  ['impl_9',['Impl',['../structeonc_1_1Matter_1_1Impl.html',1,'eonc::Matter::Impl'],['../structeonc_1_1Parameters_1_1Impl.html',1,'eonc::Parameters::Impl'],['../structRGPotEngine_1_1Impl.html',1,'RGPotEngine::Impl']]],
+  ['impl_9',['Impl',['../structeonc_1_1Matter_1_1Impl.html',1,'eonc::Matter::Impl'],['../structeonc_1_1Parameters_1_1Impl.html',1,'eonc::Parameters::Impl'],['../structMatter_1_1Impl.html',1,'Matter::Impl'],['../structParameters_1_1Impl.html',1,'Parameters::Impl'],['../structRGPotEngine_1_1Impl.html',1,'RGPotEngine::Impl']]],
   ['improveddimer_10',['ImprovedDimer',['../classeonc_1_1ImprovedDimer.html',1,'eonc']]],
   ['improvedtangent_11',['ImprovedTangent',['../structeonc_1_1neb_1_1ImprovedTangent.html',1,'eonc::neb']]],
   ['instancerecord_12',['InstanceRecord',['../structeonc_1_1PotRegistry_1_1InstanceRecord.html',1,'eonc::PotRegistry']]],

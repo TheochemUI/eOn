@@ -26,6 +26,7 @@ var searchData=
   ['structurecomparisonjob_23',['StructureComparisonJob',['../classeonc_1_1StructureComparisonJob.html',1,'eonc']]],
   ['structurecomparisonoptions_24',['StructureComparisonOptions',['../structeonc_1_1StructureComparisonOptions.html',1,'eonc']]],
   ['supercell_25',['SuperCell',['../classSuperCell.html',1,'']]],
-  ['surrogatepotential_26',['SurrogatePotential',['../classeonc_1_1SurrogatePotential.html',1,'eonc']]],
-  ['symmetryresult_27',['SymmetryResult',['../structeonc_1_1IRACompare_1_1SymmetryResult.html',1,'eonc::IRACompare']]]
+  ['surfacerecoverable_26',['SurfaceRecoverable',['../structeonc_1_1SurfaceRecoverable.html',1,'eonc']]],
+  ['surrogatepotential_27',['SurrogatePotential',['../classeonc_1_1SurrogatePotential.html',1,'eonc']]],
+  ['symmetryresult_28',['SymmetryResult',['../structeonc_1_1IRACompare_1_1SymmetryResult.html',1,'eonc::IRACompare']]]
 ];

@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="teal" data-content_root="../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Neighbor lists (vesin) - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="AiiDA (aiida-eon)" href="aiida.html" /><link rel="prev" title="pyeonclient" href="pyeonclient.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Neighbor lists - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="AiiDA (aiida-eon)" href="aiida.html" /><link rel="prev" title="pyeonclient" href="pyeonclient.html" />
       <link rel="canonical" href="https://eondocs.org/user_guide/neighbor_lists.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
@@ -27,7 +27,7 @@
 </style>
     <meta property="og:type" content="website"/>
   <meta property="og:url" content="https://eondocs.org/user_guide/neighbor_lists.html"/>
-  <meta property="og:title" content="Neighbor lists (vesin)"/>
+  <meta property="og:title" content="Neighbor lists"/>
     <meta name="twitter:card" content="summary"/>
   <!-- Antics analytics -->
 <script defer src="https://antics-api.turtletech.us/antics.js"></script>
@@ -112,7 +112,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">User guide</a><ul class="current">
 <li class="toctree-l2 _expand"><a class="reference internal" href="pyeonclient.html">pyeonclient</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Neighbor lists (vesin)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Neighbor lists</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="lammps_pot.html">LAMMPS Potential</a></li>
@@ -166,6 +166,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/library-api.html">Library API</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/in-process.html">In-process jobs (no file IPC)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/abi-surface.html">Public C++ surface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/relax-engine.html">Relax engine library</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/rgpot-migration.html">rgpot kernel inventory</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/porting_potentials.html">Porting potentials</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/docbuild.html">Working with the documentation</a></li>
@@ -399,7 +400,7 @@ data-aria-dark="Switch to auto color mode">
         <span>/</span>
         <meta itemprop="position" content="2" />
       </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <strong itemprop="name">Neighbor lists (vesin)</strong>
+        <strong itemprop="name">Neighbor lists</strong>
         <meta itemprop="position" content="3" />
       </li></ol>
     <div class="xl:hidden ml-1">
@@ -447,10 +448,13 @@ data-aria-dark="Switch to auto color mode">
     </div>
   </div>
 </div><article class="yue dark-code" role="main">
-          <section id="neighbor-lists-vesin">
-<h1>Neighbor lists (vesin)<a class="headerlink" href="#neighbor-lists-vesin" title="Link to this heading">¶</a></h1>
-<p>eOn uses <a class="reference external" href="https://luthaf.fr/vesin/">vesin</a> for pair finding whenever the code
-owns that step. New pair finding goes through vesin.</p>
+          <section id="neighbor-lists">
+<h1>Neighbor lists<a class="headerlink" href="#neighbor-lists" title="Link to this heading">¶</a></h1>
+<p>A periodic cutoff list is
+<a class="reference external" href="https://github.com/d-SEAMS/linkcell">linkcell</a> <code class="docutils literal notranslate"><span class="pre">pairs_within</span></code>: one row
+per atom-image, with the caller’s shift. An open axis uses
+<a class="reference external" href="https://luthaf.fr/vesin/">vesin</a>, which accepts per-axis periodicity.
+<code class="docutils literal notranslate"><span class="pre">knearest</span></code> is the k-nearest list.</p>
 <section id="layers">
 <h2>Layers<a class="headerlink" href="#layers" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper colwidths-auto docutils container">
@@ -464,7 +468,7 @@ owns that step. New pair finding goes through vesin.</p>
 <tbody>
 <tr class="row-even"><td><p>Python server geometry</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">eon.geometry.neighbors.neighbor_list</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">vesin.NeighborList</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">linkcell.pairs_within</span></code> when every axis is periodic; vesin when one is open</p></td>
 </tr>
 <tr class="row-odd"><td><p>Process-atom shells / displace</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">eon.atoms</span></code> / <code class="docutils literal notranslate"><span class="pre">get_process_atoms</span></code></p></td>
@@ -497,11 +501,12 @@ owns that step. New pair finding goes through vesin.</p>
 </span><span data-line="3"><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">S</span> <span class="o">=</span> <span class="n">neighbor_list_pairs</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">4.0</span><span class="p">)</span>
 </span></pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">brute=True</span></code> exists for API compatibility. The production algorithm is
-always vesin. <code class="docutils literal notranslate"><span class="pre">neighbor_list</span></code> unique-indexes atoms (historical eOn
-adjacency). <code class="docutils literal notranslate"><span class="pre">neighbor_list_pairs</span></code> keeps every atom-image row
-(<code class="docutils literal notranslate"><span class="pre">i</span></code>, <code class="docutils literal notranslate"><span class="pre">j</span></code>, cell shift <code class="docutils literal notranslate"><span class="pre">S</span></code>), the vesin/tonari pair contract.
-Displacement is <code class="docutils literal notranslate"><span class="pre">r[j]</span> <span class="pre">-</span> <span class="pre">r[i]</span> <span class="pre">+</span> <span class="pre">S</span> <span class="pre">&#64;</span> <span class="pre">box</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">brute=True</span></code> exists for API compatibility. On a fully periodic cell the
+list is <code class="docutils literal notranslate"><span class="pre">linkcell.pairs_within</span></code>. <code class="docutils literal notranslate"><span class="pre">neighbor_list</span></code> unique-indexes atoms
+(historical eOn adjacency). <code class="docutils literal notranslate"><span class="pre">neighbor_list_pairs</span></code> keeps every
+atom-image row (<code class="docutils literal notranslate"><span class="pre">i</span></code>, <code class="docutils literal notranslate"><span class="pre">j</span></code>, cell shift <code class="docutils literal notranslate"><span class="pre">S</span></code>). Displacement is
+<code class="docutils literal notranslate"><span class="pre">r[j]</span> <span class="pre">-</span> <span class="pre">r[i]</span> <span class="pre">+</span> <span class="pre">S</span> <span class="pre">&#64;</span> <span class="pre">box</span></code>. A squared distance on a linkcell row is
+strictly below the cutoff squared.</p>
 <section id="minimage">
 <h3>minimage<a class="headerlink" href="#minimage" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code> applies the minimum-image wrap. When
@@ -516,9 +521,9 @@ the numpy path (<code class="docutils literal notranslate"><span class="pre">pbc
 </section>
 <section id="linkcell">
 <h3>linkcell<a class="headerlink" href="#linkcell" title="Link to this heading">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">neighbor_list_linkcell</span></code> is the check path. It builds
-<code class="docutils literal notranslate"><span class="pre">linkcell.knearest</span></code> (which itself uses minimage) and compares pair
-sets to vesin. Production <code class="docutils literal notranslate"><span class="pre">neighbor_list</span></code> does not call it.</p>
+<p><code class="docutils literal notranslate"><span class="pre">neighbor_list_linkcell</span></code> is the same periodic cutoff adjacency as
+<code class="docutils literal notranslate"><span class="pre">neighbor_list</span></code>, built only from <code class="docutils literal notranslate"><span class="pre">pairs_within</span></code>. <code class="docutils literal notranslate"><span class="pre">linkcell.knearest</span></code>
+is a separate call for the k nearest atoms.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">eon.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">neighbor_list_linkcell</span>
 </span><span data-line="2"><span class="n">pairs</span> <span class="o">=</span> <span class="n">neighbor_list_linkcell</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">4.0</span><span class="p">)</span>
 </span></pre></div>
@@ -748,7 +753,7 @@ neighbour-table cell convention are in
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=c1362a89"></script>
+      <script src="../_static/documentation_options.js?v=5349f462"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

@@ -255,12 +255,12 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('ParametersMpi_
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                <span class="stringliteral">&quot;MPI_Comm does not fit in uintptr_t&quot;</span>);</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>  std::uintptr_t raw = 0;</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>  std::memcpy(&amp;raw, &amp;comm, <span class="keyword">sizeof</span>(comm));</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>  p.set_mpi_client_comm(raw);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>  p.<a class="code hl_function" href="classParameters.html#ac1d9b7ffb405f82b911232026cad1a45">set_mpi_client_comm</a>(raw);</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>}</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">inline</span> MPI_Comm getMpiClientComm(<span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p) {</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>  MPI_Comm comm{};</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>  std::uintptr_t raw = p.mpi_client_comm();</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>  std::uintptr_t raw = p.<a class="code hl_function" href="classParameters.html#a008378995f20bd525cf6c99b1c92488e">mpi_client_comm</a>();</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>  std::memcpy(&amp;comm, &amp;raw, <span class="keyword">sizeof</span>(comm));</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>  <span class="keywordflow">return</span> comm;</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}</div>
@@ -268,6 +268,8 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('ParametersMpi_
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>} <span class="comment">// namespace eonc</span></div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aParameters_8h_html"><div class="ttname"><a href="Parameters_8h.html">Parameters.h</a></div></div>
+<div class="ttc" id="aclassParameters_html_a008378995f20bd525cf6c99b1c92488e"><div class="ttname"><a href="classParameters.html#a008378995f20bd525cf6c99b1c92488e">Parameters::mpi_client_comm</a></div><div class="ttdeci">std::uintptr_t mpi_client_comm() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00258">ParametersAccess.cpp:258</a></div></div>
+<div class="ttc" id="aclassParameters_html_ac1d9b7ffb405f82b911232026cad1a45"><div class="ttname"><a href="classParameters.html#ac1d9b7ffb405f82b911232026cad1a45">Parameters::set_mpi_client_comm</a></div><div class="ttdeci">void set_mpi_client_comm(std::uintptr_t raw)</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00254">ParametersAccess.cpp:254</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Parameters_html"><div class="ttname"><a href="classeonc_1_1Parameters.html">eonc::Parameters</a></div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00035">Parameters.h:35</a></div></div>
 <div class="ttc" id="anamespaceeonc_html"><div class="ttname"><a href="namespaceeonc.html">eonc</a></div><div class="ttdoc">RAII resource manager for the ARTn C library with global synchronization.</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00023">ARTnSaddleSearch.cpp:23</a></div></div>
 </div><!-- fragment --></div><!-- contents -->

@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('structeonc_1_1
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:abcfc681e415bb093ecdc44ed452e7e0d" id="r_abcfc681e415bb093ecdc44ed452e7e0d"><td class="memItemLeft">static <a class="el" href="structeonc_1_1OptimizerConfig.html">OptimizerConfig</a>&#160;</td><td class="memItemRight"><a class="el" href="#abcfc681e415bb093ecdc44ed452e7e0d">fromParams</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:abcfc681e415bb093ecdc44ed452e7e0d" id="r_abcfc681e415bb093ecdc44ed452e7e0d"><td class="memItemLeft">static <a class="el" href="structeonc_1_1OptimizerConfig.html">OptimizerConfig</a>&#160;</td><td class="memItemRight"><a class="el" href="#abcfc681e415bb093ecdc44ed452e7e0d">fromParams</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;p)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -272,7 +272,7 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="structeonc_1_1OptimizerConfig.html">OptimizerConfig</a> eonc::OptimizerConfig::fromParams </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -285,10 +285,18 @@ Public Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="Optimizer_8h_source.html#l00057">57</a> of file <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">   57</span>                                                         {</div>
-<div class="line"><span class="lineno">   58</span>    <span class="keywordflow">return</span> {p.optimizer_options(), p.main_options().finiteDifference,</div>
-<div class="line"><span class="lineno">   59</span>            p.saddle_search_options().confine_positive.bowl_breakout,</div>
-<div class="line"><span class="lineno">   60</span>            p.potential_options().potential};</div>
+<div class="line"><span class="lineno">   58</span>    <span class="keywordflow">return</span> {p.<a class="code hl_function" href="classParameters.html#ae491b6ef463ab273a332843a66f9bdb8">optimizer_options</a>(), p.<a class="code hl_function" href="classParameters.html#a59bac76bd6b84cbdc50887d30346e129">main_options</a>().<a class="code hl_variable" href="structeonc_1_1main__options__t.html#a07c825e9e74d45cf5e50518e2195c720">finiteDifference</a>,</div>
+<div class="line"><span class="lineno">   59</span>            p.<a class="code hl_function" href="classParameters.html#a6c24e085597f8e0d137e0a850af3a4db">saddle_search_options</a>().<a class="code hl_variable" href="structeonc_1_1saddle__search__options__t.html#aae25252b0af32e79cb6528f6d108af18">confine_positive</a>.<a class="code hl_variable" href="structeonc_1_1saddle__search__options__t_1_1confine__positive__t.html#a9cf78bf499378bf735f7826ba30cd025">bowl_breakout</a>,</div>
+<div class="line"><span class="lineno">   60</span>            p.<a class="code hl_function" href="classParameters.html#a55e84b61b311cb38897a55eb0d2b39ae">potential_options</a>().<a class="code hl_variable" href="structeonc_1_1potential__options__t.html#a9cdc33bdbae47475f3a71c8e39c0ee78">potential</a>};</div>
 <div class="line"><span class="lineno">   61</span>  }</div>
+<div class="ttc" id="aclassParameters_html_a55e84b61b311cb38897a55eb0d2b39ae"><div class="ttname"><a href="classParameters.html#a55e84b61b311cb38897a55eb0d2b39ae">Parameters::potential_options</a></div><div class="ttdeci">const potential_options_t &amp; potential_options() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00079">ParametersAccess.cpp:79</a></div></div>
+<div class="ttc" id="aclassParameters_html_a59bac76bd6b84cbdc50887d30346e129"><div class="ttname"><a href="classParameters.html#a59bac76bd6b84cbdc50887d30346e129">Parameters::main_options</a></div><div class="ttdeci">const main_options_t &amp; main_options() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00075">ParametersAccess.cpp:75</a></div></div>
+<div class="ttc" id="aclassParameters_html_a6c24e085597f8e0d137e0a850af3a4db"><div class="ttname"><a href="classParameters.html#a6c24e085597f8e0d137e0a850af3a4db">Parameters::saddle_search_options</a></div><div class="ttdeci">const saddle_search_options_t &amp; saddle_search_options() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00127">ParametersAccess.cpp:127</a></div></div>
+<div class="ttc" id="aclassParameters_html_ae491b6ef463ab273a332843a66f9bdb8"><div class="ttname"><a href="classParameters.html#ae491b6ef463ab273a332843a66f9bdb8">Parameters::optimizer_options</a></div><div class="ttdeci">const optimizer_options_t &amp; optimizer_options() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00131">ParametersAccess.cpp:131</a></div></div>
+<div class="ttc" id="astructeonc_1_1main__options__t_html_a07c825e9e74d45cf5e50518e2195c720"><div class="ttname"><a href="structeonc_1_1main__options__t.html#a07c825e9e74d45cf5e50518e2195c720">eonc::main_options_t::finiteDifference</a></div><div class="ttdeci">double finiteDifference</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00039">ParametersOptions.h:39</a></div></div>
+<div class="ttc" id="astructeonc_1_1potential__options__t_html_a9cdc33bdbae47475f3a71c8e39c0ee78"><div class="ttname"><a href="structeonc_1_1potential__options__t.html#a9cdc33bdbae47475f3a71c8e39c0ee78">eonc::potential_options_t::potential</a></div><div class="ttdeci">PotType potential</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00051">ParametersOptions.h:51</a></div></div>
+<div class="ttc" id="astructeonc_1_1saddle__search__options__t_1_1confine__positive__t_html_a9cf78bf499378bf735f7826ba30cd025"><div class="ttname"><a href="structeonc_1_1saddle__search__options__t_1_1confine__positive__t.html#a9cf78bf499378bf735f7826ba30cd025">eonc::saddle_search_options_t::confine_positive_t::bowl_breakout</a></div><div class="ttdeci">bool bowl_breakout</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00224">ParametersOptions.h:224</a></div></div>
+<div class="ttc" id="astructeonc_1_1saddle__search__options__t_html_aae25252b0af32e79cb6528f6d108af18"><div class="ttname"><a href="structeonc_1_1saddle__search__options__t.html#aae25252b0af32e79cb6528f6d108af18">eonc::saddle_search_options_t::confine_positive</a></div><div class="ttdeci">struct eonc::saddle_search_options_t::confine_positive_t confine_positive</div></div>
 </div><!-- fragment -->
 </div>
 </div>

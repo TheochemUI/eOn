@@ -7,6 +7,7 @@ var classeonc_1_1NEBObjectiveFunction =
     [ "getConvergence", "classeonc_1_1NEBObjectiveFunction.html#a3c6538fb4e9f395a56f17a4f093f41c3", null ],
     [ "getEnergy", "classeonc_1_1NEBObjectiveFunction.html#a4c10ff48dedb06d2aa7929b6c56c8f4f", null ],
     [ "getGradient", "classeonc_1_1NEBObjectiveFunction.html#a01941b334921107d573ae0f8f5ad7e1f", null ],
+    [ "getMasses", "classeonc_1_1NEBObjectiveFunction.html#aebb666d686e494ae12f51d9a2649d544", null ],
     [ "getPositions", "classeonc_1_1NEBObjectiveFunction.html#a03dab0f040cd499a6a3ef38e82b668e9", null ],
     [ "isConverged", "classeonc_1_1NEBObjectiveFunction.html#a8e752fbd1e367a9c573239cb20e01341", null ],
     [ "isUncertain", "classeonc_1_1NEBObjectiveFunction.html#ace98066ce47a2bd62c91b9ec68636734", null ],

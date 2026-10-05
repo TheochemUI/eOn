@@ -161,4 +161,3 @@ another move outside the session.
 with a zero translation cap. The min-mode callback reads the centre
 from its cached evaluation and runs a displaced probe on a copy. The
 min-mode saddle search still climbs with the selected optimizer.
-

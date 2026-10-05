@@ -112,7 +112,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">User guide</a><ul class="current">
 <li class="toctree-l2 _expand"><a class="reference internal" href="pyeonclient.html">pyeonclient</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="neighbor_lists.html">Neighbor lists (vesin)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="neighbor_lists.html">Neighbor lists</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="lammps_pot.html">LAMMPS Potential</a></li>
@@ -166,6 +166,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/library-api.html">Library API</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/in-process.html">In-process jobs (no file IPC)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/abi-surface.html">Public C++ surface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/relax-engine.html">Relax engine library</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/rgpot-migration.html">rgpot kernel inventory</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/porting_potentials.html">Porting potentials</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/docbuild.html">Working with the documentation</a></li>
@@ -359,6 +360,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#eon.schema.RgpotPot.engine_path"><code class="docutils literal notranslate">engine_path</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.RgpotPot.engine_library"><code class="docutils literal notranslate">engine_library</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.RgpotPot.model_path"><code class="docutils literal notranslate">model_path</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.RgpotPot.task_name"><code class="docutils literal notranslate">task_name</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.RgpotPot.device"><code class="docutils literal notranslate">device</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.RgpotPot.length_unit"><code class="docutils literal notranslate">length_unit</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.RgpotPot.extensions_directory"><code class="docutils literal notranslate">extensions_directory</span></code></a></li>
@@ -384,6 +386,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#nwchem">NWChem</a></li>
 <li><a class="reference internal" href="#metatomic">Metatomic</a></li>
 <li><a class="reference internal" href="#xtb">xTB</a></li>
+<li><a class="reference internal" href="#uma">UMA</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#cpmd">CPMD</a><ul>
@@ -559,6 +562,7 @@ reads those keys from <code class="docutils literal notranslate"><span class="pr
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">engine_path</span> <span class="pre">(str)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">engine_library</span> <span class="pre">(str)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_path</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">task_name</span> <span class="pre">(str)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">device</span> <span class="pre">(str)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">length_unit</span> <span class="pre">(str)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">extensions_directory</span> <span class="pre">(str)</span></code></p></li>
@@ -664,6 +668,12 @@ reads those keys from <code class="docutils literal notranslate"><span class="pr
 <dt class="sig sig-object py" id="eon.schema.RgpotPot.model_path">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">model_path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.RgpotPot.model_path" title="Link to this definition">¶</a></dt>
 <dd><p>Metatomic model path when backend=metatomic.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RgpotPot.task_name">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">task_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'omol'</span></span><a class="headerlink" href="#eon.schema.RgpotPot.task_name" title="Link to this definition">¶</a></dt>
+<dd><p>UMA task head when backend=uma.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -842,6 +852,26 @@ density functional theory (DFT) block.</p>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">engine_path</span></code> may point at <code class="docutils literal notranslate"><span class="pre">libxtb_engine.so</span></code>. The client also reads
 <code class="docutils literal notranslate"><span class="pre">RGPOT_XTB_ENGINE</span></code> and <code class="docutils literal notranslate"><span class="pre">XTB_ENGINE</span></code>.</p>
+</section>
+<section id="uma">
+<h3>UMA<a class="headerlink" href="#uma" title="Link to this heading">¶</a></h3>
+<p>The engine is <code class="docutils literal notranslate"><span class="pre">libuma_engine.so</span></code>, loaded at run time through the generic
+engine interface. <code class="docutils literal notranslate"><span class="pre">model_path</span></code> names the ahead-of-time compiled model,
+<code class="docutils literal notranslate"><span class="pre">task_name</span></code> selects its task head (default <code class="docutils literal notranslate"><span class="pre">omol</span></code>), and <code class="docutils literal notranslate"><span class="pre">charge</span></code> and
+<code class="docutils literal notranslate"><span class="pre">multiplicity</span></code> set the total charge and spin.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Potential]</span>
+</span><span data-line="2"><span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">rgpot</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">[RgpotPot]</span>
+</span><span data-line="5"><span class="na">backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">uma</span>
+</span><span data-line="6"><span class="na">model_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/path/to/uma.pt2</span>
+</span><span data-line="7"><span class="na">task_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">omol</span>
+</span><span data-line="8"><span class="na">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">cpu</span>
+</span></pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">engine_path</span></code> may point at <code class="docutils literal notranslate"><span class="pre">libuma_engine.so</span></code>. The client also reads
+<code class="docutils literal notranslate"><span class="pre">RGPOT_UMA_ENGINE</span></code>. A molecule whose <code class="docutils literal notranslate"><span class="pre">.con</span></code> file carries no cell gets a
+25 angstrom diagonal box.</p>
 </section>
 </section>
 <section id="cpmd">
@@ -1326,7 +1356,7 @@ Hartree/bohr values that the engine returns.</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=c1362a89"></script>
+      <script src="../_static/documentation_options.js?v=5349f462"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

@@ -112,7 +112,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../user_guide/index.html">User guide</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/pyeonclient.html">pyeonclient</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/neighbor_lists.html">Neighbor lists (vesin)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/neighbor_lists.html">Neighbor lists</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
@@ -166,6 +166,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/library-api.html">Library API</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/in-process.html">In-process jobs (no file IPC)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/abi-surface.html">Public C++ surface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/relax-engine.html">Relax engine library</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/rgpot-migration.html">rgpot kernel inventory</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/porting_potentials.html">Porting potentials</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/docbuild.html">Working with the documentation</a></li>
@@ -424,11 +425,14 @@ data-aria-dark="Switch to auto color mode">
   <article class="yue dark-code" role="main">
           <section id="module-eon.geometry.neighbors">
 <span id="eon-geometry-neighbors"></span><h1><a class="reference internal" href="#module-eon.geometry.neighbors" title="eon.geometry.neighbors"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a><a class="headerlink" href="#module-eon.geometry.neighbors" title="Link to this heading">¶</a></h1>
-<p>Neighbor lists via vesin (PBC-aware).</p>
-<p>Historically eOn used a Python sweep-and-prune or an O(N²) brute loop.
-Both paths now go through :class:<code class="docutils literal notranslate"><span class="pre">vesin.NeighborList</span></code>, which is the supported
-geometry kernel for pair finding. The <em>brute</em> flag is retained for API
-compatibility but no longer selects a different algorithm.</p>
+<p>Neighbor lists.</p>
+<p>A periodic cutoff list is :func:<code class="docutils literal notranslate"><span class="pre">linkcell.pairs_within</span></code>: one row per
+atom-image, the caller’s shift <code class="docutils literal notranslate"><span class="pre">S</span></code>, and a squared distance strictly
+below the cutoff squared. :func:<code class="docutils literal notranslate"><span class="pre">neighbor_list</span></code> unique-indexes those
+rows. An open axis stays on :class:<code class="docutils literal notranslate"><span class="pre">vesin.NeighborList</span></code>, which accepts
+per-axis periodicity. <code class="docutils literal notranslate"><span class="pre">knearest</span></code> is the k-nearest list, not a cutoff
+list. The <em>brute</em> flag is retained for API compatibility and does not
+select another algorithm.</p>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
 <section id="functions">
@@ -446,10 +450,10 @@ compatibility but no longer selects a different algorithm.</p>
 <td><p>Neighbor list with minimum-image vectors from center → neighbor.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#eon.geometry.neighbors.neighbor_list_pairs" title="eon.geometry.neighbors.neighbor_list_pairs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neighbor_list_pairs</span></code></a></p></td>
-<td><p>Vesin pair list with cell shifts (ASE/tonari <code class="docutils literal notranslate"><span class="pre">ijS</span></code>).</p></td>
+<td><p>Cutoff pair list with cell shifts (ASE/tonari <code class="docutils literal notranslate"><span class="pre">ijS</span></code>).</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#eon.geometry.neighbors.neighbor_list_linkcell" title="eon.geometry.neighbors.neighbor_list_linkcell"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neighbor_list_linkcell</span></code></a></p></td>
-<td><p>Neighbor list via :func:<code class="docutils literal notranslate"><span class="pre">linkcell.knearest</span></code>, filtered to <em>cutoff</em>.</p></td>
+<td><p>Unique-index adjacency from :func:<code class="docutils literal notranslate"><span class="pre">linkcell.pairs_within</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#eon.geometry.neighbors.coordination_numbers" title="eon.geometry.neighbors.coordination_numbers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">coordination_numbers</span></code></a></p></td>
 <td></td>
@@ -504,8 +508,10 @@ Pair cutoff distance.
 brute
 Ignored; kept so callers using <code class="docutils literal notranslate"><span class="pre">config.comp_brute_neighbors</span></code> need no change.
 periodic
-Passed to vesin. A single bool applies to all axes; a length-3
-sequence is per-axis. Default is <code class="docutils literal notranslate"><span class="pre">p.periodic</span></code> or all-periodic.</p>
+A single bool applies to all axes; a length-3 sequence is
+per-axis. Default is <code class="docutils literal notranslate"><span class="pre">p.periodic</span></code> or all-periodic. Fully
+periodic cells use :func:<code class="docutils literal notranslate"><span class="pre">linkcell.pairs_within</span></code>. An open axis
+uses vesin.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -532,23 +538,26 @@ installed). Multi-image pair lists belong on</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.geometry.neighbors.neighbor_list_pairs">
 <span class="sig-prename descclassname"><span class="pre">eon.geometry.neighbors.</span></span><span class="sig-name descname"><span class="pre">neighbor_list_pairs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#eon.geometry.neighbors.StructureLike" title="eon.geometry.neighbors.StructureLike"><span class="pre">eon.geometry.neighbors.StructureLike</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">periodic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#eon.geometry.neighbors.PeriodicSpec" title="eon.geometry.neighbors.PeriodicSpec"><span class="pre">eon.geometry.neighbors.PeriodicSpec</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/geometry/neighbors.html#neighbor_list_pairs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.geometry.neighbors.neighbor_list_pairs" title="Link to this definition">¶</a></dt>
-<dd><p>Vesin pair list with cell shifts (ASE/tonari <code class="docutils literal notranslate"><span class="pre">ijS</span></code>).</p>
-<p>Returns <code class="docutils literal notranslate"><span class="pre">(i,</span> <span class="pre">j,</span> <span class="pre">S)</span></code> with one row per atom-image pair. Unlike</p>
+<dd><p>Cutoff pair list with cell shifts (ASE/tonari <code class="docutils literal notranslate"><span class="pre">ijS</span></code>).</p>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">(i,</span> <span class="pre">j,</span> <span class="pre">S)</span></code> with one row per atom-image pair, ordered by
+<code class="docutils literal notranslate"><span class="pre">(i,</span> <span class="pre">j,</span> <span class="pre">S)</span></code>. Unlike :func:<code class="docutils literal notranslate"><span class="pre">neighbor_list</span></code>, this does not
+unique-index or apply a minimum-image reduction. Displacement is
+<code class="docutils literal notranslate"><span class="pre">r[j]</span> <span class="pre">-</span> <span class="pre">r[i]</span> <span class="pre">+</span> <span class="pre">S</span> <span class="pre">&#64;</span> <span class="pre">box</span></code>. A fully periodic cell uses</p>
 <dl class="myst field-list simple">
 <dt class="field-odd">Func<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">neighbor_list</span></code>, this does not unique-index or apply a
-minimum-image reduction. Displacement is
-<code class="docutils literal notranslate"><span class="pre">r[j]</span> <span class="pre">-</span> <span class="pre">r[i]</span> <span class="pre">+</span> <span class="pre">S</span> <span class="pre">&#64;</span> <span class="pre">box</span></code>.</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">linkcell.pairs_within</span></code>. An open axis uses vesin. A squared
+distance on a linkcell row is strictly below the cutoff squared.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.geometry.neighbors.neighbor_list_linkcell">
-<span class="sig-prename descclassname"><span class="pre">eon.geometry.neighbors.</span></span><span class="sig-name descname"><span class="pre">neighbor_list_linkcell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#eon.geometry.neighbors.StructureLike" title="eon.geometry.neighbors.StructureLike"><span class="pre">eon.geometry.neighbors.StructureLike</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/eon/geometry/neighbors.html#neighbor_list_linkcell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.geometry.neighbors.neighbor_list_linkcell" title="Link to this definition">¶</a></dt>
-<dd><p>Neighbor list via :func:<code class="docutils literal notranslate"><span class="pre">linkcell.knearest</span></code>, filtered to <em>cutoff</em>.</p>
-<p>Production :func:<code class="docutils literal notranslate"><span class="pre">neighbor_list</span></code> stays on vesin. This path exists so
-the two kernels can be compared on the same Structure.</p>
+<span class="sig-prename descclassname"><span class="pre">eon.geometry.neighbors.</span></span><span class="sig-name descname"><span class="pre">neighbor_list_linkcell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#eon.geometry.neighbors.StructureLike" title="eon.geometry.neighbors.StructureLike"><span class="pre">eon.geometry.neighbors.StructureLike</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/eon/geometry/neighbors.html#neighbor_list_linkcell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.geometry.neighbors.neighbor_list_linkcell" title="Link to this definition">¶</a></dt>
+<dd><p>Unique-index adjacency from :func:<code class="docutils literal notranslate"><span class="pre">linkcell.pairs_within</span></code>.</p>
+<p>The cell is periodic. <code class="docutils literal notranslate"><span class="pre">knearest</span></code> is a different query and is not
+called. An empty list is returned when linkcell has no
+<code class="docutils literal notranslate"><span class="pre">pairs_within</span></code>.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -683,7 +692,7 @@ the two kernels can be compared on the same Structure.</p>
     </div>
   </div>
 </footer>
-      <script src="../../_static/documentation_options.js?v=c1362a89"></script>
+      <script src="../../_static/documentation_options.js?v=5349f462"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>

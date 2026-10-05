@@ -8,7 +8,7 @@ var searchData=
   ['update_5',['update',['../classeonc_1_1LBFGS.html#a1e91f0aaa4d3858d2b251b9612c03a59',1,'eonc::LBFGS']]],
   ['update_5fcell_5flist_6',['update_cell_list',['../classEAM.html#a1e830b5821dd96550944956d5b55046b',1,'EAM']]],
   ['updatecoord_7',['updateCoord',['../classAMS.html#aa4df01b0b3d59e85843515163ac8b03a',1,'AMS']]],
-  ['updateforces_8',['updateForces',['../classeonc_1_1NudgedElasticBand.html#a37db8e50fc6475501ad40bcf36de28b8',1,'eonc::NudgedElasticBand::updateForces(bool ci_active)'],['../classeonc_1_1NudgedElasticBand.html#adc0eee5d814008afea0fd55165292d6a',1,'eonc::NudgedElasticBand::updateForces(void)']]],
+  ['updateforces_8',['updateForces',['../classeonc_1_1NudgedElasticBand.html#a37db8e50fc6475501ad40bcf36de28b8',1,'eonc::NudgedElasticBand::updateForces(bool ci_active)'],['../classeonc_1_1NudgedElasticBand.html#adc0eee5d814008afea0fd55165292d6a',1,'eonc::NudgedElasticBand::updateForces(void)'],['../classNudgedElasticBand.html#a37db8e50fc6475501ad40bcf36de28b8',1,'NudgedElasticBand::updateForces(bool ci_active)'],['../classNudgedElasticBand.html#adc0eee5d814008afea0fd55165292d6a',1,'NudgedElasticBand::updateForces(void)']]],
   ['updateghostpositions_9',['UpdateGhostPositions',['../classGhostPotential.html#a6421cbdcca1604e64c917bd7a0479ef7',1,'GhostPotential']]],
   ['updateimagepositions_10',['UpdateImagePositions',['../classNeighborList.html#ae18d3d8b35c51b505c78c759be285ab4',1,'NeighborList']]],
   ['updatestability_11',['updateStability',['../classeonc_1_1neb_1_1OCINEBController.html#a65f2ceb4a3bcf82fb6bc226a8672d00a',1,'eonc::neb::OCINEBController']]],

@@ -1,11 +1,11 @@
 var searchData=
 [
   ['k_5fboltzmann_0',['k_boltzmann',['../namespaceforcefields_1_1unit__system.html#a3d69ed059c27e619511efc0427361679',1,'forcefields::unit_system']]],
-  ['k_5fl_1',['k_l',['../classeonc_1_1NudgedElasticBand.html#a686adcacdd19726202e710bc3bf0b00b',1,'eonc::NudgedElasticBand']]],
+  ['k_5fl_1',['k_l',['../classeonc_1_1NudgedElasticBand.html#a686adcacdd19726202e710bc3bf0b00b',1,'eonc::NudgedElasticBand::k_l'],['../classNudgedElasticBand.html#a686adcacdd19726202e710bc3bf0b00b',1,'NudgedElasticBand::k_l']]],
   ['k_5fmax_2',['k_max',['../structeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t.html#a98fbee2cdffc1b44e91ffc7b5f3971a5',1,'eonc::neb_options_t::spring_options_t::energy_weighting_t::k_max'],['../structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html#a9c76a0bf6a3e9c749962bc545e9538b7',1,'eonc::neb_options_t::spring_options_t::onsager_machlup_t::k_max']]],
   ['k_5fmin_3',['k_min',['../structeonc_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t.html#a05a6d86fcf9e14184c9910dece0d7529',1,'eonc::neb_options_t::spring_options_t::energy_weighting_t::k_min'],['../structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html#aae5fcf0b0b1de662ed5a8053a3befba6',1,'eonc::neb_options_t::spring_options_t::onsager_machlup_t::k_min']]],
   ['k_5fscale_4',['k_scale',['../structeonc_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html#add9ff30ea6a38f7f935f45c1fd83c6c9',1,'eonc::neb_options_t::spring_options_t::onsager_machlup_t']]],
-  ['k_5fu_5',['k_u',['../classeonc_1_1NudgedElasticBand.html#ab6f8093247aa83c8e6acba7391c95fc8',1,'eonc::NudgedElasticBand']]],
+  ['k_5fu_5',['k_u',['../classeonc_1_1NudgedElasticBand.html#ab6f8093247aa83c8e6acba7391c95fc8',1,'eonc::NudgedElasticBand::k_u'],['../classNudgedElasticBand.html#ab6f8093247aa83c8e6acba7391c95fc8',1,'NudgedElasticBand::k_u']]],
   ['kappa_6',['kappa',['../structeonc_1_1piqtst_1_1Recrossing.html#acc18f881a33ca5c64e67d0f40eeea77e',1,'eonc::piqtst::Recrossing::kappa'],['../structemt__parameters.html#aff521fc2d8231c897912f7779c1cce08',1,'emt_parameters::kappa']]],
   ['kb_7',['kB',['../structeonc_1_1DynamicsConfig.html#aa781ba3cf43db1f9a61926ea00280ffe',1,'eonc::DynamicsConfig::kB'],['../classeonc_1_1Dynamics.html#a00902b7db57a1a0854fb6eaa00a153c5',1,'eonc::Dynamics::kB'],['../structeonc_1_1constants__t.html#af505ec36f1b603e6ce7f4879ce2b5dab',1,'eonc::constants_t::kB'],['../structeonc_1_1pathintegral_1_1Options.html#ae035e2066df9e4f9c4f93b5f30f8515e',1,'eonc::pathintegral::Options::kB']]],
   ['kboltzmann_8',['kBoltzmann',['../namespaceeonc_1_1tunneling.html#af7d7cff7a86f5d8ade50e485b3b184e9',1,'eonc::tunneling']]],
@@ -24,7 +24,7 @@ var searchData=
   ['khbar_21',['kHbar',['../namespaceeonc_1_1tunneling.html#a9226451a02d96e8651470ee1fb21eaa9',1,'eonc::tunneling']]],
   ['kick_22',['kick',['../classeonc_1_1pathintegral_1_1RingPolymer.html#a8e42ee83d6d89aeabb5ea7b137620f43',1,'eonc::pathintegral::RingPolymer']]],
   ['kilo_23',['KILO',['../namespaceforcefields_1_1unit__system.html#a5e02426428780a8c57fa4b47e3a7be8e',1,'forcefields::unit_system']]],
-  ['kind_24',['kind',['../structeonc_1_1thermostat__options__t.html#a7222a1ac54f8920a5130b10e64f989d8',1,'eonc::thermostat_options_t']]],
+  ['kind_24',['kind',['../structEonRelaxEngine.html#a1ca6ae7d4f1bebf97543b1e41ec45877',1,'EonRelaxEngine::kind'],['../structeonc_1_1thermostat__options__t.html#a7222a1ac54f8920a5130b10e64f989d8',1,'eonc::thermostat_options_t::kind'],['../structeon__relax__outcome__t.html#a5ebfb71886ec08f318c3df4539d4f7ea',1,'eon_relax_outcome_t::kind']]],
   ['kineticcv_25',['kineticCv',['../structeonc_1_1pathintegral_1_1Sample.html#a62c575006042da7e8f641a0211af4429',1,'eonc::pathintegral::Sample::kineticCv'],['../classeonc_1_1pathintegral_1_1RingPolymer.html#ac0b3343a4e7217eb65ce5f3c7ed0145d',1,'eonc::pathintegral::RingPolymer::kineticCv() const']]],
   ['kineticsum_5f_26',['kineticSum_',['../classeonc_1_1pathintegral_1_1RingPolymer.html#a62aa9ca01651cc3c9648a2537e597ca9',1,'eonc::pathintegral::RingPolymer']]],
   ['kj_27',['KJ',['../namespaceforcefields_1_1unit__system.html#a7663bf2402823d73bd35ef9c51adab63',1,'forcefields::unit_system']]],
@@ -37,7 +37,7 @@ var searchData=
   ['kopforces_34',['kOpForces',['../namespaceeonc_1_1xtsci__eindir.html#a979fc4a7f83eb1cee175873dc0721f15',1,'eonc::xtsci_eindir']]],
   ['krotationzerofraction_35',['kRotationZeroFraction',['../namespaceeonc_1_1tunneling.html#a6a7e28068c8650ec8880a716e48e94ed',1,'eonc::tunneling']]],
   ['kschemaid_36',['kSchemaId',['../namespaceeonc_1_1xtsci__eindir.html#a3892ded03ff7ae137a4c5b7e4618b6fc',1,'eonc::xtsci_eindir']]],
-  ['ksp_37',['ksp',['../structeonc_1_1neb_1_1UniformSpring.html#a727a317587c6c59cd4f967153418d900',1,'eonc::neb::UniformSpring::ksp'],['../classeonc_1_1NudgedElasticBand.html#a5f1edccdd1810d5e2af0121248ba3dd5',1,'eonc::NudgedElasticBand::ksp']]],
+  ['ksp_37',['ksp',['../structeonc_1_1neb_1_1UniformSpring.html#a727a317587c6c59cd4f967153418d900',1,'eonc::neb::UniformSpring::ksp'],['../classeonc_1_1NudgedElasticBand.html#a5f1edccdd1810d5e2af0121248ba3dd5',1,'eonc::NudgedElasticBand::ksp'],['../classNudgedElasticBand.html#a5f1edccdd1810d5e2af0121248ba3dd5',1,'NudgedElasticBand::ksp']]],
   ['ktimeunitseconds_38',['kTimeUnitSeconds',['../namespaceeonc_1_1tunneling.html#a520ac3171661d0e32fa444d7cdd546c4',1,'eonc::tunneling']]],
   ['ktracebackloggername_39',['kTracebackLoggerName',['../namespaceeonc_1_1log_1_1detail.html#a13ecaa4676a7d55b383cf89f9b3a68cc',1,'eonc::log::detail']]],
   ['kwindowsmxcsrexceptionmasks_40',['kWindowsMxcsrExceptionMasks',['../namespaceeonc.html#a5326686c75d3fe7a05fa2a5b49bcd0ba',1,'eonc']]]

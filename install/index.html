@@ -112,7 +112,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../user_guide/index.html">User guide</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/pyeonclient.html">pyeonclient</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/neighbor_lists.html">Neighbor lists (vesin)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/neighbor_lists.html">Neighbor lists</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
@@ -166,6 +166,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/library-api.html">Library API</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/in-process.html">In-process jobs (no file IPC)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/abi-surface.html">Public C++ surface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/relax-engine.html">Relax engine library</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/rgpot-migration.html">rgpot kernel inventory</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/porting_potentials.html">Porting potentials</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../devdocs/docbuild.html">Working with the documentation</a></li>
@@ -514,7 +515,7 @@ binary is automatically made available in the activated environment.</p>
 </span><span data-line="2"><span class="c1"># $CONDA_PREFIX/lib/x86_64-linux-gnu</span>
 </span><span data-line="3"><span class="c1"># without --libdir</span>
 </span><span data-line="4">meson<span class="w"> </span>setup<span class="w"> </span>bbdir<span class="w"> </span>--prefix<span class="o">=</span><span class="nv">$CONDA_PREFIX</span><span class="w"> </span>--libdir<span class="o">=</span>lib<span class="w"> </span>--buildtype<span class="o">=</span>release<span class="w"> </span><span class="se">\</span>
-</span><span data-line="5"><span class="w">  </span>--force-fallback-for<span class="o">=</span>nlohmann_json
+</span><span data-line="5"><span class="w">  </span>--force-fallback-for<span class="o">=</span>nlohmann_json,hwy
 </span><span data-line="6">meson<span class="w"> </span>compile<span class="w"> </span>-C<span class="w"> </span>bbdir
 </span><span data-line="7">meson<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-C<span class="w"> </span>bbdir<span class="w"> </span>--suite<span class="w"> </span>eon
 </span><span data-line="8">meson<span class="w"> </span>install<span class="w"> </span>-C<span class="w"> </span>bbdir
@@ -536,7 +537,7 @@ Copy a sibling checkout into place with:</p>
 <p>A build configured with <code class="docutils literal notranslate"><span class="pre">-Dwith_gprd=disabled</span></code> has no GP dimer. Asking
 for <code class="docutils literal notranslate"><span class="pre">gprdimer</span></code> then stops, and the message names <code class="docutils literal notranslate"><span class="pre">-Dwith_gprd=enabled</span></code>
 and that <code class="docutils literal notranslate"><span class="pre">rsync</span></code>.</p>
-<p>The setup line already passes <code class="docutils literal notranslate"><span class="pre">--force-fallback-for=nlohmann_json</span></code>. The rolling distro section below says why a host <code class="docutils literal notranslate"><span class="pre">nlohmann_json</span></code> breaks the conda compiler. The test line should finish with a fail count of 0.</p>
+<p>The setup line already passes <code class="docutils literal notranslate"><span class="pre">--force-fallback-for=nlohmann_json,hwy</span></code>. The rolling distro section below says why a host <code class="docutils literal notranslate"><span class="pre">nlohmann_json</span></code> breaks the conda compiler, and why the Highway name is <code class="docutils literal notranslate"><span class="pre">hwy</span></code> rather than <code class="docutils literal notranslate"><span class="pre">libhwy</span></code>. The test line should finish with a fail count of 0.</p>
 <p>Some additional performance can be gained with <code class="docutils literal notranslate"><span class="pre">ccache</span></code> and <code class="docutils literal notranslate"><span class="pre">mold</span></code>, which can be
 passed with <code class="docutils literal notranslate"><span class="pre">--native-file</span></code>:</p>
 <ul class="simple">
@@ -557,11 +558,12 @@ the same pattern as readcon. The system CMake config for <code class="docutils l
 exports <code class="docutils literal notranslate"><span class="pre">-I/usr/include</span></code>, which mixes glibc headers into the conda sysroot.
 Force the wrap to keep that include path out of the build:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">meson<span class="w"> </span>setup<span class="w"> </span>bbdir<span class="w"> </span>--prefix<span class="o">=</span><span class="nv">$CONDA_PREFIX</span><span class="w"> </span>--libdir<span class="o">=</span>lib<span class="w"> </span><span class="se">\</span>
-</span><span data-line="2"><span class="w">  </span>--force-fallback-for<span class="o">=</span>nlohmann_json
+</span><span data-line="2"><span class="w">  </span>--force-fallback-for<span class="o">=</span>nlohmann_json,hwy
 </span></pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">client/meson.build</span></code> carries the same note beside the <code class="docutils literal notranslate"><span class="pre">nlohmann_json</span></code>
-dependency lookup.</p>
+<p><code class="docutils literal notranslate"><span class="pre">hwy</span></code> is the dependency name <code class="docutils literal notranslate"><span class="pre">highway.wrap</span></code> provides. <code class="docutils literal notranslate"><span class="pre">--force-fallback-for=libhwy</span></code>
+does not select that wrap: pkg-config can find <code class="docutils literal notranslate"><span class="pre">libhwy</span></code> and the cmake
+subproject is never configured. <code class="docutils literal notranslate"><span class="pre">client/meson.build</span></code> looks up <code class="docutils literal notranslate"><span class="pre">hwy</span></code>.</p>
 </section>
 <section id="troubleshooting-a-global-cargo-linker-setting">
 <h3>Troubleshooting: a global cargo linker setting<a class="headerlink" href="#troubleshooting-a-global-cargo-linker-setting" title="Link to this heading">¶</a></h3>
@@ -755,7 +757,7 @@ License</a>.</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=c1362a89"></script>
+      <script src="../_static/documentation_options.js?v=5349f462"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

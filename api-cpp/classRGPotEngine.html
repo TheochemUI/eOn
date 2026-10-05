@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classRGPotEngi
 </div><!--header-->
 <div class="contents">
 
-<p>Opaque rgpot-backed engine (nwchemc / cpmdc / metatomic / xtb).  
+<p>Opaque rgpot-backed engine (nwchemc / cpmdc / metatomic / uma / xtb).  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>&gt;</code></p>
@@ -293,9 +293,9 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:af46f6efc49b39d315e7fa1f4cafde8e1" id="r_af46f6efc49b39d315e7fa1f4cafde8e1"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Opaque rgpot-backed engine (nwchemc / cpmdc / metatomic / xtb). </p>
+<div class="textblock"><p>Opaque rgpot-backed engine (nwchemc / cpmdc / metatomic / uma / xtb). </p>
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00047">47</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00051">51</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a1f6ed2be88a28df606fb9833f2454fa5" name="a1f6ed2be88a28df606fb9833f2454fa5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1f6ed2be88a28df606fb9833f2454fa5">&#9670;&#160;</a></span>RGPotEngine() <span class="overload">[1/2]</span></h2>
@@ -320,157 +320,189 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00248">248</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  249</span>    : <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>(std::make_unique&lt;Impl&gt;()) {</div>
-<div class="line"><span class="lineno">  250</span>  <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> = to_lower(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a8dec74e532101f1ce4380e05489f6ad4">backend</a>);</div>
-<div class="line"><span class="lineno">  251</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;nwchem&quot;</span> || <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;nwchemc&quot;</span> ||</div>
-<div class="line"><span class="lineno">  252</span>      <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;nwchempot&quot;</span>) {</div>
-<div class="line"><span class="lineno">  253</span>    <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> = <span class="stringliteral">&quot;nwchemc&quot;</span>;</div>
-<div class="line"><span class="lineno">  254</span>    <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend = <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848a791835acc935f1b4722ba4c70c18bacc">Impl::Backend::Nwchemc</a>;</div>
-<div class="line"><span class="lineno">  255</span>    ::capnp::MallocMessageBuilder msg;</div>
-<div class="line"><span class="lineno">  256</span>    <span class="keyword">auto</span> params = msg.initRoot&lt;::NWChemParams&gt;();</div>
-<div class="line"><span class="lineno">  257</span>    params.setBasis(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3cce8b08621932e92a7a234f47bfc314">basis</a>);</div>
-<div class="line"><span class="lineno">  258</span>    params.setTheory(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ad922d97dfdfdabc9cb828a45247eb81a">theory</a>);</div>
-<div class="line"><span class="lineno">  259</span>    params.setScfType(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a06e36eb8ac4cb37ce9691971cfb9d08e">scf_type</a>);</div>
-<div class="line"><span class="lineno">  260</span>    params.setCharge(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a9c7eab255bd69147d5909fc6907655d3">charge</a>);</div>
-<div class="line"><span class="lineno">  261</span>    params.setMultiplicity(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a34d4c067f03853de114c4d33a8c45224">multiplicity</a>);</div>
-<div class="line"><span class="lineno">  262</span>    <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a>.empty())</div>
-<div class="line"><span class="lineno">  263</span>      params.setEnginePath(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a>);</div>
-<div class="line"><span class="lineno">  264</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a948f90c314c2e469761f2b706cf34dc0">engine_library</a>.empty())</div>
-<div class="line"><span class="lineno">  265</span>      params.setEnginePath(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a948f90c314c2e469761f2b706cf34dc0">engine_library</a>);</div>
-<div class="line"><span class="lineno">  266</span>    <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ac640a410bf18066058185cdc8a7d1d6d">engine_root</a>.empty())</div>
-<div class="line"><span class="lineno">  267</span>      params.setNwchemRoot(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ac640a410bf18066058185cdc8a7d1d6d">engine_root</a>);</div>
-<div class="line"><span class="lineno">  268</span>    <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a1bc5ed5c8b23207f381d0bf2fe34f3bd">title</a>.empty())</div>
-<div class="line"><span class="lineno">  269</span>      params.setTitle(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a1bc5ed5c8b23207f381d0bf2fe34f3bd">title</a>);</div>
-<div class="line"><span class="lineno">  270</span>    <span class="keywordflow">if</span> (opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a7d02521ee1febe74307e5e611f710118">memory_mb</a> &gt; 0)</div>
-<div class="line"><span class="lineno">  271</span>      params.setMemoryMb(<span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a7d02521ee1febe74307e5e611f710118">memory_mb</a>));</div>
-<div class="line"><span class="lineno">  272</span>    <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a464193c68f85bdf6ccecf730f959c505">scratch_dir</a>.empty())</div>
-<div class="line"><span class="lineno">  273</span>      params.setScratchDir(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a464193c68f85bdf6ccecf730f959c505">scratch_dir</a>);</div>
-<div class="line"><span class="lineno">  274</span>    <span class="comment">// DFT XC as inputBlocks when theory=dft and scfType is an XC label</span></div>
-<div class="line"><span class="lineno">  275</span>    std::string block = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ada72be4995d9ae99c0ff2de2109ad237">input_block</a>;</div>
-<div class="line"><span class="lineno">  276</span>    <span class="keywordflow">if</span> (block.empty()) {</div>
-<div class="line"><span class="lineno">  277</span>      <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *env = std::getenv(<span class="stringliteral">&quot;RGPOT_NWCHEM_INPUT_BLOCK&quot;</span>))</div>
-<div class="line"><span class="lineno">  278</span>        block = env;</div>
-<div class="line"><span class="lineno">  279</span>    }</div>
-<div class="line"><span class="lineno">  280</span>    <span class="keywordflow">if</span> (block.empty() &amp;&amp; (opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ad922d97dfdfdabc9cb828a45247eb81a">theory</a> == <span class="stringliteral">&quot;dft&quot;</span> || opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ad922d97dfdfdabc9cb828a45247eb81a">theory</a> == <span class="stringliteral">&quot;DFT&quot;</span>) &amp;&amp;</div>
-<div class="line"><span class="lineno">  281</span>        looks_like_dft_xc(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a06e36eb8ac4cb37ce9691971cfb9d08e">scf_type</a>)) {</div>
-<div class="line"><span class="lineno">  282</span>      block = <span class="stringliteral">&quot;dft\n  xc &quot;</span> + opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a06e36eb8ac4cb37ce9691971cfb9d08e">scf_type</a> + <span class="stringliteral">&quot;\n  mult &quot;</span> +</div>
-<div class="line"><span class="lineno">  283</span>              std::to_string(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a34d4c067f03853de114c4d33a8c45224">multiplicity</a>) + <span class="stringliteral">&quot;\nend&quot;</span>;</div>
-<div class="line"><span class="lineno">  284</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (block.empty() &amp;&amp; looks_like_dft_xc(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ad922d97dfdfdabc9cb828a45247eb81a">theory</a>)) {</div>
-<div class="line"><span class="lineno">  285</span>      block = <span class="stringliteral">&quot;dft\n  xc &quot;</span> + opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ad922d97dfdfdabc9cb828a45247eb81a">theory</a> + <span class="stringliteral">&quot;\n  mult &quot;</span> +</div>
-<div class="line"><span class="lineno">  286</span>              std::to_string(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a34d4c067f03853de114c4d33a8c45224">multiplicity</a>) + <span class="stringliteral">&quot;\nend&quot;</span>;</div>
-<div class="line"><span class="lineno">  287</span>    }</div>
-<div class="line"><span class="lineno">  288</span>    <span class="keywordflow">if</span> (!block.empty()) {</div>
-<div class="line"><span class="lineno">  289</span>      <span class="keyword">auto</span> blocks = params.initInputBlocks(1);</div>
-<div class="line"><span class="lineno">  290</span>      blocks.set(0, block);</div>
-<div class="line"><span class="lineno">  291</span>    }</div>
-<div class="line"><span class="lineno">  292</span>    <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;nwchem = std::make_unique&lt;rgpot::NWChemPot&gt;(params.asReader());</div>
-<div class="line"><span class="lineno">  293</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;nwchem-&gt;available())</div>
-<div class="line"><span class="lineno">  294</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  295</span>          <span class="stringliteral">&quot;RGPOT(nwchemc): engine not available (set NWCHEMC_LIBRARY / &quot;</span></div>
-<div class="line"><span class="lineno">  296</span>          <span class="stringliteral">&quot;RGPOT_NWCHEMC_ENGINE or [RgpotPot] engine_path)&quot;</span>);</div>
-<div class="line"><span class="lineno">  297</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;cpmd&quot;</span> || <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;cpmdc&quot;</span> ||</div>
-<div class="line"><span class="lineno">  298</span>             <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;cpmdpot&quot;</span>) {</div>
-<div class="line"><span class="lineno">  299</span>    <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> = <span class="stringliteral">&quot;cpmdc&quot;</span>;</div>
-<div class="line"><span class="lineno">  300</span>    <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend = <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848a6821cd3ce80de46e41ba282f7a8f20f0">Impl::Backend::Cpmdc</a>;</div>
-<div class="line"><span class="lineno">  301</span>    std::string local_error;</div>
-<div class="line"><span class="lineno">  302</span>    <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  303</span>      ::capnp::MallocMessageBuilder msg;</div>
-<div class="line"><span class="lineno">  304</span>      ::CPMDParams::Builder params = <a class="code hl_function" href="namespaceeon.html#a88599a5d2e9211bdc4d4614035f4e73a">eon::fillCpmdParams</a>(msg, opt);</div>
-<div class="line"><span class="lineno">  305</span>      <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;cpmd = std::make_unique&lt;rgpot::CPMDPot&gt;(params.asReader());</div>
-<div class="line"><span class="lineno">  306</span>      pin_cpmd_library(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a>.empty() ? opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a948f90c314c2e469761f2b706cf34dc0">engine_library</a></div>
-<div class="line"><span class="lineno">  307</span>                                               : opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a>);</div>
-<div class="line"><span class="lineno">  308</span>      <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;cpmd-&gt;available())</div>
-<div class="line"><span class="lineno">  309</span>        <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  310</span>            <span class="stringliteral">&quot;RGPOT(cpmdc): engine not available (set CPMDC_LIBRARY / &quot;</span></div>
-<div class="line"><span class="lineno">  311</span>            <span class="stringliteral">&quot;RGPOT_CPMDC_ENGINE or [RgpotPot] engine_path)&quot;</span>);</div>
-<div class="line"><span class="lineno">  312</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;ex) {</div>
-<div class="line"><span class="lineno">  313</span>      local_error = ex.what();</div>
-<div class="line"><span class="lineno">  314</span>    }</div>
-<div class="line"><span class="lineno">  315</span>    <span class="comment">// Several ranks: agree before MPI_Comm_split. One rank that cannot</span></div>
-<div class="line"><span class="lineno">  316</span>    <span class="comment">// read params_path must not leave the others inside the split.</span></div>
-<div class="line"><span class="lineno">  317</span>    <span class="keywordflow">if</span> (mpi_world_hint() &lt;= 1 &amp;&amp; !local_error.empty())</div>
-<div class="line"><span class="lineno">  318</span>      <span class="keywordflow">throw</span> std::runtime_error(local_error);</div>
-<div class="line"><span class="lineno">  319</span>    <span class="comment">// rgpot reports MPI only once MPI_Init has run, and agree_construction</span></div>
-<div class="line"><span class="lineno">  320</span>    <span class="comment">// is what initialises it, so the agreement keys on the launch size.</span></div>
-<div class="line"><span class="lineno">  321</span>    <span class="keywordflow">if</span> (mpi_world_hint() &gt; 1 &amp;&amp; !agree_construction(local_error)) {</div>
-<div class="line"><span class="lineno">  322</span>      <a class="code hl_function" href="#a50b569f9403c405386c3bdd8456f4268">armGroupedExit</a>();</div>
-<div class="line"><span class="lineno">  323</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  324</span>          local_error.empty()</div>
-<div class="line"><span class="lineno">  325</span>              ? std::string(</div>
-<div class="line"><span class="lineno">  326</span>                    <span class="stringliteral">&quot;RGPOT(cpmdc): a rank failed before the calculator split&quot;</span>)</div>
-<div class="line"><span class="lineno">  327</span>              : local_error);</div>
-<div class="line"><span class="lineno">  328</span>    }</div>
-<div class="line"><span class="lineno">  329</span>    <span class="keywordflow">if</span> (!local_error.empty())</div>
-<div class="line"><span class="lineno">  330</span>      <span class="keywordflow">throw</span> std::runtime_error(local_error);</div>
-<div class="line"><span class="lineno">  331</span>    <span class="keywordflow">if</span> (::rgpot::calculatorsUseMpi()) {</div>
-<div class="line"><span class="lineno">  332</span>      <span class="comment">// Collective on MPI_COMM_WORLD, before the first force: the engine</span></div>
-<div class="line"><span class="lineno">  333</span>      <span class="comment">// installs the group communicator ahead of CPMD&#39;s mp_start.</span></div>
-<div class="line"><span class="lineno">  334</span>      <span class="comment">// ranks_per_image = 0 is one calculator on the whole world.</span></div>
-<div class="line"><span class="lineno">  335</span>      <span class="keyword">const</span> rgpot::CalculatorGroup g =</div>
-<div class="line"><span class="lineno">  336</span>          ::rgpot::bindCalculators(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a4a902a596a803b78a6e51dd6225c822b">ranks_per_image</a>);</div>
-<div class="line"><span class="lineno">  337</span>      ::rgpot::finalizeMpiAtExit();</div>
-<div class="line"><span class="lineno">  338</span>      <span class="keywordflow">if</span> (mpi_world_hint() &gt; 1)</div>
-<div class="line"><span class="lineno">  339</span>        <a class="code hl_function" href="#a50b569f9403c405386c3bdd8456f4268">armGroupedExit</a>();</div>
-<div class="line"><span class="lineno">  340</span>      <span class="keywordflow">if</span> (g.index &lt; 0)</div>
-<div class="line"><span class="lineno">  341</span>        <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  342</span>            <span class="stringliteral">&quot;RGPOT(cpmdc): ranks_per_image=&quot;</span> +</div>
-<div class="line"><span class="lineno">  343</span>            std::to_string(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a4a902a596a803b78a6e51dd6225c822b">ranks_per_image</a>) +</div>
-<div class="line"><span class="lineno">  344</span>            <span class="stringliteral">&quot; does not divide the MPI world into calculator groups&quot;</span>);</div>
-<div class="line"><span class="lineno">  345</span>      <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;groups = ::rgpot::calculatorCount();</div>
-<div class="line"><span class="lineno">  346</span>      <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;group = g.index;</div>
-<div class="line"><span class="lineno">  347</span>      <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;world = ::rgpot::calculatorWorldSize();</div>
-<div class="line"><span class="lineno">  348</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a4a902a596a803b78a6e51dd6225c822b">ranks_per_image</a> &gt; 0) {</div>
-<div class="line"><span class="lineno">  349</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  350</span>          <span class="stringliteral">&quot;RGPOT(cpmdc): ranks_per_image needs rgpot built with MPI &quot;</span></div>
-<div class="line"><span class="lineno">  351</span>          <span class="stringliteral">&quot;(-Drgpot:with_mpi=enabled)&quot;</span>);</div>
-<div class="line"><span class="lineno">  352</span>    }</div>
-<div class="line"><span class="lineno">  353</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;metatomic&quot;</span> || <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;mta&quot;</span> ||</div>
-<div class="line"><span class="lineno">  354</span>             <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;metatomicpot&quot;</span>) {</div>
-<div class="line"><span class="lineno">  355</span>    <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> = <span class="stringliteral">&quot;metatomic&quot;</span>;</div>
-<div class="line"><span class="lineno">  356</span>    <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend = <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848abb337e726c1713d93fac72a3badd64b8">Impl::Backend::Metatomic</a>;</div>
-<div class="line"><span class="lineno">  357</span>    MetatomicEngineOptions mopt;</div>
-<div class="line"><span class="lineno">  358</span>    mopt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#aab1bf0b27c704116741e0c326596605a">model_path</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb903d95fa45ace3ab69edcaa5cdd64">model_path</a>;</div>
-<div class="line"><span class="lineno">  359</span>    mopt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#a6fd2f80240040775e324c2e055ed0ad4">device</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb38b12db96f664dd9c0ca9b8b9bb8a">device</a>;</div>
-<div class="line"><span class="lineno">  360</span>    mopt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#a3e43c144a75a29ff810f7d28db6cc43e">length_unit</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#aab407eb3f992b78720bcd735acd9b0bb">length_unit</a>;</div>
-<div class="line"><span class="lineno">  361</span>    mopt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#a4b1d9a0464c43b847bfece2a00f264cd">extensions_directory</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a91dc280179d43f152dd50fcbb8762795">extensions_directory</a>;</div>
-<div class="line"><span class="lineno">  362</span>    mopt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#a1cef54a2f9b9486f7d385a34adc86304">check_consistency</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a0ff1f7f3fee0daa8b0017e4c470d4d1d">check_consistency</a>;</div>
-<div class="line"><span class="lineno">  363</span>    mopt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#a00d77bea84d45584d7293e68c510b601">uncertainty_threshold</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ad6c2d8b5cd78684e5bac6ae19dcdbe42">uncertainty_threshold</a>;</div>
-<div class="line"><span class="lineno">  364</span>    mopt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#a8ed14167b3893a576711fc6d751454b4">engine_path</a> =</div>
-<div class="line"><span class="lineno">  365</span>        !opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a>.empty() ? opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> : opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a948f90c314c2e469761f2b706cf34dc0">engine_library</a>;</div>
-<div class="line"><span class="lineno">  366</span>    mopt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#a83c338ed817e8bff2eb01864b386a663">torch_determinism_strict</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#aadaadd6c54afcc8c57a879938761ac4f">torch_determinism_strict</a>;</div>
-<div class="line"><span class="lineno">  367</span>    <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;metatomic = std::make_unique&lt;MetatomicEngineLoader&gt;(mopt);</div>
-<div class="line"><span class="lineno">  368</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;metatomic-&gt;available())</div>
-<div class="line"><span class="lineno">  369</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  370</span>          <span class="stringliteral">&quot;RGPOT(metatomic): engine not available (set RGPOT_METATOMIC_ENGINE &quot;</span></div>
-<div class="line"><span class="lineno">  371</span>          <span class="stringliteral">&quot;or [RgpotPot] engine_path to librgpot_metatomic_engine.so)&quot;</span>);</div>
-<div class="line"><span class="lineno">  372</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;xtb&quot;</span> || <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;xtbpot&quot;</span> || <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;gfn&quot;</span> ||</div>
-<div class="line"><span class="lineno">  373</span>             <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;gfnxtb&quot;</span>) {</div>
-<div class="line"><span class="lineno">  374</span>    <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> = <span class="stringliteral">&quot;xtb&quot;</span>;</div>
-<div class="line"><span class="lineno">  375</span>    <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend = <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848ab8a6303c48d4a9a6e202734cbdd02bf2">Impl::Backend::Xtb</a>;</div>
-<div class="line"><span class="lineno">  376</span>    XTBEngineOptions xopt;</div>
-<div class="line"><span class="lineno">  377</span>    xopt.<a class="code hl_variable" href="structXTBEngineOptions.html#aa81323b80eed2599ebf1487451957875">method</a> = xtb_method_from_paramset(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3a761a3378f874ca2e41764d5797cace">xtb_paramset</a>);</div>
-<div class="line"><span class="lineno">  378</span>    xopt.<a class="code hl_variable" href="structXTBEngineOptions.html#ae7932f15a10e85e1e633f95f3cf273bb">accuracy</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ac3f15f0a8041fdf192e328e2a35a7e37">xtb_accuracy</a>;</div>
-<div class="line"><span class="lineno">  379</span>    xopt.<a class="code hl_variable" href="structXTBEngineOptions.html#a9b47e44d1ba3d4656075292809e62e28">electronic_temperature</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a9b5a6f95eb4a8016c265fc197664b7a0">xtb_electronic_temperature</a>;</div>
-<div class="line"><span class="lineno">  380</span>    xopt.<a class="code hl_variable" href="structXTBEngineOptions.html#a70af5fbbada5662c935cdfe5e15bfeae">max_iterations</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a7b78f1852bb38cf382a601c4f4ebfb93">xtb_max_iterations</a>;</div>
-<div class="line"><span class="lineno">  381</span>    xopt.<a class="code hl_variable" href="structXTBEngineOptions.html#a711e7d3894625dd40e6ec71a7ae73288">charge</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#aece5083dcb8102323094779244c07f19">xtb_charge</a>;</div>
-<div class="line"><span class="lineno">  382</span>    xopt.<a class="code hl_variable" href="structXTBEngineOptions.html#a01475518154082d4c901d4adfca2504a">uhf</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a05cbeb421682b503889b914da920aa08">xtb_uhf</a>;</div>
-<div class="line"><span class="lineno">  383</span>    xopt.<a class="code hl_variable" href="structXTBEngineOptions.html#a5fc00e571e98d3e6ad9f9c33759f201e">engine_path</a> =</div>
-<div class="line"><span class="lineno">  384</span>        !opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a>.empty() ? opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> : opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a948f90c314c2e469761f2b706cf34dc0">engine_library</a>;</div>
-<div class="line"><span class="lineno">  385</span>    <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;xtb = std::make_unique&lt;XTBEngineLoader&gt;(xopt);</div>
-<div class="line"><span class="lineno">  386</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;xtb-&gt;available())</div>
-<div class="line"><span class="lineno">  387</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  388</span>          <span class="stringliteral">&quot;RGPOT(xtb): engine not available (set RGPOT_XTB_ENGINE or &quot;</span></div>
-<div class="line"><span class="lineno">  389</span>          <span class="stringliteral">&quot;[RgpotPot] engine_path to librgpot_xtb_engine.so)&quot;</span>);</div>
-<div class="line"><span class="lineno">  390</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  391</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;RGPOT: unknown backend &#39;&quot;</span> + opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a8dec74e532101f1ce4380e05489f6ad4">backend</a> +</div>
-<div class="line"><span class="lineno">  392</span>                             <span class="stringliteral">&quot;&#39; (expected nwchemc, cpmdc, metatomic, or xtb)&quot;</span>);</div>
-<div class="line"><span class="lineno">  393</span>  }</div>
-<div class="line"><span class="lineno">  394</span>}</div>
-<div class="ttc" id="aclassRGPotEngine_html_a50b569f9403c405386c3bdd8456f4268"><div class="ttname"><a href="#a50b569f9403c405386c3bdd8456f4268">RGPotEngine::armGroupedExit</a></div><div class="ttdeci">void armGroupedExit() const</div><div class="ttdoc">After MPI_Finalize, _Exit.</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8cpp_source.html#l00426">RGPotEngine.cpp:426</a></div></div>
-<div class="ttc" id="aclassRGPotEngine_html_acc8855b3134bf681a9cb00304c04e55a"><div class="ttname"><a href="#acc8855b3134bf681a9cb00304c04e55a">RGPotEngine::impl_</a></div><div class="ttdeci">std::unique_ptr&lt; Impl &gt; impl_</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00102">RGPotEngine.h:102</a></div></div>
-<div class="ttc" id="aclassRGPotEngine_html_af46f6efc49b39d315e7fa1f4cafde8e1"><div class="ttname"><a href="#af46f6efc49b39d315e7fa1f4cafde8e1">RGPotEngine::backend_</a></div><div class="ttdeci">std::string backend_</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00103">RGPotEngine.h:103</a></div></div>
-<div class="ttc" id="anamespaceeon_html_a88599a5d2e9211bdc4d4614035f4e73a"><div class="ttname"><a href="namespaceeon.html#a88599a5d2e9211bdc4d4614035f4e73a">eon::fillCpmdParams</a></div><div class="ttdeci">::CPMDParams::Builder fillCpmdParams(::capnp::MallocMessageBuilder &amp;msg, const RGPotEngineOptions &amp;opt)</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8cpp_source.html#l00182">RGPotEngine.cpp:182</a></div></div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00250">250</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  251</span>    : <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>(std::make_unique&lt;Impl&gt;()) {</div>
+<div class="line"><span class="lineno">  252</span>  <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> = to_lower(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a8dec74e532101f1ce4380e05489f6ad4">backend</a>);</div>
+<div class="line"><span class="lineno">  253</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;nwchem&quot;</span> || <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;nwchemc&quot;</span> ||</div>
+<div class="line"><span class="lineno">  254</span>      <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;nwchempot&quot;</span>) {</div>
+<div class="line"><span class="lineno">  255</span>    <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> = <span class="stringliteral">&quot;nwchemc&quot;</span>;</div>
+<div class="line"><span class="lineno">  256</span>    <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend = <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848a791835acc935f1b4722ba4c70c18bacc">Impl::Backend::Nwchemc</a>;</div>
+<div class="line"><span class="lineno">  257</span>    ::capnp::MallocMessageBuilder msg;</div>
+<div class="line"><span class="lineno">  258</span>    <span class="keyword">auto</span> params = msg.initRoot&lt;::NWChemParams&gt;();</div>
+<div class="line"><span class="lineno">  259</span>    params.setBasis(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3cce8b08621932e92a7a234f47bfc314">basis</a>);</div>
+<div class="line"><span class="lineno">  260</span>    params.setTheory(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ad922d97dfdfdabc9cb828a45247eb81a">theory</a>);</div>
+<div class="line"><span class="lineno">  261</span>    params.setScfType(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a06e36eb8ac4cb37ce9691971cfb9d08e">scf_type</a>);</div>
+<div class="line"><span class="lineno">  262</span>    params.setCharge(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a9c7eab255bd69147d5909fc6907655d3">charge</a>);</div>
+<div class="line"><span class="lineno">  263</span>    params.setMultiplicity(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a34d4c067f03853de114c4d33a8c45224">multiplicity</a>);</div>
+<div class="line"><span class="lineno">  264</span>    <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a>.empty())</div>
+<div class="line"><span class="lineno">  265</span>      params.setEnginePath(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a>);</div>
+<div class="line"><span class="lineno">  266</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a948f90c314c2e469761f2b706cf34dc0">engine_library</a>.empty())</div>
+<div class="line"><span class="lineno">  267</span>      params.setEnginePath(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a948f90c314c2e469761f2b706cf34dc0">engine_library</a>);</div>
+<div class="line"><span class="lineno">  268</span>    <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ac640a410bf18066058185cdc8a7d1d6d">engine_root</a>.empty())</div>
+<div class="line"><span class="lineno">  269</span>      params.setNwchemRoot(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ac640a410bf18066058185cdc8a7d1d6d">engine_root</a>);</div>
+<div class="line"><span class="lineno">  270</span>    <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a1bc5ed5c8b23207f381d0bf2fe34f3bd">title</a>.empty())</div>
+<div class="line"><span class="lineno">  271</span>      params.setTitle(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a1bc5ed5c8b23207f381d0bf2fe34f3bd">title</a>);</div>
+<div class="line"><span class="lineno">  272</span>    <span class="keywordflow">if</span> (opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a7d02521ee1febe74307e5e611f710118">memory_mb</a> &gt; 0)</div>
+<div class="line"><span class="lineno">  273</span>      params.setMemoryMb(<span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a7d02521ee1febe74307e5e611f710118">memory_mb</a>));</div>
+<div class="line"><span class="lineno">  274</span>    <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a464193c68f85bdf6ccecf730f959c505">scratch_dir</a>.empty())</div>
+<div class="line"><span class="lineno">  275</span>      params.setScratchDir(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a464193c68f85bdf6ccecf730f959c505">scratch_dir</a>);</div>
+<div class="line"><span class="lineno">  276</span>    <span class="comment">// DFT XC as inputBlocks when theory=dft and scfType is an XC label</span></div>
+<div class="line"><span class="lineno">  277</span>    std::string block = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ada72be4995d9ae99c0ff2de2109ad237">input_block</a>;</div>
+<div class="line"><span class="lineno">  278</span>    <span class="keywordflow">if</span> (block.empty()) {</div>
+<div class="line"><span class="lineno">  279</span>      <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *env = std::getenv(<span class="stringliteral">&quot;RGPOT_NWCHEM_INPUT_BLOCK&quot;</span>))</div>
+<div class="line"><span class="lineno">  280</span>        block = env;</div>
+<div class="line"><span class="lineno">  281</span>    }</div>
+<div class="line"><span class="lineno">  282</span>    <span class="keywordflow">if</span> (block.empty() &amp;&amp; (opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ad922d97dfdfdabc9cb828a45247eb81a">theory</a> == <span class="stringliteral">&quot;dft&quot;</span> || opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ad922d97dfdfdabc9cb828a45247eb81a">theory</a> == <span class="stringliteral">&quot;DFT&quot;</span>) &amp;&amp;</div>
+<div class="line"><span class="lineno">  283</span>        looks_like_dft_xc(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a06e36eb8ac4cb37ce9691971cfb9d08e">scf_type</a>)) {</div>
+<div class="line"><span class="lineno">  284</span>      block = <span class="stringliteral">&quot;dft\n  xc &quot;</span> + opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a06e36eb8ac4cb37ce9691971cfb9d08e">scf_type</a> + <span class="stringliteral">&quot;\n  mult &quot;</span> +</div>
+<div class="line"><span class="lineno">  285</span>              std::to_string(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a34d4c067f03853de114c4d33a8c45224">multiplicity</a>) + <span class="stringliteral">&quot;\nend&quot;</span>;</div>
+<div class="line"><span class="lineno">  286</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (block.empty() &amp;&amp; looks_like_dft_xc(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ad922d97dfdfdabc9cb828a45247eb81a">theory</a>)) {</div>
+<div class="line"><span class="lineno">  287</span>      block = <span class="stringliteral">&quot;dft\n  xc &quot;</span> + opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ad922d97dfdfdabc9cb828a45247eb81a">theory</a> + <span class="stringliteral">&quot;\n  mult &quot;</span> +</div>
+<div class="line"><span class="lineno">  288</span>              std::to_string(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a34d4c067f03853de114c4d33a8c45224">multiplicity</a>) + <span class="stringliteral">&quot;\nend&quot;</span>;</div>
+<div class="line"><span class="lineno">  289</span>    }</div>
+<div class="line"><span class="lineno">  290</span>    <span class="keywordflow">if</span> (!block.empty()) {</div>
+<div class="line"><span class="lineno">  291</span>      <span class="keyword">auto</span> blocks = params.initInputBlocks(1);</div>
+<div class="line"><span class="lineno">  292</span>      blocks.set(0, block);</div>
+<div class="line"><span class="lineno">  293</span>    }</div>
+<div class="line"><span class="lineno">  294</span>    <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;nwchem = std::make_unique&lt;rgpot::NWChemPot&gt;(params.asReader());</div>
+<div class="line"><span class="lineno">  295</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;nwchem-&gt;available())</div>
+<div class="line"><span class="lineno">  296</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  297</span>          <span class="stringliteral">&quot;RGPOT(nwchemc): engine not available (set NWCHEMC_LIBRARY / &quot;</span></div>
+<div class="line"><span class="lineno">  298</span>          <span class="stringliteral">&quot;RGPOT_NWCHEMC_ENGINE or [RgpotPot] engine_path)&quot;</span>);</div>
+<div class="line"><span class="lineno">  299</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;cpmd&quot;</span> || <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;cpmdc&quot;</span> ||</div>
+<div class="line"><span class="lineno">  300</span>             <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;cpmdpot&quot;</span>) {</div>
+<div class="line"><span class="lineno">  301</span>    <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> = <span class="stringliteral">&quot;cpmdc&quot;</span>;</div>
+<div class="line"><span class="lineno">  302</span>    <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend = <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848a6821cd3ce80de46e41ba282f7a8f20f0">Impl::Backend::Cpmdc</a>;</div>
+<div class="line"><span class="lineno">  303</span>    std::string local_error;</div>
+<div class="line"><span class="lineno">  304</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  305</span>      ::capnp::MallocMessageBuilder msg;</div>
+<div class="line"><span class="lineno">  306</span>      ::CPMDParams::Builder params = <a class="code hl_function" href="namespaceeon.html#a88599a5d2e9211bdc4d4614035f4e73a">eon::fillCpmdParams</a>(msg, opt);</div>
+<div class="line"><span class="lineno">  307</span>      <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;cpmd = std::make_unique&lt;rgpot::CPMDPot&gt;(params.asReader());</div>
+<div class="line"><span class="lineno">  308</span>      pin_cpmd_library(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a>.empty() ? opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a948f90c314c2e469761f2b706cf34dc0">engine_library</a></div>
+<div class="line"><span class="lineno">  309</span>                                               : opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a>);</div>
+<div class="line"><span class="lineno">  310</span>      <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;cpmd-&gt;available())</div>
+<div class="line"><span class="lineno">  311</span>        <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  312</span>            <span class="stringliteral">&quot;RGPOT(cpmdc): engine not available (set CPMDC_LIBRARY / &quot;</span></div>
+<div class="line"><span class="lineno">  313</span>            <span class="stringliteral">&quot;RGPOT_CPMDC_ENGINE or [RgpotPot] engine_path)&quot;</span>);</div>
+<div class="line"><span class="lineno">  314</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;ex) {</div>
+<div class="line"><span class="lineno">  315</span>      local_error = ex.what();</div>
+<div class="line"><span class="lineno">  316</span>    }</div>
+<div class="line"><span class="lineno">  317</span>    <span class="comment">// Several ranks: agree before MPI_Comm_split. One rank that cannot</span></div>
+<div class="line"><span class="lineno">  318</span>    <span class="comment">// read params_path must not leave the others inside the split.</span></div>
+<div class="line"><span class="lineno">  319</span>    <span class="keywordflow">if</span> (mpi_world_hint() &lt;= 1 &amp;&amp; !local_error.empty())</div>
+<div class="line"><span class="lineno">  320</span>      <span class="keywordflow">throw</span> std::runtime_error(local_error);</div>
+<div class="line"><span class="lineno">  321</span>    <span class="comment">// rgpot reports MPI only once MPI_Init has run, and agree_construction</span></div>
+<div class="line"><span class="lineno">  322</span>    <span class="comment">// is what initialises it, so the agreement keys on the launch size.</span></div>
+<div class="line"><span class="lineno">  323</span>    <span class="keywordflow">if</span> (mpi_world_hint() &gt; 1 &amp;&amp; !agree_construction(local_error)) {</div>
+<div class="line"><span class="lineno">  324</span>      <a class="code hl_function" href="#a50b569f9403c405386c3bdd8456f4268">armGroupedExit</a>();</div>
+<div class="line"><span class="lineno">  325</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  326</span>          local_error.empty()</div>
+<div class="line"><span class="lineno">  327</span>              ? std::string(</div>
+<div class="line"><span class="lineno">  328</span>                    <span class="stringliteral">&quot;RGPOT(cpmdc): a rank failed before the calculator split&quot;</span>)</div>
+<div class="line"><span class="lineno">  329</span>              : local_error);</div>
+<div class="line"><span class="lineno">  330</span>    }</div>
+<div class="line"><span class="lineno">  331</span>    <span class="keywordflow">if</span> (!local_error.empty())</div>
+<div class="line"><span class="lineno">  332</span>      <span class="keywordflow">throw</span> std::runtime_error(local_error);</div>
+<div class="line"><span class="lineno">  333</span>    <span class="keywordflow">if</span> (::rgpot::calculatorsUseMpi()) {</div>
+<div class="line"><span class="lineno">  334</span>      <span class="comment">// Collective on MPI_COMM_WORLD, before the first force: the engine</span></div>
+<div class="line"><span class="lineno">  335</span>      <span class="comment">// installs the group communicator ahead of CPMD&#39;s mp_start.</span></div>
+<div class="line"><span class="lineno">  336</span>      <span class="comment">// ranks_per_image = 0 is one calculator on the whole world.</span></div>
+<div class="line"><span class="lineno">  337</span>      <span class="keyword">const</span> rgpot::CalculatorGroup g =</div>
+<div class="line"><span class="lineno">  338</span>          ::rgpot::bindCalculators(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a4a902a596a803b78a6e51dd6225c822b">ranks_per_image</a>);</div>
+<div class="line"><span class="lineno">  339</span>      ::rgpot::finalizeMpiAtExit();</div>
+<div class="line"><span class="lineno">  340</span>      <span class="keywordflow">if</span> (mpi_world_hint() &gt; 1)</div>
+<div class="line"><span class="lineno">  341</span>        <a class="code hl_function" href="#a50b569f9403c405386c3bdd8456f4268">armGroupedExit</a>();</div>
+<div class="line"><span class="lineno">  342</span>      <span class="keywordflow">if</span> (g.index &lt; 0)</div>
+<div class="line"><span class="lineno">  343</span>        <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  344</span>            <span class="stringliteral">&quot;RGPOT(cpmdc): ranks_per_image=&quot;</span> +</div>
+<div class="line"><span class="lineno">  345</span>            std::to_string(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a4a902a596a803b78a6e51dd6225c822b">ranks_per_image</a>) +</div>
+<div class="line"><span class="lineno">  346</span>            <span class="stringliteral">&quot; does not divide the MPI world into calculator groups&quot;</span>);</div>
+<div class="line"><span class="lineno">  347</span>      <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;groups = ::rgpot::calculatorCount();</div>
+<div class="line"><span class="lineno">  348</span>      <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;group = g.index;</div>
+<div class="line"><span class="lineno">  349</span>      <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;world = ::rgpot::calculatorWorldSize();</div>
+<div class="line"><span class="lineno">  350</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a4a902a596a803b78a6e51dd6225c822b">ranks_per_image</a> &gt; 0) {</div>
+<div class="line"><span class="lineno">  351</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  352</span>          <span class="stringliteral">&quot;RGPOT(cpmdc): ranks_per_image needs rgpot built with MPI &quot;</span></div>
+<div class="line"><span class="lineno">  353</span>          <span class="stringliteral">&quot;(-Drgpot:with_mpi=enabled)&quot;</span>);</div>
+<div class="line"><span class="lineno">  354</span>    }</div>
+<div class="line"><span class="lineno">  355</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;metatomic&quot;</span> || <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;mta&quot;</span> ||</div>
+<div class="line"><span class="lineno">  356</span>             <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;metatomicpot&quot;</span>) {</div>
+<div class="line"><span class="lineno">  357</span>    <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> = <span class="stringliteral">&quot;metatomic&quot;</span>;</div>
+<div class="line"><span class="lineno">  358</span>    <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend = <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848abb337e726c1713d93fac72a3badd64b8">Impl::Backend::Metatomic</a>;</div>
+<div class="line"><span class="lineno">  359</span>    MetatomicEngineOptions mopt;</div>
+<div class="line"><span class="lineno">  360</span>    mopt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#aab1bf0b27c704116741e0c326596605a">model_path</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb903d95fa45ace3ab69edcaa5cdd64">model_path</a>;</div>
+<div class="line"><span class="lineno">  361</span>    mopt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#a6fd2f80240040775e324c2e055ed0ad4">device</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb38b12db96f664dd9c0ca9b8b9bb8a">device</a>;</div>
+<div class="line"><span class="lineno">  362</span>    mopt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#a3e43c144a75a29ff810f7d28db6cc43e">length_unit</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#aab407eb3f992b78720bcd735acd9b0bb">length_unit</a>;</div>
+<div class="line"><span class="lineno">  363</span>    mopt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#a4b1d9a0464c43b847bfece2a00f264cd">extensions_directory</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a91dc280179d43f152dd50fcbb8762795">extensions_directory</a>;</div>
+<div class="line"><span class="lineno">  364</span>    mopt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#a1cef54a2f9b9486f7d385a34adc86304">check_consistency</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a0ff1f7f3fee0daa8b0017e4c470d4d1d">check_consistency</a>;</div>
+<div class="line"><span class="lineno">  365</span>    mopt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#a00d77bea84d45584d7293e68c510b601">uncertainty_threshold</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ad6c2d8b5cd78684e5bac6ae19dcdbe42">uncertainty_threshold</a>;</div>
+<div class="line"><span class="lineno">  366</span>    mopt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#a8ed14167b3893a576711fc6d751454b4">engine_path</a> =</div>
+<div class="line"><span class="lineno">  367</span>        !opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a>.empty() ? opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> : opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a948f90c314c2e469761f2b706cf34dc0">engine_library</a>;</div>
+<div class="line"><span class="lineno">  368</span>    mopt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#a83c338ed817e8bff2eb01864b386a663">torch_determinism_strict</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#aadaadd6c54afcc8c57a879938761ac4f">torch_determinism_strict</a>;</div>
+<div class="line"><span class="lineno">  369</span>    <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;metatomic = std::make_unique&lt;MetatomicEngineLoader&gt;(mopt);</div>
+<div class="line"><span class="lineno">  370</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;metatomic-&gt;available())</div>
+<div class="line"><span class="lineno">  371</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  372</span>          <span class="stringliteral">&quot;RGPOT(metatomic): engine not available (set RGPOT_METATOMIC_ENGINE &quot;</span></div>
+<div class="line"><span class="lineno">  373</span>          <span class="stringliteral">&quot;or [RgpotPot] engine_path to librgpot_metatomic_engine.so)&quot;</span>);</div>
+<div class="line"><span class="lineno">  374</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;uma&quot;</span> || <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;omol&quot;</span> || <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;umapot&quot;</span>) {</div>
+<div class="line"><span class="lineno">  375</span>    <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> = <span class="stringliteral">&quot;uma&quot;</span>;</div>
+<div class="line"><span class="lineno">  376</span>    <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend = <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848a747fc9cc9a0245b4da2ea33437eaabd1">Impl::Backend::Uma</a>;</div>
+<div class="line"><span class="lineno">  377</span>    GenericEngineOptions gopt;</div>
+<div class="line"><span class="lineno">  378</span>    gopt.<a class="code hl_variable" href="structGenericEngineOptions.html#adc7d78d3a9d4a92d009fbcc416d33ef3">library</a> = <span class="stringliteral">&quot;libuma_engine.so&quot;</span>;</div>
+<div class="line"><span class="lineno">  379</span>    gopt.<a class="code hl_variable" href="structGenericEngineOptions.html#a3ab2ecc18392e697a33eff393ed95696">env_var</a> = <span class="stringliteral">&quot;RGPOT_UMA_ENGINE&quot;</span>;</div>
+<div class="line"><span class="lineno">  380</span>    gopt.<a class="code hl_variable" href="structGenericEngineOptions.html#ab6fb6a03a8f2a8fb463dc8ee562c298c">engine_path</a> =</div>
+<div class="line"><span class="lineno">  381</span>        !opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a>.empty() ? opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> : opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a948f90c314c2e469761f2b706cf34dc0">engine_library</a>;</div>
+<div class="line"><span class="lineno">  382</span>    gopt.<a class="code hl_variable" href="structGenericEngineOptions.html#a22e46625db58958645291f43d37af86a">tag</a> = <span class="stringliteral">&quot;uma&quot;</span>;</div>
+<div class="line"><span class="lineno">  383</span>    {</div>
+<div class="line"><span class="lineno">  384</span>      ::capnp::MallocMessageBuilder msg;</div>
+<div class="line"><span class="lineno">  385</span>      <span class="keyword">auto</span> params = msg.initRoot&lt;::UmaParams&gt;();</div>
+<div class="line"><span class="lineno">  386</span>      params.setModelPath(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb903d95fa45ace3ab69edcaa5cdd64">model_path</a>);</div>
+<div class="line"><span class="lineno">  387</span>      params.setTaskName(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ac1be0b6b290f5f1e81ef6c2e870c9a18">task_name</a>);</div>
+<div class="line"><span class="lineno">  388</span>      params.setDevice(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb38b12db96f664dd9c0ca9b8b9bb8a">device</a>);</div>
+<div class="line"><span class="lineno">  389</span>      params.setCharge(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a9c7eab255bd69147d5909fc6907655d3">charge</a>);</div>
+<div class="line"><span class="lineno">  390</span>      params.setSpin(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a34d4c067f03853de114c4d33a8c45224">multiplicity</a>);</div>
+<div class="line"><span class="lineno">  391</span>      <span class="keyword">const</span> <span class="keyword">auto</span> words = ::capnp::messageToFlatArray(msg);</div>
+<div class="line"><span class="lineno">  392</span>      <span class="keyword">const</span> <span class="keyword">auto</span> bytes = words.asBytes();</div>
+<div class="line"><span class="lineno">  393</span>      gopt.<a class="code hl_variable" href="structGenericEngineOptions.html#a43bccac3c8fd13c1a28c0f9a1e8ebe13">config</a>.assign(bytes.begin(), bytes.end());</div>
+<div class="line"><span class="lineno">  394</span>    }</div>
+<div class="line"><span class="lineno">  395</span>    <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;uma = std::make_unique&lt;GenericEngineLoader&gt;(gopt);</div>
+<div class="line"><span class="lineno">  396</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;uma-&gt;available())</div>
+<div class="line"><span class="lineno">  397</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  398</span>          <span class="stringliteral">&quot;RGPOT(uma): engine not available (set RGPOT_UMA_ENGINE or &quot;</span></div>
+<div class="line"><span class="lineno">  399</span>          <span class="stringliteral">&quot;[RgpotPot] engine_path to libuma_engine.so)&quot;</span>);</div>
+<div class="line"><span class="lineno">  400</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;xtb&quot;</span> || <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;xtbpot&quot;</span> || <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;gfn&quot;</span> ||</div>
+<div class="line"><span class="lineno">  401</span>             <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> == <span class="stringliteral">&quot;gfnxtb&quot;</span>) {</div>
+<div class="line"><span class="lineno">  402</span>    <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a> = <span class="stringliteral">&quot;xtb&quot;</span>;</div>
+<div class="line"><span class="lineno">  403</span>    <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend = <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848ab8a6303c48d4a9a6e202734cbdd02bf2">Impl::Backend::Xtb</a>;</div>
+<div class="line"><span class="lineno">  404</span>    XTBEngineOptions xopt;</div>
+<div class="line"><span class="lineno">  405</span>    xopt.<a class="code hl_variable" href="structXTBEngineOptions.html#aa81323b80eed2599ebf1487451957875">method</a> = xtb_method_from_paramset(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3a761a3378f874ca2e41764d5797cace">xtb_paramset</a>);</div>
+<div class="line"><span class="lineno">  406</span>    xopt.<a class="code hl_variable" href="structXTBEngineOptions.html#ae7932f15a10e85e1e633f95f3cf273bb">accuracy</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ac3f15f0a8041fdf192e328e2a35a7e37">xtb_accuracy</a>;</div>
+<div class="line"><span class="lineno">  407</span>    xopt.<a class="code hl_variable" href="structXTBEngineOptions.html#a9b47e44d1ba3d4656075292809e62e28">electronic_temperature</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a9b5a6f95eb4a8016c265fc197664b7a0">xtb_electronic_temperature</a>;</div>
+<div class="line"><span class="lineno">  408</span>    xopt.<a class="code hl_variable" href="structXTBEngineOptions.html#a70af5fbbada5662c935cdfe5e15bfeae">max_iterations</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a7b78f1852bb38cf382a601c4f4ebfb93">xtb_max_iterations</a>;</div>
+<div class="line"><span class="lineno">  409</span>    xopt.<a class="code hl_variable" href="structXTBEngineOptions.html#a711e7d3894625dd40e6ec71a7ae73288">charge</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#aece5083dcb8102323094779244c07f19">xtb_charge</a>;</div>
+<div class="line"><span class="lineno">  410</span>    xopt.<a class="code hl_variable" href="structXTBEngineOptions.html#a01475518154082d4c901d4adfca2504a">uhf</a> = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a05cbeb421682b503889b914da920aa08">xtb_uhf</a>;</div>
+<div class="line"><span class="lineno">  411</span>    xopt.<a class="code hl_variable" href="structXTBEngineOptions.html#a5fc00e571e98d3e6ad9f9c33759f201e">engine_path</a> =</div>
+<div class="line"><span class="lineno">  412</span>        !opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a>.empty() ? opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> : opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a948f90c314c2e469761f2b706cf34dc0">engine_library</a>;</div>
+<div class="line"><span class="lineno">  413</span>    <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;xtb = std::make_unique&lt;XTBEngineLoader&gt;(xopt);</div>
+<div class="line"><span class="lineno">  414</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;xtb-&gt;available())</div>
+<div class="line"><span class="lineno">  415</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  416</span>          <span class="stringliteral">&quot;RGPOT(xtb): engine not available (set RGPOT_XTB_ENGINE or &quot;</span></div>
+<div class="line"><span class="lineno">  417</span>          <span class="stringliteral">&quot;[RgpotPot] engine_path to librgpot_xtb_engine.so)&quot;</span>);</div>
+<div class="line"><span class="lineno">  418</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  419</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  420</span>        <span class="stringliteral">&quot;RGPOT: unknown backend &#39;&quot;</span> + opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a8dec74e532101f1ce4380e05489f6ad4">backend</a> +</div>
+<div class="line"><span class="lineno">  421</span>        <span class="stringliteral">&quot;&#39; (expected nwchemc, cpmdc, metatomic, uma, or xtb)&quot;</span>);</div>
+<div class="line"><span class="lineno">  422</span>  }</div>
+<div class="line"><span class="lineno">  423</span>}</div>
+<div class="ttc" id="aclassRGPotEngine_html_a50b569f9403c405386c3bdd8456f4268"><div class="ttname"><a href="#a50b569f9403c405386c3bdd8456f4268">RGPotEngine::armGroupedExit</a></div><div class="ttdeci">void armGroupedExit() const</div><div class="ttdoc">After MPI_Finalize, _Exit.</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8cpp_source.html#l00455">RGPotEngine.cpp:455</a></div></div>
+<div class="ttc" id="aclassRGPotEngine_html_acc8855b3134bf681a9cb00304c04e55a"><div class="ttname"><a href="#acc8855b3134bf681a9cb00304c04e55a">RGPotEngine::impl_</a></div><div class="ttdeci">std::unique_ptr&lt; Impl &gt; impl_</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00106">RGPotEngine.h:106</a></div></div>
+<div class="ttc" id="aclassRGPotEngine_html_af46f6efc49b39d315e7fa1f4cafde8e1"><div class="ttname"><a href="#af46f6efc49b39d315e7fa1f4cafde8e1">RGPotEngine::backend_</a></div><div class="ttdeci">std::string backend_</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00107">RGPotEngine.h:107</a></div></div>
+<div class="ttc" id="anamespaceeon_html_a88599a5d2e9211bdc4d4614035f4e73a"><div class="ttname"><a href="namespaceeon.html#a88599a5d2e9211bdc4d4614035f4e73a">eon::fillCpmdParams</a></div><div class="ttdeci">::CPMDParams::Builder fillCpmdParams(::capnp::MallocMessageBuilder &amp;msg, const RGPotEngineOptions &amp;opt)</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8cpp_source.html#l00183">RGPotEngine.cpp:183</a></div></div>
+<div class="ttc" id="astructGenericEngineOptions_html_a22e46625db58958645291f43d37af86a"><div class="ttname"><a href="structGenericEngineOptions.html#a22e46625db58958645291f43d37af86a">GenericEngineOptions::tag</a></div><div class="ttdeci">std::string tag</div><div class="ttdoc">Backend tag for error messages (&quot;uma&quot;, ...).</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00035">GenericEngineLoader.h:35</a></div></div>
+<div class="ttc" id="astructGenericEngineOptions_html_a3ab2ecc18392e697a33eff393ed95696"><div class="ttname"><a href="structGenericEngineOptions.html#a3ab2ecc18392e697a33eff393ed95696">GenericEngineOptions::env_var</a></div><div class="ttdeci">std::string env_var</div><div class="ttdoc">Optional env var naming an explicit .so path (checked first).</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00028">GenericEngineLoader.h:28</a></div></div>
+<div class="ttc" id="astructGenericEngineOptions_html_a43bccac3c8fd13c1a28c0f9a1e8ebe13"><div class="ttname"><a href="structGenericEngineOptions.html#a43bccac3c8fd13c1a28c0f9a1e8ebe13">GenericEngineOptions::config</a></div><div class="ttdeci">std::vector&lt; unsigned char &gt; config</div><div class="ttdoc">Cap&#39;n Proto flat-array message (the engine&#39;s params struct on the shared Potentials....</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00033">GenericEngineLoader.h:33</a></div></div>
+<div class="ttc" id="astructGenericEngineOptions_html_ab6fb6a03a8f2a8fb463dc8ee562c298c"><div class="ttname"><a href="structGenericEngineOptions.html#ab6fb6a03a8f2a8fb463dc8ee562c298c">GenericEngineOptions::engine_path</a></div><div class="ttdeci">std::string engine_path</div><div class="ttdoc">Optional explicit .so path from config.</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00030">GenericEngineLoader.h:30</a></div></div>
+<div class="ttc" id="astructGenericEngineOptions_html_adc7d78d3a9d4a92d009fbcc416d33ef3"><div class="ttname"><a href="structGenericEngineOptions.html#adc7d78d3a9d4a92d009fbcc416d33ef3">GenericEngineOptions::library</a></div><div class="ttdeci">std::string library</div><div class="ttdoc">Library basename to search for, e.g. &quot;libuma_engine.so&quot;.</div><div class="ttdef"><b>Definition</b> <a href="GenericEngineLoader_8h_source.html#l00026">GenericEngineLoader.h:26</a></div></div>
 <div class="ttc" id="astructMetatomicEngineOptions_html_a00d77bea84d45584d7293e68c510b601"><div class="ttname"><a href="structMetatomicEngineOptions.html#a00d77bea84d45584d7293e68c510b601">MetatomicEngineOptions::uncertainty_threshold</a></div><div class="ttdeci">double uncertainty_threshold</div><div class="ttdef"><b>Definition</b> <a href="MetatomicEngineLoader_8h_source.html#l00016">MetatomicEngineLoader.h:16</a></div></div>
 <div class="ttc" id="astructMetatomicEngineOptions_html_a1cef54a2f9b9486f7d385a34adc86304"><div class="ttname"><a href="structMetatomicEngineOptions.html#a1cef54a2f9b9486f7d385a34adc86304">MetatomicEngineOptions::check_consistency</a></div><div class="ttdeci">bool check_consistency</div><div class="ttdef"><b>Definition</b> <a href="MetatomicEngineLoader_8h_source.html#l00015">MetatomicEngineLoader.h:15</a></div></div>
 <div class="ttc" id="astructMetatomicEngineOptions_html_a3e43c144a75a29ff810f7d28db6cc43e"><div class="ttname"><a href="structMetatomicEngineOptions.html#a3e43c144a75a29ff810f7d28db6cc43e">MetatomicEngineOptions::length_unit</a></div><div class="ttdeci">std::string length_unit</div><div class="ttdef"><b>Definition</b> <a href="MetatomicEngineLoader_8h_source.html#l00013">MetatomicEngineLoader.h:13</a></div></div>
@@ -500,16 +532,18 @@ Private Attributes</h2></td></tr>
 <div class="ttc" id="astructRGPotEngineOptions_html_aadaadd6c54afcc8c57a879938761ac4f"><div class="ttname"><a href="structRGPotEngineOptions.html#aadaadd6c54afcc8c57a879938761ac4f">RGPotEngineOptions::torch_determinism_strict</a></div><div class="ttdeci">bool torch_determinism_strict</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00036">RGPotEngine.h:36</a></div></div>
 <div class="ttc" id="astructRGPotEngineOptions_html_abfb38b12db96f664dd9c0ca9b8b9bb8a"><div class="ttname"><a href="structRGPotEngineOptions.html#abfb38b12db96f664dd9c0ca9b8b9bb8a">RGPotEngineOptions::device</a></div><div class="ttdeci">std::string device</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00031">RGPotEngine.h:31</a></div></div>
 <div class="ttc" id="astructRGPotEngineOptions_html_abfb903d95fa45ace3ab69edcaa5cdd64"><div class="ttname"><a href="structRGPotEngineOptions.html#abfb903d95fa45ace3ab69edcaa5cdd64">RGPotEngineOptions::model_path</a></div><div class="ttdeci">std::string model_path</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00030">RGPotEngine.h:30</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_ac1be0b6b290f5f1e81ef6c2e870c9a18"><div class="ttname"><a href="structRGPotEngineOptions.html#ac1be0b6b290f5f1e81ef6c2e870c9a18">RGPotEngineOptions::task_name</a></div><div class="ttdeci">std::string task_name</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00047">RGPotEngine.h:47</a></div></div>
 <div class="ttc" id="astructRGPotEngineOptions_html_ac3f15f0a8041fdf192e328e2a35a7e37"><div class="ttname"><a href="structRGPotEngineOptions.html#ac3f15f0a8041fdf192e328e2a35a7e37">RGPotEngineOptions::xtb_accuracy</a></div><div class="ttdeci">double xtb_accuracy</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00039">RGPotEngine.h:39</a></div></div>
 <div class="ttc" id="astructRGPotEngineOptions_html_ac640a410bf18066058185cdc8a7d1d6d"><div class="ttname"><a href="structRGPotEngineOptions.html#ac640a410bf18066058185cdc8a7d1d6d">RGPotEngineOptions::engine_root</a></div><div class="ttdeci">std::string engine_root</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00019">RGPotEngine.h:19</a></div></div>
 <div class="ttc" id="astructRGPotEngineOptions_html_ad6c2d8b5cd78684e5bac6ae19dcdbe42"><div class="ttname"><a href="structRGPotEngineOptions.html#ad6c2d8b5cd78684e5bac6ae19dcdbe42">RGPotEngineOptions::uncertainty_threshold</a></div><div class="ttdeci">double uncertainty_threshold</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00035">RGPotEngine.h:35</a></div></div>
 <div class="ttc" id="astructRGPotEngineOptions_html_ad922d97dfdfdabc9cb828a45247eb81a"><div class="ttname"><a href="structRGPotEngineOptions.html#ad922d97dfdfdabc9cb828a45247eb81a">RGPotEngineOptions::theory</a></div><div class="ttdeci">std::string theory</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00011">RGPotEngine.h:11</a></div></div>
 <div class="ttc" id="astructRGPotEngineOptions_html_ada72be4995d9ae99c0ff2de2109ad237"><div class="ttname"><a href="structRGPotEngineOptions.html#ada72be4995d9ae99c0ff2de2109ad237">RGPotEngineOptions::input_block</a></div><div class="ttdeci">std::string input_block</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00024">RGPotEngine.h:24</a></div></div>
 <div class="ttc" id="astructRGPotEngineOptions_html_aece5083dcb8102323094779244c07f19"><div class="ttname"><a href="structRGPotEngineOptions.html#aece5083dcb8102323094779244c07f19">RGPotEngineOptions::xtb_charge</a></div><div class="ttdeci">double xtb_charge</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00042">RGPotEngine.h:42</a></div></div>
-<div class="ttc" id="astructRGPotEngine_1_1Impl_html_a8c07483b6acd962ff04455de5aecb848a6821cd3ce80de46e41ba282f7a8f20f0"><div class="ttname"><a href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848a6821cd3ce80de46e41ba282f7a8f20f0">RGPotEngine::Impl::Backend::Cpmdc</a></div><div class="ttdeci">@ Cpmdc</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8cpp_source.html#l00235">RGPotEngine.cpp:235</a></div></div>
-<div class="ttc" id="astructRGPotEngine_1_1Impl_html_a8c07483b6acd962ff04455de5aecb848a791835acc935f1b4722ba4c70c18bacc"><div class="ttname"><a href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848a791835acc935f1b4722ba4c70c18bacc">RGPotEngine::Impl::Backend::Nwchemc</a></div><div class="ttdeci">@ Nwchemc</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8cpp_source.html#l00235">RGPotEngine.cpp:235</a></div></div>
-<div class="ttc" id="astructRGPotEngine_1_1Impl_html_a8c07483b6acd962ff04455de5aecb848ab8a6303c48d4a9a6e202734cbdd02bf2"><div class="ttname"><a href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848ab8a6303c48d4a9a6e202734cbdd02bf2">RGPotEngine::Impl::Backend::Xtb</a></div><div class="ttdeci">@ Xtb</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8cpp_source.html#l00235">RGPotEngine.cpp:235</a></div></div>
-<div class="ttc" id="astructRGPotEngine_1_1Impl_html_a8c07483b6acd962ff04455de5aecb848abb337e726c1713d93fac72a3badd64b8"><div class="ttname"><a href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848abb337e726c1713d93fac72a3badd64b8">RGPotEngine::Impl::Backend::Metatomic</a></div><div class="ttdeci">@ Metatomic</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8cpp_source.html#l00235">RGPotEngine.cpp:235</a></div></div>
+<div class="ttc" id="astructRGPotEngine_1_1Impl_html_a8c07483b6acd962ff04455de5aecb848a6821cd3ce80de46e41ba282f7a8f20f0"><div class="ttname"><a href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848a6821cd3ce80de46e41ba282f7a8f20f0">RGPotEngine::Impl::Backend::Cpmdc</a></div><div class="ttdeci">@ Cpmdc</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8cpp_source.html#l00236">RGPotEngine.cpp:236</a></div></div>
+<div class="ttc" id="astructRGPotEngine_1_1Impl_html_a8c07483b6acd962ff04455de5aecb848a747fc9cc9a0245b4da2ea33437eaabd1"><div class="ttname"><a href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848a747fc9cc9a0245b4da2ea33437eaabd1">RGPotEngine::Impl::Backend::Uma</a></div><div class="ttdeci">@ Uma</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8cpp_source.html#l00236">RGPotEngine.cpp:236</a></div></div>
+<div class="ttc" id="astructRGPotEngine_1_1Impl_html_a8c07483b6acd962ff04455de5aecb848a791835acc935f1b4722ba4c70c18bacc"><div class="ttname"><a href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848a791835acc935f1b4722ba4c70c18bacc">RGPotEngine::Impl::Backend::Nwchemc</a></div><div class="ttdeci">@ Nwchemc</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8cpp_source.html#l00236">RGPotEngine.cpp:236</a></div></div>
+<div class="ttc" id="astructRGPotEngine_1_1Impl_html_a8c07483b6acd962ff04455de5aecb848ab8a6303c48d4a9a6e202734cbdd02bf2"><div class="ttname"><a href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848ab8a6303c48d4a9a6e202734cbdd02bf2">RGPotEngine::Impl::Backend::Xtb</a></div><div class="ttdeci">@ Xtb</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8cpp_source.html#l00236">RGPotEngine.cpp:236</a></div></div>
+<div class="ttc" id="astructRGPotEngine_1_1Impl_html_a8c07483b6acd962ff04455de5aecb848abb337e726c1713d93fac72a3badd64b8"><div class="ttname"><a href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848abb337e726c1713d93fac72a3badd64b8">RGPotEngine::Impl::Backend::Metatomic</a></div><div class="ttdeci">@ Metatomic</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8cpp_source.html#l00236">RGPotEngine.cpp:236</a></div></div>
 <div class="ttc" id="astructXTBEngineOptions_html_a01475518154082d4c901d4adfca2504a"><div class="ttname"><a href="structXTBEngineOptions.html#a01475518154082d4c901d4adfca2504a">XTBEngineOptions::uhf</a></div><div class="ttdeci">int uhf</div><div class="ttdef"><b>Definition</b> <a href="XTBEngineLoader_8h_source.html#l00016">XTBEngineLoader.h:16</a></div></div>
 <div class="ttc" id="astructXTBEngineOptions_html_a5fc00e571e98d3e6ad9f9c33759f201e"><div class="ttname"><a href="structXTBEngineOptions.html#a5fc00e571e98d3e6ad9f9c33759f201e">XTBEngineOptions::engine_path</a></div><div class="ttdeci">std::string engine_path</div><div class="ttdef"><b>Definition</b> <a href="XTBEngineLoader_8h_source.html#l00017">XTBEngineLoader.h:17</a></div></div>
 <div class="ttc" id="astructXTBEngineOptions_html_a70af5fbbada5662c935cdfe5e15bfeae"><div class="ttname"><a href="structXTBEngineOptions.html#a70af5fbbada5662c935cdfe5e15bfeae">XTBEngineOptions::max_iterations</a></div><div class="ttdeci">int max_iterations</div><div class="ttdef"><b>Definition</b> <a href="XTBEngineLoader_8h_source.html#l00014">XTBEngineLoader.h:14</a></div></div>
@@ -589,20 +623,20 @@ Private Attributes</h2></td></tr>
 <p>After MPI_Finalize, _Exit. </p>
 <p>Library destructors do not run on a finalized MPI world. When rgpot requested an abort at exit (a failed engine call), MPI_Abort replaces MPI_Finalize. No-op unless this process was started as one of several ranks. </p>
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00426">426</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  426</span>                                       {</div>
-<div class="line"><span class="lineno">  427</span><span class="preprocessor">#if defined(__linux__)</span></div>
-<div class="line"><span class="lineno">  428</span>  <span class="keywordflow">if</span> (mpi_world_hint() &lt;= 1)</div>
-<div class="line"><span class="lineno">  429</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  430</span>  <span class="keyword">const</span> EonRgpotGroupMpi *api = group_mpi();</div>
-<div class="line"><span class="lineno">  431</span>  <span class="keywordflow">if</span> (api == <span class="keyword">nullptr</span>)</div>
-<div class="line"><span class="lineno">  432</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  433</span>  <span class="keyword">static</span> std::once_flag once;</div>
-<div class="line"><span class="lineno">  434</span>  std::call_once(once, [api] { ::on_exit(api-&gt;<a class="code hl_variable" href="structEonRgpotGroupMpi.html#aa2f52d2d4c9e70360621a84ba040ff33">hard_exit</a>, <span class="keyword">nullptr</span>); });</div>
-<div class="line"><span class="lineno">  435</span><span class="preprocessor">#else</span></div>
-<div class="line"><span class="lineno">  436</span>  (void)<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">  437</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  438</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00455">455</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  455</span>                                       {</div>
+<div class="line"><span class="lineno">  456</span><span class="preprocessor">#if defined(__linux__)</span></div>
+<div class="line"><span class="lineno">  457</span>  <span class="keywordflow">if</span> (mpi_world_hint() &lt;= 1)</div>
+<div class="line"><span class="lineno">  458</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  459</span>  <span class="keyword">const</span> EonRgpotGroupMpi *api = group_mpi();</div>
+<div class="line"><span class="lineno">  460</span>  <span class="keywordflow">if</span> (api == <span class="keyword">nullptr</span>)</div>
+<div class="line"><span class="lineno">  461</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  462</span>  <span class="keyword">static</span> std::once_flag once;</div>
+<div class="line"><span class="lineno">  463</span>  std::call_once(once, [api] { ::on_exit(api-&gt;<a class="code hl_variable" href="structEonRgpotGroupMpi.html#aa2f52d2d4c9e70360621a84ba040ff33">hard_exit</a>, <span class="keyword">nullptr</span>); });</div>
+<div class="line"><span class="lineno">  464</span><span class="preprocessor">#else</span></div>
+<div class="line"><span class="lineno">  465</span>  (void)<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">  466</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  467</span>}</div>
 <div class="ttc" id="astructEonRgpotGroupMpi_html_aa2f52d2d4c9e70360621a84ba040ff33"><div class="ttname"><a href="structEonRgpotGroupMpi.html#aa2f52d2d4c9e70360621a84ba040ff33">EonRgpotGroupMpi::hard_exit</a></div><div class="ttdeci">void(* hard_exit)(int status, void *arg)</div><div class="ttdoc">on_exit handler: MPI_Abort when rgpot asked for it, else MPI_Finalize, then _Exit.</div><div class="ttdef"><b>Definition</b> <a href="RgpotGroupMpi_8h_source.html#l00021">RgpotGroupMpi.h:21</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -630,20 +664,22 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00493">493</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  493</span>                                  {</div>
-<div class="line"><span class="lineno">  494</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>)</div>
-<div class="line"><span class="lineno">  495</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  496</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend == <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848a791835acc935f1b4722ba4c70c18bacc">Impl::Backend::Nwchemc</a> &amp;&amp; <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;nwchem)</div>
-<div class="line"><span class="lineno">  497</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;nwchem-&gt;available();</div>
-<div class="line"><span class="lineno">  498</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend == <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848a6821cd3ce80de46e41ba282f7a8f20f0">Impl::Backend::Cpmdc</a> &amp;&amp; <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;cpmd)</div>
-<div class="line"><span class="lineno">  499</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;cpmd-&gt;available();</div>
-<div class="line"><span class="lineno">  500</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend == <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848abb337e726c1713d93fac72a3badd64b8">Impl::Backend::Metatomic</a> &amp;&amp; <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;metatomic)</div>
-<div class="line"><span class="lineno">  501</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;metatomic-&gt;available();</div>
-<div class="line"><span class="lineno">  502</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend == <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848ab8a6303c48d4a9a6e202734cbdd02bf2">Impl::Backend::Xtb</a> &amp;&amp; <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;xtb)</div>
-<div class="line"><span class="lineno">  503</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;xtb-&gt;available();</div>
-<div class="line"><span class="lineno">  504</span>  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  505</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00522">522</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  522</span>                                  {</div>
+<div class="line"><span class="lineno">  523</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>)</div>
+<div class="line"><span class="lineno">  524</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  525</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend == <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848a791835acc935f1b4722ba4c70c18bacc">Impl::Backend::Nwchemc</a> &amp;&amp; <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;nwchem)</div>
+<div class="line"><span class="lineno">  526</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;nwchem-&gt;available();</div>
+<div class="line"><span class="lineno">  527</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend == <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848a6821cd3ce80de46e41ba282f7a8f20f0">Impl::Backend::Cpmdc</a> &amp;&amp; <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;cpmd)</div>
+<div class="line"><span class="lineno">  528</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;cpmd-&gt;available();</div>
+<div class="line"><span class="lineno">  529</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend == <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848abb337e726c1713d93fac72a3badd64b8">Impl::Backend::Metatomic</a> &amp;&amp; <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;metatomic)</div>
+<div class="line"><span class="lineno">  530</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;metatomic-&gt;available();</div>
+<div class="line"><span class="lineno">  531</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend == <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848a747fc9cc9a0245b4da2ea33437eaabd1">Impl::Backend::Uma</a> &amp;&amp; <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;uma)</div>
+<div class="line"><span class="lineno">  532</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;uma-&gt;available();</div>
+<div class="line"><span class="lineno">  533</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend == <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848ab8a6303c48d4a9a6e202734cbdd02bf2">Impl::Backend::Xtb</a> &amp;&amp; <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;xtb)</div>
+<div class="line"><span class="lineno">  534</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;xtb-&gt;available();</div>
+<div class="line"><span class="lineno">  535</span>  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  536</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -670,8 +706,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00054">54</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   54</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a>; }</div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00058">58</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   58</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#af46f6efc49b39d315e7fa1f4cafde8e1">backend_</a>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -697,14 +733,14 @@ Private Attributes</h2></td></tr>
 <p>Collective on MPI_COMM_WORLD: every rank leaves with world rank 0's bytes. </p>
 <p>A no-op on one rank. </p>
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00452">452</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  452</span>                                                                       {</div>
-<div class="line"><span class="lineno">  453</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a> || <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;world &lt;= 1 || bytes == 0)</div>
-<div class="line"><span class="lineno">  454</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  455</span>  <span class="comment">// World rank 0 is the first rank of calculator 0.</span></div>
-<div class="line"><span class="lineno">  456</span>  <span class="keywordflow">if</span> (::rgpot::shareFromCalculator(0, data, bytes) == 0)</div>
-<div class="line"><span class="lineno">  457</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;RGPOT: could not broadcast from the driver rank&quot;</span>);</div>
-<div class="line"><span class="lineno">  458</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00481">481</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  481</span>                                                                       {</div>
+<div class="line"><span class="lineno">  482</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a> || <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;world &lt;= 1 || bytes == 0)</div>
+<div class="line"><span class="lineno">  483</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  484</span>  <span class="comment">// World rank 0 is the first rank of calculator 0.</span></div>
+<div class="line"><span class="lineno">  485</span>  <span class="keywordflow">if</span> (::rgpot::shareFromCalculator(0, data, bytes) == 0)</div>
+<div class="line"><span class="lineno">  486</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;RGPOT: could not broadcast from the driver rank&quot;</span>);</div>
+<div class="line"><span class="lineno">  487</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -733,10 +769,10 @@ Private Attributes</h2></td></tr>
 
 <p>Number of calculator groups the MPI world is split into (1 when ranks_per_image is off) and the group this rank belongs to. </p>
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00398">398</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  398</span>                                                 {</div>
-<div class="line"><span class="lineno">  399</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a> ? <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;groups : 1;</div>
-<div class="line"><span class="lineno">  400</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00427">427</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  427</span>                                                 {</div>
+<div class="line"><span class="lineno">  428</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a> ? <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;groups : 1;</div>
+<div class="line"><span class="lineno">  429</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -763,10 +799,10 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00402">402</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  402</span>                                                {</div>
-<div class="line"><span class="lineno">  403</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a> ? <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;group : 0;</div>
-<div class="line"><span class="lineno">  404</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00431">431</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  431</span>                                                {</div>
+<div class="line"><span class="lineno">  432</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a> ? <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;group : 0;</div>
+<div class="line"><span class="lineno">  433</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -795,10 +831,10 @@ Private Attributes</h2></td></tr>
 
 <p>Ranks in the MPI world the groups were bound on (1 without MPI). </p>
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00406">406</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  406</span>                                                {</div>
-<div class="line"><span class="lineno">  407</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a> ? <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;world : 1;</div>
-<div class="line"><span class="lineno">  408</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00435">435</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  435</span>                                                {</div>
+<div class="line"><span class="lineno">  436</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a> ? <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;world : 1;</div>
+<div class="line"><span class="lineno">  437</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -819,11 +855,11 @@ Private Attributes</h2></td></tr>
 
 <p>Registers MPI_Finalize at exit (once per process) when the world has more than one rank. </p>
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00417">417</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  417</span>                                          {</div>
-<div class="line"><span class="lineno">  418</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a> &amp;&amp; <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;world &gt; 1)</div>
-<div class="line"><span class="lineno">  419</span>    ::rgpot::finalizeMpiAtExit();</div>
-<div class="line"><span class="lineno">  420</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00446">446</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  446</span>                                          {</div>
+<div class="line"><span class="lineno">  447</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a> &amp;&amp; <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;world &gt; 1)</div>
+<div class="line"><span class="lineno">  448</span>    ::rgpot::finalizeMpiAtExit();</div>
+<div class="line"><span class="lineno">  449</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -866,19 +902,19 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00533">533</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  534</span>                                                                       {</div>
-<div class="line"><span class="lineno">  535</span>  <a class="code hl_function" href="#a7385980d95885de5a833360fe8af5c92">forceEngine</a>(N, R, atomicNrs, F, U, box);</div>
-<div class="line"><span class="lineno">  536</span>  <span class="comment">// Set on one rank by the multi-rank failure test. The text is the</span></div>
-<div class="line"><span class="lineno">  537</span>  <span class="comment">// engine error that rank has to deliver to rank 0. It is raised after</span></div>
-<div class="line"><span class="lineno">  538</span>  <span class="comment">// the engine call, where an engine error surfaces, so the rank has</span></div>
-<div class="line"><span class="lineno">  539</span>  <span class="comment">// already taken part in every collective the engine runs.</span></div>
-<div class="line"><span class="lineno">  540</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *fail = std::getenv(<span class="stringliteral">&quot;RGPOT_FORCE_FAIL&quot;</span>)) {</div>
-<div class="line"><span class="lineno">  541</span>    <span class="keywordflow">if</span> (fail[0] != <span class="charliteral">&#39;\0&#39;</span>)</div>
-<div class="line"><span class="lineno">  542</span>      <span class="keywordflow">throw</span> std::runtime_error(fail);</div>
-<div class="line"><span class="lineno">  543</span>  }</div>
-<div class="line"><span class="lineno">  544</span>}</div>
-<div class="ttc" id="aclassRGPotEngine_html_a7385980d95885de5a833360fe8af5c92"><div class="ttname"><a href="#a7385980d95885de5a833360fe8af5c92">RGPotEngine::forceEngine</a></div><div class="ttdeci">void forceEngine(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box) const</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8cpp_source.html#l00546">RGPotEngine.cpp:546</a></div></div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00564">564</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  565</span>                                                                       {</div>
+<div class="line"><span class="lineno">  566</span>  <a class="code hl_function" href="#a7385980d95885de5a833360fe8af5c92">forceEngine</a>(N, R, atomicNrs, F, U, box);</div>
+<div class="line"><span class="lineno">  567</span>  <span class="comment">// Set on one rank by the multi-rank failure test. The text is the</span></div>
+<div class="line"><span class="lineno">  568</span>  <span class="comment">// engine error that rank has to deliver to rank 0. It is raised after</span></div>
+<div class="line"><span class="lineno">  569</span>  <span class="comment">// the engine call, where an engine error surfaces, so the rank has</span></div>
+<div class="line"><span class="lineno">  570</span>  <span class="comment">// already taken part in every collective the engine runs.</span></div>
+<div class="line"><span class="lineno">  571</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *fail = std::getenv(<span class="stringliteral">&quot;RGPOT_FORCE_FAIL&quot;</span>)) {</div>
+<div class="line"><span class="lineno">  572</span>    <span class="keywordflow">if</span> (fail[0] != <span class="charliteral">&#39;\0&#39;</span>)</div>
+<div class="line"><span class="lineno">  573</span>      <span class="keywordflow">throw</span> std::runtime_error(fail);</div>
+<div class="line"><span class="lineno">  574</span>  }</div>
+<div class="line"><span class="lineno">  575</span>}</div>
+<div class="ttc" id="aclassRGPotEngine_html_a7385980d95885de5a833360fe8af5c92"><div class="ttname"><a href="#a7385980d95885de5a833360fe8af5c92">RGPotEngine::forceEngine</a></div><div class="ttdeci">void forceEngine(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box) const</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8cpp_source.html#l00577">RGPotEngine.cpp:577</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -929,46 +965,59 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00546">546</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  547</span>                                                                             {</div>
-<div class="line"><span class="lineno">  548</span>  <span class="keywordflow">if</span> (N &lt;= 0)</div>
-<div class="line"><span class="lineno">  549</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;RGPotEngine::force called with N &lt;= 0&quot;</span>);</div>
-<div class="line"><span class="lineno">  550</span> </div>
-<div class="line"><span class="lineno">  551</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> positions(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(N), 3);</div>
-<div class="line"><span class="lineno">  552</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; N; ++i) {</div>
-<div class="line"><span class="lineno">  553</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> ii = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(i);</div>
-<div class="line"><span class="lineno">  554</span>    positions(ii, 0) = R[3 * i + 0];</div>
-<div class="line"><span class="lineno">  555</span>    positions(ii, 1) = R[3 * i + 1];</div>
-<div class="line"><span class="lineno">  556</span>    positions(ii, 2) = R[3 * i + 2];</div>
-<div class="line"><span class="lineno">  557</span>  }</div>
-<div class="line"><span class="lineno">  558</span>  std::vector&lt;int&gt; atmtypes(atomicNrs, atomicNrs + N);</div>
-<div class="line"><span class="lineno">  559</span>  <span class="keyword">const</span> <span class="keyword">auto</span> cell = box_from_row_major(box);</div>
-<div class="line"><span class="lineno">  560</span> </div>
-<div class="line"><span class="lineno">  561</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend == <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848abb337e726c1713d93fac72a3badd64b8">Impl::Backend::Metatomic</a>) {</div>
-<div class="line"><span class="lineno">  562</span>    <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;metatomic-&gt;force(N, R, atomicNrs, F, U, <span class="keyword">nullptr</span>, box);</div>
-<div class="line"><span class="lineno">  563</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  564</span>  }</div>
-<div class="line"><span class="lineno">  565</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend == <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848ab8a6303c48d4a9a6e202734cbdd02bf2">Impl::Backend::Xtb</a>) {</div>
-<div class="line"><span class="lineno">  566</span>    <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;xtb-&gt;force(N, R, atomicNrs, F, U, <span class="keyword">nullptr</span>, box);</div>
-<div class="line"><span class="lineno">  567</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  568</span>  }</div>
-<div class="line"><span class="lineno">  569</span> </div>
-<div class="line"><span class="lineno">  570</span>  <span class="comment">// rgpot &gt;= 2.5.0: operator() returns (energy, forces, variance).</span></div>
-<div class="line"><span class="lineno">  571</span>  std::tuple&lt;double, AtomMatrix, double&gt; result;</div>
-<div class="line"><span class="lineno">  572</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend == <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848a791835acc935f1b4722ba4c70c18bacc">Impl::Backend::Nwchemc</a>)</div>
-<div class="line"><span class="lineno">  573</span>    result = (*<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;nwchem)(positions, atmtypes, cell);</div>
-<div class="line"><span class="lineno">  574</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  575</span>    result = (*<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;cpmd)(positions, atmtypes, cell);</div>
-<div class="line"><span class="lineno">  576</span> </div>
-<div class="line"><span class="lineno">  577</span>  *U = std::get&lt;0&gt;(result);</div>
-<div class="line"><span class="lineno">  578</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;forces = std::get&lt;1&gt;(result);</div>
-<div class="line"><span class="lineno">  579</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; N; ++i) {</div>
-<div class="line"><span class="lineno">  580</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> ii = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(i);</div>
-<div class="line"><span class="lineno">  581</span>    F[3 * i + 0] = forces(ii, 0);</div>
-<div class="line"><span class="lineno">  582</span>    F[3 * i + 1] = forces(ii, 1);</div>
-<div class="line"><span class="lineno">  583</span>    F[3 * i + 2] = forces(ii, 2);</div>
-<div class="line"><span class="lineno">  584</span>  }</div>
-<div class="line"><span class="lineno">  585</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00577">577</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  578</span>                                                                             {</div>
+<div class="line"><span class="lineno">  579</span>  <span class="keywordflow">if</span> (N &lt;= 0)</div>
+<div class="line"><span class="lineno">  580</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;RGPotEngine::force called with N &lt;= 0&quot;</span>);</div>
+<div class="line"><span class="lineno">  581</span> </div>
+<div class="line"><span class="lineno">  582</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> positions(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(N), 3);</div>
+<div class="line"><span class="lineno">  583</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; N; ++i) {</div>
+<div class="line"><span class="lineno">  584</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> ii = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(i);</div>
+<div class="line"><span class="lineno">  585</span>    positions(ii, 0) = R[3 * i + 0];</div>
+<div class="line"><span class="lineno">  586</span>    positions(ii, 1) = R[3 * i + 1];</div>
+<div class="line"><span class="lineno">  587</span>    positions(ii, 2) = R[3 * i + 2];</div>
+<div class="line"><span class="lineno">  588</span>  }</div>
+<div class="line"><span class="lineno">  589</span>  std::vector&lt;int&gt; atmtypes(atomicNrs, atomicNrs + N);</div>
+<div class="line"><span class="lineno">  590</span>  <span class="keyword">const</span> <span class="keyword">auto</span> cell = box_from_row_major(box);</div>
+<div class="line"><span class="lineno">  591</span> </div>
+<div class="line"><span class="lineno">  592</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend == <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848abb337e726c1713d93fac72a3badd64b8">Impl::Backend::Metatomic</a>) {</div>
+<div class="line"><span class="lineno">  593</span>    <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;metatomic-&gt;force(N, R, atomicNrs, F, U, <span class="keyword">nullptr</span>, box);</div>
+<div class="line"><span class="lineno">  594</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  595</span>  }</div>
+<div class="line"><span class="lineno">  596</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend == <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848a747fc9cc9a0245b4da2ea33437eaabd1">Impl::Backend::Uma</a>) {</div>
+<div class="line"><span class="lineno">  597</span>    <span class="comment">// A molecular .con may omit the cell. A 25 A diagonal stands in, so</span></div>
+<div class="line"><span class="lineno">  598</span>    <span class="comment">// a singular box does not reach the neighbor list.</span></div>
+<div class="line"><span class="lineno">  599</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> got_cell = box &amp;&amp; box[0] &gt; 0.0 &amp;&amp; box[4] &gt; 0.0 &amp;&amp; box[8] &gt; 0.0;</div>
+<div class="line"><span class="lineno">  600</span>    std::array&lt;double, 9&gt; cell_sub{};</div>
+<div class="line"><span class="lineno">  601</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> *effective_box = box;</div>
+<div class="line"><span class="lineno">  602</span>    <span class="keywordflow">if</span> (!got_cell) {</div>
+<div class="line"><span class="lineno">  603</span>      cell_sub[0] = cell_sub[4] = cell_sub[8] = 25.0;</div>
+<div class="line"><span class="lineno">  604</span>      effective_box = cell_sub.data();</div>
+<div class="line"><span class="lineno">  605</span>    }</div>
+<div class="line"><span class="lineno">  606</span>    <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;uma-&gt;force(N, R, atomicNrs, F, U, <span class="keyword">nullptr</span>, effective_box);</div>
+<div class="line"><span class="lineno">  607</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  608</span>  }</div>
+<div class="line"><span class="lineno">  609</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend == <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848ab8a6303c48d4a9a6e202734cbdd02bf2">Impl::Backend::Xtb</a>) {</div>
+<div class="line"><span class="lineno">  610</span>    <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;xtb-&gt;force(N, R, atomicNrs, F, U, <span class="keyword">nullptr</span>, box);</div>
+<div class="line"><span class="lineno">  611</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  612</span>  }</div>
+<div class="line"><span class="lineno">  613</span> </div>
+<div class="line"><span class="lineno">  614</span>  <span class="comment">// rgpot &gt;= 2.5.0: operator() returns (energy, forces, variance).</span></div>
+<div class="line"><span class="lineno">  615</span>  std::tuple&lt;double, AtomMatrix, double&gt; result;</div>
+<div class="line"><span class="lineno">  616</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend == <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848a791835acc935f1b4722ba4c70c18bacc">Impl::Backend::Nwchemc</a>)</div>
+<div class="line"><span class="lineno">  617</span>    result = (*<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;nwchem)(positions, atmtypes, cell);</div>
+<div class="line"><span class="lineno">  618</span>  <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  619</span>    result = (*<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;cpmd)(positions, atmtypes, cell);</div>
+<div class="line"><span class="lineno">  620</span> </div>
+<div class="line"><span class="lineno">  621</span>  *U = std::get&lt;0&gt;(result);</div>
+<div class="line"><span class="lineno">  622</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;forces = std::get&lt;1&gt;(result);</div>
+<div class="line"><span class="lineno">  623</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; N; ++i) {</div>
+<div class="line"><span class="lineno">  624</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> ii = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(i);</div>
+<div class="line"><span class="lineno">  625</span>    F[3 * i + 0] = forces(ii, 0);</div>
+<div class="line"><span class="lineno">  626</span>    F[3 * i + 1] = forces(ii, 1);</div>
+<div class="line"><span class="lineno">  627</span>    F[3 * i + 2] = forces(ii, 2);</div>
+<div class="line"><span class="lineno">  628</span>  }</div>
+<div class="line"><span class="lineno">  629</span>}</div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -998,11 +1047,11 @@ Private Attributes</h2></td></tr>
 
 <p>True when the engine keeps converged orbitals per key. </p>
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00528">528</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  528</span>                                            {</div>
-<div class="line"><span class="lineno">  529</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a> &amp;&amp; <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend == <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848a6821cd3ce80de46e41ba282f7a8f20f0">Impl::Backend::Cpmdc</a> &amp;&amp; <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;cpmd &amp;&amp;</div>
-<div class="line"><span class="lineno">  530</span>         keeps_orbitals_per_key(*<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;cpmd);</div>
-<div class="line"><span class="lineno">  531</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00559">559</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  559</span>                                            {</div>
+<div class="line"><span class="lineno">  560</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a> &amp;&amp; <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend == <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848a6821cd3ce80de46e41ba282f7a8f20f0">Impl::Backend::Cpmdc</a> &amp;&amp; <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;cpmd &amp;&amp;</div>
+<div class="line"><span class="lineno">  561</span>         keeps_orbitals_per_key(*<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;cpmd);</div>
+<div class="line"><span class="lineno">  562</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1031,10 +1080,10 @@ Private Attributes</h2></td></tr>
 
 <p>True once rgpot asked for MPI_Abort at exit in this process. </p>
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00422">422</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  422</span>                                             {</div>
-<div class="line"><span class="lineno">  423</span>  return ::rgpot::mpiAbortRequested();</div>
-<div class="line"><span class="lineno">  424</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00451">451</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  451</span>                                             {</div>
+<div class="line"><span class="lineno">  452</span>  return ::rgpot::mpiAbortRequested();</div>
+<div class="line"><span class="lineno">  453</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1081,11 +1130,11 @@ Private Attributes</h2></td></tr>
 <p>Names the calculation the next <a class="el" href="#af5bffcb28d557da9488f9d75bc6b12e8">force()</a> belongs to (cpmdc: the engine keeps converged orbitals per key, so each image or bead starts its SCF from its own previous orbitals). </p>
 <p>Other backends ignore it. </p>
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00523">523</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  523</span>                                                     {</div>
-<div class="line"><span class="lineno">  524</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a> &amp;&amp; <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend == <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848a6821cd3ce80de46e41ba282f7a8f20f0">Impl::Backend::Cpmdc</a> &amp;&amp; <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;cpmd)</div>
-<div class="line"><span class="lineno">  525</span>    select_orbitals(*<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;cpmd, key);</div>
-<div class="line"><span class="lineno">  526</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00554">554</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  554</span>                                                     {</div>
+<div class="line"><span class="lineno">  555</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a> &amp;&amp; <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;backend == <a class="code hl_enumvalue" href="structRGPotEngine_1_1Impl.html#a8c07483b6acd962ff04455de5aecb848a6821cd3ce80de46e41ba282f7a8f20f0">Impl::Backend::Cpmdc</a> &amp;&amp; <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;cpmd)</div>
+<div class="line"><span class="lineno">  556</span>    select_orbitals(*<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;cpmd, key);</div>
+<div class="line"><span class="lineno">  557</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1131,38 +1180,38 @@ Private Attributes</h2></td></tr>
 <p>Collective on MPI_COMM_WORLD: every rank leaves with the energy and the 3N forces computed by the first rank of group <span class="tt">owner</span>. </p>
 <p>Only CPMD's parent rank holds the true forces, so this also keeps the ranks of one group on the same step. <span class="tt">ok</span> is the owner's status; the return value is the owner's status on every rank. <span class="tt">error</span> is the owner's engine message on every rank. </p>
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00460">460</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  461</span>                                                      {</div>
-<div class="line"><span class="lineno">  462</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a> || <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;world &lt;= 1) {</div>
-<div class="line"><span class="lineno">  463</span>    (void)error;</div>
-<div class="line"><span class="lineno">  464</span>    <span class="keywordflow">return</span> ok;</div>
-<div class="line"><span class="lineno">  465</span>  }</div>
-<div class="line"><span class="lineno">  466</span>  <span class="comment">// Slot 0 carries the owner&#39;s status, so a failed evaluation reaches</span></div>
-<div class="line"><span class="lineno">  467</span>  <span class="comment">// every rank through the same broadcast as a good one.</span></div>
-<div class="line"><span class="lineno">  468</span>  std::vector&lt;double&gt; buf(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(3 * N + 2));</div>
-<div class="line"><span class="lineno">  469</span>  <span class="keywordflow">if</span> (owner == <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;group) {</div>
-<div class="line"><span class="lineno">  470</span>    buf[0] = ok ? 1.0 : 0.0;</div>
-<div class="line"><span class="lineno">  471</span>    buf[1] = *U;</div>
-<div class="line"><span class="lineno">  472</span>    std::copy(F, F + 3 * N, buf.begin() + 2);</div>
-<div class="line"><span class="lineno">  473</span>  }</div>
-<div class="line"><span class="lineno">  474</span>  <span class="keywordflow">if</span> (::rgpot::shareFromCalculator(owner, buf.data(),</div>
-<div class="line"><span class="lineno">  475</span>                                   buf.size() * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>)) == 0)</div>
-<div class="line"><span class="lineno">  476</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;RGPOT: could not share a calculator result&quot;</span>);</div>
-<div class="line"><span class="lineno">  477</span>  *U = buf[1];</div>
-<div class="line"><span class="lineno">  478</span>  std::copy(buf.begin() + 2, buf.end(), F);</div>
-<div class="line"><span class="lineno">  479</span>  <span class="comment">// The owner&#39;s engine text travels with the status. Other ranks hold an</span></div>
-<div class="line"><span class="lineno">  480</span>  <span class="comment">// empty string until this broadcast.</span></div>
-<div class="line"><span class="lineno">  481</span>  std::array&lt;char, 512&gt; msg{};</div>
-<div class="line"><span class="lineno">  482</span>  <span class="keywordflow">if</span> (owner == <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;group &amp;&amp; !<a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a>.empty()) {</div>
-<div class="line"><span class="lineno">  483</span>    <span class="keyword">const</span> <span class="keyword">auto</span> n = std::min(<a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a>.size(), msg.size() - 1);</div>
-<div class="line"><span class="lineno">  484</span>    std::memcpy(msg.data(), <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a>.data(), n);</div>
-<div class="line"><span class="lineno">  485</span>  }</div>
-<div class="line"><span class="lineno">  486</span>  <span class="keywordflow">if</span> (::rgpot::shareFromCalculator(owner, msg.data(), msg.size()) == 0)</div>
-<div class="line"><span class="lineno">  487</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;RGPOT: could not share a calculator error&quot;</span>);</div>
-<div class="line"><span class="lineno">  488</span>  <span class="keywordflow">if</span> (msg[0] != <span class="charliteral">&#39;\0&#39;</span>)</div>
-<div class="line"><span class="lineno">  489</span>    <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a>.assign(msg.data());</div>
-<div class="line"><span class="lineno">  490</span>  <span class="keywordflow">return</span> buf[0] == 1.0;</div>
-<div class="line"><span class="lineno">  491</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00489">489</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  490</span>                                                      {</div>
+<div class="line"><span class="lineno">  491</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a> || <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;world &lt;= 1) {</div>
+<div class="line"><span class="lineno">  492</span>    (void)error;</div>
+<div class="line"><span class="lineno">  493</span>    <span class="keywordflow">return</span> ok;</div>
+<div class="line"><span class="lineno">  494</span>  }</div>
+<div class="line"><span class="lineno">  495</span>  <span class="comment">// Slot 0 carries the owner&#39;s status, so a failed evaluation reaches</span></div>
+<div class="line"><span class="lineno">  496</span>  <span class="comment">// every rank through the same broadcast as a good one.</span></div>
+<div class="line"><span class="lineno">  497</span>  std::vector&lt;double&gt; buf(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(3 * N + 2));</div>
+<div class="line"><span class="lineno">  498</span>  <span class="keywordflow">if</span> (owner == <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;group) {</div>
+<div class="line"><span class="lineno">  499</span>    buf[0] = ok ? 1.0 : 0.0;</div>
+<div class="line"><span class="lineno">  500</span>    buf[1] = *U;</div>
+<div class="line"><span class="lineno">  501</span>    std::copy(F, F + 3 * N, buf.begin() + 2);</div>
+<div class="line"><span class="lineno">  502</span>  }</div>
+<div class="line"><span class="lineno">  503</span>  <span class="keywordflow">if</span> (::rgpot::shareFromCalculator(owner, buf.data(),</div>
+<div class="line"><span class="lineno">  504</span>                                   buf.size() * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>)) == 0)</div>
+<div class="line"><span class="lineno">  505</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;RGPOT: could not share a calculator result&quot;</span>);</div>
+<div class="line"><span class="lineno">  506</span>  *U = buf[1];</div>
+<div class="line"><span class="lineno">  507</span>  std::copy(buf.begin() + 2, buf.end(), F);</div>
+<div class="line"><span class="lineno">  508</span>  <span class="comment">// The owner&#39;s engine text travels with the status. Other ranks hold an</span></div>
+<div class="line"><span class="lineno">  509</span>  <span class="comment">// empty string until this broadcast.</span></div>
+<div class="line"><span class="lineno">  510</span>  std::array&lt;char, 512&gt; msg{};</div>
+<div class="line"><span class="lineno">  511</span>  <span class="keywordflow">if</span> (owner == <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;group &amp;&amp; !<a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a>.empty()) {</div>
+<div class="line"><span class="lineno">  512</span>    <span class="keyword">const</span> <span class="keyword">auto</span> n = std::min(<a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a>.size(), msg.size() - 1);</div>
+<div class="line"><span class="lineno">  513</span>    std::memcpy(msg.data(), <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a>.data(), n);</div>
+<div class="line"><span class="lineno">  514</span>  }</div>
+<div class="line"><span class="lineno">  515</span>  <span class="keywordflow">if</span> (::rgpot::shareFromCalculator(owner, msg.data(), msg.size()) == 0)</div>
+<div class="line"><span class="lineno">  516</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;RGPOT: could not share a calculator error&quot;</span>);</div>
+<div class="line"><span class="lineno">  517</span>  <span class="keywordflow">if</span> (msg[0] != <span class="charliteral">&#39;\0&#39;</span>)</div>
+<div class="line"><span class="lineno">  518</span>    <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a>.assign(msg.data());</div>
+<div class="line"><span class="lineno">  519</span>  <span class="keywordflow">return</span> buf[0] == 1.0;</div>
+<div class="line"><span class="lineno">  520</span>}</div>
 <div class="ttc" id="anamespaceeonc_1_1dynlib_html_a793e2f7806f01afcc170a5b8054f4e6f"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">eonc::dynlib::error</a></div><div class="ttdeci">std::string error()</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00082">DynLib.h:82</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -1192,18 +1241,18 @@ Private Attributes</h2></td></tr>
 
 <p>Calls cpmdc_finalize while the engine is still mapped. MPI stays up. </p>
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00440">440</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  440</span>                                          {</div>
-<div class="line"><span class="lineno">  441</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a> || <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;module_down)</div>
-<div class="line"><span class="lineno">  442</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  443</span>  <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;module_down = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  444</span><span class="preprocessor">#if !defined(_WIN32)</span></div>
-<div class="line"><span class="lineno">  445</span>  <span class="keywordflow">if</span> (<span class="keyword">auto</span> *fin =</div>
-<div class="line"><span class="lineno">  446</span>          <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">void</span> (*)()<span class="keyword">&gt;</span>(dlsym(RTLD_DEFAULT, <span class="stringliteral">&quot;cpmdc_finalize&quot;</span>)))</div>
-<div class="line"><span class="lineno">  447</span>    fin();</div>
-<div class="line"><span class="lineno">  448</span>  pin_cpmd_library({});</div>
-<div class="line"><span class="lineno">  449</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  450</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00469">469</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  469</span>                                          {</div>
+<div class="line"><span class="lineno">  470</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a> || <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;module_down)</div>
+<div class="line"><span class="lineno">  471</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  472</span>  <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;module_down = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  473</span><span class="preprocessor">#if !defined(_WIN32)</span></div>
+<div class="line"><span class="lineno">  474</span>  <span class="keywordflow">if</span> (<span class="keyword">auto</span> *fin =</div>
+<div class="line"><span class="lineno">  475</span>          <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">void</span> (*)()<span class="keyword">&gt;</span>(dlsym(RTLD_DEFAULT, <span class="stringliteral">&quot;cpmdc_finalize&quot;</span>)))</div>
+<div class="line"><span class="lineno">  476</span>    fin();</div>
+<div class="line"><span class="lineno">  477</span>  pin_cpmd_library({});</div>
+<div class="line"><span class="lineno">  478</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  479</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1232,13 +1281,13 @@ Private Attributes</h2></td></tr>
 
 <p>This process's rank in that world (0 without MPI). </p>
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00410">410</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  410</span>                                          {</div>
-<div class="line"><span class="lineno">  411</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a> || <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;world &lt;= 1)</div>
-<div class="line"><span class="lineno">  412</span>    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><span class="lineno">  413</span>  <span class="keyword">const</span> rgpot::CalculatorGroup &amp;g = ::rgpot::thisCalculator();</div>
-<div class="line"><span class="lineno">  414</span>  <span class="keywordflow">return</span> g.index * g.ranks + g.rank_in_group;</div>
-<div class="line"><span class="lineno">  415</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00439">439</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  439</span>                                          {</div>
+<div class="line"><span class="lineno">  440</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a> || <a class="code hl_variable" href="#acc8855b3134bf681a9cb00304c04e55a">impl_</a>-&gt;world &lt;= 1)</div>
+<div class="line"><span class="lineno">  441</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">  442</span>  <span class="keyword">const</span> rgpot::CalculatorGroup &amp;g = ::rgpot::thisCalculator();</div>
+<div class="line"><span class="lineno">  443</span>  <span class="keywordflow">return</span> g.index * g.ranks + g.rank_in_group;</div>
+<div class="line"><span class="lineno">  444</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1263,7 +1312,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00103">103</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00107">107</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
 
 </div>
 </div>
@@ -1287,7 +1336,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00102">102</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00106">106</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
 
 </div>
 </div>

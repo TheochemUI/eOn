@@ -5,5 +5,6 @@ var searchData=
   ['hessian_2ecpp_2',['Hessian.cpp',['../Hessian_8cpp.html',1,'']]],
   ['hessian_2eh_3',['Hessian.h',['../Hessian_8h.html',1,'']]],
   ['hessianjob_2ecpp_4',['HessianJob.cpp',['../HessianJob_8cpp.html',1,'']]],
-  ['hessianjob_2eh_5',['HessianJob.h',['../HessianJob_8h.html',1,'']]]
+  ['hessianjob_2eh_5',['HessianJob.h',['../HessianJob_8h.html',1,'']]],
+  ['hostsurfacepotential_2eh_6',['HostSurfacePotential.h',['../HostSurfacePotential_8h.html',1,'']]]
 ];

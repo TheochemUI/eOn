@@ -11,7 +11,7 @@ var searchData=
   ['weightedspring_8',['WeightedSpring',['../structeonc_1_1neb_1_1WeightedSpring.html',1,'eonc::neb']]],
   ['weighting_9',['weighting',['../structeonc_1_1neb__options__t_1_1spring__options__t.html#a3a84535f8056cb43b2023d970f6bb1a9',1,'eonc::neb_options_t::spring_options_t']]],
   ['wellcurvature_10',['wellCurvature',['../namespaceeonc_1_1tunneling.html#aa0aeb8495929af6bf06268578baf07e8',1,'eonc::tunneling']]],
-  ['what_11',['what',['../classeonc_1_1DimerModeRestoredException.html#aef7053521adb1c5f957dd92d875c5df7',1,'eonc::DimerModeRestoredException']]],
+  ['what_11',['what',['../structeonc_1_1SurfaceRecoverable.html#ae0c10845a909d25986bef7ad995fba4b',1,'eonc::SurfaceRecoverable::what()'],['../classeonc_1_1DimerModeRestoredException.html#aef7053521adb1c5f957dd92d875c5df7',1,'eonc::DimerModeRestoredException::what()']]],
   ['width_12',['width',['../structeonc_1_1DecodedDiv.html#aa3d0fe345070a978a24a8557c9cf703e',1,'eonc::DecodedDiv']]],
   ['window_13',['Window',['../structeonc_1_1neb_1_1zoom_1_1Window.html',1,'eonc::neb::zoom']]],
   ['within_5fradius_14',['within_radius',['../structeonc_1_1prefactor__options__t.html#a42970258e5041f31401f9ceaa21f54c6',1,'eonc::prefactor_options_t']]],
@@ -51,5 +51,5 @@ var searchData=
   ['writepathcon_48',['writePathCon',['../namespaceeonc_1_1neb.html#a97a7096d08e3c06ae953526f3d794259',1,'eonc::neb']]],
   ['writeposcar_49',['writePOSCAR',['../classVASP.html#a4fbbbed55b18a24930fcddeec5108f7d',1,'VASP']]],
   ['writeresultsdat_50',['writeResultsDat',['../structeonc_1_1JobResultEnvelope.html#a49b89d6be57cd79cf5bf95e3bba3d009',1,'eonc::JobResultEnvelope']]],
-  ['writetibble_51',['writeTibble',['../classeonc_1_1Matter.html#a0937750cfe196a94470bbe0f565f6bc8',1,'eonc::Matter::writeTibble()'],['../namespaceeonc_1_1io.html#af6b4831ef3e56d5233f89c5a9689e7ec',1,'eonc::io::writeTibble()']]]
+  ['writetibble_51',['writeTibble',['../classeonc_1_1Matter.html#a0937750cfe196a94470bbe0f565f6bc8',1,'eonc::Matter::writeTibble()'],['../classMatter.html#a0937750cfe196a94470bbe0f565f6bc8',1,'Matter::writeTibble()'],['../namespaceeonc_1_1io.html#af6b4831ef3e56d5233f89c5a9689e7ec',1,'eonc::io::writeTibble()']]]
 ];

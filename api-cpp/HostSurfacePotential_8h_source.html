@@ -1,0 +1,522 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: /home/runner/work/eOn/eOn/client/relax/HostSurfacePotential.h Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn 3.2.0</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('HostSurfacePotential_8h_source.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">HostSurfacePotential.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="HostSurfacePotential_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">/*</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">** This file is part of eOn.</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">**</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">** SPDX-License-Identifier: BSD-3-Clause</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">**</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">** Copyright (c) 2010--present, eOn Development Team</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">** All rights reserved.</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">**</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">** Repo:</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">** https://github.com/TheochemUI/eOn</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">*/</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="Matter_8h.html">eon/Matter.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="Potential_8h.html">eon/Potential.h</a>&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="code" href="eon__relax__engine_8h.html">eon/relax/eon_relax_engine.h</a>&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;stdexcept&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc.html">eonc</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="};">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeonc_1_1SurfaceRecoverable.html">   26</a></span><span class="keyword">struct </span><a class="code hl_function" href="structeonc_1_1SurfaceRecoverable.html#a04cb163c3171ce2c7bc99a3027298f69">SurfaceRecoverable</a> : std::exception {</div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="}">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeonc_1_1SurfaceRecoverable.html#a04cb163c3171ce2c7bc99a3027298f69">   27</a></span>  <span class="keyword">explicit</span> <a class="code hl_function" href="structeonc_1_1SurfaceRecoverable.html#a04cb163c3171ce2c7bc99a3027298f69">SurfaceRecoverable</a>(<span class="keywordtype">int</span> code)</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>      : <a class="code hl_variable" href="structeonc_1_1SurfaceRecoverable.html#a2f7c41027de4ce1b8810dd97affc443f">rc</a>{code} {}</div>
+</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeonc_1_1SurfaceRecoverable.html#a2f7c41027de4ce1b8810dd97affc443f">   29</a></span>  <span class="keywordtype">int</span> <a class="code hl_variable" href="structeonc_1_1SurfaceRecoverable.html#a2f7c41027de4ce1b8810dd97affc443f">rc</a>{0};</div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="}">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeonc_1_1SurfaceRecoverable.html#ae0c10845a909d25986bef7ad995fba4b">   30</a></span>  [[nodiscard]] <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_function" href="structeonc_1_1SurfaceRecoverable.html#ae0c10845a909d25986bef7ad995fba4b">what</a>() const noexcept<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;host surface recoverable&quot;</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>  }</div>
+</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>};</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="};">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeonc_1_1HostSurfacePotential.html">   35</a></span><span class="keyword">class </span><a class="code hl_function" href="classeonc_1_1HostSurfacePotential.html#aa40a3c73db48b62b643e1baf55b401b5">HostSurfacePotential</a> : <span class="keyword">public</span> <a class="code hl_function" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a> {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="}">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeonc_1_1HostSurfacePotential.html#aa40a3c73db48b62b643e1baf55b401b5">   37</a></span>  <a class="code hl_function" href="classeonc_1_1HostSurfacePotential.html#aa40a3c73db48b62b643e1baf55b401b5">HostSurfacePotential</a>(<a class="code hl_typedef" href="eon__relax__engine_8h.html#add0438f9af1370ea3ae4a282bfd956ee">eon_relax_surface_fn</a> fn, <span class="keywordtype">void</span> *user, std::uint64_t epoch)</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>      : <a class="code hl_function" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a>(<a class="code hl_enumeration" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a>::<a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a696b031073e74bf2cb98e5ef201d4aa3">UNKNOWN</a>),</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#ae314c5fefb0e2af299e60d87251cba8b">fn_</a>{fn},</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#a4d9b3ecc02b31a644ac2b3b1e2327907">user_</a>{user},</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#a22e0875dc4ae529dbabb9f09a9981892">epoch_</a>{epoch} {}</div>
+</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="foldopen" id="foldopen00043" data-start="{" data-end="}">
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeonc_1_1HostSurfacePotential.html#a76dafc6a365c5fe7f280ba4a59a349c2">   43</a></span>  [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeonc_1_1HostSurfacePotential.html#a76dafc6a365c5fe7f280ba4a59a349c2">supportsBatchEvaluation</a>() const noexcept<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>  }</div>
+</div>
+<div class="foldopen" id="foldopen00046" data-start="{" data-end="}">
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeonc_1_1HostSurfacePotential.html#aa91340687b534ac1b7788f1fcf78ec7c">   46</a></span>  [[nodiscard]] <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">long</span> <a class="code hl_function" href="classeonc_1_1HostSurfacePotential.html#aa91340687b534ac1b7788f1fcf78ec7c">surfaceEpoch</a>() const noexcept<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#a22e0875dc4ae529dbabb9f09a9981892">epoch_</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  }</div>
+</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeonc_1_1HostSurfacePotential.html#a0c6ceba7c0823eacbf27258d33bd28f5">   49</a></span>  [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeonc_1_1HostSurfacePotential.html#a0c6ceba7c0823eacbf27258d33bd28f5">lastStatus</a>() const noexcept { <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#a6d534a8f0315c7898d56c4670de37552">last_</a>; }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeonc_1_1HostSurfacePotential.html#a52f4f69b270ce696562ee60d36fd9aeb">   50</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1HostSurfacePotential.html#a52f4f69b270ce696562ee60d36fd9aeb">setEpoch</a>(std::uint64_t epoch) { <a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#a22e0875dc4ae529dbabb9f09a9981892">epoch_</a> = epoch; }</div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="}">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeonc_1_1HostSurfacePotential.html#a2ad2a493db47fd1d281973a63a063c1e">   51</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1HostSurfacePotential.html#a2ad2a493db47fd1d281973a63a063c1e">bindPath</a>(<span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; &amp;path) {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#ab75c7b181ae7f8faf89983b3269d17c8">path_</a> = path;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  }</div>
+</div>
+<div class="foldopen" id="foldopen00054" data-start="{" data-end="}">
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeonc_1_1HostSurfacePotential.html#acdbf5ea57f53540c4661601c4ea72559">   54</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1HostSurfacePotential.html#acdbf5ea57f53540c4661601c4ea72559">bindBand</a>(<span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; &amp;path)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <a class="code hl_function" href="classeonc_1_1HostSurfacePotential.html#a2ad2a493db47fd1d281973a63a063c1e">bindPath</a>(path);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>  }</div>
+</div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="}">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeonc_1_1HostSurfacePotential.html#a257d8a808415c0de4cd7a504dd05fff4">   57</a></span>  [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeonc_1_1HostSurfacePotential.html#a257d8a808415c0de4cd7a504dd05fff4">forwardsStoredCell</a>() const noexcept<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>  }</div>
+</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="foldopen" id="foldopen00061" data-start="{" data-end="}">
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeonc_1_1HostSurfacePotential.html#ac48dbee8ac8cf74b615ed611f97fe5d2">   61</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1HostSurfacePotential.html#ac48dbee8ac8cf74b615ed611f97fe5d2">force</a>(<span class="keywordtype">long</span> nAtoms, <span class="keyword">const</span> <span class="keywordtype">double</span> *positions, <span class="keyword">const</span> <span class="keywordtype">int</span> *atomicNrs,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>             <span class="keywordtype">double</span> *forces, <span class="keywordtype">double</span> *energy, <span class="keywordtype">double</span> *variance,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>             <span class="keyword">const</span> <span class="keywordtype">double</span> *box)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> *posv[] = {positions};</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> *nrv[] = {atomicNrs};</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">double</span> *frcv[] = {forces};</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> *boxv[] = {box};</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">double</span> e{0};</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">double</span> var{0};</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#a672d020c751a5786a58135cd0523fb37">count_calls_</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <a class="code hl_function" href="classeonc_1_1HostSurfacePotential.html#ab14149ce2bf83771b6e689dfa6a1a2b1">forceBatch</a>(1, nAtoms, posv, nrv, frcv, &amp;e, &amp;var, boxv);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#a672d020c751a5786a58135cd0523fb37">count_calls_</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordflow">if</span> (energy) {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>      *energy = e;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    }</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordflow">if</span> (variance) {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>      *variance = var;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>  }</div>
+</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="foldopen" id="foldopen00081" data-start="{" data-end="}">
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classeonc_1_1HostSurfacePotential.html#ab14149ce2bf83771b6e689dfa6a1a2b1">   81</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1HostSurfacePotential.html#ab14149ce2bf83771b6e689dfa6a1a2b1">forceBatch</a>(<span class="keywordtype">long</span> nSystems, <span class="keywordtype">long</span> nAtoms, <span class="keyword">const</span> <span class="keywordtype">double</span> *<span class="keyword">const</span> *positions,</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                  <span class="keyword">const</span> <span class="keywordtype">int</span> *<span class="keyword">const</span> *atomicNrs, <span class="keywordtype">double</span> *<span class="keyword">const</span> *forces,</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                  <span class="keywordtype">double</span> *energies, <span class="keywordtype">double</span> *variances,</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                  <span class="keyword">const</span> <span class="keywordtype">double</span> *<span class="keyword">const</span> *boxes)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#ae314c5fefb0e2af299e60d87251cba8b">fn_</a>) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;HostSurfacePotential: NULL surface&quot;</span>);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    }</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> npos = 3 * nAtoms * nSystems;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> nbox = 9 * nSystems;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    std::vector&lt;double&gt; pos(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(npos), 0.0);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    std::vector&lt;double&gt; frc(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(npos), 0.0);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    std::vector&lt;double&gt; box(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nbox), 0.0);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    std::vector&lt;int32_t&gt; z(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nAtoms), 0);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    std::vector&lt;int64_t&gt; ids(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nSystems), 0);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordflow">if</span> (atomicNrs &amp;&amp; atomicNrs[0]) {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> a = 0; a &lt; nAtoms; ++a) {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        z[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(a)] = atomicNrs[0][a];</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>      }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    }</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> s = 0; s &lt; nSystems; ++s) {</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>      int64_t <span class="keywordtype">id</span> = <a class="code hl_define" href="eon__relax__engine_8h.html#aae23e442c0004571bf563ce41190554d">EON_RELAX_IMAGE_NONE</a>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>      <span class="keywordflow">if</span> (positions &amp;&amp; positions[s]) {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#ab75c7b181ae7f8faf89983b3269d17c8">path_</a>.size(); ++i) {</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>          <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#ab75c7b181ae7f8faf89983b3269d17c8">path_</a>[i] &amp;&amp; <a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#ab75c7b181ae7f8faf89983b3269d17c8">path_</a>[i]-&gt;getPositions().data() == positions[s]) {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            <span class="keywordtype">id</span> = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(i);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>          }</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        }</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>      }</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>      ids[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(s)] = <span class="keywordtype">id</span>;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>      <span class="keywordflow">if</span> (positions &amp;&amp; positions[s]) {</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt; 3 * nAtoms; ++k) {</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>          pos[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(s * 3 * nAtoms + k)] = positions[s][k];</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        }</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>      }</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>      <span class="keywordflow">if</span> (boxes &amp;&amp; boxes[s]) {</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt; 9; ++k) {</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>          box[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(s * 9 + k)] = boxes[s][k];</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        }</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>      }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    }</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    std::vector&lt;double&gt; ebuf(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nSystems), 0.0);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    std::vector&lt;double&gt; vbuf(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nSystems), 0.0);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    std::uint64_t new_epoch = <a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#a22e0875dc4ae529dbabb9f09a9981892">epoch_</a>;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <a class="code hl_struct" href="structeon__relax__surface__request__t.html">eon_relax_surface_request_t</a> req{};</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    req.<a class="code hl_variable" href="structeon__relax__surface__request__t.html#ace59d8211cd9ba1a697dac42a7606391">version</a>.<a class="code hl_variable" href="structeon__relax__version__t.html#a9f6cbd3a49305df9429b249187f6405c">major</a> = <a class="code hl_define" href="eon__relax__engine_8h.html#a1e9867c32d64e1dd587e9a06c33fd295">EON_RELAX_ABI_MAJOR</a>;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    req.<a class="code hl_variable" href="structeon__relax__surface__request__t.html#ace59d8211cd9ba1a697dac42a7606391">version</a>.<a class="code hl_variable" href="structeon__relax__version__t.html#ab7946b3cecc8c61fa72cde29ae794fca">minor</a> = <a class="code hl_define" href="eon__relax__engine_8h.html#a3163efec45bfa587d9219d3e6cc7b754">EON_RELAX_ABI_MINOR</a>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    req.<a class="code hl_variable" href="structeon__relax__surface__request__t.html#ad49a64f9412c2b54a17dde151085af22">n_images</a> = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(nSystems);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    req.<a class="code hl_variable" href="structeon__relax__surface__request__t.html#a2354a97e7d63b8387b1f97e94d953086">n_atoms</a> = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(nAtoms);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    req.<a class="code hl_variable" href="structeon__relax__surface__request__t.html#a64be8b657424ea54d2180eb19543797c">positions</a> = pos.data();</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    req.<a class="code hl_variable" href="structeon__relax__surface__request__t.html#a05003afbd1679ad5748dd99eb4217a6e">atomic_nrs</a> = z.data();</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    req.<a class="code hl_variable" href="structeon__relax__surface__request__t.html#a47fb67a1d23faa8b8e92a2fc2e274cdb">boxes</a> = box.data();</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    req.<a class="code hl_variable" href="structeon__relax__surface__request__t.html#a53bef974126ebbc3d6478ad0ada57ebe">image_ids</a> = ids.data();</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    req.<a class="code hl_variable" href="structeon__relax__surface__request__t.html#a373428dbef371cc630ca12d69b88a85a">energies</a> = ebuf.data();</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    req.<a class="code hl_variable" href="structeon__relax__surface__request__t.html#a041dfbff147c59389d3b0ecd928083c4">forces</a> = frc.data();</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    req.<a class="code hl_variable" href="structeon__relax__surface__request__t.html#a6351921b9c6d69ebc4256b0462724001">variances</a> = vbuf.data();</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    req.<a class="code hl_variable" href="structeon__relax__surface__request__t.html#af6e552c91919ac5938bd2d80f3584c72">epoch_out</a> = &amp;new_epoch;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#a6d534a8f0315c7898d56c4670de37552">last_</a> = <a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#ae314c5fefb0e2af299e60d87251cba8b">fn_</a>(<a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#a4d9b3ecc02b31a644ac2b3b1e2327907">user_</a>, &amp;req);</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#a6d534a8f0315c7898d56c4670de37552">last_</a> &lt; 0) {</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;HostSurfacePotential: surface failed&quot;</span>);</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    }</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#a6d534a8f0315c7898d56c4670de37552">last_</a> &gt; 0) {</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>      <span class="keywordflow">throw</span> <a class="code hl_struct" href="structeonc_1_1SurfaceRecoverable.html">SurfaceRecoverable</a>(<a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#a6d534a8f0315c7898d56c4670de37552">last_</a>);</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    }</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keywordflow">if</span> (new_epoch != <a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#a22e0875dc4ae529dbabb9f09a9981892">epoch_</a>) {</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>      <a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#a22e0875dc4ae529dbabb9f09a9981892">epoch_</a> = new_epoch;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    }</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#a672d020c751a5786a58135cd0523fb37">count_calls_</a>) {</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> s = 0; s &lt; nSystems; ++s) {</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        <a class="code hl_variable" href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">forceCallCounter</a>++;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        <a class="code hl_function" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">PotRegistry::get</a>().<a class="code hl_function" href="classeonc_1_1PotRegistry.html#a46a3c876ed01abc8123cd88bc3aae8da">on_force_call</a>(<a class="code hl_variable" href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">ptype</a>);</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>      }</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    }</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> s = 0; s &lt; nSystems; ++s) {</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>      <span class="keywordflow">if</span> (energies) {</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        energies[s] = ebuf[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(s)];</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>      }</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>      <span class="keywordflow">if</span> (variances) {</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        variances[s] = vbuf[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(s)];</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>      }</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>      <span class="keywordflow">if</span> (forces &amp;&amp; forces[s]) {</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt; 3 * nAtoms; ++k) {</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>          forces[s][k] = frc[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(s * 3 * nAtoms + k)];</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        }</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>      }</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    }</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>  }</div>
+</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno"><a class="line" href="classeonc_1_1HostSurfacePotential.html#ae314c5fefb0e2af299e60d87251cba8b">  170</a></span>  <a class="code hl_typedef" href="eon__relax__engine_8h.html#add0438f9af1370ea3ae4a282bfd956ee">eon_relax_surface_fn</a> <a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#ae314c5fefb0e2af299e60d87251cba8b">fn_</a>;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno"><a class="line" href="classeonc_1_1HostSurfacePotential.html#a4d9b3ecc02b31a644ac2b3b1e2327907">  171</a></span>  <span class="keywordtype">void</span> *<a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#a4d9b3ecc02b31a644ac2b3b1e2327907">user_</a>;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno"><a class="line" href="classeonc_1_1HostSurfacePotential.html#a22e0875dc4ae529dbabb9f09a9981892">  172</a></span>  std::uint64_t <a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#a22e0875dc4ae529dbabb9f09a9981892">epoch_</a>{0};</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno"><a class="line" href="classeonc_1_1HostSurfacePotential.html#a6d534a8f0315c7898d56c4670de37552">  173</a></span>  <span class="keywordtype">int</span> <a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#a6d534a8f0315c7898d56c4670de37552">last_</a>{0};</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno"><a class="line" href="classeonc_1_1HostSurfacePotential.html#a672d020c751a5786a58135cd0523fb37">  174</a></span>  <span class="keywordtype">bool</span> <a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#a672d020c751a5786a58135cd0523fb37">count_calls_</a>{<span class="keyword">true</span>};</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno"><a class="line" href="classeonc_1_1HostSurfacePotential.html#ab75c7b181ae7f8faf89983b3269d17c8">  175</a></span>  std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; <a class="code hl_variable" href="classeonc_1_1HostSurfacePotential.html#ab75c7b181ae7f8faf89983b3269d17c8">path_</a>;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>};</div>
+</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>} <span class="comment">// namespace eonc</span></div>
+<div class="ttc" id="aMatter_8h_html"><div class="ttname"><a href="Matter_8h.html">Matter.h</a></div></div>
+<div class="ttc" id="aPotential_8h_html"><div class="ttname"><a href="Potential_8h.html">Potential.h</a></div></div>
+<div class="ttc" id="aclasseonc_1_1HostSurfacePotential_html_a0c6ceba7c0823eacbf27258d33bd28f5"><div class="ttname"><a href="classeonc_1_1HostSurfacePotential.html#a0c6ceba7c0823eacbf27258d33bd28f5">eonc::HostSurfacePotential::lastStatus</a></div><div class="ttdeci">int lastStatus() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="#l00049">HostSurfacePotential.h:49</a></div></div>
+<div class="ttc" id="aclasseonc_1_1HostSurfacePotential_html_a22e0875dc4ae529dbabb9f09a9981892"><div class="ttname"><a href="classeonc_1_1HostSurfacePotential.html#a22e0875dc4ae529dbabb9f09a9981892">eonc::HostSurfacePotential::epoch_</a></div><div class="ttdeci">std::uint64_t epoch_</div><div class="ttdef"><b>Definition</b> <a href="#l00172">HostSurfacePotential.h:172</a></div></div>
+<div class="ttc" id="aclasseonc_1_1HostSurfacePotential_html_a257d8a808415c0de4cd7a504dd05fff4"><div class="ttname"><a href="classeonc_1_1HostSurfacePotential.html#a257d8a808415c0de4cd7a504dd05fff4">eonc::HostSurfacePotential::forwardsStoredCell</a></div><div class="ttdeci">bool forwardsStoredCell() const noexcept override</div><div class="ttdoc">A host that owns the cell reads the stored matrix.</div><div class="ttdef"><b>Definition</b> <a href="#l00057">HostSurfacePotential.h:57</a></div></div>
+<div class="ttc" id="aclasseonc_1_1HostSurfacePotential_html_a2ad2a493db47fd1d281973a63a063c1e"><div class="ttname"><a href="classeonc_1_1HostSurfacePotential.html#a2ad2a493db47fd1d281973a63a063c1e">eonc::HostSurfacePotential::bindPath</a></div><div class="ttdeci">void bindPath(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;path)</div><div class="ttdef"><b>Definition</b> <a href="#l00051">HostSurfacePotential.h:51</a></div></div>
+<div class="ttc" id="aclasseonc_1_1HostSurfacePotential_html_a4d9b3ecc02b31a644ac2b3b1e2327907"><div class="ttname"><a href="classeonc_1_1HostSurfacePotential.html#a4d9b3ecc02b31a644ac2b3b1e2327907">eonc::HostSurfacePotential::user_</a></div><div class="ttdeci">void * user_</div><div class="ttdef"><b>Definition</b> <a href="#l00171">HostSurfacePotential.h:171</a></div></div>
+<div class="ttc" id="aclasseonc_1_1HostSurfacePotential_html_a52f4f69b270ce696562ee60d36fd9aeb"><div class="ttname"><a href="classeonc_1_1HostSurfacePotential.html#a52f4f69b270ce696562ee60d36fd9aeb">eonc::HostSurfacePotential::setEpoch</a></div><div class="ttdeci">void setEpoch(std::uint64_t epoch)</div><div class="ttdef"><b>Definition</b> <a href="#l00050">HostSurfacePotential.h:50</a></div></div>
+<div class="ttc" id="aclasseonc_1_1HostSurfacePotential_html_a672d020c751a5786a58135cd0523fb37"><div class="ttname"><a href="classeonc_1_1HostSurfacePotential.html#a672d020c751a5786a58135cd0523fb37">eonc::HostSurfacePotential::count_calls_</a></div><div class="ttdeci">bool count_calls_</div><div class="ttdef"><b>Definition</b> <a href="#l00174">HostSurfacePotential.h:174</a></div></div>
+<div class="ttc" id="aclasseonc_1_1HostSurfacePotential_html_a6d534a8f0315c7898d56c4670de37552"><div class="ttname"><a href="classeonc_1_1HostSurfacePotential.html#a6d534a8f0315c7898d56c4670de37552">eonc::HostSurfacePotential::last_</a></div><div class="ttdeci">int last_</div><div class="ttdef"><b>Definition</b> <a href="#l00173">HostSurfacePotential.h:173</a></div></div>
+<div class="ttc" id="aclasseonc_1_1HostSurfacePotential_html_a76dafc6a365c5fe7f280ba4a59a349c2"><div class="ttname"><a href="classeonc_1_1HostSurfacePotential.html#a76dafc6a365c5fe7f280ba4a59a349c2">eonc::HostSurfacePotential::supportsBatchEvaluation</a></div><div class="ttdeci">bool supportsBatchEvaluation() const noexcept override</div><div class="ttdoc">Whether this potential supports batched evaluation of N systems in a single call.</div><div class="ttdef"><b>Definition</b> <a href="#l00043">HostSurfacePotential.h:43</a></div></div>
+<div class="ttc" id="aclasseonc_1_1HostSurfacePotential_html_aa40a3c73db48b62b643e1baf55b401b5"><div class="ttname"><a href="classeonc_1_1HostSurfacePotential.html#aa40a3c73db48b62b643e1baf55b401b5">eonc::HostSurfacePotential::HostSurfacePotential</a></div><div class="ttdeci">HostSurfacePotential(eon_relax_surface_fn fn, void *user, std::uint64_t epoch)</div><div class="ttdef"><b>Definition</b> <a href="#l00037">HostSurfacePotential.h:37</a></div></div>
+<div class="ttc" id="aclasseonc_1_1HostSurfacePotential_html_aa91340687b534ac1b7788f1fcf78ec7c"><div class="ttname"><a href="classeonc_1_1HostSurfacePotential.html#aa91340687b534ac1b7788f1fcf78ec7c">eonc::HostSurfacePotential::surfaceEpoch</a></div><div class="ttdeci">unsigned long long surfaceEpoch() const noexcept override</div><div class="ttdoc">Host-visible surface generation.</div><div class="ttdef"><b>Definition</b> <a href="#l00046">HostSurfacePotential.h:46</a></div></div>
+<div class="ttc" id="aclasseonc_1_1HostSurfacePotential_html_ab14149ce2bf83771b6e689dfa6a1a2b1"><div class="ttname"><a href="classeonc_1_1HostSurfacePotential.html#ab14149ce2bf83771b6e689dfa6a1a2b1">eonc::HostSurfacePotential::forceBatch</a></div><div class="ttdeci">void forceBatch(long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes) override</div><div class="ttdef"><b>Definition</b> <a href="#l00081">HostSurfacePotential.h:81</a></div></div>
+<div class="ttc" id="aclasseonc_1_1HostSurfacePotential_html_ab75c7b181ae7f8faf89983b3269d17c8"><div class="ttname"><a href="classeonc_1_1HostSurfacePotential.html#ab75c7b181ae7f8faf89983b3269d17c8">eonc::HostSurfacePotential::path_</a></div><div class="ttdeci">std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; path_</div><div class="ttdef"><b>Definition</b> <a href="#l00175">HostSurfacePotential.h:175</a></div></div>
+<div class="ttc" id="aclasseonc_1_1HostSurfacePotential_html_ac48dbee8ac8cf74b615ed611f97fe5d2"><div class="ttname"><a href="classeonc_1_1HostSurfacePotential.html#ac48dbee8ac8cf74b615ed611f97fe5d2">eonc::HostSurfacePotential::force</a></div><div class="ttdeci">void force(long nAtoms, const double *positions, const int *atomicNrs, double *forces, double *energy, double *variance, const double *box) override</div><div class="ttdef"><b>Definition</b> <a href="#l00061">HostSurfacePotential.h:61</a></div></div>
+<div class="ttc" id="aclasseonc_1_1HostSurfacePotential_html_acdbf5ea57f53540c4661601c4ea72559"><div class="ttname"><a href="classeonc_1_1HostSurfacePotential.html#acdbf5ea57f53540c4661601c4ea72559">eonc::HostSurfacePotential::bindBand</a></div><div class="ttdeci">void bindBand(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;path) override</div><div class="ttdoc">NEB calls this with the finished band before the first force evaluation, so a host surface can name e...</div><div class="ttdef"><b>Definition</b> <a href="#l00054">HostSurfacePotential.h:54</a></div></div>
+<div class="ttc" id="aclasseonc_1_1HostSurfacePotential_html_ae314c5fefb0e2af299e60d87251cba8b"><div class="ttname"><a href="classeonc_1_1HostSurfacePotential.html#ae314c5fefb0e2af299e60d87251cba8b">eonc::HostSurfacePotential::fn_</a></div><div class="ttdeci">eon_relax_surface_fn fn_</div><div class="ttdef"><b>Definition</b> <a href="#l00170">HostSurfacePotential.h:170</a></div></div>
+<div class="ttc" id="aclasseonc_1_1PotRegistry_html_a46a3c876ed01abc8123cd88bc3aae8da"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a46a3c876ed01abc8123cd88bc3aae8da">eonc::PotRegistry::on_force_call</a></div><div class="ttdeci">void on_force_call(PotType t) noexcept override</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00088">PotRegistry.cpp:88</a></div></div>
+<div class="ttc" id="aclasseonc_1_1PotRegistry_html_a5d307a4845d9c0d6d16031a5a637e23b"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">eonc::PotRegistry::get</a></div><div class="ttdeci">static PotRegistry &amp; get() noexcept</div><div class="ttdoc">Process-lifetime singleton.</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00050">PotRegistry.cpp:50</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_a2ae7cca425e3d69d2825c58d1c7704eb"><div class="ttname"><a href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">eonc::Potential::forceCallCounter</a></div><div class="ttdeci">std::atomic&lt; size_t &gt; forceCallCounter</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00056">Potential.h:56</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_ac102f249b890f52d06d96feff8f2047a"><div class="ttname"><a href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">eonc::Potential::ptype</a></div><div class="ttdeci">PotType ptype</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00047">Potential.h:47</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_af81acd9a6775ff13fab861a51fb9ba95"><div class="ttname"><a href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">eonc::Potential::Potential</a></div><div class="ttdeci">Potential(PotType a_ptype)</div><div class="ttdoc">Production default: construction-scope registry, else PotRegistry::get().</div><div class="ttdef"><b>Definition</b> <a href="PotentialParams_8cpp_source.html#l00029">PotentialParams.cpp:29</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html"><div class="ttname"><a href="eon__relax__engine_8h.html">eon_relax_engine.h</a></div><div class="ttdoc">Tier-2 C ABI: eOn as a dlopen relaxation engine.</div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_a1e9867c32d64e1dd587e9a06c33fd295"><div class="ttname"><a href="eon__relax__engine_8h.html#a1e9867c32d64e1dd587e9a06c33fd295">EON_RELAX_ABI_MAJOR</a></div><div class="ttdeci">#define EON_RELAX_ABI_MAJOR</div><div class="ttdef"><b>Definition</b> <a href="eon__relax__engine_8h_source.html#l00072">eon_relax_engine.h:72</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_a3163efec45bfa587d9219d3e6cc7b754"><div class="ttname"><a href="eon__relax__engine_8h.html#a3163efec45bfa587d9219d3e6cc7b754">EON_RELAX_ABI_MINOR</a></div><div class="ttdeci">#define EON_RELAX_ABI_MINOR</div><div class="ttdef"><b>Definition</b> <a href="eon__relax__engine_8h_source.html#l00073">eon_relax_engine.h:73</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_aae23e442c0004571bf563ce41190554d"><div class="ttname"><a href="eon__relax__engine_8h.html#aae23e442c0004571bf563ce41190554d">EON_RELAX_IMAGE_NONE</a></div><div class="ttdeci">#define EON_RELAX_IMAGE_NONE</div><div class="ttdef"><b>Definition</b> <a href="eon__relax__engine_8h_source.html#l00129">eon_relax_engine.h:129</a></div></div>
+<div class="ttc" id="aeon__relax__engine_8h_html_add0438f9af1370ea3ae4a282bfd956ee"><div class="ttname"><a href="eon__relax__engine_8h.html#add0438f9af1370ea3ae4a282bfd956ee">eon_relax_surface_fn</a></div><div class="ttdeci">int(* eon_relax_surface_fn)(void *user, eon_relax_surface_request_t *req)</div><div class="ttdoc">Return 0 on success, positive recoverable, negative fatal.</div><div class="ttdef"><b>Definition</b> <a href="eon__relax__engine_8h_source.html#l00199">eon_relax_engine.h:199</a></div></div>
+<div class="ttc" id="anamespaceeonc_html"><div class="ttname"><a href="namespaceeonc.html">eonc</a></div><div class="ttdoc">RAII resource manager for the ARTn C library with global synchronization.</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00023">ARTnSaddleSearch.cpp:23</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">eonc::PotType</a></div><div class="ttdeci">PotType</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00036">BaseStructures.h:36</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a696b031073e74bf2cb98e5ef201d4aa3"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a696b031073e74bf2cb98e5ef201d4aa3">eonc::PotType::UNKNOWN</a></div><div class="ttdeci">@ UNKNOWN</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00038">BaseStructures.h:38</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html"><div class="ttname"><a href="structeon__relax__surface__request__t.html">eon_relax_surface_request_t</a></div><div class="ttdoc">Host-surface request: one struct, engine-stamped version, so the callback contract grows behind the v...</div><div class="ttdef"><b>Definition</b> <a href="eon__relax__engine_8h_source.html#l00183">eon_relax_engine.h:183</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html_a041dfbff147c59389d3b0ecd928083c4"><div class="ttname"><a href="structeon__relax__surface__request__t.html#a041dfbff147c59389d3b0ecd928083c4">eon_relax_surface_request_t::forces</a></div><div class="ttdeci">double * forces</div><div class="ttdef"><b>Definition</b> <a href="eon__relax__engine_8h_source.html#l00193">eon_relax_engine.h:193</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html_a05003afbd1679ad5748dd99eb4217a6e"><div class="ttname"><a href="structeon__relax__surface__request__t.html#a05003afbd1679ad5748dd99eb4217a6e">eon_relax_surface_request_t::atomic_nrs</a></div><div class="ttdeci">const int32_t * atomic_nrs</div><div class="ttdef"><b>Definition</b> <a href="eon__relax__engine_8h_source.html#l00189">eon_relax_engine.h:189</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html_a2354a97e7d63b8387b1f97e94d953086"><div class="ttname"><a href="structeon__relax__surface__request__t.html#a2354a97e7d63b8387b1f97e94d953086">eon_relax_surface_request_t::n_atoms</a></div><div class="ttdeci">int64_t n_atoms</div><div class="ttdef"><b>Definition</b> <a href="eon__relax__engine_8h_source.html#l00187">eon_relax_engine.h:187</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html_a373428dbef371cc630ca12d69b88a85a"><div class="ttname"><a href="structeon__relax__surface__request__t.html#a373428dbef371cc630ca12d69b88a85a">eon_relax_surface_request_t::energies</a></div><div class="ttdeci">double * energies</div><div class="ttdef"><b>Definition</b> <a href="eon__relax__engine_8h_source.html#l00192">eon_relax_engine.h:192</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html_a47fb67a1d23faa8b8e92a2fc2e274cdb"><div class="ttname"><a href="structeon__relax__surface__request__t.html#a47fb67a1d23faa8b8e92a2fc2e274cdb">eon_relax_surface_request_t::boxes</a></div><div class="ttdeci">const double * boxes</div><div class="ttdef"><b>Definition</b> <a href="eon__relax__engine_8h_source.html#l00190">eon_relax_engine.h:190</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html_a53bef974126ebbc3d6478ad0ada57ebe"><div class="ttname"><a href="structeon__relax__surface__request__t.html#a53bef974126ebbc3d6478ad0ada57ebe">eon_relax_surface_request_t::image_ids</a></div><div class="ttdeci">const int64_t * image_ids</div><div class="ttdef"><b>Definition</b> <a href="eon__relax__engine_8h_source.html#l00191">eon_relax_engine.h:191</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html_a6351921b9c6d69ebc4256b0462724001"><div class="ttname"><a href="structeon__relax__surface__request__t.html#a6351921b9c6d69ebc4256b0462724001">eon_relax_surface_request_t::variances</a></div><div class="ttdeci">double * variances</div><div class="ttdef"><b>Definition</b> <a href="eon__relax__engine_8h_source.html#l00194">eon_relax_engine.h:194</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html_a64be8b657424ea54d2180eb19543797c"><div class="ttname"><a href="structeon__relax__surface__request__t.html#a64be8b657424ea54d2180eb19543797c">eon_relax_surface_request_t::positions</a></div><div class="ttdeci">const double * positions</div><div class="ttdef"><b>Definition</b> <a href="eon__relax__engine_8h_source.html#l00188">eon_relax_engine.h:188</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html_ace59d8211cd9ba1a697dac42a7606391"><div class="ttname"><a href="structeon__relax__surface__request__t.html#ace59d8211cd9ba1a697dac42a7606391">eon_relax_surface_request_t::version</a></div><div class="ttdeci">eon_relax_version_t version</div><div class="ttdef"><b>Definition</b> <a href="eon__relax__engine_8h_source.html#l00184">eon_relax_engine.h:184</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html_ad49a64f9412c2b54a17dde151085af22"><div class="ttname"><a href="structeon__relax__surface__request__t.html#ad49a64f9412c2b54a17dde151085af22">eon_relax_surface_request_t::n_images</a></div><div class="ttdeci">int64_t n_images</div><div class="ttdef"><b>Definition</b> <a href="eon__relax__engine_8h_source.html#l00186">eon_relax_engine.h:186</a></div></div>
+<div class="ttc" id="astructeon__relax__surface__request__t_html_af6e552c91919ac5938bd2d80f3584c72"><div class="ttname"><a href="structeon__relax__surface__request__t.html#af6e552c91919ac5938bd2d80f3584c72">eon_relax_surface_request_t::epoch_out</a></div><div class="ttdeci">uint64_t * epoch_out</div><div class="ttdef"><b>Definition</b> <a href="eon__relax__engine_8h_source.html#l00195">eon_relax_engine.h:195</a></div></div>
+<div class="ttc" id="astructeon__relax__version__t_html_a9f6cbd3a49305df9429b249187f6405c"><div class="ttname"><a href="structeon__relax__version__t.html#a9f6cbd3a49305df9429b249187f6405c">eon_relax_version_t::major</a></div><div class="ttdeci">uint32_t major</div><div class="ttdef"><b>Definition</b> <a href="eon__relax__engine_8h_source.html#l00077">eon_relax_engine.h:77</a></div></div>
+<div class="ttc" id="astructeon__relax__version__t_html_ab7946b3cecc8c61fa72cde29ae794fca"><div class="ttname"><a href="structeon__relax__version__t.html#ab7946b3cecc8c61fa72cde29ae794fca">eon_relax_version_t::minor</a></div><div class="ttdeci">uint32_t minor</div><div class="ttdef"><b>Definition</b> <a href="eon__relax__engine_8h_source.html#l00078">eon_relax_engine.h:78</a></div></div>
+<div class="ttc" id="astructeonc_1_1SurfaceRecoverable_html"><div class="ttname"><a href="structeonc_1_1SurfaceRecoverable.html">eonc::SurfaceRecoverable</a></div><div class="ttdef"><b>Definition</b> <a href="#l00026">HostSurfacePotential.h:26</a></div></div>
+<div class="ttc" id="astructeonc_1_1SurfaceRecoverable_html_a04cb163c3171ce2c7bc99a3027298f69"><div class="ttname"><a href="structeonc_1_1SurfaceRecoverable.html#a04cb163c3171ce2c7bc99a3027298f69">eonc::SurfaceRecoverable::SurfaceRecoverable</a></div><div class="ttdeci">SurfaceRecoverable(int code)</div><div class="ttdef"><b>Definition</b> <a href="#l00027">HostSurfacePotential.h:27</a></div></div>
+<div class="ttc" id="astructeonc_1_1SurfaceRecoverable_html_a2f7c41027de4ce1b8810dd97affc443f"><div class="ttname"><a href="structeonc_1_1SurfaceRecoverable.html#a2f7c41027de4ce1b8810dd97affc443f">eonc::SurfaceRecoverable::rc</a></div><div class="ttdeci">int rc</div><div class="ttdef"><b>Definition</b> <a href="#l00029">HostSurfacePotential.h:29</a></div></div>
+<div class="ttc" id="astructeonc_1_1SurfaceRecoverable_html_ae0c10845a909d25986bef7ad995fba4b"><div class="ttname"><a href="structeonc_1_1SurfaceRecoverable.html#ae0c10845a909d25986bef7ad995fba4b">eonc::SurfaceRecoverable::what</a></div><div class="ttdeci">const char * what() const noexcept override</div><div class="ttdef"><b>Definition</b> <a href="#l00030">HostSurfacePotential.h:30</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="dir_db3a54907829b36871118d03417739cd.html">client</a></li><li class="navelem"><a href="dir_f5f062b0a46407db52f1b6e7934df174.html">relax</a></li><li class="navelem"><a href="HostSurfacePotential_8h.html">HostSurfacePotential.h</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

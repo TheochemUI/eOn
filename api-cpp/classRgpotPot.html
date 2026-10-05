@@ -278,8 +278,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:af81acd9a6775ff13fab861a51fb9ba95 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Production default: construction-scope registry, else <a class="el" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b" title="Process-lifetime singleton.">PotRegistry::get()</a>.  <br /></td></tr>
 <tr class="memitem:a4e175c0617f001c818b78cc147a32172 inherit pub_methods_classeonc_1_1Potential" id="r_a4e175c0617f001c818b78cc147a32172"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a4e175c0617f001c818b78cc147a32172">Potential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> a_ptype, <a class="el" href="classeonc_1_1IPotRegistry.html">IPotRegistry</a> &amp;registry)</td></tr>
 <tr class="memdesc:a4e175c0617f001c818b78cc147a32172 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test seam: injected registry, no process-default get() counters.  <br /></td></tr>
-<tr class="memitem:ac02d0eefd5dd48d49d5bee0ce3298184 inherit pub_methods_classeonc_1_1Potential" id="r_ac02d0eefd5dd48d49d5bee0ce3298184"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac02d0eefd5dd48d49d5bee0ce3298184">Potential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> a_ptype, const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p)</td></tr>
-<tr class="memitem:ac908414bc07e7c33019e01abb4a7d9ee inherit pub_methods_classeonc_1_1Potential" id="r_ac908414bc07e7c33019e01abb4a7d9ee"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac908414bc07e7c33019e01abb4a7d9ee">Potential</a> (const <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> &amp;a_params)</td></tr>
+<tr class="memitem:ac02d0eefd5dd48d49d5bee0ce3298184 inherit pub_methods_classeonc_1_1Potential" id="r_ac02d0eefd5dd48d49d5bee0ce3298184"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac02d0eefd5dd48d49d5bee0ce3298184">Potential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> a_ptype, const <a class="el" href="classParameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:ac908414bc07e7c33019e01abb4a7d9ee inherit pub_methods_classeonc_1_1Potential" id="r_ac908414bc07e7c33019e01abb4a7d9ee"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac908414bc07e7c33019e01abb4a7d9ee">Potential</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;a_params)</td></tr>
 <tr class="memitem:a57af1d92eeff9618f873a0241e390de2 inherit pub_methods_classeonc_1_1Potential" id="r_a57af1d92eeff9618f873a0241e390de2"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a57af1d92eeff9618f873a0241e390de2">~Potential</a> ()</td></tr>
 <tr class="memitem:a57832183eb8dec7c2f1442363d1f7994 inherit pub_methods_classeonc_1_1Potential" id="r_a57832183eb8dec7c2f1442363d1f7994"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a57832183eb8dec7c2f1442363d1f7994">force</a> (std::span&lt; const double &gt; positions, std::span&lt; const int &gt; atomicNrs, std::span&lt; double &gt; forces, double *energy, double *variance, std::span&lt; const double &gt; box)</td></tr>
 <tr class="memdesc:a57832183eb8dec7c2f1442363d1f7994 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">C++ call site: size-checked view over the raw FFI <a class="el" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">force()</a>.  <br /></td></tr>
@@ -287,6 +287,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:af63f26dc7fdff78a6613961ea860f3a1 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional frozen-atom mask (nAtoms*3, 1.0 = fixed).  <br /></td></tr>
 <tr class="memitem:aa2f4f152a44aa2827a6ca08bdd40da81 inherit pub_methods_classeonc_1_1Potential" id="r_aa2f4f152a44aa2827a6ca08bdd40da81"><td class="memItemLeft">std::tuple&lt; double, <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#aa2f4f152a44aa2827a6ca08bdd40da81">get_ef</a> (const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;pos, const VectorXi &amp;atmnrs, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;box)</td></tr>
 <tr class="memitem:a4f0274548044ab1f714e4801352c4547 inherit pub_methods_classeonc_1_1Potential" id="r_a4f0274548044ab1f714e4801352c4547"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a4f0274548044ab1f714e4801352c4547">getType</a> () const</td></tr>
+<tr class="memitem:a2cf63eff38dc537815c7e3811fad7574 inherit pub_methods_classeonc_1_1Potential" id="r_a2cf63eff38dc537815c7e3811fad7574"><td class="memItemLeft">virtual unsigned long long&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a2cf63eff38dc537815c7e3811fad7574">surfaceEpoch</a> () const noexcept</td></tr>
+<tr class="memdesc:a2cf63eff38dc537815c7e3811fad7574 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Host-visible surface generation.  <br /></td></tr>
 <tr class="memitem:a8f4fea1662aaa9e26f7a2ac0862d53f8 inherit pub_methods_classeonc_1_1Potential" id="r_a8f4fea1662aaa9e26f7a2ac0862d53f8"><td class="memItemLeft">virtual double&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a8f4fea1662aaa9e26f7a2ac0862d53f8">finiteCutoff</a> () const noexcept</td></tr>
 <tr class="memdesc:a8f4fea1662aaa9e26f7a2ac0862d53f8 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finite interaction range in position length units.  <br /></td></tr>
 <tr class="memitem:a85b0a3456f6528d8c464ab4b5774878e inherit pub_methods_classeonc_1_1Potential" id="r_a85b0a3456f6528d8c464ab4b5774878e"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a85b0a3456f6528d8c464ab4b5774878e">isSurrogate</a> () const noexcept</td></tr>
@@ -298,6 +300,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a8b83745c9898990f848daafa4c351c2f inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether NEB should create separate <a class="el" href="classeonc_1_1Potential.html">Potential</a> instances per image for true parallel force evaluation.  <br /></td></tr>
 <tr class="memitem:a59bc4af33d113751d3804054b79a4872 inherit pub_methods_classeonc_1_1Potential" id="r_a59bc4af33d113751d3804054b79a4872"><td class="memItemLeft">virtual std::shared_ptr&lt; <a class="el" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a59bc4af33d113751d3804054b79a4872">clonePotential</a> () const</td></tr>
 <tr class="memdesc:a59bc4af33d113751d3804054b79a4872 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Independent instance that does not reload from disk.  <br /></td></tr>
+<tr class="memitem:ac6023d2a81dfa40d946b5b73364a60c9 inherit pub_methods_classeonc_1_1Potential" id="r_ac6023d2a81dfa40d946b5b73364a60c9"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac6023d2a81dfa40d946b5b73364a60c9">bindBand</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;)</td></tr>
+<tr class="memdesc:ac6023d2a81dfa40d946b5b73364a60c9 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">NEB calls this with the finished band before the first force evaluation, so a host surface can name each image.  <br /></td></tr>
+<tr class="memitem:a5e2fb0c0cbe7cf3c1074bb35d8d7cb8f inherit pub_methods_classeonc_1_1Potential" id="r_a5e2fb0c0cbe7cf3c1074bb35d8d7cb8f"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a5e2fb0c0cbe7cf3c1074bb35d8d7cb8f">forwardsStoredCell</a> () const noexcept</td></tr>
+<tr class="memdesc:a5e2fb0c0cbe7cf3c1074bb35d8d7cb8f inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">A host that owns the cell reads the stored matrix.  <br /></td></tr>
 <tr class="memitem:a12bba5921cf3936f25d13563ac49f90f inherit pub_methods_classeonc_1_1Potential" id="r_a12bba5921cf3936f25d13563ac49f90f"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a12bba5921cf3936f25d13563ac49f90f">computesStress</a> () const noexcept</td></tr>
 <tr class="memdesc:a12bba5921cf3936f25d13563ac49f90f inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when <a class="el" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">force()</a> leaves a Cauchy stress that <a class="el" href="classeonc_1_1Potential.html#a98c3cc78cc840b21cb178a4d625437f2" title="Cauchy stress in eV/Angstrom^3.">cauchyStress()</a> can read until the next <a class="el" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">force()</a> on this instance.  <br /></td></tr>
 <tr class="memitem:a98c3cc78cc840b21cb178a4d625437f2 inherit pub_methods_classeonc_1_1Potential" id="r_a98c3cc78cc840b21cb178a4d625437f2"><td class="memItemLeft">virtual <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a98c3cc78cc840b21cb178a4d625437f2">cauchyStress</a> () const</td></tr>
@@ -404,83 +410,84 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">   51</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a7b78f1852bb38cf382a601c4f4ebfb93">xtb_max_iterations</a> = o.xtb_max_iterations;</div>
 <div class="line"><span class="lineno">   52</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#aece5083dcb8102323094779244c07f19">xtb_charge</a> = o.xtb_charge;</div>
 <div class="line"><span class="lineno">   53</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a05cbeb421682b503889b914da920aa08">xtb_uhf</a> = o.xtb_uhf;</div>
-<div class="line"><span class="lineno">   54</span> </div>
-<div class="line"><span class="lineno">   55</span>  <span class="comment">// Env overrides (CI / benchmarks)</span></div>
-<div class="line"><span class="lineno">   56</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_BACKEND&quot;</span>))</div>
-<div class="line"><span class="lineno">   57</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a8dec74e532101f1ce4380e05489f6ad4">backend</a> = e;</div>
-<div class="line"><span class="lineno">   58</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_NWCHEM_BASIS&quot;</span>))</div>
-<div class="line"><span class="lineno">   59</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3cce8b08621932e92a7a234f47bfc314">basis</a> = e;</div>
-<div class="line"><span class="lineno">   60</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_NWCHEM_THEORY&quot;</span>))</div>
-<div class="line"><span class="lineno">   61</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ad922d97dfdfdabc9cb828a45247eb81a">theory</a> = e;</div>
-<div class="line"><span class="lineno">   62</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_NWCHEM_SCF_TYPE&quot;</span>))</div>
-<div class="line"><span class="lineno">   63</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a06e36eb8ac4cb37ce9691971cfb9d08e">scf_type</a> = e;</div>
-<div class="line"><span class="lineno">   64</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_PARAMS_PATH&quot;</span>))</div>
-<div class="line"><span class="lineno">   65</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a7ae5836006e7a47ea0b75091b293e354">params_path</a> = e;</div>
-<div class="line"><span class="lineno">   66</span>  <span class="comment">// Engine-path env overrides are backend-scoped: NWCHEMC_LIBRARY must not</span></div>
-<div class="line"><span class="lineno">   67</span>  <span class="comment">// leak into a cpmdc configure (CPMDPot resolves CPMDC_LIBRARY itself).</span></div>
-<div class="line"><span class="lineno">   68</span>  std::string backend_lc = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a8dec74e532101f1ce4380e05489f6ad4">backend</a>;</div>
-<div class="line"><span class="lineno">   69</span>  std::ranges::transform(backend_lc, backend_lc.begin(),</div>
-<div class="line"><span class="lineno">   70</span>                         [](<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> c) { return std::tolower(c); });</div>
-<div class="line"><span class="lineno">   71</span>  <span class="keywordflow">if</span> (backend_lc.rfind(<span class="stringliteral">&quot;nwchem&quot;</span>, 0) == 0) {</div>
-<div class="line"><span class="lineno">   72</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;NWCHEMC_LIBRARY&quot;</span>))</div>
-<div class="line"><span class="lineno">   73</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
-<div class="line"><span class="lineno">   74</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_NWCHEMC_ENGINE&quot;</span>))</div>
-<div class="line"><span class="lineno">   75</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
-<div class="line"><span class="lineno">   76</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_NWCHEM_ENGINE&quot;</span>))</div>
-<div class="line"><span class="lineno">   77</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
-<div class="line"><span class="lineno">   78</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (backend_lc.rfind(<span class="stringliteral">&quot;cpmd&quot;</span>, 0) == 0) {</div>
-<div class="line"><span class="lineno">   79</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;CPMDC_LIBRARY&quot;</span>))</div>
-<div class="line"><span class="lineno">   80</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
-<div class="line"><span class="lineno">   81</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_CPMDC_ENGINE&quot;</span>))</div>
-<div class="line"><span class="lineno">   82</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
-<div class="line"><span class="lineno">   83</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (backend_lc.rfind(<span class="stringliteral">&quot;meta&quot;</span>, 0) == 0 || backend_lc == <span class="stringliteral">&quot;mta&quot;</span>) {</div>
-<div class="line"><span class="lineno">   84</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_METATOMIC_ENGINE&quot;</span>))</div>
-<div class="line"><span class="lineno">   85</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
-<div class="line"><span class="lineno">   86</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;METATOMIC_ENGINE&quot;</span>))</div>
-<div class="line"><span class="lineno">   87</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
-<div class="line"><span class="lineno">   88</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_METATOMIC_MODEL&quot;</span>))</div>
-<div class="line"><span class="lineno">   89</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb903d95fa45ace3ab69edcaa5cdd64">model_path</a> = e;</div>
-<div class="line"><span class="lineno">   90</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (backend_lc == <span class="stringliteral">&quot;xtb&quot;</span> || backend_lc == <span class="stringliteral">&quot;xtbpot&quot;</span> ||</div>
-<div class="line"><span class="lineno">   91</span>             backend_lc == <span class="stringliteral">&quot;gfn&quot;</span> || backend_lc == <span class="stringliteral">&quot;gfnxtb&quot;</span>) {</div>
-<div class="line"><span class="lineno">   92</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_XTB_ENGINE&quot;</span>))</div>
-<div class="line"><span class="lineno">   93</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
-<div class="line"><span class="lineno">   94</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;XTB_ENGINE&quot;</span>))</div>
-<div class="line"><span class="lineno">   95</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
-<div class="line"><span class="lineno">   96</span>    <span class="keywordflow">if</span> (opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3a761a3378f874ca2e41764d5797cace">xtb_paramset</a>.empty() || opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3a761a3378f874ca2e41764d5797cace">xtb_paramset</a> == <span class="stringliteral">&quot;GFN2xTB&quot;</span>) {</div>
-<div class="line"><span class="lineno">   97</span>      <span class="keywordflow">if</span> (!p.<a class="code hl_function" href="classeonc_1_1Parameters.html#a30580f564a20e0ddaa54990c279df0de">xtb_options</a>().<a class="code hl_variable" href="structeonc_1_1xtb__options__t.html#a206f24650cc1424d68e592468c7a7a86">paramset</a>.empty())</div>
-<div class="line"><span class="lineno">   98</span>        opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3a761a3378f874ca2e41764d5797cace">xtb_paramset</a> = p.<a class="code hl_function" href="classeonc_1_1Parameters.html#a30580f564a20e0ddaa54990c279df0de">xtb_options</a>().<a class="code hl_variable" href="structeonc_1_1xtb__options__t.html#a206f24650cc1424d68e592468c7a7a86">paramset</a>;</div>
-<div class="line"><span class="lineno">   99</span>    }</div>
-<div class="line"><span class="lineno">  100</span>  }</div>
-<div class="line"><span class="lineno">  101</span> </div>
-<div class="line"><span class="lineno">  102</span>  <span class="comment">// Dual-read [Metatomic] when RGPOT backend is metatomic</span></div>
-<div class="line"><span class="lineno">  103</span>  <span class="keywordflow">if</span> ((backend_lc.rfind(<span class="stringliteral">&quot;meta&quot;</span>, 0) == 0 || backend_lc == <span class="stringliteral">&quot;mta&quot;</span>) &amp;&amp;</div>
-<div class="line"><span class="lineno">  104</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb903d95fa45ace3ab69edcaa5cdd64">model_path</a>.empty())</div>
-<div class="line"><span class="lineno">  105</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb903d95fa45ace3ab69edcaa5cdd64">model_path</a> = p.<a class="code hl_function" href="classeonc_1_1Parameters.html#a021fc65b0ee76c5adaea0ecdd803e706">metatomic_options</a>().<a class="code hl_variable" href="structeonc_1_1metatomic__options__t.html#a16029a798ddf5bea97fdfa3854253a64">model_path</a>;</div>
-<div class="line"><span class="lineno">  106</span>  <span class="keywordflow">if</span> ((backend_lc.rfind(<span class="stringliteral">&quot;meta&quot;</span>, 0) == 0 || backend_lc == <span class="stringliteral">&quot;mta&quot;</span>) &amp;&amp;</div>
-<div class="line"><span class="lineno">  107</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb38b12db96f664dd9c0ca9b8b9bb8a">device</a> == <span class="stringliteral">&quot;cpu&quot;</span> &amp;&amp; !p.<a class="code hl_function" href="classeonc_1_1Parameters.html#a021fc65b0ee76c5adaea0ecdd803e706">metatomic_options</a>().<a class="code hl_variable" href="structeonc_1_1metatomic__options__t.html#a0d3458d1458652392970a0a5a42d5ec4">device</a>.empty())</div>
-<div class="line"><span class="lineno">  108</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb38b12db96f664dd9c0ca9b8b9bb8a">device</a> = p.<a class="code hl_function" href="classeonc_1_1Parameters.html#a021fc65b0ee76c5adaea0ecdd803e706">metatomic_options</a>().<a class="code hl_variable" href="structeonc_1_1metatomic__options__t.html#a0d3458d1458652392970a0a5a42d5ec4">device</a>;</div>
-<div class="line"><span class="lineno">  109</span> </div>
-<div class="line"><span class="lineno">  110</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a> = std::make_unique&lt;RGPotEngine&gt;(opt);</div>
-<div class="line"><span class="lineno">  111</span>  <a class="code hl_variable" href="#a36cfb3ad59f4bc1bd797a9ef8c033976">backend_</a> = <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;backend();</div>
-<div class="line"><span class="lineno">  112</span>  <a class="code hl_variable" href="#aa510f91f12397e12b96ccde20b0a3e9a">driver_</a> = <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;worldRank() == 0;</div>
-<div class="line"><span class="lineno">  113</span>  std::cout</div>
-<div class="line"><span class="lineno">  114</span>      &lt;&lt; <span class="stringliteral">&quot;RgpotPot: in-process rgpot backend=&quot;</span> &lt;&lt; <a class="code hl_variable" href="#a36cfb3ad59f4bc1bd797a9ef8c033976">backend_</a></div>
-<div class="line"><span class="lineno">  115</span>      &lt;&lt; <span class="stringliteral">&quot; (dlopen: &quot;</span></div>
-<div class="line"><span class="lineno">  116</span>         <span class="stringliteral">&quot;libnwchemc/libcpmdc/librgpot_metatomic_engine/librgpot_xtb_engine)&quot;</span></div>
-<div class="line"><span class="lineno">  117</span>      &lt;&lt; std::endl;</div>
-<div class="line"><span class="lineno">  118</span>  <span class="comment">// Finalize is registered first. The grouped-exit handler is next, and</span></div>
-<div class="line"><span class="lineno">  119</span>  <span class="comment">// the stop handler is last, so exit runs stop, then Finalize, then _Exit.</span></div>
-<div class="line"><span class="lineno">  120</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;finalizeMpiAtExit();</div>
-<div class="line"><span class="lineno">  121</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;armGroupedExit();</div>
-<div class="line"><span class="lineno">  122</span>  <a class="code hl_function" href="#ae87ceb0b49847c3ae9e3d0773dc49478">releaseWorkersAtExit</a>();</div>
-<div class="line"><span class="lineno">  123</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aa510f91f12397e12b96ccde20b0a3e9a">driver_</a>)</div>
-<div class="line"><span class="lineno">  124</span>    <a class="code hl_function" href="#acab2b31e6271c7e676fa1ce814df2c49">serveWorker</a>();</div>
-<div class="line"><span class="lineno">  125</span>}</div>
+<div class="line"><span class="lineno">   54</span>  opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ac1be0b6b290f5f1e81ef6c2e870c9a18">task_name</a> = o.task_name;</div>
+<div class="line"><span class="lineno">   55</span> </div>
+<div class="line"><span class="lineno">   56</span>  <span class="comment">// Env overrides (CI / benchmarks)</span></div>
+<div class="line"><span class="lineno">   57</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_BACKEND&quot;</span>))</div>
+<div class="line"><span class="lineno">   58</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a8dec74e532101f1ce4380e05489f6ad4">backend</a> = e;</div>
+<div class="line"><span class="lineno">   59</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_NWCHEM_BASIS&quot;</span>))</div>
+<div class="line"><span class="lineno">   60</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3cce8b08621932e92a7a234f47bfc314">basis</a> = e;</div>
+<div class="line"><span class="lineno">   61</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_NWCHEM_THEORY&quot;</span>))</div>
+<div class="line"><span class="lineno">   62</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ad922d97dfdfdabc9cb828a45247eb81a">theory</a> = e;</div>
+<div class="line"><span class="lineno">   63</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_NWCHEM_SCF_TYPE&quot;</span>))</div>
+<div class="line"><span class="lineno">   64</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a06e36eb8ac4cb37ce9691971cfb9d08e">scf_type</a> = e;</div>
+<div class="line"><span class="lineno">   65</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_PARAMS_PATH&quot;</span>))</div>
+<div class="line"><span class="lineno">   66</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a7ae5836006e7a47ea0b75091b293e354">params_path</a> = e;</div>
+<div class="line"><span class="lineno">   67</span>  <span class="comment">// Engine-path env overrides are backend-scoped: NWCHEMC_LIBRARY must not</span></div>
+<div class="line"><span class="lineno">   68</span>  <span class="comment">// leak into a cpmdc configure (CPMDPot resolves CPMDC_LIBRARY itself).</span></div>
+<div class="line"><span class="lineno">   69</span>  std::string backend_lc = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a8dec74e532101f1ce4380e05489f6ad4">backend</a>;</div>
+<div class="line"><span class="lineno">   70</span>  std::ranges::transform(backend_lc, backend_lc.begin(),</div>
+<div class="line"><span class="lineno">   71</span>                         [](<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> c) { return std::tolower(c); });</div>
+<div class="line"><span class="lineno">   72</span>  <span class="keywordflow">if</span> (backend_lc.rfind(<span class="stringliteral">&quot;nwchem&quot;</span>, 0) == 0) {</div>
+<div class="line"><span class="lineno">   73</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;NWCHEMC_LIBRARY&quot;</span>))</div>
+<div class="line"><span class="lineno">   74</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
+<div class="line"><span class="lineno">   75</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_NWCHEMC_ENGINE&quot;</span>))</div>
+<div class="line"><span class="lineno">   76</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
+<div class="line"><span class="lineno">   77</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_NWCHEM_ENGINE&quot;</span>))</div>
+<div class="line"><span class="lineno">   78</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
+<div class="line"><span class="lineno">   79</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (backend_lc.rfind(<span class="stringliteral">&quot;cpmd&quot;</span>, 0) == 0) {</div>
+<div class="line"><span class="lineno">   80</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;CPMDC_LIBRARY&quot;</span>))</div>
+<div class="line"><span class="lineno">   81</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
+<div class="line"><span class="lineno">   82</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_CPMDC_ENGINE&quot;</span>))</div>
+<div class="line"><span class="lineno">   83</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
+<div class="line"><span class="lineno">   84</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (backend_lc.rfind(<span class="stringliteral">&quot;meta&quot;</span>, 0) == 0 || backend_lc == <span class="stringliteral">&quot;mta&quot;</span>) {</div>
+<div class="line"><span class="lineno">   85</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_METATOMIC_ENGINE&quot;</span>))</div>
+<div class="line"><span class="lineno">   86</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
+<div class="line"><span class="lineno">   87</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;METATOMIC_ENGINE&quot;</span>))</div>
+<div class="line"><span class="lineno">   88</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
+<div class="line"><span class="lineno">   89</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_METATOMIC_MODEL&quot;</span>))</div>
+<div class="line"><span class="lineno">   90</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb903d95fa45ace3ab69edcaa5cdd64">model_path</a> = e;</div>
+<div class="line"><span class="lineno">   91</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (backend_lc == <span class="stringliteral">&quot;xtb&quot;</span> || backend_lc == <span class="stringliteral">&quot;xtbpot&quot;</span> ||</div>
+<div class="line"><span class="lineno">   92</span>             backend_lc == <span class="stringliteral">&quot;gfn&quot;</span> || backend_lc == <span class="stringliteral">&quot;gfnxtb&quot;</span>) {</div>
+<div class="line"><span class="lineno">   93</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_XTB_ENGINE&quot;</span>))</div>
+<div class="line"><span class="lineno">   94</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
+<div class="line"><span class="lineno">   95</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;XTB_ENGINE&quot;</span>))</div>
+<div class="line"><span class="lineno">   96</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a> = e;</div>
+<div class="line"><span class="lineno">   97</span>    <span class="keywordflow">if</span> (opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3a761a3378f874ca2e41764d5797cace">xtb_paramset</a>.empty() || opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3a761a3378f874ca2e41764d5797cace">xtb_paramset</a> == <span class="stringliteral">&quot;GFN2xTB&quot;</span>) {</div>
+<div class="line"><span class="lineno">   98</span>      <span class="keywordflow">if</span> (!p.<a class="code hl_function" href="classeonc_1_1Parameters.html#a30580f564a20e0ddaa54990c279df0de">xtb_options</a>().<a class="code hl_variable" href="structeonc_1_1xtb__options__t.html#a206f24650cc1424d68e592468c7a7a86">paramset</a>.empty())</div>
+<div class="line"><span class="lineno">   99</span>        opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a3a761a3378f874ca2e41764d5797cace">xtb_paramset</a> = p.<a class="code hl_function" href="classeonc_1_1Parameters.html#a30580f564a20e0ddaa54990c279df0de">xtb_options</a>().<a class="code hl_variable" href="structeonc_1_1xtb__options__t.html#a206f24650cc1424d68e592468c7a7a86">paramset</a>;</div>
+<div class="line"><span class="lineno">  100</span>    }</div>
+<div class="line"><span class="lineno">  101</span>  }</div>
+<div class="line"><span class="lineno">  102</span> </div>
+<div class="line"><span class="lineno">  103</span>  <span class="comment">// Dual-read [Metatomic] when RGPOT backend is metatomic</span></div>
+<div class="line"><span class="lineno">  104</span>  <span class="keywordflow">if</span> ((backend_lc.rfind(<span class="stringliteral">&quot;meta&quot;</span>, 0) == 0 || backend_lc == <span class="stringliteral">&quot;mta&quot;</span>) &amp;&amp;</div>
+<div class="line"><span class="lineno">  105</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb903d95fa45ace3ab69edcaa5cdd64">model_path</a>.empty())</div>
+<div class="line"><span class="lineno">  106</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb903d95fa45ace3ab69edcaa5cdd64">model_path</a> = p.<a class="code hl_function" href="classeonc_1_1Parameters.html#a021fc65b0ee76c5adaea0ecdd803e706">metatomic_options</a>().<a class="code hl_variable" href="structeonc_1_1metatomic__options__t.html#a16029a798ddf5bea97fdfa3854253a64">model_path</a>;</div>
+<div class="line"><span class="lineno">  107</span>  <span class="keywordflow">if</span> ((backend_lc.rfind(<span class="stringliteral">&quot;meta&quot;</span>, 0) == 0 || backend_lc == <span class="stringliteral">&quot;mta&quot;</span>) &amp;&amp;</div>
+<div class="line"><span class="lineno">  108</span>      opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb38b12db96f664dd9c0ca9b8b9bb8a">device</a> == <span class="stringliteral">&quot;cpu&quot;</span> &amp;&amp; !p.<a class="code hl_function" href="classeonc_1_1Parameters.html#a021fc65b0ee76c5adaea0ecdd803e706">metatomic_options</a>().<a class="code hl_variable" href="structeonc_1_1metatomic__options__t.html#a0d3458d1458652392970a0a5a42d5ec4">device</a>.empty())</div>
+<div class="line"><span class="lineno">  109</span>    opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#abfb38b12db96f664dd9c0ca9b8b9bb8a">device</a> = p.<a class="code hl_function" href="classeonc_1_1Parameters.html#a021fc65b0ee76c5adaea0ecdd803e706">metatomic_options</a>().<a class="code hl_variable" href="structeonc_1_1metatomic__options__t.html#a0d3458d1458652392970a0a5a42d5ec4">device</a>;</div>
+<div class="line"><span class="lineno">  110</span> </div>
+<div class="line"><span class="lineno">  111</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a> = std::make_unique&lt;RGPotEngine&gt;(opt);</div>
+<div class="line"><span class="lineno">  112</span>  <a class="code hl_variable" href="#a36cfb3ad59f4bc1bd797a9ef8c033976">backend_</a> = <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;backend();</div>
+<div class="line"><span class="lineno">  113</span>  <a class="code hl_variable" href="#aa510f91f12397e12b96ccde20b0a3e9a">driver_</a> = <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;worldRank() == 0;</div>
+<div class="line"><span class="lineno">  114</span>  std::cout</div>
+<div class="line"><span class="lineno">  115</span>      &lt;&lt; <span class="stringliteral">&quot;RgpotPot: in-process rgpot backend=&quot;</span> &lt;&lt; <a class="code hl_variable" href="#a36cfb3ad59f4bc1bd797a9ef8c033976">backend_</a></div>
+<div class="line"><span class="lineno">  116</span>      &lt;&lt; <span class="stringliteral">&quot; (dlopen: &quot;</span></div>
+<div class="line"><span class="lineno">  117</span>         <span class="stringliteral">&quot;libnwchemc/libcpmdc/librgpot_metatomic_engine/librgpot_xtb_engine)&quot;</span></div>
+<div class="line"><span class="lineno">  118</span>      &lt;&lt; std::endl;</div>
+<div class="line"><span class="lineno">  119</span>  <span class="comment">// Finalize is registered first. The grouped-exit handler is next, and</span></div>
+<div class="line"><span class="lineno">  120</span>  <span class="comment">// the stop handler is last, so exit runs stop, then Finalize, then _Exit.</span></div>
+<div class="line"><span class="lineno">  121</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;finalizeMpiAtExit();</div>
+<div class="line"><span class="lineno">  122</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;armGroupedExit();</div>
+<div class="line"><span class="lineno">  123</span>  <a class="code hl_function" href="#ae87ceb0b49847c3ae9e3d0773dc49478">releaseWorkersAtExit</a>();</div>
+<div class="line"><span class="lineno">  124</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aa510f91f12397e12b96ccde20b0a3e9a">driver_</a>)</div>
+<div class="line"><span class="lineno">  125</span>    <a class="code hl_function" href="#acab2b31e6271c7e676fa1ce814df2c49">serveWorker</a>();</div>
+<div class="line"><span class="lineno">  126</span>}</div>
 <div class="ttc" id="aclassRgpotPot_html_a36cfb3ad59f4bc1bd797a9ef8c033976"><div class="ttname"><a href="#a36cfb3ad59f4bc1bd797a9ef8c033976">RgpotPot::backend_</a></div><div class="ttdeci">std::string backend_</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8h_source.html#l00092">RgpotPot.h:92</a></div></div>
 <div class="ttc" id="aclassRgpotPot_html_a5dc28ce178c64749350e33931c191d34"><div class="ttname"><a href="#a5dc28ce178c64749350e33931c191d34">RgpotPot::impl_</a></div><div class="ttdeci">std::unique_ptr&lt; RGPotEngine &gt; impl_</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8h_source.html#l00091">RgpotPot.h:91</a></div></div>
 <div class="ttc" id="aclassRgpotPot_html_aa510f91f12397e12b96ccde20b0a3e9a"><div class="ttname"><a href="#aa510f91f12397e12b96ccde20b0a3e9a">RgpotPot::driver_</a></div><div class="ttdeci">bool driver_</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8h_source.html#l00093">RgpotPot.h:93</a></div></div>
-<div class="ttc" id="aclassRgpotPot_html_acab2b31e6271c7e676fa1ce814df2c49"><div class="ttname"><a href="#acab2b31e6271c7e676fa1ce814df2c49">RgpotPot::serveWorker</a></div><div class="ttdeci">void serveWorker()</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00343">RgpotPot.cpp:343</a></div></div>
-<div class="ttc" id="aclassRgpotPot_html_ae87ceb0b49847c3ae9e3d0773dc49478"><div class="ttname"><a href="#ae87ceb0b49847c3ae9e3d0773dc49478">RgpotPot::releaseWorkersAtExit</a></div><div class="ttdeci">void releaseWorkersAtExit()</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00200">RgpotPot.cpp:200</a></div></div>
+<div class="ttc" id="aclassRgpotPot_html_acab2b31e6271c7e676fa1ce814df2c49"><div class="ttname"><a href="#acab2b31e6271c7e676fa1ce814df2c49">RgpotPot::serveWorker</a></div><div class="ttdeci">void serveWorker()</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00344">RgpotPot.cpp:344</a></div></div>
+<div class="ttc" id="aclassRgpotPot_html_ae87ceb0b49847c3ae9e3d0773dc49478"><div class="ttname"><a href="#ae87ceb0b49847c3ae9e3d0773dc49478">RgpotPot::releaseWorkersAtExit</a></div><div class="ttdeci">void releaseWorkersAtExit()</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00201">RgpotPot.cpp:201</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Parameters_html_a021fc65b0ee76c5adaea0ecdd803e706"><div class="ttname"><a href="classeonc_1_1Parameters.html#a021fc65b0ee76c5adaea0ecdd803e706">eonc::Parameters::metatomic_options</a></div><div class="ttdeci">const metatomic_options_t &amp; metatomic_options() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00160">ParametersAccess.cpp:160</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Parameters_html_a30580f564a20e0ddaa54990c279df0de"><div class="ttname"><a href="classeonc_1_1Parameters.html#a30580f564a20e0ddaa54990c279df0de">eonc::Parameters::xtb_options</a></div><div class="ttdeci">const xtb_options_t &amp; xtb_options() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00087">ParametersAccess.cpp:87</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Parameters_html_ad6988eb7a376b0aa777353ebbc0e253a"><div class="ttname"><a href="classeonc_1_1Parameters.html#ad6988eb7a376b0aa777353ebbc0e253a">eonc::Parameters::rgpot_options</a></div><div class="ttdeci">const rgpot_options_t &amp; rgpot_options() const</div><div class="ttdef"><b>Definition</b> <a href="ParametersAccess_8cpp_source.html#l00112">ParametersAccess.cpp:112</a></div></div>
@@ -510,14 +517,15 @@ Additional Inherited Members</h2></td></tr>
 <div class="ttc" id="astructRGPotEngineOptions_html_aadaadd6c54afcc8c57a879938761ac4f"><div class="ttname"><a href="structRGPotEngineOptions.html#aadaadd6c54afcc8c57a879938761ac4f">RGPotEngineOptions::torch_determinism_strict</a></div><div class="ttdeci">bool torch_determinism_strict</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00036">RGPotEngine.h:36</a></div></div>
 <div class="ttc" id="astructRGPotEngineOptions_html_abfb38b12db96f664dd9c0ca9b8b9bb8a"><div class="ttname"><a href="structRGPotEngineOptions.html#abfb38b12db96f664dd9c0ca9b8b9bb8a">RGPotEngineOptions::device</a></div><div class="ttdeci">std::string device</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00031">RGPotEngine.h:31</a></div></div>
 <div class="ttc" id="astructRGPotEngineOptions_html_abfb903d95fa45ace3ab69edcaa5cdd64"><div class="ttname"><a href="structRGPotEngineOptions.html#abfb903d95fa45ace3ab69edcaa5cdd64">RGPotEngineOptions::model_path</a></div><div class="ttdeci">std::string model_path</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00030">RGPotEngine.h:30</a></div></div>
+<div class="ttc" id="astructRGPotEngineOptions_html_ac1be0b6b290f5f1e81ef6c2e870c9a18"><div class="ttname"><a href="structRGPotEngineOptions.html#ac1be0b6b290f5f1e81ef6c2e870c9a18">RGPotEngineOptions::task_name</a></div><div class="ttdeci">std::string task_name</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00047">RGPotEngine.h:47</a></div></div>
 <div class="ttc" id="astructRGPotEngineOptions_html_ac3f15f0a8041fdf192e328e2a35a7e37"><div class="ttname"><a href="structRGPotEngineOptions.html#ac3f15f0a8041fdf192e328e2a35a7e37">RGPotEngineOptions::xtb_accuracy</a></div><div class="ttdeci">double xtb_accuracy</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00039">RGPotEngine.h:39</a></div></div>
 <div class="ttc" id="astructRGPotEngineOptions_html_ac640a410bf18066058185cdc8a7d1d6d"><div class="ttname"><a href="structRGPotEngineOptions.html#ac640a410bf18066058185cdc8a7d1d6d">RGPotEngineOptions::engine_root</a></div><div class="ttdeci">std::string engine_root</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00019">RGPotEngine.h:19</a></div></div>
 <div class="ttc" id="astructRGPotEngineOptions_html_ad6c2d8b5cd78684e5bac6ae19dcdbe42"><div class="ttname"><a href="structRGPotEngineOptions.html#ad6c2d8b5cd78684e5bac6ae19dcdbe42">RGPotEngineOptions::uncertainty_threshold</a></div><div class="ttdeci">double uncertainty_threshold</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00035">RGPotEngine.h:35</a></div></div>
 <div class="ttc" id="astructRGPotEngineOptions_html_ad922d97dfdfdabc9cb828a45247eb81a"><div class="ttname"><a href="structRGPotEngineOptions.html#ad922d97dfdfdabc9cb828a45247eb81a">RGPotEngineOptions::theory</a></div><div class="ttdeci">std::string theory</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00011">RGPotEngine.h:11</a></div></div>
 <div class="ttc" id="astructRGPotEngineOptions_html_ada72be4995d9ae99c0ff2de2109ad237"><div class="ttname"><a href="structRGPotEngineOptions.html#ada72be4995d9ae99c0ff2de2109ad237">RGPotEngineOptions::input_block</a></div><div class="ttdeci">std::string input_block</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00024">RGPotEngine.h:24</a></div></div>
 <div class="ttc" id="astructRGPotEngineOptions_html_aece5083dcb8102323094779244c07f19"><div class="ttname"><a href="structRGPotEngineOptions.html#aece5083dcb8102323094779244c07f19">RGPotEngineOptions::xtb_charge</a></div><div class="ttdeci">double xtb_charge</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00042">RGPotEngine.h:42</a></div></div>
-<div class="ttc" id="astructeonc_1_1metatomic__options__t_html_a0d3458d1458652392970a0a5a42d5ec4"><div class="ttname"><a href="structeonc_1_1metatomic__options__t.html#a0d3458d1458652392970a0a5a42d5ec4">eonc::metatomic_options_t::device</a></div><div class="ttdeci">std::string device</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00421">ParametersOptions.h:421</a></div></div>
-<div class="ttc" id="astructeonc_1_1metatomic__options__t_html_a16029a798ddf5bea97fdfa3854253a64"><div class="ttname"><a href="structeonc_1_1metatomic__options__t.html#a16029a798ddf5bea97fdfa3854253a64">eonc::metatomic_options_t::model_path</a></div><div class="ttdeci">std::string model_path</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00420">ParametersOptions.h:420</a></div></div>
+<div class="ttc" id="astructeonc_1_1metatomic__options__t_html_a0d3458d1458652392970a0a5a42d5ec4"><div class="ttname"><a href="structeonc_1_1metatomic__options__t.html#a0d3458d1458652392970a0a5a42d5ec4">eonc::metatomic_options_t::device</a></div><div class="ttdeci">std::string device</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00422">ParametersOptions.h:422</a></div></div>
+<div class="ttc" id="astructeonc_1_1metatomic__options__t_html_a16029a798ddf5bea97fdfa3854253a64"><div class="ttname"><a href="structeonc_1_1metatomic__options__t.html#a16029a798ddf5bea97fdfa3854253a64">eonc::metatomic_options_t::model_path</a></div><div class="ttdeci">std::string model_path</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00421">ParametersOptions.h:421</a></div></div>
 <div class="ttc" id="astructeonc_1_1xtb__options__t_html_a206f24650cc1424d68e592468c7a7a86"><div class="ttname"><a href="structeonc_1_1xtb__options__t.html#a206f24650cc1424d68e592468c7a7a86">eonc::xtb_options_t::paramset</a></div><div class="ttdeci">std::string paramset</div><div class="ttdef"><b>Definition</b> <a href="ParametersOptions_8h_source.html#l00088">ParametersOptions.h:88</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -545,17 +553,17 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00127">127</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  127</span>                    {</div>
-<div class="line"><span class="lineno">  128</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> grouped = <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a> &amp;&amp; <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorWorld() &gt; 1;</div>
-<div class="line"><span class="lineno">  129</span>  <a class="code hl_function" href="#ac0c86f60fd32c3cc3dfa34d6b0973ac3">stopAndDrop</a>();</div>
-<div class="line"><span class="lineno">  130</span>  <span class="comment">// ~CPMDPot dlcloses libcpmdc. On several ranks that runs Fortran</span></div>
-<div class="line"><span class="lineno">  131</span>  <span class="comment">// destructors while another rank may already be in MPI_Finalize.</span></div>
-<div class="line"><span class="lineno">  132</span>  <span class="comment">// The process reclaims the engine at _Exit.</span></div>
-<div class="line"><span class="lineno">  133</span>  <span class="keywordflow">if</span> (grouped)</div>
-<div class="line"><span class="lineno">  134</span>    (void)<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>.release();</div>
-<div class="line"><span class="lineno">  135</span>}</div>
-<div class="ttc" id="aclassRgpotPot_html_ac0c86f60fd32c3cc3dfa34d6b0973ac3"><div class="ttname"><a href="#ac0c86f60fd32c3cc3dfa34d6b0973ac3">RgpotPot::stopAndDrop</a></div><div class="ttdeci">void stopAndDrop()</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00175">RgpotPot.cpp:175</a></div></div>
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00128">128</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  128</span>                    {</div>
+<div class="line"><span class="lineno">  129</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> grouped = <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a> &amp;&amp; <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorWorld() &gt; 1;</div>
+<div class="line"><span class="lineno">  130</span>  <a class="code hl_function" href="#ac0c86f60fd32c3cc3dfa34d6b0973ac3">stopAndDrop</a>();</div>
+<div class="line"><span class="lineno">  131</span>  <span class="comment">// ~CPMDPot dlcloses libcpmdc. On several ranks that runs Fortran</span></div>
+<div class="line"><span class="lineno">  132</span>  <span class="comment">// destructors while another rank may already be in MPI_Finalize.</span></div>
+<div class="line"><span class="lineno">  133</span>  <span class="comment">// The process reclaims the engine at _Exit.</span></div>
+<div class="line"><span class="lineno">  134</span>  <span class="keywordflow">if</span> (grouped)</div>
+<div class="line"><span class="lineno">  135</span>    (void)<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>.release();</div>
+<div class="line"><span class="lineno">  136</span>}</div>
+<div class="ttc" id="aclassRgpotPot_html_ac0c86f60fd32c3cc3dfa34d6b0973ac3"><div class="ttname"><a href="#ac0c86f60fd32c3cc3dfa34d6b0973ac3">RgpotPot::stopAndDrop</a></div><div class="ttdeci">void stopAndDrop()</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00176">RgpotPot.cpp:176</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -675,65 +683,65 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00280">280</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  285</span>                                                     {</div>
-<div class="line"><span class="lineno">  286</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> groups = <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorGroups();</div>
-<div class="line"><span class="lineno">  287</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> mine = <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorIndex();</div>
-<div class="line"><span class="lineno">  288</span>  <span class="keyword">auto</span> ownerOf = [&amp;](<span class="keywordtype">long</span> j) { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(route[j]); };</div>
-<div class="line"><span class="lineno">  289</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorWorld() &lt;= 1) {</div>
-<div class="line"><span class="lineno">  290</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nSystems; j++) {</div>
-<div class="line"><span class="lineno">  291</span>      <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;selectOrbitals(orbital_key(owners, j));</div>
-<div class="line"><span class="lineno">  292</span>      <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;force(nAtoms, positions[j], atomicNrs[j], forces[j], &amp;energies[j],</div>
-<div class="line"><span class="lineno">  293</span>                   boxes[j]);</div>
-<div class="line"><span class="lineno">  294</span>    }</div>
-<div class="line"><span class="lineno">  295</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  296</span>  }</div>
-<div class="line"><span class="lineno">  297</span>  std::vector&lt;char&gt; ok(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nSystems), 1);</div>
-<div class="line"><span class="lineno">  298</span>  std::vector&lt;std::string&gt; errors(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nSystems));</div>
-<div class="line"><span class="lineno">  299</span>  std::vector&lt;long&gt; owned(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(groups), 0);</div>
-<div class="line"><span class="lineno">  300</span>  <span class="keywordtype">long</span> last = -1;</div>
-<div class="line"><span class="lineno">  301</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nSystems; j++) {</div>
-<div class="line"><span class="lineno">  302</span>    owned[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(ownerOf(j))]++;</div>
-<div class="line"><span class="lineno">  303</span>    <span class="keywordflow">if</span> (ownerOf(j) == mine) {</div>
-<div class="line"><span class="lineno">  304</span>      last = j;</div>
-<div class="line"><span class="lineno">  305</span>      <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;selectOrbitals(orbital_key(owners, j));</div>
-<div class="line"><span class="lineno">  306</span>      ok[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] =</div>
-<div class="line"><span class="lineno">  307</span>          <a class="code hl_function" href="#ac867425d3cd0489eb1390d239ee30727">evaluate</a>(nAtoms, positions[j], atomicNrs[j], forces[j], &amp;energies[j],</div>
-<div class="line"><span class="lineno">  308</span>                   boxes[j], errors[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)]);</div>
-<div class="line"><span class="lineno">  309</span>    }</div>
-<div class="line"><span class="lineno">  310</span>  }</div>
-<div class="line"><span class="lineno">  311</span>  <span class="comment">// Every calculator makes the same number of engine calls: the engine</span></div>
-<div class="line"><span class="lineno">  312</span>  <span class="comment">// agrees on errors across MPI_COMM_WORLD after each one. A calculator</span></div>
-<div class="line"><span class="lineno">  313</span>  <span class="comment">// that owns fewer systems repeats one into scratch buffers, its last</span></div>
-<div class="line"><span class="lineno">  314</span>  <span class="comment">// own system or system 0 when it owns none. The repeat runs under that</span></div>
-<div class="line"><span class="lineno">  315</span>  <span class="comment">// system&#39;s key, so a repeat of the last own system is the session&#39;s</span></div>
-<div class="line"><span class="lineno">  316</span>  <span class="comment">// stored result and costs no SCF.</span></div>
-<div class="line"><span class="lineno">  317</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> most = *std::max_element(owned.begin(), owned.end());</div>
-<div class="line"><span class="lineno">  318</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> pad = most - owned[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(mine)];</div>
-<div class="line"><span class="lineno">  319</span>  <span class="keywordflow">if</span> (pad &gt; 0) {</div>
-<div class="line"><span class="lineno">  320</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> j = last &gt;= 0 ? last : 0;</div>
-<div class="line"><span class="lineno">  321</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;selectOrbitals(orbital_key(owners, j));</div>
-<div class="line"><span class="lineno">  322</span>    std::vector&lt;double&gt; scratchF(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(3 * nAtoms));</div>
-<div class="line"><span class="lineno">  323</span>    <span class="keywordtype">double</span> scratchU = 0.0;</div>
-<div class="line"><span class="lineno">  324</span>    std::string scratchError;</div>
-<div class="line"><span class="lineno">  325</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt; pad; k++)</div>
-<div class="line"><span class="lineno">  326</span>      try_force(*<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>, nAtoms, positions[j], atomicNrs[j], scratchF.data(),</div>
-<div class="line"><span class="lineno">  327</span>                &amp;scratchU, boxes[j], scratchError);</div>
-<div class="line"><span class="lineno">  328</span>  }</div>
-<div class="line"><span class="lineno">  329</span>  <span class="comment">// Every share runs before any rank raises, so all ranks leave together.</span></div>
-<div class="line"><span class="lineno">  330</span>  <span class="keywordtype">long</span> failed = -1;</div>
-<div class="line"><span class="lineno">  331</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nSystems; j++) {</div>
-<div class="line"><span class="lineno">  332</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> owner = ownerOf(j);</div>
-<div class="line"><span class="lineno">  333</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;shareResult(owner, nAtoms, forces[j], &amp;energies[j],</div>
-<div class="line"><span class="lineno">  334</span>                            ok[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] != 0,</div>
-<div class="line"><span class="lineno">  335</span>                            errors[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)]) &amp;&amp;</div>
-<div class="line"><span class="lineno">  336</span>        failed &lt; 0)</div>
-<div class="line"><span class="lineno">  337</span>      failed = j;</div>
-<div class="line"><span class="lineno">  338</span>  }</div>
-<div class="line"><span class="lineno">  339</span>  <span class="keywordflow">if</span> (failed &gt;= 0)</div>
-<div class="line"><span class="lineno">  340</span>    raise_failure(failed, ownerOf(failed), errors[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(failed)]);</div>
-<div class="line"><span class="lineno">  341</span>}</div>
-<div class="ttc" id="aclassRgpotPot_html_ac867425d3cd0489eb1390d239ee30727"><div class="ttname"><a href="#ac867425d3cd0489eb1390d239ee30727">RgpotPot::evaluate</a></div><div class="ttdeci">bool evaluate(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box, std::string &amp;error)</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00251">RgpotPot.cpp:251</a></div></div>
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00281">281</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  286</span>                                                     {</div>
+<div class="line"><span class="lineno">  287</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> groups = <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorGroups();</div>
+<div class="line"><span class="lineno">  288</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> mine = <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorIndex();</div>
+<div class="line"><span class="lineno">  289</span>  <span class="keyword">auto</span> ownerOf = [&amp;](<span class="keywordtype">long</span> j) { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(route[j]); };</div>
+<div class="line"><span class="lineno">  290</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorWorld() &lt;= 1) {</div>
+<div class="line"><span class="lineno">  291</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nSystems; j++) {</div>
+<div class="line"><span class="lineno">  292</span>      <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;selectOrbitals(orbital_key(owners, j));</div>
+<div class="line"><span class="lineno">  293</span>      <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;force(nAtoms, positions[j], atomicNrs[j], forces[j], &amp;energies[j],</div>
+<div class="line"><span class="lineno">  294</span>                   boxes[j]);</div>
+<div class="line"><span class="lineno">  295</span>    }</div>
+<div class="line"><span class="lineno">  296</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  297</span>  }</div>
+<div class="line"><span class="lineno">  298</span>  std::vector&lt;char&gt; ok(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nSystems), 1);</div>
+<div class="line"><span class="lineno">  299</span>  std::vector&lt;std::string&gt; errors(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nSystems));</div>
+<div class="line"><span class="lineno">  300</span>  std::vector&lt;long&gt; owned(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(groups), 0);</div>
+<div class="line"><span class="lineno">  301</span>  <span class="keywordtype">long</span> last = -1;</div>
+<div class="line"><span class="lineno">  302</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nSystems; j++) {</div>
+<div class="line"><span class="lineno">  303</span>    owned[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(ownerOf(j))]++;</div>
+<div class="line"><span class="lineno">  304</span>    <span class="keywordflow">if</span> (ownerOf(j) == mine) {</div>
+<div class="line"><span class="lineno">  305</span>      last = j;</div>
+<div class="line"><span class="lineno">  306</span>      <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;selectOrbitals(orbital_key(owners, j));</div>
+<div class="line"><span class="lineno">  307</span>      ok[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] =</div>
+<div class="line"><span class="lineno">  308</span>          <a class="code hl_function" href="#ac867425d3cd0489eb1390d239ee30727">evaluate</a>(nAtoms, positions[j], atomicNrs[j], forces[j], &amp;energies[j],</div>
+<div class="line"><span class="lineno">  309</span>                   boxes[j], errors[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)]);</div>
+<div class="line"><span class="lineno">  310</span>    }</div>
+<div class="line"><span class="lineno">  311</span>  }</div>
+<div class="line"><span class="lineno">  312</span>  <span class="comment">// Every calculator makes the same number of engine calls: the engine</span></div>
+<div class="line"><span class="lineno">  313</span>  <span class="comment">// agrees on errors across MPI_COMM_WORLD after each one. A calculator</span></div>
+<div class="line"><span class="lineno">  314</span>  <span class="comment">// that owns fewer systems repeats one into scratch buffers, its last</span></div>
+<div class="line"><span class="lineno">  315</span>  <span class="comment">// own system or system 0 when it owns none. The repeat runs under that</span></div>
+<div class="line"><span class="lineno">  316</span>  <span class="comment">// system&#39;s key, so a repeat of the last own system is the session&#39;s</span></div>
+<div class="line"><span class="lineno">  317</span>  <span class="comment">// stored result and costs no SCF.</span></div>
+<div class="line"><span class="lineno">  318</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> most = *std::max_element(owned.begin(), owned.end());</div>
+<div class="line"><span class="lineno">  319</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> pad = most - owned[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(mine)];</div>
+<div class="line"><span class="lineno">  320</span>  <span class="keywordflow">if</span> (pad &gt; 0) {</div>
+<div class="line"><span class="lineno">  321</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> j = last &gt;= 0 ? last : 0;</div>
+<div class="line"><span class="lineno">  322</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;selectOrbitals(orbital_key(owners, j));</div>
+<div class="line"><span class="lineno">  323</span>    std::vector&lt;double&gt; scratchF(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(3 * nAtoms));</div>
+<div class="line"><span class="lineno">  324</span>    <span class="keywordtype">double</span> scratchU = 0.0;</div>
+<div class="line"><span class="lineno">  325</span>    std::string scratchError;</div>
+<div class="line"><span class="lineno">  326</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt; pad; k++)</div>
+<div class="line"><span class="lineno">  327</span>      try_force(*<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>, nAtoms, positions[j], atomicNrs[j], scratchF.data(),</div>
+<div class="line"><span class="lineno">  328</span>                &amp;scratchU, boxes[j], scratchError);</div>
+<div class="line"><span class="lineno">  329</span>  }</div>
+<div class="line"><span class="lineno">  330</span>  <span class="comment">// Every share runs before any rank raises, so all ranks leave together.</span></div>
+<div class="line"><span class="lineno">  331</span>  <span class="keywordtype">long</span> failed = -1;</div>
+<div class="line"><span class="lineno">  332</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nSystems; j++) {</div>
+<div class="line"><span class="lineno">  333</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> owner = ownerOf(j);</div>
+<div class="line"><span class="lineno">  334</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;shareResult(owner, nAtoms, forces[j], &amp;energies[j],</div>
+<div class="line"><span class="lineno">  335</span>                            ok[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] != 0,</div>
+<div class="line"><span class="lineno">  336</span>                            errors[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)]) &amp;&amp;</div>
+<div class="line"><span class="lineno">  337</span>        failed &lt; 0)</div>
+<div class="line"><span class="lineno">  338</span>      failed = j;</div>
+<div class="line"><span class="lineno">  339</span>  }</div>
+<div class="line"><span class="lineno">  340</span>  <span class="keywordflow">if</span> (failed &gt;= 0)</div>
+<div class="line"><span class="lineno">  341</span>    raise_failure(failed, ownerOf(failed), errors[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(failed)]);</div>
+<div class="line"><span class="lineno">  342</span>}</div>
+<div class="ttc" id="aclassRgpotPot_html_ac867425d3cd0489eb1390d239ee30727"><div class="ttname"><a href="#ac867425d3cd0489eb1390d239ee30727">RgpotPot::evaluate</a></div><div class="ttdeci">bool evaluate(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box, std::string &amp;error)</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00252">RgpotPot.cpp:252</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -789,22 +797,22 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00262">262</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  264</span>                                        {</div>
-<div class="line"><span class="lineno">  265</span>  <span class="comment">// Every calculator evaluates the structure, because the engine agrees</span></div>
-<div class="line"><span class="lineno">  266</span>  <span class="comment">// on errors across MPI_COMM_WORLD after each call and a calculator that</span></div>
-<div class="line"><span class="lineno">  267</span>  <span class="comment">// skipped the call would never join that agreement. The first rank of</span></div>
-<div class="line"><span class="lineno">  268</span>  <span class="comment">// `group`, the one whose stored orbitals are nearest, sends its result</span></div>
-<div class="line"><span class="lineno">  269</span>  <span class="comment">// to every rank.</span></div>
-<div class="line"><span class="lineno">  270</span>  std::string <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a>;</div>
-<div class="line"><span class="lineno">  271</span>  <span class="comment">// Only that group&#39;s call counts toward the calculator usage report.</span></div>
-<div class="line"><span class="lineno">  272</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;selectOrbitals(kSingleKey);</div>
-<div class="line"><span class="lineno">  273</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> ok = <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorIndex() == group</div>
-<div class="line"><span class="lineno">  274</span>                      ? <a class="code hl_function" href="#ac867425d3cd0489eb1390d239ee30727">evaluate</a>(N, R, atomicNrs, F, U, box, error)</div>
-<div class="line"><span class="lineno">  275</span>                      : try_force(*<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>, N, R, atomicNrs, F, U, box, <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a>);</div>
-<div class="line"><span class="lineno">  276</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;shareResult(group, N, F, U, ok, error))</div>
-<div class="line"><span class="lineno">  277</span>    raise_failure(0, group, error);</div>
-<div class="line"><span class="lineno">  278</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00263">263</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  265</span>                                        {</div>
+<div class="line"><span class="lineno">  266</span>  <span class="comment">// Every calculator evaluates the structure, because the engine agrees</span></div>
+<div class="line"><span class="lineno">  267</span>  <span class="comment">// on errors across MPI_COMM_WORLD after each call and a calculator that</span></div>
+<div class="line"><span class="lineno">  268</span>  <span class="comment">// skipped the call would never join that agreement. The first rank of</span></div>
+<div class="line"><span class="lineno">  269</span>  <span class="comment">// `group`, the one whose stored orbitals are nearest, sends its result</span></div>
+<div class="line"><span class="lineno">  270</span>  <span class="comment">// to every rank.</span></div>
+<div class="line"><span class="lineno">  271</span>  std::string <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a>;</div>
+<div class="line"><span class="lineno">  272</span>  <span class="comment">// Only that group&#39;s call counts toward the calculator usage report.</span></div>
+<div class="line"><span class="lineno">  273</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;selectOrbitals(kSingleKey);</div>
+<div class="line"><span class="lineno">  274</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> ok = <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorIndex() == group</div>
+<div class="line"><span class="lineno">  275</span>                      ? <a class="code hl_function" href="#ac867425d3cd0489eb1390d239ee30727">evaluate</a>(N, R, atomicNrs, F, U, box, error)</div>
+<div class="line"><span class="lineno">  276</span>                      : try_force(*<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>, N, R, atomicNrs, F, U, box, <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a>);</div>
+<div class="line"><span class="lineno">  277</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;shareResult(group, N, F, U, ok, error))</div>
+<div class="line"><span class="lineno">  278</span>    raise_failure(0, group, error);</div>
+<div class="line"><span class="lineno">  279</span>}</div>
 <div class="ttc" id="anamespaceeonc_1_1dynlib_html_a793e2f7806f01afcc170a5b8054f4e6f"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">eonc::dynlib::error</a></div><div class="ttdeci">std::string error()</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00082">DynLib.h:82</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -832,8 +840,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00137">137</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  137</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a> &amp;&amp; <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;available(); }</div>
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00138">138</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  138</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a> &amp;&amp; <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;available(); }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -889,15 +897,15 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00251">251</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  253</span>                                          {</div>
-<div class="line"><span class="lineno">  254</span>  <span class="keyword">const</span> <span class="keyword">auto</span> t0 = std::chrono::steady_clock::now();</div>
-<div class="line"><span class="lineno">  255</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> ok = try_force(*<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>, N, R, atomicNrs, F, U, box, error);</div>
-<div class="line"><span class="lineno">  256</span>  <a class="code hl_variable" href="#a67b32eeeed8ee2f090b5cb0112628c0a">busy_</a> += std::chrono::duration&lt;double&gt;(std::chrono::steady_clock::now() - t0)</div>
-<div class="line"><span class="lineno">  257</span>               .count();</div>
-<div class="line"><span class="lineno">  258</span>  <a class="code hl_variable" href="#a9dddb38e484330164f23d57b2d83d861">systemsDone_</a> += 1.0;</div>
-<div class="line"><span class="lineno">  259</span>  <span class="keywordflow">return</span> ok;</div>
-<div class="line"><span class="lineno">  260</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00252">252</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  254</span>                                          {</div>
+<div class="line"><span class="lineno">  255</span>  <span class="keyword">const</span> <span class="keyword">auto</span> t0 = std::chrono::steady_clock::now();</div>
+<div class="line"><span class="lineno">  256</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> ok = try_force(*<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>, N, R, atomicNrs, F, U, box, error);</div>
+<div class="line"><span class="lineno">  257</span>  <a class="code hl_variable" href="#a67b32eeeed8ee2f090b5cb0112628c0a">busy_</a> += std::chrono::duration&lt;double&gt;(std::chrono::steady_clock::now() - t0)</div>
+<div class="line"><span class="lineno">  258</span>               .count();</div>
+<div class="line"><span class="lineno">  259</span>  <a class="code hl_variable" href="#a9dddb38e484330164f23d57b2d83d861">systemsDone_</a> += 1.0;</div>
+<div class="line"><span class="lineno">  260</span>  <span class="keywordflow">return</span> ok;</div>
+<div class="line"><span class="lineno">  261</span>}</div>
 <div class="ttc" id="aclassRgpotPot_html_a67b32eeeed8ee2f090b5cb0112628c0a"><div class="ttname"><a href="#a67b32eeeed8ee2f090b5cb0112628c0a">RgpotPot::busy_</a></div><div class="ttdeci">double busy_</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8h_source.html#l00098">RgpotPot.h:98</a></div></div>
 <div class="ttc" id="aclassRgpotPot_html_a9dddb38e484330164f23d57b2d83d861"><div class="ttname"><a href="#a9dddb38e484330164f23d57b2d83d861">RgpotPot::systemsDone_</a></div><div class="ttdeci">double systemsDone_</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8h_source.html#l00099">RgpotPot.h:99</a></div></div>
 </div><!-- fragment -->
@@ -926,20 +934,20 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00161">161</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  161</span>                                {</div>
-<div class="line"><span class="lineno">  162</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> groups = <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorGroups();</div>
-<div class="line"><span class="lineno">  163</span>  <a class="code hl_variable" href="#ad975e68dfea4d5d839283791b70a46f6">use_</a>.busy.assign(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(groups), 0.0);</div>
-<div class="line"><span class="lineno">  164</span>  <a class="code hl_variable" href="#ad975e68dfea4d5d839283791b70a46f6">use_</a>.systems.assign(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(groups), 0.0);</div>
-<div class="line"><span class="lineno">  165</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> g = 0; g &lt; groups; g++) {</div>
-<div class="line"><span class="lineno">  166</span>    <span class="keywordtype">double</span> tally[3] = {<a class="code hl_variable" href="#a67b32eeeed8ee2f090b5cb0112628c0a">busy_</a>, <a class="code hl_variable" href="#a9dddb38e484330164f23d57b2d83d861">systemsDone_</a>, 0.0};</div>
-<div class="line"><span class="lineno">  167</span>    <span class="keywordtype">double</span> unused = 0.0;</div>
-<div class="line"><span class="lineno">  168</span>    std::string <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a>;</div>
-<div class="line"><span class="lineno">  169</span>    (void)<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;shareResult(g, 1, tally, &amp;unused, <span class="keyword">true</span>, error);</div>
-<div class="line"><span class="lineno">  170</span>    <a class="code hl_variable" href="#ad975e68dfea4d5d839283791b70a46f6">use_</a>.busy[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(g)] = tally[0];</div>
-<div class="line"><span class="lineno">  171</span>    <a class="code hl_variable" href="#ad975e68dfea4d5d839283791b70a46f6">use_</a>.systems[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(g)] = tally[1];</div>
-<div class="line"><span class="lineno">  172</span>  }</div>
-<div class="line"><span class="lineno">  173</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00162">162</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  162</span>                                {</div>
+<div class="line"><span class="lineno">  163</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> groups = <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorGroups();</div>
+<div class="line"><span class="lineno">  164</span>  <a class="code hl_variable" href="#ad975e68dfea4d5d839283791b70a46f6">use_</a>.busy.assign(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(groups), 0.0);</div>
+<div class="line"><span class="lineno">  165</span>  <a class="code hl_variable" href="#ad975e68dfea4d5d839283791b70a46f6">use_</a>.systems.assign(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(groups), 0.0);</div>
+<div class="line"><span class="lineno">  166</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> g = 0; g &lt; groups; g++) {</div>
+<div class="line"><span class="lineno">  167</span>    <span class="keywordtype">double</span> tally[3] = {<a class="code hl_variable" href="#a67b32eeeed8ee2f090b5cb0112628c0a">busy_</a>, <a class="code hl_variable" href="#a9dddb38e484330164f23d57b2d83d861">systemsDone_</a>, 0.0};</div>
+<div class="line"><span class="lineno">  168</span>    <span class="keywordtype">double</span> unused = 0.0;</div>
+<div class="line"><span class="lineno">  169</span>    std::string <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a>;</div>
+<div class="line"><span class="lineno">  170</span>    (void)<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;shareResult(g, 1, tally, &amp;unused, <span class="keyword">true</span>, error);</div>
+<div class="line"><span class="lineno">  171</span>    <a class="code hl_variable" href="#ad975e68dfea4d5d839283791b70a46f6">use_</a>.busy[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(g)] = tally[0];</div>
+<div class="line"><span class="lineno">  172</span>    <a class="code hl_variable" href="#ad975e68dfea4d5d839283791b70a46f6">use_</a>.systems[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(g)] = tally[1];</div>
+<div class="line"><span class="lineno">  173</span>  }</div>
+<div class="line"><span class="lineno">  174</span>}</div>
 <div class="ttc" id="aclassRgpotPot_html_ad975e68dfea4d5d839283791b70a46f6"><div class="ttname"><a href="#ad975e68dfea4d5d839283791b70a46f6">RgpotPot::use_</a></div><div class="ttdeci">eonc::CalculatorGroupUse use_</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8h_source.html#l00100">RgpotPot.h:100</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -998,40 +1006,41 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">eonc::Potential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00405">405</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  406</span>                                                                     {</div>
-<div class="line"><span class="lineno">  407</span>  <span class="keywordflow">if</span> (variance)</div>
-<div class="line"><span class="lineno">  408</span>    *variance = 0.0;</div>
-<div class="line"><span class="lineno">  409</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorWorld() &lt;= 1) {</div>
-<div class="line"><span class="lineno">  410</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;selectOrbitals(kSingleKey);</div>
-<div class="line"><span class="lineno">  411</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;force(N, R, atomicNrs, F, U, box);</div>
-<div class="line"><span class="lineno">  412</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  413</span>  }</div>
-<div class="line"><span class="lineno">  414</span>  <span class="keyword">const</span> <span class="keyword">auto</span> t0 = std::chrono::steady_clock::now();</div>
-<div class="line"><span class="lineno">  415</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a4525f8f90b21598144f3e753f79fbe39">schedule_</a>)</div>
-<div class="line"><span class="lineno">  416</span>    <a class="code hl_variable" href="#a4525f8f90b21598144f3e753f79fbe39">schedule_</a> = std::make_unique&lt;eonc::GroupSchedule&gt;(<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorGroups());</div>
-<div class="line"><span class="lineno">  417</span>  <span class="comment">// The group whose last geometry is nearest holds the warmest orbitals.</span></div>
-<div class="line"><span class="lineno">  418</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> group = <a class="code hl_variable" href="#a4525f8f90b21598144f3e753f79fbe39">schedule_</a>-&gt;nearest(R, 3 * N);</div>
-<div class="line"><span class="lineno">  419</span>  <a class="code hl_variable" href="#a4525f8f90b21598144f3e753f79fbe39">schedule_</a>-&gt;settle(kSingleKey, group);</div>
-<div class="line"><span class="lineno">  420</span>  <a class="code hl_variable" href="#a4525f8f90b21598144f3e753f79fbe39">schedule_</a>-&gt;record(kSingleKey, R, 3 * N);</div>
-<div class="line"><span class="lineno">  421</span>  std::int64_t hdr[4] = {kSingle, N, 1, group};</div>
-<div class="line"><span class="lineno">  422</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(hdr, <span class="keyword">sizeof</span>(hdr));</div>
-<div class="line"><span class="lineno">  423</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(<span class="keyword">const_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(R), 3 * N * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
-<div class="line"><span class="lineno">  424</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(<span class="keyword">const_cast&lt;</span><span class="keywordtype">int</span> *<span class="keyword">&gt;</span>(atomicNrs), N * <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div>
-<div class="line"><span class="lineno">  425</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(<span class="keyword">const_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(box), 9 * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
-<div class="line"><span class="lineno">  426</span>  <span class="comment">// Before the evaluation, so a failure that ends the job still stops</span></div>
-<div class="line"><span class="lineno">  427</span>  <span class="comment">// the workers.</span></div>
-<div class="line"><span class="lineno">  428</span>  <a class="code hl_function" href="#ae87ceb0b49847c3ae9e3d0773dc49478">releaseWorkersAtExit</a>();</div>
-<div class="line"><span class="lineno">  429</span>  <a class="code hl_function" href="#aef513c1ddb8453c6841752b8294d309d">computeSingle</a>(N, R, atomicNrs, F, U, box, group);</div>
-<div class="line"><span class="lineno">  430</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> dt =</div>
-<div class="line"><span class="lineno">  431</span>      std::chrono::duration&lt;double&gt;(std::chrono::steady_clock::now() - t0)</div>
-<div class="line"><span class="lineno">  432</span>          .count();</div>
-<div class="line"><span class="lineno">  433</span>  <a class="code hl_variable" href="#ad975e68dfea4d5d839283791b70a46f6">use_</a>.wall += dt;</div>
-<div class="line"><span class="lineno">  434</span>  <a class="code hl_variable" href="#ad975e68dfea4d5d839283791b70a46f6">use_</a>.singleWall += dt;</div>
-<div class="line"><span class="lineno">  435</span>  <a class="code hl_variable" href="#ad975e68dfea4d5d839283791b70a46f6">use_</a>.singles++;</div>
-<div class="line"><span class="lineno">  436</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00406">406</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  407</span>                                                                     {</div>
+<div class="line"><span class="lineno">  408</span>  <span class="keywordflow">if</span> (variance)</div>
+<div class="line"><span class="lineno">  409</span>    *variance = 0.0;</div>
+<div class="line"><span class="lineno">  410</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorWorld() &lt;= 1) {</div>
+<div class="line"><span class="lineno">  411</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;selectOrbitals(kSingleKey);</div>
+<div class="line"><span class="lineno">  412</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;force(N, R, atomicNrs, F, U, box);</div>
+<div class="line"><span class="lineno">  413</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  414</span>  }</div>
+<div class="line"><span class="lineno">  415</span>  <span class="keyword">const</span> <span class="keyword">auto</span> t0 = std::chrono::steady_clock::now();</div>
+<div class="line"><span class="lineno">  416</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a4525f8f90b21598144f3e753f79fbe39">schedule_</a>)</div>
+<div class="line"><span class="lineno">  417</span>    <a class="code hl_variable" href="#a4525f8f90b21598144f3e753f79fbe39">schedule_</a> =</div>
+<div class="line"><span class="lineno">  418</span>        std::make_unique&lt;eonc::GroupSchedule&gt;(<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorGroups());</div>
+<div class="line"><span class="lineno">  419</span>  <span class="comment">// The group whose last geometry is nearest holds the warmest orbitals.</span></div>
+<div class="line"><span class="lineno">  420</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> group = <a class="code hl_variable" href="#a4525f8f90b21598144f3e753f79fbe39">schedule_</a>-&gt;nearest(R, 3 * N);</div>
+<div class="line"><span class="lineno">  421</span>  <a class="code hl_variable" href="#a4525f8f90b21598144f3e753f79fbe39">schedule_</a>-&gt;settle(kSingleKey, group);</div>
+<div class="line"><span class="lineno">  422</span>  <a class="code hl_variable" href="#a4525f8f90b21598144f3e753f79fbe39">schedule_</a>-&gt;record(kSingleKey, R, 3 * N);</div>
+<div class="line"><span class="lineno">  423</span>  std::int64_t hdr[4] = {kSingle, N, 1, group};</div>
+<div class="line"><span class="lineno">  424</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(hdr, <span class="keyword">sizeof</span>(hdr));</div>
+<div class="line"><span class="lineno">  425</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(<span class="keyword">const_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(R), 3 * N * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
+<div class="line"><span class="lineno">  426</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(<span class="keyword">const_cast&lt;</span><span class="keywordtype">int</span> *<span class="keyword">&gt;</span>(atomicNrs), N * <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div>
+<div class="line"><span class="lineno">  427</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(<span class="keyword">const_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(box), 9 * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
+<div class="line"><span class="lineno">  428</span>  <span class="comment">// Before the evaluation, so a failure that ends the job still stops</span></div>
+<div class="line"><span class="lineno">  429</span>  <span class="comment">// the workers.</span></div>
+<div class="line"><span class="lineno">  430</span>  <a class="code hl_function" href="#ae87ceb0b49847c3ae9e3d0773dc49478">releaseWorkersAtExit</a>();</div>
+<div class="line"><span class="lineno">  431</span>  <a class="code hl_function" href="#aef513c1ddb8453c6841752b8294d309d">computeSingle</a>(N, R, atomicNrs, F, U, box, group);</div>
+<div class="line"><span class="lineno">  432</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> dt =</div>
+<div class="line"><span class="lineno">  433</span>      std::chrono::duration&lt;double&gt;(std::chrono::steady_clock::now() - t0)</div>
+<div class="line"><span class="lineno">  434</span>          .count();</div>
+<div class="line"><span class="lineno">  435</span>  <a class="code hl_variable" href="#ad975e68dfea4d5d839283791b70a46f6">use_</a>.wall += dt;</div>
+<div class="line"><span class="lineno">  436</span>  <a class="code hl_variable" href="#ad975e68dfea4d5d839283791b70a46f6">use_</a>.singleWall += dt;</div>
+<div class="line"><span class="lineno">  437</span>  <a class="code hl_variable" href="#ad975e68dfea4d5d839283791b70a46f6">use_</a>.singles++;</div>
+<div class="line"><span class="lineno">  438</span>}</div>
 <div class="ttc" id="aclassRgpotPot_html_a4525f8f90b21598144f3e753f79fbe39"><div class="ttname"><a href="#a4525f8f90b21598144f3e753f79fbe39">RgpotPot::schedule_</a></div><div class="ttdeci">std::unique_ptr&lt; eonc::GroupSchedule &gt; schedule_</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8h_source.html#l00102">RgpotPot.h:102</a></div></div>
-<div class="ttc" id="aclassRgpotPot_html_aef513c1ddb8453c6841752b8294d309d"><div class="ttname"><a href="#aef513c1ddb8453c6841752b8294d309d">RgpotPot::computeSingle</a></div><div class="ttdeci">void computeSingle(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box, int group)</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00262">RgpotPot.cpp:262</a></div></div>
+<div class="ttc" id="aclassRgpotPot_html_aef513c1ddb8453c6841752b8294d309d"><div class="ttname"><a href="#aef513c1ddb8453c6841752b8294d309d">RgpotPot::computeSingle</a></div><div class="ttdeci">void computeSingle(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box, int group)</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00263">RgpotPot.cpp:263</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1094,12 +1103,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#aa66e1416134ff55639a6d20a34e3c1c1">eonc::Potential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00446">446</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  450</span>                                                      {</div>
-<div class="line"><span class="lineno">  451</span>  <a class="code hl_function" href="#a674bf337af44b7f429fb39cc8aa38995">forceBatchOwned</a>(nSystems, nAtoms, positions, atomicNrs, forces, energies,</div>
-<div class="line"><span class="lineno">  452</span>                  variances, boxes, <span class="keyword">nullptr</span>);</div>
-<div class="line"><span class="lineno">  453</span>}</div>
-<div class="ttc" id="aclassRgpotPot_html_a674bf337af44b7f429fb39cc8aa38995"><div class="ttname"><a href="#a674bf337af44b7f429fb39cc8aa38995">RgpotPot::forceBatchOwned</a></div><div class="ttdeci">void forceBatchOwned(long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes, const long *owners) override</div><div class="ttdoc">owners[j] is system j&#39;s identity (a NEB image, a ring bead): it names the orbitals the engine starts ...</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00455">RgpotPot.cpp:455</a></div></div>
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00448">448</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  452</span>                                                      {</div>
+<div class="line"><span class="lineno">  453</span>  <a class="code hl_function" href="#a674bf337af44b7f429fb39cc8aa38995">forceBatchOwned</a>(nSystems, nAtoms, positions, atomicNrs, forces, energies,</div>
+<div class="line"><span class="lineno">  454</span>                  variances, boxes, <span class="keyword">nullptr</span>);</div>
+<div class="line"><span class="lineno">  455</span>}</div>
+<div class="ttc" id="aclassRgpotPot_html_a674bf337af44b7f429fb39cc8aa38995"><div class="ttname"><a href="#a674bf337af44b7f429fb39cc8aa38995">RgpotPot::forceBatchOwned</a></div><div class="ttdeci">void forceBatchOwned(long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes, const long *owners) override</div><div class="ttdoc">owners[j] is system j&#39;s identity (a NEB image, a ring bead): it names the orbitals the engine starts ...</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00457">RgpotPot.cpp:457</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1170,68 +1179,67 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#a44b9979c8df31acc86cfbe87dec05d26">eonc::Potential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00455">455</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  460</span>                                                   {</div>
-<div class="line"><span class="lineno">  461</span>  std::vector&lt;std::int64_t&gt; ids(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nSystems), -1);</div>
-<div class="line"><span class="lineno">  462</span>  <span class="keywordflow">if</span> (owners) {</div>
-<div class="line"><span class="lineno">  463</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nSystems; j++)</div>
-<div class="line"><span class="lineno">  464</span>      ids[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = owners[j];</div>
-<div class="line"><span class="lineno">  465</span>  }</div>
-<div class="line"><span class="lineno">  466</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> grouped = <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorWorld() &gt; 1;</div>
-<div class="line"><span class="lineno">  467</span>  <span class="keyword">const</span> <span class="keyword">auto</span> t0 = std::chrono::steady_clock::now();</div>
-<div class="line"><span class="lineno">  468</span>  std::vector&lt;std::int64_t&gt; route(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nSystems), 0);</div>
-<div class="line"><span class="lineno">  469</span>  <span class="keywordflow">if</span> (grouped) {</div>
-<div class="line"><span class="lineno">  470</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a4525f8f90b21598144f3e753f79fbe39">schedule_</a>)</div>
-<div class="line"><span class="lineno">  471</span>      <a class="code hl_variable" href="#a4525f8f90b21598144f3e753f79fbe39">schedule_</a> =</div>
-<div class="line"><span class="lineno">  472</span>          std::make_unique&lt;eonc::GroupSchedule&gt;(<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorGroups());</div>
-<div class="line"><span class="lineno">  473</span>    std::vector&lt;std::int64_t&gt; keys(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nSystems));</div>
-<div class="line"><span class="lineno">  474</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nSystems; j++)</div>
-<div class="line"><span class="lineno">  475</span>      keys[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = orbital_key(ids.data(), j);</div>
-<div class="line"><span class="lineno">  476</span>    <span class="keyword">const</span> std::vector&lt;int&gt; groupOf = <a class="code hl_variable" href="#a4525f8f90b21598144f3e753f79fbe39">schedule_</a>-&gt;assign(keys);</div>
-<div class="line"><span class="lineno">  477</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nSystems; j++) {</div>
-<div class="line"><span class="lineno">  478</span>      route[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = groupOf[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)];</div>
-<div class="line"><span class="lineno">  479</span>      <a class="code hl_variable" href="#a4525f8f90b21598144f3e753f79fbe39">schedule_</a>-&gt;record(keys[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)], positions[j],</div>
-<div class="line"><span class="lineno">  480</span>                        3 * nAtoms);</div>
-<div class="line"><span class="lineno">  481</span>    }</div>
-<div class="line"><span class="lineno">  482</span>    std::int64_t hdr[4] = {kBatch, nAtoms, nSystems, 0};</div>
-<div class="line"><span class="lineno">  483</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(hdr, <span class="keyword">sizeof</span>(hdr));</div>
-<div class="line"><span class="lineno">  484</span>    std::vector&lt;double&gt; R(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(3 * nAtoms * nSystems));</div>
-<div class="line"><span class="lineno">  485</span>    std::vector&lt;int&gt; Z(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nAtoms * nSystems));</div>
-<div class="line"><span class="lineno">  486</span>    std::vector&lt;double&gt; box(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(9 * nSystems));</div>
-<div class="line"><span class="lineno">  487</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nSystems; j++) {</div>
-<div class="line"><span class="lineno">  488</span>      std::copy(positions[j], positions[j] + 3 * nAtoms,</div>
-<div class="line"><span class="lineno">  489</span>                R.begin() + 3 * nAtoms * j);</div>
-<div class="line"><span class="lineno">  490</span>      std::copy(atomicNrs[j], atomicNrs[j] + nAtoms, Z.begin() + nAtoms * j);</div>
-<div class="line"><span class="lineno">  491</span>      std::copy(boxes[j], boxes[j] + 9, box.begin() + 9 * j);</div>
-<div class="line"><span class="lineno">  492</span>    }</div>
-<div class="line"><span class="lineno">  493</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(R.data(), R.size() * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
-<div class="line"><span class="lineno">  494</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(Z.data(), Z.size() * <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div>
-<div class="line"><span class="lineno">  495</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(box.data(), box.size() * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
-<div class="line"><span class="lineno">  496</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(ids.data(), ids.size() * <span class="keyword">sizeof</span>(std::int64_t));</div>
-<div class="line"><span class="lineno">  497</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(route.data(),</div>
-<div class="line"><span class="lineno">  498</span>                               route.size() * <span class="keyword">sizeof</span>(std::int64_t));</div>
-<div class="line"><span class="lineno">  499</span>  }</div>
-<div class="line"><span class="lineno">  500</span>  <a class="code hl_function" href="#ae87ceb0b49847c3ae9e3d0773dc49478">releaseWorkersAtExit</a>();</div>
-<div class="line"><span class="lineno">  501</span>  <a class="code hl_function" href="#aca43bbd6ee7721cb4ad2fbaee6d06420">computeBatch</a>(nSystems, nAtoms, positions, atomicNrs, forces, energies, boxes,</div>
-<div class="line"><span class="lineno">  502</span>               ids.data(), route.data());</div>
-<div class="line"><span class="lineno">  503</span>  <span class="keywordflow">if</span> (grouped) {</div>
-<div class="line"><span class="lineno">  504</span>    <a class="code hl_variable" href="#ad975e68dfea4d5d839283791b70a46f6">use_</a>.wall +=</div>
-<div class="line"><span class="lineno">  505</span>        std::chrono::duration&lt;double&gt;(std::chrono::steady_clock::now() - t0)</div>
-<div class="line"><span class="lineno">  506</span>            .count();</div>
-<div class="line"><span class="lineno">  507</span>    <a class="code hl_variable" href="#ad975e68dfea4d5d839283791b70a46f6">use_</a>.batches++;</div>
-<div class="line"><span class="lineno">  508</span>  }</div>
-<div class="line"><span class="lineno">  509</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nSystems; j++) {</div>
-<div class="line"><span class="lineno">  510</span>    <span class="keywordflow">if</span> (variances)</div>
-<div class="line"><span class="lineno">  511</span>      variances[j] = 0.0;</div>
-<div class="line"><span class="lineno">  512</span>    <a class="code hl_variable" href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">forceCallCounter</a>++;</div>
-<div class="line"><span class="lineno">  513</span>    <a class="code hl_function" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">eonc::PotRegistry::get</a>().<a class="code hl_function" href="classeonc_1_1PotRegistry.html#a46a3c876ed01abc8123cd88bc3aae8da">on_force_call</a>(<a class="code hl_variable" href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">ptype</a>);</div>
-<div class="line"><span class="lineno">  514</span>  }</div>
-<div class="line"><span class="lineno">  515</span>}</div>
-<div class="ttc" id="aclassRgpotPot_html_aca43bbd6ee7721cb4ad2fbaee6d06420"><div class="ttname"><a href="#aca43bbd6ee7721cb4ad2fbaee6d06420">RgpotPot::computeBatch</a></div><div class="ttdeci">void computeBatch(long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, const double *const *boxes, const std::int64_t *owners, const std::int64_t *route)</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00280">RgpotPot.cpp:280</a></div></div>
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00457">457</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  462</span>                                                   {</div>
+<div class="line"><span class="lineno">  463</span>  std::vector&lt;std::int64_t&gt; ids(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nSystems), -1);</div>
+<div class="line"><span class="lineno">  464</span>  <span class="keywordflow">if</span> (owners) {</div>
+<div class="line"><span class="lineno">  465</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nSystems; j++)</div>
+<div class="line"><span class="lineno">  466</span>      ids[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = owners[j];</div>
+<div class="line"><span class="lineno">  467</span>  }</div>
+<div class="line"><span class="lineno">  468</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> grouped = <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorWorld() &gt; 1;</div>
+<div class="line"><span class="lineno">  469</span>  <span class="keyword">const</span> <span class="keyword">auto</span> t0 = std::chrono::steady_clock::now();</div>
+<div class="line"><span class="lineno">  470</span>  std::vector&lt;std::int64_t&gt; route(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nSystems), 0);</div>
+<div class="line"><span class="lineno">  471</span>  <span class="keywordflow">if</span> (grouped) {</div>
+<div class="line"><span class="lineno">  472</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a4525f8f90b21598144f3e753f79fbe39">schedule_</a>)</div>
+<div class="line"><span class="lineno">  473</span>      <a class="code hl_variable" href="#a4525f8f90b21598144f3e753f79fbe39">schedule_</a> =</div>
+<div class="line"><span class="lineno">  474</span>          std::make_unique&lt;eonc::GroupSchedule&gt;(<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorGroups());</div>
+<div class="line"><span class="lineno">  475</span>    std::vector&lt;std::int64_t&gt; keys(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nSystems));</div>
+<div class="line"><span class="lineno">  476</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nSystems; j++)</div>
+<div class="line"><span class="lineno">  477</span>      keys[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = orbital_key(ids.data(), j);</div>
+<div class="line"><span class="lineno">  478</span>    <span class="keyword">const</span> std::vector&lt;int&gt; groupOf = <a class="code hl_variable" href="#a4525f8f90b21598144f3e753f79fbe39">schedule_</a>-&gt;assign(keys);</div>
+<div class="line"><span class="lineno">  479</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nSystems; j++) {</div>
+<div class="line"><span class="lineno">  480</span>      route[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = groupOf[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)];</div>
+<div class="line"><span class="lineno">  481</span>      <a class="code hl_variable" href="#a4525f8f90b21598144f3e753f79fbe39">schedule_</a>-&gt;record(keys[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)], positions[j], 3 * nAtoms);</div>
+<div class="line"><span class="lineno">  482</span>    }</div>
+<div class="line"><span class="lineno">  483</span>    std::int64_t hdr[4] = {kBatch, nAtoms, nSystems, 0};</div>
+<div class="line"><span class="lineno">  484</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(hdr, <span class="keyword">sizeof</span>(hdr));</div>
+<div class="line"><span class="lineno">  485</span>    std::vector&lt;double&gt; R(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(3 * nAtoms * nSystems));</div>
+<div class="line"><span class="lineno">  486</span>    std::vector&lt;int&gt; Z(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nAtoms * nSystems));</div>
+<div class="line"><span class="lineno">  487</span>    std::vector&lt;double&gt; box(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(9 * nSystems));</div>
+<div class="line"><span class="lineno">  488</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nSystems; j++) {</div>
+<div class="line"><span class="lineno">  489</span>      std::copy(positions[j], positions[j] + 3 * nAtoms,</div>
+<div class="line"><span class="lineno">  490</span>                R.begin() + 3 * nAtoms * j);</div>
+<div class="line"><span class="lineno">  491</span>      std::copy(atomicNrs[j], atomicNrs[j] + nAtoms, Z.begin() + nAtoms * j);</div>
+<div class="line"><span class="lineno">  492</span>      std::copy(boxes[j], boxes[j] + 9, box.begin() + 9 * j);</div>
+<div class="line"><span class="lineno">  493</span>    }</div>
+<div class="line"><span class="lineno">  494</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(R.data(), R.size() * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
+<div class="line"><span class="lineno">  495</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(Z.data(), Z.size() * <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div>
+<div class="line"><span class="lineno">  496</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(box.data(), box.size() * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
+<div class="line"><span class="lineno">  497</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(ids.data(), ids.size() * <span class="keyword">sizeof</span>(std::int64_t));</div>
+<div class="line"><span class="lineno">  498</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(route.data(),</div>
+<div class="line"><span class="lineno">  499</span>                               route.size() * <span class="keyword">sizeof</span>(std::int64_t));</div>
+<div class="line"><span class="lineno">  500</span>  }</div>
+<div class="line"><span class="lineno">  501</span>  <a class="code hl_function" href="#ae87ceb0b49847c3ae9e3d0773dc49478">releaseWorkersAtExit</a>();</div>
+<div class="line"><span class="lineno">  502</span>  <a class="code hl_function" href="#aca43bbd6ee7721cb4ad2fbaee6d06420">computeBatch</a>(nSystems, nAtoms, positions, atomicNrs, forces, energies, boxes,</div>
+<div class="line"><span class="lineno">  503</span>               ids.data(), route.data());</div>
+<div class="line"><span class="lineno">  504</span>  <span class="keywordflow">if</span> (grouped) {</div>
+<div class="line"><span class="lineno">  505</span>    <a class="code hl_variable" href="#ad975e68dfea4d5d839283791b70a46f6">use_</a>.wall +=</div>
+<div class="line"><span class="lineno">  506</span>        std::chrono::duration&lt;double&gt;(std::chrono::steady_clock::now() - t0)</div>
+<div class="line"><span class="lineno">  507</span>            .count();</div>
+<div class="line"><span class="lineno">  508</span>    <a class="code hl_variable" href="#ad975e68dfea4d5d839283791b70a46f6">use_</a>.batches++;</div>
+<div class="line"><span class="lineno">  509</span>  }</div>
+<div class="line"><span class="lineno">  510</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; nSystems; j++) {</div>
+<div class="line"><span class="lineno">  511</span>    <span class="keywordflow">if</span> (variances)</div>
+<div class="line"><span class="lineno">  512</span>      variances[j] = 0.0;</div>
+<div class="line"><span class="lineno">  513</span>    <a class="code hl_variable" href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">forceCallCounter</a>++;</div>
+<div class="line"><span class="lineno">  514</span>    <a class="code hl_function" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">eonc::PotRegistry::get</a>().<a class="code hl_function" href="classeonc_1_1PotRegistry.html#a46a3c876ed01abc8123cd88bc3aae8da">on_force_call</a>(<a class="code hl_variable" href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">ptype</a>);</div>
+<div class="line"><span class="lineno">  515</span>  }</div>
+<div class="line"><span class="lineno">  516</span>}</div>
+<div class="ttc" id="aclassRgpotPot_html_aca43bbd6ee7721cb4ad2fbaee6d06420"><div class="ttname"><a href="#aca43bbd6ee7721cb4ad2fbaee6d06420">RgpotPot::computeBatch</a></div><div class="ttdeci">void computeBatch(long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, const double *const *boxes, const std::int64_t *owners, const std::int64_t *route)</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00281">RgpotPot.cpp:281</a></div></div>
 <div class="ttc" id="aclasseonc_1_1PotRegistry_html_a46a3c876ed01abc8123cd88bc3aae8da"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a46a3c876ed01abc8123cd88bc3aae8da">eonc::PotRegistry::on_force_call</a></div><div class="ttdeci">void on_force_call(PotType t) noexcept override</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00088">PotRegistry.cpp:88</a></div></div>
 <div class="ttc" id="aclasseonc_1_1PotRegistry_html_a5d307a4845d9c0d6d16031a5a637e23b"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">eonc::PotRegistry::get</a></div><div class="ttdeci">static PotRegistry &amp; get() noexcept</div><div class="ttdoc">Process-lifetime singleton.</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00050">PotRegistry.cpp:50</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Potential_html_a2ae7cca425e3d69d2825c58d1c7704eb"><div class="ttname"><a href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">eonc::Potential::forceCallCounter</a></div><div class="ttdeci">std::atomic&lt; size_t &gt; forceCallCounter</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00054">Potential.h:54</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Potential_html_ac102f249b890f52d06d96feff8f2047a"><div class="ttname"><a href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">eonc::Potential::ptype</a></div><div class="ttdeci">PotType ptype</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00045">Potential.h:45</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_a2ae7cca425e3d69d2825c58d1c7704eb"><div class="ttname"><a href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">eonc::Potential::forceCallCounter</a></div><div class="ttdeci">std::atomic&lt; size_t &gt; forceCallCounter</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00056">Potential.h:56</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_ac102f249b890f52d06d96feff8f2047a"><div class="ttname"><a href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">eonc::Potential::ptype</a></div><div class="ttdeci">PotType ptype</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00047">Potential.h:47</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1349,21 +1357,21 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00200">200</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  200</span>                                    {</div>
-<div class="line"><span class="lineno">  201</span>  <span class="keywordflow">if</span> (g_driver || !<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a> || <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorWorld() &lt;= 1)</div>
-<div class="line"><span class="lineno">  202</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  203</span>  <span class="comment">// Runs before the MPI_Finalize handler registered in the constructor.</span></div>
-<div class="line"><span class="lineno">  204</span>  <span class="comment">// After a failed engine call the workers can sit in a collective that</span></div>
-<div class="line"><span class="lineno">  205</span>  <span class="comment">// the stop broadcast never meets; the grouped exit handler aborts the</span></div>
-<div class="line"><span class="lineno">  206</span>  <span class="comment">// world instead.</span></div>
-<div class="line"><span class="lineno">  207</span>  g_driver = <span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">  208</span>  std::atexit([] {</div>
-<div class="line"><span class="lineno">  209</span>    <span class="keywordflow">if</span> (g_driver &amp;&amp; !<a class="code hl_function" href="classRGPotEngine.html#a2a1f696175dbc4d665d2e9a8d173504c">RGPotEngine::mpiAbortRequested</a>())</div>
-<div class="line"><span class="lineno">  210</span>      g_driver-&gt;stopAndDrop();</div>
-<div class="line"><span class="lineno">  211</span>  });</div>
-<div class="line"><span class="lineno">  212</span>}</div>
-<div class="ttc" id="aclassRGPotEngine_html_a2a1f696175dbc4d665d2e9a8d173504c"><div class="ttname"><a href="classRGPotEngine.html#a2a1f696175dbc4d665d2e9a8d173504c">RGPotEngine::mpiAbortRequested</a></div><div class="ttdeci">static bool mpiAbortRequested() noexcept</div><div class="ttdoc">True once rgpot asked for MPI_Abort at exit in this process.</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8cpp_source.html#l00422">RGPotEngine.cpp:422</a></div></div>
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00201">201</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  201</span>                                    {</div>
+<div class="line"><span class="lineno">  202</span>  <span class="keywordflow">if</span> (g_driver || !<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a> || <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorWorld() &lt;= 1)</div>
+<div class="line"><span class="lineno">  203</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  204</span>  <span class="comment">// Runs before the MPI_Finalize handler registered in the constructor.</span></div>
+<div class="line"><span class="lineno">  205</span>  <span class="comment">// After a failed engine call the workers can sit in a collective that</span></div>
+<div class="line"><span class="lineno">  206</span>  <span class="comment">// the stop broadcast never meets; the grouped exit handler aborts the</span></div>
+<div class="line"><span class="lineno">  207</span>  <span class="comment">// world instead.</span></div>
+<div class="line"><span class="lineno">  208</span>  g_driver = <span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">  209</span>  std::atexit([] {</div>
+<div class="line"><span class="lineno">  210</span>    <span class="keywordflow">if</span> (g_driver &amp;&amp; !<a class="code hl_function" href="classRGPotEngine.html#a2a1f696175dbc4d665d2e9a8d173504c">RGPotEngine::mpiAbortRequested</a>())</div>
+<div class="line"><span class="lineno">  211</span>      g_driver-&gt;stopAndDrop();</div>
+<div class="line"><span class="lineno">  212</span>  });</div>
+<div class="line"><span class="lineno">  213</span>}</div>
+<div class="ttc" id="aclassRGPotEngine_html_a2a1f696175dbc4d665d2e9a8d173504c"><div class="ttname"><a href="classRGPotEngine.html#a2a1f696175dbc4d665d2e9a8d173504c">RGPotEngine::mpiAbortRequested</a></div><div class="ttdeci">static bool mpiAbortRequested() noexcept</div><div class="ttdoc">True once rgpot asked for MPI_Abort at exit in this process.</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8cpp_source.html#l00451">RGPotEngine.cpp:451</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1424,16 +1432,16 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00151">151</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  151</span>                        {</div>
-<div class="line"><span class="lineno">  152</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a> || !<a class="code hl_variable" href="#aa510f91f12397e12b96ccde20b0a3e9a">driver_</a> || <a class="code hl_variable" href="#a79abcbb0876456ed0944f6b6446ba07f">stopped_</a> || <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorWorld() &lt;= 1)</div>
-<div class="line"><span class="lineno">  153</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  154</span>  std::int64_t hdr[4] = {kStop, 0, 0, 0};</div>
-<div class="line"><span class="lineno">  155</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(hdr, <span class="keyword">sizeof</span>(hdr));</div>
-<div class="line"><span class="lineno">  156</span>  <a class="code hl_variable" href="#a79abcbb0876456ed0944f6b6446ba07f">stopped_</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  157</span>  <span class="keywordflow">if</span> (g_driver == <span class="keyword">this</span>)</div>
-<div class="line"><span class="lineno">  158</span>    g_driver = <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">  159</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00152">152</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  152</span>                        {</div>
+<div class="line"><span class="lineno">  153</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a> || !<a class="code hl_variable" href="#aa510f91f12397e12b96ccde20b0a3e9a">driver_</a> || <a class="code hl_variable" href="#a79abcbb0876456ed0944f6b6446ba07f">stopped_</a> || <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorWorld() &lt;= 1)</div>
+<div class="line"><span class="lineno">  154</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  155</span>  std::int64_t hdr[4] = {kStop, 0, 0, 0};</div>
+<div class="line"><span class="lineno">  156</span>  <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(hdr, <span class="keyword">sizeof</span>(hdr));</div>
+<div class="line"><span class="lineno">  157</span>  <a class="code hl_variable" href="#a79abcbb0876456ed0944f6b6446ba07f">stopped_</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  158</span>  <span class="keywordflow">if</span> (g_driver == <span class="keyword">this</span>)</div>
+<div class="line"><span class="lineno">  159</span>    g_driver = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  160</span>}</div>
 <div class="ttc" id="aclassRgpotPot_html_a79abcbb0876456ed0944f6b6446ba07f"><div class="ttname"><a href="#a79abcbb0876456ed0944f6b6446ba07f">RgpotPot::stopped_</a></div><div class="ttdeci">bool stopped_</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8h_source.html#l00094">RgpotPot.h:94</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -1461,70 +1469,70 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00343">343</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  343</span>                           {</div>
-<div class="line"><span class="lineno">  344</span>  <span class="keywordflow">for</span> (;;) {</div>
-<div class="line"><span class="lineno">  345</span>    std::int64_t hdr[4] = {kStop, 0, 0, 0};</div>
-<div class="line"><span class="lineno">  346</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(hdr, <span class="keyword">sizeof</span>(hdr));</div>
-<div class="line"><span class="lineno">  347</span>    <span class="keywordflow">if</span> (hdr[0] == kStop) {</div>
-<div class="line"><span class="lineno">  348</span>      <span class="comment">// Drop CPMD, wait until the driver has dropped it too, then exit 0.</span></div>
-<div class="line"><span class="lineno">  349</span>      <span class="comment">// MPI_Finalize is collective and runs from the exit handler.</span></div>
-<div class="line"><span class="lineno">  350</span>      <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  351</span>        <a class="code hl_function" href="#a906c9d78bb020e4651afa8922c064ca6">exchangeGroupUse</a>();</div>
-<div class="line"><span class="lineno">  352</span>      } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;) {</div>
-<div class="line"><span class="lineno">  353</span>      }</div>
-<div class="line"><span class="lineno">  354</span>      <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a8bcb7ba8f038e0c27f7464f7790121de">dropped_</a>) {</div>
-<div class="line"><span class="lineno">  355</span>        <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;shutdownModule();</div>
-<div class="line"><span class="lineno">  356</span>        <a class="code hl_variable" href="#a8bcb7ba8f038e0c27f7464f7790121de">dropped_</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  357</span>      }</div>
-<div class="line"><span class="lineno">  358</span>      std::int64_t ack[4] = {kDown, 0, 0, 0};</div>
-<div class="line"><span class="lineno">  359</span>      <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(ack, <span class="keyword">sizeof</span>(ack));</div>
-<div class="line"><span class="lineno">  360</span>      std::exit(0);</div>
-<div class="line"><span class="lineno">  361</span>    }</div>
-<div class="line"><span class="lineno">  362</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> n = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(hdr[1]);</div>
-<div class="line"><span class="lineno">  363</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> m = hdr[0] == kBatch ? <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(hdr[2]) : 1;</div>
-<div class="line"><span class="lineno">  364</span>    std::vector&lt;double&gt; R(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(3 * n * m));</div>
-<div class="line"><span class="lineno">  365</span>    std::vector&lt;int&gt; Z(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(n * m));</div>
-<div class="line"><span class="lineno">  366</span>    std::vector&lt;double&gt; box(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(9 * m));</div>
-<div class="line"><span class="lineno">  367</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(R.data(), R.size() * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
-<div class="line"><span class="lineno">  368</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(Z.data(), Z.size() * <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div>
-<div class="line"><span class="lineno">  369</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(box.data(), box.size() * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
-<div class="line"><span class="lineno">  370</span>    std::vector&lt;std::int64_t&gt; ids(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(m), -1);</div>
-<div class="line"><span class="lineno">  371</span>    std::vector&lt;std::int64_t&gt; route(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(m), 0);</div>
-<div class="line"><span class="lineno">  372</span>    <span class="keywordflow">if</span> (hdr[0] == kBatch) {</div>
-<div class="line"><span class="lineno">  373</span>      <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(ids.data(), ids.size() * <span class="keyword">sizeof</span>(std::int64_t));</div>
-<div class="line"><span class="lineno">  374</span>      <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(route.data(),</div>
-<div class="line"><span class="lineno">  375</span>                                 route.size() * <span class="keyword">sizeof</span>(std::int64_t));</div>
-<div class="line"><span class="lineno">  376</span>    }</div>
-<div class="line"><span class="lineno">  377</span>    std::vector&lt;double&gt; F(R.size()), U(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(m));</div>
-<div class="line"><span class="lineno">  378</span>    <span class="comment">// A failed request raised on the driver too; the driver decides</span></div>
-<div class="line"><span class="lineno">  379</span>    <span class="comment">// whether the job goes on, so a worker keeps serving.</span></div>
-<div class="line"><span class="lineno">  380</span>    <span class="keywordflow">if</span> (hdr[0] == kSingle) {</div>
-<div class="line"><span class="lineno">  381</span>      <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  382</span>        <a class="code hl_function" href="#aef513c1ddb8453c6841752b8294d309d">computeSingle</a>(n, R.data(), Z.data(), F.data(), U.data(), box.data(),</div>
-<div class="line"><span class="lineno">  383</span>                      <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(hdr[3]));</div>
-<div class="line"><span class="lineno">  384</span>      } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::runtime_error &amp;) {</div>
-<div class="line"><span class="lineno">  385</span>      }</div>
-<div class="line"><span class="lineno">  386</span>      <span class="keywordflow">continue</span>;</div>
-<div class="line"><span class="lineno">  387</span>    }</div>
-<div class="line"><span class="lineno">  388</span>    std::vector&lt;const double *&gt; pos(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(m)), bx(pos.size());</div>
-<div class="line"><span class="lineno">  389</span>    std::vector&lt;const int *&gt; nrs(pos.size());</div>
-<div class="line"><span class="lineno">  390</span>    std::vector&lt;double *&gt; frc(pos.size());</div>
-<div class="line"><span class="lineno">  391</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; m; j++) {</div>
-<div class="line"><span class="lineno">  392</span>      pos[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = R.data() + 3 * n * j;</div>
-<div class="line"><span class="lineno">  393</span>      nrs[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = Z.data() + n * j;</div>
-<div class="line"><span class="lineno">  394</span>      frc[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = F.data() + 3 * n * j;</div>
-<div class="line"><span class="lineno">  395</span>      bx[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = box.data() + 9 * j;</div>
-<div class="line"><span class="lineno">  396</span>    }</div>
-<div class="line"><span class="lineno">  397</span>    <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  398</span>      <a class="code hl_function" href="#aca43bbd6ee7721cb4ad2fbaee6d06420">computeBatch</a>(m, n, pos.data(), nrs.data(), frc.data(), U.data(),</div>
-<div class="line"><span class="lineno">  399</span>                   bx.data(), ids.data(), route.data());</div>
-<div class="line"><span class="lineno">  400</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::runtime_error &amp;) {</div>
-<div class="line"><span class="lineno">  401</span>    }</div>
-<div class="line"><span class="lineno">  402</span>  }</div>
-<div class="line"><span class="lineno">  403</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00344">344</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  344</span>                           {</div>
+<div class="line"><span class="lineno">  345</span>  <span class="keywordflow">for</span> (;;) {</div>
+<div class="line"><span class="lineno">  346</span>    std::int64_t hdr[4] = {kStop, 0, 0, 0};</div>
+<div class="line"><span class="lineno">  347</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(hdr, <span class="keyword">sizeof</span>(hdr));</div>
+<div class="line"><span class="lineno">  348</span>    <span class="keywordflow">if</span> (hdr[0] == kStop) {</div>
+<div class="line"><span class="lineno">  349</span>      <span class="comment">// Drop CPMD, wait until the driver has dropped it too, then exit 0.</span></div>
+<div class="line"><span class="lineno">  350</span>      <span class="comment">// MPI_Finalize is collective and runs from the exit handler.</span></div>
+<div class="line"><span class="lineno">  351</span>      <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  352</span>        <a class="code hl_function" href="#a906c9d78bb020e4651afa8922c064ca6">exchangeGroupUse</a>();</div>
+<div class="line"><span class="lineno">  353</span>      } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;) {</div>
+<div class="line"><span class="lineno">  354</span>      }</div>
+<div class="line"><span class="lineno">  355</span>      <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a8bcb7ba8f038e0c27f7464f7790121de">dropped_</a>) {</div>
+<div class="line"><span class="lineno">  356</span>        <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;shutdownModule();</div>
+<div class="line"><span class="lineno">  357</span>        <a class="code hl_variable" href="#a8bcb7ba8f038e0c27f7464f7790121de">dropped_</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  358</span>      }</div>
+<div class="line"><span class="lineno">  359</span>      std::int64_t ack[4] = {kDown, 0, 0, 0};</div>
+<div class="line"><span class="lineno">  360</span>      <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(ack, <span class="keyword">sizeof</span>(ack));</div>
+<div class="line"><span class="lineno">  361</span>      std::exit(0);</div>
+<div class="line"><span class="lineno">  362</span>    }</div>
+<div class="line"><span class="lineno">  363</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> n = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(hdr[1]);</div>
+<div class="line"><span class="lineno">  364</span>    <span class="keyword">const</span> <span class="keywordtype">long</span> m = hdr[0] == kBatch ? <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(hdr[2]) : 1;</div>
+<div class="line"><span class="lineno">  365</span>    std::vector&lt;double&gt; R(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(3 * n * m));</div>
+<div class="line"><span class="lineno">  366</span>    std::vector&lt;int&gt; Z(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(n * m));</div>
+<div class="line"><span class="lineno">  367</span>    std::vector&lt;double&gt; box(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(9 * m));</div>
+<div class="line"><span class="lineno">  368</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(R.data(), R.size() * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
+<div class="line"><span class="lineno">  369</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(Z.data(), Z.size() * <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div>
+<div class="line"><span class="lineno">  370</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(box.data(), box.size() * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
+<div class="line"><span class="lineno">  371</span>    std::vector&lt;std::int64_t&gt; ids(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(m), -1);</div>
+<div class="line"><span class="lineno">  372</span>    std::vector&lt;std::int64_t&gt; route(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(m), 0);</div>
+<div class="line"><span class="lineno">  373</span>    <span class="keywordflow">if</span> (hdr[0] == kBatch) {</div>
+<div class="line"><span class="lineno">  374</span>      <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(ids.data(), ids.size() * <span class="keyword">sizeof</span>(std::int64_t));</div>
+<div class="line"><span class="lineno">  375</span>      <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(route.data(),</div>
+<div class="line"><span class="lineno">  376</span>                                 route.size() * <span class="keyword">sizeof</span>(std::int64_t));</div>
+<div class="line"><span class="lineno">  377</span>    }</div>
+<div class="line"><span class="lineno">  378</span>    std::vector&lt;double&gt; F(R.size()), U(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(m));</div>
+<div class="line"><span class="lineno">  379</span>    <span class="comment">// A failed request raised on the driver too; the driver decides</span></div>
+<div class="line"><span class="lineno">  380</span>    <span class="comment">// whether the job goes on, so a worker keeps serving.</span></div>
+<div class="line"><span class="lineno">  381</span>    <span class="keywordflow">if</span> (hdr[0] == kSingle) {</div>
+<div class="line"><span class="lineno">  382</span>      <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  383</span>        <a class="code hl_function" href="#aef513c1ddb8453c6841752b8294d309d">computeSingle</a>(n, R.data(), Z.data(), F.data(), U.data(), box.data(),</div>
+<div class="line"><span class="lineno">  384</span>                      <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(hdr[3]));</div>
+<div class="line"><span class="lineno">  385</span>      } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::runtime_error &amp;) {</div>
+<div class="line"><span class="lineno">  386</span>      }</div>
+<div class="line"><span class="lineno">  387</span>      <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  388</span>    }</div>
+<div class="line"><span class="lineno">  389</span>    std::vector&lt;const double *&gt; pos(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(m)), bx(pos.size());</div>
+<div class="line"><span class="lineno">  390</span>    std::vector&lt;const int *&gt; nrs(pos.size());</div>
+<div class="line"><span class="lineno">  391</span>    std::vector&lt;double *&gt; frc(pos.size());</div>
+<div class="line"><span class="lineno">  392</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; m; j++) {</div>
+<div class="line"><span class="lineno">  393</span>      pos[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = R.data() + 3 * n * j;</div>
+<div class="line"><span class="lineno">  394</span>      nrs[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = Z.data() + n * j;</div>
+<div class="line"><span class="lineno">  395</span>      frc[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = F.data() + 3 * n * j;</div>
+<div class="line"><span class="lineno">  396</span>      bx[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(j)] = box.data() + 9 * j;</div>
+<div class="line"><span class="lineno">  397</span>    }</div>
+<div class="line"><span class="lineno">  398</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  399</span>      <a class="code hl_function" href="#aca43bbd6ee7721cb4ad2fbaee6d06420">computeBatch</a>(m, n, pos.data(), nrs.data(), frc.data(), U.data(),</div>
+<div class="line"><span class="lineno">  400</span>                   bx.data(), ids.data(), route.data());</div>
+<div class="line"><span class="lineno">  401</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::runtime_error &amp;) {</div>
+<div class="line"><span class="lineno">  402</span>    }</div>
+<div class="line"><span class="lineno">  403</span>  }</div>
+<div class="line"><span class="lineno">  404</span>}</div>
 <div class="ttc" id="aclassRgpotPot_html_a8bcb7ba8f038e0c27f7464f7790121de"><div class="ttname"><a href="#a8bcb7ba8f038e0c27f7464f7790121de">RgpotPot::dropped_</a></div><div class="ttdeci">bool dropped_</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8h_source.html#l00095">RgpotPot.h:95</a></div></div>
-<div class="ttc" id="aclassRgpotPot_html_a906c9d78bb020e4651afa8922c064ca6"><div class="ttname"><a href="#a906c9d78bb020e4651afa8922c064ca6">RgpotPot::exchangeGroupUse</a></div><div class="ttdeci">void exchangeGroupUse()</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00161">RgpotPot.cpp:161</a></div></div>
+<div class="ttc" id="aclassRgpotPot_html_a906c9d78bb020e4651afa8922c064ca6"><div class="ttname"><a href="#a906c9d78bb020e4651afa8922c064ca6">RgpotPot::exchangeGroupUse</a></div><div class="ttdeci">void exchangeGroupUse()</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00162">RgpotPot.cpp:162</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1551,33 +1559,33 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00175">175</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  175</span>                           {</div>
-<div class="line"><span class="lineno">  176</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>)</div>
-<div class="line"><span class="lineno">  177</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  178</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> grouped = <a class="code hl_variable" href="#aa510f91f12397e12b96ccde20b0a3e9a">driver_</a> &amp;&amp; <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorWorld() &gt; 1;</div>
-<div class="line"><span class="lineno">  179</span>  <span class="keywordflow">if</span> (grouped &amp;&amp; !<a class="code hl_variable" href="#a79abcbb0876456ed0944f6b6446ba07f">stopped_</a>) {</div>
-<div class="line"><span class="lineno">  180</span>    <a class="code hl_function" href="#ae6c65b972ba91b1c5b4512fc03474e04">sendStop</a>();</div>
-<div class="line"><span class="lineno">  181</span>    <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  182</span>      <a class="code hl_function" href="#a906c9d78bb020e4651afa8922c064ca6">exchangeGroupUse</a>();</div>
-<div class="line"><span class="lineno">  183</span>      std::cout &lt;&lt; <span class="stringliteral">&quot;RgpotPot: &quot;</span> &lt;&lt; <a class="code hl_variable" href="#ad975e68dfea4d5d839283791b70a46f6">use_</a>.table() &lt;&lt; std::flush;</div>
-<div class="line"><span class="lineno">  184</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;ex) {</div>
-<div class="line"><span class="lineno">  185</span>      std::cerr &lt;&lt; <span class="stringliteral">&quot;RgpotPot: no calculator-group summary: &quot;</span> &lt;&lt; ex.what()</div>
-<div class="line"><span class="lineno">  186</span>                &lt;&lt; std::endl;</div>
-<div class="line"><span class="lineno">  187</span>    }</div>
-<div class="line"><span class="lineno">  188</span>  }</div>
-<div class="line"><span class="lineno">  189</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a8bcb7ba8f038e0c27f7464f7790121de">dropped_</a>) {</div>
-<div class="line"><span class="lineno">  190</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;shutdownModule();</div>
-<div class="line"><span class="lineno">  191</span>    <a class="code hl_variable" href="#a8bcb7ba8f038e0c27f7464f7790121de">dropped_</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  192</span>  }</div>
-<div class="line"><span class="lineno">  193</span>  <span class="keywordflow">if</span> (grouped &amp;&amp; !<a class="code hl_variable" href="#a98ce20269344bb0ad538f70c46b050b6">acked_</a>) {</div>
-<div class="line"><span class="lineno">  194</span>    std::int64_t hdr[4] = {kDown, 0, 0, 0};</div>
-<div class="line"><span class="lineno">  195</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(hdr, <span class="keyword">sizeof</span>(hdr));</div>
-<div class="line"><span class="lineno">  196</span>    <a class="code hl_variable" href="#a98ce20269344bb0ad538f70c46b050b6">acked_</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  197</span>  }</div>
-<div class="line"><span class="lineno">  198</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00176">176</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  176</span>                           {</div>
+<div class="line"><span class="lineno">  177</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>)</div>
+<div class="line"><span class="lineno">  178</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  179</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> grouped = <a class="code hl_variable" href="#aa510f91f12397e12b96ccde20b0a3e9a">driver_</a> &amp;&amp; <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorWorld() &gt; 1;</div>
+<div class="line"><span class="lineno">  180</span>  <span class="keywordflow">if</span> (grouped &amp;&amp; !<a class="code hl_variable" href="#a79abcbb0876456ed0944f6b6446ba07f">stopped_</a>) {</div>
+<div class="line"><span class="lineno">  181</span>    <a class="code hl_function" href="#ae6c65b972ba91b1c5b4512fc03474e04">sendStop</a>();</div>
+<div class="line"><span class="lineno">  182</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  183</span>      <a class="code hl_function" href="#a906c9d78bb020e4651afa8922c064ca6">exchangeGroupUse</a>();</div>
+<div class="line"><span class="lineno">  184</span>      std::cout &lt;&lt; <span class="stringliteral">&quot;RgpotPot: &quot;</span> &lt;&lt; <a class="code hl_variable" href="#ad975e68dfea4d5d839283791b70a46f6">use_</a>.table() &lt;&lt; std::flush;</div>
+<div class="line"><span class="lineno">  185</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;ex) {</div>
+<div class="line"><span class="lineno">  186</span>      std::cerr &lt;&lt; <span class="stringliteral">&quot;RgpotPot: no calculator-group summary: &quot;</span> &lt;&lt; ex.what()</div>
+<div class="line"><span class="lineno">  187</span>                &lt;&lt; std::endl;</div>
+<div class="line"><span class="lineno">  188</span>    }</div>
+<div class="line"><span class="lineno">  189</span>  }</div>
+<div class="line"><span class="lineno">  190</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a8bcb7ba8f038e0c27f7464f7790121de">dropped_</a>) {</div>
+<div class="line"><span class="lineno">  191</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;shutdownModule();</div>
+<div class="line"><span class="lineno">  192</span>    <a class="code hl_variable" href="#a8bcb7ba8f038e0c27f7464f7790121de">dropped_</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  193</span>  }</div>
+<div class="line"><span class="lineno">  194</span>  <span class="keywordflow">if</span> (grouped &amp;&amp; !<a class="code hl_variable" href="#a98ce20269344bb0ad538f70c46b050b6">acked_</a>) {</div>
+<div class="line"><span class="lineno">  195</span>    std::int64_t hdr[4] = {kDown, 0, 0, 0};</div>
+<div class="line"><span class="lineno">  196</span>    <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;broadcastFromDriver(hdr, <span class="keyword">sizeof</span>(hdr));</div>
+<div class="line"><span class="lineno">  197</span>    <a class="code hl_variable" href="#a98ce20269344bb0ad538f70c46b050b6">acked_</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  198</span>  }</div>
+<div class="line"><span class="lineno">  199</span>}</div>
 <div class="ttc" id="aclassRgpotPot_html_a98ce20269344bb0ad538f70c46b050b6"><div class="ttname"><a href="#a98ce20269344bb0ad538f70c46b050b6">RgpotPot::acked_</a></div><div class="ttdeci">bool acked_</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8h_source.html#l00096">RgpotPot.h:96</a></div></div>
-<div class="ttc" id="aclassRgpotPot_html_ae6c65b972ba91b1c5b4512fc03474e04"><div class="ttname"><a href="#ae6c65b972ba91b1c5b4512fc03474e04">RgpotPot::sendStop</a></div><div class="ttdeci">void sendStop()</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00151">RgpotPot.cpp:151</a></div></div>
+<div class="ttc" id="aclassRgpotPot_html_ae6c65b972ba91b1c5b4512fc03474e04"><div class="ttname"><a href="#ae6c65b972ba91b1c5b4512fc03474e04">RgpotPot::sendStop</a></div><div class="ttdeci">void sendStop()</div><div class="ttdef"><b>Definition</b> <a href="RgpotPot_8cpp_source.html#l00152">RgpotPot.cpp:152</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1608,14 +1616,14 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#a2d8781e3cbea888f88b7523c5d00bc43">eonc::Potential</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00438">438</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  438</span>                                                      {</div>
-<div class="line"><span class="lineno">  439</span>  <span class="comment">// One calculator gains from a batch too when the engine keeps orbitals</span></div>
-<div class="line"><span class="lineno">  440</span>  <span class="comment">// per key: the batch carries each image&#39;s or bead&#39;s identity, a single</span></div>
-<div class="line"><span class="lineno">  441</span>  <span class="comment">// force() does not.</span></div>
-<div class="line"><span class="lineno">  442</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a> &amp;&amp;</div>
-<div class="line"><span class="lineno">  443</span>         (<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorGroups() &gt; 1 || <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;keepsOrbitalsPerKey());</div>
-<div class="line"><span class="lineno">  444</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RgpotPot_8cpp_source.html#l00440">440</a> of file <a class="el" href="RgpotPot_8cpp_source.html">RgpotPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  440</span>                                                      {</div>
+<div class="line"><span class="lineno">  441</span>  <span class="comment">// One calculator gains from a batch too when the engine keeps orbitals</span></div>
+<div class="line"><span class="lineno">  442</span>  <span class="comment">// per key: the batch carries each image&#39;s or bead&#39;s identity, a single</span></div>
+<div class="line"><span class="lineno">  443</span>  <span class="comment">// force() does not.</span></div>
+<div class="line"><span class="lineno">  444</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a> &amp;&amp;</div>
+<div class="line"><span class="lineno">  445</span>         (<a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;calculatorGroups() &gt; 1 || <a class="code hl_variable" href="#a5dc28ce178c64749350e33931c191d34">impl_</a>-&gt;keepsOrbitalsPerKey());</div>
+<div class="line"><span class="lineno">  446</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

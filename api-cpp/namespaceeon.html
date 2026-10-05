@@ -262,56 +262,56 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00182">182</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  183</span>                                                                    {</div>
-<div class="line"><span class="lineno">  184</span>  ::CPMDParams::Builder params = msg.initRoot&lt;::CPMDParams&gt;();</div>
-<div class="line"><span class="lineno">  185</span>  <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a7ae5836006e7a47ea0b75091b293e354">params_path</a>.empty()) {</div>
-<div class="line"><span class="lineno">  186</span>    <span class="keyword">const</span> <span class="keyword">auto</span> words = read_params_file(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a7ae5836006e7a47ea0b75091b293e354">params_path</a>);</div>
-<div class="line"><span class="lineno">  187</span>    ::capnp::FlatArrayMessageReader reader(</div>
-<div class="line"><span class="lineno">  188</span>        kj::arrayPtr(words.data(), words.size()));</div>
-<div class="line"><span class="lineno">  189</span>    msg.setRoot(reader.getRoot&lt;::CPMDParams&gt;());</div>
-<div class="line"><span class="lineno">  190</span>    params = msg.getRoot&lt;::CPMDParams&gt;();</div>
-<div class="line"><span class="lineno">  191</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  192</span>    params.setFunctional(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a9fa540f49d27738ce93c1e35fc223b79">functional</a>);</div>
-<div class="line"><span class="lineno">  193</span>    params.setCutOffRy(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a684ca46659b5c02341399ba05cdd9a54">cutoff_ry</a>);</div>
-<div class="line"><span class="lineno">  194</span>    params.setCharge(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a9c7eab255bd69147d5909fc6907655d3">charge</a>);</div>
-<div class="line"><span class="lineno">  195</span>    params.setMultiplicity(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a34d4c067f03853de114c4d33a8c45224">multiplicity</a>);</div>
-<div class="line"><span class="lineno">  196</span>    <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a1bc5ed5c8b23207f381d0bf2fe34f3bd">title</a>.empty())</div>
-<div class="line"><span class="lineno">  197</span>      params.setTitle(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a1bc5ed5c8b23207f381d0bf2fe34f3bd">title</a>);</div>
-<div class="line"><span class="lineno">  198</span>    <span class="keywordflow">if</span> (opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a7d02521ee1febe74307e5e611f710118">memory_mb</a> &gt; 0)</div>
-<div class="line"><span class="lineno">  199</span>      params.setMemoryMb(<span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a7d02521ee1febe74307e5e611f710118">memory_mb</a>));</div>
-<div class="line"><span class="lineno">  200</span>  }</div>
-<div class="line"><span class="lineno">  201</span>  <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a>.empty())</div>
-<div class="line"><span class="lineno">  202</span>    params.setEnginePath(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a>);</div>
-<div class="line"><span class="lineno">  203</span>  <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a948f90c314c2e469761f2b706cf34dc0">engine_library</a>.empty())</div>
-<div class="line"><span class="lineno">  204</span>    params.setEnginePath(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a948f90c314c2e469761f2b706cf34dc0">engine_library</a>);</div>
-<div class="line"><span class="lineno">  205</span>  <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ac640a410bf18066058185cdc8a7d1d6d">engine_root</a>.empty())</div>
-<div class="line"><span class="lineno">  206</span>    params.setCpmdRoot(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ac640a410bf18066058185cdc8a7d1d6d">engine_root</a>);</div>
-<div class="line"><span class="lineno">  207</span>  <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a464193c68f85bdf6ccecf730f959c505">scratch_dir</a>.empty())</div>
-<div class="line"><span class="lineno">  208</span>    params.setScratchDir(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a464193c68f85bdf6ccecf730f959c505">scratch_dir</a>);</div>
-<div class="line"><span class="lineno">  209</span>  <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a9b869368677a0173ca2b5f52e7f6e2b9">permanent_dir</a>.empty())</div>
-<div class="line"><span class="lineno">  210</span>    params.setPermanentDir(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a9b869368677a0173ca2b5f52e7f6e2b9">permanent_dir</a>);</div>
-<div class="line"><span class="lineno">  211</span> </div>
-<div class="line"><span class="lineno">  212</span>  std::string block = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ada72be4995d9ae99c0ff2de2109ad237">input_block</a>;</div>
-<div class="line"><span class="lineno">  213</span>  <span class="keywordflow">if</span> (block.empty()) {</div>
-<div class="line"><span class="lineno">  214</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *env = std::getenv(<span class="stringliteral">&quot;RGPOT_CPMD_INPUT_BLOCK&quot;</span>))</div>
-<div class="line"><span class="lineno">  215</span>      block = env;</div>
-<div class="line"><span class="lineno">  216</span>  }</div>
-<div class="line"><span class="lineno">  217</span>  <span class="keywordflow">if</span> (!block.empty()) {</div>
-<div class="line"><span class="lineno">  218</span>    std::vector&lt;std::string&gt; kept;</div>
-<div class="line"><span class="lineno">  219</span>    {</div>
-<div class="line"><span class="lineno">  220</span>      <span class="keyword">auto</span> existing = params.getInputBlocks();</div>
-<div class="line"><span class="lineno">  221</span>      kept.reserve(existing.size());</div>
-<div class="line"><span class="lineno">  222</span>      <span class="keywordflow">for</span> (<span class="keyword">auto</span> text : existing)</div>
-<div class="line"><span class="lineno">  223</span>        kept.emplace_back(text.cStr());</div>
-<div class="line"><span class="lineno">  224</span>    }</div>
-<div class="line"><span class="lineno">  225</span>    <span class="keyword">auto</span> blocks = params.initInputBlocks(kept.size() + 1);</div>
-<div class="line"><span class="lineno">  226</span>    <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; kept.size(); ++i)</div>
-<div class="line"><span class="lineno">  227</span>      blocks.set(i, kept[i]);</div>
-<div class="line"><span class="lineno">  228</span>    blocks.set(kept.size(), block);</div>
-<div class="line"><span class="lineno">  229</span>  }</div>
-<div class="line"><span class="lineno">  230</span>  <span class="keywordflow">return</span> params;</div>
-<div class="line"><span class="lineno">  231</span>}</div>
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8cpp_source.html#l00183">183</a> of file <a class="el" href="RGPotEngine_8cpp_source.html">RGPotEngine.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  184</span>                                                                    {</div>
+<div class="line"><span class="lineno">  185</span>  ::CPMDParams::Builder params = msg.initRoot&lt;::CPMDParams&gt;();</div>
+<div class="line"><span class="lineno">  186</span>  <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a7ae5836006e7a47ea0b75091b293e354">params_path</a>.empty()) {</div>
+<div class="line"><span class="lineno">  187</span>    <span class="keyword">const</span> <span class="keyword">auto</span> words = read_params_file(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a7ae5836006e7a47ea0b75091b293e354">params_path</a>);</div>
+<div class="line"><span class="lineno">  188</span>    ::capnp::FlatArrayMessageReader reader(</div>
+<div class="line"><span class="lineno">  189</span>        kj::arrayPtr(words.data(), words.size()));</div>
+<div class="line"><span class="lineno">  190</span>    msg.setRoot(reader.getRoot&lt;::CPMDParams&gt;());</div>
+<div class="line"><span class="lineno">  191</span>    params = msg.getRoot&lt;::CPMDParams&gt;();</div>
+<div class="line"><span class="lineno">  192</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  193</span>    params.setFunctional(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a9fa540f49d27738ce93c1e35fc223b79">functional</a>);</div>
+<div class="line"><span class="lineno">  194</span>    params.setCutOffRy(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a684ca46659b5c02341399ba05cdd9a54">cutoff_ry</a>);</div>
+<div class="line"><span class="lineno">  195</span>    params.setCharge(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a9c7eab255bd69147d5909fc6907655d3">charge</a>);</div>
+<div class="line"><span class="lineno">  196</span>    params.setMultiplicity(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a34d4c067f03853de114c4d33a8c45224">multiplicity</a>);</div>
+<div class="line"><span class="lineno">  197</span>    <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a1bc5ed5c8b23207f381d0bf2fe34f3bd">title</a>.empty())</div>
+<div class="line"><span class="lineno">  198</span>      params.setTitle(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a1bc5ed5c8b23207f381d0bf2fe34f3bd">title</a>);</div>
+<div class="line"><span class="lineno">  199</span>    <span class="keywordflow">if</span> (opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a7d02521ee1febe74307e5e611f710118">memory_mb</a> &gt; 0)</div>
+<div class="line"><span class="lineno">  200</span>      params.setMemoryMb(<span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a7d02521ee1febe74307e5e611f710118">memory_mb</a>));</div>
+<div class="line"><span class="lineno">  201</span>  }</div>
+<div class="line"><span class="lineno">  202</span>  <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a>.empty())</div>
+<div class="line"><span class="lineno">  203</span>    params.setEnginePath(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a>);</div>
+<div class="line"><span class="lineno">  204</span>  <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a948f90c314c2e469761f2b706cf34dc0">engine_library</a>.empty())</div>
+<div class="line"><span class="lineno">  205</span>    params.setEnginePath(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a948f90c314c2e469761f2b706cf34dc0">engine_library</a>);</div>
+<div class="line"><span class="lineno">  206</span>  <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ac640a410bf18066058185cdc8a7d1d6d">engine_root</a>.empty())</div>
+<div class="line"><span class="lineno">  207</span>    params.setCpmdRoot(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ac640a410bf18066058185cdc8a7d1d6d">engine_root</a>);</div>
+<div class="line"><span class="lineno">  208</span>  <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a464193c68f85bdf6ccecf730f959c505">scratch_dir</a>.empty())</div>
+<div class="line"><span class="lineno">  209</span>    params.setScratchDir(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a464193c68f85bdf6ccecf730f959c505">scratch_dir</a>);</div>
+<div class="line"><span class="lineno">  210</span>  <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a9b869368677a0173ca2b5f52e7f6e2b9">permanent_dir</a>.empty())</div>
+<div class="line"><span class="lineno">  211</span>    params.setPermanentDir(opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#a9b869368677a0173ca2b5f52e7f6e2b9">permanent_dir</a>);</div>
+<div class="line"><span class="lineno">  212</span> </div>
+<div class="line"><span class="lineno">  213</span>  std::string block = opt.<a class="code hl_variable" href="structRGPotEngineOptions.html#ada72be4995d9ae99c0ff2de2109ad237">input_block</a>;</div>
+<div class="line"><span class="lineno">  214</span>  <span class="keywordflow">if</span> (block.empty()) {</div>
+<div class="line"><span class="lineno">  215</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *env = std::getenv(<span class="stringliteral">&quot;RGPOT_CPMD_INPUT_BLOCK&quot;</span>))</div>
+<div class="line"><span class="lineno">  216</span>      block = env;</div>
+<div class="line"><span class="lineno">  217</span>  }</div>
+<div class="line"><span class="lineno">  218</span>  <span class="keywordflow">if</span> (!block.empty()) {</div>
+<div class="line"><span class="lineno">  219</span>    std::vector&lt;std::string&gt; kept;</div>
+<div class="line"><span class="lineno">  220</span>    {</div>
+<div class="line"><span class="lineno">  221</span>      <span class="keyword">auto</span> existing = params.getInputBlocks();</div>
+<div class="line"><span class="lineno">  222</span>      kept.reserve(existing.size());</div>
+<div class="line"><span class="lineno">  223</span>      <span class="keywordflow">for</span> (<span class="keyword">auto</span> text : existing)</div>
+<div class="line"><span class="lineno">  224</span>        kept.emplace_back(text.cStr());</div>
+<div class="line"><span class="lineno">  225</span>    }</div>
+<div class="line"><span class="lineno">  226</span>    <span class="keyword">auto</span> blocks = params.initInputBlocks(kept.size() + 1);</div>
+<div class="line"><span class="lineno">  227</span>    <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; kept.size(); ++i)</div>
+<div class="line"><span class="lineno">  228</span>      blocks.set(i, kept[i]);</div>
+<div class="line"><span class="lineno">  229</span>    blocks.set(kept.size(), block);</div>
+<div class="line"><span class="lineno">  230</span>  }</div>
+<div class="line"><span class="lineno">  231</span>  <span class="keywordflow">return</span> params;</div>
+<div class="line"><span class="lineno">  232</span>}</div>
 <div class="ttc" id="astructRGPotEngineOptions_html_a1bc5ed5c8b23207f381d0bf2fe34f3bd"><div class="ttname"><a href="structRGPotEngineOptions.html#a1bc5ed5c8b23207f381d0bf2fe34f3bd">RGPotEngineOptions::title</a></div><div class="ttdeci">std::string title</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00020">RGPotEngine.h:20</a></div></div>
 <div class="ttc" id="astructRGPotEngineOptions_html_a34d4c067f03853de114c4d33a8c45224"><div class="ttname"><a href="structRGPotEngineOptions.html#a34d4c067f03853de114c4d33a8c45224">RGPotEngineOptions::multiplicity</a></div><div class="ttdeci">int multiplicity</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00016">RGPotEngine.h:16</a></div></div>
 <div class="ttc" id="astructRGPotEngineOptions_html_a464193c68f85bdf6ccecf730f959c505"><div class="ttname"><a href="structRGPotEngineOptions.html#a464193c68f85bdf6ccecf730f959c505">RGPotEngineOptions::scratch_dir</a></div><div class="ttdeci">std::string scratch_dir</div><div class="ttdef"><b>Definition</b> <a href="RGPotEngine_8h_source.html#l00022">RGPotEngine.h:22</a></div></div>

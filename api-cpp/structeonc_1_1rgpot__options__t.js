@@ -21,6 +21,7 @@ var structeonc_1_1rgpot__options__t =
     [ "ranks_per_image", "structeonc_1_1rgpot__options__t.html#aa56d2829a569f89a52eae61c0eabe195", null ],
     [ "scf_type", "structeonc_1_1rgpot__options__t.html#a7d75ed1691092f413b06bc06c71c0839", null ],
     [ "scratch_dir", "structeonc_1_1rgpot__options__t.html#a0c0a68853a266bd351574abaf8f6a2e8", null ],
+    [ "task_name", "structeonc_1_1rgpot__options__t.html#ade78bfc8051a8be58206e7d3a571603c", null ],
     [ "theory", "structeonc_1_1rgpot__options__t.html#aed61bb40096957d35edd517aac135e51", null ],
     [ "title", "structeonc_1_1rgpot__options__t.html#a2f1861a8f72663194c542459a67cfa4e", null ],
     [ "torch_determinism_strict", "structeonc_1_1rgpot__options__t.html#a2191a3596df2dce63fc323c0e581cda6", null ],

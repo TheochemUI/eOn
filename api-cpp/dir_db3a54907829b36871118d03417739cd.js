@@ -1,6 +1,7 @@
 var dir_db3a54907829b36871118d03417739cd =
 [
     [ "potentials", "dir_a8aef543466d2fa8dc828abfbb06a958.html", "dir_a8aef543466d2fa8dc828abfbb06a958" ],
+    [ "relax", "dir_f5f062b0a46407db52f1b6e7934df174.html", "dir_f5f062b0a46407db52f1b6e7934df174" ],
     [ "ARTnSaddleSearch.cpp", "ARTnSaddleSearch_8cpp.html", null ],
     [ "AtomicGPDimer.cpp", "AtomicGPDimer_8cpp.html", null ],
     [ "BasinHoppingJob.cpp", "BasinHoppingJob_8cpp.html", null ],

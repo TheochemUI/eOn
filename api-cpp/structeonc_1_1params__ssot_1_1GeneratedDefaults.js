@@ -85,6 +85,7 @@ var structeonc_1_1params__ssot_1_1GeneratedDefaults =
     [ "RGPOTPOT_RANKS_PER_IMAGE", "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a57d7b022bf5bdd9c0fbc6784265550c3", null ],
     [ "RGPOTPOT_SCF_TYPE", "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a20472a8f678f0f40bc66f94999bda5fa", null ],
     [ "RGPOTPOT_SCRATCH_DIR", "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#ad2e8ccadbe40e352f802cc50dd5e0a90", null ],
+    [ "RGPOTPOT_TASK_NAME", "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a65bb260201e96062045a41564aaa19f7", null ],
     [ "RGPOTPOT_THEORY", "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a197aebbddf713e4af10cc7289ecf16aa", null ],
     [ "RGPOTPOT_TITLE", "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a8e9e7aa61a8f93101de86e624221e455", null ],
     [ "RGPOTPOT_TORCH_DETERMINISM_STRICT", "structeonc_1_1params__ssot_1_1GeneratedDefaults.html#ae5110a2d26ce0e8c7595d2c5c08d792a", null ],

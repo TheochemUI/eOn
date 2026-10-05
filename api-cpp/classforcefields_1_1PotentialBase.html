@@ -407,7 +407,7 @@ Periodic Boundaries, Distance...</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Functions and tools commonly used by potentials. </p>
 <p>Contains functions for quadratic retrainst, Lennard-Jones, Coulomb, to manage the periodic boundaries and interface for cutoff. The system of units used is (eV, Angstrom, fs, e). Rules to combine different Lennard-Jones parameters were taken from:<br  />
- Unlike Lennard-Jones Parameters for Vapor-Liquid Equilibria, Thorsten Schnabel, Jadran Vrabec , Hans Hasse, Institut fur Technische Thermodynamik und Thermische Verfahrenstechnik, Universitat Stuttgart, D-70550 Stuttgart, Germany, <a href="http://www.itt.uni-stuttgart.de/~schnabel/CR.pdf">http://www.itt.uni-stuttgart.de/~schnabel/CR.pdf</a>. </p>
+ Unlike Lennard-Jones <a class="el" href="classParameters.html">Parameters</a> for Vapor-Liquid Equilibria, Thorsten Schnabel, Jadran Vrabec , Hans Hasse, Institut fur Technische Thermodynamik und Thermische Verfahrenstechnik, Universitat Stuttgart, D-70550 Stuttgart, Germany, <a href="http://www.itt.uni-stuttgart.de/~schnabel/CR.pdf">http://www.itt.uni-stuttgart.de/~schnabel/CR.pdf</a>. </p>
 
 <p class="definition">Definition at line <a class="el" href="potential__base_8hpp_source.html#l00024">24</a> of file <a class="el" href="potential__base_8hpp_source.html">potential_base.hpp</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
@@ -934,7 +934,7 @@ template&lt;int N, class R, class F&gt; </div>
 
 <p>Potential for Platinum. </p>
 <p>Simple 12-6 Lennard-Jones potential for Platinum.<br  />
-Parameters from: C. Kittel, Introduction to Solid State Physics, (Wiley, New York, 1986). </p><dl class="params"><dt>Parameters</dt><dd>
+<a class="el" href="classParameters.html">Parameters</a> from: C. Kittel, Introduction to Solid State Physics, (Wiley, New York, 1986). </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">nAtoms</td><td>Number of atoms. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">positions</td><td>Positions of atoms. </td></tr>
@@ -1640,7 +1640,7 @@ double &amp; z2)</a> and <a class="el" href="#a253c3fc3a173fc9d94253fdc67616a2b"
     <tr><td class="paramdir">[in]</td><td class="paramname">R1, R2</td><td>Positions of atom 1 and 2. </td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">F1, F2</td><td>Force on atom 1 and 2. </td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">E</td><td>Energy. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">epsilon, sigma</td><td>Parameters of the Lennard-Jones potential. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">epsilon, sigma</td><td><a class="el" href="classParameters.html">Parameters</a> of the Lennard-Jones potential. </td></tr>
   </table>
   </dd>
 </dl>

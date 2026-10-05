@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['nebinit_0',['NEBInit',['../namespaceeonc.html#a323be6616e43feab55a65202288b9459',1,'eonc']]],
-  ['nebstatus_1',['NEBStatus',['../classeonc_1_1NudgedElasticBand.html#ae4aa0062944f9d1fb091b3c4f5bd1016',1,'eonc::NudgedElasticBand']]]
+  ['mode_0',['Mode',['../structeonc_1_1neb__options__t_1_1zoom__options__t.html#a11710c18d78ff8802774f0df474e5604',1,'eonc::neb_options_t::zoom_options_t']]]
 ];

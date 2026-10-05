@@ -3,7 +3,7 @@ var searchData=
   ['walkhelped_0',['walkHelped',['../classeonc_1_1neb_1_1OCINEBController.html#a167d2fa135d39aabf7540dbd34f26b29',1,'eonc::neb::OCINEBController']]],
   ['water_1',['Water',['../structforcefields_1_1SpceCcl_1_1Water.html#ad268f177db9d6ed7f29bedcf24294d45',1,'forcefields::SpceCcl::Water::Water(double const rh1[], double const rh2[], double const ro[], double const rc[], double fh1[], double fh2[], double fo[])'],['../structforcefields_1_1SpceCcl_1_1Water.html#ab13fc45a4c9b449f27ea0023e9cecb1b',1,'forcefields::SpceCcl::Water::Water(Water const &amp;w, double fh1[], double fh2[], double fo[])']]],
   ['wellcurvature_2',['wellCurvature',['../namespaceeonc_1_1tunneling.html#aa0aeb8495929af6bf06268578baf07e8',1,'eonc::tunneling']]],
-  ['what_3',['what',['../classeonc_1_1DimerModeRestoredException.html#aef7053521adb1c5f957dd92d875c5df7',1,'eonc::DimerModeRestoredException']]],
+  ['what_3',['what',['../structeonc_1_1SurfaceRecoverable.html#ae0c10845a909d25986bef7ad995fba4b',1,'eonc::SurfaceRecoverable::what()'],['../classeonc_1_1DimerModeRestoredException.html#aef7053521adb1c5f957dd92d875c5df7',1,'eonc::DimerModeRestoredException::what()']]],
   ['wkbaction_4',['wkbAction',['../namespaceeonc_1_1tunneling.html#a39200e7272b41f1e43249b8248aa9931',1,'eonc::tunneling']]],
   ['wkblogratealongpath_5',['wkbLogRateAlongPath',['../namespaceeonc_1_1tunneling.html#acaab88438127f267c951cd93e89ced78',1,'eonc::tunneling']]],
   ['wkbsplitting_6',['wkbSplitting',['../namespaceeonc_1_1tunneling.html#a9859c2618af08b80c94e154595dfea7d',1,'eonc::tunneling']]],
@@ -23,5 +23,5 @@ var searchData=
   ['writepathcon_20',['writePathCon',['../namespaceeonc_1_1neb.html#a97a7096d08e3c06ae953526f3d794259',1,'eonc::neb']]],
   ['writeposcar_21',['writePOSCAR',['../classVASP.html#a4fbbbed55b18a24930fcddeec5108f7d',1,'VASP']]],
   ['writeresultsdat_22',['writeResultsDat',['../structeonc_1_1JobResultEnvelope.html#a49b89d6be57cd79cf5bf95e3bba3d009',1,'eonc::JobResultEnvelope']]],
-  ['writetibble_23',['writeTibble',['../classeonc_1_1Matter.html#a0937750cfe196a94470bbe0f565f6bc8',1,'eonc::Matter::writeTibble()'],['../namespaceeonc_1_1io.html#af6b4831ef3e56d5233f89c5a9689e7ec',1,'eonc::io::writeTibble()']]]
+  ['writetibble_23',['writeTibble',['../classeonc_1_1Matter.html#a0937750cfe196a94470bbe0f565f6bc8',1,'eonc::Matter::writeTibble()'],['../classMatter.html#a0937750cfe196a94470bbe0f565f6bc8',1,'Matter::writeTibble()'],['../namespaceeonc_1_1io.html#af6b4831ef3e56d5233f89c5a9689e7ec',1,'eonc::io::writeTibble()']]]
 ];

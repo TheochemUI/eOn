@@ -4,6 +4,7 @@ var dir_2527c5cc2e6dc8ce970a4d420439d1d9 =
     [ "helpers", "dir_1c95d0eaf906b6a49fd655cb828cf90c.html", "dir_1c95d0eaf906b6a49fd655cb828cf90c" ],
     [ "libs", "dir_ba81d6ef0a17701214eba92b83cf7613.html", "dir_ba81d6ef0a17701214eba92b83cf7613" ],
     [ "potentials", "dir_858247b18a1611539d1f444885056636.html", "dir_858247b18a1611539d1f444885056636" ],
+    [ "relax", "dir_a8f1cfa64ff9bec0381a493ccdc93b11.html", "dir_a8f1cfa64ff9bec0381a493ccdc93b11" ],
     [ "api.h", "api_8h.html", null ],
     [ "ARTnSaddleSearch.h", "ARTnSaddleSearch_8h.html", "ARTnSaddleSearch_8h" ],
     [ "AtomicGPDimer.h", "AtomicGPDimer_8h.html", "AtomicGPDimer_8h" ],

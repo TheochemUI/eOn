@@ -2,8 +2,8 @@ var searchData=
 [
   ['parallel_5freplica_5foptions_5ft_0',['parallel_replica_options_t',['../structeonc_1_1parallel__replica__options__t.html',1,'eonc']]],
   ['parallelreplicajob_1',['ParallelReplicaJob',['../classeonc_1_1ParallelReplicaJob.html',1,'eonc']]],
-  ['parameters_2',['Parameters',['../classeonc_1_1Parameters.html',1,'eonc']]],
-  ['parametersloadaccess_3',['ParametersLoadAccess',['../structeonc_1_1ParametersLoadAccess.html',1,'eonc']]],
+  ['parameters_2',['Parameters',['../classeonc_1_1Parameters.html',1,'eonc::Parameters'],['../classParameters.html',1,'Parameters']]],
+  ['parametersloadaccess_3',['ParametersLoadAccess',['../structeonc_1_1ParametersLoadAccess.html',1,'eonc::ParametersLoadAccess'],['../structParametersLoadAccess.html',1,'ParametersLoadAccess']]],
   ['path_5finitialization_5ft_4',['path_initialization_t',['../structeonc_1_1neb__options__t_1_1path__initialization__t.html',1,'eonc::neb_options_t']]],
   ['plaineb_5',['PlainEB',['../structeonc_1_1neb_1_1PlainEB.html',1,'eonc::neb']]],
   ['plane_6',['Plane',['../structeonc_1_1piqtst_1_1Plane.html',1,'eonc::piqtst']]],

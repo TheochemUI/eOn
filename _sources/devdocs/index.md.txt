@@ -22,6 +22,7 @@ parallel-potentials
 library-api
 in-process
 abi-surface
+relax-engine
 rgpot-migration
 porting_potentials
 docbuild
