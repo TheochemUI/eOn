@@ -2203,7 +2203,13 @@ if get_option('with_tests')
         )
         # librgpot and librgpot_pot are MPI-free; the MPI side loads on
         # demand, so eonclient itself must not map libmpi or a transport.
-        if _rgpot_mpi_dep.found() and host_machine.system() == 'linux'
+        # eOn's own with_mpi links eonclient to libmpi, so that check
+        # holds only when that option is off.
+        if (
+            _rgpot_mpi_dep.found()
+            and host_machine.system() == 'linux'
+            and not get_option('with_mpi').enabled()
+        )
             test(
                 'test_eonclient_no_mpi_at_load',
                 find_program('bash'),
