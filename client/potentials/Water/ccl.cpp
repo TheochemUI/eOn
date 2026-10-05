@@ -25,10 +25,10 @@ namespace {
 #if defined(FORCEFIELDS_UNIT_SYSTEM_HPP) &&                                    \
     (FORCEFIELDS_UNIT_SYSTEM_HPP !=                                            \
      FORCEFIELDS_UNIT_SYSTEM_ELECTRONVOLT_ANGSTROM_FEMTOSECOND_ECHARGE)
-double const re_ = 0.9572 * unit_system::ANGSTROM;
-double const thetae_ = 104.52 * unit_system::DEGREE;
+double const reEq_ = 0.9572 * unit_system::ANGSTROM;
+double const thetaEq_ = 104.52 * unit_system::DEGREE;
 
-double const re2_ = re_ * re_;
+double const re2_ = reEq_ * reEq_;
 
 // ------------------------ Quadratic ---------------------------
 double const ro_2_ = 84.54e-12 * unit_system::ERGS_PER_ANGSTROM2;
@@ -60,8 +60,8 @@ double const ro1_ro2_theta_2_ = 3.05e-12 * unit_system::ERGS_PER_ANGSTROM2;
 // ro_theta_3 = 0
 double const theta_4_ = -0.0318e-12 * unit_system::ERGS_PER_ANGSTROM2;
 #else
-double const re_ = 0.9572;                  // ANGSTROM
-double const thetae_ = 1.82421813418447321; // RADIANS
+double const reEq_ = 0.9572;                  // ANGSTROM
+double const thetaEq_ = 1.82421813418447321; // RADIANS
 
 double const re2_ = 0.91623184; // ANGSTROM^2
 
@@ -104,10 +104,10 @@ Improved Potential Functions for Bent AB2 Molecules: Water and Ozone. GD Carney,
 LA Curtiss, SR Langhoff, J. Mol. Spectroscopy @b 1976, vol. 61, p. 371-381
 */
 
-/// Distance OH at equilibrium
-double const Ccl::re_ = re_;
-/// Distance OH at equilibrium
-double const Ccl::thetae_ = thetae_;
+// The initializer is outside the class, but its lookup starts in the
+// class. Naming these re_ and thetae_ would bind each member to itself.
+double const Ccl::re_ = reEq_;
+double const Ccl::thetae_ = thetaEq_;
 
 /** Compute the forces and the energy.
 The order of the atoms is very important. For this function the order is H1, H1,
