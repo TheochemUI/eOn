@@ -15,6 +15,7 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Matter.h"
 
+#include <chrono>
 #include <filesystem>
 #include <fstream>
 #include <sstream>
@@ -115,17 +116,24 @@ TEST_CASE("allFreeAtoms drops fixed rows", "[prefactor]") {
 TEST_CASE("logFreqs appends a wrapped frequency table", "[prefactor]") {
   namespace fs = std::filesystem;
   const auto original = fs::current_path();
-  const auto dir = fs::temp_directory_path() / "eon_prefactor_freqs";
+  const auto dir =
+      fs::temp_directory_path() /
+      ("eon_prefactor_freqs_" +
+       std::to_string(
+           std::chrono::steady_clock::now().time_since_epoch().count()));
   fs::create_directories(dir);
   fs::current_path(dir);
   VectorXd freqs(6);
   freqs << 1.0, 2.0, 3.0, 4.0, 5.0, 6.0;
   eonc::Prefactor::logFreqs(freqs, "minimum 1");
   fs::current_path(original);
-  std::ifstream in(dir / "freqs.dat");
-  std::stringstream buf;
-  buf << in.rdbuf();
-  const std::string text = buf.str();
+  std::string text;
+  {
+    std::ifstream in(dir / "freqs.dat");
+    std::stringstream buf;
+    buf << in.rdbuf();
+    text = buf.str();
+  }
   fs::remove_all(dir);
   REQUIRE(text.find("minimum 1") != std::string::npos);
   REQUIRE(text.find("1.000000") != std::string::npos);

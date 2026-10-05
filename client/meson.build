@@ -1643,20 +1643,15 @@ eon_relax_capnp = custom_target(
 
 # Tier-2 plugin: dlopen'ed by a learning host (gpr_optim) to run an NEB or
 # a saddle search against the host's surface.
-# A static MSVC library has no import thunks. Consumers that include
-# this header as dllimport then fail with LNK2019 on __imp_eon_relax_*.
-# EON_RELAX_STATIC makes the declarations ordinary C symbols. A shared
-# build keeps dllexport on the library and dllimport on callers.
-_relax_static = get_option('default_library') == 'static'
-_relax_api_args = ['-DEON_RELAX_ENGINE_BUILD']
-if _relax_static
-    _relax_api_args = ['-DEON_RELAX_STATIC']
-endif
-eon_relax_engine = library(
+# Always a shared library. The learning host and the ABI test load it
+# with dlopen/LoadLibrary. A static archive is not a loadable module:
+# Windows CI sets EON_RELAX_ENGINE to libeon_relax_engine.a and
+# LoadLibrary returns null. default_library=static must not apply here.
+eon_relax_engine = shared_library(
     'eon_relax_engine',
     ['relax/RelaxEngineAbi.cpp', eon_relax_capnp],
     dependencies: _deps + _gprd_extra_deps + [capnp_dep],
-    cpp_args: _args + _relax_api_args,
+    cpp_args: _args + ['-DEON_RELAX_ENGINE_BUILD'],
     link_with: _linkto,
     include_directories: _incdirs + [include_directories('.')],
     build_rpath: ':'.join(_runtime_rpath),
@@ -1983,11 +1978,7 @@ if get_option('with_tests')
                 include_directories: test.get(0) == 'test_relax_engine'
                 ? _incdirs + [include_directories('.')]
                 : _incdirs,
-                cpp_args: (
-                    test.get(0) == 'test_relax_engine' and _relax_static
-                )
-                ? test_args + ['-DEON_RELAX_STATIC']
-                : test_args,
+                cpp_args: test_args,
                 # Include /STACK:16M (Windows) so EAM Al Fortran pots do not
                 # SIGSEGV with STATUS_STACK_OVERFLOW (default stack is 1 MB).
                 link_args: _linkargs,
