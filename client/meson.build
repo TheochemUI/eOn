@@ -1985,6 +1985,21 @@ if get_option('with_tests')
     _test_env.set('EON_TEST_SYSTEMS_DIR', _systems_dir)
     _test_env.set('EONCLIENT', ec.full_path())
     _test_env.set('EON_RELAX_ENGINE', eon_relax_engine.full_path())
+    # The Metatomic job puts torch/lib ahead of the pixi prefix. The
+    # engine DLL was linked against the prefix's capnp, kj, and flang
+    # runtimes. A same-named DLL from torch is missing those entry
+    # points and the process exits 0xC0000139. The prefix bins, then
+    # the built readcon DLL, come first.
+    if is_windows
+        _prefix_bin = get_option('prefix') / 'bin'
+        _prefix_lbin = get_option('prefix') / 'Library' / 'bin'
+        if fs.is_dir(_prefix_bin)
+            _test_env.prepend('PATH', _prefix_bin)
+        endif
+        if fs.is_dir(_prefix_lbin)
+            _test_env.prepend('PATH', _prefix_lbin)
+        endif
+    endif
     if _readcon_runtime_dir != ''
         _test_env.prepend('PATH', _readcon_runtime_dir)
     endif
