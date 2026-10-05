@@ -1,1 +1,1 @@
-A nlohmann or Highway pkg-config result under /usr is not used. The Meson wraps supply those headers.
+A /usr pkg-config nlohmann or Highway is not used; the wraps supply them.

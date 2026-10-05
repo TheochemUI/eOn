@@ -410,9 +410,11 @@ if not inireader_dep.found()
 endif
 _deps += inireader_dep
 
-# A prefix install (conda, EasyBuild) is usable. A pkg-config or CMake
-# result whose prefix is /usr injects the host headers into the conda
-# sysroot and is not used. The wrap supplies the headers.
+# A /usr pkg-config result is not used and the wrap is. That result is a
+# pkg-config prefix of /usr, or an includedir of /usr or /usr/include.
+# A real prefix (conda, EasyBuild) is kept. dependency() caches a found
+# result, so the wrap is taken with subproject(), not another
+# dependency() call.
 nlohmann_json_dep = dependency('nlohmann_json', required: false)
 _nlohmann_prefix = ''
 _nlohmann_inc = ''
@@ -428,27 +430,28 @@ if nlohmann_json_dep.found()
 endif
 _nlohmann_usr = (
     _nlohmann_prefix == '/usr'
-    or _nlohmann_prefix.startswith('/usr/')
+    or _nlohmann_inc == '/usr'
     or _nlohmann_inc == '/usr/include'
-    or _nlohmann_inc.startswith('/usr/')
 )
-if (
-    not nlohmann_json_dep.found()
-    or _nlohmann_usr
-    or not cppc.has_header(
-        'nlohmann/json.hpp',
-        dependencies: nlohmann_json_dep,
-    )
-)
-    nlohmann_json_dep = subproject('nlohmann_json').get_variable(
-        'nlohmann_json_dep',
-    )
+if not nlohmann_json_dep.found() or _nlohmann_usr
+    if _nlohmann_usr
+        message(
+            'nlohmann_json: a /usr pkg-config result is not used; the wrap is',
+        )
+    endif
+    nlohmann_json_dep = subproject(
+        'nlohmann_json',
+        default_options: ['default_library=static'],
+    ).get_variable('nlohmann_json_dep')
 endif
 _deps += nlohmann_json_dep
 
-# Highway SIMD (optional, for vectorized potentials). Same /usr rule:
-# a libhwy that links from /usr/lib and does not put hwy/ on the
-# compile line is not the Highway this tree builds.
+# Highway SIMD (optional, for vectorized potentials).
+# A /usr pkg-config result is not used and the wrap is. A real prefix
+# (conda, EasyBuild) is kept. cmake.subproject imports hwy_list_targets.
+# Meson PGICompiler (nvc++) has no get_pie_args, so that exe dies
+# ninja-write. The cmake subproject's .a archives are not readable by
+# MSVC link.exe, so Windows skips the wrap too.
 hwy_dep = dependency('libhwy', required: false)
 _hwy_prefix = ''
 _hwy_inc = ''
@@ -461,25 +464,23 @@ if hwy_dep.found()
 endif
 _hwy_usr = (
     _hwy_prefix == '/usr'
-    or _hwy_prefix.startswith('/usr/')
+    or _hwy_inc == '/usr'
     or _hwy_inc == '/usr/include'
-    or _hwy_inc.startswith('/usr/')
 )
-_hwy_header = (
-    hwy_dep.found()
-    and not _hwy_usr
-    and cppc.has_header('hwy/foreach_target.h', dependencies: hwy_dep)
-)
-# cmake.subproject imports hwy_list_targets. Meson PGICompiler (nvc++)
-# has no get_pie_args, so that exe dies ninja-write.
+_hwy_use = hwy_dep.found() and not _hwy_usr
 _cxx_id = cppc.get_id()
 if (
-    not _hwy_header
+    not _hwy_use
     and host_machine.system() != 'windows'
     and _cxx_id not in ['nvidia_hpc', 'pgi']
 )
-    # cmake subproject produces .a archives that MSVC link.exe cannot read
-    message('Highway: using the cmake subproject...')
+    if _hwy_usr
+        message(
+            'Highway: a /usr pkg-config result is not used; the wrap is',
+        )
+    else
+        message('Highway: system libhwy not found, trying cmake subproject...')
+    endif
     hwy_opts = cmake.subproject_options()
     hwy_opts.add_cmake_defines({
         'HWY_ENABLE_TESTS': 'OFF',
@@ -492,10 +493,10 @@ if (
     hwy_proj = cmake.subproject('highway', required: false, options: hwy_opts)
     if hwy_proj.found()
         hwy_dep = hwy_proj.dependency('hwy')
-        _hwy_header = true
+        _hwy_use = true
     endif
 endif
-if _hwy_header
+if _hwy_use
     _deps += hwy_dep
     _args += ['-DWITH_HIGHWAY']
     message('Highway SIMD: enabled')
