@@ -247,11 +247,12 @@ jobs:
             | grep -vE '/usr/bin$|[Mm]ingw|[Ss]trawberry' \
             | paste -sd:)
           PIXI_PRE="${PIXI_PROJECT_ROOT:-$PWD}/.pixi/envs/dev-mta"
-          # Library/bin before torch. scripts/ci/win_msvc_path.sh appends
-          # MSVC so LoadLibrary prefers the prefix the engine was linked
-          # against. torch/lib first makes test_relax_engine exit
-          # 0xC0000139 on a same-named DLL.
-          export PATH="${PIXI_PRE}/Library/bin:${PIXI_PRE}/bin:${pythonLocation}/Lib/site-packages/torch/lib:${PATH}"
+          # Do not put torch/lib on PATH. The Windows loader searches PATH
+          # after the executable directory. A same-named DLL there is
+          # missing the entry point test_relax_engine was linked against,
+          # and the process exits 0xC0000139. Meson adds torch/lib only to
+          # the tests that load it.
+          export PATH="${PIXI_PRE}/Library/bin:${PIXI_PRE}/bin:${PATH}"
           # shellcheck source=scripts/ci/win_flang_rt.sh
           source scripts/ci/win_flang_rt.sh
           eon_export_flang_rt "${PIXI_PRE}" --required

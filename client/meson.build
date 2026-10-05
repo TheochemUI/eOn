@@ -520,6 +520,7 @@ _deps += dl_dep
 # with *default* options before eOn can pass its own; get_variable() then
 # fails for anything the default profile skipped. Force pkg-config-only.
 _rgpot_proj = []
+_have_rgpot_wrap = false
 _rgpot_pkg = dependency(
     'rgpot',
     version: '>=3.2.0',
@@ -559,6 +560,99 @@ if not _rgpot_pkg.found()
         find_program(meson.project_source_root() / 'scripts' / 'install_wrap_rgpot.py'),
         _rgpot_proj.get_variable('rgpot').full_path(),
         get_option('libdir'),
+    )
+    _have_rgpot_wrap = true
+endif
+
+# The compiler records the prefix libdir as DT_RPATH ahead of the $ORIGIN
+# entries Meson adds for each target. DT_RPATH is searched in flag order,
+# and ahead of LD_LIBRARY_PATH, so a library installed into that prefix is
+# the one a later build loads. Project link arguments are emitted before
+# those external flags. The entries are the client build layout at every
+# directory depth a client target is linked from: each potential directory,
+# the client directory itself, and a wrap-built librgpot. They are $ORIGIN
+# relative, so install does not keep a build directory. A path that is not
+# present is an extra lookup.
+if host_system == 'linux'
+    _pot_out = run_command(
+        find_program('find'),
+        meson.current_source_dir() / 'potentials',
+        '-name',
+        'meson.build',
+        '-printf',
+        '%P\\n',
+        check: true,
+    )
+    _pot_rels = []
+    foreach _pot_line : _pot_out.stdout().splitlines()
+        if _pot_line.endswith('/meson.build')
+            _pot_rels += 'potentials' / _pot_line.replace('/meson.build', '')
+        endif
+    endforeach
+    _pot_sorted = []
+    foreach _pot_rel : _pot_rels
+        _pot_placed = false
+        _pot_next = []
+        foreach _pot_old : _pot_sorted
+            if not _pot_placed and _pot_rel < _pot_old
+                _pot_next += _pot_rel
+                _pot_placed = true
+            endif
+            _pot_next += _pot_old
+        endforeach
+        if not _pot_placed
+            _pot_next += _pot_rel
+        endif
+        _pot_sorted = _pot_next
+    endforeach
+    # '.' is the client build directory (libeonclib and the executables).
+    # python/ is one level under it. Nested potentials set the deeper levels.
+    _origin_deps = ['.'] + _pot_sorted
+    _origin_depth = 1
+    foreach _pot_rel : _pot_sorted
+        _pot_n = _pot_rel.split('/').length()
+        if _pot_n > _origin_depth
+            _origin_depth = _pot_n
+        endif
+    endforeach
+    if _have_rgpot_wrap
+        _rgpot_libdir = fs.parent(_rgpot_proj.get_variable('rgpot').full_path())
+        _rgpot_rel = fs.relative_to(_rgpot_libdir, meson.current_build_dir())
+        if not _rgpot_rel.startswith('/')
+            _origin_deps += _rgpot_rel
+        endif
+    endif
+    _origin_entries = []
+    foreach _origin_level : range(_origin_depth + 1)
+        _origin_ups = ''
+        foreach _origin_step : range(_origin_level)
+            _origin_ups += '../'
+        endforeach
+        foreach _origin_dep : _origin_deps
+            if _origin_dep == '.'
+                _origin_rel = _origin_ups
+            else
+                _origin_rel = _origin_ups + _origin_dep
+            endif
+            if _origin_rel.endswith('/')
+                _origin_rel = _origin_rel.substring(0, -1)
+            endif
+            if _origin_rel == ''
+                _origin_entries += '$ORIGIN'
+            else
+                # os.path.normpath drops a leading $ORIGIN when the next
+                # component is '..'. Concatenate so the token stays literal.
+                _origin_entries += '$ORIGIN/' + _origin_rel
+            endif
+        endforeach
+    endforeach
+    add_project_link_arguments(
+        '-Wl,-rpath,' + ':'.join(_origin_entries),
+        language: ['c', 'cpp'],
+    )
+    message(
+        'build-tree rpath entries before the prefix libdir:',
+        _origin_entries.length(),
     )
 endif
 
@@ -1204,6 +1298,14 @@ if get_option('with_ase_nwchem')
     _args += ['-DWITH_ASE_NWCHEM']
 endif
 
+# Torch's Windows wheel ships DLLs whose names also exist in the pixi
+# prefix (OpenMP, zlib, and others). The loader returns 0xC0000139 when
+# it binds one of those names and the export the engine was linked
+# against is missing. The wheel bins are where those DLLs actually sit
+# (metatensor and metatomic use bin, torch uses lib).
+_win_torch_dirs = []
+_win_wheel_bins = []
+
 if get_option('with_metatomic')
     if get_option('torch_path') != ''
         # Setting up Torch..
@@ -1302,7 +1404,16 @@ for name in ("metatensor", "metatensor_torch", "metatomic", "vesin"):
             _mta_lib,
             _vesin_lib,
         ]
-        if not is_windows
+        if is_windows
+            _win_torch_dirs = pip_metatomic_runtime_dirs
+            foreach _wheel_dir : pip_metatomic_runtime_dirs
+                _win_wheel_bins += _wheel_dir
+                _wheel_bin = fs.parent(_wheel_dir) / 'bin'
+                if _wheel_bin != _wheel_dir and fs.is_dir(_wheel_bin)
+                    _win_wheel_bins += _wheel_bin
+                endif
+            endforeach
+        else
             _runtime_rpath += pip_metatomic_runtime_dirs
         endif
         mts_inc_args = []
@@ -2005,15 +2116,17 @@ if get_option('with_tests')
     endif
     # Windows loads a DLL's imports from the executable directory before
     # PATH. Stage the engine's non-system imports beside the test, the
-    # same place the Fortran pot DLLs sit. Torch on PATH cannot shadow
-    # them.
+    # same place the Fortran pot DLLs sit. The prefix is searched before
+    # a plugin directory, so the linked runtime is the one copied.
     _stage_engine_imports = []
     _have_staged_engine_imports = false
     if is_windows
+        # The loader searches the executable directory before PATH.
+        # Prefix before the wheel: a name that exists in both is the one
+        # the flang and capnp link used. Wheel bins fill torch and
+        # metatensor, which the prefix does not ship. readcon is last so
+        # its build directory cannot supply libomp.dll.
         _stage_search = []
-        if _readcon_runtime_dir != ''
-            _stage_search += _readcon_runtime_dir
-        endif
         _lbin = get_option('prefix') / 'Library' / 'bin'
         _pbin = get_option('prefix') / 'bin'
         if fs.is_dir(_lbin)
@@ -2021,6 +2134,32 @@ if get_option('with_tests')
         endif
         if fs.is_dir(_pbin)
             _stage_search += _pbin
+        endif
+        _flang_new = find_program('flang-new', required: false)
+        if _flang_new.found()
+            _flang_res = run_command(
+                _flang_new,
+                '-print-resource-dir',
+                check: false,
+            )
+            if _flang_res.returncode() == 0
+                _flang_rt = _flang_res.stdout().strip() / 'lib' / 'x86_64-pc-windows-msvc'
+                if fs.is_dir(_flang_rt)
+                    _stage_search += _flang_rt
+                endif
+            endif
+        endif
+        foreach _wheel_dir : _win_wheel_bins
+            if fs.is_dir(_wheel_dir)
+                _stage_search += _wheel_dir
+            endif
+        endforeach
+        if _readcon_runtime_dir != ''
+            _stage_search += _readcon_runtime_dir
+        endif
+        _stage_depends = []
+        if _have_readcon_dll_beside
+            _stage_depends += _readcon_dll_beside
         endif
         _stage_engine_imports = custom_target(
             'stage-engine-dll-imports',
@@ -2032,6 +2171,7 @@ if get_option('with_tests')
                 '@INPUT@',
                 '@OUTPUT@',
             ] + _stage_search,
+            depends: _stage_depends,
             build_by_default: true,
         )
         _have_staged_engine_imports = true
@@ -2058,6 +2198,35 @@ if get_option('with_tests')
         endif
         if test.get(0) == 'test_client_timing'
             _case_depends += [ec]
+        elif is_windows and test.get(0) != 'test_relax_engine' and _win_torch_dirs.length() > 0
+            # A new environment. Prepending on _test_env would leak
+            # torch/lib into test_relax_engine, which is the 0xC0000139.
+            _case_env = environment()
+            _case_env.set('EON_TEST_SYSTEMS_DIR', _systems_dir)
+            _case_env.set('EONCLIENT', ec.full_path())
+            _case_env.set('EON_RELAX_ENGINE', eon_relax_engine.full_path())
+            if _fortran_pot_dirs.length() > 0
+                _case_env.set(
+                    'EON_POTENTIALS_PATH',
+                    _pot_pathsep.join(_fortran_pot_dirs),
+                )
+            endif
+            foreach _torch_dir : _win_torch_dirs
+                if fs.is_dir(_torch_dir)
+                    _case_env.prepend('PATH', _torch_dir)
+                endif
+            endforeach
+            _torch_prefix_bin = get_option('prefix') / 'bin'
+            _torch_prefix_lbin = get_option('prefix') / 'Library' / 'bin'
+            if fs.is_dir(_torch_prefix_bin)
+                _case_env.prepend('PATH', _torch_prefix_bin)
+            endif
+            if fs.is_dir(_torch_prefix_lbin)
+                _case_env.prepend('PATH', _torch_prefix_lbin)
+            endif
+            if _readcon_runtime_dir != ''
+                _case_env.prepend('PATH', _readcon_runtime_dir)
+            endif
         elif test.get(0) == 'test_serve_spec'
             # Spawn eonclient. The shared test env is one object, so this
             # case gets its own copy plus the client path.
@@ -2066,36 +2235,59 @@ if get_option('with_tests')
             _case_env.set('EONCLIENT', ec.full_path())
             _case_depends = [ec]
         endif
-        test(
+        _test_exe = executable(
             test.get(0),
-            executable(
-                test.get(0),
-                sources: [
-                    'unit_tests/' + test.get(1),
-                    'thirdparty/catch2/catch_amalgamated.cpp',
-                ],
-                include_directories: test.get(0) == 'test_relax_engine'
-                ? _incdirs + [include_directories('.')]
-                : _incdirs,
-                cpp_args: test_args,
-                # Include /STACK:16M (Windows) so EAM Al Fortran pots do not
-                # SIGSEGV with STATUS_STACK_OVERFLOW (default stack is 1 MB).
-                link_args: _linkargs,
-                dependencies: test.get(0) == 'test_relax_engine'
-                ? test_deps + [capnp_dep]
-                : test_deps,
-                link_with: test.get(0) == 'test_relax_engine'
-                ? test_link + [eon_relax_engine]
-                : test_link,
-                build_rpath: ':'.join(_runtime_rpath),
-            ),
-            workdir: meson.project_source_root() + '/client/unit_tests/data/systems/' + test.get(
-                2,
-            ),
-            timeout: test_timeout,
-            env: _case_env,
-            depends: _case_depends,
+            sources: [
+                'unit_tests/' + test.get(1),
+                'thirdparty/catch2/catch_amalgamated.cpp',
+            ],
+            include_directories: test.get(0) == 'test_relax_engine'
+            ? _incdirs + [include_directories('.')]
+            : _incdirs,
+            cpp_args: test_args,
+            # Include /STACK:16M (Windows) so EAM Al Fortran pots do not
+            # SIGSEGV with STATUS_STACK_OVERFLOW (default stack is 1 MB).
+            link_args: _linkargs,
+            dependencies: test.get(0) == 'test_relax_engine'
+            ? test_deps + [capnp_dep]
+            : test_deps,
+            link_with: test.get(0) == 'test_relax_engine'
+            ? test_link + [eon_relax_engine]
+            : test_link,
+            build_rpath: ':'.join(_runtime_rpath),
         )
+        _test_workdir = meson.project_source_root() + '/client/unit_tests/data/systems/' + test.get(
+            2,
+        )
+        # Meson puts every linked DLL directory on PATH ahead of the
+        # prefix. The launcher rebuilds PATH from the stage search list
+        # so the prefix and the wheel that provided each DLL come first.
+        if is_windows and test.get(0) == 'test_relax_engine'
+            test(
+                test.get(0),
+                py,
+                args: [
+                    meson.project_source_root() / 'scripts' / 'ci' / 'win_relax_launch.py',
+                    _test_exe.full_path(),
+                ] + _stage_search,
+                workdir: _test_workdir,
+                # The launcher reads the import tables of the wheel DLLs
+                # before the test. That is more than the default 30s on a
+                # cold runner disk.
+                timeout: 180,
+                env: _case_env,
+                depends: _case_depends + [_test_exe],
+            )
+        else
+            test(
+                test.get(0),
+                _test_exe,
+                workdir: _test_workdir,
+                timeout: test_timeout,
+                env: _case_env,
+                depends: _case_depends,
+            )
+        endif
     endforeach
     # potential_base.cpp is enough for computePt. The rest of the water
     # library is not part of the default build.
