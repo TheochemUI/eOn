@@ -54,3 +54,17 @@ def test_import_table_lists_the_dll_and_skips_kernel32(tmp_path: Path):
     assert mod.imported_dlls(pe) == ["capnp.dll"]
     assert mod._system("KERNEL32.dll")
     assert not mod._system("capnp.dll")
+
+
+def test_libomp_comes_from_the_first_search_directory(tmp_path: Path):
+    mod = _mod()
+    pe = tmp_path / "engine.dll"
+    pe.write_bytes(_pe(b"KERNEL32.dll"))
+    first = tmp_path / "prefix"
+    second = tmp_path / "plugin"
+    first.mkdir()
+    second.mkdir()
+    (first / "libomp.dll").write_bytes(b"llvm")
+    (second / "libomp.dll").write_bytes(b"other")
+    mod.stage(pe, [first, second], tmp_path / "stamp.txt")
+    assert (tmp_path / "libomp.dll").read_bytes() == b"llvm"

@@ -16,6 +16,18 @@ import struct
 import sys
 from pathlib import Path
 
+# LLVM libomp is what Flang links. Intel libiomp5md.dll, the copy in
+# torch/lib, does not export the same symbols. conda-forge/openmp-feedstock#8
+# and numpy-feedstock#308. Copy the LLVM names from the first search
+# directory so the executable directory wins over PATH.
+_ALSO = (
+    "libomp.dll",
+    "libomp140.x86_64.dll",
+    "flang_rt.runtime.dll",
+    "FortranRuntime.dll",
+    "FortranDecimal.dll",
+)
+
 _SYSTEM = {
     "kernel32.dll",
     "kernelbase.dll",
@@ -113,6 +125,15 @@ def stage(dll: Path, search: list[Path], stamp: Path) -> None:
             shutil.copy2(source, target)
             copied.append(name)
             queue.append(target)
+    for name in _ALSO:
+        target = dest / name
+        if target.is_file():
+            continue
+        source = next((d / name for d in search if (d / name).is_file()), None)
+        if source is None:
+            continue
+        shutil.copy2(source, target)
+        copied.append(name)
     stamp.write_text("\n".join(copied) + "\n", encoding="utf-8")
 
 
