@@ -1,10 +1,12 @@
 """Copy a Windows DLL's non-system imports beside it.
 
-The loader searches the executable directory before PATH. Torch's
-directory is on PATH ahead of the pixi prefix, so a same-named DLL
-from torch is missing the entry point the engine was linked against
-and the process exits 0xC0000139. Pot plugins already keep their
-runtime DLLs beside the loader. This does that for the engine DLL.
+The loader searches the executable directory before PATH
+(SafeDllSearchMode does not change that). A same-named DLL from
+torch, libiomp5md.dll or libomp.dll, is missing the entry point the
+engine linked and the process exits 0xC0000139. The first search
+directory that contains a name is the copy placed beside the engine.
+That directory must be the prefix or the flang resource dir, not a
+plugin directory that happens to ship the same file name.
 """
 
 from __future__ import annotations
