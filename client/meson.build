@@ -2107,14 +2107,30 @@ if get_option('with_tests')
     endif
     # Windows loads a DLL's imports from the executable directory before
     # PATH. Stage the engine's non-system imports beside the test, the
-    # same place the Fortran pot DLLs sit. Torch on PATH cannot shadow
-    # them.
+    # same place the Fortran pot DLLs sit. The prefix is searched before
+    # a plugin directory, so the linked runtime is the one copied.
     _stage_engine_imports = []
     _have_staged_engine_imports = false
     if is_windows
+        # The loader searches the executable directory before PATH.
+        # The first directory that contains a DLL name is the copy
+        # placed there. The prefix and the flang resource dir are the
+        # libraries the engine linked. readcon comes last so it cannot
+        # supply a same-named OpenMP or runtime DLL.
         _stage_search = []
-        if _readcon_runtime_dir != ''
-            _stage_search += _readcon_runtime_dir
+        _flang_new = find_program('flang-new', required: false)
+        if _flang_new.found()
+            _flang_res = run_command(
+                _flang_new,
+                '-print-resource-dir',
+                check: false,
+            )
+            if _flang_res.returncode() == 0
+                _flang_rt = _flang_res.stdout().strip() / 'lib' / 'x86_64-pc-windows-msvc'
+                if fs.is_dir(_flang_rt)
+                    _stage_search += _flang_rt
+                endif
+            endif
         endif
         _lbin = get_option('prefix') / 'Library' / 'bin'
         _pbin = get_option('prefix') / 'bin'
@@ -2123,6 +2139,9 @@ if get_option('with_tests')
         endif
         if fs.is_dir(_pbin)
             _stage_search += _pbin
+        endif
+        if _readcon_runtime_dir != ''
+            _stage_search += _readcon_runtime_dir
         endif
         _stage_engine_imports = custom_target(
             'stage-engine-dll-imports',
