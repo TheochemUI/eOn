@@ -1647,10 +1647,23 @@ eon_relax_capnp = custom_target(
 # with dlopen/LoadLibrary. A static archive is not a loadable module:
 # Windows CI sets EON_RELAX_ENGINE to libeon_relax_engine.a and
 # LoadLibrary returns null. default_library=static must not apply here.
+# Windows puts only readcon headers on _deps. The import library stays
+# off eonclib because llvm-ar and link reject the cargo DLL. This DLL
+# pulls eonclib in, so it needs the same import library the executables
+# get, without the cargo sources that contain the DLL.
+_engine_deps = _deps + _gprd_extra_deps + [capnp_dep]
+if is_windows
+    _engine_deps += readcon_dep.partial_dependency(
+        includes: true,
+        compile_args: true,
+        link_args: true,
+        links: true,
+    )
+endif
 eon_relax_engine = shared_library(
     'eon_relax_engine',
     ['relax/RelaxEngineAbi.cpp', eon_relax_capnp],
-    dependencies: _deps + _gprd_extra_deps + [capnp_dep],
+    dependencies: _engine_deps,
     cpp_args: _args + ['-DEON_RELAX_ENGINE_BUILD'],
     link_with: _linkto,
     include_directories: _incdirs + [include_directories('.')],
