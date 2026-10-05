@@ -1571,17 +1571,22 @@ _capnp_import_path = capnp_dep.get_variable('includedir', default_value: '')
 if _capnp_import_path == ''
     _capnp_import_path = fs.parent(fs.parent(capnp_prog.full_path())) / 'include'
 endif
+# capnp writes <schema>.c++. MSVC cl ignores that extension (D9024,
+# D9027), and the librarian then fails with LNK1181 on the missing
+# object. The script republishes the translation unit as .cpp.
 eon_relax_capnp = custom_target(
     'eon_relax_capnp',
     input: meson.project_source_root() / 'schema' / 'eon_relax_engine.capnp',
-    output: ['eon_relax_engine.capnp.h', 'eon_relax_engine.capnp.c++'],
+    output: ['eon_relax_engine.capnp.h', 'eon_relax_engine.capnp.cpp'],
     command: [
-        capnp_prog,
-        'compile',
-        '-oc++:@OUTDIR@',
-        '--import-path=' + _capnp_import_path,
-        '--src-prefix=' + meson.project_source_root() / 'schema',
-        '@INPUT@',
+        py.full_path(),
+        meson.project_source_root() / 'scripts' / 'capnp_cpp_unit.py',
+        '--capnp', capnp_prog.full_path(),
+        '--import-path', _capnp_import_path,
+        '--src-prefix', meson.project_source_root() / 'schema',
+        '--schema', '@INPUT@',
+        '--header', '@OUTPUT0@',
+        '--source', '@OUTPUT1@',
     ],
 )
 

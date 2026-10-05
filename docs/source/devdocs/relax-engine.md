@@ -42,7 +42,10 @@ them without a change in positions.
 ## Build and test
 
 The library builds with the default configuration and installs next to
-`libeonclib`. The unit test `test_relax_engine` links the library and
+`libeonclib`. Cap'n Proto writes the generated translation unit as
+`.c++`. MSVC `cl` ignores that extension, so the build republishes it
+as `eon_relax_engine.capnp.cpp` before compiling. The unit test
+`test_relax_engine` links the library and
 also opens it with `dlopen` through the `EON_RELAX_ENGINE` environment
 variable that `meson test` sets:
 
