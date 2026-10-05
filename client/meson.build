@@ -653,6 +653,10 @@ readcon_dep = dependency(
     required: false,
 )
 readcon_order_srcs = []
+# Directory of the readcon DLL this build linked. A pixi env can put
+# another readcon_core.dll earlier on PATH; Windows then starts the
+# test with STATUS_ENTRYPOINT_NOT_FOUND (0xC0000139).
+_readcon_runtime_dir = ''
 if not readcon_dep.found()
     readcon_proj = subproject(
         'readcon-core',
@@ -668,6 +672,11 @@ if not readcon_dep.found()
     # drops declare_dependency.sources, so attach the stamp here. A
     # readcon-core without the stamp contributes no sources.
     readcon_order_srcs += readcon_proj.get_variable('readcon_order', [])
+    if is_windows
+        _readcon_runtime_dir = fs.parent(
+            readcon_proj.get_variable('readcon_cargo')[0].full_path(),
+        )
+    endif
 endif
 if is_windows
     # On Windows, do not put cargo .lib/.dll on eonclib: llvm-ar treats
@@ -1958,6 +1967,9 @@ if get_option('with_tests')
     _test_env.set('EON_TEST_SYSTEMS_DIR', _systems_dir)
     _test_env.set('EONCLIENT', ec.full_path())
     _test_env.set('EON_RELAX_ENGINE', eon_relax_engine.full_path())
+    if _readcon_runtime_dir != ''
+        _test_env.prepend('PATH', _readcon_runtime_dir)
+    endif
     if _fortran_pot_dirs.length() > 0
         # FortranPotLoader splits on ';' on Windows (drive letters break ':').
         # Same pathsep rule as PATH: win=';' unix=':'.
