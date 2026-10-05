@@ -1298,6 +1298,12 @@ if get_option('with_ase_nwchem')
     _args += ['-DWITH_ASE_NWCHEM']
 endif
 
+# Torch's Windows wheel ships DLLs whose names also exist in the pixi
+# prefix (OpenMP, zlib, and others). The loader returns 0xC0000139 when
+# it binds one of those names and the export the engine was linked
+# against is missing. test_relax_engine does not get that directory.
+_win_torch_dirs = []
+
 if get_option('with_metatomic')
     if get_option('torch_path') != ''
         # Setting up Torch..
@@ -1396,7 +1402,9 @@ for name in ("metatensor", "metatensor_torch", "metatomic", "vesin"):
             _mta_lib,
             _vesin_lib,
         ]
-        if not is_windows
+        if is_windows
+            _win_torch_dirs = pip_metatomic_runtime_dirs
+        else
             _runtime_rpath += pip_metatomic_runtime_dirs
         endif
         mts_inc_args = []
@@ -2152,6 +2160,35 @@ if get_option('with_tests')
         endif
         if test.get(0) == 'test_client_timing'
             _case_depends += [ec]
+        elif is_windows and test.get(0) != 'test_relax_engine' and _win_torch_dirs.length() > 0
+            # A new environment. Prepending on _test_env would leak
+            # torch/lib into test_relax_engine, which is the 0xC0000139.
+            _case_env = environment()
+            _case_env.set('EON_TEST_SYSTEMS_DIR', _systems_dir)
+            _case_env.set('EONCLIENT', ec.full_path())
+            _case_env.set('EON_RELAX_ENGINE', eon_relax_engine.full_path())
+            if _fortran_pot_dirs.length() > 0
+                _case_env.set(
+                    'EON_POTENTIALS_PATH',
+                    _pot_pathsep.join(_fortran_pot_dirs),
+                )
+            endif
+            foreach _torch_dir : _win_torch_dirs
+                if fs.is_dir(_torch_dir)
+                    _case_env.prepend('PATH', _torch_dir)
+                endif
+            endforeach
+            _torch_prefix_bin = get_option('prefix') / 'bin'
+            _torch_prefix_lbin = get_option('prefix') / 'Library' / 'bin'
+            if fs.is_dir(_torch_prefix_bin)
+                _case_env.prepend('PATH', _torch_prefix_bin)
+            endif
+            if fs.is_dir(_torch_prefix_lbin)
+                _case_env.prepend('PATH', _torch_prefix_lbin)
+            endif
+            if _readcon_runtime_dir != ''
+                _case_env.prepend('PATH', _readcon_runtime_dir)
+            endif
         elif test.get(0) == 'test_serve_spec'
             # Spawn eonclient. The shared test env is one object, so this
             # case gets its own copy plus the client path.
