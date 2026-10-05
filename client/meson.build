@@ -1074,6 +1074,11 @@ if get_option('with_xtb')
         )
         xtb_dep = declare_dependency(
             compile_args: ['-I' + _xtb_pc.get_variable(pkgconfig: 'includedir')],
+            # rgpot's xtb dependency still contributes a bare xtb.lib.
+            # link.exe searches LIBPATH and the build root, not this
+            # directory, so the generated import library is invisible
+            # unless its directory is on the link line.
+            link_args: ['/LIBPATH:' + meson.current_build_dir()],
             dependencies: cppc.find_library(
                 'xtb',
                 dirs: [meson.current_build_dir()],
