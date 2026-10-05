@@ -50,8 +50,7 @@ void bind_matter(nb::module_ &m) {
       .def("resize", &Matter::resize, nb::arg("n_atoms"))
       .def("set_cancel_token", &Matter::setCancelToken, nb::arg("token"),
            "Share a CancelToken. Copies see the same request.")
-      .def("cancel_token", &Matter::cancelToken,
-           nb::rv_policy::copy,
+      .def("cancel_token", &Matter::cancelToken, nb::rv_policy::copy,
            "Copy of the token currently attached to this Matter.")
       .def_prop_ro("n_atoms", &Matter::numberOfAtoms)
       .def_prop_ro("n_free", &Matter::numberOfFreeAtoms)

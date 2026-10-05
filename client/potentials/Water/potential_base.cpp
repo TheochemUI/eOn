@@ -527,8 +527,8 @@ void PotentialBase::switching(double const r1[], double const r2[], double f1[],
 
 /** Minimum image representation.
 Writes the minimum image of @a r in place. Each component satisfies @f$
-\frac{-period}{2} \le r_i \le \frac{period}{2} @f$. The periods should be set with
-setPeriodicity();
+\frac{-period}{2} \le r_i \le \frac{period}{2} @f$. The periods should be set
+with setPeriodicity();
 @param[in,out] r      Three-dimension vector.
 @see setPeriodicity().*/
 void PotentialBase::applyPeriodicity1(double r[]) {

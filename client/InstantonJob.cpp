@@ -46,7 +46,6 @@ namespace {
 /// One unit of imaginary time, sqrt(amu Angstrom^2 / eV), in fs.
 constexpr double kTimeUnitFs = 10.180505717871193;
 
-
 /// Mass-weighted coordinates over the free atoms, measured from a reference
 /// structure under its minimum image.
 class MassWeighted {
@@ -439,11 +438,10 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   const double vSaddle = saddle.getPotentialEnergy();
   const MatrixXd hReactant = hessianAt(VectorXd::Zero(n));
   const MatrixXd hSaddle = hessianAt(qSaddle);
-  const VectorXd unstableMode =
-      Eigen::SelfAdjointEigenSolver<MatrixXd>(0.5 *
-                                              (hSaddle + hSaddle.transpose()))
-          .eigenvectors()
-          .col(0);
+  const VectorXd unstableMode = Eigen::SelfAdjointEigenSolver<MatrixXd>(
+                                    0.5 * (hSaddle + hSaddle.transpose()))
+                                    .eigenvectors()
+                                    .col(0);
   const double tc = tunneling::crossoverTemperature(hSaddle);
   const long rigidModes = mw.rigidBasis(reactant, rotationZero).cols();
   if (temperatures.size() == 1) {
@@ -552,8 +550,8 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
                     pathQ.size(),
                     PotRegistry::get().total_force_calls() - before);
       for (size_t k = 0; k < pathQ.size(); ++k) {
-        EONC_LOG_DEBUG("[Instanton] path {} s {:.6f} V - V_reactant {:.8f}",
-                       k, profile->s()[k], pathV[k] - vReactant);
+        EONC_LOG_DEBUG("[Instanton] path {} s {:.6f} V - V_reactant {:.8f}", k,
+                       profile->s()[k], pathV[k] - vReactant);
       }
     } catch (const std::exception &ex) {
       EONC_LOG_WARNING("[Instanton] steepest-descent path unusable: {}; "
@@ -754,8 +752,8 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     EONC_LOG_INFO("[Instanton] {:.4g} K: ring spans s = {:.4f} to {:.4f} "
                   "amu^0.5 A along the unstable mode, chord overlap {:.3f}, "
                   "dividing-plane crossing {:.4f} amu^0.5 A off the saddle",
-                  temperature, channel.sMin, channel.sMax,
-                  channel.chordOverlap, channel.crossingOffset);
+                  temperature, channel.sMin, channel.sMax, channel.chordOverlap,
+                  channel.crossingOffset);
     if (inst.converged && !channel.belongs) {
       EONC_LOG_ERROR("[Instanton] {:.4g} K: the ring does not pass through "
                      "the seeded saddle's channel (it must straddle the "
@@ -783,9 +781,10 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         }
         auto it = anchors.find(j);
         if (it == anchors.end()) {
-          it = anchors
-                   .emplace(j, beadHessianAt(inst.beads[static_cast<size_t>(j)]))
-                   .first;
+          it =
+              anchors
+                  .emplace(j, beadHessianAt(inst.beads[static_cast<size_t>(j)]))
+                  .first;
         }
         return it->second;
       };
@@ -805,10 +804,9 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         bodies.sqrtMasses = ro.rigidSqrtMasses;
         bodies.reference = ro.rigidReference;
         bodies.rotations = ro.rigidRotations;
-        tunneling::instantonRate(inst, beadHessian, hReactant,
-                                 vReactant - o.energy_shift, hSaddle,
-                                 vSaddle - o.energy_shift, rigidModes, 4096,
-                                 bodies);
+        tunneling::instantonRate(
+            inst, beadHessian, hReactant, vReactant - o.energy_shift, hSaddle,
+            vSaddle - o.energy_shift, rigidModes, 4096, bodies);
         rateOk = std::isfinite(inst.logRate) && inst.negativeModes == 1;
         if (inst.negativeModes != 1) {
           EONC_LOG_ERROR("[Instanton] the ring Hessian has {} negative modes, "

@@ -162,8 +162,7 @@ public:
   }
   bool refresh(bool /*finite_difference_step*/) override {
     double U = 0.0;
-    surface_.force(kAtoms, x_.data(), kAtomicNrs, f_.data(), &U, nullptr,
-                   kBox);
+    surface_.force(kAtoms, x_.data(), kAtomicNrs, f_.data(), &U, nullptr, kBox);
     return f_.allFinite();
   }
   [[nodiscard]] Eigen::Index imageDof() const override { return x_.size(); }

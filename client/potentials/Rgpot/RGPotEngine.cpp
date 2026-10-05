@@ -371,8 +371,7 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
       throw std::runtime_error(
           "RGPOT(metatomic): engine not available (set RGPOT_METATOMIC_ENGINE "
           "or [RgpotPot] engine_path to librgpot_metatomic_engine.so)");
-  } else if (backend_ == "uma" || backend_ == "omol" ||
-             backend_ == "umapot") {
+  } else if (backend_ == "uma" || backend_ == "omol" || backend_ == "umapot") {
     backend_ = "uma";
     impl_->backend = Impl::Backend::Uma;
     GenericEngineOptions gopt;
@@ -417,8 +416,9 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
           "RGPOT(xtb): engine not available (set RGPOT_XTB_ENGINE or "
           "[RgpotPot] engine_path to librgpot_xtb_engine.so)");
   } else {
-    throw std::runtime_error("RGPOT: unknown backend '" + opt.backend +
-                             "' (expected nwchemc, cpmdc, metatomic, uma, or xtb)");
+    throw std::runtime_error(
+        "RGPOT: unknown backend '" + opt.backend +
+        "' (expected nwchemc, cpmdc, metatomic, uma, or xtb)");
   }
 }
 

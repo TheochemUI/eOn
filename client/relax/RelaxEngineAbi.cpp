@@ -11,7 +11,6 @@
 */
 #include "eon/relax/eon_relax_engine.h"
 
-#include "relax/HostSurfacePotential.h"
 #include "eon/Eigen.h"
 #include "eon/Matter.h"
 #include "eon/MinModeSaddleSearch.h"
@@ -19,6 +18,7 @@
 #include "eon/Optimizer.h"
 #include "eon/Parameters.h"
 #include "eon_relax_engine.capnp.h"
+#include "relax/HostSurfacePotential.h"
 #include "version.h"
 
 #include <capnp/serialize.h>
@@ -70,9 +70,7 @@ void set_err(char *errbuf, size_t errlen, const char *msg) {
 
 bool known_kind(eon_relax_kind_t kind) { return EON_RELAX_KIND_IS_KNOWN(kind); }
 
-int neb_status(NudgedElasticBand::NEBStatus st) {
-  return static_cast<int>(st);
-}
+int neb_status(NudgedElasticBand::NEBStatus st) { return static_cast<int>(st); }
 
 void fill_matter(Matter &m, const eon_relax_band_t *band, long image,
                  uint64_t epoch) {
@@ -271,8 +269,9 @@ int eon_relax_abi_stamp(eon_relax_version_t *out) {
 }
 
 const char *eon_relax_version_hash_str(void) {
-  static const std::string id = VERSION + "+git." + GIT_HASH_FULL + "+feat." +
-                                std::to_string(fnv1a64(FEATURES_STRING.c_str()));
+  static const std::string id =
+      VERSION + "+git." + GIT_HASH_FULL + "+feat." +
+      std::to_string(fnv1a64(FEATURES_STRING.c_str()));
   return id.c_str();
 }
 
@@ -374,8 +373,8 @@ int eon_relax_run(EonRelaxEngine *eng, eon_relax_band_t *band,
   }
   stamp_outcome(out, eng->kind, eng->epoch);
 
-  auto pot = std::make_shared<eonc::HostSurfacePotential>(surface, user,
-                                                          eng->epoch);
+  auto pot =
+      std::make_shared<eonc::HostSurfacePotential>(surface, user, eng->epoch);
   try {
     if (eng->kind == EON_RELAX_KIND_NEB) {
       if (band->n_images < 3) {
@@ -438,8 +437,7 @@ int eon_relax_run(EonRelaxEngine *eng, eon_relax_band_t *band,
     const double reactant_e = matter->getPotentialEnergy();
     MinModeSaddleSearch search(matter, mode, reactant_e, eng->params, pot);
     const int sst = search.run();
-    write_image(band->positions, *matter,
-                static_cast<long>(band->n_atoms));
+    write_image(band->positions, *matter, static_cast<long>(band->n_atoms));
     out->iterations = search.getIterationCount();
     out->surface_epoch = pot->surfaceEpoch();
     out->status = sst;
@@ -503,9 +501,8 @@ int eon_relax_step(EonRelaxEngine *eng, eon_relax_band_t *band,
     return fail_out(eng, out, mass_rc, EON_RELAX_KIND_NEB, eng->epoch);
   }
   stamp_outcome(out, EON_RELAX_KIND_NEB, eng->epoch);
-  if (eng->step_neb &&
-      (band->n_atoms != eng->step_neb->atoms ||
-       band->n_images != eng->step_neb->numImages + 2)) {
+  if (eng->step_neb && (band->n_atoms != eng->step_neb->atoms ||
+                        band->n_images != eng->step_neb->numImages + 2)) {
     out->status = -1;
     return stamp_rc(eng, EON_RELAX_INVALID_PARAMETER);
   }
@@ -536,15 +533,13 @@ int eon_relax_step(EonRelaxEngine *eng, eon_relax_band_t *band,
         fill_matter(img, band, static_cast<long>(i), eng->epoch);
         path.push_back(std::move(img));
       }
-      eng->step_neb = std::make_unique<NudgedElasticBand>(std::move(path),
-                                                          eng->params,
-                                                          eng->step_pot);
+      eng->step_neb = std::make_unique<NudgedElasticBand>(
+          std::move(path), eng->params, eng->step_pot);
       eng->step_pot->bindPath(eng->step_neb->path);
       dirty_endpoints(*eng->step_neb);
       eng->step_neb->E_ref =
           std::min(eng->step_neb->path[0]->getPotentialEnergy(),
-                   eng->step_neb
-                       ->path[eng->step_neb->numImages + 1]
+                   eng->step_neb->path[eng->step_neb->numImages + 1]
                        ->getPotentialEnergy());
       eng->step_neb->updateForces();
       eng->step_objf = std::make_shared<NEBObjectiveFunction>(
@@ -634,9 +629,7 @@ int eon_relax_reset(EonRelaxEngine *eng) {
   return EON_RELAX_OK;
 }
 
-void eon_relax_destroy(EonRelaxEngine *eng) {
-  delete eng;
-}
+void eon_relax_destroy(EonRelaxEngine *eng) { delete eng; }
 
 const char *eon_relax_status_name(eon_relax_kind_t kind, int status) {
   if (kind == EON_RELAX_KIND_NEB) {

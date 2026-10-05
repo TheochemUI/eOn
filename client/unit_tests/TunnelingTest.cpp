@@ -1158,10 +1158,9 @@ struct CubicBond {
     const Eigen::Vector3d b = bond(q);
     const double r = b.norm();
     const Eigen::Vector3d u = b / r;
-    const Eigen::Matrix3d a = d2vd(r - re) * u * u.transpose() +
-                              dvd(r - re) / r *
-                                  (Eigen::Matrix3d::Identity() -
-                                   u * u.transpose());
+    const Eigen::Matrix3d a =
+        d2vd(r - re) * u * u.transpose() +
+        dvd(r - re) / r * (Eigen::Matrix3d::Identity() - u * u.transpose());
     MatrixXd h(6, 6);
     h << a, -a, -a, a;
     return h;
@@ -1231,9 +1230,8 @@ TEST_CASE("The rate lifts the rotations of a free diatomic's ring",
                                                    Eigen::EigenvaluesOnly);
   std::vector<double> lam(es.eigenvalues().data(),
                           es.eigenvalues().data() + n * f);
-  std::sort(lam.begin(), lam.end(), [](double a, double b) {
-    return std::abs(a) < std::abs(b);
-  });
+  std::sort(lam.begin(), lam.end(),
+            [](double a, double b) { return std::abs(a) < std::abs(b); });
   double logDetPrime = 0.0;
   long negative = 0;
   for (size_t i = 6; i < lam.size(); ++i) {
@@ -1259,8 +1257,7 @@ TEST_CASE("The rate lifts the rotations of a free diatomic's ring",
   instantonRate(copied, hessian, hr, 0.0, MatrixXd(), 0.0, 5);
   CAPTURE(expected, ring.logRateTimesZr, copied.logRateTimesZr);
   REQUIRE(ring.negativeModes == 1);
-  REQUIRE_THAT(ring.logRateTimesZr,
-               Catch::Matchers::WithinAbs(expected, 1e-6));
+  REQUIRE_THAT(ring.logRateTimesZr, Catch::Matchers::WithinAbs(expected, 1e-6));
   // The reactant's rotation generators on every bead miss the ring's null
   // space by a stretch-dependent angle.
   REQUIRE(std::abs(copied.logRateTimesZr - expected) > 1e-3);
@@ -1314,8 +1311,8 @@ TEST_CASE("The Eckart ring converges to the analytic instanton at second "
     REQUIRE_THAT(hi, Catch::Matchers::WithinAbs(-lo, 1e-6));
     err.push_back(inst.logRateTimesZr - analytic);
     errZ.push_back(inst.logZr - logZ);
-    const double leading = u * u * u / std::tanh(0.5 * u) / 48.0 /
-                           static_cast<double>(n * n);
+    const double leading =
+        u * u * u / std::tanh(0.5 * u) / 48.0 / static_cast<double>(n * n);
     CAPTURE(n, inst.logRateTimesZr, err.back(), errZ.back(), leading);
     REQUIRE(errZ.back() > 0.0);
     if (n >= 64) {
@@ -1452,10 +1449,9 @@ TEST_CASE("Quantum harmonic TST keeps a soft mode's zero-point factor exact",
   hs(0, 0) = -2.0;
   hs(1, 1) = std::pow(xs / bh, 2);
   const double barrier = 0.3;
-  const double expected = std::log(xr / xs) +
-                          std::log(2.0 * std::sinh(0.5 * bh * 2.0)) -
-                          std::log(2.0 * std::numbers::pi * bh) -
-                          beta * barrier;
+  const double expected =
+      std::log(xr / xs) + std::log(2.0 * std::sinh(0.5 * bh * 2.0)) -
+      std::log(2.0 * std::numbers::pi * bh) - beta * barrier;
   REQUIRE_THAT(quantumHarmonicTstLogRate(hr, hs, beta, barrier, 0),
                Catch::Matchers::WithinAbs(expected, 1e-12));
 }
@@ -1487,9 +1483,8 @@ TEST_CASE("The rate leaves out the ring Hessian's near-zero eigenvalue",
                                                    Eigen::EigenvaluesOnly);
   std::vector<double> lam(es.eigenvalues().data(),
                           es.eigenvalues().data() + opt.beads);
-  std::sort(lam.begin(), lam.end(), [](double a, double b) {
-    return std::abs(a) < std::abs(b);
-  });
+  std::sort(lam.begin(), lam.end(),
+            [](double a, double b) { return std::abs(a) < std::abs(b); });
   double logDetPrime = 0.0;
   for (size_t i = 1; i < lam.size(); ++i) {
     logDetPrime += std::log(std::abs(lam[i]));
@@ -1498,8 +1493,7 @@ TEST_CASE("The rate leaves out the ring Hessian's near-zero eigenvalue",
       -std::log(bnh) +
       0.5 * std::log(inst.bN /
                      (2.0 * std::numbers::pi * inst.betaN * kHbar * kHbar)) -
-      (static_cast<double>(opt.beads - 1) * std::log(bnh) +
-       0.5 * logDetPrime) -
+      (static_cast<double>(opt.beads - 1) * std::log(bnh) + 0.5 * logDetPrime) -
       inst.betaN * inst.ringPotential;
   for (const long dense : {4096L, 0L}) {
     RateInstanton ring = inst;
@@ -1605,7 +1599,8 @@ MatrixXd periodicSlabHessian(long l, MatrixXd &generators) {
   const double box = static_cast<double>(l);
   MatrixXd h = MatrixXd::Zero(3 * n, 3 * n);
   auto add = [&](long p, long q, double k) {
-    Eigen::Vector3d d = pos[static_cast<size_t>(q)] - pos[static_cast<size_t>(p)];
+    Eigen::Vector3d d =
+        pos[static_cast<size_t>(q)] - pos[static_cast<size_t>(p)];
     for (int a = 0; a < 2; ++a) {
       d(a) -= box * std::round(d(a) / box);
     }
@@ -1681,7 +1676,8 @@ TEST_CASE("Rotational zero modes are told apart on the Hessian's own scale",
       g.block(3 * atom, 3 + c, 3, 1) = e.cross(x.segment<3>(3 * atom) - com);
     }
   }
-  const RotationZeroModes bond = rotationZeroModes(pes.hessian(VectorXd::Zero(6)), g);
+  const RotationZeroModes bond =
+      rotationZeroModes(pes.hessian(VectorXd::Zero(6)), g);
   CAPTURE(bond.residual[0], bond.residual[1], bond.residual[2],
           bond.softestVibration);
   REQUIRE_FALSE(bond.zero[0]); // about the bond: no generator

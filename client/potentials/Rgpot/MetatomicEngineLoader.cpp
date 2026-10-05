@@ -76,8 +76,9 @@ MetatomicEngineLoader::MetatomicEngineLoader(
 #endif
   }
   if (!m_lib) {
-    std::string msg = "RGPOT(metatomic): librgpot_metatomic_engine.so not found "
-                      "(set RGPOT_METATOMIC_ENGINE or EON_POTENTIALS_PATH)";
+    std::string msg =
+        "RGPOT(metatomic): librgpot_metatomic_engine.so not found "
+        "(set RGPOT_METATOMIC_ENGINE or EON_POTENTIALS_PATH)";
     if (!last_dlerr.empty())
       msg += std::string("; last dlerror: ") + last_dlerr;
     throw std::runtime_error(msg);

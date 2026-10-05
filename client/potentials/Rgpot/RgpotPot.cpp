@@ -414,7 +414,8 @@ void RgpotPot::force(long N, const double *R, const int *atomicNrs, double *F,
   }
   const auto t0 = std::chrono::steady_clock::now();
   if (!schedule_)
-    schedule_ = std::make_unique<eonc::GroupSchedule>(impl_->calculatorGroups());
+    schedule_ =
+        std::make_unique<eonc::GroupSchedule>(impl_->calculatorGroups());
   // The group whose last geometry is nearest holds the warmest orbitals.
   const int group = schedule_->nearest(R, 3 * N);
   schedule_->settle(kSingleKey, group);
@@ -477,8 +478,7 @@ void RgpotPot::forceBatchOwned(long nSystems, long nAtoms,
     const std::vector<int> groupOf = schedule_->assign(keys);
     for (long j = 0; j < nSystems; j++) {
       route[static_cast<size_t>(j)] = groupOf[static_cast<size_t>(j)];
-      schedule_->record(keys[static_cast<size_t>(j)], positions[j],
-                        3 * nAtoms);
+      schedule_->record(keys[static_cast<size_t>(j)], positions[j], 3 * nAtoms);
     }
     std::int64_t hdr[4] = {kBatch, nAtoms, nSystems, 0};
     impl_->broadcastFromDriver(hdr, sizeof(hdr));

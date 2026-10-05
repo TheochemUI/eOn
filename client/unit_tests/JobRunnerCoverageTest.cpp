@@ -54,7 +54,8 @@ protected:
   std::unique_ptr<Parameters> params;
   size_t forceCalls_{0};
 
-  JobIntegrationFixture() : originalDir{std::filesystem::current_path()} {
+  JobIntegrationFixture()
+      : originalDir{std::filesystem::current_path()} {
     static int counter = 0;
     workdir = std::filesystem::temp_directory_path() /
               ("eon_test_jobcov_" + std::to_string(counter++));

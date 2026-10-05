@@ -24,7 +24,8 @@
 namespace eonc {
 
 struct SurfaceRecoverable : std::exception {
-  explicit SurfaceRecoverable(int code) : rc{code} {}
+  explicit SurfaceRecoverable(int code)
+      : rc{code} {}
   int rc{0};
   [[nodiscard]] const char *what() const noexcept override {
     return "host surface recoverable";
@@ -33,9 +34,11 @@ struct SurfaceRecoverable : std::exception {
 
 class HostSurfacePotential : public Potential {
 public:
-  HostSurfacePotential(eon_relax_surface_fn fn, void *user,
-                       std::uint64_t epoch)
-      : Potential(PotType::UNKNOWN), fn_{fn}, user_{user}, epoch_{epoch} {}
+  HostSurfacePotential(eon_relax_surface_fn fn, void *user, std::uint64_t epoch)
+      : Potential(PotType::UNKNOWN),
+        fn_{fn},
+        user_{user},
+        epoch_{epoch} {}
 
   [[nodiscard]] bool supportsBatchEvaluation() const noexcept override {
     return true;

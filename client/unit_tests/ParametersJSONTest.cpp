@@ -504,8 +504,7 @@ TEST_CASE("JSON RgpotPot omits xtb_charge resets it from charge",
   Parameters kept;
   ParametersLoadAccess::rgpot_options(kept).charge = 5;
   ParametersLoadAccess::rgpot_options(kept).xtb_charge = 9.0;
-  nlohmann::json present = {
-      {"RgpotPot", {{"charge", 5}, {"xtb_charge", 2.5}}}};
+  nlohmann::json present = {{"RgpotPot", {{"charge", 5}, {"xtb_charge", 2.5}}}};
   eonc::config::from_json(present, kept);
   REQUIRE(kept.rgpot_options().xtb_charge == Catch::Approx(2.5));
 }

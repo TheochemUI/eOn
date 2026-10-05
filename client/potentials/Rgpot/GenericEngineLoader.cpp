@@ -78,11 +78,10 @@ GenericEngineLoader::GenericEngineLoader(const GenericEngineOptions &opt)
 #endif
   }
   if (!m_lib) {
-    std::string msg = "RGPOT(" + m_tag + "): " + opt.library +
-                      " not found (set " +
-                      (opt.env_var.empty() ? std::string("engine_path")
-                                           : opt.env_var) +
-                      " or EON_POTENTIALS_PATH)";
+    std::string msg =
+        "RGPOT(" + m_tag + "): " + opt.library + " not found (set " +
+        (opt.env_var.empty() ? std::string("engine_path") : opt.env_var) +
+        " or EON_POTENTIALS_PATH)";
     if (!last_dlerr.empty())
       msg += std::string("; last dlerror: ") + last_dlerr;
     throw std::runtime_error(msg);

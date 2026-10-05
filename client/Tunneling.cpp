@@ -3338,10 +3338,10 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
     rigid = ringRigidBasis(inst.beads, rigidBodies.sqrtMasses,
                            rigidBodies.reference, rigidBodies.rotations);
     if (static_cast<long>(rigid.size()) != nullBasis.cols()) {
-      throw std::runtime_error(
-          "instantonRate: the ring has " + std::to_string(rigid.size()) +
-          " rigid motions and the reactant " +
-          std::to_string(nullBasis.cols()));
+      throw std::runtime_error("instantonRate: the ring has " +
+                               std::to_string(rigid.size()) +
+                               " rigid motions and the reactant " +
+                               std::to_string(nullBasis.cols()));
     }
   } else {
     for (long r = 0; r < nullBasis.cols(); ++r) {
@@ -3459,7 +3459,8 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
         ++tiny;
       }
     }
-    inst.negativeModes = negative > 1 ? std::max(1L, negative - tiny) : negative;
+    inst.negativeModes =
+        negative > 1 ? std::max(1L, negative - tiny) : negative;
   } else {
     // The lowest ring eigenvalue, for the report, from products alone.
     auto applyFull = [&](const std::vector<VectorXd> &vec) {
@@ -3503,9 +3504,9 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
   // Along an eigenvector the lift adds c to its eigenvalue, so it comes off
   // as c + lambda_0 for the cycle (lambda_0 is not zero on a discrete ring)
   // and as c for the exact rigid zeros.
-  const double logDetPrime =
-      logAbsDet - std::log(std::abs(c + inst.zeroEigenvalue)) -
-      static_cast<double>(nDrop - 1) * std::log(c);
+  const double logDetPrime = logAbsDet -
+                             std::log(std::abs(c + inst.zeroEigenvalue)) -
+                             static_cast<double>(nDrop - 1) * std::log(c);
   const double logProd =
       static_cast<double>(N * f - nDrop) * std::log(bnh) + 0.5 * logDetPrime;
 

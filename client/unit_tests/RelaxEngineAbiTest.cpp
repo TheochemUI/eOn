@@ -20,8 +20,8 @@
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
 #include "eon/relax/eon_relax_engine.h"
-#include "relax/HostSurfacePotential.h"
 #include "eon_relax_engine.capnp.h"
+#include "relax/HostSurfacePotential.h"
 
 #include <capnp/message.h>
 #include <capnp/serialize.h>
@@ -99,8 +99,8 @@ static int surface_forward(void *user, eon_relax_surface_request_t *req) {
 }
 
 static void pack_harmonic_band(std::vector<double> &pos,
-                               std::vector<double> &boxes, std::vector<int32_t> &z,
-                               long n_images) {
+                               std::vector<double> &boxes,
+                               std::vector<int32_t> &z, long n_images) {
   const long n_atoms = 1;
   pos.assign(static_cast<size_t>(n_images * 3 * n_atoms), 0.0);
   boxes.assign(static_cast<size_t>(n_images * 9), 0.0);
@@ -161,8 +161,8 @@ TEST_CASE("HostSurfacePotential forceBatch counts each system",
 TEST_CASE("HostSurfacePotential force plus Matter counts one call",
           "[relax][pot][epoch]") {
   SurfaceCtx ctx{nullptr, 0.0, 0, 0};
-  auto pot = std::make_shared<eonc::HostSurfacePotential>(surface_forward,
-                                                          &ctx, 0);
+  auto pot =
+      std::make_shared<eonc::HostSurfacePotential>(surface_forward, &ctx, 0);
   Parameters params;
   Matter m(pot, params);
   m.resize(1);
@@ -193,8 +193,8 @@ TEST_CASE("HostSurfacePotential force plus Matter counts one call",
 TEST_CASE("NEBObjectiveFunction returns interior host masses",
           "[relax][neb][masses]") {
   SurfaceCtx ctx{nullptr, 0.0, 0, 0};
-  auto pot = std::make_shared<eonc::HostSurfacePotential>(surface_forward,
-                                                          &ctx, 0);
+  auto pot =
+      std::make_shared<eonc::HostSurfacePotential>(surface_forward, &ctx, 0);
   Parameters params;
   ParametersLoadAccess::neb_options(params).image_count = 5;
   std::vector<Matter> path;
@@ -330,8 +330,8 @@ TEST_CASE("relax engine destroy NULL is a no-op", "[relax][abi]") {
 TEST_CASE("relax engine status_name is fail-closed", "[relax][abi]") {
   REQUIRE(std::string(eon_relax_status_name(EON_RELAX_KIND_NEB,
                                             EON_RELAX_NEB_GOOD)) == "GOOD");
-  REQUIRE(std::string(eon_relax_status_name(
-              EON_RELAX_KIND_NEB, EON_RELAX_NEB_MAX_UNCERTAINTY)) ==
+  REQUIRE(std::string(eon_relax_status_name(EON_RELAX_KIND_NEB,
+                                            EON_RELAX_NEB_MAX_UNCERTAINTY)) ==
           "MAX_UNCERTAINTY");
   REQUIRE(eon_relax_status_name(EON_RELAX_KIND_NEB, 99) == nullptr);
   REQUIRE(eon_relax_status_name(EON_RELAX_KIND_INVALID, 0) == nullptr);
@@ -388,8 +388,7 @@ TEST_CASE("relax engine create NULL config and reject unknown capnp",
   eon_relax_destroy(eng);
 }
 
-TEST_CASE("relax engine NEB on a harmonic surface converges",
-          "[relax][neb]") {
+TEST_CASE("relax engine NEB on a harmonic surface converges", "[relax][neb]") {
   const long n_images = 7;
   std::vector<double> pos;
   std::vector<double> boxes;
@@ -494,11 +493,10 @@ TEST_CASE("libeon_relax_engine exports the C waist", "[relax][dlopen]") {
   REQUIRE(eonc::dynlib::sym(h, "eon_relax_reset") != nullptr);
   auto abi = eonc::dynlib::loadSym<int (*)()>(h, "eon_relax_abi_version");
   REQUIRE(abi != nullptr);
-  REQUIRE(abi() == static_cast<int>((EON_RELAX_ABI_MAJOR << 16) |
-                                    EON_RELAX_ABI_MINOR));
+  REQUIRE(abi() ==
+          static_cast<int>((EON_RELAX_ABI_MAJOR << 16) | EON_RELAX_ABI_MINOR));
   eonc::dynlib::close(h);
 }
-
 
 TEST_CASE("relax engine stepper converges the harmonic band one step at a "
           "time",
@@ -748,7 +746,8 @@ static int surface_product_var(void *user, eon_relax_surface_request_t *req) {
     }
     req->energies[s] = e;
     if (req->variances) {
-      const int64_t id = req->image_ids ? req->image_ids[s] : EON_RELAX_IMAGE_NONE;
+      const int64_t id =
+          req->image_ids ? req->image_ids[s] : EON_RELAX_IMAGE_NONE;
       req->variances[s] = (id == ctx->product_id) ? 10.0 : 0.0;
     }
   }
