@@ -36,6 +36,13 @@ TEST_CASE("pmf scan steps s uniformly from reactant to product", "[oh_tst]") {
           eonc::pmfScanS(1, nScan, guideLen));
 }
 
+TEST_CASE("OH-TST ridge follows two kT of reversible work", "[oh_tst]") {
+  const double thermal = 0.025;
+  REQUIRE_FALSE(eonc::reversibleWorkPastRidge(0.0, thermal));
+  REQUIRE_FALSE(eonc::reversibleWorkPastRidge(2.0 * thermal, thermal));
+  REQUIRE(eonc::reversibleWorkPastRidge(2.0 * thermal + 1e-9, thermal));
+}
+
 TEST_CASE("pmf scan with fewer than two planes still spans the guideline",
           "[oh_tst]") {
   REQUIRE(eonc::pmfScanS(0, 1, 4.0) == 0.0);

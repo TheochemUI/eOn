@@ -485,11 +485,6 @@ std::vector<std::string> OHTSTJob::run(void) {
 
     if (plane == 0) {
       sideSign = (avg.fn < 0.0) ? -1 : 1;
-    } else if (!guidelineMoving && ((avg.fn < 0.0) ? -1 : 1) != sideSign) {
-      guidelineMoving = true;
-      EONC_LOG_DEBUG("[oh_tst] plane {}: translational force changed "
-                     "sign; guideline now follows <r> along the normal",
-                     plane);
     }
 
     // Reversible work (Eqs 18-19), trapezoid between consecutive
@@ -512,6 +507,16 @@ std::vector<std::string> OHTSTJob::run(void) {
     }
 
     const double aTotal = aTrans + aRot;
+    // The basin bottom is force-free. A sign change moves the guideline
+    // only after the reversible work has passed two kT.
+    if (plane != 0 && !guidelineMoving &&
+        ((avg.fn < 0.0) ? -1 : 1) != sideSign &&
+        reversibleWorkPastRidge(aTotal, m_kbt)) {
+      guidelineMoving = true;
+      EONC_LOG_DEBUG("[oh_tst] plane {}: translational force changed "
+                     "sign; guideline now follows <r> along the normal",
+                     plane);
+    }
     if (aTotal > aBest) {
       aBest = aTotal;
       sBest = s;

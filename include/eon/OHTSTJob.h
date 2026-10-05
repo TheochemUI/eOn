@@ -28,6 +28,13 @@ inline double pmfScanS(long plane, long nScan, double guideLen) {
   return static_cast<double>(plane) * guideLen / static_cast<double>(n - 1);
 }
 
+/// The reactant basin is force-free. A sign change is the ridge only
+/// after the reversible work has passed two kT.
+inline bool reversibleWorkPastRidge(double reversibleWork,
+                                    double thermalEnergy) {
+  return reversibleWork > 2.0 * thermalEnergy;
+}
+
 /**
  * @file
  * @ingroup Jobs
