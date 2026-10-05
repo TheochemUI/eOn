@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/gpr-dimer.json",
+  "title": "GPR Dimer",
+  "description": "config.ini [GPR Dimer] section (GPRDimerConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "finite_angle": {
+      "default": 0.005,
+      "type": "number"
+    },
+    "converged_angle": {
+      "default": 5.0,
+      "type": "number"
+    },
+    "relaxation_converged_angle": {
+      "default": 0.005,
+      "type": "number"
+    },
+    "max_initial_rotation_iterations": {
+      "default": 6,
+      "type": "integer"
+    },
+    "max_relaxation_rotation_iterations": {
+      "default": 10,
+      "type": "integer"
+    },
+    "divisor_t_dimer": {
+      "default": 10,
+      "type": "integer"
+    },
+    "max_outer_iterations": {
+      "default": 300,
+      "type": "integer"
+    },
+    "max_inner_iterations": {
+      "default": 1000,
+      "type": "integer"
+    },
+    "max_midpoint_displacement": {
+      "default": 0.5,
+      "type": "number"
+    },
+    "rotation_opt_method": {
+      "default": "lbfgs",
+      "type": "string"
+    },
+    "translation_opt_method": {
+      "default": "lbfgs",
+      "type": "string"
+    },
+    "active_radius": {
+      "default": 5.0,
+      "type": "number"
+    },
+    "dimer_separation": {
+      "default": 0.01,
+      "type": "number"
+    },
+    "force_threshold": {
+      "default": 0.01,
+      "type": "number"
+    }
+  }
+}

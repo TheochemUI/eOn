@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/structure-comparison.json",
+  "title": "Structure Comparison",
+  "description": "config.ini [Structure Comparison] section (StructureComparisonConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "energy_difference": {
+      "default": 0.01,
+      "description": "How different in energy two configurations must be to be considered different structures.",
+      "type": "number"
+    },
+    "distance_difference": {
+      "default": 0.1,
+      "description": "The maximum distance two mapped atoms may be for two configurations to be considered equivalent.",
+      "type": "number"
+    },
+    "indistinguishable_atoms": {
+      "default": true,
+      "description": "Use an algorithm to compare structures that does not distinguish between atoms of the same element. The numbering of the atoms does not affect the structural comparison.",
+      "type": "boolean"
+    },
+    "check_rotation": {
+      "default": false,
+      "description": "Finds optimal overlap of structures via rotation before comparing them. Use this option in systems where structures can become rotated, such as nanoparticles.",
+      "type": "boolean"
+    },
+    "brute_neighbors": {
+      "default": false,
+      "description": "Determine neighbors by brute force (use this with nonorthogonal boxes).",
+      "type": "boolean"
+    },
+    "neighbor_cutoff": {
+      "default": 3.3,
+      "description": "Atoms within this distance of each other are considered neighbors.",
+      "type": "number"
+    },
+    "use_covalent": {
+      "default": false,
+      "description": "Use the covalent radii of atoms to determine neighbors.",
+      "type": "boolean"
+    },
+    "covalent_scale": {
+      "default": 1.3,
+      "description": "Scale factor for covalent radii when determining neighbors.",
+      "type": "number"
+    },
+    "remove_translation": {
+      "default": true,
+      "description": "Remove translational components when comparing structures.",
+      "type": "boolean"
+    }
+  }
+}

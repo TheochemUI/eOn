@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/xtsci.json",
+  "title": "Xtsci",
+  "description": "config.ini [Xtsci] section (XtsciConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "method": {
+      "default": "lbfgs",
+      "description": "Solver inside the xtsci-optimize engine (opt_method = xtsci).\n\n``opt_method = xtsci`` selects the engine. This field selects the\nmethod the engine runs. Tokens match ``xts_method_t``.\n\nQuasi-Newton:\n  - ``lbfgs``: two-loop L-BFGS (Nocedal-Wright 7.4)\n  - ``bfgs``: dense inverse-BFGS\n  - ``sr1``: inverse SR1\n  - ``sr2``: SR2 Hessian update\n\nHessian (pair Hessian from eOn, ``xts_minimize_hess``):\n  - ``newton``: Levenberg-shifted Newton\n  - ``rfo``: Banerjee / Baker rational function optimization\n\nFirst-order:\n  - ``steepest``: ``d = -g``\n  - ``adam``: Kingma-Ba Adam with a line search\n  - ``pso``: particle swarm\n  - ``fire``: Bitzek FIRE (one fused force per geometry)\n  - ``fire2``: Guénolé FIRE 2.0\n  - ``bb``: Barzilai-Borwein spectral step\n\nTrust-region Hessian (pair Hessian from eOn):\n  - ``dogleg``: Powell dogleg on the host pair matrix\n\nNonlinear CG (conjugacy is the method token):\n  - ``polak_ribiere``, ``fletcher_reeves``, ``hestenes_stiefel``,\n    ``dai_yuan``, ``conjugate_descent``, ``hager_zhang``,\n    ``liu_storey``, ``fr_pr``",
+      "enum": [
+        "lbfgs",
+        "bfgs",
+        "sr1",
+        "sr2",
+        "newton",
+        "rfo",
+        "steepest",
+        "adam",
+        "pso",
+        "polak_ribiere",
+        "fletcher_reeves",
+        "hestenes_stiefel",
+        "dai_yuan",
+        "conjugate_descent",
+        "hager_zhang",
+        "liu_storey",
+        "fr_pr",
+        "fire",
+        "bb",
+        "dogleg",
+        "fire2"
+      ],
+      "type": "string"
+    },
+    "qn_step": {
+      "default": "lbfgs",
+      "description": "How an L-BFGS session uses a host Hessian (xts_qn_step_t).\n\nOnly used when ``method = lbfgs``. ``lbfgs`` is two-loop with\noptional ``precon`` as \\(H_0 = P^{-1}\\). ``newton`` / ``rfo`` take\nthat same host matrix as the step (eOn rematch).",
+      "enum": [
+        "lbfgs",
+        "newton",
+        "rfo"
+      ],
+      "type": "string"
+    },
+    "precon": {
+      "default": "none",
+      "description": "Host pair / model Hessian kind. Built in eOn, not in xtsci.\n\n``pair`` is the Mones PSD clip. ``pair_full`` keeps signed\ncurvature. ``lindh_full`` / ``fischer`` / ``schlegel`` / ``swart``\nare Cartesian model Hessians (B^T k B). The matrix is assembled\nin eOn and passed through ``xts_solver_step_hess``.",
+      "enum": [
+        "none",
+        "pair",
+        "pair_abs",
+        "pair_full",
+        "exp",
+        "c1",
+        "lindh",
+        "lindh_full",
+        "fischer",
+        "schlegel",
+        "swart"
+      ],
+      "type": "string"
+    },
+    "accept": {
+      "default": "none",
+      "description": "How the session takes a proposed step (xts_accept_t).\n\n``none`` takes the maxmove-clipped step (one oracle). ``energy``\nrefuses a rise. ``nonmonotone`` is the Grippo window of five.",
+      "enum": [
+        "none",
+        "energy",
+        "nonmonotone"
+      ],
+      "type": "string"
+    },
+    "highs": {
+      "default": false,
+      "description": "HiGHS feasible-set step (xts_solver_set_highs).\n\nWhen true, xtsci asks HiGHS for the step: Newton QP on the host\npair Hessian if one is passed, otherwise two-loop plus boxes.\nNeeds ``--features highs`` on the xtsci-optimize build.",
+      "type": "boolean"
+    },
+    "manifold": {
+      "default": "euclidean",
+      "description": "Embedded manifold (xts_manifold_t).\n\nEuclidean is the default. Isolated molecules use\n``rigid_quotient`` (Sella Cartesian \\(R^{3N}/SE(3)\\)) or\n``mw_rigid`` (Page-McIver / Sella IRC Eckart). ``sphere`` is\n\\(S^{n-1}\\), ``so3`` a row-major 9-vector, ``stiefel`` is\n\\(\\mathrm{St}(n,1)\\), ``se3`` is rotation then translation\n(length 12).",
+      "enum": [
+        "euclidean",
+        "rigid_quotient",
+        "mw_rigid",
+        "sphere",
+        "so3",
+        "stiefel",
+        "se3"
+      ],
+      "type": "string"
+    }
+  }
+}

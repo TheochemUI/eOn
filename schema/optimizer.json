@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/optimizer.json",
+  "title": "Optimizer",
+  "description": "config.ini [Optimizer] section (OptimizerConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "opt_method": {
+      "default": "cg",
+      "description": "The optimization method to use.\n\nOptions:\n  - ``box``: Optimizes the atom positions and box using quickmin\n  - ``cg``: Conjugate gradient\n  - ``qm``: Quickmin\n  - ``lbfgs``: Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton optimizer\n  - ``fire``: Fast inertial relaxation engine\n  - ``sd``: Steepest descent\n  - ``xtsci``: xtsci-optimize engine. Pick the solver with ``[Xtsci] method``. Needs ``-Dwith_xtsci=true``.",
+      "enum": [
+        "box",
+        "cg",
+        "qm",
+        "lbfgs",
+        "fire",
+        "sd",
+        "xtsci"
+      ],
+      "type": "string"
+    },
+    "convergence_metric": {
+      "default": "norm",
+      "description": "The metric to use to determine when an optimization is complete.\n\nOptions:\n  - ``norm``: Euclidean ``||F||_2`` of the free-atom force vector (default)\n  - ``rms``: ``||F||_2 / sqrt(3 N_free)``, OPTIM MYLBFGS RMS. Opt-in.\n  - ``max_atom``: The maximum force on any non-frozen atom\n  - ``max_component``: The maximum force on any non-frozen degree of freedom",
+      "enum": [
+        "norm",
+        "rms",
+        "max_atom",
+        "max_component"
+      ],
+      "type": "string"
+    },
+    "converged_force": {
+      "default": 0.01,
+      "description": "When the convergence_metric is smaller than this value (eV/A), the structure is considered minimized.",
+      "type": "number"
+    },
+    "max_move": {
+      "default": 0.2,
+      "description": "Maximum distance that an atom may be moved in a single optimization step (Angstroms).",
+      "type": "number"
+    },
+    "time_step": {
+      "default": 1.0,
+      "description": "The dynamical timestep for the quickmin algorithm (fs).",
+      "type": "number"
+    },
+    "max_iterations": {
+      "default": 1000,
+      "description": "The maximum number of optimization iterations that will be performed.",
+      "type": "integer"
+    }
+  }
+}

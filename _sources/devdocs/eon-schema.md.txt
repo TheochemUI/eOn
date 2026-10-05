@@ -75,6 +75,22 @@ Search) can be key-checked with `unknown_ini_keys`. Other pot sections
 (SocketNWChemPot, Metatomic, …) are free-form relative to the Cap’n Proto
 catalog.
 
+## config.ini JSON Schema
+
+`eon_schema.config.jsonschema` emits one JSON Schema document per L1 section
+in `MODEL_INI_SECTION`, plus an index. Those files are the copy of record for
+config.ini keys, defaults, and allowed values. Property names are the INI
+option names.
+
+```bash
+python -m eon_schema.config.jsonschema
+```
+
+The docs build copies `docs/source/_extra/` to the site root
+(`html_extra_path`), so the index is
+[/schema/index.json](https://eondocs.org/schema/index.json) and the guide map
+is [/llms.txt](https://eondocs.org/llms.txt).
+
 ## Authoring
 
 1. **L0 fields/defaults:** edit monorepo `schema/eon_params.capnp`, run

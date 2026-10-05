@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/dimer.json",
+  "title": "Dimer",
+  "description": "config.ini [Dimer] section (DimerConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "opt_method": {
+      "default": "cg",
+      "description": "Optimization algorithm to choose the dimer rotation direction.\n\nOptions:\n - 'sd': Steepest descent, rotate along the rotational force.\n - 'cg': Conjugate gradient, rotate along conjugate directions.\n - 'lbfgs': Limited memory Broyden-Fletcher-Goldfarb-Shanno Quasi-Newton optimizer.",
+      "enum": [
+        "sd",
+        "cg",
+        "lbfgs"
+      ],
+      "type": "string"
+    },
+    "converged_angle": {
+      "default": 5.0,
+      "description": "The dimer is considered converged if it will be rotated fewer degrees than this angle.",
+      "type": "number"
+    },
+    "rotations_max": {
+      "default": 10,
+      "description": "This is the maximum number of rotations allowed for the dimer for each minimum mode estimation.",
+      "type": "integer"
+    },
+    "finite_angle": {
+      "default": 0.005,
+      "description": "Finite angle for dimer rotation.",
+      "type": "number"
+    },
+    "improved": {
+      "default": true,
+      "description": "Indicates if the improved dimer method is used.",
+      "type": "boolean"
+    },
+    "max_iterations": {
+      "default": 1000,
+      "description": "Maximum number of iterations allowed for the dimer.",
+      "type": "integer"
+    },
+    "rotations_min": {
+      "default": 1,
+      "description": "Minimum number of rotations for the dimer. [not improved]",
+      "type": "integer"
+    },
+    "torque_min": {
+      "default": 0.1,
+      "description": "Minimum torque for the dimer. [not improved]",
+      "type": "number"
+    },
+    "torque_max": {
+      "default": 1.0,
+      "description": "Maximum torque for the dimer. [not improved]",
+      "type": "number"
+    },
+    "remove_rotation": {
+      "default": false,
+      "description": "Indicates if the rotation should be removed.\n\nImplements the method of :cite:t:`dm-melanderRemovingExternalDegrees2015`",
+      "type": "boolean"
+    }
+  }
+}

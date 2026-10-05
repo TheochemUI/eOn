@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/kdb.json",
+  "title": "KDB",
+  "description": "config.ini [KDB] section (KDBConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "use_kdb": {
+      "default": false,
+      "type": "boolean"
+    },
+    "kdb_only": {
+      "default": false,
+      "description": "Only use KDB in an AKMC simulation, no random searches.",
+      "type": "boolean"
+    },
+    "remove_duplicates": {
+      "default": false,
+      "description": "KDB will not make duplicate suggestions. This can slow KDB querying, so it may be best to use this only for slow potentials (DFT, etc.).",
+      "type": "boolean"
+    },
+    "kdb_name": {
+      "default": "kdb.db",
+      "type": "string"
+    },
+    "kdb_nf": {
+      "default": 0.2,
+      "type": "number"
+    },
+    "kdb_dc": {
+      "default": 0.3,
+      "type": "number"
+    },
+    "kdb_mac": {
+      "default": 0.7,
+      "type": "number"
+    }
+  }
+}

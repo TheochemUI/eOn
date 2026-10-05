@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/ams-io.json",
+  "title": "AMS_IO",
+  "description": "config.ini [AMS_IO] section (AMSIOConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "engine": {
+      "default": "",
+      "description": "Engine for AMS calculation. One of REAXFF, MOPAC.",
+      "enum": [
+        "",
+        "REAXFF",
+        "MOPAC"
+      ],
+      "type": "string"
+    },
+    "forcefield": {
+      "default": "",
+      "description": "Force field to use (e.g., 'OPt.ff').",
+      "type": "string"
+    },
+    "model": {
+      "default": "",
+      "description": "Model to use (e.g., 'PM7', 'PM3').",
+      "type": "string"
+    },
+    "xc": {
+      "default": "",
+      "description": "Exchange-correlation functional.",
+      "type": "string"
+    }
+  }
+}

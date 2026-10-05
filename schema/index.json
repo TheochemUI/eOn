@@ -1,0 +1,771 @@
+{
+  "$id": "https://eondocs.org/schema/index.json",
+  "title": "eOn config.ini",
+  "description": "Index of JSON Schema documents for config.ini. Each file is the copy of record for that section's keys, defaults, and allowed values.",
+  "eon_schema": "0.2.3",
+  "sections": {
+    "Main": {
+      "model": "MainConfig",
+      "file": "main.json",
+      "id": "https://eondocs.org/schema/main.json",
+      "keys": [
+        "job",
+        "random_seed",
+        "temperature",
+        "finite_difference",
+        "checkpoint",
+        "quiet",
+        "write_log",
+        "write_con_forces",
+        "max_force_calls",
+        "remove_net_force"
+      ]
+    },
+    "Potential": {
+      "model": "PotentialConfig",
+      "file": "potential.json",
+      "id": "https://eondocs.org/schema/potential.json",
+      "keys": [
+        "mpi_poll_period",
+        "lammps_logging",
+        "lammps_threads",
+        "ext_pot_path",
+        "potential",
+        "emt_rasmussen",
+        "potentials_path",
+        "log_potential"
+      ]
+    },
+    "Optimizer": {
+      "model": "OptimizerConfig",
+      "file": "optimizer.json",
+      "id": "https://eondocs.org/schema/optimizer.json",
+      "keys": [
+        "opt_method",
+        "convergence_metric",
+        "converged_force",
+        "max_move",
+        "time_step",
+        "max_iterations"
+      ]
+    },
+    "Structure Comparison": {
+      "model": "StructureComparisonConfig",
+      "file": "structure-comparison.json",
+      "id": "https://eondocs.org/schema/structure-comparison.json",
+      "keys": [
+        "energy_difference",
+        "distance_difference",
+        "indistinguishable_atoms",
+        "check_rotation",
+        "brute_neighbors",
+        "neighbor_cutoff",
+        "use_covalent",
+        "covalent_scale",
+        "remove_translation"
+      ]
+    },
+    "Process Search": {
+      "model": "ProcessSearchConfig",
+      "file": "process-search.json",
+      "id": "https://eondocs.org/schema/process-search.json",
+      "keys": [
+        "minimization_offset",
+        "minimize_first"
+      ]
+    },
+    "Saddle Search": {
+      "model": "SaddleSearchConfig",
+      "file": "saddle-search.json",
+      "id": "https://eondocs.org/schema/saddle-search.json",
+      "keys": [
+        "method",
+        "min_mode_method",
+        "disp_at_random",
+        "max_energy",
+        "max_step_size",
+        "displace_radius",
+        "displace_magnitude",
+        "displace_min_norm",
+        "displace_random_weight",
+        "displace_not_FCC_HCP_weight",
+        "displace_not_TCP_BCC_weight",
+        "displace_not_TCP_weight",
+        "displace_water_weight",
+        "displace_least_coordinated_weight",
+        "displace_under_coordinated_weight",
+        "displace_listed_atom_weight",
+        "displace_atom_list",
+        "displace_atom_kmc_state_script",
+        "displace_listed_type_weight",
+        "displace_type_list",
+        "molecule_list",
+        "displace_all_listed",
+        "displace_max_coordination",
+        "displace_1d",
+        "converged_force",
+        "max_iterations",
+        "nonlocal_count_abort",
+        "nonlocal_distance_abort",
+        "client_displace_type",
+        "stdev_translation",
+        "stdev_rotation",
+        "void_bias_fraction",
+        "random_mode",
+        "zero_mode_abort_curvature",
+        "confine_positive",
+        "bowl_breakout",
+        "bowl_active_atoms",
+        "dynamics_temperature",
+        "dynamics_state_check_interval",
+        "dynamics_record_interval",
+        "dynamics_linear_interpolation",
+        "dynamics_max_init_curvature",
+        "nonnegative_displacement_abort",
+        "max_single_displace",
+        "remove_rotation",
+        "perp_force_ratio",
+        "confine_positive_min_force",
+        "confine_positive_scale_ratio",
+        "confine_positive_boost",
+        "confine_positive_min_active"
+      ]
+    },
+    "Dimer": {
+      "model": "DimerConfig",
+      "file": "dimer.json",
+      "id": "https://eondocs.org/schema/dimer.json",
+      "keys": [
+        "opt_method",
+        "converged_angle",
+        "rotations_max",
+        "finite_angle",
+        "improved",
+        "max_iterations",
+        "rotations_min",
+        "torque_min",
+        "torque_max",
+        "remove_rotation"
+      ]
+    },
+    "Nudged Elastic Band": {
+      "model": "NudgedElasticBandConfig",
+      "file": "nudged-elastic-band.json",
+      "id": "https://eondocs.org/schema/nudged-elastic-band.json",
+      "keys": [
+        "images",
+        "spring",
+        "climbing_image_method",
+        "old_tangent",
+        "neb_max_iterations",
+        "neb_climbing_image_converged_only",
+        "neb_climbing_image_band_slack",
+        "neb_doubly_nudged",
+        "neb_doubly_nudged_switching",
+        "neb_elastic_band",
+        "converged_force",
+        "onsager_machlup",
+        "om_optimize_k",
+        "om_k_scale",
+        "om_k_min",
+        "om_k_max",
+        "energy_weighted",
+        "ew_trigger",
+        "ew_ksp_min",
+        "ew_ksp_max",
+        "initial_path_in",
+        "initializer",
+        "init_max_iterations",
+        "init_max_move",
+        "init_force_threshold",
+        "sidpp_growth_alpha",
+        "minimize_endpoints",
+        "minimize_endpoints_for_ipath",
+        "ci_after",
+        "ci_mmf",
+        "ci_mmf_after",
+        "ci_mmf_nsteps",
+        "ci_mmf_ci_stability_count",
+        "ci_mmf_angle",
+        "ci_mmf_restore_unhelpful",
+        "setup_mmf_peaks",
+        "mmf_peak_tolerance",
+        "zoom_neb",
+        "zoom_alpha",
+        "zoom_offset",
+        "zoom_mode",
+        "zoom_after",
+        "zoom_interpolation",
+        "zoom_ci_stability",
+        "zoom_max_iterations"
+      ]
+    },
+    "Lanczos": {
+      "model": "LanczosConfig",
+      "file": "lanczos.json",
+      "id": "https://eondocs.org/schema/lanczos.json",
+      "keys": [
+        "tolerance",
+        "max_iterations",
+        "quit_early",
+        "phva_atoms"
+      ]
+    },
+    "Davidson": {
+      "model": "DavidsonConfig",
+      "file": "davidson.json",
+      "id": "https://eondocs.org/schema/davidson.json",
+      "keys": [
+        "tolerance",
+        "max_iterations",
+        "diagonal_preconditioner",
+        "phva_atoms"
+      ]
+    },
+    "ARTn": {
+      "model": "ARTnConfig",
+      "file": "artn.json",
+      "id": "https://eondocs.org/schema/artn.json",
+      "keys": [
+        "push_step_size",
+        "force_threshold",
+        "max_iterations",
+        "ninit",
+        "nperp_limitation",
+        "lanczos_min_size",
+        "nsmooth",
+        "filin"
+      ]
+    },
+    "IRA": {
+      "model": "IRAConfig",
+      "file": "ira.json",
+      "id": "https://eondocs.org/schema/ira.json",
+      "keys": [
+        "distance_threshold",
+        "symmetry_threshold",
+        "use_pbc"
+      ]
+    },
+    "Prefactor": {
+      "model": "PrefactorConfig",
+      "file": "prefactor.json",
+      "id": "https://eondocs.org/schema/prefactor.json",
+      "keys": [
+        "all_free_atoms",
+        "filter_scheme",
+        "filter_fraction",
+        "min_displacement",
+        "within_radius",
+        "default_value",
+        "min_value",
+        "max_value",
+        "configuration",
+        "rate_estimation"
+      ]
+    },
+    "Dynamics": {
+      "model": "DynamicsConfig",
+      "file": "dynamics.json",
+      "id": "https://eondocs.org/schema/dynamics.json",
+      "keys": [
+        "time_step",
+        "time",
+        "thermostat",
+        "andersen_collision_period",
+        "andersen_alpha",
+        "nose_mass",
+        "langevin_friction"
+      ]
+    },
+    "Parallel Replica": {
+      "model": "ParallelReplicaConfig",
+      "file": "parallel-replica.json",
+      "id": "https://eondocs.org/schema/parallel-replica.json",
+      "keys": [
+        "dephase_time",
+        "state_check_interval",
+        "refine_transition",
+        "state_save_interval",
+        "post_transition_time",
+        "stop_after_transition",
+        "dephase_loop_stop",
+        "dephase_loop_max"
+      ]
+    },
+    "Hyperdynamics": {
+      "model": "HyperdynamicsConfig",
+      "file": "hyperdynamics.json",
+      "id": "https://eondocs.org/schema/hyperdynamics.json",
+      "keys": [
+        "bias_potential",
+        "bb_dvmax",
+        "bb_rmd_time",
+        "bb_boost_atom_list",
+        "bb_rcut",
+        "bb_stretch_threshold",
+        "bb_ds_curvature"
+      ]
+    },
+    "AKMC": {
+      "model": "AKMCConfig",
+      "file": "akmc.json",
+      "id": "https://eondocs.org/schema/akmc.json",
+      "keys": [
+        "confidence",
+        "server_side_process_search",
+        "thermally_accessible_window",
+        "thermally_accessible_buffer",
+        "max_kmc_steps",
+        "confidence_scheme",
+        "confidence_correction",
+        "max_rate",
+        "eq_rate"
+      ]
+    },
+    "Basin Hopping": {
+      "model": "BasinHoppingConfig",
+      "file": "basin-hopping.json",
+      "id": "https://eondocs.org/schema/basin-hopping.json",
+      "keys": [
+        "steps",
+        "displacement",
+        "write_unique",
+        "initial_state_pool_size",
+        "initial_random_structure_probability",
+        "push_apart_distance",
+        "adjust_displacement",
+        "adjust_fraction",
+        "adjust_period",
+        "target_ratio",
+        "displacement_distribution",
+        "max_displacement_algorithm",
+        "quenching_steps",
+        "swap_probability",
+        "single_atom_displace",
+        "jump_max",
+        "significant_structure",
+        "jump_steps"
+      ]
+    },
+    "Communicator": {
+      "model": "CommunicatorConfig",
+      "file": "communicator.json",
+      "id": "https://eondocs.org/schema/communicator.json",
+      "keys": [
+        "type",
+        "jobs_per_bundle",
+        "num_jobs",
+        "max_jobs",
+        "client_path",
+        "number_of_CPUs",
+        "script_path",
+        "name_prefix",
+        "queued_jobs",
+        "cancel_job",
+        "submit_job"
+      ]
+    },
+    "Paths": {
+      "model": "PathsConfig",
+      "file": "paths.json",
+      "id": "https://eondocs.org/schema/paths.json",
+      "keys": [
+        "main_directory",
+        "jobs_out",
+        "jobs_in",
+        "incomplete",
+        "states",
+        "results",
+        "potential_files",
+        "bh_minima",
+        "kdb_scratch",
+        "kdb",
+        "superbasins",
+        "superbasin_recycling",
+        "scratch"
+      ]
+    },
+    "Debug": {
+      "model": "DebugConfig",
+      "file": "debug.json",
+      "id": "https://eondocs.org/schema/debug.json",
+      "keys": [
+        "save_stdout",
+        "interactive_shell",
+        "result_files_path",
+        "use_mean_time",
+        "register_extra_results",
+        "target_trajectory",
+        "keep_bad_saddles",
+        "keep_all_result_files",
+        "estimate_neb_eigenvalues",
+        "neb_mmf_estimator",
+        "write_movies",
+        "write_movies_interval",
+        "write_deprecated_outs",
+        "stop_criterion"
+      ]
+    },
+    "KDB": {
+      "model": "KDBConfig",
+      "file": "kdb.json",
+      "id": "https://eondocs.org/schema/kdb.json",
+      "keys": [
+        "use_kdb",
+        "kdb_only",
+        "remove_duplicates",
+        "kdb_name",
+        "kdb_nf",
+        "kdb_dc",
+        "kdb_mac"
+      ]
+    },
+    "Recycling": {
+      "model": "RecyclingConfig",
+      "file": "recycling.json",
+      "id": "https://eondocs.org/schema/recycling.json",
+      "keys": [
+        "use_recycling",
+        "move_distance",
+        "displace_moved_only",
+        "save_suggestions",
+        "active_region",
+        "mass_weight_factor",
+        "use_sb_recycling"
+      ]
+    },
+    "Coarse Graining": {
+      "model": "CoarseGrainingConfig",
+      "file": "coarse-graining.json",
+      "id": "https://eondocs.org/schema/coarse-graining.json",
+      "keys": [
+        "use_mcamc",
+        "state_file",
+        "superbasin_scheme",
+        "max_size",
+        "number_of_transitions",
+        "energy_increment",
+        "rate_threshold",
+        "superbasin_confidence",
+        "use_askmc",
+        "askmc_confidence",
+        "askmc_barrier_raise_param",
+        "askmc_high_barrier_def",
+        "askmc_barrier_test_on",
+        "askmc_connections_test_on"
+      ]
+    },
+    "Hessian": {
+      "model": "HessianConfig",
+      "file": "hessian.json",
+      "id": "https://eondocs.org/schema/hessian.json",
+      "keys": [
+        "phva_atoms",
+        "zero_freq_value"
+      ]
+    },
+    "Serve": {
+      "model": "ServeConfig",
+      "file": "serve.json",
+      "id": "https://eondocs.org/schema/serve.json",
+      "keys": [
+        "host",
+        "port",
+        "replicas",
+        "gateway_port",
+        "endpoints"
+      ]
+    },
+    "Refine": {
+      "model": "RefineConfig",
+      "file": "refine.json",
+      "id": "https://eondocs.org/schema/refine.json",
+      "keys": [
+        "refine_opt_method",
+        "refine_threshold"
+      ]
+    },
+    "Metatomic": {
+      "model": "Metatomic",
+      "file": "metatomic.json",
+      "id": "https://eondocs.org/schema/metatomic.json",
+      "keys": [
+        "model_path",
+        "device",
+        "length_unit",
+        "extensions_directory",
+        "check_consistency",
+        "uncertainty_threshold",
+        "variant_base",
+        "variant_energy",
+        "variant_energy_uncertainty",
+        "energy_output",
+        "energy_uncertainty_output",
+        "force_output",
+        "non_conservative",
+        "random_rotation",
+        "n_symmetry_rotations",
+        "variant_force",
+        "deterministic",
+        "deterministic_strict"
+      ]
+    },
+    "XTBPot": {
+      "model": "XTBPot",
+      "file": "xtbpot.json",
+      "id": "https://eondocs.org/schema/xtbpot.json",
+      "keys": [
+        "paramset",
+        "accuracy",
+        "electronic_temperature",
+        "max_iterations",
+        "uhf",
+        "charge"
+      ]
+    },
+    "ZBLPot": {
+      "model": "ZBLPot",
+      "file": "zblpot.json",
+      "id": "https://eondocs.org/schema/zblpot.json",
+      "keys": [
+        "cut_inner",
+        "cut_global"
+      ]
+    },
+    "SocketNWChemPot": {
+      "model": "SocketNWChemPot",
+      "file": "socketnwchempot.json",
+      "id": "https://eondocs.org/schema/socketnwchempot.json",
+      "keys": [
+        "host",
+        "port",
+        "nwchem_settings",
+        "unix_socket_path",
+        "unix_socket_mode",
+        "mem_in_gb",
+        "make_template_input"
+      ]
+    },
+    "RgpotPot": {
+      "model": "RgpotPot",
+      "file": "rgpotpot.json",
+      "id": "https://eondocs.org/schema/rgpotpot.json",
+      "keys": [
+        "backend",
+        "basis",
+        "theory",
+        "scf_type",
+        "functional",
+        "cutoff_ry",
+        "charge",
+        "multiplicity",
+        "engine_path",
+        "engine_library",
+        "model_path",
+        "device",
+        "length_unit",
+        "extensions_directory",
+        "check_consistency",
+        "uncertainty_threshold",
+        "torch_determinism_strict",
+        "paramset",
+        "accuracy",
+        "electronic_temperature",
+        "max_iterations",
+        "uhf",
+        "engine_root",
+        "title",
+        "memory_mb",
+        "scratch_dir",
+        "input_block",
+        "permanent_dir"
+      ]
+    },
+    "ASE_NWCHEM": {
+      "model": "ASE_NWCHEM",
+      "file": "ase-nwchem.json",
+      "id": "https://eondocs.org/schema/ase-nwchem.json",
+      "keys": [
+        "nwchem_path",
+        "nproc",
+        "mpi_launcher",
+        "multiplicity",
+        "scf_thresh",
+        "scf_maxiter",
+        "basis",
+        "memory"
+      ]
+    },
+    "ASE_ORCA": {
+      "model": "ASE_ORCA",
+      "file": "ase-orca.json",
+      "id": "https://eondocs.org/schema/ase-orca.json",
+      "keys": [
+        "orca_path",
+        "nproc",
+        "simpleinput"
+      ]
+    },
+    "LBFGS": {
+      "model": "LBFGSConfig",
+      "file": "lbfgs.json",
+      "id": "https://eondocs.org/schema/lbfgs.json",
+      "keys": [
+        "lbfgs_memory",
+        "lbfgs_inverse_curvature",
+        "lbfgs_max_inverse_curvature",
+        "lbfgs_auto_scale",
+        "lbfgs_angle_reset",
+        "lbfgs_distance_reset",
+        "lbfgs_curvature",
+        "lbfgs_project_rigid",
+        "lbfgs_secant",
+        "lbfgs_precon",
+        "lbfgs_step",
+        "lbfgs_h0",
+        "lbfgs_accept",
+        "lbfgs_extra_updates",
+        "lbfgs_cautious_eps",
+        "lbfgs_cautious_alpha",
+        "lbfgs_precon_A",
+        "lbfgs_precon_mu",
+        "lbfgs_precon_rcut"
+      ]
+    },
+    "CG": {
+      "model": "CGConfig",
+      "file": "cg.json",
+      "id": "https://eondocs.org/schema/cg.json",
+      "keys": [
+        "cg_no_overshooting",
+        "cg_knock_out_max_move",
+        "cg_line_search",
+        "cg_line_converged",
+        "cg_max_iter_before_reset",
+        "cg_max_iter_line_search"
+      ]
+    },
+    "FIRE": {
+      "model": "FIREConfig",
+      "file": "fire.json",
+      "id": "https://eondocs.org/schema/fire.json",
+      "keys": [
+        "time_step",
+        "time_step_max"
+      ]
+    },
+    "QuickMin": {
+      "model": "QuickMinConfig",
+      "file": "quickmin.json",
+      "id": "https://eondocs.org/schema/quickmin.json",
+      "keys": [
+        "time_step",
+        "qm_steepest_descent"
+      ]
+    },
+    "SD": {
+      "model": "SDConfig",
+      "file": "sd.json",
+      "id": "https://eondocs.org/schema/sd.json",
+      "keys": [
+        "sd_alpha",
+        "sd_two_point"
+      ]
+    },
+    "Xtsci": {
+      "model": "XtsciConfig",
+      "file": "xtsci.json",
+      "id": "https://eondocs.org/schema/xtsci.json",
+      "keys": [
+        "method",
+        "qn_step",
+        "precon",
+        "accept",
+        "highs",
+        "manifold"
+      ]
+    },
+    "GPR Dimer": {
+      "model": "GPRDimerConfig",
+      "file": "gpr-dimer.json",
+      "id": "https://eondocs.org/schema/gpr-dimer.json",
+      "keys": [
+        "finite_angle",
+        "converged_angle",
+        "relaxation_converged_angle",
+        "max_initial_rotation_iterations",
+        "max_relaxation_rotation_iterations",
+        "divisor_t_dimer",
+        "max_outer_iterations",
+        "max_inner_iterations",
+        "max_midpoint_displacement",
+        "rotation_opt_method",
+        "translation_opt_method",
+        "active_radius",
+        "dimer_separation",
+        "force_threshold"
+      ]
+    },
+    "BGSD": {
+      "model": "BGSDConfig",
+      "file": "bgsd.json",
+      "id": "https://eondocs.org/schema/bgsd.json",
+      "keys": [
+        "alpha",
+        "beta",
+        "gradientfinitedifference",
+        "Hforceconvergence",
+        "grad2energyconvergence",
+        "grad2forceconvergence"
+      ]
+    },
+    "Distributed Replica": {
+      "model": "DistributedReplicaConfig",
+      "file": "distributed-replica.json",
+      "id": "https://eondocs.org/schema/distributed-replica.json",
+      "keys": [
+        "sampling steps",
+        "target_temperature",
+        "balance_steps"
+      ]
+    },
+    "AMS": {
+      "model": "AMSConfig",
+      "file": "ams.json",
+      "id": "https://eondocs.org/schema/ams.json",
+      "keys": [
+        "engine",
+        "forcefield",
+        "model",
+        "xc",
+        "basis",
+        "resources"
+      ]
+    },
+    "AMS_IO": {
+      "model": "AMSIOConfig",
+      "file": "ams-io.json",
+      "id": "https://eondocs.org/schema/ams-io.json",
+      "keys": [
+        "engine",
+        "forcefield",
+        "model",
+        "xc"
+      ]
+    },
+    "AMSEnv": {
+      "model": "AMSEnvConfig",
+      "file": "amsenv.json",
+      "id": "https://eondocs.org/schema/amsenv.json",
+      "keys": [
+        "amshome",
+        "scm_tmpdir",
+        "scm_pythondir",
+        "amsbin",
+        "scmlicense",
+        "amsresources"
+      ]
+    }
+  }
+}

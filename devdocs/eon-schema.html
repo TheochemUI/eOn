@@ -347,6 +347,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#what-consumers-re-export">What consumers re-export</a></li>
 <li><a class="reference internal" href="#dependencies">Dependencies</a></li>
 <li><a class="reference internal" href="#ini-helpers">INI helpers</a></li>
+<li><a class="reference internal" href="#config-ini-json-schema">config.ini JSON Schema</a></li>
 <li><a class="reference internal" href="#authoring">Authoring</a></li>
 <li><a class="reference internal" href="#fat-vs-split">Fat vs split</a></li>
 </ul>
@@ -546,6 +547,20 @@ rgpycrumbs issue tracker.</p>
 Search) can be key-checked with <code class="docutils literal notranslate"><span class="pre">unknown_ini_keys</span></code>. Other pot sections
 (SocketNWChemPot, Metatomic, …) are free-form relative to the Cap’n Proto
 catalog.</p>
+</section>
+<section id="config-ini-json-schema">
+<h2>config.ini JSON Schema<a class="headerlink" href="#config-ini-json-schema" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">eon_schema.config.jsonschema</span></code> emits one JSON Schema document per L1 section
+in <code class="docutils literal notranslate"><span class="pre">MODEL_INI_SECTION</span></code>, plus an index. Those files are the copy of record for
+config.ini keys, defaults, and allowed values. Property names are the INI
+option names.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">python<span class="w"> </span>-m<span class="w"> </span>eon_schema.config.jsonschema
+</span></pre></div>
+</div>
+<p>The docs build copies <code class="docutils literal notranslate"><span class="pre">docs/source/_extra/</span></code> to the site root
+(<code class="docutils literal notranslate"><span class="pre">html_extra_path</span></code>), so the index is
+<a class="reference external" href="https://eondocs.org/schema/index.json">/schema/index.json</a> and the guide map
+is <a class="reference external" href="https://eondocs.org/llms.txt">/llms.txt</a>.</p>
 </section>
 <section id="authoring">
 <h2>Authoring<a class="headerlink" href="#authoring" title="Link to this heading">¶</a></h2>

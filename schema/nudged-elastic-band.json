@@ -1,0 +1,250 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/nudged-elastic-band.json",
+  "title": "Nudged Elastic Band",
+  "description": "config.ini [Nudged Elastic Band] section (NudgedElasticBandConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "images": {
+      "default": 5,
+      "description": "Number of NEB images between the fixed endpoints.",
+      "type": "integer"
+    },
+    "spring": {
+      "default": 5.0,
+      "description": "The spring constant, in eV/Ang^2 between the images.",
+      "type": "number"
+    },
+    "climbing_image_method": {
+      "default": true,
+      "description": "Indicates if the climbing image method is used.\n\nAs discussed in :cite:t:`neb-henkelmanClimbingImageNudged2000`.",
+      "type": "boolean"
+    },
+    "old_tangent": {
+      "default": false,
+      "description": "Indicates if the old tangent method is used.\n\nFrom :cite:t:`neb-millsQuantumThermalEffects1994`, before :cite:t:`neb-henkelmanImprovedTangentEstimate2000`.",
+      "type": "boolean"
+    },
+    "neb_max_iterations": {
+      "default": 1000,
+      "description": "Maximum number of iterations allowed for the NEB.",
+      "type": "integer"
+    },
+    "neb_climbing_image_converged_only": {
+      "default": true,
+      "description": "If true, NEB convergence compares the climbing image to the force tolerance, but only after the rest of the band is within climbing_image_band_slack times that tolerance.",
+      "type": "boolean"
+    },
+    "neb_climbing_image_band_slack": {
+      "default": 10.0,
+      "description": "When climbing_image_converged_only is true, reject convergence if any non-CI image exceeds this multiple of the force tolerance.",
+      "type": "number"
+    },
+    "neb_doubly_nudged": {
+      "default": false,
+      "description": "Indicates if the doubly nudged method is used.",
+      "type": "boolean"
+    },
+    "neb_doubly_nudged_switching": {
+      "default": false,
+      "description": "Indicates if the doubly nudged switching method is used.\n\nMethod as demonstrated in :cite:t:`neb-trygubenkoDoublyNudgedElastic2004`.",
+      "type": "boolean"
+    },
+    "neb_elastic_band": {
+      "default": false,
+      "description": "Indicates if the elastic band method is used.",
+      "type": "boolean"
+    },
+    "converged_force": {
+      "default": 0.01,
+      "description": "Converged force threshold for the NEB.\n\nThis defaults to being the same as :any:`eon.schema.OptimizerConfig.converged_force`",
+      "type": "number"
+    },
+    "onsager_machlup": {
+      "default": false,
+      "description": "Indicates if the Onsager-Machlup (OM) Action is used.\n\nMethod as demonstrated in :cite:t:`neb-mandelliModifiedNudgedElastic2021`.",
+      "type": "boolean"
+    },
+    "om_optimize_k": {
+      "default": true,
+      "description": "Indicates if the Onsager-Machlup (OM) Action spacing is recalculated at each step.",
+      "type": "boolean"
+    },
+    "om_k_scale": {
+      "default": 1.0,
+      "description": "Indicates stiffness of OM adaption of springs.\n\nStiffness:\n- > 1 (stiff) provides a smoother path but may \"cut corners\" near the saddle\n- < 1 (softer) hugs valleys but paths may become jagged/noisy",
+      "type": "number"
+    },
+    "om_k_min": {
+      "default": 0.1,
+      "description": "Minimum stiffness.",
+      "type": "number"
+    },
+    "om_k_max": {
+      "default": 100,
+      "description": "Minimum stiffness.",
+      "type": "number"
+    },
+    "energy_weighted": {
+      "default": false,
+      "description": "Indicates if the energy-weighted method is used.\n\nMethod as demonstrated in :cite:t:`neb-asgeirssonNudgedElasticBand2021`.",
+      "type": "boolean"
+    },
+    "ew_trigger": {
+      "default": 10.0,
+      "description": "Threshold for the energy-weighted method.",
+      "type": "number"
+    },
+    "ew_ksp_min": {
+      "default": 0.972,
+      "description": "Minimum value for KSP in the energy-weighted method.",
+      "type": "number"
+    },
+    "ew_ksp_max": {
+      "default": 9.72,
+      "description": "Maximum value for KSP in the energy-weighted method.",
+      "type": "number"
+    },
+    "initial_path_in": {
+      "default": "",
+      "description": "File from which the initial path is read.\n\nThis file must contain a list of .con files, one per image on the path.",
+      "type": "string"
+    },
+    "initializer": {
+      "default": "linear",
+      "description": "Initialization strategy.\n\nOptions:\n- ``linear``: Euclidean distance based image interpolation for initial NEB paths.\n- ``idpp``: Image depedent pair potential initialzation :cite:t:`neb-smidstrupImprovedInitialGuess2014`.\n- ``idpp_collective``: IDPP as a potential initialized with the NEB.\n- ``sidpp``: Sequential Image depedent pair potential initialzation :cite:t:`neb-schmerwitzImprovedInitializationOptimal2024`.\n- ``file``: Start from an arbitrary path, needs initial_path_in set as well.",
+      "enum": [
+        "linear",
+        "idpp",
+        "idpp_collective",
+        "sidpp",
+        "file"
+      ],
+      "type": "string"
+    },
+    "init_max_iterations": {
+      "default": 5000,
+      "description": "Steps to run the IDPP for.",
+      "type": "integer"
+    },
+    "init_max_move": {
+      "default": 0.1,
+      "description": "Max move for NEB initialization.",
+      "type": "number"
+    },
+    "init_force_threshold": {
+      "default": 0.001,
+      "description": "Force threshold for NEB IDPP initialization.",
+      "type": "number"
+    },
+    "sidpp_growth_alpha": {
+      "default": 0.33,
+      "description": "The step size for adding new images in S-IDPP.",
+      "type": "number"
+    },
+    "minimize_endpoints": {
+      "default": false,
+      "description": "Minimize the reactant and product before the NEB.",
+      "type": "boolean"
+    },
+    "minimize_endpoints_for_ipath": {
+      "default": false,
+      "description": "Minimize the reactant and product before the NEB, even if an initial path is provided.",
+      "type": "boolean"
+    },
+    "ci_after": {
+      "default": "inf",
+      "description": "Convergence before the CI is turned on.",
+      "type": "number"
+    },
+    "ci_mmf": {
+      "default": false,
+      "description": "Use an MMF method for the CI.",
+      "type": "boolean"
+    },
+    "ci_mmf_after": {
+      "default": 0.5,
+      "description": "Convergence before the CI is turned on.",
+      "type": "number"
+    },
+    "ci_mmf_nsteps": {
+      "default": 10,
+      "description": "Number of steps for which the MMF is run at the CI image.",
+      "type": "integer"
+    },
+    "ci_mmf_ci_stability_count": {
+      "default": 5,
+      "description": "Number of stable iterations before settling on a CI image index.",
+      "type": "integer"
+    },
+    "ci_mmf_angle": {
+      "default": 0.8,
+      "description": "Alignment threshold w.r.t NEB mode.",
+      "type": "number"
+    },
+    "ci_mmf_restore_unhelpful": {
+      "default": false,
+      "description": "Restore the walked image after an alignment reject or force increase on that image. A CI-index hop after a downhill dimer step is not a force increase. False is the Frontiers OCI-NEB protocol (doi:10.3389/fchem.2026.1807063, Algorithm 1): restore only on positive curvature.",
+      "type": "boolean"
+    },
+    "setup_mmf_peaks": {
+      "default": true,
+      "description": "Generate modes and peak configurations.",
+      "type": "boolean"
+    },
+    "mmf_peak_tolerance": {
+      "default": 0.05,
+      "description": "Generate modes and peak configurations.",
+      "type": "number"
+    },
+    "zoom_neb": {
+      "default": false,
+      "description": "After the climbing image is stable, pack every image onto a window around it and continue the band, including OCINEB.",
+      "type": "boolean"
+    },
+    "zoom_alpha": {
+      "default": 0.5,
+      "description": "Auto window keeps images above this fraction of the barrier height, measured from the lower endpoint.",
+      "type": "number"
+    },
+    "zoom_offset": {
+      "default": 1,
+      "description": "Manual window half-width in images on each side of the climbing image.",
+      "type": "integer"
+    },
+    "zoom_mode": {
+      "default": "auto",
+      "description": "auto uses zoom_alpha; manual uses zoom_offset.",
+      "enum": [
+        "auto",
+        "manual"
+      ],
+      "type": "string"
+    },
+    "zoom_after": {
+      "default": 0.0,
+      "description": "Band force that arms Zoom-NEB. 0 uses ten times converged_force.",
+      "type": "number"
+    },
+    "zoom_interpolation": {
+      "default": "cubic",
+      "description": "Arc-length interpolation used to pack images into the window.",
+      "enum": [
+        "cubic",
+        "linear"
+      ],
+      "type": "string"
+    },
+    "zoom_ci_stability": {
+      "default": 5,
+      "description": "Iterations the climbing-image index must stay fixed before zoom.",
+      "type": "integer"
+    },
+    "zoom_max_iterations": {
+      "default": 0,
+      "description": "Iterations allowed after zoom. 0 keeps the band iteration cap.",
+      "type": "integer"
+    }
+  }
+}

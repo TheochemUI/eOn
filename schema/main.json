@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/main.json",
+  "title": "Main",
+  "description": "config.ini [Main] section (MainConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "job": {
+      "default": "akmc",
+      "description": "The type of job to execute.\n\nOptions:\n - ``molecular_dynamics``: Molecular dynamics.\n - ``parallel_replica``: Calculate the rare-event dynamics of the system by combining transitions observed from multiple trajectories run in parallel.\n - ``saddle_search``: Do a saddle point search using a minimum mode method.\n - ``displacement_sampling``: Job to sample different displacement methods and parameters to see which are the most efficient.\n - ``process_search``: Combined saddle search, minimizations, and prefactor calculations. Used by the aKMC method.\n - ``basin_hopping``: Search for global minimum using basin hopping method.\n - ``minimization``: Find the minimum from an initial configuration.\n - ``akmc``: Run an adaptive kinetic monte carlo simulation.\n - ``hessian``: Calculate the Hessian matrix for the specified configuration in a process.\n - ``finite_differences``: Finite difference methods.\n - ``global_optimization``: Global optimization methods.\n - ``gp_surrogate``: Gaussian process surrogate methods.\n - ``monte_carlo``: Monte Carlo methods.\n - ``nudged_elastic_band``: Nudged elastic band methods.\n - ``point``: Single point calculation.\n - ``prefactor``: Prefactor calculations.\n - ``replica_exchange``: Replica exchange methods.\n - ``safe_hyperdynamics``: Safe hyperdynamics methods.\n - ``structure_comparison``: Structure comparison methods.\n - ``tad``: Temperature-accelerated dynamics.",
+      "enum": [
+        "akmc",
+        "basin_hopping",
+        "displacement_sampling",
+        "dynamics",
+        "escape_rate",
+        "finite_differences",
+        "global_optimization",
+        "gp_surrogate",
+        "hessian",
+        "minimization",
+        "monte_carlo",
+        "molecular_dynamics",
+        "nudged_elastic_band",
+        "parallel_replica",
+        "point",
+        "prefactor",
+        "process_search",
+        "replica_exchange",
+        "saddle_search",
+        "safe_hyperdynamics",
+        "structure_comparison",
+        "tad",
+        "unbiased_parallel_replica"
+      ],
+      "type": "string"
+    },
+    "random_seed": {
+      "description": "Takes an integer for the random seed. If this number is less than zero the current time is used as the random seed. If it is not defined, a 32 bit sized integer is used.",
+      "type": "integer"
+    },
+    "temperature": {
+      "default": 300.0,
+      "description": "The temperature that the job will run at.",
+      "type": "number"
+    },
+    "finite_difference": {
+      "default": 0.01,
+      "description": "The finite difference distance to use for dimer, hessian, lanczos, and optimization methods.",
+      "type": "number"
+    },
+    "checkpoint": {
+      "default": false,
+      "description": "Resuming search from checkpoint files.",
+      "type": "boolean"
+    },
+    "quiet": {
+      "default": false,
+      "description": "Disable logging to stdout.",
+      "type": "boolean"
+    },
+    "write_log": {
+      "default": true,
+      "description": "Enable writing log to client.log file.",
+      "type": "boolean"
+    },
+    "write_con_forces": {
+      "default": false,
+      "description": "Write 'Forces of Component' sections into .con outputs so restarts co-load forces and energy without re-evaluating the potential. Off by default: classic con readers (e.g. ASE's eon parser) reject frames that carry force sections.",
+      "type": "boolean"
+    },
+    "max_force_calls": {
+      "default": 0,
+      "description": "The maximum number of total force calls per job. The default, 0, means unlimited force calls. If this limit is reached, an error code 1017 is thrown and shows up in the client log.",
+      "type": "integer"
+    },
+    "remove_net_force": {
+      "default": true,
+      "description": "If True, ensures that the net force on the system of atoms is zero by adjusting the force on each free atom.",
+      "type": "boolean"
+    }
+  }
+}

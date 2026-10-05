@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/communicator.json",
+  "title": "Communicator",
+  "description": "config.ini [Communicator] section (CommunicatorConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "default": "local",
+      "description": "Communicator type\n\nOptions:\n - 'local': Subprocess ``eonclient`` on the same machine (file-based jobs).\n - 'local_lib' / 'inprocess': In-process ``pyeonclient.Matter`` (no client binary;\n   requires ``-Dwith_pyeonclient=true``). Structures stay Matter end-to-end.\n - 'cluster': Job scheduler via user shell scripts.\n - 'mpi': Server and clients as an MPI job.",
+      "enum": [
+        "local",
+        "local_lib",
+        "inprocess",
+        "cluster",
+        "mpi"
+      ],
+      "type": "string"
+    },
+    "jobs_per_bundle": {
+      "default": 1,
+      "description": "Number of jobs per bundle.\n\nIn ``eOn``, a job is defined as a task that the ``eonclient`` executes, such\nas a process search or a parallel replica run. Sometimes it makes sense to\nrun more than one of the same type of job at a time.\n\nFor example, when using empirical potentials to do saddle searches a single\nsearch might only take several seconds on modern CPUs. In order to improve\nperformance more than one client job (*e.g.*, process search, dimer,\nminimization) can be run at the same time.",
+      "type": "integer"
+    },
+    "num_jobs": {
+      "default": 1,
+      "description": "Number of jobs.\n\nThe meaning of this variable changes depending on the communicator type. For\n``local``, it is the number of jobs run every time the program is invoked. For\n``cluster``, it is the desired sum of the queued and running jobs.",
+      "type": "integer"
+    },
+    "max_jobs": {
+      "default": 0,
+      "description": "Maximum number of akmc jobs that can be running at once for the current state.\n\nFor communicators with queues (``cluster``), no more jobs will be queued if\nthe number of jobs queued and in progress equals or exceeds this number. A\ndefault of 0 means unlimited.",
+      "type": "integer"
+    },
+    "client_path": {
+      "default": "eonclient",
+      "description": "Path to the eon client binary.\n\nIf only a name and not a path is given, ``eOn`` looks for the binary in the\nsame directory as the configuration file. If not found there, it searches\nthrough the directories in the ``$PATH`` environment variable.",
+      "type": "string"
+    },
+    "number_of_CPUs": {
+      "default": 1,
+      "description": "Number of jobs that will run simultaneously for the local communicator.",
+      "type": "integer"
+    },
+    "script_path": {
+      "default": "./",
+      "description": "Path to the user-defined scripts for submitting jobs to the communicator for the cluster communicator.",
+      "type": "string"
+    },
+    "name_prefix": {
+      "default": "eon",
+      "description": "Prefix added to job names to make them identifiable by the user for the cluster communicator.",
+      "type": "string"
+    },
+    "queued_jobs": {
+      "default": "queued_jobs.sh",
+      "description": "Name of the script that returns the job IDs of all the running and queued jobs for the cluster communicator.\n\nThis may return more than just ``eOn`` jobs.",
+      "type": "string"
+    },
+    "cancel_job": {
+      "default": "cancel_job.sh",
+      "description": "Name of the script that cancels a job for the cluster communicator.\n\nTakes a single argument, the JobID.",
+      "type": "string"
+    },
+    "submit_job": {
+      "default": "submit_job.sh",
+      "description": "Name of the script that submits a single job to the queuing system for the cluster communicator.\n\nIt takes two command line arguments. The first is the name of the job. This\nis not required for ``eOn`` use, but is highly recommended so that users can\nidentify which job is which. The second argument is the working directory.\nThis is the path where the ``eOn`` client should be executed. All of the\nneeded client files will be placed in this directory. The script must return\nthe job id of the submitted job. This is how ``eOn`` internally keeps track\nof jobs.",
+      "type": "string"
+    }
+  }
+}

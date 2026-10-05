@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/lbfgs.json",
+  "title": "LBFGS",
+  "description": "config.ini [LBFGS] section (LBFGSConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "lbfgs_memory": {
+      "default": 20,
+      "description": "Number of previous gradients and positions to store for the LBFGS method.",
+      "type": "integer"
+    },
+    "lbfgs_inverse_curvature": {
+      "default": 0.01,
+      "description": "Initial inverse curvature value for LBFGS.",
+      "type": "number"
+    },
+    "lbfgs_max_inverse_curvature": {
+      "default": 0.0,
+      "description": "Maximum inverse curvature value for LBFGS.",
+      "type": "number"
+    },
+    "lbfgs_auto_scale": {
+      "default": true,
+      "description": "If true, auto-scale the inverse curvature in LBFGS.",
+      "type": "boolean"
+    },
+    "lbfgs_angle_reset": {
+      "default": true,
+      "description": "If true, reset the LBFGS angle.",
+      "type": "boolean"
+    },
+    "lbfgs_distance_reset": {
+      "default": true,
+      "description": "If true, reset the LBFGS distance.",
+      "type": "boolean"
+    },
+    "lbfgs_curvature": {
+      "default": "reset",
+      "description": "How to treat a pair with insufficient curvature.\n\nOptions:\n  - ``reset``: wipe L-BFGS memory (ASE-style default)\n  - ``skip``: skip that pair when ``s·y < 0.2 sᵀ B0 s``\n  - ``damped``: Powell 1978 damping, ŷ = θy+(1-θ)B0 s\n  - ``cautious``: Li-Fukushima 2001, keep the pair only if\n    ``s·y >= ε ||s||² ||g||^α``",
+      "enum": [
+        "reset",
+        "skip",
+        "damped",
+        "cautious"
+      ],
+      "type": "string"
+    },
+    "lbfgs_project_rigid": {
+      "default": false,
+      "description": "Project translation and rotation out of the L-BFGS force and step. Isolated clusters only.",
+      "type": "boolean"
+    },
+    "lbfgs_secant": {
+      "default": "standard",
+      "description": "Secant pair: standard y = g_{k+1}-g_k, or Zhang-Xu modified secant using the two energies.",
+      "enum": [
+        "standard",
+        "zhangxu"
+      ],
+      "type": "string"
+    },
+    "lbfgs_precon": {
+      "default": "none",
+      "description": "Two-loop H0 metric. none is H0 I. exp/c1 is Packwood-Kermode (JCP 2016). lindh is the Lindh 1995 stretch model. pair is the Mones 2018 positive-definite pair Hessian of LJ or Morse. pair_full is the signed pair Hessian for Newton/RFO.",
+      "enum": [
+        "none",
+        "exp",
+        "c1",
+        "lindh",
+        "lindh_full",
+        "pair",
+        "pair_abs",
+        "pair_full",
+        "fischer",
+        "schlegel",
+        "swart"
+      ],
+      "type": "string"
+    },
+    "lbfgs_step": {
+      "default": "lbfgs",
+      "description": "lbfgs is the two-loop direction. newton is Levenberg-shifted H^{-1} g. rfo is Banerjee/Baker rational function optimization.",
+      "enum": [
+        "lbfgs",
+        "newton",
+        "rfo"
+      ],
+      "type": "string"
+    },
+    "lbfgs_h0": {
+      "default": "sy_yy",
+      "description": "Initial inverse-Hessian scale: Nocedal-Wright 7.20, Barzilai-Borwein-2, or the smaller of the two.",
+      "enum": [
+        "sy_yy",
+        "ss_sy",
+        "adaptive"
+      ],
+      "type": "string"
+    },
+    "lbfgs_accept": {
+      "default": "none",
+      "description": "none takes the two-loop step (ASE / historical eOn). energy refuses a rise. nonmonotone is a Grippo window of the last five values.",
+      "enum": [
+        "none",
+        "energy",
+        "nonmonotone"
+      ],
+      "type": "string"
+    },
+    "lbfgs_extra_updates": {
+      "default": 0,
+      "description": "Al-Baali extra-updates: reuse the newest pair this many extra times in the two-loop recursion.",
+      "type": "integer"
+    },
+    "lbfgs_cautious_eps": {
+      "default": 1e-06,
+      "description": "Li-Fukushima ε in s·y >= ε ||s||² ||g||^α.",
+      "type": "number"
+    },
+    "lbfgs_cautious_alpha": {
+      "default": 0.01,
+      "description": "Li-Fukushima α in s·y >= ε ||s||² ||g||^α.",
+      "type": "number"
+    },
+    "lbfgs_precon_A": {
+      "default": 3.0,
+      "description": "Packwood Exp stiffness A in μ exp(-A (r/r_nn - 1)).",
+      "type": "number"
+    },
+    "lbfgs_precon_mu": {
+      "default": 1.0,
+      "description": "Packwood pair-preconditioner scale μ.",
+      "type": "number"
+    },
+    "lbfgs_precon_rcut": {
+      "default": 0.0,
+      "description": "Pair-preconditioner cutoff. 0 means 2 r_nn.",
+      "type": "number"
+    }
+  }
+}

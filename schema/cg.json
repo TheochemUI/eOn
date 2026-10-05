@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/cg.json",
+  "title": "CG",
+  "description": "config.ini [CG] section (CGConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "cg_no_overshooting": {
+      "default": false,
+      "description": "If true, prevent overshooting in CG.",
+      "type": "boolean"
+    },
+    "cg_knock_out_max_move": {
+      "default": false,
+      "description": "If true, limit the maximum move in CG.",
+      "type": "boolean"
+    },
+    "cg_line_search": {
+      "default": false,
+      "description": "If true, perform a line search in CG.",
+      "type": "boolean"
+    },
+    "cg_line_converged": {
+      "default": 0.1,
+      "description": "Convergence criterion for the line search in CG.",
+      "type": "number"
+    },
+    "cg_max_iter_before_reset": {
+      "default": 0,
+      "description": "Maximum number of iterations before reset in CG.",
+      "type": "integer"
+    },
+    "cg_max_iter_line_search": {
+      "default": 10,
+      "description": "Maximum number of iterations for the line search in CG.",
+      "type": "integer"
+    }
+  }
+}

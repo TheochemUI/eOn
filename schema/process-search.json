@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/process-search.json",
+  "title": "Process Search",
+  "description": "config.ini [Process Search] section (ProcessSearchConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "minimization_offset": {
+      "default": null,
+      "description": "This is the distance images bracketing the saddle are displaced.\n\nAfter a saddle is found, images are placed on either side of the saddle\nalong the mode and minimized to ensure that the saddle is connected to the\noriginal minimum and to locate the product state.\nThis defaults to being the same as\n:any:`eon.schema.OptimizerConfig.max_move`",
+      "type": "number"
+    },
+    "minimize_first": {
+      "default": true,
+      "description": "Every time a process search is run by a client the reactant will be minimized first before doing any saddle searches.",
+      "type": "boolean"
+    }
+  }
+}

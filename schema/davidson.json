@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/davidson.json",
+  "title": "Davidson",
+  "description": "config.ini [Davidson] section (DavidsonConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "tolerance": {
+      "default": 0.01,
+      "description": "Convergence on relative eigenvalue change and residual norm for the Davidson min-mode Ritz pair.",
+      "type": "number"
+    },
+    "max_iterations": {
+      "default": 20,
+      "description": "Maximum subspace dimension / Davidson iterations.",
+      "type": "integer"
+    },
+    "diagonal_preconditioner": {
+      "default": false,
+      "description": "Use a cheap | (H v)_i / v_i | heuristic preconditioner (not the true Hessian diagonal).",
+      "type": "boolean"
+    },
+    "phva_atoms": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        }
+      ],
+      "default": "All",
+      "description": "PHVA mobile/active atoms for the Davidson Ritz space (not free/fixed): comma-delimited indices or 'All' for every free atom."
+    }
+  }
+}

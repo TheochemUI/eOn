@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eondocs.org/schema/distributed-replica.json",
+  "title": "Distributed Replica",
+  "description": "config.ini [Distributed Replica] section (DistributedReplicaConfig). Keys, defaults, and allowed values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "sampling steps": {
+      "default": 500,
+      "type": "integer"
+    },
+    "target_temperature": {
+      "default": 300.0,
+      "type": "number"
+    },
+    "balance_steps": {
+      "default": 500,
+      "type": "integer"
+    }
+  }
+}
