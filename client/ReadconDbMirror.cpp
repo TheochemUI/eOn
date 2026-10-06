@@ -11,6 +11,8 @@
 */
 #include "ReadconDbMirror.h"
 
+#include "eon/EonLogger.h"
+
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
@@ -89,6 +91,9 @@ Api &api() {
     }
   }
   if (out.lib == nullptr) {
+    const char *err = dlerror();
+    EONC_LOG_WARNING("[readcon-db] libreadcon_db.so failed to load: {}",
+                     err != nullptr ? err : "dlopen returned null");
     out.missing = true;
     return out;
   }

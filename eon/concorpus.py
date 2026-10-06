@@ -50,6 +50,23 @@ def corpus_dir(con_path: Path) -> Path:
     return con_path.resolve().parent / "readcon.db"
 
 
+def _loader_error() -> str:
+    """dlopen text for a missing libreadcon_db.so, or an empty string."""
+    import ctypes
+
+    try:
+        ctypes.CDLL("libreadcon_db.so")
+    except OSError as exc:
+        return str(exc)
+    return ""
+
+
+def _note_library_missing(exc: BaseException) -> None:
+    """One warning. Later calls return before this runs."""
+    detail = _loader_error() or str(exc)
+    logger.warning("libreadcon_db.so failed to load: %s", detail)
+
+
 def _corpus(directory: Path):
     global _unavailable
     if _unavailable:
@@ -60,9 +77,9 @@ def _corpus(directory: Path):
         return cached
     try:
         from readcon_db import ConCorpus
-    except ImportError:
+    except (ImportError, OSError) as exc:
         _unavailable = True
-        logger.debug("readcon_db is not installed; con files stay authoritative")
+        _note_library_missing(exc)
         return None
     try:
         db = ConCorpus(key)

@@ -60,8 +60,12 @@ def _open_store(config):
     """Open the catalog at ``config.kdb_path``, or None when amsel is absent."""
     try:
         from amsel import KdbStore
-    except ImportError:
-        logger.error("amsel is not installed; the process catalog is closed")
+    except ImportError as exc:
+        # A missing dependency inside amsel is not "the module was not found".
+        if getattr(exc, "name", None) == "amsel":
+            logger.error("amsel is not installed; the process catalog is closed")
+        else:
+            logger.error("process catalog import failed: %s", exc)
         return None
     path = Path(config.kdb_path)
     try:
