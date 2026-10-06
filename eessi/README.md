@@ -2,7 +2,9 @@
 
 `eOn-devel-2026.06-GCCcore-15.2.0.eb` is an EasyBuild bundle. The module loads
 Meson, Ninja, CMake, pkgconf, Eigen, Python, and Rust from EESSI 2026.06.
-CapnProto 1.4.0 and `foss/2026.1` are separate loads. quill, inih,
+It depends on `foss/2026.1`, which loads OpenMPI, FFTW, and OpenBLAS.
+The same `eb` command builds Cap'n Proto 1.4.0 into the bundle prefix, so
+`pkg-config` finds `capnp-rpc` after `module load eOn-devel`. quill, inih,
 nlohmann_json, Highway, rgpot, and readcon-core come from the wraps in
 `subprojects/`, so the first `meson setup` needs network.
 
@@ -22,37 +24,15 @@ module load EESSI-extend
 eb --umask=022 eessi/eOn-devel-2026.06-GCCcore-15.2.0.eb
 ```
 
-The same prefix then receives CapnProto 1.4.0. The direct rgpot arm needs
-the `capnp` program and `capnp-rpc`. EasyBuild fetches that module from
-easybuild-easyconfigs pull request 26480. The filename keeps the other
-recipes in that pull request unused.
-
-```bash
-eb --umask=022 --from-pr 26480 CapnProto-1.4.0-GCCcore-15.2.0.eb
-```
-
-A full 40-character commit id works in place of the pull request number.
-This id is the pull request head. `--from-commit` stays on it.
-
-```bash
-eb --umask=022 --from-commit 66fa89934f0476cd4f9ff14154ee4c87ae5c5d82 CapnProto-1.4.0-GCCcore-15.2.0.eb
-```
-
-If that commit is rejected because toolchain GCCcore 15.2.0 is unsupported
-and the supported list is empty, export the variable that message prints,
-then rerun `eb`:
-
-```bash
-export EESSI_SITE_TOP_LEVEL_TOOLCHAINS_2026_06='[{"name": "GCCcore", "version": "15.2.0"}]'
-```
-
 In each new shell, from the `develop` checkout:
 
 ```bash
 source /cvmfs/software.eessi.io/versions/2026.06/init/bash
 module load EESSI-extend
-module load foss/2026.1 eOn-devel/2026.06-GCCcore-15.2.0 CapnProto/1.4.0-GCCcore-15.2.0
+module load eOn-devel/2026.06-GCCcore-15.2.0
 hash -r
+command -v mpicc
+pkg-config --exists capnp-rpc
 unset RUSTC_WRAPPER CARGO_BUILD_RUSTC_WRAPPER RUSTC_WORKSPACE_WRAPPER
 unset RUSTFLAGS CARGO_ENCODED_RUSTFLAGS
 export CARGO_HOME="$PWD/../eon-cargo-home"

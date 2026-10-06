@@ -7,8 +7,9 @@
 #   module load EESSI-extend
 #   eb --umask=022 eessi/eOn-devel-2026.06-GCCcore-15.2.0.eb
 #
-# The configure, build and test commands, with foss/2026.1, CapnProto 1.4.0
-# and the run-path list, are in docs/source/install/eessi.md.
+# foss/2026.1 is an external module. This file builds Cap'n Proto 1.4.0 into
+# the same prefix. The configure, build and test commands, and the run-path
+# list, are in docs/source/install/eessi.md.
 #
 # quill, inih, nlohmann_json, Highway, rgpot and readcon-core come from the
 # wraps in subprojects/, so the build needs network the first time.
@@ -19,7 +20,8 @@ version = '2026.06'
 
 homepage = 'https://eondocs.org'
 description = """Build and test dependencies for developing eOn from a source checkout
- on EESSI 2026.06: compilers, Meson, Ninja, CMake, pkg-config, Eigen, Python and Rust."""
+ on EESSI 2026.06: compilers, Meson, Ninja, CMake, pkg-config, Eigen, Python,
+ Rust, Cap'n Proto, and the foss toolchain (OpenMPI, FFTW, OpenBLAS)."""
 
 toolchain = {'name': 'GCCcore', 'version': '15.2.0'}
 
@@ -31,7 +33,25 @@ dependencies = [
     ('Eigen', '5.0.0'),
     ('Python', '3.14.2'),
     ('Rust', '1.94.1'),
+    # Already installed in EESSI 2026.06. Loads OpenMPI, FFTW and OpenBLAS.
+    ('foss/2026.1', 'EXTERNAL_MODULE'),
 ]
+
+# Cap'n Proto is not an EESSI 2026.06 module. Build it into this prefix so
+# one `module load eOn-devel` puts capnp-rpc on PKG_CONFIG_PATH.
+components = [
+    ('CapnProto', '1.4.0', {
+        'easyblock': 'ConfigureMake',
+        'source_urls': ['https://capnproto.org/'],
+        'sources': ['capnproto-c++-1.4.0.tar.gz'],
+        'checksums': ['fa02378ad522b318916b9ad928d1372fc9abd43dd1f4f0392e50450f5c87828f'],
+        'configopts': '--libdir=%(installdir)s/lib',
+    }),
+]
+
+modextrapaths = {
+    'PKG_CONFIG_PATH': ['lib/pkgconfig'],
+}
 
 # Name the compilers: meson otherwise wraps cc in any ccache or sccache on PATH.
 modextravars = {

@@ -187,7 +187,7 @@ meson subprojects download artn-plugin ira
 
 # European environment for scientific software installations (EESSI)
 
-A `develop` checkout on this 2026.06 release uses EESSI-extend, the `eOn-devel` bundle, CapnProto 1.4.0, and `foss/2026.1`. The run-path list and the calculator groups are on the [build page](eessi.md).
+A `develop` checkout on this 2026.06 release uses EESSI-extend and the `eOn-devel` bundle. That bundle depends on `foss/2026.1` and builds Cap'n Proto 1.4.0. The run-path list and the calculator groups are on the [build page](eessi.md).
 
 # Licenses
 
