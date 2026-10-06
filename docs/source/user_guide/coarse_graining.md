@@ -68,7 +68,8 @@ exit direction and time compared to normal KMC simulation
 ## amsel discover_decide
 
 `[amsel] discover_decide = true` runs on the current state's process table.
-The state list can hold one state. `use_mcamc` stays off. The repeat-count
+The state list can hold one state. `use_mcamc` stays off.
+`use_mcamc` is not required. The repeat-count
 confidence scheme does not hold this step. A run that leaves
 `discover_decide` off still waits for `confidence` under
 `confidence_scheme`.

@@ -57,7 +57,7 @@ cookbook = [
 
 [project.urls]
 Homepage = "https://github.com/TheochemUI/eOn"
-Documentation = "https://theochemuieon.readthedocs.io/"
+Documentation = "https://eondocs.org/"
 Repository = "https://github.com/TheochemUI/eOn"
 Issues = "https://github.com/TheochemUI/eOn/issues"
 Changelog = "https://github.com/TheochemUI/eOn/blob/main/CHANGELOG.md"

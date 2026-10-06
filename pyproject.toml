@@ -41,7 +41,7 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://github.com/TheochemUI/eOn"
-Documentation = "https://theochemuieon.readthedocs.io/"
+Documentation = "https://eondocs.org/"
 Repository = "https://github.com/TheochemUI/eOn"
 Changelog = "https://github.com/TheochemUI/eOn/blob/main/CHANGELOG.md"
 "Release process" = "https://github.com/TheochemUI/eOn/blob/main/docs/source/devdocs/release.md"
