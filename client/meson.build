@@ -522,7 +522,7 @@ _deps += dl_dep
 _rgpot_proj = []
 _rgpot_pkg = dependency(
     'rgpot',
-    version: '>=3.2.0',
+    version: '>=3.4.0',
     method: 'pkg-config',
     required: false,
     allow_fallback: false,

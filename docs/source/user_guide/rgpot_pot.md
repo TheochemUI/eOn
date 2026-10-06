@@ -32,9 +32,11 @@ Cap'n Proto messages passed into the C ABI. The `rgpot` Meson subproject is
 `subprojects/rgpot.wrap`, and the build pulls `nwchempot_dep` and
 `cpmdpot_dep`. Serve mode uses `ptlrpc_dep` under `-Dwith_serve`.
 
-`dependency('rgpot')` prefers an installed rgpot at 3.2.0 or newer. The Meson
-wrap is the fallback. A CPMD run that splits ranks uses the flag in the CPMD
-section.
+`dependency('rgpot')` prefers an installed rgpot. `cpmdc_bind_calculator`
+and `rgpot::bindCalculators` first ship in rgpot 3.3.0. This build requires
+3.4.0, which adds `rgpot::calculatorsUseMpi`. An installed 3.3.0 fails that
+version check. The Meson wrap is the fallback. A CPMD run that splits ranks
+uses the flag in the CPMD section.
 
 ## Configuration
 
