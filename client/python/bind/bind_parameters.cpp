@@ -790,6 +790,155 @@ void bind_parameters(nb::module_ &m) {
           [](eonc::Parameters &s, const std::string &v) {
             eonc::ParametersLoadAccess::rgpot_options(s).theory = v;
           })
+      .def_prop_rw(
+          "rgpot_scf_type",
+          [](const eonc::Parameters &s) {
+            return eonc::ParametersLoadAccess::rgpot_options(s).scf_type;
+          },
+          [](eonc::Parameters &s, const std::string &v) {
+            eonc::ParametersLoadAccess::rgpot_options(s).scf_type = v;
+          })
+      .def_prop_rw(
+          "rgpot_functional",
+          [](const eonc::Parameters &s) {
+            return eonc::ParametersLoadAccess::rgpot_options(s).functional;
+          },
+          [](eonc::Parameters &s, const std::string &v) {
+            eonc::ParametersLoadAccess::rgpot_options(s).functional = v;
+          })
+      .def_prop_rw(
+          "rgpot_cutoff_ry",
+          [](const eonc::Parameters &s) {
+            return eonc::ParametersLoadAccess::rgpot_options(s).cutoff_ry;
+          },
+          [](eonc::Parameters &s, double v) {
+            eonc::ParametersLoadAccess::rgpot_options(s).cutoff_ry = v;
+          })
+      .def_prop_rw(
+          "rgpot_charge",
+          [](const eonc::Parameters &s) {
+            return static_cast<long>(
+                eonc::ParametersLoadAccess::rgpot_options(s).charge);
+          },
+          [](eonc::Parameters &s, long v) {
+            eonc::ParametersLoadAccess::rgpot_options(s).charge =
+                static_cast<int>(v);
+          })
+      .def_prop_rw(
+          "rgpot_multiplicity",
+          [](const eonc::Parameters &s) {
+            return static_cast<long>(
+                eonc::ParametersLoadAccess::rgpot_options(s).multiplicity);
+          },
+          [](eonc::Parameters &s, long v) {
+            eonc::ParametersLoadAccess::rgpot_options(s).multiplicity =
+                static_cast<int>(v);
+          })
+      .def_prop_rw(
+          "rgpot_engine_root",
+          [](const eonc::Parameters &s) {
+            return eonc::ParametersLoadAccess::rgpot_options(s).engine_root;
+          },
+          [](eonc::Parameters &s, const std::string &v) {
+            eonc::ParametersLoadAccess::rgpot_options(s).engine_root = v;
+          })
+      .def_prop_rw(
+          "rgpot_scratch_dir",
+          [](const eonc::Parameters &s) {
+            return eonc::ParametersLoadAccess::rgpot_options(s).scratch_dir;
+          },
+          [](eonc::Parameters &s, const std::string &v) {
+            eonc::ParametersLoadAccess::rgpot_options(s).scratch_dir = v;
+          })
+      .def_prop_rw(
+          "rgpot_input_block",
+          [](const eonc::Parameters &s) {
+            return eonc::ParametersLoadAccess::rgpot_options(s).input_block;
+          },
+          [](eonc::Parameters &s, const std::string &v) {
+            eonc::ParametersLoadAccess::rgpot_options(s).input_block = v;
+          })
+      .def_prop_rw(
+          "rgpot_permanent_dir",
+          [](const eonc::Parameters &s) {
+            return eonc::ParametersLoadAccess::rgpot_options(s).permanent_dir;
+          },
+          [](eonc::Parameters &s, const std::string &v) {
+            eonc::ParametersLoadAccess::rgpot_options(s).permanent_dir = v;
+          })
+      .def_prop_rw(
+          "rgpot_params_path",
+          [](const eonc::Parameters &s) {
+            return eonc::ParametersLoadAccess::rgpot_options(s).params_path;
+          },
+          [](eonc::Parameters &s, const std::string &v) {
+            eonc::ParametersLoadAccess::rgpot_options(s).params_path = v;
+          })
+      .def_prop_rw(
+          "rgpot_ranks_per_image",
+          [](const eonc::Parameters &s) {
+            return static_cast<long>(
+                eonc::ParametersLoadAccess::rgpot_options(s).ranks_per_image);
+          },
+          [](eonc::Parameters &s, long v) {
+            eonc::ParametersLoadAccess::rgpot_options(s).ranks_per_image =
+                static_cast<int>(v);
+          })
+      .def_prop_rw(
+          "rgpot_xtb_paramset",
+          [](const eonc::Parameters &s) {
+            return eonc::ParametersLoadAccess::rgpot_options(s).xtb_paramset;
+          },
+          [](eonc::Parameters &s, const std::string &v) {
+            eonc::ParametersLoadAccess::rgpot_options(s).xtb_paramset = v;
+          })
+      .def_prop_rw(
+          "rgpot_xtb_accuracy",
+          [](const eonc::Parameters &s) {
+            return eonc::ParametersLoadAccess::rgpot_options(s).xtb_accuracy;
+          },
+          [](eonc::Parameters &s, double v) {
+            eonc::ParametersLoadAccess::rgpot_options(s).xtb_accuracy = v;
+          })
+      .def_prop_rw(
+          "rgpot_xtb_electronic_temperature",
+          [](const eonc::Parameters &s) {
+            return eonc::ParametersLoadAccess::rgpot_options(s)
+                .xtb_electronic_temperature;
+          },
+          [](eonc::Parameters &s, double v) {
+            eonc::ParametersLoadAccess::rgpot_options(s)
+                .xtb_electronic_temperature = v;
+          })
+      .def_prop_rw(
+          "rgpot_xtb_max_iterations",
+          [](const eonc::Parameters &s) {
+            return static_cast<long>(
+                eonc::ParametersLoadAccess::rgpot_options(s)
+                    .xtb_max_iterations);
+          },
+          [](eonc::Parameters &s, long v) {
+            eonc::ParametersLoadAccess::rgpot_options(s).xtb_max_iterations =
+                static_cast<int>(v);
+          })
+      .def_prop_rw(
+          "rgpot_xtb_charge",
+          [](const eonc::Parameters &s) {
+            return eonc::ParametersLoadAccess::rgpot_options(s).xtb_charge;
+          },
+          [](eonc::Parameters &s, double v) {
+            eonc::ParametersLoadAccess::rgpot_options(s).xtb_charge = v;
+          })
+      .def_prop_rw(
+          "rgpot_xtb_uhf",
+          [](const eonc::Parameters &s) {
+            return static_cast<long>(
+                eonc::ParametersLoadAccess::rgpot_options(s).xtb_uhf);
+          },
+          [](eonc::Parameters &s, long v) {
+            eonc::ParametersLoadAccess::rgpot_options(s).xtb_uhf =
+                static_cast<int>(v);
+          })
 
       // --- Saddle search ---
       .def_prop_rw(
