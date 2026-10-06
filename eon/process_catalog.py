@@ -6,13 +6,7 @@ that section. The barrier, the prefactor, the same mode components, and
 the frame keys live on ``amsel.KdbProcess``. A good saddle is stored when
 it is registered. The next search of a matching state refines from the
 stored saddle, then a random displacement follows when no suggestion
-remains.
-
-``kdb_nf`` is the neighbor fudge (a fraction). ``kdb_dc`` is the distance
-cutoff in angstroms. ``kdb_mac`` is the minimum absolute cosine at which
-the stored mode is the refine direction; below it the direction is the
-reactant-to-saddle vector. ``Paths.kdb`` is the directory
-``amsel.KdbStore`` opens.
+remains. ``Paths.kdb`` is the directory ``amsel.KdbStore`` opens.
 """
 
 from __future__ import annotations

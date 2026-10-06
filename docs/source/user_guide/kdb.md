@@ -53,6 +53,9 @@ With `kdb_only = true` and an empty catalog, no random search is submitted.
 `amsel` and `readcon-db`. A missing `amsel` logs `amsel is not installed`
 and leaves the state unmarked, so a later iteration can try again.
 
+The retired reader imported `aselite` from the `kdb` module of the
+`tsase` package. This catalog does not import that module.
+
 The three match numbers are `kdb_nf`, `kdb_dc`, and `kdb_mac`:
 
 - `kdb_nf` is the neighbor fudge, a fraction. The default is 0.2.
