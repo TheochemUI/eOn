@@ -35,6 +35,7 @@ def test_bundle_depends_on_foss_and_builds_capnproto():
     assert components[0][1] == "1.4.0"
     spec = components[0][2]
     assert spec["easyblock"] == "ConfigureMake"
+    assert spec["start_dir"] == "capnproto-c++-1.4.0"
     assert spec["checksums"] == [CAPNP_SHA256]
     assert "capnproto-c++-1.4.0.tar.gz" in spec["sources"]
     assert compilers["CC"] == "gcc"

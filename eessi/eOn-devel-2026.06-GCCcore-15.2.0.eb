@@ -45,6 +45,7 @@ components = [
         'source_urls': ['https://capnproto.org/'],
         'sources': ['capnproto-c++-1.4.0.tar.gz'],
         'checksums': ['fa02378ad522b318916b9ad928d1372fc9abd43dd1f4f0392e50450f5c87828f'],
+        'start_dir': 'capnproto-c++-1.4.0',
         'configopts': '--libdir=%(installdir)s/lib',
     }),
 ]
