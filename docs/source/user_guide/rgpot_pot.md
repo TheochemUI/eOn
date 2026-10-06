@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "eOn RGPOT potential: in-process rgpot NWChem and CPMD, including a CPMDParams file and MPI calculator groups."
-    "keywords": "eOn, RGPOT, rgpot, CPMD, libcpmdc, params_path, ranks_per_image"
+    "description": "eOn rgpot potential: in-process rgpot NWChem and CPMD, including a CPMDParams file and MPI calculator groups."
+    "keywords": "eOn, rgpot, CPMD, libcpmdc, params_path, ranks_per_image"
 ---
 
 # RgpotPot (direct in-process rgpot)
@@ -13,7 +13,7 @@ myst:
 On non-Windows builds, potential `rgpot` links
 [rgpot](https://github.com/OmniPotentRPC/rgpot) and loads `libnwchemc.so` or
 `libcpmdc.so` with `dlopen` in the eOn process.
-`RGPOT` and `rgpot` name the same potential.
+The ini name is `rgpot`.
 The cpmdc engine is documented at [cpmdc.rgoswami.me](https://cpmdc.rgoswami.me).
 
 Potserv clients, `eonclient --serve`
@@ -440,8 +440,8 @@ numbered from `00`. The default of `setup_mmf_peaks` leaves those files on.
 ## SocketNWChem
 
 SocketNWChem speaks the i-PI socket, and eOn listens. The direct potential
-(RGPOT) loads `libnwchemc.so` or `libcpmdc.so` in the eOn process.
-SocketNWChem keeps an external NWChem process warm across calls. RGPOT
+(`rgpot`) loads `libnwchemc.so` or `libcpmdc.so` in the eOn process.
+SocketNWChem keeps an external NWChem process warm across calls. `rgpot`
 keeps one session, and that session keeps the orbitals.
 
 ## Implementation notes
