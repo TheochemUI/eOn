@@ -58,7 +58,7 @@ path.write_text("".join(lines))
 PY
 sed "s|@PREFIX@|$PREFIX|g" "$here/LINUX-CONDA-PIXI" > "$src/configure/LINUX-CONDA-PIXI"
 (cd "$src" && ./configure.sh -DEST="$dest" LINUX-CONDA-PIXI)
-make -C "$dest/obj" -f "$dest/Makefile" -j "$JOBS" "$dest/lib/libcpmd.a" timetag.o cpmd.x
+make -C "$dest/obj" -f "$dest/Makefile" -j "$JOBS" "$dest/lib/libcpmd.a" timetag.o "$dest/bin/cpmd.x"
 test -s "$dest/lib/libcpmd.a"
 cpmd_bin=$(find "$dest" -name cpmd.x -type f | head -1)
 test -x "$cpmd_bin"
