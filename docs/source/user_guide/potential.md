@@ -24,6 +24,9 @@ the corresponding `-Dwith_*` flags.
 
 ### External
 
+RGPOT
+: In-process rgpot calculators. Set `potential = rgpot` and configure `[RgpotPot]`. NWChem and CPMD are backends. See {doc}`rgpot_pot`. {bdg-success}`conda-forge`
+
 VASP {cite:p}`pot-kresseEfficientIterativeSchemes1996`
 : Vienna Ab-Initio Simulation Program (VASP) I/O interface. `-Dwith_vasp` defaults false. {bdg-warning}`source build`
 
@@ -129,6 +132,12 @@ An exact listed spelling wins, so `SocketNWChem` stays distinct from `socketnwch
 ## Potential configurations
 
 Several potentials have additional configuration stanzas.
+
+### RGPOT
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.RgpotPot
+```
 
 ### Metatomic
 
