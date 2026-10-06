@@ -1,7 +1,9 @@
 # CPMD BLYP via in-process RgpotPot
 
 `RgpotPot` runs rgpot's `CPMDPot` frontend inside `eonclient` (no potserv, no
-sockets); the CPMD engine library is `dlopen`ed at runtime.
+sockets); the CPMD engine library is `dlopen`ed at runtime. A non-empty
+`params_path` is the Strasbourg CPMDParams message. The scalar keys apply
+when that path is empty.
 
 1. Build a CPMD engine: real `libcpmdc.so` from
    [OmniPotentRPC/cpmdc](https://github.com/OmniPotentRPC/cpmdc), or the fake

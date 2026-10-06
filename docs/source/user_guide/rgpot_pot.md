@@ -174,7 +174,7 @@ calculator groups. Calculator groups are this page's launch,
 
 Three layers build the message CPMD receives.
 
-`params_path` on `[RgpotPot]` is a Cap'n Proto CPMDParams file. It owns
+`params_path` on `[RgpotPot]` is a Cap'n Proto CPMDParams file. That file is the Strasbourg message. A periodic deck belongs in the message. It owns
 `functional`, `cutOffRy`, `charge`, `multiplicity`, `title`, `memoryMb`,
 `inputSections`, and `inputBlocks`. `RGPOT_PARAMS_PATH` overrides the
 ini key. Scalar keys are not written over a file that loaded. Every rank
