@@ -95,6 +95,22 @@ namespace tests {
 static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 /// Parse a results.dat file into key-value pairs.
+// Lines are "value key". Count a key by the token after the last space so a
+// repeated extra is visible. parseResultsDat keeps only the second copy.
+static long resultsDatKeyCount(const std::filesystem::path &path,
+                               const std::string &key) {
+  std::ifstream in(path);
+  std::string line;
+  long count = 0;
+  while (std::getline(in, line)) {
+    const auto pos = line.rfind(' ');
+    if (pos != std::string::npos && line.substr(pos + 1) == key) {
+      ++count;
+    }
+  }
+  return count;
+}
+
 static std::map<std::string, std::string>
 parseResultsDat(const std::string &path) {
   std::map<std::string, std::string> result;
@@ -2908,6 +2924,10 @@ force_tolerance = 1e-3
   REQUIRE(std::stod(results.at("instanton_symmetric")) == 0.0);
   REQUIRE(std::stod(results.at("instanton_beta_asymmetry")) > 0.1);
   REQUIRE(results.count("tunnel_splitting_instanton") == 0);
+  // results.dat is a list. A map keeps the second copy of a repeated key.
+  const auto dat = workdir / "results.dat";
+  REQUIRE(resultsDatKeyCount(dat, "instanton_beta_asymmetry") == 1);
+  REQUIRE(resultsDatKeyCount(dat, "instanton_symmetric") == 1);
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
