@@ -22,7 +22,8 @@ if [ ! -d "$src/.git" ]; then
   git clone "$OPENCPMD_REPO" "$src"
 fi
 git -C "$src" fetch --depth 1 origin "$OPENCPMD_COMMIT"
-git -C "$src" checkout --detach FETCH_HEAD
+git -C "$src" checkout --force --detach FETCH_HEAD
+git -C "$src" clean -fd
 test "$(git -C "$src" rev-parse HEAD)" = "$OPENCPMD_COMMIT"
 
 if [ -n "${CPMDC_SRC:-}" ]; then
@@ -39,6 +40,22 @@ test "$(git -C "$cpmdc" rev-parse HEAD)" = "$CPMDC_COMMIT"
 for p in $PATCHES; do
   patch -d "$src" -p1 --forward < "$cpmdc/tools/opencpmd_$p.patch"
 done
+# GCC 16 rejects KIND() of an imported BIND(C) enumerator in this file.
+python3 - "$src/src/cuda_interfaces.mod.F90" << 'PY'
+import pathlib, sys
+path = pathlib.Path(sys.argv[1])
+text = path.read_text()
+text = text.replace(
+    "INTEGER( KIND( cudaMemcpyHostToHost ) )",
+    "INTEGER( C_INT )",
+)
+lines = []
+for line in text.splitlines(True):
+    if "IMPORT ::" in line and "cudaMemcpyHostToHost" in line and "C_INT" not in line:
+        line = line.replace("cudaMemcpyHostToHost", "cudaMemcpyHostToHost, C_INT", 1)
+    lines.append(line)
+path.write_text("".join(lines))
+PY
 sed "s|@PREFIX@|$PREFIX|g" "$here/LINUX-CONDA-PIXI" > "$src/configure/LINUX-CONDA-PIXI"
 (cd "$src" && ./configure.sh -DEST="$dest" LINUX-CONDA-PIXI)
 make -C "$dest/obj" -f "$dest/Makefile" -j "$JOBS" "$dest/lib/libcpmd.a" timetag.o cpmd.x
