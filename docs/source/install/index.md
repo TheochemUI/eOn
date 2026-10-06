@@ -31,7 +31,7 @@ pixi add eon
 micromamba install -c conda-forge eon
 ```
 
-Those commands install the conda-forge release package. They do not check out `develop`. A source build of `develop` is the section below. The examples in this book run against the release package. `pixi.toml` on `develop` records version 3.6.0. The conda-forge package is built without `-Drgpot:with_mpi=enabled`, so it does not ship calculator groups or in-process CPMD.
+Those commands install the conda-forge release package. They do not check out `develop`. A source build of `develop` is the section below. The examples in this book run against the release package. `pixi.toml` on `develop` records version 3.6.0. The conda-forge package does not contain the CPMD engine. It is built without `-Drgpot:with_mpi=enabled`, so it does not ship calculator groups or in-process CPMD.
 
 The conda package is a maximalist build with the following potentials and
 features enabled:
