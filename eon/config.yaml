@@ -2304,11 +2304,26 @@ RgpotPot:
             kind: string
             default: "sto-3g"
 
+        # Read by the client when basis is absent.
+        nwchem_basis:
+            kind: string
+            default: "sto-3g"
+
         theory:
             kind: string
             default: "scf"
 
+        # Read by the client when theory is absent.
+        nwchem_theory:
+            kind: string
+            default: "scf"
+
         scf_type:
+            kind: string
+            default: "rhf"
+
+        # Read by the client when scf_type is absent.
+        nwchem_scf_type:
             kind: string
             default: "rhf"
 
@@ -2338,7 +2353,17 @@ RgpotPot:
             kind: int
             default: 0
 
+        # Read by the client when charge is absent.
+        nwchem_charge:
+            kind: int
+            default: 0
+
         multiplicity:
+            kind: int
+            default: 1
+
+        # Read by the client when multiplicity is absent.
+        nwchem_multiplicity:
             kind: int
             default: 1
 
@@ -2423,7 +2448,22 @@ RgpotPot:
                 - GFN1xTB
                 - GFN2xTB
 
+        # Read by the client when paramset is absent.
+        xtb_paramset:
+            kind: string
+            default: "GFN2xTB"
+            values:
+                - GFNFF
+                - GFN0xTB
+                - GFN1xTB
+                - GFN2xTB
+
         accuracy:
+            kind: float
+            default: 1.0
+
+        # Read by the client when accuracy is absent.
+        xtb_accuracy:
             kind: float
             default: 1.0
 
@@ -2431,11 +2471,26 @@ RgpotPot:
             kind: float
             default: 300.0
 
+        # Read by the client when electronic_temperature is absent.
+        xtb_electronic_temperature:
+            kind: float
+            default: 300.0
+
         max_iterations:
             kind: int
             default: 250
 
+        # Read by the client when max_iterations is absent.
+        xtb_max_iterations:
+            kind: int
+            default: 250
+
         uhf:
+            kind: int
+            default: 0
+
+        # Read by the client when uhf is absent.
+        xtb_uhf:
             kind: int
             default: 0
 

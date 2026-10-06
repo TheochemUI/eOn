@@ -797,10 +797,25 @@ class RgpotPot(BaseModel):
     basis: str = Field(
         default="sto-3g", description="Basis set for the NWChem backend."
     )
+    nwchem_basis: str = Field(
+        default="sto-3g",
+        exclude=True,
+        description="Alias of basis, read when basis is absent.",
+    )
     theory: str = Field(
         default="scf", description="Theory level for the NWChem backend."
     )
+    nwchem_theory: str = Field(
+        default="scf",
+        exclude=True,
+        description="Alias of theory, read when theory is absent.",
+    )
     scf_type: str = Field(default="rhf", description="SCF type for the NWChem backend.")
+    nwchem_scf_type: str = Field(
+        default="rhf",
+        exclude=True,
+        description="Alias of scf_type, read when scf_type is absent.",
+    )
     functional: str = Field(
         default="BLYP",
         description=(
@@ -831,7 +846,17 @@ class RgpotPot(BaseModel):
         description="Alias of cutoff_ry, read when cutOffRy and cutoff_ry are absent.",
     )
     charge: int = Field(default=0, description="Total charge.")
+    nwchem_charge: int = Field(
+        default=0,
+        exclude=True,
+        description="Alias of charge, read when charge is absent.",
+    )
     multiplicity: int = Field(default=1, description="Spin multiplicity.")
+    nwchem_multiplicity: int = Field(
+        default=1,
+        exclude=True,
+        description="Alias of multiplicity, read when multiplicity is absent.",
+    )
     engine_path: str = Field(
         default="",
         description=(
@@ -877,15 +902,42 @@ class RgpotPot(BaseModel):
         default="GFN2xTB",
         description="XTB paramset when backend=xtb.",
     )
+    xtb_paramset: Literal["GFNFF", "GFN0xTB", "GFN1xTB", "GFN2xTB"] = Field(
+        default="GFN2xTB",
+        exclude=True,
+        description="Alias of paramset, read when paramset is absent.",
+    )
     accuracy: float = Field(default=1.0, description="XTB accuracy when backend=xtb.")
+    xtb_accuracy: float = Field(
+        default=1.0,
+        exclude=True,
+        description="Alias of accuracy, read when accuracy is absent.",
+    )
     electronic_temperature: float = Field(
         default=300.0,
         description="XTB electronic temperature (K) when backend=xtb.",
     )
+    xtb_electronic_temperature: float = Field(
+        default=300.0,
+        exclude=True,
+        description=(
+            "Alias of electronic_temperature, read when that key is absent."
+        ),
+    )
     max_iterations: int = Field(
         default=250, description="XTB max iterations when backend=xtb."
     )
+    xtb_max_iterations: int = Field(
+        default=250,
+        exclude=True,
+        description="Alias of max_iterations, read when max_iterations is absent.",
+    )
     uhf: int = Field(default=0, description="XTB unpaired electrons when backend=xtb.")
+    xtb_uhf: int = Field(
+        default=0,
+        exclude=True,
+        description="Alias of uhf, read when uhf is absent.",
+    )
     xtb_charge: float = Field(
         default=0.0,
         description=("XTB total charge when backend=xtb. An omitted key uses charge."),

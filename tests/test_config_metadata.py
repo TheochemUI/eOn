@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import ast
 import importlib.util
+import re
 from pathlib import Path
 import unittest
 from typing import Any
@@ -116,6 +117,15 @@ def _extract_fields(class_node: ast.ClassDef) -> dict[str, dict[str, Any]]:
     return fields
 
 
+def _rgpot_ini_get_names() -> set[str]:
+    text = (
+        REPO_ROOT / "include" / "eon" / "generated" / "ParametersSSOTIni.inc"
+    ).read_text(encoding="utf-8")
+    block = text.split('const char *sec = "RgpotPot";', 1)[1]
+    block = block.split("const std::string be", 1)[0]
+    return set(re.findall(r'ini\.Get(?:Integer|Real|Boolean)?\(sec, "([^"]+)"', block))
+
+
 def _extract_literal_values(annotation: ast.AST) -> list[str]:
     if not isinstance(annotation, ast.Subscript):
         return []
@@ -157,6 +167,13 @@ class ConfigMetadataDriftTest(unittest.TestCase):
                         self.assertEqual(
                             field_info["values"], config_options[field_name]["values"]
                         )
+
+    def test_rgpot_pot_names_match(self) -> None:
+        yaml_names = set(self.config_sections["RgpotPot"])
+        model_names = set(self.schema_sections["RgpotPot"])
+        ini_names = _rgpot_ini_get_names()
+        self.assertEqual(yaml_names, model_names)
+        self.assertEqual(model_names, ini_names)
 
     def test_saddle_search_method_contract(self) -> None:
         self.assertEqual(
