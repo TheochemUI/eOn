@@ -1,0 +1,44 @@
+name: OpenCPMD point
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  si3n4_point:
+    runs-on: ubuntu-22.04
+    name: Si3N4 point
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Compilers and libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gfortran libopenmpi-dev libfftw3-dev libopenblas-dev
+      - uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e # v0.9.4
+        with:
+          cache: true
+          cache-write: true
+      - name: eonclient
+        shell: pixi run bash -e {0}
+        run: |
+          meson setup bbdir --buildtype release -Dwith_tests=false
+          meson compile -C bbdir eonclient
+      - name: Kit inputs
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: TheochemUI/sige_repro
+          path: kit
+          persist-credentials: false
+      - name: Pinned OpenCPMD point
+        shell: pixi run bash -e {0}
+        env:
+          OPENCPMD_COMMIT: 062582b7cfd832d36f88f504cd08e4ead42eb404
+          CPMDC_COMMIT: 8439c25cf0bd5f4caefd6ed07bebf142e2b181f5
+          PREFIX: /usr
+          STACK: ${{ github.workspace }}/.stack-opencpmd
+          KIT: ${{ github.workspace }}/kit
+          EONCLIENT: ${{ github.workspace }}/bbdir/client/eonclient
+        run: bash scripts/ci/opencpmd_point.sh

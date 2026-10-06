@@ -1,0 +1,14 @@
+     IRAT=2
+     FC='mpif90'
+     CC='mpicc'
+     LD='mpif90'
+     CPP=''
+     CPPFLAGS='-D__Linux -D__GNU -D__PARALLEL -D__HAS_FFT_FFTW3 -I@PREFIX@/include'
+     FFLAGS_GROMOS='-ffixed-form $(FFLAGS)'
+     FFLAGS_GROMOS_MODULES=' $(FFLAGS)'
+     AR='ar ruv'
+     RANLIB='ranlib'
+     FFLAGS='-O2 -march=native -fPIC -fallow-argument-mismatch -ffree-line-length-none -I@PREFIX@/include'
+     CFLAGS='-O2 -march=native -fPIC -Wno-error=int-conversion -Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration'
+     LIBS='-L@PREFIX@/lib -lfftw3 -lopenblas'
+     LFLAGS='-Wl,-rpath,@PREFIX@/lib '${LIBS}
