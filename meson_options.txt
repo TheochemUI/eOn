@@ -2,7 +2,9 @@
 option('with_water', type : 'boolean', value : false)
 option('with_ams', type : 'boolean', value : false)
 option('with_mpi', type : 'feature', value : 'disabled',
-       description : 'Link MPI and build the MPI potential')
+       description : 'Build the client/server program and the MPI potential. Not calculator groups.')
+option('with_rgpot_mpi', type : 'feature', value : 'disabled',
+       description : 'Build rgpot calculator groups. Forwards to the subproject option with_mpi. Not the client/server switch.')
 # auto: Linux links min_mode_method=gprdimer when subprojects/gpr_optim
 # is present and the subproject configures. A failed fetch leaves the
 # dimer off. enabled stops configuration instead.

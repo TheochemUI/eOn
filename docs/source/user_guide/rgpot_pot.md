@@ -164,9 +164,11 @@ After a failed engine call rgpot asks for `MPI_Abort` at exit, and the
 exit handler aborts the world instead of waiting in `MPI_Finalize` for
 ranks left inside a CPMD collective.
 
-eOn's `-Dwith_mpi=enabled` option builds the client/server program. Calculator
-groups are this page's launch, `mpirun -np N eonclient`, with rgpot built
-`-Drgpot:with_mpi=enabled`.
+Pass `-Dwith_rgpot_mpi=enabled` to turn the wrap's calculator-group MPI on.
+That option forwards to the subproject flag `-Drgpot:with_mpi=enabled`.
+eOn's `-Dwith_mpi=enabled` option builds the client/server program, not
+calculator groups. Calculator groups are this page's launch,
+`mpirun -np N eonclient`, with rgpot built `-Dwith_rgpot_mpi=enabled`.
 
 ### CPMDParams file and the cpmd section
 

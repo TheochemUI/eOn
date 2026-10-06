@@ -547,6 +547,9 @@ if not _rgpot_pkg.found()
         # Fortran kernels inside librgpot.
         'with_fortran_pots': 'enabled',
     }
+    if get_option('with_rgpot_mpi').enabled()
+        rgpot_opts += {'with_mpi': 'enabled'}
+    endif
     # Direct RGPOT is mandatory off Windows; serve still opts into RPC there.
     if not is_windows or get_option('with_serve')
         rgpot_opts += {'with_rpc': true}
