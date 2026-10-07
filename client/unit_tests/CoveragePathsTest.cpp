@@ -1147,7 +1147,7 @@ TEST_CASE("a nearly symmetric instanton records the splitting",
   auto reactant = loadReactant(params, pot);
   auto product = std::make_shared<Matter>(*reactant);
   auto pos = product->getPositions();
-  pos(0, 0) += 0.01;
+  pos(0, 0) += 0.005;
   product->setPositions(pos);
   REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
   REQUIRE(eonc::io::io_ok(product->matter2con("product.con", false)));
