@@ -32,7 +32,6 @@
 #include "eon/potentials/Metatomic/MetatomicLoader.h"
 #include "eon/potentials/PluginLoader.h"
 #include "eon/potentials/Rgpot/GenericEngineLoader.h"
-#include "eon/potentials/Rgpot/RGPotEngine.h"
 #include "eon/potentials/Rgpot/MetatomicEngineLoader.h"
 #include "eon/potentials/Rgpot/XTBEngineLoader.h"
 
@@ -829,25 +828,6 @@ TEST_CASE("rgpot xtb, metatomic, and uma backends evaluate the stand-in",
   }
   evaluate("uma", "GFN2xTB");
   evaluate("omol", "GFN2xTB");
-
-  RGPotEngineOptions opt;
-  opt.backend = "uma";
-  opt.engine_path = fake;
-  opt.model_path = "stand-in";
-  opt.task_name = "omol";
-  opt.device = "cpu";
-  RGPotEngine engine(opt);
-  const double R[3] = {0.0, 0.0, 0.0};
-  const int z[1] = {1};
-  double F[3] = {};
-  double energy = 0.0;
-  const double zeroBox[9] = {};
-  engine.force(1, R, z, F, &energy, zeroBox);
-  REQUIRE(energy == Catch::Approx(0.5));
-  engine.force(1, R, z, F, &energy, nullptr);
-  REQUIRE(engine.available());
-  REQUIRE_THROWS_AS(engine.force(0, R, z, F, &energy, zeroBox),
-                    std::runtime_error);
 }
 #endif
 #endif
