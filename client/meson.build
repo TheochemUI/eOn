@@ -2348,6 +2348,7 @@ if get_option('with_tests')
             include_directories: _incdirs,
             cpp_args: test_args,
             link_with: test_link,
+            build_rpath: ':'.join(_runtime_rpath),
         )
         _rgpot_test_env = environment()
         _rgpot_test_env.set(

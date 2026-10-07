@@ -18,6 +18,7 @@
 #include <filesystem>
 #include <fstream>
 #include <mutex>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <unordered_map>
@@ -51,7 +52,8 @@ std::uint64_t fnv1a(const std::string &bytes) {
   return h == 0 ? 1 : h;
 }
 
-std::filesystem::path corpus_dir(const std::filesystem::path &con_path) {
+std::optional<std::filesystem::path>
+corpus_dir(const std::filesystem::path &con_path) {
   namespace fs = std::filesystem;
   std::error_code ec;
   fs::path cur = fs::weakly_canonical(con_path, ec);
@@ -69,11 +71,8 @@ std::filesystem::path corpus_dir(const std::filesystem::path &con_path) {
     }
     cur = parent;
   }
-  fs::path beside = fs::weakly_canonical(con_path, ec);
-  if (ec) {
-    beside = fs::absolute(con_path);
-  }
-  return beside.parent_path() / "readcon.db";
+  // A stray .con is not a job. Do not mint readcon.db beside it.
+  return std::nullopt;
 }
 
 #if !defined(_WIN32)
@@ -214,7 +213,11 @@ void mirror_con_corpus(const std::string &path) {
     canonical = fs::absolute(path);
   }
   const std::string resolved = canonical.string();
-  const std::size_t id = corpus_handle(corpus_dir(canonical));
+  const auto corpus = corpus_dir(canonical);
+  if (!corpus) {
+    return;
+  }
+  const std::size_t id = corpus_handle(*corpus);
   if (id == static_cast<std::size_t>(-1)) {
     return;
   }
