@@ -17,6 +17,7 @@
 #include "eon/GeometryAnalysis.h"
 #include "eon/HelperFunctions.h"
 #include "eon/IRACompare.h"
+#include "eon/InstantonJob.h"
 #include "eon/Matter.h"
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/NEBInitialPaths.hpp"
@@ -24,13 +25,17 @@
 #include "eon/NudgedElasticBand.h"
 #include "eon/NudgedElasticBandJob.h"
 #include "eon/OHTSTJob.h"
+#include "eon/ParallelReplicaJob.h"
 #include "eon/Parameters.h"
 #include "eon/ProcessSearchJob.h"
 #include "eon/QuantumFreeEnergy.h"
 #include "eon/Runtime.h"
+#include "eon/SafeHyperJob.h"
+#include "eon/TADJob.h"
 #include "eon/TestJob.h"
 #include "eon/potentials/Metatomic/MetatomicLoader.h"
 #include "eon/potentials/PluginLoader.h"
+#include "eon/potentials/Rgpot/RgpotPot.h"
 #include "eon/potentials/Rgpot/GenericEngineLoader.h"
 #include "eon/potentials/Rgpot/MetatomicEngineLoader.h"
 #include "eon/potentials/Rgpot/XTBEngineLoader.h"
@@ -934,10 +939,12 @@ TEST_CASE("dynamics basin and gradient-squared searches take one short step",
         .dynamics.state_check_interval = 1.0;
     ParametersLoadAccess::saddle_search_options(params)
         .dynamics.linear_interpolation = false;
-    ParametersLoadAccess::dynamics_options(params).time_step = 1.0;
-    ParametersLoadAccess::dynamics_options(params).steps = 2;
+    ParametersLoadAccess::dynamics_options(params).time_step = 2.0;
+    ParametersLoadAccess::dynamics_options(params).steps = 3;
     ParametersLoadAccess::parallel_replica_options(params).dephase_time = 0.0;
     ParametersLoadAccess::optimizer_options(params).max_iterations = 0;
+    ParametersLoadAccess::structure_comparison_options(params)
+        .distance_difference = 1.0e-8;
     ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
     ParametersLoadAccess::neb_options(params).image_count = 3;
     ParametersLoadAccess::neb_options(params).max_iterations = 1;
@@ -974,5 +981,113 @@ TEST_CASE("dynamics basin and gradient-squared searches take one short step",
     REQUIRE(std::isfinite(found->getPotentialEnergy()));
   }
 }
+
+namespace {
+
+Parameters shortMolecularDynamics(const Parameters &base) {
+  Parameters params = base;
+  ParametersLoadAccess::dynamics_options(params).time_step = 1.0;
+  ParametersLoadAccess::dynamics_options(params).steps = 4;
+  ParametersLoadAccess::main_options(params).temperature = 300.0;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 0;
+  ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
+  ParametersLoadAccess::parallel_replica_options(params).dephase_time = 0.0;
+  ParametersLoadAccess::parallel_replica_options(params).refine_transition =
+      true;
+  ParametersLoadAccess::structure_comparison_options(params)
+      .distance_difference = 1.0e-8;
+  return params;
+}
+
+} // namespace
+
+TEST_CASE("short accelerated dynamics records a transition",
+          "[job][tad][coverage]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters base = ljParams();
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, base));
+  auto seed = loadReactant(base, pot);
+
+  eonc::Runtime runtime;
+  {
+    auto owned = std::make_unique<Parameters>(shortMolecularDynamics(base));
+    eonc::TADJob job(std::move(owned), runtime);
+    auto found = job.runFromMatter(std::make_shared<Matter>(*seed));
+    REQUIRE(found != nullptr);
+    REQUIRE(std::isfinite(found->getPotentialEnergy()));
+  }
+  {
+    auto owned = std::make_unique<Parameters>(shortMolecularDynamics(base));
+    eonc::SafeHyperJob job(std::move(owned), runtime);
+    auto found = job.runFromMatter(std::make_shared<Matter>(*seed));
+    REQUIRE(found != nullptr);
+  }
+  {
+    auto owned = std::make_unique<Parameters>(shortMolecularDynamics(base));
+    eonc::ParallelReplicaJob job(std::move(owned), runtime);
+    auto found = job.runFromMatter(std::make_shared<Matter>(*seed));
+    REQUIRE(found != nullptr);
+  }
+}
+
+TEST_CASE("a four-bead instanton reads a starting band", "[job][instanton]") {
+  Workdir work;
+  Parameters params = ljParams();
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, pot);
+  auto product = std::make_shared<Matter>(*reactant);
+  auto pos = product->getPositions();
+  pos(0, 0) += 1.5;
+  product->setPositions(pos);
+  REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
+  REQUIRE(eonc::io::io_ok(product->matter2con("product.con", false)));
+  REQUIRE(eonc::io::io_ok(reactant->matter2con("band.con", false)));
+  REQUIRE(eonc::io::io_ok(product->matter2con("band.con", true)));
+  ParametersLoadAccess::main_options(params).job = JobType::Instanton;
+  ParametersLoadAccess::instanton_options(params).beads = 4;
+  ParametersLoadAccess::instanton_options(params).max_iterations = 1;
+  ParametersLoadAccess::instanton_options(params).force_tolerance = 10.0;
+  ParametersLoadAccess::instanton_options(params).initial_path = "band.con";
+  ParametersLoadAccess::instanton_options(params).hessian_stride = 4;
+  eonc::Runtime runtime;
+  auto owned = std::make_unique<Parameters>(params);
+  eonc::InstantonJob job(std::move(owned), runtime);
+  const auto files = job.run();
+  REQUIRE_FALSE(files.empty());
+}
+
+#ifdef WITH_RGPOT
+TEST_CASE("rgpot batch forces share one calculator", "[pot][rgpot][batch]") {
+  const char *fake = std::getenv("EON_FAKE_ENGINE_SO");
+  if (fake == nullptr || !std::filesystem::exists(fake)) {
+    return;
+  }
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::RGPOT;
+  ParametersLoadAccess::rgpot_options(params).backend = "xtb";
+  ParametersLoadAccess::rgpot_options(params).engine_path = fake;
+  auto owned = eonc::helpers::makePotential(PotType::RGPOT, params);
+  auto *rg = dynamic_cast<RgpotPot *>(owned.get());
+  REQUIRE(rg != nullptr);
+  const double pos[6] = {0, 0, 0, 1.2, 0, 0};
+  const int z[2] = {1, 1};
+  double f0[6] = {};
+  double f1[6] = {};
+  double energies[2] = {};
+  double variances[2] = {};
+  const double box[9] = {10, 0, 0, 0, 10, 0, 0, 0, 10};
+  const double *positions[2] = {pos, pos};
+  const int *numbers[2] = {z, z};
+  double *forces[2] = {f0, f1};
+  const double *boxes[2] = {box, box};
+  rg->forceBatch(2, 2, positions, numbers, forces, energies, variances, boxes);
+  REQUIRE(std::isfinite(energies[0]));
+  REQUIRE(std::isfinite(energies[1]));
+  REQUIRE(rg->engineAvailable());
+}
+#endif
 
 } // namespace tests
