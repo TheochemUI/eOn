@@ -1,7 +1,7 @@
 ---
 myst:
   html_meta:
-    "description": "Tunnelling splittings between two minima in eOn, and the thermal rate through a saddle: WKB along a NEB band, the ring-polymer instanton below the crossover, and the parabolic barrier factor above it."
+    "description": "Tunnelling splittings between two minima in eOn, and the thermal rate through a saddle: WKB along a NEB band and the ring-polymer instanton below the crossover. At or above the crossover the parabolic barrier correction is named and not evaluated."
     "keywords": "eOn instanton, tunnelling splitting, two-level system, WKB, ring polymer, instanton rate."
 ---
 
@@ -144,7 +144,7 @@ The columns are:
 | Object | Points | Springs | What it returns |
 |---|---|---|---|
 | `mode = splitting` | open string between two minima, started from a band when one is present | Euclidean action, no tangent projection | tunnelling splitting when the wells are close in energy |
-| `mode = rate` | closed ring through one saddle | same action, stiffness set by {math}`T` and {math}`N` | thermal rate: the ring below the crossover, the parabolic factor above it |
+| `mode = rate` | closed ring through one saddle | same action, stiffness set by {math}`T` and {math}`N` | thermal rate from the ring below the crossover. At or above it the parabolic barrier correction is named and not evaluated |
 | Centroid potential of mean force (PMF) | one ring per image, centroid held on the image | sampled, not minimised | quantum free-energy barrier along the path |
 | Harmonic centroid string | a ring at each image, optimised | local harmonic quantum correction | a free-energy estimate as good as that harmonic well |
 
@@ -176,7 +176,7 @@ out the cyclic zero mode and the rigid translations and rotations.
 
 The crossover temperature is {math}`T_c = \hbar \omega_b / (2\pi k_B)`, with
 {math}`\omega_b` the imaginary frequency at the saddle. At or above {math}`T_c`
-the ring collapses onto the saddle. Above {math}`T_c` the rate is the
+the ring collapses onto the saddle. Above {math}`T_c` that rate would be the
 parabolic barrier factor
 
 ```{math}
@@ -184,10 +184,9 @@ parabolic barrier factor
 ```
 
 times the classical harmonic transition-state theory rate from the same
-Hessians. {math}`\kappa` tends to 1 at high temperature, which is the
-one-bead limit. The factor diverges as {math}`T` approaches {math}`T_c`
-from above, and at {math}`T_c` the job stops. A large factor means the
-temperature is close to the crossover.
+Hessians. This job names that correction and does not evaluate it.
+{math}`\kappa` tends to 1 at high temperature, which is the one-bead limit.
+The factor diverges as {math}`T` approaches {math}`T_c` from above.
 
 ```{code-block} ini
 [Main]
@@ -203,8 +202,8 @@ hessian_stride = 1
 ```
 
 `temperature` is in kelvin. It must be positive. Below {math}`T_c` the job
-optimises the ring. Above {math}`T_c` it writes the parabolic rate and does
-not optimise a ring. The optimizer is not what keeps the path unused. Each
+optimises the ring. At or above {math}`T_c` the job does not optimise a
+ring. It names the parabolic barrier correction and does not evaluate it. The optimizer is not what keeps the path unused. Each
 bead still needs a force. The rate uses the fluctuation prefactor from the
 bead Hessians, and above the crossover the ring collapses onto the saddle.
 The default 0 means the temperature was not set, and
@@ -286,8 +285,9 @@ and the same band carries a one-dimensional WKB rate.
 `T_c_K`, `beads`, `converged`, `iterations`, `U_N_eV`, `negative_modes`,
 `ln_k_per_s`, `k_per_s`, `ln_k_htst_per_s`, `barrier_effective_eV`,
 `ln_k_wkb_path_per_s`, `ln_k_parabolic_per_s` and `parabolic_factor`.
-Above {math}`T_c` the instanton columns are empty and the last two hold
-the parabolic rate. Below {math}`T_c` those two are empty. A run at more than one temperature also writes
+At or above {math}`T_c` the instanton columns are empty. The parabolic
+columns stay named and are not evaluated. Below {math}`T_c` those two are
+empty. A run at more than one temperature also writes
 `instanton_<T>K.con`. The coldest temperature is written to `instanton.con`.
 
 With no atom fixed, both the reactant and the instanton omit the three
@@ -315,9 +315,6 @@ the change in the moments of inertia along the ring.
 | `rate_instanton` | {math}`k` in s^{-1} |
 | `rate_instanton_log` | {math}`\ln(k\,/\,\mathrm{s}^{-1})` |
 | `rate_htst_log` | classical harmonic transition-state theory, the same logarithm |
-| `parabolic_factor` | {math}`\kappa`, above {math}`T_c` |
-| `rate_parabolic` | {math}`\kappa` times the quantum harmonic TST rate, s^{-1} |
-| `rate_parabolic_log` | {math}`\ln(k\,/\,\mathrm{s}^{-1})` of that rate |
 | `instanton_crossover_K` | {math}`T_c`, K |
 | `instanton_negative_modes` | negative eigenvalues of the ring Hessian; a first-order saddle has 1 |
 | `instanton_zero_mode` | the eigenvalue left out |

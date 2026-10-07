@@ -2617,8 +2617,8 @@ class InstantonConfig(BaseModel):
         description=(
             "splitting: the tunnelling splitting between two minima. rate:"
             " the thermal rate out of the reactant through the saddle: the"
-            " ring below the crossover temperature, and the parabolic"
-            " barrier factor above it."
+            " ring below the crossover temperature. At or above it the"
+            " parabolic barrier correction is named and not evaluated."
         ),
     )
     reactant_filename: str = Field(
@@ -2674,7 +2674,8 @@ class InstantonConfig(BaseModel):
         ge=0.0,
         description=(
             "Mode rate: T in K. Below the crossover the job optimises the"
-            " ring. Above it the job writes the parabolic barrier factor."
+            " ring. At or above it the job names the parabolic barrier"
+            " correction and does not evaluate it."
             " 0 leaves it unset, and mode rate then refuses to run unless"
             " temperatures is set."
         ),
