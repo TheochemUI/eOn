@@ -947,14 +947,15 @@ TEST_CASE("dynamics basin and gradient-squared searches take one short step",
     ParametersLoadAccess::optimizer_options(params).max_iterations = 0;
     ParametersLoadAccess::structure_comparison_options(params)
         .distance_difference = 1.0e-8;
-    seed->structComp.distance_difference = 1.0e-8;
     ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
     ParametersLoadAccess::neb_options(params).image_count = 3;
     ParametersLoadAccess::neb_options(params).max_iterations = 1;
     ParametersLoadAccess::neb_options(params).endpoints.minimize = false;
     ParametersLoadAccess::debug_options(params).write_movies = true;
+    auto tight = std::make_shared<Matter>(pot, params);
+    REQUIRE(eonc::io::io_ok(tight->con2matter(std::string("reactant.con"))));
     eonc::ProcessSearchJob job(pot, params);
-    auto found = job.runFromMatter(seed);
+    auto found = job.runFromMatter(tight);
     REQUIRE(found != nullptr);
     REQUIRE(std::filesystem::exists(work.dir() / "neb_initial_band.con"));
   }
@@ -1011,35 +1012,37 @@ TEST_CASE("short accelerated dynamics records a transition",
   Parameters base = ljParams();
   auto pot = eonc::helpers::sharePotential(
       eonc::helpers::makePotential(PotType::LJ, base));
-  auto seed = loadReactant(base, pot);
 
   eonc::Runtime runtime;
   {
-    auto owned = std::make_unique<Parameters>(shortMolecularDynamics(base));
     std::filesystem::remove("product.con");
+    Parameters tadParams = shortMolecularDynamics(base);
+    auto hot = std::make_shared<Matter>(pot, tadParams);
+    REQUIRE(eonc::io::io_ok(hot->con2matter(std::string("reactant.con"))));
+    auto owned = std::make_unique<Parameters>(tadParams);
     eonc::TADJob job(std::move(owned), runtime);
-    auto hot = std::make_shared<Matter>(*seed);
-    hot->structComp.distance_difference = 1.0e-8;
     auto found = job.runFromMatter(hot);
     REQUIRE(found != nullptr);
     REQUIRE(std::filesystem::exists("product.con"));
   }
   {
-    auto owned = std::make_unique<Parameters>(shortMolecularDynamics(base));
     std::filesystem::remove("product.con");
+    Parameters safeParams = shortMolecularDynamics(base);
+    auto hot = std::make_shared<Matter>(pot, safeParams);
+    REQUIRE(eonc::io::io_ok(hot->con2matter(std::string("reactant.con"))));
+    auto owned = std::make_unique<Parameters>(safeParams);
     eonc::SafeHyperJob job(std::move(owned), runtime);
-    auto hot = std::make_shared<Matter>(*seed);
-    hot->structComp.distance_difference = 1.0e-8;
     auto found = job.runFromMatter(hot);
     REQUIRE(found != nullptr);
     REQUIRE(std::filesystem::exists("product.con"));
   }
   {
-    auto owned = std::make_unique<Parameters>(shortMolecularDynamics(base));
     std::filesystem::remove("product.con");
+    Parameters replicaParams = shortMolecularDynamics(base);
+    auto hot = std::make_shared<Matter>(pot, replicaParams);
+    REQUIRE(eonc::io::io_ok(hot->con2matter(std::string("reactant.con"))));
+    auto owned = std::make_unique<Parameters>(replicaParams);
     eonc::ParallelReplicaJob job(std::move(owned), runtime);
-    auto hot = std::make_shared<Matter>(*seed);
-    hot->structComp.distance_difference = 1.0e-8;
     auto found = job.runFromMatter(hot);
     REQUIRE(found != nullptr);
     REQUIRE(std::filesystem::exists("product.con"));
