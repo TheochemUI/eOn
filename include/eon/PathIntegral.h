@@ -181,6 +181,11 @@ private:
   std::vector<double> varianceBuf_;
   std::vector<long> owners_;
   mutable VectorXd centroid_;
+  std::vector<double> cosHalf_;
+  std::vector<double> sinHalf_;
+  std::vector<double> cosFull_;
+  std::vector<double> sinFull_;
+  double halfDt_{0.0};
 
   std::uint64_t rng_;
   long batches_{0};

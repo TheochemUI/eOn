@@ -427,6 +427,18 @@ RingPolymer::RingPolymer(long nAtoms, std::vector<double> masses,
   } else {
     omegaK_ = omegan * trotterEigenvalues(nBeads_);
   }
+  halfDt_ = 0.5 * opt_.dt;
+  cosHalf_.resize(static_cast<size_t>(nBeads_));
+  sinHalf_.resize(static_cast<size_t>(nBeads_));
+  cosFull_.resize(static_cast<size_t>(nBeads_));
+  sinFull_.resize(static_cast<size_t>(nBeads_));
+  for (long k = 0; k < nBeads_; ++k) {
+    const double w = omegaK_[k];
+    cosHalf_[static_cast<size_t>(k)] = std::cos(w * halfDt_);
+    sinHalf_[static_cast<size_t>(k)] = std::sin(w * halfDt_);
+    cosFull_[static_cast<size_t>(k)] = std::cos(w * opt_.dt);
+    sinFull_[static_cast<size_t>(k)] = std::sin(w * opt_.dt);
+  }
   q_.assign(static_cast<size_t>(nBeads_), VectorXd::Zero(nDof_));
   p_.assign(static_cast<size_t>(nBeads_), VectorXd::Zero(nDof_));
   f_.assign(static_cast<size_t>(nBeads_), VectorXd::Zero(nDof_));
@@ -794,13 +806,22 @@ void RingPolymer::kick(double h, bool dropParallel) {
 void RingPolymer::propagate(double h) {
   toNormal(q_, qnm_);
   toNormal(p_, pnm_);
+  const double *cosH = nullptr;
+  const double *sinH = nullptr;
+  if (h == halfDt_) {
+    cosH = cosHalf_.data();
+    sinH = sinHalf_.data();
+  } else if (h == opt_.dt) {
+    cosH = cosFull_.data();
+    sinH = sinFull_.data();
+  }
   for (long a : freeIndex_) {
     const double m = mass_[static_cast<size_t>(a)];
     qnm_[0][a] += pnm_[0][a] / m * h;
     for (long k = 1; k < nBeads_; ++k) {
       const double omega = omegaK_[k];
-      const double c = std::cos(omega * h);
-      const double s = std::sin(omega * h);
+      const double c = cosH != nullptr ? cosH[k] : std::cos(omega * h);
+      const double s = sinH != nullptr ? sinH[k] : std::sin(omega * h);
       const double pk = pnm_[static_cast<size_t>(k)][a];
       const double qk = qnm_[static_cast<size_t>(k)][a];
       pnm_[static_cast<size_t>(k)][a] = c * pk - m * omega * s * qk;
