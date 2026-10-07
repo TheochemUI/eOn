@@ -1192,6 +1192,8 @@ andersen_alpha = 1.0
   std::filesystem::copy_file(workdir / "reactant.con", workdir / "pos.con",
                              std::filesystem::copy_options::overwrite_existing);
 
+  // The process registry sums every earlier case in this binary.
+  eonc::PotRegistry::get().reset();
   auto results = runJob();
   REQUIRE(std::filesystem::exists(workdir / "final.con"));
   REQUIRE(results["job_type"] == "dynamics");

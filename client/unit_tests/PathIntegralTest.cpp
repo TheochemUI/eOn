@@ -18,6 +18,7 @@
 
 #include <cmath>
 #include <filesystem>
+#include <stdexcept>
 #include <fstream>
 #include <numbers>
 #include <string>
@@ -92,7 +93,9 @@ struct Harmonic final : eonc::Potential {
                   const int *const * /*atomicNrs*/, double *const *forces,
                   double *energies, double *variances,
                   const double *const * /*boxes*/) override {
-    REQUIRE(nAtoms == 1);
+    if (nAtoms != 1) {
+      throw std::logic_error("harmonic batch expected one atom");
+    }
     ++calls;
     if (minSystems < 0 || nSystems < minSystems) {
       minSystems = nSystems;
