@@ -331,7 +331,7 @@ def _job_result(
     *,
     cancelled: bool = False,
 ) -> dict:
-    """Typed in-process result. ``results.dat`` is derived from this dict."""
+    """Typed in-process result. Cluster adapters format text from this dict."""
     if cancelled:
         reason = "cancelled"
     elif status == 0:
@@ -474,11 +474,6 @@ class LocalInProcess(Communicator):
             job_result = _job_result(
                 status, energy, fcalls, jname, cancelled=cancelled
             )
-            results = StringIO(
-                _results_dat(
-                    status, energy, fcalls, jname, cancelled=cancelled
-                )
-            )
 
             rec = {
                 "id": jid,
@@ -487,7 +482,6 @@ class LocalInProcess(Communicator):
                 "product": _conframe_of(out),
                 "min.con": _LazyCon(out),
                 "job_result": job_result,
-                "results.dat": results,
                 "_matter": matter,
                 "_structure": out,
                 "_energy": energy,

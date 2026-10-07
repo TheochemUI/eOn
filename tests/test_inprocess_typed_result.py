@@ -1,17 +1,16 @@
-"""The in-process path keeps a typed job result beside results.dat."""
+"""The in-process path keeps a typed job result and no results.dat buffer."""
 
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_submit_keeps_the_typed_result_beside_results_dat():
+def test_submit_does_not_require_a_results_dat_buffer():
     text = (ROOT / "eon" / "communicator_inprocess.py").read_text(encoding="utf-8")
     start = text.find("job_result = _job_result(")
     assert start != -1
-    window = text[start : start + 900]
+    window = text[start : start + 700]
     assert '"job_result": job_result' in window
-    assert '"results.dat": results' in window
-    assert "_results_dat(" in window
-    helper = text[text.find("def _results_dat(") : text.find("class LocalInProcess")]
-    assert "_job_result(" in helper
+    assert '"results.dat"' not in window
+    assert "StringIO" not in window
+    assert "_results_dat(" not in window

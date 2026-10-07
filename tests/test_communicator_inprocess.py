@@ -130,7 +130,8 @@ def test_inprocess_minimize_job(tmp_path, geometry):
     assert len(results) == 1
     r0 = results[0]
     _assert_product_frame(r0)
-    assert "results.dat" in r0
+    assert "job_result" in r0
+    assert "results.dat" not in r0
     assert r0.get("_structure") is not None
     assert r0["_matter"].n_atoms == 2
     assert np.isfinite(r0["_energy"])
@@ -174,8 +175,8 @@ def test_inprocess_job_type_matrix(tmp_path, job_ini, expect):
     job = {"id": "t1", "structure": _lj_structure()}
     c.submit_jobs([job], {"config.ini": (StringIO(job_ini), 0o644)})
     r0 = c.get_results()[0]
-    text = r0["results.dat"].getvalue()
-    assert expect in text
+    assert "results.dat" not in r0
+    assert r0["job_result"]["job_type"] == expect
     _assert_product_frame(r0)
     assert r0.get("_structure") is not None
     if r0.get("saddle") is not None:
