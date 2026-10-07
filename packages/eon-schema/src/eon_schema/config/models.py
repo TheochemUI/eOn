@@ -975,10 +975,9 @@ class RgpotPot(BaseModel):
     ranks_per_image: int = Field(
         default=0,
         description=(
-            "Ranks per CPMD calculator group. The MPI world is split into"
-            " groups of this size, with one CPMD session per group. Rank 0"
-            " drives eOn and the other ranks serve force requests. 0 is one"
-            " group of all ranks."
+            "Split the MPI world into groups of this many ranks, one CPMD"
+            " session per group, and spread NEB images over the groups."
+            " 0 keeps one session on every rank."
         ),
     )
 

@@ -176,8 +176,8 @@ Three layers build the message CPMD receives.
 
 `params_path` on `[RgpotPot]` is a Cap'n Proto CPMDParams file. That file is the Strasbourg message. A periodic deck belongs in the message. It owns
 `functional`, `cutOffRy`, `charge`, `multiplicity`, `title`, `memoryMb`,
-`inputSections`, and `inputBlocks`. `RGPOT_PARAMS_PATH` overrides the
-ini key. Scalar keys are not written over a file that loaded. Every rank
+`inputSections`, and `inputBlocks`. `RGPOT_PARAMS_PATH` replaces the ini key.
+Scalar keys are not written over a file that loaded. Every rank
 reads the file before `MPI_Comm_split`. When any rank cannot read it,
 every rank throws that error and the split does not run.
 
