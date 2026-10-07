@@ -102,9 +102,9 @@ TEST_CASE("curved valley free energy matches a direct sum over normal modes",
           Catch::Approx(kValleyEnergy + directSum(hessian, tangent, 0.0))
               .margin(1e-12));
 
-  Parameters params;
-  ParametersLoadAccess::hessian_options(params).fd_scheme = "central";
-  ParametersLoadAccess::main_options(params).finiteDifference = 1e-5;
+  eonc::Parameters params;
+  eonc::ParametersLoadAccess::hessian_options(params).fd_scheme = "central";
+  eonc::ParametersLoadAccess::main_options(params).finiteDifference = 1e-5;
   auto pot = std::make_shared<CurvedValley>();
   eonc::Matter matter(pot, params);
   matter.resize(1);
