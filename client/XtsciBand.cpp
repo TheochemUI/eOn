@@ -67,12 +67,16 @@ int32_t projectionKind(const neb_options_t &neb) {
   return RGSADDLE_PROJECTION_NEB;
 }
 
-int32_t methodKind(const Parameters::optimizer_options_t &opt) {
-  const std::string &name = opt.xtsci.method;
-  if (name == "lbfgs") {
-    return RGSADDLE_METHOD_LBFGS;
+int32_t methodKind(const Parameters &params) {
+  const auto nebMethod = params.neb_options().opt_method;
+  if (nebMethod == OptType::FIRE) {
+    return RGSADDLE_METHOD_FIRE;
   }
-  return RGSADDLE_METHOD_FIRE;
+  if (nebMethod == OptType::XTSCI &&
+      params.optimizer_options().xtsci.method != "lbfgs") {
+    return RGSADDLE_METHOD_FIRE;
+  }
+  return RGSADDLE_METHOD_LBFGS;
 }
 
 // Fixed atoms keep the coordinates they had before the step.
@@ -187,7 +191,7 @@ XtsciBand::XtsciBand(NudgedElasticBand &neb, const Parameters &params)
   config.tangent = tangentKind(nebOpt);
   config.spring = springKind(nebOpt);
   config.projection = projectionKind(nebOpt);
-  config.method = methodKind(params.optimizer_options());
+  config.method = methodKind(params);
   config.spring_k = nebOpt.spring.om.enabled
                         ? nebOpt.spring.constant * nebOpt.spring.om.k_scale
                         : nebOpt.spring.constant;
@@ -268,8 +272,8 @@ void XtsciBand::step(double maxMove) {
   }
 #endif
   rgsaddle_report_t report{};
-  checkStatus(rgsaddle_band_step(m_band, surfaceCallback, this, &report),
-              "rgsaddle_band_step");
+  checkStatus(xts_band_step(m_band, surfaceCallback, this, &report),
+              "xts_band_step");
   std::vector<double> positions(m_fixed.size() * m_fixed[0].size(), 0.0);
   checkStatus(rgsaddle_band_positions(m_band, positions.data()),
               "rgsaddle_band_positions");
@@ -286,6 +290,9 @@ void XtsciBand::step(double maxMove) {
     // The accepted point is usually the band's last evaluation, which the
     // image still holds; the band update after the step then costs nothing.
     moveTo(*m_neb->path[i], pos);
+  }
+  if (report.ci_index >= 0) {
+    m_neb->climbingImage = report.ci_index;
   }
 #if RGSADDLE_ABI_MINOR >= 5
   // An image whose last evaluation was elsewhere (the solver backed off to
@@ -305,6 +312,21 @@ void XtsciBand::step(double maxMove) {
           3);
       image.setEvaluation(-grad, energies[i]);
     }
+  }
+  const auto interior = static_cast<size_t>(nImages - 2);
+  std::vector<double> projected(interior * static_cast<size_t>(dof));
+  if (rgsaddle_band_evaluation(m_band, nullptr, nullptr, projected.data()) ==
+      RGSADDLE_OK) {
+    for (int64_t i = 1; i + 1 < nImages; ++i) {
+      const AtomMatrix force = AtomMatrix::Map(
+          projected.data() + static_cast<std::ptrdiff_t>((i - 1) * dof),
+          m_neb->atoms, 3);
+      *m_neb->projectedForce[static_cast<size_t>(i)] = force;
+    }
+    // The session already projected the force. The host convergence
+    // check reads that force and does not rebuild it.
+    m_neb->movedAfterForceCall = false;
+    return;
   }
 #endif
   m_neb->movedAfterForceCall = true;

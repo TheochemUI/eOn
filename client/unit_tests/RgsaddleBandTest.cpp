@@ -29,6 +29,41 @@ namespace tests {
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
 
+TEST_CASE("default LBFGS NEB matches one xtsci band step", "[neb][rgsaddle]") {
+  auto stepped = [](OptType method) {
+    Parameters params;
+    ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+    ParametersLoadAccess::neb_options(params).opt_method = method;
+    ParametersLoadAccess::neb_options(params).image_count = 3;
+    ParametersLoadAccess::neb_options(params).max_iterations = 2;
+    ParametersLoadAccess::neb_options(params).force_tolerance = 1e-12;
+    ParametersLoadAccess::neb_options(params).climbing_image.enabled = false;
+    ParametersLoadAccess::neb_options(params).climbing_image.ocineb.use_mmf =
+        false;
+    ParametersLoadAccess::neb_options(params).initialization.method =
+        NEBInit::LINEAR;
+    ParametersLoadAccess::neb_options(params).endpoints.minimize = false;
+    ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
+    ParametersLoadAccess::optimizer_options(params).xtsci.method = "lbfgs";
+    auto pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, params));
+    auto reactant = std::make_shared<Matter>(pot, params);
+    auto product = std::make_shared<Matter>(pot, params);
+    reactant->con2matter(std::string("reactant.con"));
+    product->con2matter(std::string("reactant.con"));
+    auto shifted = product->getPositions();
+    shifted(0, 0) += 0.5;
+    product->setPositions(shifted);
+    NudgedElasticBand neb(reactant, product, params, pot);
+    (void)neb.compute();
+    return neb.path[1]->getPositions();
+  };
+  const AtomMatrix lbfgs = stepped(OptType::LBFGS);
+  const AtomMatrix xtsci = stepped(OptType::XTSCI);
+  REQUIRE(lbfgs.isApprox(xtsci, 0.0));
+  REQUIRE(lbfgs.cwiseAbs().maxCoeff() > 0.0);
+}
+
 TEST_CASE("rgsaddle band steps a short LJ path", "[neb][rgsaddle]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;

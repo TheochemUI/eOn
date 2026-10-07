@@ -1,0 +1,1 @@
+A nudged elastic band whose optimizer is LBFGS or FIRE steps with xts_band_step. The session owns the tangent, spring and projection. The band driver, the climbing-image controller and the spline extrema stay in the client.

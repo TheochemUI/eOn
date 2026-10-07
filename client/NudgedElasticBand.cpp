@@ -311,7 +311,9 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
   std::unique_ptr<Optimizer> optim;
   std::unique_ptr<Optimizer> refine_optim;
 #ifdef WITH_RGSADDLE
-  if (params.neb_options().opt_method == OptType::XTSCI) {
+  const auto bandMethod = params.neb_options().opt_method;
+  if (bandMethod == OptType::XTSCI || bandMethod == OptType::LBFGS ||
+      bandMethod == OptType::FIRE) {
     rustBand = std::make_unique<XtsciBand>(*this, params);
   } else
 #endif
