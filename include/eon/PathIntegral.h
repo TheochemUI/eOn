@@ -167,8 +167,20 @@ private:
     MatrixXd propagate;
     MatrixXd noise;
     MatrixXd extended;
+    MatrixXd draw;
+    MatrixXd acc;
   };
   std::vector<ModeGle> gle_;
+  mutable MatrixXd pack_;
+  mutable MatrixXd transformed_;
+  std::vector<const double *> posPtr_;
+  std::vector<const int *> nrsPtr_;
+  std::vector<double *> frcPtr_;
+  std::vector<const double *> boxPtr_;
+  std::vector<double> energyBuf_;
+  std::vector<double> varianceBuf_;
+  std::vector<long> owners_;
+  mutable VectorXd centroid_;
 
   std::uint64_t rng_;
   long batches_{0};

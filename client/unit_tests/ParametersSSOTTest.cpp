@@ -221,4 +221,44 @@ TEST_CASE("Parameters::load rejects INI parse errors", "[params][ini]") {
   std::fclose(handle);
   fs::remove_all(dir);
 }
+
+TEST_CASE("Parameters INI reads instanton, OH-TST, and socket keys",
+          "[params][ini]") {
+  Parameters p;
+  REQUIRE(p.load_ini_text("[Main]\n"
+                          "job = instanton\n"
+                          "temperature = 250\n"
+                          "[Potential]\n"
+                          "potential = lj\n"
+                          "lammps_threads = 2\n"
+                          "lammps_logging = true\n"
+                          "[Instanton]\n"
+                          "mode = rate\n"
+                          "springs = eco\n"
+                          "initial_hessians = finite_difference\n"
+                          "friction = explicit\n"
+                          "temperatures = 200, 300\n"
+                          "discretization = 1, 2\n"
+                          "friction_eta_beads = 0.1, 0.2\n"
+                          "beads = 16\n"
+                          "[OH_TST]\n"
+                          "thermostat = gle\n"
+                          "equil_steps = 12\n"
+                          "sample_steps = 24\n"
+                          "gle_a_file = drift.txt\n"
+                          "[SocketNWChemPot]\n"
+                          "unix_socket_mode = true\n"
+                          "unix_socket_path = eon_sock\n"
+                          "mem_in_gb = 2\n"
+                          "[Hyperdynamics]\n"
+                          "bias_potential = bond_boost\n") == 0);
+  REQUIRE(p.instanton_options().beads == 16);
+  REQUIRE(p.instanton_options().springs == "eco");
+  REQUIRE(p.instanton_options().temperatures.size() == 2);
+  REQUIRE(p.oh_tst_options().equil_steps == 12);
+  REQUIRE(p.oh_tst_options().gle_a_file == "drift.txt");
+  REQUIRE(p.socket_nwchem_options().unix_socket_mode);
+  REQUIRE(p.socket_nwchem_options().unix_socket_path == "eon_sock");
+  REQUIRE(p.potential_options().LAMMPSThreads == 2);
+}
 } // namespace tests
