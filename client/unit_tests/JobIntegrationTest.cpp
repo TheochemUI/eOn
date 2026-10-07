@@ -3010,6 +3010,62 @@ force_tolerance = 1e-6
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
+                 "InstantonJob reuses the LJ13 steepest-descent path",
+                 "[job][instanton][integration]") {
+  if (!copyTestData("neb_lj13")) {
+    SKIP("neb_lj13 test system not found");
+  }
+  writeConfig(R"(
+[Main]
+job = instanton
+
+[Potential]
+potential = lj
+
+[Instanton]
+mode = rate
+temperature = 198
+beads = 16
+max_iterations = 3000
+force_tolerance = 1e-6
+)");
+  auto first = runJob();
+  REQUIRE(first.at("termination_reason") == "0");
+  REQUIRE(std::stod(first.at("sd_path_force_calls")) > 0.0);
+  const auto pathFile = workdir / "instanton_sd_path.con";
+  REQUIRE(std::filesystem::exists(pathFile));
+  const auto saved = readcon::read_all_frames(pathFile.string());
+  REQUIRE(saved.size() >= 3);
+  const std::string text = (std::stringstream{} << std::ifstream(pathFile).rdbuf()).str();
+  REQUIRE(text.find("arc_length") != std::string::npos);
+  for (const auto &frame : saved) {
+    REQUIRE(frame.energy_opt().has_value());
+    REQUIRE(std::isfinite(*frame.energy_opt()));
+  }
+  const double firstLog = std::stod(first.at("rate_instanton_log"));
+  writeConfig(R"(
+[Main]
+job = instanton
+
+[Potential]
+potential = lj
+
+[Instanton]
+mode = rate
+temperature = 198
+beads = 16
+max_iterations = 3000
+force_tolerance = 1e-6
+initial_path = instanton_sd_path.con
+)");
+  auto second = runJob();
+  REQUIRE(second.at("termination_reason") == "0");
+  REQUIRE(std::stod(second.at("sd_path_force_calls")) == 0.0);
+  REQUIRE(std::abs(std::stod(second.at("rate_instanton_log")) - firstLog) <
+          1e-6);
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
                  "InstantonJob rate writes PI-QTST planes after the ring",
                  "[job][instanton][piqtst][integration]") {
   if (!copyTestData("neb_lj13")) {

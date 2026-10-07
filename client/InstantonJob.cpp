@@ -482,6 +482,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   // one-dimensional WKB rate. An empty path leaves the saddle-mode seed.
   std::vector<VectorXd> pathQ;
   std::vector<double> pathV;
+  long sdPathForceCalls = 0;
   std::unique_ptr<tunneling::Profile> profile;
   double hwPath = 0.0;
   if (!o.initial_path.empty()) {
@@ -507,8 +508,12 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
                                " holds fewer than three frames");
     }
     if (!haveEnergies) {
+      const long before = PotRegistry::get().total_force_calls();
       std::vector<VectorXd> grads;
       evaluate(pathQ, pathV, grads);
+      sdPathForceCalls = PotRegistry::get().total_force_calls() - before;
+    } else {
+      sdPathForceCalls = 0;
     }
     std::vector<double> arc(pathQ.size(), 0.0);
     for (size_t k = 1; k < pathQ.size(); ++k) {
@@ -539,9 +544,32 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     const long before = PotRegistry::get().total_force_calls();
     steepestDescentPath(qSaddle, vSaddle, hSaddle, mw.sqrtMasses(), evaluate,
                         pathQ, pathV);
+    sdPathForceCalls = PotRegistry::get().total_force_calls() - before;
     std::vector<double> arc(pathQ.size(), 0.0);
     for (size_t k = 1; k < pathQ.size(); ++k) {
       arc[k] = arc[k - 1] + (pathQ[k] - pathQ[k - 1]).norm();
+    }
+    if (pathQ.size() >= 3 && pathQ.size() == pathV.size()) {
+      std::vector<std::shared_ptr<Matter>> images;
+      std::vector<io::ConFrameMetadata> metas;
+      images.reserve(pathQ.size());
+      for (size_t k = 0; k < pathQ.size(); ++k) {
+        auto image = std::make_shared<Matter>(reactant);
+        mw.place(pathQ[k], *image);
+        io::ConFrameMetadata meta;
+        meta.frame_index = static_cast<uint64_t>(k);
+        meta.energy = pathV[k];
+        meta.scalars.push_back({"arc_length", arc[k]});
+        metas.push_back(std::move(meta));
+        images.push_back(std::move(image));
+      }
+      const auto frames = io::buildNebPathFrames(images, metas);
+      if (frames.empty() ||
+          !io::io_ok(io::writeConFrames("instanton_sd_path.con", frames))) {
+        throw std::runtime_error(
+            "instanton: cannot write instanton_sd_path.con");
+      }
+      returnFiles.push_back("instanton_sd_path.con");
     }
     try {
       profile = std::make_unique<tunneling::Profile>(std::move(arc), pathV);
@@ -898,6 +926,8 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       continue;
     }
     extras.emplace_back("instanton_temperature_K", temperature);
+    extras.emplace_back("sd_path_force_calls",
+                        static_cast<double>(sdPathForceCalls));
     extras.emplace_back("instanton_iterations",
                         static_cast<double>(inst.iterations));
     extras.emplace_back("instanton_ring_potential", inst.ringPotential);

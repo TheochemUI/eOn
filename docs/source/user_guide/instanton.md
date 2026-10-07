@@ -230,7 +230,10 @@ energies in the rate.
 The search is an index-1 Newton step on the ring Hessian. Without an
 `initial_path`, the rate job traces a steepest-descent path out of the
 saddle along both signs of its unstable mode and seeds the ring from it by
-the period condition below. On LJ13 that path costs 586 gradient calls. Cooling a cosine
+the period condition below. That path is written to `instanton_sd_path.con`,
+one frame per point, with the energy and the arc length. A later rate job
+reads it as `initial_path` and does not repeat those force calls. On LJ13
+that path costs 586 gradient calls. Cooling a cosine
 ring from 0.85 of the crossover is the fallback when no path can be
 built; it finds the ring only where the ring grows continuously out of
 the saddle as the temperature drops. Where it does not, the search walks
