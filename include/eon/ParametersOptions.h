@@ -829,6 +829,11 @@ struct instanton_options_t {
   // and copies it. An odd count evaluates every bead.
   bool half_ring{true};
   double energy_shift{0.0}; // eV, subtracted from each bead potential
+  // Mode rate: Litman friction bath. none, implicit (one eta on every
+  // bead) or explicit (friction_eta_beads, one value per bead).
+  std::string friction{"none"};
+  double friction_eta{0.0};
+  std::vector<double> friction_eta_beads{};
   // Mode rate: where the bead Hessian blocks start. "saddle" copies the
   // saddle Hessian to every bead (no force calls); "finite_difference"
   // takes 2 f gradient calls per bead first.

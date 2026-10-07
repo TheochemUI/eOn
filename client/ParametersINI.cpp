@@ -1788,6 +1788,39 @@ int load_ini(INIReader &ini, Parameters &params) {
                                   o.initial_hessians);
     }
     o.energy_shift = ini.GetReal("Instanton", "energy_shift", o.energy_shift);
+    o.friction = toLowerCase(ini.Get("Instanton", "friction", o.friction));
+    if (o.friction != "none" && o.friction != "implicit" &&
+        o.friction != "explicit") {
+      throw std::invalid_argument(
+          "[Instanton] friction must be none, implicit or explicit, not " +
+          o.friction);
+    }
+    o.friction_eta = ini.GetReal("Instanton", "friction_eta", o.friction_eta);
+    if (ini.KeyExists("Instanton", "friction_eta_beads")) {
+      const std::string list = ini.Get("Instanton", "friction_eta_beads", "");
+      o.friction_eta_beads.clear();
+      size_t start = 0;
+      while (start < list.size()) {
+        const size_t comma = list.find(',', start);
+        const std::string token =
+            list.substr(start, comma == std::string::npos ? std::string::npos
+                                                          : comma - start);
+        if (!token.empty()) {
+          try {
+            o.friction_eta_beads.push_back(std::stod(token));
+          } catch (const std::exception &) {
+            throw std::invalid_argument(
+                "[Instanton] friction_eta_beads must be comma-separated "
+                "numbers, not " +
+                token);
+          }
+        }
+        if (comma == std::string::npos) {
+          break;
+        }
+        start = comma + 1;
+      }
+    }
     o.bead_ladder = ini.GetBoolean("Instanton", "bead_ladder", o.bead_ladder);
     o.hessian_final = ini.Get("Instanton", "hessian_final", o.hessian_final);
     o.springs = toLowerCase(ini.Get("Instanton", "springs", o.springs));

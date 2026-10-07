@@ -322,6 +322,9 @@ json to_json(const Parameters &p) {
         {"half_ring", o.half_ring},
         {"initial_hessians", o.initial_hessians},
         {"energy_shift", o.energy_shift},
+        {"friction", o.friction},
+        {"friction_eta", o.friction_eta},
+        {"friction_eta_beads", o.friction_eta_beads},
         {"bead_ladder", o.bead_ladder},
         {"hessian_final", o.hessian_final},
         {"springs", o.springs},
@@ -786,6 +789,22 @@ void from_json(const json &j, Parameters &p) {
           o.initial_hessians);
     }
     JSON_OPT(s, "energy_shift", o.energy_shift);
+    if (s.contains("friction")) {
+      o.friction = lowerCopy(s.at("friction").get<std::string>());
+    }
+    if (o.friction != "none" && o.friction != "implicit" &&
+        o.friction != "explicit") {
+      throw std::invalid_argument(
+          "[Instanton] friction must be none, implicit or explicit, not " +
+          o.friction);
+    }
+    JSON_OPT(s, "friction_eta", o.friction_eta);
+    if (s.contains("friction_eta_beads")) {
+      o.friction_eta_beads.clear();
+      for (const auto &item : s.at("friction_eta_beads")) {
+        o.friction_eta_beads.push_back(item.get<double>());
+      }
+    }
     JSON_OPT(s, "bead_ladder", o.bead_ladder);
     JSON_OPT(s, "hessian_final", o.hessian_final);
     if (s.contains("springs")) {

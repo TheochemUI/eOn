@@ -2700,6 +2700,25 @@ class InstantonConfig(BaseModel):
         default=0.0,
         description="Subtracted from every bead potential, in eV.",
     )
+    friction: Literal["none", "implicit", "explicit"] = Field(
+        default="none",
+        description=(
+            "Mode rate: Litman friction bath. none leaves the ring"
+            " potential unchanged. implicit uses friction_eta on every"
+            " bead. explicit uses friction_eta_beads, one value per bead."
+        ),
+    )
+    friction_eta: float = Field(
+        default=0.0,
+        ge=0.0,
+        description="Implicit bath strength, the same on every bead.",
+    )
+    friction_eta_beads: str = Field(
+        default="",
+        description=(
+            "Explicit bath: comma-separated eta, one value per bead."
+        ),
+    )
     bead_ladder: bool = Field(
         default=False,
         description=(

@@ -9,10 +9,11 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 **
-** The half-ring springs and the banded ring Hessian are adapted from i-PI
-** under the MIT licence.
+** The half-ring springs, the banded ring Hessian and the friction bath
+** are adapted from i-PI under the MIT licence.
 ** i-PI Copyright (C) 2014-2015 i-PI developers
 ** Algorithms implemented by Yair Litman and Mariana Rossi, 2017.
+** Friction bath: J. Chem. Phys. 156, 194106 (2022).
 */
 #include "eon/Tunneling.h"
 #include "eon/EonLogger.h"
@@ -986,9 +987,97 @@ struct RingEval {
   std::vector<VectorXd> grad; // dU_N/dq at each bead
 };
 
+} // namespace
+
+void addFrictionBath(const std::vector<VectorXd> &q, double &u,
+                     std::vector<VectorXd> &grad,
+                     const std::vector<double> &eta) {
+  const size_t n = q.size();
+  if (n < 2 || eta.empty() || grad.size() != n) {
+    return;
+  }
+  std::vector<double> s(n, eta.size() == 1 ? eta[0] : 0.0);
+  if (eta.size() == n) {
+    s = eta;
+  } else if (eta.size() != 1) {
+    throw std::invalid_argument(
+        "addFrictionBath: eta is one value or one per bead");
+  }
+  for (double value : s) {
+    if (!(value >= 0.0)) {
+      throw std::invalid_argument("addFrictionBath: eta must be non-negative");
+    }
+  }
+  const long f = q[0].size();
+  std::vector<double> root(n);
+  for (size_t j = 0; j < n; ++j) {
+    root[j] = std::sqrt(s[j]);
+  }
+  std::vector<VectorXd> g(n, VectorXd::Zero(f));
+  std::vector<double> mid(n, 0.0);
+  for (size_t j = 1; j < n; ++j) {
+    mid[j] = 0.5 * (root[j - 1] + root[j]);
+    g[j] = g[j - 1] + mid[j] * (q[j] - q[j - 1]);
+  }
+  std::vector<VectorXd> dUdg(n, VectorXd::Zero(f));
+  const double scale = 1.0 / std::sqrt(static_cast<double>(n));
+  for (size_t k = 1; k < n; ++k) {
+    const double omega = 2.0 * std::abs(std::sin(std::numbers::pi *
+                                                  static_cast<double>(k) /
+                                                  static_cast<double>(n)));
+    VectorXd real = VectorXd::Zero(f);
+    VectorXd imag = VectorXd::Zero(f);
+    for (size_t j = 0; j < n; ++j) {
+      const double ang = -2.0 * std::numbers::pi * static_cast<double>(k * j) /
+                         static_cast<double>(n);
+      real += std::cos(ang) * g[j];
+      imag += std::sin(ang) * g[j];
+    }
+    real *= scale;
+    imag *= scale;
+    u += 0.5 * omega * (real.squaredNorm() + imag.squaredNorm());
+    for (size_t j = 0; j < n; ++j) {
+      const double ang = -2.0 * std::numbers::pi * static_cast<double>(k * j) /
+                         static_cast<double>(n);
+      dUdg[j] += omega * scale * (std::cos(ang) * real + std::sin(ang) * imag);
+    }
+  }
+  for (size_t j = n - 1; j >= 1; --j) {
+    dUdg[j - 1] += dUdg[j];
+    if (j == 1) {
+      break;
+    }
+  }
+  for (size_t j = 1; j < n; ++j) {
+    grad[j] += mid[j] * dUdg[j];
+    grad[j - 1] -= mid[j] * dUdg[j];
+  }
+}
+
+namespace {
+
+std::vector<double> frictionEta(const RateInstantonOptions &options,
+                                size_t beads) {
+  if (!options.friction) {
+    return {};
+  }
+  if (options.frictionExplicit) {
+    if (options.frictionEtaBeads.size() != beads) {
+      throw std::invalid_argument(
+          "rate instanton: explicit friction needs one eta per bead");
+    }
+    return options.frictionEtaBeads;
+  }
+  if (!(options.frictionEta > 0.0)) {
+    return {};
+  }
+  return {options.frictionEta};
+}
+
 RingEval evaluateRing(const std::vector<VectorXd> &x, double c,
                       const BatchPotential &potential,
-                      double energyShift = 0.0) {
+                      double energyShift = 0.0,
+                      const std::vector<double> &eta = {}) {
   RingEval out;
   std::vector<VectorXd> gv;
   potential(x, out.v, gv);
@@ -1010,6 +1099,9 @@ RingEval evaluateRing(const std::vector<VectorXd> &x, double c,
     out.u += out.v[j];
   }
   out.u += 0.5 * c * spring;
+  if (!eta.empty()) {
+    addFrictionBath(x, out.u, out.grad, eta);
+  }
   return out;
 }
 
@@ -2268,7 +2360,9 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       out.gradPot = std::move(gu);
       out.energies = std::move(vu);
     } else {
-      const RingEval ev = evaluateRing(q, c, potential, options.energyShift);
+      const RingEval ev =
+          evaluateRing(q, c, potential, options.energyShift,
+                       frictionEta(options, q.size()));
       out.u = ev.u;
       out.grad = ev.grad;
       out.gradPot = physicalGradient(q, ev.grad, c);
@@ -2928,7 +3022,8 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
         0.5 * (hessSaddle + hessSaddle.transpose()));
     const double barrierCurvature = std::abs(es0.eigenvalues()(0));
     const RingEval here =
-        evaluateRing(got.beads, spring, potential, options.energyShift);
+        evaluateRing(got.beads, spring, potential, options.energyShift,
+                     frictionEta(options, got.beads.size()));
     std::vector<VectorXd> oddMode;
     const double oddCurv =
         lowestOddMode(got.beads, here, spring, potential, oddMode,
@@ -3118,7 +3213,8 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
   symmetrize(x);
   projectFold(x);
 
-  RingEval cur = evaluateRing(x, c, evalPot, options.energyShift);
+  RingEval cur = evaluateRing(x, c, evalPot, options.energyShift,
+                              frictionEta(options, x.size()));
   // The unstable mode of the ring starts as every bead moving along the
   // saddle's unstable direction.
   std::vector<VectorXd> mode(x.size(), dir);
@@ -3162,7 +3258,8 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
       for (size_t k = 0; k < x.size(); ++k) {
         x[k] += kick * oddMode[k];
       }
-      cur = evaluateRing(x, c, evalPot, options.energyShift);
+      cur = evaluateRing(x, c, evalPot, options.energyShift,
+                         frictionEta(options, x.size()));
       curvature = lowestMode(x, cur, c, evalPot, mode, options.lanczosFirst,
                              options.lanczosStep, fold);
       pairs.clear();
@@ -3206,7 +3303,8 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
     }
     symmetrize(trial);
     projectFold(trial);
-    RingEval next = evaluateRing(trial, c, evalPot, options.energyShift);
+    RingEval next = evaluateRing(trial, c, evalPot, options.energyShift,
+                                 frictionEta(options, trial.size()));
     const double prevCurv = curvature;
     const long restart = options.lanczosRestart;
     curvature = lowestMode(trial, next, c, evalPot, mode, restart,

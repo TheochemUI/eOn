@@ -19,6 +19,7 @@
 #include <cmath>
 #include <memory>
 #include <numbers>
+#include <stdexcept>
 #include <vector>
 
 using namespace eonc;
@@ -1579,6 +1580,41 @@ TEST_CASE("A ring that collapses onto one point stops early",
   REQUIRE(inst.collapsed);
   REQUIRE_FALSE(inst.converged);
   REQUIRE(inst.iterations < 20);
+}
+
+TEST_CASE("friction bath adds a positive term and its gradient",
+          "[instanton]") {
+  std::vector<VectorXd> q(4, VectorXd::Zero(1));
+  q[0](0) = 0.0;
+  q[1](0) = 0.2;
+  q[2](0) = 0.5;
+  q[3](0) = 0.1;
+  std::vector<VectorXd> grad(4, VectorXd::Zero(1));
+  double flat = 0.0;
+  addFrictionBath(q, flat, grad, {0.0});
+  REQUIRE(flat == 0.0);
+
+  double implicit = 0.0;
+  grad.assign(4, VectorXd::Zero(1));
+  addFrictionBath(q, implicit, grad, {0.25});
+  REQUIRE(implicit > 0.0);
+
+  const double eps = 1e-6;
+  std::vector<VectorXd> shifted = q;
+  shifted[1](0) += eps;
+  double shiftedEnergy = 0.0;
+  std::vector<VectorXd> shiftedGrad(4, VectorXd::Zero(1));
+  addFrictionBath(shifted, shiftedEnergy, shiftedGrad, {0.25});
+  REQUIRE(grad[1](0) ==
+          Catch::Approx((shiftedEnergy - implicit) / eps).margin(1e-4));
+
+  double explicitBath = 0.0;
+  grad.assign(4, VectorXd::Zero(1));
+  addFrictionBath(q, explicitBath, grad, {0.1, 0.2, 0.4, 0.05});
+  REQUIRE(explicitBath > 0.0);
+  REQUIRE(explicitBath != Catch::Approx(implicit));
+  REQUIRE_THROWS_AS(addFrictionBath(q, explicitBath, grad, {-0.1}),
+                    std::invalid_argument);
 }
 
 namespace {

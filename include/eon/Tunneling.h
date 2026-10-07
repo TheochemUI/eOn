@@ -303,7 +303,21 @@ struct RateInstantonOptions {
   std::vector<double> rigidSqrtMasses;
   VectorXd rigidReference;
   std::array<bool, 3> rigidRotations{{false, false, false}};
+  /// Litman friction bath on the rate ring. Off leaves U_N unchanged.
+  /// Implicit uses frictionEta on every bead. Explicit uses
+  /// frictionEtaBeads, one value per bead.
+  bool friction = false;
+  bool frictionExplicit = false;
+  double frictionEta = 0.0;
+  std::vector<double> frictionEtaBeads;
 };
+
+/// Position-independent (one eta) or bead-wise friction on a closed ring.
+/// Empty or all-zero eta leaves u and grad unchanged. A negative eta is
+/// refused. J. Chem. Phys. 156, 194106 (2022).
+void addFrictionBath(const std::vector<VectorXd> &q, double &u,
+                     std::vector<VectorXd> &grad,
+                     const std::vector<double> &eta);
 
 /// Spectrum of a closed ring's Hessian without forming it.
 struct RingSpectrum {

@@ -668,6 +668,10 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     ro.halfRing = o.half_ring;
     ro.initialHessians = o.initial_hessians;
     ro.energyShift = o.energy_shift;
+    ro.friction = o.friction != "none";
+    ro.frictionExplicit = o.friction == "explicit";
+    ro.frictionEta = o.friction_eta;
+    ro.frictionEtaBeads = o.friction_eta_beads;
     if (static_cast<long>(mw.sqrtMasses().size()) == reactant.numberOfAtoms()) {
       ro.rigidSqrtMasses = mw.sqrtMasses();
       ro.rigidReference = mw.referenceFree();

@@ -1251,6 +1251,25 @@ Instanton:
             kind: float
             default: 0.0
 
+        # Mode rate: Litman friction bath. none, implicit (one eta on
+        # every bead) or explicit (one eta per bead).
+        friction:
+            kind: string
+            default: none
+            values:
+                - none
+                - implicit
+                - explicit
+
+        friction_eta:
+            kind: float
+            default: 0.0
+
+        # Explicit bath: comma-separated eta, one value per bead.
+        friction_eta_beads:
+            kind: string
+            default: ""
+
         # Start at a quarter of the beads and double up to the requested
         # count. Off searches the requested count directly.
         bead_ladder:
