@@ -4,6 +4,7 @@
 # mpirun is absent.
 # A hang in MPI_Comm_split is a failure. A Segmentation fault on the
 # way out is a failure. Rank 0's text has to carry the engine error.
+# Workers stop with std::exit(0). Their status is 0. Rank 0 exits non-zero.
 set -u
 EXE=$1
 MODE=$2
