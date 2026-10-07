@@ -11,6 +11,8 @@
 */
 #include "eon/Matter.h"
 #include "TestUtils.hpp"
+
+#include <cmath>
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/ForceNorm.h"
 #include "eon/MonteCarlo.h"
@@ -55,15 +57,16 @@ TEST_CASE("Matter takes exclusive Potential ownership", "[MatterTest]") {
   REQUIRE(raw != nullptr);
   Matter a(std::move(owned), params);
   REQUIRE(owned == nullptr);
-  // use_count includes the temporary returned by getPotential().
-  REQUIRE(a.getPotential().get() == raw);
-  REQUIRE(a.getPotential().use_count() == 2);
+  REQUIRE(a.holdsExclusivePotential());
   {
     Matter b(a);
+    REQUIRE_FALSE(a.holdsExclusivePotential());
     REQUIRE(b.getPotential().get() == raw);
-    REQUIRE(a.getPotential().use_count() == 3);
+    REQUIRE(a.getPotential().get() == raw);
   }
+  REQUIRE(a.getPotential().get() == raw);
   REQUIRE(a.getPotential().use_count() == 2);
+  REQUIRE(std::isfinite(a.getPotentialEnergy()));
 }
 
 TEST_CASE("TestCell", "[MatterTest]") {

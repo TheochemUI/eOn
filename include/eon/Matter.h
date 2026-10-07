@@ -93,10 +93,11 @@ class Matter {
 public:
   ~Matter();
   Matter(std::shared_ptr<Potential> pot, const Parameters &params);
-  /// Exclusive handoff. A later copy shares this instance; it does not clone
-  /// it.
-  Matter(std::unique_ptr<Potential> pot, const Parameters &params)
-      : Matter(std::shared_ptr<Potential>(std::move(pot)), params) {}
+  /// Exclusive handoff. The Potential stays a unique_ptr until a copy
+  /// shares that same instance. A copy does not clone it.
+  Matter(std::unique_ptr<Potential> pot, const Parameters &params);
+  /// True while no copy has shared the Potential from an exclusive handoff.
+  [[nodiscard]] bool holdsExclusivePotential() const;
   Matter(const Matter &matter);                  // create a copy of matter
   const Matter &operator=(const Matter &matter); // copy the matter object
   /// Move: transfers retained movie ConFrames (move-only). User copy
@@ -353,8 +354,11 @@ private:
                                      io::ConFrameMetadata *);
 
   eonc::log::Scoped m_log;
-  std::shared_ptr<Potential>
-      potential; // pointer to function calculating the energy and forces
+  Potential *livePotential() const;
+  void shareOwnedPotential() const;
+  mutable std::unique_ptr<Potential> ownedPotential;
+  mutable std::shared_ptr<Potential>
+      potential; // shared once a second Matter needs the same instance
   bool usePeriodicBoundaries; // boolean telling periodic boundaries are used
 
   /// Throw if pot forbids PBC (isolated molecular QM backends, issue #188).

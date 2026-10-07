@@ -67,6 +67,28 @@ Matter::Matter(std::shared_ptr<Potential> pot, const Parameters &params)
       cachedHostEpoch_{0},
       cachedPotEpoch_{0} {}
 
+Matter::Matter(std::unique_ptr<Potential> pot, const Parameters &params)
+    : Matter(std::shared_ptr<Potential>{}, params) {
+  ownedPotential = std::move(pot);
+  if (ownedPotential && ownedPotential->requiresIsolatedMoleculeLayout()) {
+    usePeriodicBoundaries = false;
+  }
+}
+
+Potential *Matter::livePotential() const {
+  return ownedPotential ? ownedPotential.get() : potential.get();
+}
+
+void Matter::shareOwnedPotential() const {
+  if (ownedPotential) {
+    potential = std::shared_ptr<Potential>(std::move(ownedPotential));
+  }
+}
+
+bool Matter::holdsExclusivePotential() const {
+  return static_cast<bool>(ownedPotential);
+}
+
 bool Matter::getWriteConForces() const noexcept {
   return parameters != nullptr && parameters->main_options().writeConForces;
 }
@@ -116,6 +138,8 @@ const Matter &Matter::operator=(const Matter &matter) {
   usePeriodicBoundaries = matter.usePeriodicBoundaries;
   pbcConvention = matter.pbcConvention;
 
+  matter.shareOwnedPotential();
+  ownedPotential.reset();
   potential = matter.potential;
   potentialEnergy = matter.potentialEnergy;
   energyVariance = matter.energyVariance;
@@ -154,6 +178,7 @@ Matter &Matter::operator=(Matter &&other) noexcept {
   if (this == &other) {
     return *this;
   }
+  ownedPotential = std::move(other.ownedPotential);
   potential = std::move(other.potential);
   usePeriodicBoundaries = other.usePeriodicBoundaries;
   pbcConvention = other.pbcConvention;
@@ -610,7 +635,7 @@ void Matter::resetForceCalls() {
 }
 
 void Matter::assertIsolatedMoleculeLayoutSafe() const {
-  if (!potential || !potential->requiresIsolatedMoleculeLayout()) {
+  if (!livePotential() || !livePotential()->requiresIsolatedMoleculeLayout()) {
     return;
   }
   if (usePeriodicBoundaries) {
@@ -622,13 +647,14 @@ void Matter::assertIsolatedMoleculeLayoutSafe() const {
 }
 
 bool Matter::epochDirty() const {
-  const unsigned long long pe = potential ? potential->surfaceEpoch() : 0ULL;
+  const unsigned long long pe =
+      livePotential() ? livePotential()->surfaceEpoch() : 0ULL;
   return cachedHostEpoch_ != surfaceEpoch_ || cachedPotEpoch_ != pe;
 }
 
 void Matter::stampSurfaceEpoch() const {
   cachedHostEpoch_ = surfaceEpoch_;
-  cachedPotEpoch_ = potential ? potential->surfaceEpoch() : 0ULL;
+  cachedPotEpoch_ = livePotential() ? livePotential()->surfaceEpoch() : 0ULL;
 }
 
 void Matter::setSurfaceEpoch(unsigned long long epoch) {
@@ -642,15 +668,15 @@ void Matter::setSurfaceEpoch(unsigned long long epoch) {
 void Matter::computePotential() const {
   cancel_token_.poll("force");
   if (recomputePotential || epochDirty()) {
-    if (!potential) {
+    if (!livePotential()) {
       throw std::runtime_error(
           "Matter::computePotential called without a potential");
     }
     assertIsolatedMoleculeLayoutSafe();
-    if (potential->isSurrogate()) {
+    if (livePotential()->isSurrogate()) {
       // Surrogate potential case: uses free-atom subset interface
       auto surrogatePotential =
-          static_cast<SurrogatePotential *>(potential.get());
+          static_cast<SurrogatePotential *>(livePotential());
       auto [freePE, freeForces, vari] = surrogatePotential->get_ef_var(
           this->getPositionsFree(), this->getAtomicNrsFree(), impl_->cell);
       this->potentialEnergy = freePE;
@@ -666,22 +692,22 @@ void Matter::computePotential() const {
       // Hot path: call force() directly into member storage.
       // No intermediate allocation, no tuple, no copy.
       double var{0};
-      potential->setFixedMask(nAtoms, impl_->isFixed.data());
+      livePotential()->setFixedMask(nAtoms, impl_->isFixed.data());
       const auto n = static_cast<size_t>(nAtoms);
       // Isolated molecules still store a box for I/O. Pots that infer PBC
       // from a non-zero cell (GFN2) must see a zero box here.
       const Matrix3d force_cell =
-          (usePeriodicBoundaries || potential->forwardsStoredCell())
+          (usePeriodicBoundaries || livePotential()->forwardsStoredCell())
               ? impl_->cell
               : Matrix3d::Zero();
-      potential->force(std::span<const double>(impl_->positions.data(), n * 3),
+      livePotential()->force(std::span<const double>(impl_->positions.data(), n * 3),
                        std::span<const int>(impl_->atomicNrs.data(), n),
                        std::span<double>(impl_->forces.data(), n * 3),
                        &potentialEnergy, &var,
                        std::span<const double>(force_cell.data(), 9));
       this->energyVariance = var;
-      potential->forceCallCounter++;
-      PotRegistry::get().on_force_call(potential->getType());
+      livePotential()->forceCallCounter++;
+      PotRegistry::get().on_force_call(livePotential()->getType());
       captureStress();
     }
     if (!std::isfinite(potentialEnergy) || !impl_->forces.allFinite()) {
@@ -796,10 +822,11 @@ Matrix<double, Eigen::Dynamic, 1> Matter::getMasses() const {
 }
 
 void Matter::setPotential(std::shared_ptr<Potential> pot) {
-  this->potential = pot;
+  ownedPotential.reset();
+  this->potential = std::move(pot);
   // Molecular QM backends (NWChem/ORCA) must not use PBC wraps (#188). Auto-off
   // with a hard fail if code later forces PBC while this pot is attached.
-  if (potential && potential->requiresIsolatedMoleculeLayout() &&
+  if (livePotential() && livePotential()->requiresIsolatedMoleculeLayout() &&
       usePeriodicBoundaries) {
     usePeriodicBoundaries = false;
     // Use EONC_LOG_* (not bare QUILL_LOG_* with eonc::log::get() as arg): the
@@ -833,7 +860,7 @@ void Matter::setComputedPotential(double energy, double variance) {
 }
 
 size_t Matter::getPotentialCalls() const {
-  return this->potential->forceCallCounter;
+  return this->livePotential()->forceCallCounter;
 }
 
 double Matter::getEnergyVariance() const {
@@ -845,19 +872,19 @@ double Matter::getEnergyVariance() const {
 
 void Matter::captureStress() const {
   impl_->haveStress = false;
-  if (!potential->computesStress()) {
+  if (!livePotential()->computesStress()) {
     return;
   }
   // A potential instance holds the stress of its own last call. With
   // [Main] parallel on, a thread-safe shared instance can serve another
   // image between that call and this read, so it is not read here.
   const bool threads = parameters && parameters->main_options().parallel;
-  if (threads && potential->isSharedInstanceThreadSafe() &&
-      !potential->needsPerImageInstance()) {
+  if (threads && livePotential()->isSharedInstanceThreadSafe() &&
+      !livePotential()->needsPerImageInstance()) {
     return;
   }
   try {
-    impl_->stress = potential->cauchyStress();
+    impl_->stress = livePotential()->cauchyStress();
     impl_->haveStress = impl_->stress.allFinite();
   } catch (const std::logic_error &) {
     impl_->haveStress = false;
@@ -865,7 +892,7 @@ void Matter::captureStress() const {
 }
 
 Matrix3d Matter::cauchyStress() {
-  if (!potential || !potential->computesStress()) {
+  if (!livePotential() || !livePotential()->computesStress()) {
     throw std::logic_error(
         "Matter::cauchyStress requires a potential that reports stress");
   }
@@ -875,14 +902,17 @@ Matrix3d Matter::cauchyStress() {
   }
   recomputePotential = true;
   computePotential();
-  Matrix3d sigma = potential->cauchyStress();
+  Matrix3d sigma = livePotential()->cauchyStress();
   if (!sigma.allFinite()) {
     throw std::runtime_error("Potential returned a non-finite stress tensor");
   }
   return sigma;
 }
 
-std::shared_ptr<Potential> Matter::getPotential() { return this->potential; }
+std::shared_ptr<Potential> Matter::getPotential() {
+  shareOwnedPotential();
+  return potential;
+}
 
 AtomMatrix Matter::pbc(const AtomMatrix &diff) const {
   if (!usePeriodicBoundaries) {
