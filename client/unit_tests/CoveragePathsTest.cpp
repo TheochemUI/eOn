@@ -1495,6 +1495,75 @@ TEST_CASE("eonclient stops when the parameter file is missing",
 }
 #endif
 
+TEST_CASE("const parameter views are readable", "[parameters][coverage]") {
+  Parameters params;
+  const Parameters &view = params;
+  params.record_load("config.ini", 0);
+  REQUIRE(view.last_load_source() == "config.ini");
+  params.set_mpi_client_comm(3);
+  REQUIRE(view.mpi_client_comm() == 3);
+  params.set_mpi_potential_rank(2);
+  REQUIRE(view.constants().kB > 0.0);
+  REQUIRE(view.main_options().temperature >= 0.0);
+  static_cast<void>(view.potential_options());
+  static_cast<void>(view.ams_options());
+  static_cast<void>(view.xtb_options());
+  static_cast<void>(view.zbl_options());
+  static_cast<void>(view.dftd_options());
+  static_cast<void>(view.expr_options());
+  static_cast<void>(view.mopac_options());
+  static_cast<void>(view.socket_nwchem_options());
+  static_cast<void>(view.rgpot_options());
+  static_cast<void>(view.structure_comparison_options());
+  static_cast<void>(view.process_search_options());
+  static_cast<void>(view.saddle_search_options());
+  static_cast<void>(view.optimizer_options());
+  static_cast<void>(view.dimer_options());
+  static_cast<void>(view.gpr_dimer_options());
+  static_cast<void>(view.gp_surrogate_options());
+  static_cast<void>(view.catlearn_options());
+  static_cast<void>(view.ase_orca_options());
+  static_cast<void>(view.ase_nwchem_options());
+  static_cast<void>(view.metatomic_options());
+  static_cast<void>(view.lanczos_options());
+  static_cast<void>(view.davidson_options());
+  static_cast<void>(view.prefactor_options());
+  static_cast<void>(view.hessian_options());
+  static_cast<void>(view.neb_options());
+  static_cast<void>(view.dynamics_options());
+  static_cast<void>(view.parallel_replica_options());
+  static_cast<void>(view.tad_options());
+  static_cast<void>(view.thermostat_options());
+  static_cast<void>(view.replica_exchange_options());
+  static_cast<void>(view.hyperdynamics_options());
+  static_cast<void>(view.basin_hopping_options());
+  static_cast<void>(view.global_optimization_options());
+  static_cast<void>(view.monte_carlo_options());
+  static_cast<void>(view.bgsd_options());
+  static_cast<void>(view.serve_options());
+  static_cast<void>(view.artn_options());
+  static_cast<void>(view.ira_options());
+  static_cast<void>(view.debug_options());
+  static_cast<void>(view.oh_tst_options());
+  REQUIRE(view.instanton_options().beads > 0);
+  static_cast<void>(ParametersLoadAccess::constants(view));
+  static_cast<void>(ParametersLoadAccess::ams_options(view));
+  static_cast<void>(ParametersLoadAccess::xtb_options(view));
+  static_cast<void>(ParametersLoadAccess::zbl_options(view));
+  static_cast<void>(ParametersLoadAccess::dftd_options(view));
+  static_cast<void>(ParametersLoadAccess::expr_options(view));
+  static_cast<void>(ParametersLoadAccess::gpr_dimer_options(view));
+  static_cast<void>(ParametersLoadAccess::gp_surrogate_options(view));
+  static_cast<void>(ParametersLoadAccess::catlearn_options(view));
+  static_cast<void>(ParametersLoadAccess::ase_orca_options(view));
+  static_cast<void>(ParametersLoadAccess::ase_nwchem_options(view));
+  static_cast<void>(ParametersLoadAccess::metatomic_options(view));
+  static_cast<void>(ParametersLoadAccess::tad_options(view));
+  static_cast<void>(ParametersLoadAccess::bgsd_options(view));
+  static_cast<void>(ParametersLoadAccess::artn_options(view));
+  static_cast<void>(ParametersLoadAccess::ira_options(view));
+}
+
 #ifdef WITH_RGPOT
 TEST_CASE("instanton batches beads on a cpmd engine", "[job][instanton][cpmd]") {
   const char *cpmd = std::getenv("CPMDC_LIBRARY");
