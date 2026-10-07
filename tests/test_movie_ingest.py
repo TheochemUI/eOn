@@ -11,7 +11,8 @@ def _body(text: str, name: str) -> str:
     start = text.find(f"def {name}(")
     assert start != -1, name
     end = text.find("\ndef ", start + 1)
-    assert end != -1
+    if end == -1:
+        end = len(text)
     return text[start:end]
 
 
