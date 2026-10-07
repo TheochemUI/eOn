@@ -1406,7 +1406,7 @@ TEST_CASE("a rate above the crossover uses the parabolic factor",
   ParametersLoadAccess::instanton_options(params).pi_time_step = 1.0;
   ParametersLoadAccess::instanton_options(params).pi_recrossing_parents = 2;
   ParametersLoadAccess::instanton_options(params).pi_recrossing_children = 1;
-  ParametersLoadAccess::instanton_options(params).pi_recrossing_time = 1.0;
+  ParametersLoadAccess::instanton_options(params).pi_recrossing_time = 4.0;
   eonc::Runtime runtime;
   auto owned = std::make_unique<Parameters>(params);
   eonc::InstantonJob job(std::move(owned), runtime);
