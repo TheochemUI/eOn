@@ -1231,6 +1231,48 @@ struct BatchLJ final : Potential {
 
 } // namespace
 
+TEST_CASE("solid-state bands refuse climbs that do not move the cell",
+          "[neb][solid]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::neb_options(params).image_count = 3;
+  ParametersLoadAccess::neb_options(params).endpoints.minimize = false;
+  ParametersLoadAccess::neb_options(params).solid_state.enabled = true;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, pot);
+  auto product = std::make_shared<Matter>(*reactant);
+  auto pos = product->getPositions();
+  pos(0, 0) += 0.4;
+  product->setPositions(pos);
+  auto expectThrow = [&](const char *label) {
+    INFO(label);
+    REQUIRE_THROWS_AS(
+        std::make_unique<NudgedElasticBand>(reactant, product, params, pot),
+        std::invalid_argument);
+  };
+  ParametersLoadAccess::neb_options(params).zoom.enabled = true;
+  expectThrow("zoom");
+  ParametersLoadAccess::neb_options(params).zoom.enabled = false;
+  ParametersLoadAccess::neb_options(params).climbing_image.ocineb.use_mmf =
+      true;
+  expectThrow("mmf");
+  ParametersLoadAccess::neb_options(params).climbing_image.ocineb.use_mmf =
+      false;
+  ParametersLoadAccess::neb_options(params).spring.om.enabled = true;
+  expectThrow("onsager");
+  ParametersLoadAccess::neb_options(params).spring.om.enabled = false;
+  ParametersLoadAccess::neb_options(params).spring.geometric = true;
+  expectThrow("geometric");
+  ParametersLoadAccess::neb_options(params).spring.geometric = false;
+  ParametersLoadAccess::neb_options(params).spring.doubly_nudged = true;
+  expectThrow("doubly nudged");
+  ParametersLoadAccess::neb_options(params).spring.doubly_nudged = false;
+  ParametersLoadAccess::neb_options(params).spring.use_elastic_band = true;
+  expectThrow("elastic");
+}
+
 TEST_CASE("an oversampled IDPP band is decimated before the climb",
           "[neb][idpp]") {
   Workdir work;
