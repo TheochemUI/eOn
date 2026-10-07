@@ -1785,7 +1785,7 @@ TEST_CASE("A long ring takes the chain inertia instead of a dense factor",
     }
   };
   const VectorXd saddle = VectorXd::Zero(1);
-  const MatrixXd hs = MatrixXd::Identity(1, 1);
+  const MatrixXd hs = -MatrixXd::Identity(1, 1);
   RateInstantonOptions opt;
   opt.beads = 4200;
   opt.halfRing = false;
