@@ -132,6 +132,8 @@ def test_inprocess_minimize_job(tmp_path, geometry):
     _assert_product_frame(r0)
     assert "job_result" in r0
     assert "results.dat" not in r0
+    assert "atomId" in r0["job_result"]
+    assert "fixedAxes" in r0["job_result"]
     assert r0.get("_structure") is not None
     assert r0["_matter"].n_atoms == 2
     assert np.isfinite(r0["_energy"])

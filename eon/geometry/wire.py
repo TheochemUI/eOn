@@ -4,6 +4,7 @@ readcon ``ConFrame`` is the on-disk codec. ``Geometry`` in
 ``schema/eon_job_result.capnp`` is the runtime contract. These lists are
 the append-only fields that keep forces, atom ids, and per-axis constraints
 on that contract. An empty list means the field is absent.
+Geometry drops ConFrame charges, spins, magmoms, angles, headers, and specVersion.
 """
 
 from __future__ import annotations

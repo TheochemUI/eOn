@@ -474,6 +474,11 @@ class LocalInProcess(Communicator):
             job_result = _job_result(
                 status, energy, fcalls, jname, cancelled=cancelled
             )
+            from eon.geometry.wire import geometry_wire_lists
+
+            raw_forces = getattr(matter, "forces", None)
+            forces = None if callable(raw_forces) else raw_forces
+            job_result.update(geometry_wire_lists(out, forces=forces))
 
             rec = {
                 "id": jid,
