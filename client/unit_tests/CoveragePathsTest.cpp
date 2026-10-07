@@ -51,6 +51,11 @@
 #include <fstream>
 #include <memory>
 #include <string>
+#ifndef _WIN32
+#include <spawn.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#endif
 #include <vector>
 
 #ifndef _WIN32
@@ -1367,6 +1372,117 @@ TEST_CASE("basin hopping writes a unique minimum from a random start",
   const auto files = job.run();
   REQUIRE_FALSE(files.empty());
 }
+
+TEST_CASE("a rate above the crossover uses the parabolic factor",
+          "[job][instanton][hot]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, pot);
+  auto saddle = std::make_shared<Matter>(*reactant);
+  auto pos = saddle->getPositions();
+  pos(0, 0) += 0.8;
+  saddle->setPositions(pos);
+  REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
+  REQUIRE(eonc::io::io_ok(saddle->matter2con("saddle.con", false)));
+  ParametersLoadAccess::main_options(params).job = JobType::Instanton;
+  ParametersLoadAccess::instanton_options(params).mode = "rate";
+  ParametersLoadAccess::instanton_options(params).temperature = 50000.0;
+  ParametersLoadAccess::instanton_options(params).temperatures = {50000.0,
+                                                                  20000.0};
+  ParametersLoadAccess::instanton_options(params).beads = 8;
+  ParametersLoadAccess::instanton_options(params).max_iterations = 2;
+  ParametersLoadAccess::instanton_options(params).force_tolerance = 10.0;
+  eonc::Runtime runtime;
+  auto owned = std::make_unique<Parameters>(params);
+  eonc::InstantonJob job(std::move(owned), runtime);
+  const auto files = job.run();
+  REQUIRE_FALSE(files.empty());
+}
+
+TEST_CASE("a loose min-mode search minimizes both endpoints",
+          "[job][process_search][ends]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::main_options(params).job = JobType::Process_Search;
+  ParametersLoadAccess::main_options(params).parallel = true;
+  ParametersLoadAccess::saddle_search_options(params).method = "min_mode";
+  ParametersLoadAccess::saddle_search_options(params).converged_force = 1.0e6;
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 4;
+  ParametersLoadAccess::dimer_options(params).improved = false;
+  ParametersLoadAccess::dimer_options(params).max_iterations = 2;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 3;
+  ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
+  ParametersLoadAccess::process_search_options(params).minimize_first = false;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto seed = std::make_shared<Matter>(pot, params);
+  REQUIRE(eonc::io::io_ok(seed->con2matter(std::string("reactant.con"))));
+  auto pos = seed->getPositions();
+  pos(0, 0) += 0.35;
+  seed->setPositions(pos);
+  eonc::ProcessSearchJob job(pot, params);
+  auto found = job.runFromMatter(seed);
+  REQUIRE(found != nullptr);
+  REQUIRE(std::isfinite(found->getPotentialEnergy()));
+}
+
+TEST_CASE("a doubly nudged band projects one spring step", "[neb][dneb]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::neb_options(params).image_count = 3;
+  ParametersLoadAccess::neb_options(params).max_iterations = 2;
+  ParametersLoadAccess::neb_options(params).force_tolerance = 0.5;
+  ParametersLoadAccess::neb_options(params).endpoints.minimize = false;
+  ParametersLoadAccess::neb_options(params).spring.doubly_nudged = true;
+  ParametersLoadAccess::neb_options(params).spring.use_switching = true;
+  ParametersLoadAccess::neb_options(params).spring.geometric = true;
+  ParametersLoadAccess::neb_options(params).spring.weighting.enabled = true;
+  ParametersLoadAccess::neb_options(params).climbing_image.use_old_tangent =
+      true;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 4;
+  ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, pot);
+  auto product = std::make_shared<Matter>(*reactant);
+  auto pos = product->getPositions();
+  pos(0, 0) += 0.7;
+  product->setPositions(pos);
+  auto neb =
+      std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
+  const auto status = neb->compute();
+  const bool known = status == NudgedElasticBand::NEBStatus::GOOD ||
+                     status == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS ||
+                     status == NudgedElasticBand::NEBStatus::RUNNING ||
+                     status == NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY;
+  REQUIRE(known);
+  REQUIRE(std::isfinite(neb->path[1]->getPotentialEnergy()));
+}
+
+#ifndef _WIN32
+TEST_CASE("eonclient stops when the parameter file is missing",
+          "[client][coverage]") {
+  const char *client = std::getenv("EONCLIENT");
+  if (client == nullptr) {
+    return;
+  }
+  Workdir work;
+  extern char **environ;
+  char *argv[] = {const_cast<char *>(client), nullptr};
+  pid_t pid = 0;
+  const int spawned = posix_spawn(&pid, client, nullptr, nullptr, argv, environ);
+  REQUIRE(spawned == 0);
+  int status = 0;
+  REQUIRE(waitpid(pid, &status, 0) > 0);
+  REQUIRE(WIFEXITED(status));
+  REQUIRE(WEXITSTATUS(status) == 1);
+}
+#endif
 
 #ifdef WITH_RGPOT
 TEST_CASE("instanton batches beads on a cpmd engine", "[job][instanton][cpmd]") {
