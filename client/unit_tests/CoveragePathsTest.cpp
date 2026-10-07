@@ -1399,10 +1399,10 @@ TEST_CASE("a rate above the crossover uses the parabolic factor",
   ParametersLoadAccess::instanton_options(params).beads = 8;
   ParametersLoadAccess::instanton_options(params).max_iterations = 2;
   ParametersLoadAccess::instanton_options(params).force_tolerance = 10.0;
-  ParametersLoadAccess::instanton_options(params).pi_planes = 1;
+  ParametersLoadAccess::instanton_options(params).pi_planes = 2;
   ParametersLoadAccess::instanton_options(params).pi_beads = 4;
-  ParametersLoadAccess::instanton_options(params).pi_equilibration_steps = 1;
-  ParametersLoadAccess::instanton_options(params).pi_sampling_steps = 1;
+  ParametersLoadAccess::instanton_options(params).pi_equilibration_steps = 0;
+  ParametersLoadAccess::instanton_options(params).pi_sampling_steps = 20;
   ParametersLoadAccess::instanton_options(params).pi_time_step = 1.0;
   ParametersLoadAccess::instanton_options(params).pi_recrossing_parents = 1;
   ParametersLoadAccess::instanton_options(params).pi_recrossing_children = 1;
