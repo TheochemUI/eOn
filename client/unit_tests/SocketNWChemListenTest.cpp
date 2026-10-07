@@ -82,12 +82,15 @@ std::string read_header(int fd) {
   if (!read_all(fd, buffer, sizeof(buffer))) {
     return {};
   }
-  int end = 11;
-  while (end >= 0 &&
-         std::isspace(static_cast<unsigned char>(buffer[end]))) {
-    --end;
+  // The server zero-fills a header. A peer may space-pad it instead.
+  std::size_t n = 0;
+  while (n < sizeof(buffer) && buffer[n] != '\0') {
+    ++n;
   }
-  return std::string(buffer, buffer + end + 1);
+  while (n > 0 && std::isspace(static_cast<unsigned char>(buffer[n - 1]))) {
+    --n;
+  }
+  return std::string(buffer, n);
 }
 
 int connect_unix(const std::string &path) {
