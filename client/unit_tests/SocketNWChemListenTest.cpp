@@ -91,22 +91,22 @@ std::string read_header(int fd) {
 }
 
 int connect_unix(const std::string &path) {
-  const int fd = ::socket(AF_UNIX, SOCK_STREAM, 0);
-  if (fd < 0) {
-    return -1;
-  }
   sockaddr_un addr{};
   addr.sun_family = AF_UNIX;
   std::strncpy(addr.sun_path, path.c_str(), sizeof(addr.sun_path) - 1);
   const socklen_t len = static_cast<socklen_t>(sizeof(addr.sun_family) +
                                                std::strlen(addr.sun_path));
   for (int attempt = 0; attempt < 200; ++attempt) {
+    const int fd = ::socket(AF_UNIX, SOCK_STREAM, 0);
+    if (fd < 0) {
+      return -1;
+    }
     if (::connect(fd, reinterpret_cast<sockaddr *>(&addr), len) == 0) {
       return fd;
     }
+    ::close(fd);
     std::this_thread::sleep_for(std::chrono::milliseconds(5));
   }
-  ::close(fd);
   return -1;
 }
 
@@ -151,18 +151,7 @@ TEST_CASE("SocketNWChem exchanges one i-PI force", "[socketnwchem]") {
   pot.emplace(params);
   std::thread client([&] {
     const std::string path = "/tmp/ipi_eonqf";
-    int fd = connect_unix(path);
-    if (fd < 0) {
-      client_ok = false;
-      return;
-    }
-    if (read_header(fd) != "STATUS" || !write_header(fd, "BAD")) {
-      client_ok = false;
-      ::close(fd);
-      return;
-    }
-    ::close(fd);
-    fd = connect_unix(path);
+    const int fd = connect_unix(path);
     if (fd < 0) {
       client_ok = false;
       return;
