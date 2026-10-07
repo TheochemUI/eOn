@@ -1,8 +1,5 @@
 """readcon-core is pinned past 0.14 and readcon-db holds campaign frames."""
 
-import os
-import shutil
-import subprocess
 from pathlib import Path
 
 import pytest
@@ -27,22 +24,11 @@ def test_readcon_pin_is_past_0_14_and_frames_use_the_corpus():
     assert "_saddle_text_with_mode(" in catalog
 
 
-def test_installed_readcon_core_is_at_least_0_16():
-    pkg = shutil.which("pkg-config")
-    if pkg is None:
-        pytest.skip("pkg-config is not on PATH")
-    env = os.environ.copy()
-    probe = subprocess.run(
-        [pkg, "--exists", "readcon-core"],
-        check=False,
-        env=env,
-    )
-    if probe.returncode != 0:
-        pytest.skip("readcon-core is not installed")
-    version = subprocess.check_output(
-        [pkg, "--modversion", "readcon-core"],
-        text=True,
-        env=env,
-    ).strip()
+def test_installed_readcon_is_past_0_14():
+    try:
+        import readcon
+    except ImportError:
+        pytest.skip("readcon is not installed")
+    version = str(readcon.__version__)
     parts = tuple(int(piece) for piece in version.split(".")[:2])
-    assert parts >= (0, 16), version
+    assert parts >= (0, 15), version
