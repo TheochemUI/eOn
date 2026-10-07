@@ -158,7 +158,7 @@ int main(int argc, char **argv) {
       // U is the energy shareResult wrote before the raise. Both ranks
       // must print the same value, the owner, and the engine text.
       std::cerr << "rank=" << rank << " fault owner=1 energy=" << U << " "
-                << ex.what() << "\n";
+                << ex.what() << std::endl;
       return 1;
     }
     std::cerr << "rank=" << rank << " fault did not throw\n";
