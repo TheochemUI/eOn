@@ -1181,6 +1181,8 @@ TEST_CASE("a four-bead instanton reads a starting band", "[job][instanton]") {
   product->setPositions(pos);
   reactant->setPeriodic(false);
   product->setPeriodic(false);
+  reactant->setCell(Matrix3d::Zero());
+  product->setCell(Matrix3d::Zero());
   REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
   REQUIRE(eonc::io::io_ok(product->matter2con("product.con", false)));
   REQUIRE(eonc::io::io_ok(reactant->matter2con("band.con", false)));
@@ -1348,6 +1350,9 @@ TEST_CASE("improved dimer batches the centre and the forward image",
   eonc::ImprovedDimer dimer(matter, params, batch);
   AtomMatrix mode = AtomMatrix::Random(matter->numberOfAtoms(), 3);
   mode.normalize();
+  auto shifted = matter->getPositions();
+  shifted(0, 0) += 0.02;
+  matter->setPositions(shifted);
   dimer.compute(matter, mode);
   REQUIRE(std::isfinite(dimer.getEigenvalue()));
 }
@@ -1396,6 +1401,14 @@ TEST_CASE("a rate above the crossover uses the parabolic factor",
   ParametersLoadAccess::instanton_options(params).beads = 8;
   ParametersLoadAccess::instanton_options(params).max_iterations = 2;
   ParametersLoadAccess::instanton_options(params).force_tolerance = 10.0;
+  ParametersLoadAccess::instanton_options(params).pi_planes = 1;
+  ParametersLoadAccess::instanton_options(params).pi_beads = 4;
+  ParametersLoadAccess::instanton_options(params).pi_equilibration_steps = 1;
+  ParametersLoadAccess::instanton_options(params).pi_sampling_steps = 1;
+  ParametersLoadAccess::instanton_options(params).pi_time_step = 1.0;
+  ParametersLoadAccess::instanton_options(params).pi_recrossing_parents = 1;
+  ParametersLoadAccess::instanton_options(params).pi_recrossing_children = 1;
+  ParametersLoadAccess::instanton_options(params).pi_recrossing_time = 1.0;
   eonc::Runtime runtime;
   auto owned = std::make_unique<Parameters>(params);
   eonc::InstantonJob job(std::move(owned), runtime);
