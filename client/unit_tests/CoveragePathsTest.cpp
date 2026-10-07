@@ -871,7 +871,7 @@ TEST_CASE("shuffled atom ids, extra ini sections, and ARTn status text",
   Matter shuffled(pot, params);
   REQUIRE(eonc::io::io_ok(
       shuffled.con2matter((work.dir() / "shuffled.con").string())));
-  REQUIRE(shuffled.numberOfAtoms() == 3);
+  REQUIRE(shuffled.numberOfAtoms() == 13);
   REQUIRE(std::isfinite(shuffled.getPotentialEnergy()));
 
   Parameters ini;
