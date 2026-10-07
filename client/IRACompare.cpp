@@ -338,7 +338,41 @@ IRACompare::SymmetryResult IRACompare::findSymmetry(const Matter &m,
 IRACompare::MatchResult
 IRACompare::alignReactantToProduct(Matter &reactant, const Matter &product,
                                    double distThreshold) {
-  MatchResult result = match(reactant, product, distThreshold);
+#ifdef WITH_IRA
+  return alignReactantToProduct(reactant, product, distThreshold,
+                                get_ira_resource());
+#else
+  MatchResult result;
+  result.error = -1;
+  return result;
+#endif
+}
+
+IRACompare::MatchResult
+IRACompare::alignReactantToProduct(Matter &reactant, const Matter &product,
+                                   double distThreshold, IIRAResource &res) {
+  const int nat1 = reactant.numberOfAtoms();
+  const int nat2 = product.numberOfAtoms();
+  std::vector<int> typ1(static_cast<size_t>(nat1 > 0 ? nat1 : 0));
+  std::vector<int> typ2(static_cast<size_t>(nat2 > 0 ? nat2 : 0));
+  if (nat1 > 0) {
+    const auto nrs = reactant.getAtomicNrs();
+    for (int i = 0; i < nat1; ++i) {
+      typ1[static_cast<size_t>(i)] = nrs[i];
+    }
+  }
+  if (nat2 > 0) {
+    const auto nrs = product.getAtomicNrs();
+    for (int i = 0; i < nat2; ++i) {
+      typ2[static_cast<size_t>(i)] = nrs[i];
+    }
+  }
+  const double *pos1 = nat1 > 0 ? reactant.getPositions().data() : nullptr;
+  const double *pos2 = nat2 > 0 ? product.getPositions().data() : nullptr;
+  MatchResult result =
+      matchArrays(nat1, typ1.empty() ? nullptr : typ1.data(), pos1, nat2,
+                  typ2.empty() ? nullptr : typ2.data(), pos2, distThreshold,
+                  res);
   if (result.error != 0) {
     return result;
   }

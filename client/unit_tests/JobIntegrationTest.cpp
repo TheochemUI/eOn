@@ -19,6 +19,7 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/BaseStructures.h"
 #include "eon/BasinHoppingJob.h"
+#include "eon/GlobalOptimizationJob.h"
 #include "eon/Bundling.h"
 #include "eon/ConFileIO.h"
 #include "eon/Job.h"
@@ -3148,6 +3149,113 @@ pi_time_step = 1.0
   for (const auto &frame : frames) {
     REQUIRE(frame.has_spreads());
   }
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "GlobalOptimizationJob records a random hop and an MD hop",
+                 "[job][global_optimization]") {
+  EON_REQUIRE_TEST_DATA(".");
+  const auto runOne = [&](const std::string &move, const std::string &decision,
+                          long mdmin) {
+    writeConfig("[Main]\n"
+                "job = global_optimization\n"
+                "temperature = 300\n"
+                "random_seed = 7\n"
+                "[Potential]\n"
+                "potential = lj\n"
+                "[Optimizer]\n"
+                "opt_method = lbfgs\n"
+                "converged_force = 0.05\n"
+                "max_iterations = 30\n"
+                "[Global Optimization]\n"
+                "move_method = " +
+                move +
+                "\n"
+                "decision_method = " +
+                decision +
+                "\n"
+                "steps = 1\n"
+                "mdmin = " +
+                std::to_string(mdmin) + "\n");
+    std::filesystem::copy_file(
+        workdir / "reactant.con", workdir / "pos.con",
+        std::filesystem::copy_options::overwrite_existing);
+    std::filesystem::remove(workdir / "earr.dat");
+    std::filesystem::current_path(workdir);
+    params = std::make_unique<Parameters>();
+    params->load("config.ini");
+    eonc::Runtime runtime;
+    eonc::PotRegistry::get().reset();
+    eonc::GlobalOptimizationJob job(std::move(params), runtime);
+    job.run();
+    std::filesystem::current_path(originalDir);
+    REQUIRE(std::filesystem::file_size(workdir / "earr.dat") > 0);
+  };
+  runOne("random", "boltzmann", 3);
+  runOne("md", "npew", 1);
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "Basin hopping keeps a unique minimum",
+                 "[job][basin_hopping]") {
+  EON_REQUIRE_TEST_DATA(".");
+  writeConfig(R"(
+[Main]
+job = basin_hopping
+temperature = 100000
+random_seed = 11
+
+[Potential]
+potential = lj
+
+[Optimizer]
+opt_method = lbfgs
+converged_force = 0.05
+max_iterations = 30
+
+[Basin Hopping]
+steps = 1
+write_unique = true
+displacement_algorithm = linear
+displacement_distribution = gaussian
+)");
+  std::filesystem::copy_file(workdir / "reactant.con", workdir / "pos.con",
+                             std::filesystem::copy_options::overwrite_existing);
+  auto results = runJob();
+  REQUIRE(results.count("minimum_energy") == 1);
+  REQUIRE(std::filesystem::exists(workdir / "min_00001.con"));
+  double energy = std::stod(results["minimum_energy"]);
+  REQUIRE(std::isfinite(energy));
+  REQUIRE(energy < 0.0);
+}
+
+TEST_CASE("Basin hopping swaps two elements", "[job][basin_hopping]") {
+  eonc::Parameters params;
+  eonc::ParametersLoadAccess::potential_options(params).potential =
+      eonc::PotType::LJ;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(eonc::PotType::LJ, params));
+  eonc::Matter matter(pot, params);
+  matter.resize(4);
+  matter.setAtomicNr(0, 1);
+  matter.setAtomicNr(1, 1);
+  matter.setAtomicNr(2, 8);
+  matter.setAtomicNr(3, 8);
+  AtomMatrix positions(4, 3);
+  positions.setZero();
+  positions(1, 0) = 1.0;
+  positions(2, 0) = 2.0;
+  positions(3, 0) = 3.0;
+  matter.setPositions(positions);
+  auto owned = std::make_unique<eonc::Parameters>(params);
+  eonc::Runtime runtime;
+  eonc::BasinHoppingJob job(std::move(owned), runtime);
+  eonc::rng::random(3);
+  const AtomMatrix before = matter.getPositions();
+  job.randomSwap(&matter);
+  REQUIRE_FALSE(before.isApprox(matter.getPositions(), 0.0));
+  REQUIRE(matter.getAtomicNr(0) == 1);
+  REQUIRE(matter.getAtomicNr(2) == 8);
 }
 
 } /* namespace tests */

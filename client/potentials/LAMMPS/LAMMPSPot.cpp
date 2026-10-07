@@ -292,6 +292,17 @@ void LAMMPSPot::ensureWorker() {
   workerSpawned = true;
 }
 
+extern "C" void __gcov_dump(void) __attribute__((weak));
+
+namespace {
+void workerExit(int code) {
+  if (__gcov_dump != nullptr) {
+    __gcov_dump();
+  }
+  _exit(code);
+}
+} // namespace
+
 void LAMMPSPot::runWorkerLoop() {
   workerChild_ = true;
   // Running in the forked child.  Evaluate forces with an in-process LAMMPS
@@ -299,10 +310,10 @@ void LAMMPSPot::runWorkerLoop() {
   for (;;) {
     long N = 0;
     if (!readExact(reqFd, &N, sizeof(N))) {
-      _exit(0); // request pipe closed -> shut down cleanly
+      workerExit(0); // request pipe closed -> shut down cleanly
     }
     if (N < 0) {
-      _exit(0); // explicit shutdown sentinel from stopWorker()
+      workerExit(0); // explicit shutdown sentinel from stopWorker()
     }
     std::vector<int> atomicNrs(static_cast<size_t>(N));
     std::vector<double> R(static_cast<size_t>(3 * N));
@@ -312,12 +323,12 @@ void LAMMPSPot::runWorkerLoop() {
         !readExact(reqFd, box, sizeof(box)) ||
         !readExact(reqFd, R.data(),
                    sizeof(double) * static_cast<size_t>(3 * N))) {
-      _exit(1);
+      workerExit(1);
     }
     std::vector<double> mask(static_cast<size_t>(3 * N), 0.0);
     if (!readExact(reqFd, mask.data(),
                    sizeof(double) * static_cast<size_t>(3 * N))) {
-      _exit(1);
+      workerExit(1);
     }
     setFixedMask(N, mask.data());
 
@@ -342,7 +353,7 @@ void LAMMPSPot::runWorkerLoop() {
         !writeExact(resFd, F.data(),
                     sizeof(double) * static_cast<size_t>(3 * N)) ||
         !writeExact(resFd, stressRaw, sizeof(stressRaw))) {
-      _exit(1);
+      workerExit(1);
     }
   }
 }

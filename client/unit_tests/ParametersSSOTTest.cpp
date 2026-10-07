@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
+#include <stdexcept>
 #include <string>
 #include <utility>
 
@@ -260,5 +261,91 @@ TEST_CASE("Parameters INI reads instanton, OH-TST, and socket keys",
   REQUIRE(p.socket_nwchem_options().unix_socket_mode);
   REQUIRE(p.socket_nwchem_options().unix_socket_path == "eon_sock");
   REQUIRE(p.potential_options().LAMMPSThreads == 2);
+}
+
+TEST_CASE("Parameters INI reads the optional potential sections",
+          "[params][ini]") {
+  Parameters xtb;
+  REQUIRE(xtb.load_ini_text("[Potential]\npotential = xtb\n"
+                            "[XTBPot]\nparamset = GFN1\naccuracy = 0.2\n"
+                            "charge = 1\n") == 0);
+  REQUIRE(xtb.xtb_options().paramset == "GFN1");
+  REQUIRE(xtb.xtb_options().acc == Catch::Approx(0.2));
+
+  Parameters zbl;
+  REQUIRE(zbl.load_ini_text("[Potential]\npotential = zbl\n"
+                            "[ZBLPot]\ncut_inner = 0.5\ncut_global = 2.5\n") ==
+          0);
+  REQUIRE(zbl.zbl_options().cut_inner == Catch::Approx(0.5));
+  REQUIRE(zbl.zbl_options().cut_global == Catch::Approx(2.5));
+
+  Parameters crossed;
+  REQUIRE_THROWS_AS(
+      crossed.load_ini_text("[Potential]\npotential = zbl\n"
+                            "[ZBLPot]\ncut_inner = 3\ncut_global = 1\n"),
+      std::runtime_error);
+
+  Parameters dispersion;
+  REQUIRE(dispersion.load_ini_text("[Potential]\npotential = dftd3\n"
+                                   "[D3Pot]\nfunctional = blyp\natm = false\n"
+                                   "damping = zero\n") == 0);
+  REQUIRE(dispersion.dftd_options().functional == "blyp");
+  REQUIRE_FALSE(dispersion.dftd_options().atm);
+  REQUIRE(dispersion.dftd_options().d3_damping == "zero");
+
+  Parameters expr;
+  REQUIRE(expr.load_ini_text("[Potential]\npotential = expr\n"
+                             "[ExprPot]\nexpression = lj\nterms = pair\n") ==
+          0);
+  REQUIRE(expr.expr_options().expression == "lj");
+  REQUIRE(expr.expr_options().terms == "pair");
+
+  Parameters mopac;
+  REQUIRE(mopac.load_ini_text(
+              "[Potential]\npotential = mopac\n"
+              "[MOPACPot]\ncharge = -1\nspin = 1\nmodel = 2\n"
+              "engine_path = libmopac.so\n") == 0);
+  REQUIRE(mopac.mopac_options().charge == -1);
+  REQUIRE(mopac.mopac_options().engine_path == "libmopac.so");
+
+  Parameters ams;
+  REQUIRE(ams.load_ini_text("[Potential]\npotential = ams\n"
+                            "[AMS]\nengine = dftb\nforcefield = uff\n"
+                            "[AMS_ENV]\namshome = /opt/ams\n") == 0);
+  REQUIRE(ams.ams_options().engine == "dftb");
+  REQUIRE(ams.ams_options().env.amshome == "/opt/ams");
+
+  Parameters sections;
+  REQUIRE(sections.load_ini_text(
+              "[Potential]\npotential = lj\n"
+              "[CG]\ncg_line_search = true\ncg_max_iter_line_search = 7\n"
+              "[FIRE]\ntime_step = 0.5\ntime_step_max = 2\n"
+              "[Xtsci]\nmethod = lbfgs\nqn_step = full\nprecon = none\n"
+              "accept = ratio\nhighs = true\nmanifold = off\n"
+              "[ASE_ORCA]\norca_path = orca\nnproc = 2\ncharge = -1\n"
+              "[ASE_NWCHEM]\nnwchem_path = nwchem\nbasis = 6-31g\n"
+              "memory = 400\n"
+              "[Metatomic]\nmodel_path = model.pt\ndevice = cpu\n"
+              "check_consistency = true\nn_symmetry_rotations = 3\n"
+              "variant_base = base\n"
+              "[Serve]\nhost = 127.0.0.1\nport = 4321\nreplicas = 2\n"
+              "endpoints = lj:1\n"
+              "[Saddle Search]\ndisplace_atom_list = 1, 2\n"
+              "confine_positive = true\nbowl_active_atoms = 4\n"
+              "confine_positive_min_active = 2\n") == 0);
+  REQUIRE(sections.optimizer_options().cg.line_search);
+  REQUIRE(sections.optimizer_options().cg.line_search_max_iter == 7);
+  REQUIRE(sections.optimizer_options().time_step_input == Catch::Approx(0.5));
+  REQUIRE(sections.optimizer_options().xtsci.method == "lbfgs");
+  REQUIRE(sections.optimizer_options().xtsci.highs);
+  REQUIRE(sections.ase_orca_options().charge == -1);
+  REQUIRE(sections.ase_nwchem_options().basis == "6-31g");
+  REQUIRE(sections.metatomic_options().model_path == "model.pt");
+  REQUIRE(sections.metatomic_options().n_symmetry_rotations == 3);
+  REQUIRE(sections.serve_options().host == "127.0.0.1");
+  REQUIRE(sections.serve_options().port == 4321);
+  REQUIRE(sections.saddle_search_options().displace_atom_list.size() == 2);
+  REQUIRE(sections.saddle_search_options().confine_positive.enabled);
+  REQUIRE(sections.saddle_search_options().confine_positive.min_active == 2);
 }
 } // namespace tests

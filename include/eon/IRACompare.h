@@ -76,6 +76,11 @@ public:
   static MatchResult alignReactantToProduct(Matter &reactant,
                                             const Matter &product,
                                             double distThreshold);
+  /// Test seam: injected resource, no process-default libira load.
+  static MatchResult alignReactantToProduct(Matter &reactant,
+                                            const Matter &product,
+                                            double distThreshold,
+                                            IIRAResource &res);
 };
 
 } // namespace eonc

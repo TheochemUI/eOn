@@ -19,8 +19,15 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/potentials/LAMMPS/LAMMPSPot.h"
 
+#include <cmath>
+#include <filesystem>
+#include <fstream>
 #include <stdexcept>
 #include <string>
+
+#ifndef _WIN32
+#include <unistd.h>
+#endif
 
 namespace tests {
 
@@ -144,5 +151,95 @@ TEST_CASE("LAMMPS screen cursor rewinds when the file is replaced",
   REQUIRE(eonc::lammpsScreenCursor(40, 80, false) == 40);
   REQUIRE(eonc::lammpsScreenCursor(-1, 80, false) == 0);
 }
+
+#ifndef _WIN32
+TEST_CASE("LAMMPSPot Morse pair returns a finite energy", "[lammps][force]") {
+  namespace fs = std::filesystem;
+  auto &loader = eonc::LammpsLoader::instance();
+  if (!loader.is_loaded()) {
+    try {
+      loader.require_loaded();
+    } catch (const std::runtime_error &err) {
+      const std::string what{err.what()};
+      REQUIRE(what.find("liblammps") != std::string::npos);
+      return;
+    }
+  }
+  REQUIRE(loader.is_loaded());
+
+  struct Cwd {
+    fs::path previous;
+    explicit Cwd(const fs::path &next) : previous(fs::current_path()) {
+      fs::current_path(next);
+    }
+    ~Cwd() {
+      std::error_code ec;
+      fs::current_path(previous, ec);
+    }
+  };
+
+  const auto writeInput = [](const fs::path &path, bool realUnits) {
+    std::ofstream out(path);
+    REQUIRE(out.is_open());
+    if (realUnits) {
+      out << "#!units real\n";
+    }
+    out << "pair_style morse 9.5\n";
+    out << "pair_coeff * * 0.7102 1.6047 2.897\n";
+    out << "pair_modify shift yes\n";
+  };
+
+  const double positions[6] = {0.0, 0.0, 0.0, 2.897, 0.0, 0.0};
+  const int numbers[2] = {78, 78};
+  const double box[9] = {20.0, 0.0, 0.0, 0.0, 20.0, 0.0, 0.0, 0.0, 20.0};
+  const double mask[6] = {1.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+
+  const fs::path metalDir =
+      fs::temp_directory_path() /
+      ("eon-lmp-metal-" + std::to_string(static_cast<long long>(::getpid())));
+  fs::remove_all(metalDir);
+  fs::create_directories(metalDir);
+  writeInput(metalDir / "in.lammps", false);
+
+  eonc::Parameters params;
+  eonc::ParametersLoadAccess::potential_options(params).LAMMPSLogging = true;
+  double metalEnergy = 0.0;
+  double metalForces[6] = {};
+  double warmEnergy = 0.0;
+  double warmForces[6] = {};
+  {
+    const Cwd cwd(metalDir);
+    LAMMPSPot pot(params);
+    pot.setFixedMask(2, mask);
+    pot.force(2, positions, numbers, metalForces, &metalEnergy, nullptr, box);
+    pot.force(2, positions, numbers, warmForces, &warmEnergy, nullptr, box);
+    if (pot.computesStress()) {
+      REQUIRE(pot.cauchyStress().allFinite());
+    }
+  }
+  REQUIRE(std::isfinite(metalEnergy));
+  REQUIRE(metalEnergy < 1.0e5);
+  REQUIRE(std::isfinite(metalForces[0]));
+  REQUIRE(warmEnergy == Catch::Approx(metalEnergy).margin(1e-6));
+
+  const fs::path realDir =
+      fs::temp_directory_path() /
+      ("eon-lmp-real-" + std::to_string(static_cast<long long>(::getpid())));
+  fs::remove_all(realDir);
+  fs::create_directories(realDir);
+  writeInput(realDir / "in.lammps", true);
+  double realEnergy = 0.0;
+  double realForces[6] = {};
+  {
+    const Cwd cwd(realDir);
+    LAMMPSPot pot(params);
+    pot.force(2, positions, numbers, realForces, &realEnergy, nullptr, box);
+  }
+  REQUIRE(std::isfinite(realEnergy));
+  REQUIRE(realEnergy * 23.0609 == Catch::Approx(metalEnergy).margin(1e-4));
+  fs::remove_all(metalDir);
+  fs::remove_all(realDir);
+}
+#endif
 
 } // namespace tests

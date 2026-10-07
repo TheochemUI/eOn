@@ -17,6 +17,8 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <utility>
+#include <vector>
 
 #ifndef _WIN32
 #include <fcntl.h>
@@ -186,6 +188,82 @@ TEST_CASE("eonclient prints version and help", "[client][timing]") {
   };
   REQUIRE_FALSE(run("--version").empty());
   REQUIRE(run("--help").find("eOn") != std::string::npos);
+#else
+  SKIP("eonclient spawn covers the POSIX client");
+#endif
+}
+
+TEST_CASE("eonclient evaluates, minimizes, and compares a structure",
+          "[client][timing]") {
+#ifndef _WIN32
+  const char *client = std::getenv("EONCLIENT");
+  const char *systems = std::getenv("EON_TEST_SYSTEMS_DIR");
+  if (client == nullptr || systems == nullptr) {
+    SKIP("EONCLIENT and EON_TEST_SYSTEMS_DIR are set by meson test");
+  }
+  const fs::path reactant = fs::path(systems) / "neb_morse" / "reactant.con";
+  REQUIRE(fs::is_regular_file(reactant));
+  const fs::path dir =
+      fs::temp_directory_path() /
+      ("eon-cli-" + std::to_string(static_cast<long long>(::getpid())));
+  std::error_code ec;
+  fs::remove_all(dir, ec);
+  fs::create_directories(dir);
+  fs::copy_file(reactant, dir / "reactant.con");
+  fs::copy_file(reactant, dir / "copy.con");
+
+  extern char **environ;
+  auto spawn = [&](const std::vector<std::string> &args) {
+    std::vector<char *> argv;
+    argv.push_back(const_cast<char *>(client));
+    for (const auto &arg : args) {
+      argv.push_back(const_cast<char *>(arg.c_str()));
+    }
+    argv.push_back(nullptr);
+    const fs::path sink = dir / "cli.out";
+    posix_spawn_file_actions_t actions;
+    posix_spawn_file_actions_init(&actions);
+    posix_spawn_file_actions_addopen(&actions, STDOUT_FILENO,
+                                     sink.string().c_str(),
+                                     O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    posix_spawn_file_actions_adddup2(&actions, STDOUT_FILENO, STDERR_FILENO);
+    pid_t pid = 0;
+    int status = 1;
+    {
+      const CwdGuard cwd(dir);
+      const int spawned =
+          posix_spawn(&pid, client, &actions, nullptr, argv.data(), environ);
+      posix_spawn_file_actions_destroy(&actions);
+      REQUIRE(spawned == 0);
+      REQUIRE(waitpid(pid, &status, 0) > 0);
+    }
+    std::ifstream in(sink);
+    std::stringstream buffer;
+    buffer << in.rdbuf();
+    return std::pair<int, std::string>{
+        WIFEXITED(status) ? WEXITSTATUS(status) : -1, buffer.str()};
+  };
+
+  const auto features = spawn({"--features"});
+  REQUIRE(features.first == 0);
+  REQUIRE(features.second.find("disabled") != std::string::npos);
+
+  const auto point = spawn({"-s", "-p", "lj", "reactant.con"});
+  REQUIRE(point.first == 0);
+  REQUIRE(point.second.find("Energy:") != std::string::npos);
+
+  const auto minimized =
+      spawn({"-m", "-p", "lj", "-f", "1.0", "reactant.con", "relaxed.con"});
+  REQUIRE(minimized.first == 0);
+  REQUIRE(fs::is_regular_file(dir / "relaxed.con"));
+
+  const auto same = spawn({"-c", "reactant.con", "copy.con"});
+  REQUIRE(same.first == 0);
+  REQUIRE(same.second.find("Structures match") != std::string::npos);
+
+  const auto both = spawn({"-s", "-m", "-p", "lj", "reactant.con"});
+  REQUIRE(both.first == 1);
+  fs::remove_all(dir, ec);
 #else
   SKIP("eonclient spawn covers the POSIX client");
 #endif
