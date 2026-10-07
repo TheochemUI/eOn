@@ -40,6 +40,7 @@
 #include <fstream>
 #include <memory>
 #include <string>
+#include <vector>
 
 #ifndef _WIN32
 #include <unistd.h>
@@ -836,19 +837,33 @@ TEST_CASE("shuffled atom ids, extra ini sections, and ARTn status text",
           "[coverage][ini]") {
   Workdir work;
   {
-    std::ofstream con(work.dir() / "shuffled.con");
-    con << "Generated\n"
-        << "10.0 10.0 10.0\n"
-        << "90.0 90.0 90.0\n"
-        << "\n"
-        << "1\n"
-        << "3\n"
-        << "1.0\n"
-        << "H\n"
-        << "Coordinates of Component 1\n"
-        << "  0.0 0.0 0.0 0 2\n"
-        << "  1.2 0.0 0.0 0 0\n"
-        << "  0.0 1.2 0.0 0 1\n";
+    std::ifstream in(work.dir() / "reactant.con");
+    std::vector<std::string> lines;
+    std::string line;
+    while (std::getline(in, line)) {
+      lines.push_back(line);
+    }
+    bool coords = false;
+    int id = 100;
+    for (auto &row : lines) {
+      if (row.find("Coordinates") != std::string::npos) {
+        coords = true;
+        continue;
+      }
+      if (!coords) {
+        continue;
+      }
+      const auto tab = row.rfind('\t');
+      if (tab == std::string::npos) {
+        break;
+      }
+      row.replace(tab + 1, std::string::npos, std::to_string(id));
+      --id;
+    }
+    std::ofstream out(work.dir() / "shuffled.con");
+    for (const auto &row : lines) {
+      out << row << '\n';
+    }
   }
   Parameters params = ljParams();
   auto pot = eonc::helpers::sharePotential(
