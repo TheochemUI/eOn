@@ -47,6 +47,12 @@ struct RGPotEngineOptions {
   std::string task_name{"omol"};
 };
 
+/// NWChem input block for a DFT theory. Empty when `existing` is set or
+/// the theory is not DFT. `theory` is matched without regard to case.
+std::string nwchemDftInputBlock(const std::string &theory,
+                                const std::string &scfType, int multiplicity,
+                                const std::string &existing);
+
 /** Opaque rgpot-backed engine (nwchemc / cpmdc / metatomic / uma / xtb). */
 class RGPotEngine {
 public:

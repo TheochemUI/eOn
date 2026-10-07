@@ -178,6 +178,25 @@ bool agree_construction(std::string &message) {
 
 } // namespace
 
+std::string nwchemDftInputBlock(const std::string &theory,
+                                const std::string &scfType, int multiplicity,
+                                const std::string &existing) {
+  if (!existing.empty()) {
+    return existing;
+  }
+  const std::string theoryKey = to_lower(theory);
+  const std::string scfKey = to_lower(scfType);
+  if (theoryKey == "dft" && looks_like_dft_xc(scfKey)) {
+    return "dft\n  xc " + scfType + "\n  mult " + std::to_string(multiplicity) +
+           "\nend";
+  }
+  if (looks_like_dft_xc(theoryKey)) {
+    return "dft\n  xc " + theory + "\n  mult " + std::to_string(multiplicity) +
+           "\nend";
+  }
+  return {};
+}
+
 namespace eon {
 ::CPMDParams::Builder fillCpmdParams(::capnp::MallocMessageBuilder &msg,
                                      const RGPotEngineOptions &opt) {
@@ -278,13 +297,9 @@ RGPotEngine::RGPotEngine(const RGPotEngineOptions &opt)
       if (const char *env = std::getenv("RGPOT_NWCHEM_INPUT_BLOCK"))
         block = env;
     }
-    if (block.empty() && (opt.theory == "dft" || opt.theory == "DFT") &&
-        looks_like_dft_xc(opt.scf_type)) {
-      block = "dft\n  xc " + opt.scf_type + "\n  mult " +
-              std::to_string(opt.multiplicity) + "\nend";
-    } else if (block.empty() && looks_like_dft_xc(opt.theory)) {
-      block = "dft\n  xc " + opt.theory + "\n  mult " +
-              std::to_string(opt.multiplicity) + "\nend";
+    if (block.empty()) {
+      block = nwchemDftInputBlock(opt.theory, opt.scf_type, opt.multiplicity,
+                                  block);
     }
     if (!block.empty()) {
       auto blocks = params.initInputBlocks(1);

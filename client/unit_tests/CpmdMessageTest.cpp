@@ -1,4 +1,5 @@
 #include "eon/potentials/Rgpot/CpmdMessage.h"
+#include "eon/potentials/Rgpot/RGPotEngine.h"
 #include "catch2/catch_amalgamated.hpp"
 
 #include <capnp/message.h>
@@ -33,6 +34,19 @@ std::filesystem::path write_message(const std::filesystem::path &path,
 }
 
 } // namespace
+
+TEST_CASE("NWChem DFT theory is matched without regard to case",
+          "[params][nwchem][RGPOT]") {
+  const std::string mixed = nwchemDftInputBlock("Dft", "B3LYP", 1, "");
+  REQUIRE(mixed.find("xc B3LYP") != std::string::npos);
+  REQUIRE(mixed.find("mult 1") != std::string::npos);
+  REQUIRE(nwchemDftInputBlock("DFT", "pbe", 3, "").find("xc pbe") !=
+          std::string::npos);
+  REQUIRE(nwchemDftInputBlock("B3LYP", "rhf", 1, "").find("xc B3LYP") !=
+          std::string::npos);
+  REQUIRE(nwchemDftInputBlock("dft", "b3lyp", 1, "keep") == "keep");
+  REQUIRE(nwchemDftInputBlock("scf", "rhf", 1, "").empty());
+}
 
 TEST_CASE("input_block appends and leaves params_path sections",
           "[params][cpmd][RGPOT]") {
