@@ -155,7 +155,10 @@ int main(int argc, char **argv) {
     try {
       pot->forceBatchOwned(1, 2, &pos, &nrs, &frc, &U, nullptr, &bx, &owner);
     } catch (const std::exception &ex) {
-      std::cerr << "rank=" << rank << " fault " << ex.what() << "\n";
+      // U is the energy shareResult wrote before the raise. Both ranks
+      // must print the same value, the owner, and the engine text.
+      std::cerr << "rank=" << rank << " fault owner=1 energy=" << U << " "
+                << ex.what() << "\n";
       return 1;
     }
     std::cerr << "rank=" << rank << " fault did not throw\n";

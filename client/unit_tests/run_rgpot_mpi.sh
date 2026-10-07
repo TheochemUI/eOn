@@ -75,10 +75,16 @@ if [ "$rc" -gt 128 ]; then
   exit 1
 fi
 if [ "$MODE" = "fault" ]; then
-  grep -q "rank=0 fault .*engine-rank1" stderr || {
-    echo "rank 0 did not print the engine error"
+  grep -q "rank=0 fault owner=1 energy=.*engine-rank1" stderr || {
+    echo "rank 0 did not print the owner, the shared energy, and the engine error"
     exit 1
   }
+  e0=$(sed -n 's/.*rank=0 fault owner=1 energy=\([^ ]*\).*/\1/p' stderr | head -1)
+  e1=$(sed -n 's/.*rank=1 fault owner=1 energy=\([^ ]*\).*/\1/p' stderr | head -1)
+  if [ -z "$e0" ] || [ "$e0" != "$e1" ]; then
+    echo "ranks did not share one energy (rank0=$e0 rank1=$e1)"
+    exit 1
+  fi
   [ "$rc" -ne 0 ] || {
     echo "mpirun exited 0"
     exit 1

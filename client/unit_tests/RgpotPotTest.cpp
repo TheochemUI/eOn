@@ -146,16 +146,18 @@ TEST_CASE("RgpotPot in-process cpmdc force (no potserv)",
              matter->getAtomicNrs().data(), forces.data(), &energy, nullptr,
              matter->getCell().data());
 
-  REQUIRE(std::isfinite(energy));
-  REQUIRE(std::abs(energy) > 1e-6);
+  // The fake engine writes 0.75 + 0.001 * cell_zz. Any other finite
+  // number is a different library, and this case is that formula.
+  const double cell_zz = matter->getCell().data()[8];
+  const double expected = 0.75 + 0.001 * cell_zz;
+  REQUIRE(energy == Catch::Approx(expected).margin(1e-9));
 
   // Two successive forces must both succeed (warm multi-call path)
   double energy2 = 0.0;
   pot->force(matter->numberOfAtoms(), matter->getPositions().data(),
              matter->getAtomicNrs().data(), forces.data(), &energy2, nullptr,
              matter->getCell().data());
-  REQUIRE(std::isfinite(energy2));
-  REQUIRE(std::abs(energy - energy2) < 1e-4);
+  REQUIRE(energy2 == Catch::Approx(expected).margin(1e-9));
 #endif
 }
 
