@@ -14,6 +14,7 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/ARTnSaddleSearch.h"
 #include "eon/BasinHoppingJob.h"
+#include "eon/Dynamics.h"
 #include "eon/EpiCenters.h"
 #include "eon/GeometryAnalysis.h"
 #include "eon/HelperFunctions.h"
@@ -1021,6 +1022,15 @@ TEST_CASE("short accelerated dynamics records a transition",
     auto hot = std::make_shared<Matter>(pot, tadParams);
     REQUIRE(eonc::io::io_ok(hot->con2matter(std::string("reactant.con"))));
     hot->setMasses(VectorXd::Ones(hot->numberOfAtoms()));
+    {
+      Matter probe(*hot);
+      eonc::Dynamics step(&probe, tadParams);
+      step.setTemperature(300.0);
+      step.setThermalVelocity();
+      const AtomMatrix before = probe.getPositions();
+      step.oneStep(1);
+      REQUIRE((probe.getPositions() - before).norm() > 1.0e-6);
+    }
     auto owned = std::make_unique<Parameters>(tadParams);
     eonc::TADJob job(std::move(owned), runtime);
     auto found = job.runFromMatter(hot);
