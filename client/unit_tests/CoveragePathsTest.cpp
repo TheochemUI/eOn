@@ -1181,8 +1181,6 @@ TEST_CASE("a four-bead instanton reads a starting band", "[job][instanton]") {
   product->setPositions(pos);
   reactant->setPeriodic(false);
   product->setPeriodic(false);
-  reactant->setCell(Matrix3d::Zero());
-  product->setCell(Matrix3d::Zero());
   REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
   REQUIRE(eonc::io::io_ok(product->matter2con("product.con", false)));
   REQUIRE(eonc::io::io_ok(reactant->matter2con("band.con", false)));
