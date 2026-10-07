@@ -1024,6 +1024,7 @@ eonclib_sources = [
     'NEBOcinebController.cpp',
     'NEBSplineExtrema.cpp',
     'Tunneling.cpp',
+    'QuantumFreeEnergy.cpp',
     'NEBSpringForce.cpp',
     'SolidStateNEB.cpp',
     'NEBTangent.cpp',
@@ -2021,6 +2022,7 @@ if get_option('with_tests')
         # The cubic rate at 600 beads, and its half-ring comparison, run
         # past the default 30s.
         ['test_tunneling', 'TunnelingTest.cpp', '', 1200],
+        ['test_quantum_free_energy', 'QuantumFreeEnergyTest.cpp', ''],
         ['test_pot', 'PotTest.cpp', 'neb_morse'],
         ['test_rgpot_adapter', 'RgpotAdapterTest.cpp', 'neb_morse'],
         # ['approve_params', 'ApproveParams.cpp', ''], # needs to handle additional parameters

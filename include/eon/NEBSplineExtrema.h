@@ -65,7 +65,8 @@ void printImageData(
     const std::vector<std::shared_ptr<EigenmodeStrategy>> &eigenmode_solvers,
     long numImages, bool estimateEigenvalues,
     std::optional<size_t> bandIndex = std::nullopt,
-    double referenceEnergy = std::numeric_limits<double>::quiet_NaN());
+    double referenceEnergy = std::numeric_limits<double>::quiet_NaN(),
+    const std::vector<double> *quantumFreeEnergy = nullptr);
 
 /// Write a NEB band as a multi-frame .con via readcon ConFrameBuilder::clone().
 [[nodiscard]] eonc::io::IoStatus writePathCon(
@@ -74,6 +75,7 @@ void printImageData(
     const std::vector<std::shared_ptr<EigenmodeStrategy>> &eigenmode_solvers,
     long numImages, bool estimateEigenvalues, std::string filename,
     std::optional<size_t> bandIndex = std::nullopt,
-    double referenceEnergy = std::numeric_limits<double>::quiet_NaN());
+    double referenceEnergy = std::numeric_limits<double>::quiet_NaN(),
+    const std::vector<double> *quantumFreeEnergy = nullptr);
 
 } // namespace eonc::neb

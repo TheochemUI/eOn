@@ -1035,6 +1035,9 @@ int load_ini(INIReader &ini, Parameters &params) {
   ParametersLoadAccess::neb_options(params).solid_state.pressure = ini.GetReal(
       neb_section, "solid_state_pressure",
       ParametersLoadAccess::neb_options(params).solid_state.pressure);
+  ParametersLoadAccess::neb_options(params).quantum_temperature = ini.GetReal(
+      neb_section, "temperature",
+      ParametersLoadAccess::neb_options(params).quantum_temperature);
   ParametersLoadAccess::neb_options(params).max_iterations = ini.GetInteger(
       neb_section, "max_iterations",
       ParametersLoadAccess::optimizer_options(params).max_iterations);

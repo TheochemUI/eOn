@@ -18,6 +18,7 @@
 #include "eon/NEBSplineExtrema.h"
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
+#include "eon/QuantumFreeEnergy.h"
 
 #include <filesystem>
 #include <format>
@@ -239,10 +240,18 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   // Save the Full NEB Path
   std::string nebFilename("neb.con");
   returnFiles.push_back(nebFilename);
+  std::vector<double> quantumFreeEnergy;
+  const double quantumTemperature = params.neb_options().quantum_temperature;
+  const std::vector<double> *quantumPtr = nullptr;
+  if (quantumTemperature > 0.0) {
+    quantumFreeEnergy = eonc::quantumFreeEnergies(
+        neb->path, neb->tangent, quantumTemperature, params);
+    quantumPtr = &quantumFreeEnergy;
+  }
   if (!eonc::io::io_ok(eonc::neb::writePathCon(
           neb->path, neb->tangent, neb->eigenmode_solvers, neb->numImages,
           params.debug_options().estimate_neb_eigenvalues, nebFilename,
-          std::nullopt, neb->reactantEnergy))) {
+          std::nullopt, neb->reactantEnergy, quantumPtr))) {
     QUILL_LOG_ERROR(m_log, "Failed to write {}", nebFilename);
   }
 

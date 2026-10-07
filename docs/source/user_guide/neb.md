@@ -195,6 +195,13 @@ strain the same weight as an atomic displacement.
 that metric. Positive pressure favors a smaller cell. Zero leaves the
 potential-energy surface.
 
+`temperature` is in kelvin. Above zero, each image carries
+`quantum_free_energy`, the potential energy plus
+`kT ln(2 sinh(beta hbar omega / 2))` summed over modes perpendicular to
+the tangent, and `zpe_corrected_barrier`, the highest of those free
+energies minus the reactant. Zero temperature is the limit
+`V + ZPE_perp` and does not turn the profile on.
+
 The cell force is the stress tensor. A potential that implements the Cauchy
 stress, with the sign `sigma = (1/V) dE/dε` for the right strain
 `h <- h (I+ε)` at fixed fractional coordinates, is used directly: the band

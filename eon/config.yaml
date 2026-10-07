@@ -226,6 +226,10 @@ Nudged Elastic Band:
             kind: float
             default: 0.0
 
+        temperature:
+            kind: float
+            default: 0.0
+
         climbing_image_method:
             kind: boolean
             default: true

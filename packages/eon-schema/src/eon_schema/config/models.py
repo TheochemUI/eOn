@@ -2223,6 +2223,13 @@ class NudgedElasticBandConfig(BaseModel):
             "(doi:10.1063/1.3684549). 1 weights a cell strain like an atomic move."
         ),
     )
+    temperature: float = Field(
+        default=0.0,
+        description=(
+            "Temperature in kelvin for the harmonic quantum free energy "
+            "along the band. Zero leaves the profile on the potential energy."
+        ),
+    )
     solid_state_pressure: float = Field(
         default=0.0,
         description=(

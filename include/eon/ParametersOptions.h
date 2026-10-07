@@ -621,6 +621,10 @@ struct neb_options_t {
     /// smaller cell. Zero keeps the potential-energy band.
     double pressure{0.0};
   } solid_state;
+
+  /// Temperature in kelvin for the harmonic quantum free-energy profile.
+  /// Zero leaves the band on the potential energy.
+  double quantum_temperature{0.0};
 };
 
 // [Molecular Dynamics] //

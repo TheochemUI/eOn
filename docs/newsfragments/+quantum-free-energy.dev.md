@@ -1,0 +1,1 @@
+A band at a Nudged Elastic Band temperature carries the harmonic quantum free energy with the tangent mode removed. At zero temperature that profile is the potential energy plus the perpendicular zero-point energy.

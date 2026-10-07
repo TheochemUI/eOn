@@ -12,6 +12,7 @@
 #include "eon/NEBSplineExtrema.h"
 #include "eon/ConFileIO.h"
 #include "eon/Tunneling.h"
+#include <algorithm>
 #include <cmath>
 #include <format>
 #include <fstream>
@@ -312,7 +313,7 @@ std::vector<readcon::ConFrame> pathToConFrames(
     const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
     const std::vector<std::shared_ptr<EigenmodeStrategy>> &eigenmode_solvers,
     long numImages, bool estimateEigenvalues, std::optional<size_t> bandIndex,
-    double referenceEnergy) {
+    double referenceEnergy, const std::vector<double> *quantumFreeEnergy) {
   const size_t nframes = static_cast<size_t>(numImages) + 2;
   if (path.size() < nframes) {
     return {};
@@ -365,6 +366,17 @@ std::vector<readcon::ConFrame> pathToConFrames(
     } catch (const std::invalid_argument &) {
     }
   }
+  if (quantumFreeEnergy != nullptr && quantumFreeEnergy->size() == nframes) {
+    const double reactant = quantumFreeEnergy->front();
+    const double barrier =
+        *std::max_element(quantumFreeEnergy->begin(), quantumFreeEnergy->end()) -
+        reactant;
+    for (size_t i = 0; i < nframes; ++i) {
+      metas[i].scalars.push_back(
+          {"quantum_free_energy", (*quantumFreeEnergy)[i]});
+      metas[i].scalars.push_back({"zpe_corrected_barrier", barrier});
+    }
+  }
 
   std::vector<std::shared_ptr<Matter>> band(
       path.begin(), path.begin() + static_cast<std::ptrdiff_t>(nframes));
@@ -376,10 +388,12 @@ eonc::io::IoStatus writePathCon(
     const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
     const std::vector<std::shared_ptr<EigenmodeStrategy>> &eigenmode_solvers,
     long numImages, bool estimateEigenvalues, std::string filename,
-    std::optional<size_t> bandIndex, double referenceEnergy) {
+    std::optional<size_t> bandIndex, double referenceEnergy,
+    const std::vector<double> *quantumFreeEnergy) {
   auto frames =
       pathToConFrames(path, tangent, eigenmode_solvers, numImages,
-                      estimateEigenvalues, bandIndex, referenceEnergy);
+                      estimateEigenvalues, bandIndex, referenceEnergy,
+                      quantumFreeEnergy);
   if (frames.empty()) {
     return eonc::io::IoStatus::InvalidArgument;
   }

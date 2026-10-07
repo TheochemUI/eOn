@@ -206,6 +206,8 @@ json to_json(const Parameters &p) {
        ParametersLoadAccess::neb_options(p).solid_state.weight},
       {"solid_state_pressure",
        ParametersLoadAccess::neb_options(p).solid_state.pressure},
+      {"temperature",
+       ParametersLoadAccess::neb_options(p).quantum_temperature},
   };
   j["Nudged Elastic Band"]["spring"] = {
       {"constant", ParametersLoadAccess::neb_options(p).spring.constant},
@@ -637,6 +639,8 @@ void from_json(const json &j, Parameters &p) {
              ParametersLoadAccess::neb_options(p).solid_state.weight);
     JSON_OPT(s, "solid_state_pressure",
              ParametersLoadAccess::neb_options(p).solid_state.pressure);
+    JSON_OPT(s, "temperature",
+             ParametersLoadAccess::neb_options(p).quantum_temperature);
     if (s.contains("spring")) {
       auto &sp = s.at("spring");
       JSON_OPT(sp, "constant",
