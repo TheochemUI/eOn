@@ -231,6 +231,27 @@ struct RgpotPotOptions {
 }
 
 # ---------------------------------------------------------------------
+# [Dynamics] path-integral keys. Defaults match eon/config.yaml.
+# ---------------------------------------------------------------------
+
+# section: Dynamics
+struct DynamicsOptions {
+  pathBeads @0 :Int32 = 8;
+  pathSprings @1 :Text = "trotter";
+  pathPileTau @2 :Float64 = 100.0;
+  pathSeed @3 :Int32 = 1;
+}
+
+# ---------------------------------------------------------------------
+# [Instanton] springs. eco is refused by the rate; the default is trotter.
+# ---------------------------------------------------------------------
+
+# section: Instanton
+struct InstantonOptions {
+  springs @0 :Text = "trotter";
+}
+
+# ---------------------------------------------------------------------
 # Root message: schema-backed parameters document
 # ---------------------------------------------------------------------
 struct EonParameters {
@@ -242,4 +263,6 @@ struct EonParameters {
   # Schema format version for forward-compat loaders
   schemaVersion @5 :UInt32 = 1;
   rgpot @6 :RgpotPotOptions;
+  dynamics @7 :DynamicsOptions;
+  instanton @8 :InstantonOptions;
 }

@@ -207,6 +207,51 @@
   ],
   "schema_version": 1,
   "sections": {
+    "Dynamics": {
+      "fields": [
+        {
+          "capnp": "pathBeads",
+          "default": 8,
+          "ordinal": 0,
+          "snake": "path_beads",
+          "type": "Int32"
+        },
+        {
+          "capnp": "pathSprings",
+          "default": "trotter",
+          "ordinal": 1,
+          "snake": "path_springs",
+          "type": "Text"
+        },
+        {
+          "capnp": "pathPileTau",
+          "default": 100.0,
+          "ordinal": 2,
+          "snake": "path_pile_tau",
+          "type": "Float64"
+        },
+        {
+          "capnp": "pathSeed",
+          "default": 1,
+          "ordinal": 3,
+          "snake": "path_seed",
+          "type": "Int32"
+        }
+      ],
+      "struct": "DynamicsOptions"
+    },
+    "Instanton": {
+      "fields": [
+        {
+          "capnp": "springs",
+          "default": "trotter",
+          "ordinal": 0,
+          "snake": "springs",
+          "type": "Text"
+        }
+      ],
+      "struct": "InstantonOptions"
+    },
     "Main": {
       "fields": [
         {

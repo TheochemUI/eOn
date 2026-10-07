@@ -110,5 +110,10 @@ struct GeneratedDefaults {
   static constexpr auto RGPOTPOT_XTB_CHARGE = 0.0;
   static constexpr auto RGPOTPOT_XTB_UHF = 0;
   static constexpr auto RGPOTPOT_TASK_NAME = std::string_view{"omol"};
+  static constexpr auto DYNAMICS_PATH_BEADS = 8;
+  static constexpr auto DYNAMICS_PATH_SPRINGS = std::string_view{"trotter"};
+  static constexpr auto DYNAMICS_PATH_PILE_TAU = 100.0;
+  static constexpr auto DYNAMICS_PATH_SEED = 1;
+  static constexpr auto INSTANTON_SPRINGS = std::string_view{"trotter"};
 };
 } // namespace eonc::params_ssot

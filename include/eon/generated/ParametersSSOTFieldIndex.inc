@@ -1,5 +1,10 @@
 // AUTO-GENERATED from schema/eon_params.capnp — do not edit.
 // Include inside a std::unordered_set<std::string> initializer.
+    "Dynamics.path_beads",
+    "Dynamics.path_pile_tau",
+    "Dynamics.path_seed",
+    "Dynamics.path_springs",
+    "Instanton.springs",
     "Main.checkpoint",
     "Main.con_filename",
     "Main.finite_difference",
