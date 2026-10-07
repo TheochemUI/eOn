@@ -79,6 +79,10 @@ public:
   static AtomMatrix displace(BasinHoppingJob &job, double step) {
     return job.displaceRandom(step);
   }
+
+  static void swap(BasinHoppingJob &job, Matter *matter) {
+    job.randomSwap(matter);
+  }
 };
 } // namespace eonc
 
@@ -3252,7 +3256,7 @@ TEST_CASE("Basin hopping swaps two elements", "[job][basin_hopping]") {
   eonc::BasinHoppingJob job(std::move(owned), runtime);
   eonc::rng::random(3);
   const AtomMatrix before = matter.getPositions();
-  job.randomSwap(&matter);
+  eonc::BasinHoppingDisplaceAccess::swap(job, &matter);
   REQUIRE_FALSE(before.isApprox(matter.getPositions(), 0.0));
   REQUIRE(matter.getAtomicNr(0) == 1);
   REQUIRE(matter.getAtomicNr(2) == 8);
