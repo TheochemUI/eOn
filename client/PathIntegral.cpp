@@ -466,6 +466,8 @@ void RingPolymer::initGle() {
                                          mode.propagate.transpose());
     mode.noise = factorCovariance(cov);
     mode.extended = MatrixXd::Zero(file.dim, nFree_);
+    mode.draw = MatrixXd::Zero(file.dim, nFree_);
+    mode.acc = MatrixXd::Zero(file.dim, nFree_);
     gle_[static_cast<size_t>(k - 1)] = std::move(mode);
   }
 }
@@ -589,51 +591,60 @@ void RingPolymer::thermalMomenta() {
 
 void RingPolymer::toNormal(const std::vector<VectorXd> &src,
                            std::vector<VectorXd> &dst) const {
-  MatrixXd packed(nDof_, nBeads_);
-  for (long j = 0; j < nBeads_; ++j) {
-    packed.col(j) = src[static_cast<size_t>(j)];
+  if (pack_.rows() != nDof_ || pack_.cols() != nBeads_) {
+    pack_.resize(nDof_, nBeads_);
+    transformed_.resize(nDof_, nBeads_);
   }
-  const MatrixXd out = packed * modes_.transpose();
+  for (long j = 0; j < nBeads_; ++j) {
+    pack_.col(j) = src[static_cast<size_t>(j)];
+  }
+  transformed_.noalias() = pack_ * modes_.transpose();
   for (long k = 0; k < nBeads_; ++k) {
-    dst[static_cast<size_t>(k)] = out.col(k);
+    dst[static_cast<size_t>(k)] = transformed_.col(k);
   }
 }
 
 void RingPolymer::fromNormal(const std::vector<VectorXd> &src,
                              std::vector<VectorXd> &dst) const {
-  MatrixXd packed(nDof_, nBeads_);
-  for (long k = 0; k < nBeads_; ++k) {
-    packed.col(k) = src[static_cast<size_t>(k)];
+  if (pack_.rows() != nDof_ || pack_.cols() != nBeads_) {
+    pack_.resize(nDof_, nBeads_);
+    transformed_.resize(nDof_, nBeads_);
   }
-  const MatrixXd out = packed * modes_;
+  for (long k = 0; k < nBeads_; ++k) {
+    pack_.col(k) = src[static_cast<size_t>(k)];
+  }
+  transformed_.noalias() = pack_ * modes_;
   for (long j = 0; j < nBeads_; ++j) {
-    dst[static_cast<size_t>(j)] = out.col(j);
+    dst[static_cast<size_t>(j)] = transformed_.col(j);
   }
 }
 
 void RingPolymer::forces(Potential &pot, const double *box) {
   double zeroBox[9] = {};
   const double *cell = box != nullptr ? box : zeroBox;
-  std::vector<const double *> pos(static_cast<size_t>(nBeads_));
-  std::vector<const int *> nrs(static_cast<size_t>(nBeads_));
-  std::vector<double *> frc(static_cast<size_t>(nBeads_));
-  std::vector<const double *> boxes(static_cast<size_t>(nBeads_), cell);
+  const auto n = static_cast<size_t>(nBeads_);
+  posPtr_.resize(n);
+  nrsPtr_.resize(n);
+  frcPtr_.resize(n);
+  boxPtr_.assign(n, cell);
+  energyBuf_.assign(n, 0.0);
+  varianceBuf_.assign(n, 0.0);
   for (long bead = 0; bead < nBeads_; ++bead) {
-    pos[static_cast<size_t>(bead)] = q_[static_cast<size_t>(bead)].data();
-    nrs[static_cast<size_t>(bead)] = atomicNumbers_.data();
-    frc[static_cast<size_t>(bead)] = f_[static_cast<size_t>(bead)].data();
+    posPtr_[static_cast<size_t>(bead)] = q_[static_cast<size_t>(bead)].data();
+    nrsPtr_[static_cast<size_t>(bead)] = atomicNumbers_.data();
+    frcPtr_[static_cast<size_t>(bead)] = f_[static_cast<size_t>(bead)].data();
   }
-  std::vector<double> energies(static_cast<size_t>(nBeads_), 0.0);
-  std::vector<double> variances(static_cast<size_t>(nBeads_), 0.0);
   // The bead index is each system's identity across steps: a potential
   // that spreads the ring over calculators keeps a bead on one calculator,
   // and one that stores per-system state (cpmdc orbitals) keeps it with
   // the bead.
-  std::vector<long> owners(static_cast<size_t>(nBeads_));
-  std::iota(owners.begin(), owners.end(), 0L);
-  pot.forceBatchOwned(nBeads_, nAtoms_, pos.data(), nrs.data(), frc.data(),
-                      energies.data(), variances.data(), boxes.data(),
-                      owners.data());
+  if (owners_.size() != n) {
+    owners_.resize(n);
+    std::iota(owners_.begin(), owners_.end(), 0L);
+  }
+  pot.forceBatchOwned(nBeads_, nAtoms_, posPtr_.data(), nrsPtr_.data(),
+                      frcPtr_.data(), energyBuf_.data(), varianceBuf_.data(),
+                      boxPtr_.data(), owners_.data());
   ++batches_;
   for (long bead = 0; bead < nBeads_; ++bead) {
     for (long a = 0; a < nDof_; ++a) {
@@ -674,11 +685,18 @@ double RingPolymer::kineticCv() const {
   if (!haveForces_) {
     return k;
   }
-  const VectorXd c = centroid();
+  if (centroid_.size() != nDof_) {
+    centroid_.resize(nDof_);
+  }
+  centroid_.setZero();
+  for (long bead = 0; bead < nBeads_; ++bead) {
+    centroid_ += q_[static_cast<size_t>(bead)];
+  }
+  centroid_ /= static_cast<double>(nBeads_);
   double virial = 0.0;
   for (long bead = 0; bead < nBeads_; ++bead) {
     for (long a : freeIndex_) {
-      virial += (q_[static_cast<size_t>(bead)][a] - c[a]) *
+      virial += (q_[static_cast<size_t>(bead)][a] - centroid_[a]) *
                 f_[static_cast<size_t>(bead)][a];
     }
   }
@@ -721,13 +739,15 @@ void RingPolymer::thermostat(double h) {
         mode.extended(0, col) = pnm_[static_cast<size_t>(k)][a] /
                                 std::sqrt(mass_[static_cast<size_t>(a)]);
       }
-      MatrixXd noise(mode.extended.rows(), mode.extended.cols());
-      for (long r = 0; r < noise.rows(); ++r) {
-        for (long c = 0; c < noise.cols(); ++c) {
-          noise(r, c) = gauss();
+      MatrixXd &draw = mode.draw;
+      for (long r = 0; r < draw.rows(); ++r) {
+        for (long c = 0; c < draw.cols(); ++c) {
+          draw(r, c) = gauss();
         }
       }
-      mode.extended = mode.propagate * mode.extended + mode.noise * noise;
+      mode.acc.noalias() = mode.propagate * mode.extended;
+      mode.acc.noalias() += mode.noise * draw;
+      mode.extended.swap(mode.acc);
       for (long col = 0; col < nFree_; ++col) {
         const long a = freeIndex_[static_cast<size_t>(col)];
         pnm_[static_cast<size_t>(k)][a] =
@@ -742,6 +762,14 @@ void RingPolymer::thermostat(double h) {
 }
 
 void RingPolymer::kick(double h, bool dropParallel) {
+  if (!(dropParallel && constrain_)) {
+    for (long bead = 0; bead < nBeads_; ++bead) {
+      for (long a : freeIndex_) {
+        p_[static_cast<size_t>(bead)][a] += f_[static_cast<size_t>(bead)][a] * h;
+      }
+    }
+    return;
+  }
   VectorXd removal = VectorXd::Zero(nDof_);
   if (dropParallel && constrain_) {
     VectorXd fc = VectorXd::Zero(nDof_);

@@ -2053,6 +2053,7 @@ if get_option('with_tests')
         ['test_bundling', 'BundlingTest.cpp', ''],
         ['test_xtsci_eindir', 'XtsciEindirTest.cpp', ''],
         ['test_lammps_loader', 'LammpsLoaderTest.cpp', ''],
+        ['test_socket_nwchem_listen', 'SocketNWChemListenTest.cpp', ''],
         ['test_plugin_loader', 'PluginLoaderTest.cpp', ''],
         ['test_ira_resource', 'IRAResourceTest.cpp', ''],
         ['test_artn_resource', 'ARTnResourceTest.cpp', ''],
