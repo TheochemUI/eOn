@@ -1147,6 +1147,8 @@ TEST_CASE("a four-bead instanton reads a starting band", "[job][instanton]") {
   auto pos = product->getPositions();
   pos(0, 0) += 1.5;
   product->setPositions(pos);
+  reactant->setPeriodic(false);
+  product->setPeriodic(false);
   REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
   REQUIRE(eonc::io::io_ok(product->matter2con("product.con", false)));
   REQUIRE(eonc::io::io_ok(reactant->matter2con("band.con", false)));
@@ -1229,6 +1231,35 @@ struct BatchLJ final : Potential {
 
 } // namespace
 
+TEST_CASE("an oversampled IDPP band is decimated before the climb",
+          "[neb][idpp]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::neb_options(params).image_count = 3;
+  ParametersLoadAccess::neb_options(params).max_iterations = 1;
+  ParametersLoadAccess::neb_options(params).force_tolerance = 1.0;
+  ParametersLoadAccess::neb_options(params).endpoints.minimize = false;
+  ParametersLoadAccess::neb_options(params).initialization.method =
+      NEBInit::IDPP;
+  ParametersLoadAccess::neb_options(params).initialization.oversampling = true;
+  ParametersLoadAccess::neb_options(params).initialization.oversampling_factor =
+      2;
+  ParametersLoadAccess::neb_options(params).initialization.max_iterations = 1;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 5;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, pot);
+  auto product = std::make_shared<Matter>(*reactant);
+  auto pos = product->getPositions();
+  pos(0, 0) += 0.8;
+  product->setPositions(pos);
+  auto neb =
+      std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
+  REQUIRE(neb->numImages == 3);
+  REQUIRE(std::isfinite(neb->path[1]->getPotentialEnergy()));
+}
+
 TEST_CASE("improved dimer batches the centre and the forward image",
           "[dimer][batch]") {
   Workdir work;
@@ -1285,7 +1316,7 @@ TEST_CASE("rate instanton climbs a short bead ladder", "[job][instanton]") {
   ParametersLoadAccess::main_options(params).job = JobType::Instanton;
   ParametersLoadAccess::instanton_options(params).mode = "rate";
   ParametersLoadAccess::instanton_options(params).temperature = 200.0;
-  ParametersLoadAccess::instanton_options(params).beads = 8;
+  ParametersLoadAccess::instanton_options(params).beads = 16;
   ParametersLoadAccess::instanton_options(params).max_iterations = 2;
   ParametersLoadAccess::instanton_options(params).force_tolerance = 10.0;
   ParametersLoadAccess::instanton_options(params).bead_ladder = true;
