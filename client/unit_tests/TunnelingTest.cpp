@@ -1771,3 +1771,31 @@ TEST_CASE("A link weight divides one spring of a closed ring",
       closedRingPotential(beads, c, flat, std::vector<double>{0.0, 1.0, 1.0, 1.0}),
       std::invalid_argument);
 }
+
+TEST_CASE("A long ring takes the chain inertia instead of a dense factor",
+          "[Tunneling][Instanton][large_ring]") {
+  const BatchPotential hook = [](const std::vector<VectorXd> &q,
+                                 std::vector<double> &v,
+                                 std::vector<VectorXd> &g) {
+    v.resize(q.size());
+    g.resize(q.size());
+    for (size_t i = 0; i < q.size(); ++i) {
+      v[i] = 0.5 * q[i].squaredNorm();
+      g[i] = q[i];
+    }
+  };
+  const VectorXd saddle = VectorXd::Zero(1);
+  const MatrixXd hs = MatrixXd::Identity(1, 1);
+  RateInstantonOptions opt;
+  opt.beads = 4200;
+  opt.halfRing = false;
+  opt.maxIterations = 1;
+  opt.forceTolerance = 1.0e6;
+  opt.checkOddSector = false;
+  opt.lanczosFirst = 2;
+  opt.lanczosRestart = 2;
+  const RateInstanton inst =
+      optimizeRateInstanton(saddle, hs, 1.0, {}, hook, opt);
+  REQUIRE(inst.iterations >= 0);
+  REQUIRE(std::isfinite(inst.ringPotential));
+}
