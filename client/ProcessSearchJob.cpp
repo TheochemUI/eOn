@@ -179,7 +179,7 @@ std::vector<std::string> ProcessSearchJob::run() {
     throw std::runtime_error("unknown saddle_search.method");
   }
 
-  (void)runPrepared();
+  static_cast<void>(runPrepared());
   return returnFiles;
 }
 

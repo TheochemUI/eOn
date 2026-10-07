@@ -8,6 +8,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <memory>
 
 namespace eonc {
 
@@ -92,10 +93,10 @@ VesinNeighborList *VesinNeighbors::release() {
   if (!owns_) {
     return nullptr;
   }
-  auto *heap = new VesinNeighborList(list_);
+  auto heap = std::make_unique<VesinNeighborList>(list_);
   list_ = VesinNeighborList{};
   owns_ = false;
-  return heap;
+  return heap.release();
 }
 
 } // namespace eonc

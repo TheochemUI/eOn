@@ -121,7 +121,7 @@ void bind_matter(nb::module_ &m) {
             auto &self = nb::cast<Matter &>(self_obj);
             {
               nb::gil_scoped_release release;
-              (void)self.getForces(); // ensure force cache
+              static_cast<void>(self.getForces()); // ensure force cache
             }
             return view_n3_readonly(matter_forces_ptr(self),
                                     self.numberOfAtoms(), self_obj);
@@ -137,7 +137,7 @@ void bind_matter(nb::module_ &m) {
             auto &self = nb::cast<Matter &>(self_obj);
             {
               nb::gil_scoped_release release;
-              (void)self.getForcesRaw();
+              static_cast<void>(self.getForcesRaw());
             }
             return view_n3_readonly(matter_forces_raw_ptr(self),
                                     self.numberOfAtoms(), self_obj);

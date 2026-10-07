@@ -372,7 +372,7 @@ TEST_CASE("getFree respects per-axis constraints", "[MatterTest][fixed]") {
 
 TEST_CASE("setForces persist until positions change", "[MatterTest][hfa4]") {
   auto [m1, params] = makeLJCluster();
-  (void)m1->getPotentialEnergy();
+  static_cast<void>(m1->getPotentialEnergy());
   AtomMatrix inj = m1->getForces();
   inj.setConstant(0.123);
   m1->setForces(inj);
@@ -449,9 +449,9 @@ struct IsolatedMoleculePot final : Potential {
   void force(long nAtoms, const double *positions, const int *atomicNrs,
              double *forces, double *energy, double *variance,
              const double *box) override {
-    (void)positions;
-    (void)atomicNrs;
-    (void)box;
+    static_cast<void>(positions);
+    static_cast<void>(atomicNrs);
+    static_cast<void>(box);
     *energy = 0.0;
     *variance = 0.0;
     for (long i = 0; i < nAtoms * 3; ++i) {

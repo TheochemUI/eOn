@@ -129,7 +129,7 @@ class AseCalcPotential final : public eonc::Potential {
   /// Do not alias ASE arrays onto Matter storage. ASE writes in place
   /// and would skip setPositions, leaving energy/forces stale.
   bool try_share_positions(eonc::Matter &m) {
-    (void)m;
+    static_cast<void>(m);
     shared_positions_ = false;
     return false;
   }
@@ -434,10 +434,11 @@ void bind_potential(nb::module_ &m) {
             }
             const size_t rows = static_cast<size_t>(forces.rows());
             const size_t cols = 3;
-            double *buf = new double[rows * cols];
-            std::memcpy(buf, forces.data(), rows * cols * sizeof(double));
+            auto owned = std::make_unique<double[]>(rows * cols);
+            std::memcpy(owned.get(), forces.data(), rows * cols * sizeof(double));
+            double *buf = owned.release();
             nb::capsule owner(buf, [](void *p) noexcept {
-              delete[] static_cast<double *>(p);
+              std::unique_ptr<double[]> reclaim(static_cast<double *>(p));
             });
             auto f_np = nb::ndarray<nb::numpy, double, nb::c_contig>(
                 buf, {rows, cols}, owner);

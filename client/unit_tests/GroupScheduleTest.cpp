@@ -53,7 +53,7 @@ TEST_CASE("A partial band that would stack on one group is spread",
           "[RGPOT][schedule]") {
   GroupSchedule s(2);
   const std::vector<std::int64_t> band{0, 1, 2, 3, 4, 5, 6};
-  (void)s.assign(band);
+  static_cast<void>(s.assign(band));
   // Images 0, 2, 4 and 6 live on group 0. A batch of those four alone
   // would put all four there; the cap is two.
   const std::vector<std::int64_t> dirty{0, 2, 4, 6};

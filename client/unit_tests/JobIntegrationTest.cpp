@@ -459,7 +459,7 @@ neighbor_cutoff = 3.3
   REQUIRE(std::abs(expect.front()) > 1e-3);
 
   auto results = runJob();
-  (void)results;
+  static_cast<void>(results);
   std::ifstream fd_results((workdir / "curvature.dat").string());
   std::string header;
   std::getline(fd_results, header);
@@ -1424,7 +1424,7 @@ static AtomMatrix replicaBiasPositions(const Parameters &spec, bool keepBias) {
   matter->con2matter(std::string("pos.con"));
   matter->relax();
   // runFromMatter writes the reactant before copying, which wraps PBC.
-  (void)matter->matter2con("reactant.con");
+  static_cast<void>(matter->matter2con("reactant.con"));
 
   auto trajectory = std::make_shared<Matter>(pot, spec);
   *trajectory = *matter;
@@ -1454,7 +1454,7 @@ static AtomMatrix replicaBiasPositions(const Parameters &spec, bool keepBias) {
   for (long step = 1; step <= spec.dynamics_options().steps; ++step) {
     bondBoost.advance();
     dynamics.oneStep();
-    (void)bondBoost.boost();
+    static_cast<void>(bondBoost.boost());
   }
   return trajectory->getPositionsCopy();
 }
@@ -1538,7 +1538,7 @@ static ReplicaTransitionRun replicaTransitionRun(const Parameters &spec,
   reactant->con2matter(std::string("pos.con"));
   reactant->relax();
   // runFromMatter writes the reactant before copying, which wraps PBC.
-  (void)reactant->matter2con("reactant.con");
+  static_cast<void>(reactant->matter2con("reactant.con"));
 
   auto trajectory = std::make_shared<Matter>(pot, spec);
   *trajectory = *reactant;
@@ -1585,7 +1585,7 @@ static ReplicaTransitionRun replicaTransitionRun(const Parameters &spec,
   for (long step = 1; step <= steps; ++step) {
     bondBoost.advance();
     dynamics.oneStep();
-    (void)bondBoost.boost();
+    static_cast<void>(bondBoost.boost());
     if (out.transitionStep != 0 ||
         (step % stateCheckInterval != 0 && step != steps)) {
       continue;

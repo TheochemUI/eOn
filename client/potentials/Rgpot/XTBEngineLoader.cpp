@@ -12,7 +12,7 @@ void *open_lib(const char *path) {
 #ifndef _WIN32
   return dlopen(path, RTLD_NOW | RTLD_LOCAL);
 #else
-  (void)path;
+  static_cast<void>(path);
   return nullptr;
 #endif
 }
@@ -21,15 +21,15 @@ void close_lib(void *h) {
   if (h)
     dlclose(h);
 #else
-  (void)h;
+  static_cast<void>(h);
 #endif
 }
 void *load_sym(void *h, const char *n) {
 #ifndef _WIN32
   return dlsym(h, n);
 #else
-  (void)h;
-  (void)n;
+  static_cast<void>(h);
+  static_cast<void>(n);
   return nullptr;
 #endif
 }

@@ -32,7 +32,7 @@ UniformSpring::compute(long i, const AtomMatrix &tangent, double distNext,
 
 SpringResult GeometricSpring::compute(long i, const AtomMatrix &tangent,
                                       double distNext, double distPrev) const {
-  (void)i;
+  static_cast<void>(i);
   SpringResult result;
   result.forceSpringPar =
       ksp * (distNext * distNext - distPrev * distPrev) * tangent;

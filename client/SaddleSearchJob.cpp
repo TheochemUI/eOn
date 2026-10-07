@@ -78,7 +78,7 @@ std::vector<std::string> SaddleSearchJob::run() {
     mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
   }
 
-  (void)runPrepared(mode);
+  static_cast<void>(runPrepared(mode));
   return returnFiles;
 }
 

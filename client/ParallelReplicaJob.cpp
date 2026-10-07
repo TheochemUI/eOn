@@ -35,7 +35,7 @@ std::vector<std::string> ParallelReplicaJob::run() {
       throw std::runtime_error("failed to load " + posIn);
     }
   }
-  (void)runFromMatter(reactant);
+  static_cast<void>(runFromMatter(reactant));
   return returnFiles;
 }
 

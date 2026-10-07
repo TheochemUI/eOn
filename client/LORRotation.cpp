@@ -369,9 +369,9 @@ void LORRotation::compute(std::shared_ptr<Matter> matter,
     if (appendHistory(CN)) {
       trackBest(CN, N, HN);
     }
-    (void)Nprev;
-    (void)HNprev;
-    (void)CNprev;
+    static_cast<void>(Nprev);
+    static_cast<void>(HNprev);
+    static_cast<void>(CNprev);
 
     F = HN - CN * N;
     applyMask(F);

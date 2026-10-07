@@ -115,7 +115,7 @@ RgpotPot::RgpotPot(const eonc::Parameters &p)
       << "RgpotPot: in-process rgpot backend=" << backend_
       << " (dlopen: "
          "libnwchemc/libcpmdc/librgpot_metatomic_engine/librgpot_xtb_engine)"
-      << std::endl;
+      << '\n';
   // Finalize is registered first. The grouped-exit handler is next, and
   // the stop handler is last, so exit runs stop, then Finalize, then _Exit.
   impl_->finalizeMpiAtExit();
@@ -132,7 +132,7 @@ RgpotPot::~RgpotPot() {
   // destructors while another rank may already be in MPI_Finalize.
   // The process reclaims the engine at _Exit.
   if (grouped)
-    (void)impl_.release();
+    static_cast<void>(impl_.release());
 }
 
 bool RgpotPot::engineAvailable() const { return impl_ && impl_->available(); }
@@ -167,7 +167,7 @@ void RgpotPot::exchangeGroupUse() {
     double tally[3] = {busy_, systemsDone_, 0.0};
     double unused = 0.0;
     std::string error;
-    (void)impl_->shareResult(g, 1, tally, &unused, true, error);
+    static_cast<void>(impl_->shareResult(g, 1, tally, &unused, true, error));
     use_.busy[static_cast<size_t>(g)] = tally[0];
     use_.systems[static_cast<size_t>(g)] = tally[1];
   }
@@ -184,7 +184,7 @@ void RgpotPot::stopAndDrop() {
       std::cout << "RgpotPot: " << use_.table() << std::flush;
     } catch (const std::exception &ex) {
       std::cerr << "RgpotPot: no calculator-group summary: " << ex.what()
-                << std::endl;
+                << '\n';
     }
   }
   if (!dropped_) {

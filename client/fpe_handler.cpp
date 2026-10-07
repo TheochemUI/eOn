@@ -239,7 +239,7 @@ static X86DivRegs x86_div_regs(void *scp) {
     regs.dx = reinterpret_cast<uintptr_t *>(&ctx->uc_mcontext->__ss.__edx);
   }
 #else
-  (void)ctx;
+  static_cast<void>(ctx);
 #endif
   return regs;
 }
@@ -282,7 +282,7 @@ static void write_fault_rip(void *scp) {
   }
   write(STDERR_FILENO, hex, sizeof(hex) - 1);
 #else
-  (void)scp;
+  static_cast<void>(scp);
 #endif
 }
 
@@ -484,7 +484,7 @@ static void fpe_signal_handler(int sig, siginfo_t *sip, void *scp) {
     ctx->uc_mcontext->__ns.__fpcr &= ~fpcr_clear;
   }
 #endif
-  (void)sig;
+  static_cast<void>(sig);
 }
 #endif
 

@@ -36,7 +36,7 @@ std::vector<std::string> ReplicaExchangeJob::run() {
     QUILL_LOG_CRITICAL(log, "Failed to load {}", posFilename);
     throw std::runtime_error("failed to load " + posFilename);
   }
-  (void)runFromMatter(pos);
+  static_cast<void>(runFromMatter(pos));
   return returnFiles;
 }
 

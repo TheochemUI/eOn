@@ -33,9 +33,9 @@ struct FlatPot final : Potential {
   void force(long nAtoms, const double *positions, const int *atomicNrs,
              double *forces, double *energy, double *variance,
              const double *box) override {
-    (void)positions;
-    (void)atomicNrs;
-    (void)box;
+    static_cast<void>(positions);
+    static_cast<void>(atomicNrs);
+    static_cast<void>(box);
     *energy = 0.0;
     *variance = 0.0;
     for (long i = 0; i < nAtoms * 3; ++i) {

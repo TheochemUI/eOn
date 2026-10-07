@@ -29,7 +29,7 @@ std::vector<std::string> ReplicaDynamicsJob::run() {
     QUILL_LOG_CRITICAL(log, "Failed to load {}", reactantFilename);
     throw std::runtime_error("failed to load " + reactantFilename);
   }
-  (void)runFromMatter(std::move(seed));
+  static_cast<void>(runFromMatter(std::move(seed)));
   return returnFiles;
 }
 

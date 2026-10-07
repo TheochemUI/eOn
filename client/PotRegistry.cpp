@@ -11,6 +11,7 @@
 */
 #include "eon/PotRegistry.h"
 #include <fstream>
+#include <memory>
 #include <iomanip>
 #include <sstream>
 
@@ -53,7 +54,7 @@ PotRegistry &PotRegistry::get() noexcept {
   // destructors (interpreter finalization, leaked shared_ptrs). A
   // function-local static would already be destroyed on those paths,
   // so on_destroyed would lock a destroyed mutex.
-  static PotRegistry *instance = new PotRegistry;
+  static PotRegistry *instance = std::make_unique<PotRegistry>().release();
   return *instance;
 }
 

@@ -163,7 +163,7 @@ TEST_CASE("VerifyForceBearingWrite", "[approval][confileio][modern]") {
 TEST_CASE("VerifyDefaultWriteHasNoForceSections",
           "[approval][confileio][compat]") {
   auto m = load_reactant();
-  (void)m->getPotentialEnergy();
+  static_cast<void>(m->getPotentialEnergy());
   REQUIRE_FALSE(m->needsForceUpdate());
   REQUIRE_FALSE(eonc::io::write_con_forces());
 

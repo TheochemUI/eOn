@@ -1574,7 +1574,10 @@ for name in ("metatensor", "metatensor_torch", "metatomic", "vesin"):
     _args += ['-DWITH_METATOMIC']
     metatomic_pot = library(
         'metatomic_pot',
-        'potentials/Metatomic/MetatomicPotential.cpp',
+        [
+            'potentials/Metatomic/MetatomicPotential.cpp',
+            'potentials/Metatomic/MetatomicCAbi.cpp',
+        ],
         dependencies: _deps,
         cpp_args: _args,
         link_with: _linkto,

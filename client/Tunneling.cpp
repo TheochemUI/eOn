@@ -3233,8 +3233,8 @@ void RingPolymerPotential::forceBatch(long nSystems, long nAtoms,
                                       double *const *forces, double *energies,
                                       double *variances,
                                       const double *const *boxes) {
-  (void)atomicNrs;
-  (void)boxes;
+  static_cast<void>(atomicNrs);
+  static_cast<void>(boxes);
   if (nSystems < 1 || nAtoms != nAtoms_ || positions == nullptr ||
       forces == nullptr || energies == nullptr) {
     throw std::invalid_argument(

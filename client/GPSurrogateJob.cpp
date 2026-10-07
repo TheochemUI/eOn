@@ -42,7 +42,7 @@ std::vector<std::string> GPSurrogateJob::run() {
     EONC_LOG_CRITICAL("Failed to load {}", productFilename);
     throw std::runtime_error("failed to load " + productFilename);
   }
-  (void)runFromMatter(initial, final_state);
+  static_cast<void>(runFromMatter(initial, final_state));
   return returnFiles;
 }
 

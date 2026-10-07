@@ -17,6 +17,7 @@
 #include <torch/csrc/jit/runtime/graph_executor.h>
 
 #include <cstdint>
+#include <memory>
 #include <random>
 #include <sstream>
 #include <string>
@@ -558,7 +559,7 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
   const double inv_n = 1.0 / static_cast<double>(n_passes);
   *energy = energy_acc * inv_n;
   forces_acc = forces_acc * inv_n;
-  (void)variance_set;
+  static_cast<void>(variance_set);
 
   std::memcpy(forces, forces_acc.contiguous().data_ptr<double>(),
               nAtoms * 3 * sizeof(double));
@@ -584,7 +585,8 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
   options.return_distances = false; // we don't need distances
   options.return_vectors = true;    // metatomic uses vectors for autograd
 
-  VesinNeighborList *vesin_neighbor_list = new VesinNeighborList();
+  auto owned_list = std::make_unique<VesinNeighborList>();
+  VesinNeighborList *vesin_neighbor_list = owned_list.get();
 
   VesinDevice cpu{VesinCPU, 0};
   const char *error_message = nullptr;
@@ -602,7 +604,6 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
       err_str += " (no message; vesin header/lib ABI mismatch? need vesin>=0.6 "
                  "with matching engine)";
     }
-    delete vesin_neighbor_list;
     throw std::runtime_error(err_str);
   }
 
@@ -624,10 +625,12 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
   }
 
   // Custom deleter to free vesin's memory when the torch tensor is destroyed
-  auto deleter = [=](void *) {
-    vesin_free(vesin_neighbor_list);
-    delete vesin_neighbor_list;
+  auto *raw_list = owned_list.release();
+  auto deleter = [raw_list](void *) {
+    vesin_free(raw_list);
+    std::unique_ptr<VesinNeighborList> reclaim(raw_list);
   };
+  vesin_neighbor_list = raw_list;
 
   auto pair_vectors = torch::from_blob(
       vesin_neighbor_list->vectors, {n_pairs, 3, 1}, deleter,

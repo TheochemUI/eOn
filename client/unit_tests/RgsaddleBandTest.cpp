@@ -55,7 +55,7 @@ TEST_CASE("default LBFGS NEB matches one xtsci band step", "[neb][rgsaddle]") {
     shifted(0, 0) += 0.5;
     product->setPositions(shifted);
     NudgedElasticBand neb(reactant, product, params, pot);
-    (void)neb.compute();
+    static_cast<void>(neb.compute());
     return neb.path[1]->getPositions();
   };
   const AtomMatrix lbfgs = stepped(OptType::LBFGS);
@@ -125,7 +125,7 @@ TEST_CASE("rgsaddle band evaluates each moved image once per step",
   product->setPositions(shifted);
   const size_t before = pot->forceCallCounter;
   NudgedElasticBand neb(reactant, product, params, pot);
-  (void)neb.compute();
+  static_cast<void>(neb.compute());
   const size_t calls = pot->forceCallCounter - before;
   // Two endpoints and the first band update, then at most two
   // evaluations of the interior per FIRE step (rgmin's start point and its

@@ -34,8 +34,8 @@ void GPRPotential::cleanMemory() {}
 void GPRPotential::force(long N, const double *R, const int *atomicNrs,
                          double *F, double *U, double *variance,
                          const double *box) {
-  (void)atomicNrs;
-  (void)box;
+  static_cast<void>(atomicNrs);
+  static_cast<void>(box);
   if (variance != nullptr) {
     *variance = 0.0;
   }

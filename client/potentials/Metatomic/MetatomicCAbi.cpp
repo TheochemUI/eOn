@@ -74,7 +74,9 @@ EonMtaPot *eon_mta_pot_create(const EonMtaConfig *cfg, char *errbuf,
   }
 }
 
-void eon_mta_pot_destroy(EonMtaPot *pot) { delete pot; }
+void eon_mta_pot_destroy(EonMtaPot *pot) {
+  std::unique_ptr<EonMtaPot> owned(pot);
+}
 
 int eon_mta_pot_force(EonMtaPot *pot, long nAtoms, const double *positions,
                       const int *atomicNrs, double *forces, double *energy,

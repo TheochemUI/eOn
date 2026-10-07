@@ -619,7 +619,7 @@ TEST_CASE_METHOD(DimerFixture,
        {DimerRotationBackend::Lanczos, DimerRotationBackend::Davidson,
         DimerRotationBackend::LOR}) {
     ParametersLoadAccess::dimer_options(params).rotation_backend = backend;
-    (void)matter->getForces();
+    static_cast<void>(matter->getForces());
     REQUIRE_FALSE(matter->needsForceUpdate());
     const double e0 = matter->getPotentialEnergy();
     ImprovedDimer dimer(matter, params, pot);
@@ -934,8 +934,8 @@ public:
   void force(long nAtoms, const double *positions, const int *atomicNrs,
              double *forces, double *energy, double *variance,
              const double *box) override {
-    (void)atomicNrs;
-    (void)box;
+    static_cast<void>(atomicNrs);
+    static_cast<void>(box);
     const double curvature[3] = {-10.0, 0.1, 5.0};
     double e = 0.0;
     for (long a = 0; a < nAtoms; ++a) {
@@ -1110,7 +1110,7 @@ TEST_CASE_METHOD(DimerFixture, "XtsciMinMode keeps its session across a search",
   // The fixture's 0.01 degree converged angle rotates to the cap every
   // time; the default 5 degrees lets a mode that holds stop early.
   ParametersLoadAccess::dimer_options(params).converged_angle = 5.0;
-  (void)matter->getForces();
+  static_cast<void>(matter->getForces());
   XtsciMinMode modeSolver(matter, params, pot);
   modeSolver.compute(matter, mode);
   const long first = modeSolver.totalForceCalls;

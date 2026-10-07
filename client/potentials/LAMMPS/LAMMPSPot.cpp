@@ -78,7 +78,7 @@ LAMMPSPot::LAMMPSPot(const eonc::Parameters &p, eonc::ILammpsLoader &loader,
   // child process, so the parent never initialises MPI at all.
   ensureWorker();
 #else
-  (void)isolate_worker;
+  static_cast<void>(isolate_worker);
 #endif
 }
 

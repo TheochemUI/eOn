@@ -281,31 +281,36 @@ uint64_t eon_relax_version_hash(void) {
 
 EonRelaxEngine *eon_relax_create(const void *config, size_t config_len,
                                  char *errbuf, size_t errlen) {
-  if (config == nullptr && config_len == 0) {
-    auto *eng = new (std::nothrow) EonRelaxEngine();
-    if (!eng) {
+  auto make_engine = [&]() -> std::unique_ptr<EonRelaxEngine> {
+    try {
+      return std::make_unique<EonRelaxEngine>();
+    } catch (const std::bad_alloc &) {
       set_err(errbuf, errlen, "-19 out of memory");
       return nullptr;
     }
+  };
+  if (config == nullptr && config_len == 0) {
+    auto eng = make_engine();
+    if (!eng) {
+      return nullptr;
+    }
     eng->kind = EON_RELAX_KIND_NEB;
-    return eng;
+    return eng.release();
   }
   if (config == nullptr || config_len == 0) {
     set_err(errbuf, errlen, "-13 RelaxEngineParams capnp root");
     return nullptr;
   }
-  auto *eng = new (std::nothrow) EonRelaxEngine();
+  auto eng = make_engine();
   if (!eng) {
-    set_err(errbuf, errlen, "-19 out of memory");
     return nullptr;
   }
   const int prc = apply_relax_params(eng->params, &eng->kind, &eng->epoch,
                                      config, config_len, errbuf, errlen);
   if (prc != EON_RELAX_OK) {
-    delete eng;
     return nullptr;
   }
-  return eng;
+  return eng.release();
 }
 
 int eon_relax_set_surface_epoch(EonRelaxEngine *eng, uint64_t epoch) {
@@ -629,7 +634,9 @@ int eon_relax_reset(EonRelaxEngine *eng) {
   return EON_RELAX_OK;
 }
 
-void eon_relax_destroy(EonRelaxEngine *eng) { delete eng; }
+void eon_relax_destroy(EonRelaxEngine *eng) {
+  std::unique_ptr<EonRelaxEngine> owned(eng);
+}
 
 const char *eon_relax_status_name(eon_relax_kind_t kind, int status) {
   if (kind == EON_RELAX_KIND_NEB) {

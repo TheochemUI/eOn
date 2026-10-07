@@ -459,10 +459,10 @@ void bind_sampling(nb::module_ &m) {
   // Mechanical shells for PR family (not product focus)
   auto bind_pr_like = [&](const char *name, auto make_and_run) {
     // use explicit classes below instead
-    (void)name;
-    (void)make_and_run;
+    static_cast<void>(name);
+    static_cast<void>(make_and_run);
   };
-  (void)bind_pr_like;
+  static_cast<void>(bind_pr_like);
 
   struct PyPR : SeededAlgo {
     using SeededAlgo::SeededAlgo;

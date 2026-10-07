@@ -222,7 +222,7 @@ void mirror_con_corpus(const std::string &path) {
   std::uint32_t nframes = 0;
   api().append_str(id, tid, text.c_str(), resolved.c_str(), &nframes);
 #else
-  (void)path;
+  static_cast<void>(path);
 #endif
 }
 

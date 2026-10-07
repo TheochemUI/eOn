@@ -74,13 +74,13 @@ TEST_CASE("Morse forces identical from cached and freshly built pair lists",
   matter->con2matter(std::string("reactant.con"));
 
   const AtomMatrix r0 = matter->getPositions();
-  (void)matter->getPotentialEnergy(); // first sighting: phantom stamp only
+  static_cast<void>(matter->getPotentialEnergy()); // first sighting: phantom stamp only
 
   // Second sighting captures the pair list (lazy capture) at r0b.
   AtomMatrix r0b = r0;
   r0b(3, 2) += 1.0e-3;
   matter->setPositions(r0b);
-  (void)matter->getPotentialEnergy();
+  static_cast<void>(matter->getPotentialEnergy());
 
   // Displacement below skin/2 (0.5 A): this evaluation runs off the pair
   // list captured at r0b, with vectors derived from the r1 positions.
@@ -97,7 +97,7 @@ TEST_CASE("Morse forces identical from cached and freshly built pair lists",
     AtomMatrix shifted = r0;
     shifted.col(2).array() += 2.0 * static_cast<double>(k);
     matter->setPositions(shifted);
-    (void)matter->getPotentialEnergy();
+    static_cast<void>(matter->getPotentialEnergy());
   }
 
   // Same geometry again, now from a direct scan at r1 itself (first

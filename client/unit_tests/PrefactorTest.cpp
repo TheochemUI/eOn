@@ -104,7 +104,7 @@ TEST_CASE("movedAtomsPct pulls in neighbors inside the radius", "[prefactor]") {
 
 TEST_CASE("allFreeAtoms drops fixed rows", "[prefactor]") {
   auto [matter, params] = makeLJCluster();
-  (void)params;
+  static_cast<void>(params);
   matter->setFixed(0, true);
   VectorXi free = eonc::Prefactor::allFreeAtoms(matter.get());
   REQUIRE(free.size() == matter->numberOfAtoms() - 1);

@@ -122,7 +122,7 @@ void pin_cpmd_library(const std::string &path) {
   const char *name = path.empty() ? "libcpmdc.so" : path.c_str();
   dlopen(name, RTLD_NOW | RTLD_NOLOAD | RTLD_GLOBAL | RTLD_NODELETE);
 #else
-  (void)path;
+  static_cast<void>(path);
 #endif
 }
 
@@ -478,7 +478,7 @@ void RGPotEngine::armGroupedExit() const {
   // first and _Exit skips those destructors. The handler does not return.
   ::on_exit(api->hard_exit, nullptr);
 #else
-  (void)this;
+  static_cast<void>(this);
 #endif
 }
 
@@ -505,7 +505,7 @@ void RGPotEngine::broadcastFromDriver(void *data, std::size_t bytes) const {
 bool RGPotEngine::shareResult(int owner, long N, double *F, double *U, bool ok,
                               std::string &error) const {
   if (!impl_ || impl_->world <= 1) {
-    (void)error;
+    static_cast<void>(error);
     return ok;
   }
   // Slot 0 carries the owner's status, so a failed evaluation reaches

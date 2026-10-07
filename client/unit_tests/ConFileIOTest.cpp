@@ -904,7 +904,7 @@ TEST_CASE("ConFileIO writes forces from Parameters without the process flag",
       eonc::helpers::makePotential(PotType::LJ, params));
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
-  (void)m->getPotentialEnergy();
+  static_cast<void>(m->getPotentialEnergy());
   REQUIRE_FALSE(eonc::io::write_con_forces());
 
   auto tmppath =
@@ -925,7 +925,7 @@ TEST_CASE("ConFileIO metadata.write_con_forces overrides process flag",
       eonc::helpers::makePotential(PotType::LJ, params));
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
-  (void)m->getPotentialEnergy();
+  static_cast<void>(m->getPotentialEnergy());
 
   auto tmp_on =
       std::filesystem::temp_directory_path() / "_test_forces_meta_on.con";

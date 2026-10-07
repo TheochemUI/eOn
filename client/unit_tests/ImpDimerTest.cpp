@@ -94,8 +94,8 @@ public:
   void force(long nAtoms, const double *positions, const int *atomicNrs,
              double *forces, double *energy, double *variance,
              const double *box) override {
-    (void)atomicNrs;
-    (void)box;
+    static_cast<void>(atomicNrs);
+    static_cast<void>(box);
     if (inside_.fetch_add(1) != 0) {
       log_->overlaps.fetch_add(1);
     }

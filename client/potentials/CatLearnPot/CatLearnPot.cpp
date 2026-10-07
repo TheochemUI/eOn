@@ -39,8 +39,8 @@ void CatLearnPot::force(long nAtoms, const double *positions,
                         const int *atomicNrs, double *forces, double *energy,
                         double *variance, const double *box) {
   using namespace pybind11::literals;
-  (void)atomicNrs;
-  (void)box;
+  static_cast<void>(atomicNrs);
+  static_cast<void>(box);
   py::gil_scoped_acquire gil;
   const Eigen::Map<const MatrixXd> features(positions, 1, nAtoms * 3);
   py::tuple ef_and_unc = (this->m_gpmod.attr("predict")(

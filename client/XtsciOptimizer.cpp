@@ -447,7 +447,7 @@ int XtsciOptimizer::run(size_t a_maxIterations, double a_maxMove) {
     }
     m_objf->setPositions(m_x);
     m_cached_x = m_x;
-    (void)value;
+    static_cast<void>(value);
     return m_objf->isConverged() ? 1 : 0;
   }
   for (size_t i = 0; i < a_maxIterations; ++i) {

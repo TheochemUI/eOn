@@ -38,27 +38,27 @@ Argum::BasicColorizer<char> colorizer(colorScheme);
 
 void singlePoint(std::unique_ptr<eonc::Matter> matter) {
   std::cout << "Energy:         " << std::fixed << std::setprecision(15)
-            << matter->getPotentialEnergy() << std::endl;
+            << matter->getPotentialEnergy() << '\n';
   std::cout << "(free) Forces:         \n" << matter->getForcesFree() << "\n";
   std::cout << "Max atom force: " << std::scientific << matter->maxForce()
-            << std::endl;
+            << '\n';
 }
 
 void minimize(std::unique_ptr<eonc::Matter> matter,
               const std::string &confileout) {
   matter->relax(false, false);
   if (confileout.empty()) {
-    std::cout << "No output file specified, not saving" << std::endl;
+    std::cout << "No output file specified, not saving" << '\n';
     return;
   }
-  std::cout << "Saving relaxed structure to " << confileout << std::endl;
+  std::cout << "Saving relaxed structure to " << confileout << '\n';
   if (!eonc::io::io_ok(matter->matter2con(confileout))) {
-    std::cerr << "Failed to write " << confileout << std::endl;
+    std::cerr << "Failed to write " << confileout << '\n';
   }
 }
 
 void printFeatures() {
-  std::cout << colorizer.heading("Compile-time features:") << std::endl;
+  std::cout << colorizer.heading("Compile-time features:") << '\n';
   // Parse FEATURES_STRING and colorize enabled/disabled
   std::istringstream stream(FEATURES_STRING);
   std::string line;
@@ -69,9 +69,9 @@ void printFeatures() {
       if (colonPos != std::string::npos) {
         std::string featureName = line.substr(0, colonPos + 2);
         std::string status = line.substr(colonPos + 2);
-        std::cout << featureName << colorizer.warning(status) << std::endl;
+        std::cout << featureName << colorizer.warning(status) << '\n';
       } else {
-        std::cout << line << std::endl;
+        std::cout << line << '\n';
       }
     } else if (line.find(": disabled") != std::string::npos) {
       // Extract feature name and colorize "disabled" with error (red)
@@ -79,12 +79,12 @@ void printFeatures() {
       if (colonPos != std::string::npos) {
         std::string featureName = line.substr(0, colonPos + 2);
         std::string status = line.substr(colonPos + 2);
-        std::cout << featureName << colorizer.error(status) << std::endl;
+        std::cout << featureName << colorizer.error(status) << '\n';
       } else {
-        std::cout << line << std::endl;
+        std::cout << line << '\n';
       }
     } else {
-      std::cout << line << std::endl;
+      std::cout << line << '\n';
     }
   }
 }
@@ -130,7 +130,7 @@ void commandLine(int argc, char **argv) {
   parser.add(Argum::Option("--version", "-v")
                  .help("Print version information")
                  .handler([&]() {
-                   std::cout << VERSION_STRING << std::endl;
+                   std::cout << VERSION_STRING << '\n';
                    std::exit(EXIT_SUCCESS);
                  }));
 
@@ -373,7 +373,7 @@ void commandLine(int argc, char **argv) {
   auto matter = std::make_unique<Matter>(pot, params);
   auto matter2 = std::make_unique<Matter>(pot, params);
   if (!eonc::io::io_ok(matter->con2matter(confile))) {
-    std::cerr << "Failed to load " << confile << std::endl;
+    std::cerr << "Failed to load " << confile << '\n';
     std::exit(EXIT_FAILURE);
   }
 
@@ -383,7 +383,7 @@ void commandLine(int argc, char **argv) {
     minimize(std::move(matter), confileout);
   } else if (cflag) {
     if (!eonc::io::io_ok(matter2->con2matter(confileout))) {
-      std::cerr << "Failed to load " << confileout << std::endl;
+      std::cerr << "Failed to load " << confileout << '\n';
       std::exit(EXIT_FAILURE);
     }
     Matter probe(*matter);

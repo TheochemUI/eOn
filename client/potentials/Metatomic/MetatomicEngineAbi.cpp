@@ -60,7 +60,9 @@ RgpotMtaPot *rgpot_mta_create(const RgpotMtaConfig *cfg, char *errbuf,
   }
 }
 
-void rgpot_mta_destroy(RgpotMtaPot *pot) { delete pot; }
+void rgpot_mta_destroy(RgpotMtaPot *pot) {
+  std::unique_ptr<RgpotMtaPot> owned(pot);
+}
 
 int rgpot_mta_force(RgpotMtaPot *pot, long nAtoms, const double *positions,
                     const int *atomicNrs, double *forces, double *energy,

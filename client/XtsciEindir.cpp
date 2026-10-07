@@ -188,8 +188,8 @@ const std::string &provenance() { return provenance_slot(); }
 
 State *bind(ObjectiveFunction *objective, Eigen::VectorXd *cached) {
 #ifndef WITH_EINDIR
-  (void)objective;
-  (void)cached;
+  static_cast<void>(objective);
+  static_cast<void>(cached);
   return nullptr;
 #else
   if (objective == nullptr || objective->degreesOfFreedom() <= 0) {
@@ -261,19 +261,19 @@ State *bind(ObjectiveFunction *objective, Eigen::VectorXd *cached) {
 
 void release(State *state) {
 #ifdef WITH_EINDIR
-  delete state;
+  std::unique_ptr<State> owned(state);
 #else
-  (void)state;
+  static_cast<void>(state);
 #endif
 }
 
 int eval_grad(State *state, const DLManagedTensorVersioned *x, double *value,
               DLManagedTensorVersioned *gradient) {
 #ifndef WITH_EINDIR
-  (void)state;
-  (void)x;
-  (void)value;
-  (void)gradient;
+  static_cast<void>(state);
+  static_cast<void>(x);
+  static_cast<void>(value);
+  static_cast<void>(gradient);
   return 2;
 #else
   if (state == nullptr) {
@@ -291,15 +291,15 @@ int minimize(State *state, double *x, std::size_t n, std::size_t maxiter,
              double gtol, double istep, std::size_t memory, int method,
              double *value_out) {
 #ifndef WITH_EINDIR
-  (void)state;
-  (void)x;
-  (void)n;
-  (void)maxiter;
-  (void)gtol;
-  (void)istep;
-  (void)memory;
-  (void)method;
-  (void)value_out;
+  static_cast<void>(state);
+  static_cast<void>(x);
+  static_cast<void>(n);
+  static_cast<void>(maxiter);
+  static_cast<void>(gtol);
+  static_cast<void>(istep);
+  static_cast<void>(memory);
+  static_cast<void>(method);
+  static_cast<void>(value_out);
   return 1;
 #else
   if (state == nullptr || x == nullptr) {
