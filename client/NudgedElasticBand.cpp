@@ -1023,6 +1023,7 @@ void NudgedElasticBand::prepareSolidState() {
 }
 
 void NudgedElasticBand::projectSolidState(bool ci_active) {
+  // Each image keeps one cell. The band does not store a cell on each bead.
   const double pressure = params.neb_options().solid_state.pressure;
   const Matrix3d external = Matrix3d::Identity() * pressure;
   std::vector<double> enthalpy(static_cast<size_t>(numImages + 2));

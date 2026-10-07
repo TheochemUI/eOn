@@ -209,6 +209,14 @@ reads the stress the potential returned with each image's force call, so an
 iteration costs one call per moved image. A potential that does not report
 the Cauchy stress is refused. The band does not estimate that tensor.
 
+A ring on this band is one centroid and one cell. The force and the stress
+the band follows are the averages of that image's beads. The band spring
+stays on the centroids, and the ring springs stay inside the image. The
+Jacobian remains the fixed factor from the two endpoint volumes. The dimer
+on the physical potential finds the classical saddle. A dimer on the
+ring-polymer potential is the instanton, so it is not a step of this band.
+The transmission coefficient is not a band iteration.
+
 `ci_mmf`, `zoom_neb`, `onsager_machlup`, `neb_doubly_nudged`, and
 `neb_elastic_band` are refused. The climbing image itself is the joint-space
 reflection of the force. Peak files still carry the atomic block of the tangent.
