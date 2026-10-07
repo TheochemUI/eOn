@@ -3190,8 +3190,10 @@ TEST_CASE_METHOD(JobIntegrationFixture,
     params->load("config.ini");
     eonc::Runtime runtime;
     eonc::PotRegistry::get().reset();
-    eonc::GlobalOptimizationJob job(std::move(params), runtime);
-    job.run();
+    {
+      eonc::GlobalOptimizationJob job(std::move(params), runtime);
+      job.run();
+    }
     std::filesystem::current_path(originalDir);
     REQUIRE(std::filesystem::file_size(workdir / "earr.dat") > 0);
   };
@@ -3219,6 +3221,7 @@ max_iterations = 30
 
 [Basin Hopping]
 steps = 1
+displacement = 0
 write_unique = true
 displacement_algorithm = linear
 displacement_distribution = gaussian
