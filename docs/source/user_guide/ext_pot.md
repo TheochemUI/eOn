@@ -25,6 +25,12 @@ The [ASE](project:ase_pot.md) potentials require additional compile-time flags
 that are **not** enabled in the `conda-forge` build.
 ```
 
+## CPMD method file
+
+A CPMD script behind `ext_pot` should read one job TOML, the same file the
+[rgpot page](project:rgpot_pot.md) compiles to a CPMDParams message. The
+file route renders that message. The script does not keep a second cutoff.
+
 ## Protocol
 
 When the client needs an energy/force evaluation it:

@@ -19,3 +19,8 @@ def test_guide_shows_one_toml_for_both_routes():
     assert "cpmdc_params_render_input_deck" in text
     assert "si3n4-isomer1.toml" in text
     assert "asin-tls.toml" in text
+    ext = (ROOT / "docs" / "source" / "user_guide" / "ext_pot.md").read_text(
+        encoding="utf-8"
+    )
+    assert "one job TOML" in ext
+    assert "rgpot_pot.md" in ext
