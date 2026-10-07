@@ -1,8 +1,8 @@
 # Standalone PyPI package: pyeonclient
 #
-# Base wheels (always): RGPOT linked, no torch NEEDED - small manylinux.
+# Base wheels (always): RGPOT linked, no torch NEEDED - manylinux and win-64.
 # Metatomic wheels (optional matrix): WITH_METATOMIC against CPU torch from PyPI
-#   (same distribution model as torch itself - not conda-forge-gated).
+#   on manylinux and win-64 (same distribution model as torch itself).
 #
 # Publish: tag pyeonclient-v* or workflow_dispatch with publish=true
 #
@@ -100,6 +100,20 @@ jobs:
             variant: metatomic
             # meson needs torch/metatensor modules in the *build* env
             build_frontend: "build;args: --no-isolation"
+          - name: abi3-win
+            os: windows-2022
+            free_threaded: false
+            cibw_build: "cp312-win_amd64"
+            cibw_enable: ""
+            variant: base
+            build_frontend: "build"
+          - name: abi3-win-metatomic
+            os: windows-2022
+            free_threaded: false
+            cibw_build: "cp312-win_amd64"
+            cibw_enable: ""
+            variant: metatomic
+            build_frontend: "build;args: --no-isolation"
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -109,6 +123,7 @@ jobs:
 
       - name: Skip optional metatomic on PR unless forced
         id: gate
+        shell: bash
         run: |
           if [[ "${{ matrix.variant }}" == "metatomic" ]]; then
             if [[ "${{ github.event_name }}" == "pull_request" && "${{ github.event.inputs.build_metatomic || 'true' }}" != "true" ]]; then
@@ -122,10 +137,11 @@ jobs:
 
       - name: Activate pyeonclient pyproject
         if: steps.gate.outputs.skip != 'true'
+        shell: bash
         run: bash scripts/pyeonclient_prepare_pyproject.sh
 
       - name: Install host build deps
-        if: steps.gate.outputs.skip != 'true'
+        if: steps.gate.outputs.skip != 'true' && runner.os != 'Windows'
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -137,9 +153,17 @@ jobs:
              . "$HOME/.cargo/env" && cargo install cbindgen)
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
 
+      - name: Activate MSVC [windows]
+        if: steps.gate.outputs.skip != 'true' && runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
+        with:
+          arch: x64
+          vsversion: "2022"
+
       - name: Meson config-settings for variant
         if: steps.gate.outputs.skip != 'true'
         id: cfg
+        shell: bash
         run: |
           CFG=""
           if [[ "${{ matrix.free_threaded }}" == "true" ]]; then
@@ -173,7 +197,7 @@ jobs:
           CIBW_SKIP: "pp* *-win32 *-manylinux_i686 *-musllinux*"
           CIBW_ARCHS: native
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
-          CIBW_ENVIRONMENT: >-
+          CIBW_ENVIRONMENT_LINUX: >-
             PATH=/root/.cargo/bin:$PATH
             CARGO_HOME=/root/.cargo
             LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:$LD_LIBRARY_PATH
@@ -181,7 +205,7 @@ jobs:
             CMAKE_PREFIX_PATH=/usr/local
           CIBW_BEFORE_ALL_LINUX: |
             bash scripts/pyeonclient_manylinux_deps.sh
-          CIBW_BEFORE_BUILD: |
+          CIBW_BEFORE_BUILD_LINUX: |
             set -euo pipefail
             export LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:${LD_LIBRARY_PATH:-}
             pip install -U pip 'nanobind>=2.4,<3' meson ninja meson-python auditwheel
@@ -199,6 +223,13 @@ jobs:
               echo "TORCH_LIB=${TORCH_LIB}"
               ls "${TORCH_LIB}"/libc10* "${TORCH_LIB}"/libtorch* 2>/dev/null | head
             fi
+          CIBW_BEFORE_BUILD_WINDOWS: |
+            python -m pip install -U pip "nanobind>=2.4,<3" meson ninja meson-python
+            python -m pip install --only-binary=:all: numpy
+            if "${{ matrix.variant }}"=="metatomic" (
+              python -m pip install --only-binary=:all: torch --index-url https://download.pytorch.org/whl/cpu
+              python -m pip install metatensor metatensor-torch metatomic-torch vesin
+            )
           # The private-SONAME step first (it renames librgpot and rewrites
           # RECORD), then auditwheel, which vendors the Fortran, OpenMP and
           # Cap'n Proto runtimes and sets the manylinux tag. A failed repair
@@ -217,6 +248,7 @@ jobs:
 
       - name: Tag metatomic wheels with local version (never collide with base)
         if: steps.gate.outputs.skip != 'true' && matrix.variant == 'metatomic'
+        shell: bash
         run: |
           mkdir -p wheelhouse-tagged
           for w in wheelhouse/*.whl; do
