@@ -18,8 +18,8 @@ namespace eonc {
 /// Ring-polymer instanton ([Instanton]): the tunnelling splitting between
 /// two minima beyond one-dimensional WKB (mode splitting), or the thermal
 /// rate through a saddle (mode rate): the ring below the crossover
-/// temperature. At or above the crossover the job names the parabolic
-/// barrier correction and does not evaluate it.
+/// temperature, and the parabolic barrier factor times quantum harmonic
+/// transition-state theory above it.
 class InstantonJob : public Job {
 public:
   InstantonJob(std::unique_ptr<Parameters> parameters, Runtime &rt)

@@ -626,20 +626,50 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     const bool last = ti + 1 == temperatures.size();
     const double wkbLog = wkbAt(beta);
     if (!(temperature < tc)) {
-      // The ring collapses onto the saddle. The parabolic barrier
-      // correction is the rate above the crossover. This job names it
-      // and does not evaluate it.
-      EONC_LOG_INFO("[Instanton] {:.4g} K is at or above the crossover {:.4g} "
-                    "K; the parabolic barrier correction is not evaluated",
-                    temperature, tc);
-      table << temperature << ' ' << tc << ' ' << o.beads
-            << " 0 0 nan 0 nan nan nan nan " << wkbLog << " nan nan\n";
-      rateFailed = true;
-      status = RunStatus::FAIL_POTENTIAL_FAILED;
-      if (last) {
-        extras.emplace_back("instanton_temperature_K", temperature);
-        if (std::isfinite(wkbLog)) {
-          extras.emplace_back("rate_wkb_path_log", wkbLog);
+      // The ring is not searched. Above T_c the rate is the parabolic
+      // barrier factor times quantum harmonic TST. At T_c the factor
+      // diverges and that temperature records no rate.
+      bool wrote = false;
+      if (temperature > tc) {
+        try {
+          const double factor = tunneling::parabolicFactor(temperature, tc);
+          const double logQhtst = tunneling::quantumHarmonicTstLogRate(
+              hReactant, hSaddle, beta, vSaddle - vReactant, rigidModes);
+          const double logPar = logQhtst + std::log(factor);
+          const double kPar = std::exp(logPar) / tunneling::kTimeUnitSeconds;
+          EONC_LOG_INFO("[Instanton] {:.4g} K is above the crossover {:.4g} "
+                        "K; parabolic factor {:.6g}, ln(k s) = {:.4f}",
+                        temperature, tc, factor, logPar - logSecond);
+          table << temperature << ' ' << tc << ' ' << o.beads
+                << " 0 0 nan 0 nan nan nan nan " << wkbLog << ' '
+                << (logPar - logSecond) << ' ' << factor << '\n';
+          if (last) {
+            extras.emplace_back("instanton_temperature_K", temperature);
+            extras.emplace_back("parabolic_factor", factor);
+            extras.emplace_back("rate_parabolic", kPar);
+            extras.emplace_back("rate_parabolic_log", logPar - logSecond);
+            if (std::isfinite(wkbLog)) {
+              extras.emplace_back("rate_wkb_path_log", wkbLog);
+            }
+          }
+          wrote = true;
+        } catch (const std::exception &ex) {
+          EONC_LOG_ERROR("[Instanton] {}", ex.what());
+        }
+      }
+      if (!wrote) {
+        EONC_LOG_ERROR("[Instanton] {:.4g} K is at the crossover temperature "
+                       "{:.4g} K; the parabolic factor diverges there",
+                       temperature, tc);
+        table << temperature << ' ' << tc << ' ' << o.beads
+              << " 0 0 nan 0 nan nan nan nan " << wkbLog << " nan nan\n";
+        rateFailed = true;
+        status = RunStatus::FAIL_POTENTIAL_FAILED;
+        if (last) {
+          extras.emplace_back("instanton_temperature_K", temperature);
+          if (std::isfinite(wkbLog)) {
+            extras.emplace_back("rate_wkb_path_log", wkbLog);
+          }
         }
       }
       continue;

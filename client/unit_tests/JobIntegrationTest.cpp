@@ -3072,8 +3072,8 @@ TEST_CASE_METHOD(JobIntegrationFixture,
     SKIP("neb_lj13 test system not found");
   }
   // A short run: the plumbing, the files and the keys, not converged
-  // numbers. 400 K is above the 330 K crossover, so no ring is searched.
-  // The parabolic barrier correction is named and not evaluated.
+  // numbers. 400 K is above the 330 K crossover, so no ring is searched
+  // and the rate is the parabolic factor.
   writeConfig(R"(
 [Main]
 job = instanton
@@ -3091,25 +3091,16 @@ pi_sampling_steps = 40
 pi_time_step = 1.0
 )");
   auto results = runJob();
-  REQUIRE(results.at("termination_reason") == "2");
-  REQUIRE(results.count("rate_parabolic_log") == 0);
-  REQUIRE(results.count("parabolic_factor") == 0);
-  REQUIRE(results.count("rate_parabolic") == 0);
+  REQUIRE(results.at("termination_reason") == "0");
   for (const char *key :
        {"barrier_piqtst", "barrier_piqtst_error", "rate_piqtst_log",
-        "rate_piqtst_log_error", "piqtst_s_star", "barrier_classical"}) {
+        "rate_piqtst_log_error", "piqtst_s_star", "barrier_classical",
+        "parabolic_factor", "rate_parabolic", "rate_parabolic_log"}) {
     CAPTURE(key);
     REQUIRE(results.count(key) == 1);
     REQUIRE(std::isfinite(std::stod(results.at(key))));
   }
-  std::ifstream table(workdir / "rate_instanton.dat");
-  std::string header;
-  std::string row;
-  REQUIRE(static_cast<bool>(std::getline(table, header)));
-  REQUIRE(header.find("parabolic_factor") != std::string::npos);
-  REQUIRE(static_cast<bool>(std::getline(table, row)));
-  REQUIRE(row.size() >= 8);
-  REQUIRE(row.substr(row.size() - 8) == " nan nan");
+  REQUIRE(std::stod(results.at("parabolic_factor")) > 1.0);
   REQUIRE(std::stod(results.at("piqtst_planes")) == 4.0);
   REQUIRE(std::stod(results.at("barrier_piqtst")) >= 0.0);
   REQUIRE(std::filesystem::exists(workdir / "rate_piqtst.dat"));

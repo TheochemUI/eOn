@@ -809,8 +809,7 @@ struct debug_options_t {
 // Ring-polymer instanton: the tunnelling splitting between two minima
 // (mode "splitting", eonc::tunneling::optimizeInstanton) or the thermal rate
 // out of a minimum through a saddle (mode "rate"): the ring below the
-// crossover temperature. At or above it the parabolic barrier correction
-// is named and not evaluated.
+// crossover temperature, and the parabolic barrier factor above it.
 struct instanton_options_t {
   std::string mode{"splitting"};
   std::string reactant_filename{"reactant.con"};
