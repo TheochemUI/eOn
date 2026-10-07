@@ -73,7 +73,6 @@ TEST_CASE("Matter takes exclusive Potential ownership", "[MatterTest]") {
 TEST_CASE("A requested cancel stops the next force and relax", "[MatterTest]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  params.optimizer_options().max_iterations = 5;
   auto owned = eonc::helpers::makePotential(PotType::LJ, params);
   Matter matter(std::move(owned), params);
   matter.con2matter(std::string("reactant.con"));
