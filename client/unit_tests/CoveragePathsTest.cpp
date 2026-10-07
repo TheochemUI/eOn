@@ -12,6 +12,7 @@
 
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/ARTnSaddleSearch.h"
 #include "eon/EpiCenters.h"
 #include "eon/GeometryAnalysis.h"
 #include "eon/HelperFunctions.h"
@@ -31,6 +32,7 @@
 #include "eon/potentials/Metatomic/MetatomicLoader.h"
 #include "eon/potentials/PluginLoader.h"
 #include "eon/potentials/Rgpot/GenericEngineLoader.h"
+#include "eon/potentials/Rgpot/RGPotEngine.h"
 #include "eon/potentials/Rgpot/MetatomicEngineLoader.h"
 #include "eon/potentials/Rgpot/XTBEngineLoader.h"
 
@@ -771,6 +773,150 @@ TEST_CASE("plugin loader opens a present library and reports a bad file",
     REQUIRE(mta.is_loaded());
   }
 }
+
+#ifdef WITH_RGPOT
+TEST_CASE("rgpot xtb, metatomic, and uma backends evaluate the stand-in",
+          "[pot][rgpot][coverage]") {
+  Parameters unknown;
+  ParametersLoadAccess::potential_options(unknown).potential = PotType::RGPOT;
+  ParametersLoadAccess::rgpot_options(unknown).backend = "not-a-backend";
+  REQUIRE_THROWS_AS(eonc::helpers::makePotential(PotType::RGPOT, unknown),
+                    std::runtime_error);
+
+  Parameters badSet;
+  ParametersLoadAccess::potential_options(badSet).potential = PotType::RGPOT;
+  ParametersLoadAccess::rgpot_options(badSet).backend = "xtb";
+  ParametersLoadAccess::rgpot_options(badSet).xtb_paramset = "nope";
+  REQUIRE_THROWS_AS(eonc::helpers::makePotential(PotType::RGPOT, badSet),
+                    std::runtime_error);
+
+  const char *fake = std::getenv("EON_FAKE_ENGINE_SO");
+  if (fake == nullptr || !std::filesystem::exists(fake)) {
+    return;
+  }
+
+  auto evaluate = [&](const char *backend, const char *paramset) {
+    Parameters params;
+    ParametersLoadAccess::potential_options(params).potential = PotType::RGPOT;
+    ParametersLoadAccess::rgpot_options(params).backend = backend;
+    ParametersLoadAccess::rgpot_options(params).engine_path = fake;
+    ParametersLoadAccess::rgpot_options(params).xtb_paramset =
+        paramset == nullptr ? "" : paramset;
+    ParametersLoadAccess::rgpot_options(params).model_path = "stand-in";
+    ParametersLoadAccess::rgpot_options(params).device = "cpu";
+    ParametersLoadAccess::rgpot_options(params).task_name = "omol";
+    auto pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::RGPOT, params));
+    Matter matter(pot, params);
+    REQUIRE(eonc::io::io_ok(matter.con2matter(std::string("reactant.con"))));
+    REQUIRE(std::isfinite(matter.getPotentialEnergy()));
+    REQUIRE(matter.getForces().allFinite());
+  };
+  evaluate("xtb", "GFN0xTB");
+  evaluate("gfn", "GFN1-xTB");
+  evaluate("gfnxtb", "GFN-FF");
+  evaluate("xtb", nullptr);
+  {
+    EnvGuard backend("RGPOT_BACKEND", "xtb");
+    EnvGuard xtb("RGPOT_XTB_ENGINE", fake);
+    evaluate("nwchemc", "GFN2xTB");
+  }
+  {
+    EnvGuard eng("RGPOT_METATOMIC_ENGINE", fake);
+    EnvGuard model("RGPOT_METATOMIC_MODEL", "stand-in");
+    evaluate("metatomic", "GFN2xTB");
+    evaluate("mta", "GFN2xTB");
+  }
+  evaluate("uma", "GFN2xTB");
+  evaluate("omol", "GFN2xTB");
+
+  RGPotEngineOptions opt;
+  opt.backend = "uma";
+  opt.engine_path = fake;
+  opt.model_path = "stand-in";
+  opt.task_name = "omol";
+  opt.device = "cpu";
+  RGPotEngine engine(opt);
+  const double R[3] = {0.0, 0.0, 0.0};
+  const int z[1] = {1};
+  double F[3] = {};
+  double energy = 0.0;
+  const double zeroBox[9] = {};
+  engine.force(1, R, z, F, &energy, zeroBox);
+  REQUIRE(energy == Catch::Approx(0.5));
+  engine.force(1, R, z, F, &energy, nullptr);
+  REQUIRE(engine.available());
+  REQUIRE_THROWS_AS(engine.force(0, R, z, F, &energy, zeroBox),
+                    std::runtime_error);
+}
 #endif
+#endif
+
+TEST_CASE("shuffled atom ids, extra ini sections, and ARTn status text",
+          "[coverage][ini]") {
+  Workdir work;
+  {
+    std::ofstream con(work.dir() / "shuffled.con");
+    con << "Generated\n"
+        << "10.0 10.0 10.0\n"
+        << "90.0 90.0 90.0\n"
+        << "\n"
+        << "1\n"
+        << "3\n"
+        << "1.0\n"
+        << "H\n"
+        << "Coordinates of Component 1\n"
+        << "  0.0 0.0 0.0 0 2\n"
+        << "  1.2 0.0 0.0 0 0\n"
+        << "  0.0 1.2 0.0 0 1\n";
+  }
+  Parameters params = ljParams();
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  Matter shuffled(pot, params);
+  REQUIRE(eonc::io::io_ok(
+      shuffled.con2matter((work.dir() / "shuffled.con").string())));
+  REQUIRE(shuffled.numberOfAtoms() == 3);
+  REQUIRE(std::isfinite(shuffled.getPotentialEnergy()));
+
+  Parameters ini;
+  REQUIRE(ini.load_ini_text(R"(
+[Main]
+job = minimization
+[QuickMin]
+time_step = 0.4
+[FIRE]
+time_step = 0.2
+[Surrogate]
+potential = catlearn
+[CatLearn]
+catl_path = /tmp/catlearn
+model = stand-in
+use_derivatives = false
+[ASE_ORCA]
+orca_path = /tmp/orca
+nproc = 1
+charge = 0
+multiplicity = 1
+)") == 0);
+  REQUIRE(ini.optimizer_options().time_step_input == Catch::Approx(0.2));
+
+  auto seed = loadReactant(params, pot);
+  AtomMatrix mode = AtomMatrix::Zero(seed->numberOfAtoms(), 3);
+  eonc::ARTnSaddleSearch search(seed, pot, mode, params);
+#ifndef WITH_ARTN
+  REQUIRE(search.run() == eonc::ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR);
+#endif
+  REQUIRE(std::isnan(search.getEigenvalue()));
+  REQUIRE(search.getEigenvector().rows() == seed->numberOfAtoms());
+  REQUIRE(search.describeStatus(eonc::ARTnSaddleSearch::STATUS_GOOD) ==
+          "Success");
+  REQUIRE(search.describeStatus(
+              eonc::ARTnSaddleSearch::STATUS_BAD_MAX_ITERATIONS) ==
+          "Too many iterations");
+  REQUIRE(search.describeStatus(eonc::ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR) ==
+          "ARTn backend error");
+  REQUIRE(search.describeStatus(99) == "Unknown status");
+}
 
 } // namespace tests
