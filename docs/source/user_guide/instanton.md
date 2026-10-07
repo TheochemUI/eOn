@@ -204,7 +204,10 @@ hessian_stride = 1
 
 `temperature` is in kelvin. It must be positive. Below {math}`T_c` the job
 optimises the ring. Above {math}`T_c` it writes the parabolic rate and does
-not optimise a ring. The default 0 means the temperature was not set, and
+not optimise a ring. The optimizer is not what keeps the path unused. Each
+bead still needs a force. The rate uses the fluctuation prefactor from the
+bead Hessians, and above the crossover the ring collapses onto the saddle.
+The default 0 means the temperature was not set, and
 `mode = rate` then refuses to run. `beads` defaults to 256, the same default as the splitting. A ring
 of 32 beads at 5 K does not resolve a stiff bond: the path integral starts
 to converge once the bead count exceeds {math}`\beta \hbar \omega` of the
