@@ -714,6 +714,36 @@ else
     _deps += [readcon_dep]
 endif
 
+# readcon-db: corpus mirror. Resolve it the same way as readcon-core
+# (pkg-config, then the wrap). The shared library is not archived beside
+# the static readcon-core.
+readcon_db_dep = dependency(
+    'readcon-db',
+    version: '>=0.1.6',
+    method: 'pkg-config',
+    required: false,
+)
+if not readcon_db_dep.found()
+    readcon_db_proj = subproject(
+        'readcon-db',
+        version: '>=0.1.6',
+        default_options: {
+            'with_tests': false,
+            'default_library': 'shared',
+        },
+    )
+    readcon_db_dep = readcon_db_proj.get_variable('readcon_dep')
+endif
+_readcon_db_version = readcon_db_dep.version()
+if _readcon_db_version == ''
+    _readcon_db_version = '0.1.6'
+endif
+readcon_db_dep = declare_dependency(
+    dependencies: [readcon_db_dep],
+    compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
+)
+_deps += [readcon_db_dep]
+
 # Potentials
 subdir('potentials/EAM')
 subdir('potentials/EMT')
@@ -1870,6 +1900,7 @@ if get_option('with_tests')
         ['test_piqtst', 'PIQTSTTest.cpp', '', 120],
         ['strparse_run', 'StringHelpersTest.cpp', ''],
         ['test_matter', 'MatterTest.cpp', 'neb_morse'],
+        ['test_readcon_db_mirror', 'ReadconDbMirrorTest.cpp', 'neb_morse'],
         # The cubic rate at 600 beads, and its half-ring comparison, run
         # past the default 30s.
         ['test_tunneling', 'TunnelingTest.cpp', '', 1200],

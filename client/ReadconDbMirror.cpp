@@ -14,12 +14,17 @@
 #include "eon/EonLogger.h"
 
 #include <cstdint>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <mutex>
 #include <sstream>
 #include <string>
 #include <unordered_map>
+
+#ifndef EON_READCON_DB_VERSION
+#define EON_READCON_DB_VERSION ""
+#endif
 
 #if !defined(_WIN32)
 #include <dlfcn.h>
@@ -75,19 +80,61 @@ struct Api {
   OpenFn open = nullptr;
   AppendFn append_str = nullptr;
   bool missing = false;
+  bool from_process = false;
+  int epoch = -1;
 };
+
+int &mirror_epoch() {
+  static int epoch = 0;
+  return epoch;
+}
+
+void clear_api(Api &out) {
+  if (out.lib != nullptr && !out.from_process) {
+    dlclose(out.lib);
+  }
+  out = Api{};
+}
+
+bool resolve_symbols(Api &out, void *handle) {
+  out.open = reinterpret_cast<OpenFn>(dlsym(handle, "rkrdb_open"));
+  out.append_str = reinterpret_cast<AppendFn>(
+      dlsym(handle, "rkrdb_append_trajectory_str"));
+  return out.open != nullptr && out.append_str != nullptr;
+}
 
 Api &api() {
   static Api out;
-  if (out.lib != nullptr || out.missing) {
+  if (out.epoch == mirror_epoch() &&
+      (out.lib != nullptr || out.from_process || out.missing)) {
     return out;
   }
-  const char *names[] = {"libreadcon_db.so", "libreadcon_db.so.0",
-                         "libreadcon_db.dylib"};
-  for (const char *name : names) {
-    out.lib = dlopen(name, RTLD_LAZY | RTLD_LOCAL);
-    if (out.lib != nullptr) {
-      break;
+  clear_api(out);
+  out.epoch = mirror_epoch();
+  const char *forced = std::getenv("EON_READCON_DB_LIBRARY");
+  if (forced != nullptr) {
+    namespace fs = std::filesystem;
+    std::error_code ec;
+    if (forced[0] == '\0' || !fs::is_regular_file(forced, ec) || ec) {
+      EONC_LOG_WARNING("[readcon-db] libreadcon_db.so failed to load: {}",
+                       forced[0] == '\0' ? "empty path" : forced);
+      out.missing = true;
+      return out;
+    }
+    out.lib = dlopen(forced, RTLD_LAZY | RTLD_LOCAL);
+  } else if (resolve_symbols(out, RTLD_DEFAULT)) {
+    out.from_process = true;
+    return out;
+  } else {
+    out.open = nullptr;
+    out.append_str = nullptr;
+    const char *names[] = {"libreadcon_db.so", "libreadcon_db.so.0",
+                           "libreadcon_db.dylib"};
+    for (const char *name : names) {
+      out.lib = dlopen(name, RTLD_LAZY | RTLD_LOCAL);
+      if (out.lib != nullptr) {
+        break;
+      }
     }
   }
   if (out.lib == nullptr) {
@@ -97,12 +144,11 @@ Api &api() {
     out.missing = true;
     return out;
   }
-  out.open = reinterpret_cast<OpenFn>(dlsym(out.lib, "rkrdb_open"));
-  out.append_str =
-      reinterpret_cast<AppendFn>(dlsym(out.lib, "rkrdb_append_trajectory_str"));
-  if (out.open == nullptr || out.append_str == nullptr) {
+  if (!resolve_symbols(out, out.lib)) {
     dlclose(out.lib);
     out.lib = nullptr;
+    out.open = nullptr;
+    out.append_str = nullptr;
     out.missing = true;
   }
   return out;
@@ -172,6 +218,28 @@ void mirror_con_corpus(const std::string &path) {
 #else
   (void)path;
 #endif
+}
+
+bool readcon_db_mirror_ok() {
+#if !defined(_WIN32)
+  const Api &fns = api();
+  return !fns.missing && fns.open != nullptr && fns.append_str != nullptr;
+#else
+  return false;
+#endif
+}
+
+void readcon_db_mirror_reset() {
+#if !defined(_WIN32)
+  mirror_epoch()++;
+#endif
+}
+
+const char *readcon_db_loaded_version() {
+  if (!readcon_db_mirror_ok()) {
+    return "";
+  }
+  return EON_READCON_DB_VERSION;
 }
 
 } // namespace eonc::io
