@@ -947,6 +947,7 @@ TEST_CASE("dynamics basin and gradient-squared searches take one short step",
     ParametersLoadAccess::optimizer_options(params).max_iterations = 0;
     ParametersLoadAccess::structure_comparison_options(params)
         .distance_difference = 1.0e-8;
+    seed->structComp.distance_difference = 1.0e-8;
     ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
     ParametersLoadAccess::neb_options(params).image_count = 3;
     ParametersLoadAccess::neb_options(params).max_iterations = 1;
@@ -955,7 +956,7 @@ TEST_CASE("dynamics basin and gradient-squared searches take one short step",
     eonc::ProcessSearchJob job(pot, params);
     auto found = job.runFromMatter(seed);
     REQUIRE(found != nullptr);
-    REQUIRE(std::isfinite(found->getPotentialEnergy()));
+    REQUIRE(std::filesystem::exists(work.dir() / "neb_initial_band.con"));
   }
   {
     Parameters params = base;
@@ -1015,22 +1016,33 @@ TEST_CASE("short accelerated dynamics records a transition",
   eonc::Runtime runtime;
   {
     auto owned = std::make_unique<Parameters>(shortMolecularDynamics(base));
+    std::filesystem::remove("product.con");
     eonc::TADJob job(std::move(owned), runtime);
-    auto found = job.runFromMatter(std::make_shared<Matter>(*seed));
+    auto hot = std::make_shared<Matter>(*seed);
+    hot->structComp.distance_difference = 1.0e-8;
+    auto found = job.runFromMatter(hot);
     REQUIRE(found != nullptr);
-    REQUIRE(std::isfinite(found->getPotentialEnergy()));
+    REQUIRE(std::filesystem::exists("product.con"));
   }
   {
     auto owned = std::make_unique<Parameters>(shortMolecularDynamics(base));
+    std::filesystem::remove("product.con");
     eonc::SafeHyperJob job(std::move(owned), runtime);
-    auto found = job.runFromMatter(std::make_shared<Matter>(*seed));
+    auto hot = std::make_shared<Matter>(*seed);
+    hot->structComp.distance_difference = 1.0e-8;
+    auto found = job.runFromMatter(hot);
     REQUIRE(found != nullptr);
+    REQUIRE(std::filesystem::exists("product.con"));
   }
   {
     auto owned = std::make_unique<Parameters>(shortMolecularDynamics(base));
+    std::filesystem::remove("product.con");
     eonc::ParallelReplicaJob job(std::move(owned), runtime);
-    auto found = job.runFromMatter(std::make_shared<Matter>(*seed));
+    auto hot = std::make_shared<Matter>(*seed);
+    hot->structComp.distance_difference = 1.0e-8;
+    auto found = job.runFromMatter(hot);
     REQUIRE(found != nullptr);
+    REQUIRE(std::filesystem::exists("product.con"));
   }
 }
 
