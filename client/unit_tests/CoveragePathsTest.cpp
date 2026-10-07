@@ -954,6 +954,7 @@ TEST_CASE("dynamics basin and gradient-squared searches take one short step",
     ParametersLoadAccess::debug_options(params).write_movies = true;
     auto tight = std::make_shared<Matter>(pot, params);
     REQUIRE(eonc::io::io_ok(tight->con2matter(std::string("reactant.con"))));
+    tight->setMasses(VectorXd::Ones(tight->numberOfAtoms()));
     eonc::ProcessSearchJob job(pot, params);
     auto found = job.runFromMatter(tight);
     REQUIRE(found != nullptr);
@@ -1019,6 +1020,7 @@ TEST_CASE("short accelerated dynamics records a transition",
     Parameters tadParams = shortMolecularDynamics(base);
     auto hot = std::make_shared<Matter>(pot, tadParams);
     REQUIRE(eonc::io::io_ok(hot->con2matter(std::string("reactant.con"))));
+    hot->setMasses(VectorXd::Ones(hot->numberOfAtoms()));
     auto owned = std::make_unique<Parameters>(tadParams);
     eonc::TADJob job(std::move(owned), runtime);
     auto found = job.runFromMatter(hot);
@@ -1030,6 +1032,7 @@ TEST_CASE("short accelerated dynamics records a transition",
     Parameters safeParams = shortMolecularDynamics(base);
     auto hot = std::make_shared<Matter>(pot, safeParams);
     REQUIRE(eonc::io::io_ok(hot->con2matter(std::string("reactant.con"))));
+    hot->setMasses(VectorXd::Ones(hot->numberOfAtoms()));
     auto owned = std::make_unique<Parameters>(safeParams);
     eonc::SafeHyperJob job(std::move(owned), runtime);
     auto found = job.runFromMatter(hot);
@@ -1041,6 +1044,7 @@ TEST_CASE("short accelerated dynamics records a transition",
     Parameters replicaParams = shortMolecularDynamics(base);
     auto hot = std::make_shared<Matter>(pot, replicaParams);
     REQUIRE(eonc::io::io_ok(hot->con2matter(std::string("reactant.con"))));
+    hot->setMasses(VectorXd::Ones(hot->numberOfAtoms()));
     auto owned = std::make_unique<Parameters>(replicaParams);
     eonc::ParallelReplicaJob job(std::move(owned), runtime);
     auto found = job.runFromMatter(hot);
