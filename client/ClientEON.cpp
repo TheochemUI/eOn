@@ -150,12 +150,11 @@ static int eonClientMain(int argc, char **argv) {
   // thread and the file sinks. Help and version already returned above.
   if (!serverRank) {
     std::string configName = parameters.main_options().iniFilename;
-#ifdef EONMPI
+    // A bundle is config_0.ini plus its siblings. That set is a parameter
+    // file even when config.ini itself is absent.
     if (eonc::helpers::existsFile("config_0.ini")) {
       configName = "config_0.ini";
-    } else
-#endif
-    {
+    } else {
       configName = eonc::helpers::getRelevantFile(configName);
     }
     if (!eonc::helpers::existsFile(configName)) {
