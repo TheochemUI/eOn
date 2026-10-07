@@ -13,9 +13,11 @@
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/ARTnSaddleSearch.h"
+#include "eon/BasinHoppingJob.h"
 #include "eon/EpiCenters.h"
 #include "eon/GeometryAnalysis.h"
 #include "eon/HelperFunctions.h"
+#include "eon/ImprovedDimer.h"
 #include "eon/IRACompare.h"
 #include "eon/InstantonJob.h"
 #include "eon/Matter.h"
@@ -1089,5 +1091,107 @@ TEST_CASE("rgpot batch forces share one calculator", "[pot][rgpot][batch]") {
   REQUIRE(rg->engineAvailable());
 }
 #endif
+
+namespace {
+
+struct BatchLJ final : Potential {
+  std::shared_ptr<Potential> inner;
+  explicit BatchLJ(const Parameters &p)
+      : Potential(PotType::LJ),
+        inner{eonc::helpers::sharePotential(
+            eonc::helpers::makePotential(PotType::LJ, p))} {}
+  using Potential::force;
+  void force(long nAtoms, const double *positions, const int *atomicNrs,
+             double *forces, double *energy, double *variance,
+             const double *box) override {
+    inner->force(nAtoms, positions, atomicNrs, forces, energy, variance, box);
+  }
+  [[nodiscard]] bool supportsBatchEvaluation() const noexcept override {
+    return true;
+  }
+  void forceBatch(long nSystems, long nAtoms, const double *const *positions,
+                  const int *const *atomicNrs, double *const *forces,
+                  double *energies, double *variances,
+                  const double *const *boxes) override {
+    for (long s = 0; s < nSystems; ++s) {
+      double var = 0.0;
+      inner->force(nAtoms, positions[s], atomicNrs[s], forces[s], &energies[s],
+                   &var, boxes[s]);
+      if (variances != nullptr) {
+        variances[s] = var;
+      }
+    }
+  }
+};
+
+} // namespace
+
+TEST_CASE("improved dimer batches the centre and the forward image",
+          "[dimer][batch]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::dimer_options(params).improved = true;
+  ParametersLoadAccess::dimer_options(params).opt_method = OptType::LBFGS;
+  ParametersLoadAccess::dimer_options(params).max_iterations = 3;
+  auto batch = std::make_shared<BatchLJ>(params);
+  auto matter = std::make_shared<Matter>(batch, params);
+  REQUIRE(eonc::io::io_ok(matter->con2matter(std::string("reactant.con"))));
+  eonc::ImprovedDimer dimer(matter, params, batch);
+  AtomMatrix mode = AtomMatrix::Random(matter->numberOfAtoms(), 3);
+  mode.normalize();
+  dimer.compute(matter, mode);
+  REQUIRE(std::isfinite(dimer.getEigenvalue()));
+}
+
+TEST_CASE("basin hopping writes a unique minimum from a random start",
+          "[job][basin_hopping]") {
+  Workdir work;
+  std::filesystem::copy_file(work.dir() / "reactant.con", work.dir() / "pos.con",
+                             std::filesystem::copy_options::overwrite_existing);
+  Parameters params = ljParams();
+  ParametersLoadAccess::main_options(params).job = JobType::Basin_Hopping;
+  ParametersLoadAccess::basin_hopping_options(params).steps = 2;
+  ParametersLoadAccess::basin_hopping_options(params).displacement = 0.3;
+  ParametersLoadAccess::basin_hopping_options(params)
+      .initial_random_structure_probability = 1.0;
+  ParametersLoadAccess::basin_hopping_options(params).write_unique = true;
+  ParametersLoadAccess::basin_hopping_options(params).push_apart_distance = 0.4;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 8;
+  ParametersLoadAccess::optimizer_options(params).converged_force = 0.05;
+  eonc::Runtime runtime;
+  auto owned = std::make_unique<Parameters>(params);
+  eonc::BasinHoppingJob job(std::move(owned), runtime);
+  const auto files = job.run();
+  REQUIRE_FALSE(files.empty());
+}
+
+TEST_CASE("rate instanton climbs a short bead ladder", "[job][instanton]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, pot);
+  auto saddle = std::make_shared<Matter>(*reactant);
+  auto pos = saddle->getPositions();
+  pos(0, 0) += 0.8;
+  saddle->setPositions(pos);
+  REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
+  REQUIRE(eonc::io::io_ok(saddle->matter2con("saddle.con", false)));
+  ParametersLoadAccess::main_options(params).job = JobType::Instanton;
+  ParametersLoadAccess::instanton_options(params).mode = "rate";
+  ParametersLoadAccess::instanton_options(params).temperature = 200.0;
+  ParametersLoadAccess::instanton_options(params).beads = 8;
+  ParametersLoadAccess::instanton_options(params).max_iterations = 2;
+  ParametersLoadAccess::instanton_options(params).force_tolerance = 10.0;
+  ParametersLoadAccess::instanton_options(params).bead_ladder = true;
+  ParametersLoadAccess::instanton_options(params).half_ring = false;
+  eonc::Runtime runtime;
+  auto owned = std::make_unique<Parameters>(params);
+  eonc::InstantonJob job(std::move(owned), runtime);
+  const auto files = job.run();
+  REQUIRE_FALSE(files.empty());
+}
 
 } // namespace tests
