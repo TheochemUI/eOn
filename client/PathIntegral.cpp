@@ -603,31 +603,34 @@ void RingPolymer::thermalMomenta() {
 
 void RingPolymer::toNormal(const std::vector<VectorXd> &src,
                            std::vector<VectorXd> &dst) const {
-  if (pack_.rows() != nDof_ || pack_.cols() != nBeads_) {
-    pack_.resize(nDof_, nBeads_);
-    transformed_.resize(nDof_, nBeads_);
-  }
-  for (long j = 0; j < nBeads_; ++j) {
-    pack_.col(j) = src[static_cast<size_t>(j)];
-  }
-  transformed_.noalias() = pack_ * modes_.transpose();
-  for (long k = 0; k < nBeads_; ++k) {
-    dst[static_cast<size_t>(k)] = transformed_.col(k);
+  // modes_ is column-major: modes(k, j) lives at k + j * nBeads.
+  // Fixed coordinates are not ring degrees of freedom, so they stay in
+  // bead space and are left out of the multiply.
+  const double *mode = modes_.data();
+  const long n = nBeads_;
+  for (long a : freeIndex_) {
+    for (long k = 0; k < n; ++k) {
+      double sum = 0.0;
+      for (long j = 0; j < n; ++j) {
+        sum += src[static_cast<size_t>(j)][a] * mode[k + j * n];
+      }
+      dst[static_cast<size_t>(k)][a] = sum;
+    }
   }
 }
 
 void RingPolymer::fromNormal(const std::vector<VectorXd> &src,
                              std::vector<VectorXd> &dst) const {
-  if (pack_.rows() != nDof_ || pack_.cols() != nBeads_) {
-    pack_.resize(nDof_, nBeads_);
-    transformed_.resize(nDof_, nBeads_);
-  }
-  for (long k = 0; k < nBeads_; ++k) {
-    pack_.col(k) = src[static_cast<size_t>(k)];
-  }
-  transformed_.noalias() = pack_ * modes_;
-  for (long j = 0; j < nBeads_; ++j) {
-    dst[static_cast<size_t>(j)] = transformed_.col(j);
+  const double *mode = modes_.data();
+  const long n = nBeads_;
+  for (long a : freeIndex_) {
+    for (long j = 0; j < n; ++j) {
+      double sum = 0.0;
+      for (long k = 0; k < n; ++k) {
+        sum += src[static_cast<size_t>(k)][a] * mode[k + j * n];
+      }
+      dst[static_cast<size_t>(j)][a] = sum;
+    }
   }
 }
 
@@ -888,8 +891,8 @@ void RingPolymer::step(Potential &pot, const double *box, bool record) {
   }
   kick(half, true);
   projectMomentum();
-  propagate(half);
-  propagate(half);
+  // Two free half-steps are one full step of the exact ring propagator.
+  propagate(opt_.dt);
   projectPosition();
   forces(pot, box);
   if (record) {

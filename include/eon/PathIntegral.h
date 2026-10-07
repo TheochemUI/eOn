@@ -171,8 +171,6 @@ private:
     MatrixXd acc;
   };
   std::vector<ModeGle> gle_;
-  mutable MatrixXd pack_;
-  mutable MatrixXd transformed_;
   std::vector<const double *> posPtr_;
   std::vector<const int *> nrsPtr_;
   std::vector<double *> frcPtr_;
