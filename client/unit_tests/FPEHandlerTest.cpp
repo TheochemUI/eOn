@@ -131,6 +131,27 @@ TEST_CASE("enableFPE reports overflow and an invalid operation once",
 #endif
 }
 
+TEST_CASE("enableFPE steps past a prefixed integer divide", "[fpe][prefix]") {
+#if defined(_WIN32) || !(defined(__x86_64__) || defined(__i386__))
+  SKIP("prefixed integer divide continue is x86 only");
+#else
+  eonc::enableFPE();
+  int num = 1;
+  int den = 0;
+  int quot = -1;
+  asm volatile("xorl %%edx, %%edx\n\t"
+               ".byte 0x66\n\t"
+               "idivl %%ecx\n\t"
+               : "=a"(quot)
+               : "a"(num), "c"(den)
+               : "edx", "cc");
+  int marker = 7;
+  REQUIRE(marker == 7);
+  eonc::disableFPE();
+  feclearexcept(FE_ALL_EXCEPT);
+#endif
+}
+
 TEST_CASE("safe_div returns fallback on zero denom without trapping",
           "[fpe][safemath]") {
   eonc::enableFPE();

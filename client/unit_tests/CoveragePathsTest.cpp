@@ -958,8 +958,8 @@ TEST_CASE("dynamics basin and gradient-squared searches take one short step",
     ParametersLoadAccess::structure_comparison_options(params)
         .distance_difference = 1.0e-8;
     ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
-    ParametersLoadAccess::neb_options(params).image_count = 3;
-    ParametersLoadAccess::neb_options(params).max_iterations = 1;
+    ParametersLoadAccess::neb_options(params).image_count = 5;
+    ParametersLoadAccess::neb_options(params).max_iterations = 12;
     ParametersLoadAccess::neb_options(params).endpoints.minimize = false;
     ParametersLoadAccess::debug_options(params).write_movies = true;
     auto tight = std::make_shared<Matter>(pot, params);
