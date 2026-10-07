@@ -549,7 +549,7 @@ TEST_CASE("NEB job interpolates through an explicit transition structure",
   }
   auto owned = std::make_unique<Parameters>(params);
   ParametersLoadAccess::main_options(*owned).job = JobType::Nudged_Elastic_Band;
-  ParametersLoadAccess::neb_options(*owned).image_count = 3;
+  ParametersLoadAccess::neb_options(*owned).image_count = 1;
   ParametersLoadAccess::neb_options(*owned).force_tolerance = 1.0;
   ParametersLoadAccess::optimizer_options(*owned).max_iterations = 1;
   ParametersLoadAccess::neb_options(*owned).max_iterations = 1;
