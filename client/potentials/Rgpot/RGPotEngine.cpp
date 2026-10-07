@@ -16,7 +16,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
-#include <mutex>
 #include <stdexcept>
 #include <string>
 #include <tuple>
@@ -457,10 +456,12 @@ void RGPotEngine::armGroupedExit() const {
   if (mpi_world_hint() <= 1)
     return;
   const EonRgpotGroupMpi *api = group_mpi();
-  if (api == nullptr)
+  if (api == nullptr || api->hard_exit == nullptr)
     return;
-  static std::once_flag once;
-  std::call_once(once, [api] { ::on_exit(api->hard_exit, nullptr); });
+  // A library loaded during the run can register an exit handler after
+  // the first call. Registering again puts this handler last, so it runs
+  // first and _Exit skips those destructors. The handler does not return.
+  ::on_exit(api->hard_exit, nullptr);
 #else
   (void)this;
 #endif

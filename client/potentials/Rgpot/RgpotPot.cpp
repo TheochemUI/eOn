@@ -191,6 +191,8 @@ void RgpotPot::stopAndDrop() {
     impl_->shutdownModule();
     dropped_ = true;
   }
+  if (impl_->calculatorWorld() > 1)
+    impl_->armGroupedExit();
   if (grouped && !acked_) {
     std::int64_t hdr[4] = {kDown, 0, 0, 0};
     impl_->broadcastFromDriver(hdr, sizeof(hdr));
@@ -358,6 +360,7 @@ void RgpotPot::serveWorker() {
       }
       std::int64_t ack[4] = {kDown, 0, 0, 0};
       impl_->broadcastFromDriver(ack, sizeof(ack));
+      impl_->armGroupedExit();
       std::exit(0);
     }
     const long n = static_cast<long>(hdr[1]);
