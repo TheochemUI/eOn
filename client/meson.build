@@ -737,6 +737,7 @@ if not readcon_db_dep.found()
     _readcon_db_version = _readcon_db_inner.version()
     # --as-needed drops the shared library: the mirror resolves rkrdb_open
     # at load time, so the link line has to keep the library anyway.
+    _runtime_rpath += [fs.parent(_readcon_db_so.full_path())]
     readcon_db_dep = declare_dependency(
         link_args: [
             '-Wl,--no-as-needed',
