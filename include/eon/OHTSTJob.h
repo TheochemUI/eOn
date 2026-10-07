@@ -35,10 +35,11 @@ inline bool reversibleWorkPastRidge(double reversibleWork,
   return reversibleWork > 2.0 * thermalEnergy;
 }
 
-/**
- * @file
+/** @file
  * @ingroup Jobs
- *
+ */
+
+/**
  * \brief Optimized hyperplanar transition state theory (OH-TST).
  *
  * Implements the reversible-work variational TST of Johannesson and
