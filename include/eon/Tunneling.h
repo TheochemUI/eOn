@@ -374,9 +374,10 @@ struct RateInstanton {
 /// unstable mode to where V has dropped by (1 - T / T_c) of the lower of the
 /// two barriers. At or below `newtonLimit` active coordinates the step is an
 /// index-1 Newton step on a Bofill Hessian, and below 0.75 T_c an empty
-/// guess cools from 0.85 T_c. Beyond that limit the step is minimum-mode
-/// following. An even ring whose beads match under j -> N - j is evaluated
-/// from one turning point to the other and mirrored. `saddle` and
+/// guess cools from 0.85 T_c. Beyond that limit the step is the dimer in
+/// MinModeSaddleSearch on one ring structure. An even ring whose beads match
+/// under j -> N - j is evaluated from one turning point to the other and
+/// mirrored. `saddle` and
 /// `hessSaddle` are mass-weighted.
 RateInstanton optimizeRateInstanton(const VectorXd &saddle,
                                     const MatrixXd &hessSaddle, double beta,

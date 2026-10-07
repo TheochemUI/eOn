@@ -17,6 +17,10 @@
 */
 #include "eon/Tunneling.h"
 #include "eon/EonLogger.h"
+#include "eon/LowestEigenmode.h"
+#include "eon/MinModeSaddleSearch.h"
+#include "eon/Parameters.h"
+#include "eon/RingPolymerPotential.h"
 
 #include <Eigen/Eigenvalues>
 #include <Eigen/LU>
@@ -1103,97 +1107,6 @@ RingEval evaluateRing(const std::vector<VectorXd> &x, double c,
     addFrictionBath(x, out.u, out.grad, eta);
   }
   return out;
-}
-
-// Lowest eigenpair of the ring Hessian by Lanczos on finite-difference
-// products, started from `start`; full reorthogonalisation.
-double lowestMode(const std::vector<VectorXd> &x, const RingEval &here,
-                  double c, const BatchPotential &potential,
-                  std::vector<VectorXd> &mode, long steps, double eps,
-                  bool mirror = false) {
-  const size_t n = x.size();
-  // The thermal instanton retraces, so the unstable mode is even. Probes
-  // and products stay on that mirror and the potential call sees one half.
-  const bool reflect = mirror && n % 2 == 0;
-  auto snap = [&](std::vector<VectorXd> &q) {
-    if (!reflect) {
-      return;
-    }
-    const long m = static_cast<long>(n) / 2;
-    for (long j = 1; j < m; ++j) {
-      const size_t a = static_cast<size_t>(j);
-      const size_t b = n - a;
-      const VectorXd mid = 0.5 * (q[a] + q[b]);
-      q[a] = mid;
-      q[b] = mid;
-    }
-  };
-  auto hv = [&](const std::vector<VectorXd> &u) {
-    std::vector<VectorXd> xp(n);
-    for (size_t j = 0; j < n; ++j) {
-      xp[j] = x[j] + eps * u[j];
-    }
-    snap(xp);
-    const RingEval e = evaluateRing(xp, c, potential);
-    std::vector<VectorXd> out(n);
-    for (size_t j = 0; j < n; ++j) {
-      out[j] = (e.grad[j] - here.grad[j]) / eps;
-    }
-    snap(out);
-    return out;
-  };
-  std::vector<std::vector<VectorXd>> basis;
-  std::vector<double> alpha, beta;
-  std::vector<VectorXd> q = mode;
-  snap(q);
-  scale(q, 1.0 / std::sqrt(dot(q, q)));
-  for (long k = 0; k < steps; ++k) {
-    basis.push_back(q);
-    std::vector<VectorXd> w = hv(q);
-    const double a = dot(w, q);
-    alpha.push_back(a);
-    for (const auto &b : basis) {
-      const double p = dot(w, b);
-      for (size_t j = 0; j < n; ++j) {
-        w[j] -= p * b[j];
-      }
-    }
-    snap(w);
-    const double bnorm = std::sqrt(dot(w, w));
-    if (!(bnorm > 1e-12) || k + 1 == steps) {
-      break;
-    }
-    beta.push_back(bnorm);
-    scale(w, 1.0 / bnorm);
-    q = std::move(w);
-  }
-  const long m = static_cast<long>(alpha.size());
-  MatrixXd t = MatrixXd::Zero(m, m);
-  for (long i = 0; i < m; ++i) {
-    t(i, i) = alpha[static_cast<size_t>(i)];
-    if (i + 1 < m) {
-      t(i, i + 1) = t(i + 1, i) = beta[static_cast<size_t>(i)];
-    }
-  }
-  const Eigen::SelfAdjointEigenSolver<MatrixXd> es(t);
-  const VectorXd y = es.eigenvectors().col(0);
-  std::vector<VectorXd> ritz(n);
-  for (size_t j = 0; j < n; ++j) {
-    ritz[j] = VectorXd::Zero(x[j].size());
-  }
-  for (long i = 0; i < m; ++i) {
-    for (size_t j = 0; j < n; ++j) {
-      ritz[j] += y(i) * basis[static_cast<size_t>(i)][j];
-    }
-  }
-  scale(ritz, 1.0 / std::sqrt(dot(ritz, ritz)));
-  snap(ritz);
-  const double rnorm = std::sqrt(dot(ritz, ritz));
-  if (rnorm > 0.0) {
-    scale(ritz, 1.0 / rnorm);
-  }
-  mode = std::move(ritz);
-  return es.eigenvalues()(0);
 }
 
 // Lowest curvature of the ring Hessian over vectors odd under j -> N-j and
@@ -3055,6 +2968,434 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
 
 } // namespace
 
+namespace {
+
+struct SearchedRing {
+  std::vector<VectorXd> beads;
+  std::vector<double> energies;
+  double ringPotential = 0.0;
+  double bN = 0.0;
+  long iterations = 0;
+  bool converged = false;
+};
+
+std::vector<VectorXd> activeBeadsOf(const std::vector<VectorXd> &full,
+                                    bool fold) {
+  if (!fold) {
+    return full;
+  }
+  const long m = static_cast<long>(full.size()) / 2;
+  return std::vector<VectorXd>(full.begin(), full.begin() + (m + 1));
+}
+
+std::vector<VectorXd> expandMirrored(const std::vector<VectorXd> &active,
+                                     long nBeads, bool fold) {
+  if (!fold) {
+    return active;
+  }
+  const long m = nBeads / 2;
+  std::vector<VectorXd> full(static_cast<size_t>(nBeads));
+  full[0] = active[0];
+  full[static_cast<size_t>(m)] = active[static_cast<size_t>(m)];
+  for (long j = 1; j < m; ++j) {
+    full[static_cast<size_t>(j)] = active[static_cast<size_t>(j)];
+    full[static_cast<size_t>(nBeads - j)] = active[static_cast<size_t>(j)];
+  }
+  return full;
+}
+
+} // namespace
+
+void RingPolymerPotential::fixLayout(long nBeads, long dof, bool fold,
+                                     const VectorXd &modeDir) {
+  if (nBeads < 4 || dof < 1 || modeDir.size() != dof) {
+    throw std::invalid_argument(
+        "ring structure: need at least 4 beads and a mode of the bead "
+        "dimension");
+  }
+  if (fold && nBeads % 2 != 0) {
+    throw std::invalid_argument(
+        "ring structure: a folded ring needs an even bead count");
+  }
+  nBeads_ = nBeads;
+  dof_ = dof;
+  fold_ = fold;
+  nActive_ = fold ? (nBeads / 2 + 1) : nBeads;
+  atomsPerBead_ = (dof + 2) / 3;
+  usedOnLast_ = static_cast<int>(dof % 3 == 0 ? 3 : dof % 3);
+  nAtoms_ = atomsPerBead_ * nActive_;
+  modeDir_ = modeDir;
+  const double nrm = modeDir_.norm();
+  if (!(nrm > 0.0)) {
+    throw std::invalid_argument("ring structure: the saddle direction is zero");
+  }
+  modeDir_ /= nrm;
+}
+
+RingPolymerPotential::RingPolymerPotential(BatchPotential beads, long nBeads,
+                                           long dof, double spring,
+                                           double energyShift,
+                                           std::vector<double> eta, bool fold,
+                                           VectorXd modeDir)
+    : Potential(PotType::UNKNOWN),
+      beads_(std::move(beads)),
+      spring_(spring),
+      energyShift_(energyShift),
+      eta_(std::move(eta)) {
+  if (!(spring > 0.0) || !std::isfinite(spring)) {
+    throw std::invalid_argument("ring structure: the spring constant must be positive");
+  }
+  fixLayout(nBeads, dof, fold, modeDir);
+}
+
+void RingPolymerPotential::packActive(const std::vector<VectorXd> &active,
+                                      double *positions) const {
+  if (static_cast<long>(active.size()) != nActive_ || positions == nullptr) {
+    throw std::invalid_argument("ring structure: bead count does not match");
+  }
+  std::fill(positions, positions + 3 * nAtoms_, 0.0);
+  for (long j = 0; j < nActive_; ++j) {
+    if (active[static_cast<size_t>(j)].size() != dof_) {
+      throw std::invalid_argument(
+          "ring structure: bead dimension does not match");
+    }
+    long flat = 0;
+    const double *src = active[static_cast<size_t>(j)].data();
+    for (long a = 0; a < atomsPerBead_; ++a) {
+      double *atom = positions + (j * atomsPerBead_ + a) * 3;
+      const int nax = (a + 1 == atomsPerBead_) ? usedOnLast_ : 3;
+      for (int ax = 0; ax < nax; ++ax, ++flat) {
+        atom[ax] = src[flat];
+      }
+    }
+  }
+}
+
+std::vector<VectorXd>
+RingPolymerPotential::unpack(const double *positions) const {
+  if (positions == nullptr) {
+    throw std::invalid_argument("ring structure: missing positions");
+  }
+  std::vector<VectorXd> active(static_cast<size_t>(nActive_),
+                               VectorXd::Zero(dof_));
+  for (long j = 0; j < nActive_; ++j) {
+    long flat = 0;
+    for (long a = 0; a < atomsPerBead_; ++a) {
+      const double *atom = positions + (j * atomsPerBead_ + a) * 3;
+      const int nax = (a + 1 == atomsPerBead_) ? usedOnLast_ : 3;
+      for (int ax = 0; ax < nax; ++ax, ++flat) {
+        active[static_cast<size_t>(j)](flat) = atom[ax];
+      }
+    }
+  }
+  return active;
+}
+
+void RingPolymerPotential::packMode(const VectorXd &dir,
+                                    AtomMatrix &mode) const {
+  if (mode.rows() != nAtoms_) {
+    throw std::invalid_argument("ring mode: atom count does not match");
+  }
+  std::vector<VectorXd> beads(static_cast<size_t>(nActive_), dir);
+  packActive(beads, mode.data());
+  const double nrm = mode.norm();
+  if (!(nrm > 0.0)) {
+    throw std::invalid_argument("ring mode: the saddle direction is zero");
+  }
+  mode /= nrm;
+}
+
+double RingPolymerPotential::writeForces(const std::vector<VectorXd> &grad,
+                                         const double *positions,
+                                         double *forces) const {
+  std::fill(forces, forces + 3 * nAtoms_, 0.0);
+  for (long j = 0; j < nActive_; ++j) {
+    long flat = 0;
+    const double *src = grad[static_cast<size_t>(j)].data();
+    for (long a = 0; a < atomsPerBead_; ++a) {
+      double *atom = forces + (j * atomsPerBead_ + a) * 3;
+      const int nax = (a + 1 == atomsPerBead_) ? usedOnLast_ : 3;
+      for (int ax = 0; ax < nax; ++ax, ++flat) {
+        atom[ax] = -src[flat];
+      }
+    }
+  }
+  double extra = 0.0;
+  constexpr double kAxis = 1.0e3;
+  if (usedOnLast_ == 3) {
+    return extra;
+  }
+  for (long j = 0; j < nActive_; ++j) {
+    const long atom = j * atomsPerBead_ + atomsPerBead_ - 1;
+    double *frc = forces + atom * 3;
+    const double *pos = positions + atom * 3;
+    for (int ax = usedOnLast_; ax < 3; ++ax) {
+      extra += 0.5 * kAxis * pos[ax] * pos[ax];
+      frc[ax] = -kAxis * pos[ax];
+    }
+  }
+  return extra;
+}
+
+void RingPolymerPotential::force(long nAtoms, const double *positions,
+                                 const int *atomicNrs, double *forces,
+                                 double *energy, double *variance,
+                                 const double *box) {
+  const double *pos[] = {positions};
+  const int *nrs[] = {atomicNrs};
+  double *frc[] = {forces};
+  const double *boxes[] = {box};
+  double var = 0.0;
+  forceBatch(1, nAtoms, pos, nrs, frc, energy, variance ? &var : &var, boxes);
+  if (variance) {
+    *variance = var;
+  }
+  forceCallCounter -= 1;
+}
+
+void RingPolymerPotential::forceBatch(long nSystems, long nAtoms,
+                                      const double *const *positions,
+                                      const int *const *atomicNrs,
+                                      double *const *forces, double *energies,
+                                      double *variances,
+                                      const double *const *boxes) {
+  (void)atomicNrs;
+  (void)boxes;
+  if (nSystems < 1 || nAtoms != nAtoms_ || positions == nullptr ||
+      forces == nullptr || energies == nullptr) {
+    throw std::invalid_argument(
+        "ring structure: the atom count does not match the bead packing");
+  }
+  struct Item {
+    std::vector<VectorXd> raw;
+    std::vector<VectorXd> q;
+  };
+  std::vector<Item> items(static_cast<size_t>(nSystems));
+  std::vector<VectorXd> all;
+  all.reserve(static_cast<size_t>(nSystems * nActive_));
+  for (long i = 0; i < nSystems; ++i) {
+    items[static_cast<size_t>(i)].raw = unpack(positions[i]);
+    items[static_cast<size_t>(i)].q = items[static_cast<size_t>(i)].raw;
+    if (fold_) {
+      projectMonotonePrefix(items[static_cast<size_t>(i)].q, nActive_ - 1,
+                            modeDir_);
+    }
+    all.insert(all.end(), items[static_cast<size_t>(i)].q.begin(),
+               items[static_cast<size_t>(i)].q.end());
+  }
+  std::vector<double> vAll;
+  std::vector<VectorXd> gAll;
+  beads_(all, vAll, gAll);
+  if (vAll.size() != all.size() || gAll.size() != all.size()) {
+    throw std::runtime_error(
+        "ring structure: the bead potential returned the wrong count");
+  }
+  size_t cursor = 0;
+  const double kMono = std::max(4.0 * spring_, 1.0);
+  for (long i = 0; i < nSystems; ++i) {
+    const auto &q = items[static_cast<size_t>(i)].q;
+    const auto &raw = items[static_cast<size_t>(i)].raw;
+    std::vector<double> vActive(vAll.begin() + static_cast<std::ptrdiff_t>(cursor),
+                                vAll.begin() + static_cast<std::ptrdiff_t>(cursor + nActive_));
+    std::vector<VectorXd> gActive(gAll.begin() + static_cast<std::ptrdiff_t>(cursor),
+                                  gAll.begin() + static_cast<std::ptrdiff_t>(cursor + nActive_));
+    cursor += static_cast<size_t>(nActive_);
+    for (const auto &g : gActive) {
+      if (g.size() != dof_) {
+        throw std::runtime_error(
+            "ring structure: a bead gradient has the wrong dimension");
+      }
+    }
+    std::vector<VectorXd> fullQ = expandMirrored(q, nBeads_, fold_);
+    std::vector<double> vFull(static_cast<size_t>(nBeads_));
+    std::vector<VectorXd> gFull(static_cast<size_t>(nBeads_),
+                                VectorXd::Zero(dof_));
+    if (!fold_) {
+      vFull = std::move(vActive);
+      gFull = std::move(gActive);
+    } else {
+      const long m = nBeads_ / 2;
+      vFull[0] = vActive[0];
+      gFull[0] = gActive[0];
+      vFull[static_cast<size_t>(m)] = vActive[static_cast<size_t>(m)];
+      gFull[static_cast<size_t>(m)] = gActive[static_cast<size_t>(m)];
+      for (long j = 1; j < m; ++j) {
+        vFull[static_cast<size_t>(j)] = vActive[static_cast<size_t>(j)];
+        vFull[static_cast<size_t>(nBeads_ - j)] = vActive[static_cast<size_t>(j)];
+        gFull[static_cast<size_t>(j)] = gActive[static_cast<size_t>(j)];
+        gFull[static_cast<size_t>(nBeads_ - j)] = gActive[static_cast<size_t>(j)];
+      }
+    }
+    auto replay = [&](const std::vector<VectorXd> &, std::vector<double> &v,
+                      std::vector<VectorXd> &g) {
+      v = vFull;
+      g = gFull;
+    };
+    const RingEval ev = evaluateRing(fullQ, spring_, replay, energyShift_, eta_);
+    std::vector<VectorXd> reduced;
+    if (!fold_) {
+      reduced = ev.grad;
+    } else {
+      const long m = nBeads_ / 2;
+      reduced.resize(static_cast<size_t>(m + 1));
+      reduced[0] = ev.grad[0];
+      reduced[static_cast<size_t>(m)] = ev.grad[static_cast<size_t>(m)];
+      for (long j = 1; j < m; ++j) {
+        reduced[static_cast<size_t>(j)] =
+            ev.grad[static_cast<size_t>(j)] +
+            ev.grad[static_cast<size_t>(nBeads_ - j)];
+      }
+    }
+    double penalty = 0.0;
+    if (fold_) {
+      for (long j = 0; j < nActive_; ++j) {
+        const VectorXd d = raw[static_cast<size_t>(j)] - q[static_cast<size_t>(j)];
+        penalty += 0.5 * kMono * d.squaredNorm();
+        reduced[static_cast<size_t>(j)] += kMono * d;
+      }
+    }
+    const double axis = writeForces(reduced, positions[i], forces[i]);
+    energies[i] = ev.u + penalty + axis;
+    if (variances) {
+      variances[i] = 0.0;
+    }
+    forceCallCounter += 1;
+  }
+}
+
+namespace {
+
+SearchedRing oneDimerSearch(const std::vector<VectorXd> &full, double c,
+                            const BatchPotential &potential,
+                            const RateInstantonOptions &options,
+                            const VectorXd &dir, bool fold,
+                            const std::vector<double> &eta) {
+  auto pot = std::make_shared<RingPolymerPotential>(
+      potential, options.beads, dir.size(), c, options.energyShift, eta, fold,
+      dir);
+  Parameters params;
+  ParametersLoadAccess::main_options(params).removeNetForce = false;
+  ParametersLoadAccess::main_options(params).parallel = false;
+  ParametersLoadAccess::main_options(params).finiteDifference =
+      options.lanczosStep > 0.0 ? options.lanczosStep : 1.0e-4;
+  ParametersLoadAccess::optimizer_options(params).method = OptType::CG;
+  ParametersLoadAccess::optimizer_options(params).max_move = options.maxStep;
+  ParametersLoadAccess::optimizer_options(params).convergence_metric =
+      "max_component";
+  ParametersLoadAccess::optimizer_options(params).converged_force =
+      options.forceTolerance;
+  ParametersLoadAccess::saddle_search_options(params).minmode_method =
+      LowestEigenmode::MINMODE_DIMER;
+  ParametersLoadAccess::saddle_search_options(params).max_iterations =
+      options.maxIterations;
+  ParametersLoadAccess::saddle_search_options(params).converged_force =
+      options.forceTolerance;
+  ParametersLoadAccess::saddle_search_options(params).max_energy = 1.0e9;
+  ParametersLoadAccess::dimer_options(params).improved = true;
+  ParametersLoadAccess::dimer_options(params).rotation_backend =
+      DimerRotationBackend::Classical;
+
+  auto matter = std::make_shared<Matter>(pot, params);
+  matter->resize(pot->structureAtoms());
+  matter->setPeriodic(false);
+  matter->setMasses(VectorXd::Ones(pot->structureAtoms()));
+  for (long i = 0; i < pot->structureAtoms(); ++i) {
+    matter->setAtomicNr(i, 1);
+  }
+  const long atomsPer = pot->structureAtoms() / pot->activeBeads();
+  const int used =
+      static_cast<int>((dir.size() % 3 == 0) ? 3 : (dir.size() % 3));
+  if (used < 3) {
+    for (long j = 0; j < pot->activeBeads(); ++j) {
+      const long atom = j * atomsPer + atomsPer - 1;
+      for (int ax = used; ax < 3; ++ax) {
+        matter->setFixed(atom, ax, 1);
+      }
+    }
+  }
+  VectorXd packed = VectorXd::Zero(3 * pot->structureAtoms());
+  pot->packActive(activeBeadsOf(full, fold), packed.data());
+  matter->setPositionsV(packed);
+  AtomMatrix mode(pot->structureAtoms(), 3);
+  pot->packMode(dir, mode);
+  const double e0 = matter->getPotentialEnergy();
+  MinModeSaddleSearch search(matter, mode, e0, params, pot);
+  const int status = search.run(options.maxIterations);
+
+  std::vector<VectorXd> beads =
+      expandMirrored(pot->unpack(matter->getPositions().data()), options.beads,
+                     fold);
+  RingEval ev = evaluateRing(beads, c, potential, options.energyShift, eta);
+  if (fold) {
+    std::vector<VectorXd> projected = beads;
+    projectMonotonePrefix(projected, options.beads / 2, dir);
+    const long m = options.beads / 2;
+    for (long j = 1; j < m; ++j) {
+      projected[static_cast<size_t>(options.beads - j)] =
+          projected[static_cast<size_t>(j)];
+    }
+    RingEval evFold =
+        evaluateRing(projected, c, potential, options.energyShift, eta);
+    if (largestBeadNorm(evFold.grad) <= largestBeadNorm(ev.grad)) {
+      beads = std::move(projected);
+      ev = std::move(evFold);
+    }
+  }
+  SearchedRing out;
+  out.beads = std::move(beads);
+  out.energies = ev.v;
+  out.ringPotential = ev.u;
+  for (size_t j = 0; j < out.beads.size(); ++j) {
+    const size_t next = (j + 1) % out.beads.size();
+    out.bN += (out.beads[next] - out.beads[j]).squaredNorm();
+  }
+  out.iterations = search.getIterationCount();
+  const double residual = largestBeadNorm(ev.grad);
+  out.converged = search.getEigenvalue() < 0.0 &&
+                  residual < options.forceTolerance;
+  EONC_LOG_INFO("[Instanton] dimer status {} after {} iterations, largest "
+                "residual {:.3e}, curvature {:.6f}",
+                status, out.iterations, residual, search.getEigenvalue());
+  return out;
+}
+
+SearchedRing searchRingWithDimer(std::vector<VectorXd> full, double c,
+                                 const BatchPotential &potential,
+                                 const RateInstantonOptions &options,
+                                 const VectorXd &dir, bool fold, double betaN,
+                                 double barrierCurvature) {
+  const std::vector<double> eta = frictionEta(options, full.size());
+  SearchedRing out =
+      oneDimerSearch(full, c, potential, options, dir, fold, eta);
+  if (!fold || !options.checkOddSector || out.beads.size() != full.size()) {
+    return out;
+  }
+  const RingEval here =
+      evaluateRing(out.beads, c, potential, options.energyShift, eta);
+  if (!(largestBeadNorm(here.grad) < options.forceTolerance)) {
+    return out;
+  }
+  std::vector<VectorXd> oddMode;
+  const double oddCurv =
+      lowestOddMode(out.beads, here, c, potential, oddMode,
+                    options.lanczosFirst, options.lanczosStep);
+  if (!(oddCurv < -1.0e-3 * barrierCurvature) ||
+      oddMode.size() != out.beads.size()) {
+    return out;
+  }
+  std::vector<VectorXd> kicked = out.beads;
+  const double kick = std::sqrt(2.0 / (betaN * -oddCurv));
+  for (size_t k = 0; k < kicked.size(); ++k) {
+    kicked[k] += kick * oddMode[k];
+  }
+  const long before = out.iterations;
+  out = oneDimerSearch(kicked, c, potential, options, dir, false, eta);
+  out.iterations += before;
+  return out;
+}
+
+} // namespace
+
 RateInstanton optimizeRateInstanton(const VectorXd &saddle,
                                     const MatrixXd &hessSaddle, double beta,
                                     std::vector<VectorXd> guess,
@@ -3133,8 +3474,7 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
   }
 
   // An even count whose beads already match under j -> N-j is the
-  // out-and-back instanton. The images are assigned equal, so the
-  // potential on one half is copied, and the step stays on the closed ring.
+  // out-and-back instanton. The shared dimer sees one half of that ring.
   const bool wantMirror = options.halfRing && N % 2 == 0;
   std::vector<VectorXd> x = std::move(guess);
   bool fold = false;
@@ -3149,199 +3489,33 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
       }
     }
   }
-  BatchPotential evalPot = potential;
   if (fold) {
-    evalPot = [&](const std::vector<VectorXd> &q, std::vector<double> &v,
-                  std::vector<VectorXd> &g) {
-      const long m = N / 2;
-      bool sym = true;
-      for (long j = 1; j < m; ++j) {
-        if ((q[static_cast<size_t>(j)] - q[static_cast<size_t>(N - j)])
-                .squaredNorm() != 0.0) {
-          sym = false;
-          break;
-        }
-      }
-      if (!sym) {
-        potential(q, v, g);
-        return;
-      }
-      std::vector<VectorXd> uniq(static_cast<size_t>(m + 1));
-      for (long j = 0; j <= m; ++j) {
-        uniq[static_cast<size_t>(j)] = q[static_cast<size_t>(j)];
-      }
-      std::vector<double> vu;
-      std::vector<VectorXd> gu;
-      potential(uniq, vu, gu);
-      v.assign(static_cast<size_t>(N), 0.0);
-      g.assign(static_cast<size_t>(N), VectorXd());
-      for (long j = 0; j <= m; ++j) {
-        v[static_cast<size_t>(j)] = vu[static_cast<size_t>(j)];
-        g[static_cast<size_t>(j)] = gu[static_cast<size_t>(j)];
-      }
-      for (long j = 1; j < m; ++j) {
-        v[static_cast<size_t>(N - j)] = vu[static_cast<size_t>(j)];
-        g[static_cast<size_t>(N - j)] = gu[static_cast<size_t>(j)];
-      }
-    };
-  }
-  auto symmetrize = [&](std::vector<VectorXd> &q) {
-    if (!fold) {
-      return;
-    }
     const long m = N / 2;
     for (long j = 1; j < m; ++j) {
       const size_t a = static_cast<size_t>(j);
       const size_t b = static_cast<size_t>(N - j);
-      const VectorXd mid = 0.5 * (q[a] + q[b]);
-      q[a] = mid;
-      q[b] = mid;
+      const VectorXd mid = 0.5 * (x[a] + x[b]);
+      x[a] = mid;
+      x[b] = mid;
     }
-  };
-  // The mirror of an out-and-back bounce is symmetric too. A monotone
-  // reaction coordinate on beads 0..N/2 leaves that bounce out of the step.
-  auto projectFold = [&](std::vector<VectorXd> &q) {
-    if (!fold) {
-      return;
-    }
-    projectMonotonePrefix(q, N / 2, dir);
-    const long m = N / 2;
+    projectMonotonePrefix(x, m, dir);
     for (long j = 1; j < m; ++j) {
-      q[static_cast<size_t>(N - j)] = q[static_cast<size_t>(j)];
+      x[static_cast<size_t>(N - j)] = x[static_cast<size_t>(j)];
     }
-  };
-  symmetrize(x);
-  projectFold(x);
-
-  RingEval cur = evaluateRing(x, c, evalPot, options.energyShift,
-                              frictionEta(options, x.size()));
-  // The unstable mode of the ring starts as every bead moving along the
-  // saddle's unstable direction.
-  std::vector<VectorXd> mode(x.size(), dir);
-  double curvature = lowestMode(x, cur, c, evalPot, mode, options.lanczosFirst,
-                                options.lanczosStep, fold);
-  std::deque<std::pair<std::vector<VectorXd>, std::vector<VectorXd>>> pairs;
-  auto effective = [&](const std::vector<VectorXd> &g) {
-    const double par = dot(g, mode);
-    std::vector<VectorXd> e = g;
-    const double f = curvature < 0.0 ? 2.0 : 1.0;
-    for (size_t j = 0; j < e.size(); ++j) {
-      e[j] -= f * par * mode[j];
-      if (!(curvature < 0.0)) {
-        e[j] = -par * mode[j]; // climb along the mode only
-      }
-    }
-    return e;
-  };
-  std::vector<VectorXd> geff = effective(cur.grad);
-  long limit = options.maxIterations;
-  for (long it = 0; it < limit; ++it) {
-    inst.iterations = it;
-    if (curvature < 0.0 && largestBeadNorm(cur.grad) < options.forceTolerance) {
-      std::vector<VectorXd> oddMode;
-      const double oddCurv =
-          fold ? lowestOddMode(x, cur, c, potential, oddMode,
-                               options.lanczosFirst, options.lanczosStep)
-               : 0.0;
-      if (!(oddCurv < -1e-3 * std::abs(curvature))) {
-        inst.converged = true;
-        break;
-      }
-      // A mirror-symmetric stationary point with a second unstable mode
-      // odd under the mirror, such as two copies of the instanton on one
-      // ring. The rest of the search runs on the whole ring from a kick
-      // along that mode which lowers beta_N U_N by one in the quadratic
-      // model.
-      fold = false;
-      evalPot = potential;
-      const double kick = std::sqrt(2.0 / (inst.betaN * -oddCurv));
-      for (size_t k = 0; k < x.size(); ++k) {
-        x[k] += kick * oddMode[k];
-      }
-      cur = evaluateRing(x, c, evalPot, options.energyShift,
-                         frictionEta(options, x.size()));
-      curvature = lowestMode(x, cur, c, evalPot, mode, options.lanczosFirst,
-                             options.lanczosStep, fold);
-      pairs.clear();
-      geff = effective(cur.grad);
-      limit = it + options.maxIterations;
-    }
-    std::vector<VectorXd> trial(x.size());
-    std::vector<VectorXd> d = geff;
-    std::vector<double> alpha(pairs.size());
-    for (size_t i = pairs.size(); i-- > 0;) {
-      const double rho = 1.0 / dot(pairs[i].second, pairs[i].first);
-      alpha[i] = rho * dot(pairs[i].first, d);
-      for (size_t k = 0; k < d.size(); ++k) {
-        d[k] -= alpha[i] * pairs[i].second[k];
-      }
-    }
-    double gamma = 1.0 / (4.0 * c); // spring stiffness sets the first scale
-    if (!pairs.empty()) {
-      gamma = dot(pairs.back().first, pairs.back().second) /
-              dot(pairs.back().second, pairs.back().second);
-    }
-    scale(d, gamma);
-    for (size_t i = 0; i < pairs.size(); ++i) {
-      const double rho = 1.0 / dot(pairs[i].second, pairs[i].first);
-      const double b = rho * dot(pairs[i].second, d);
-      for (size_t k = 0; k < d.size(); ++k) {
-        d[k] += (alpha[i] - b) * pairs[i].first[k];
-      }
-    }
-    if (!(dot(d, geff) > 0.0)) { // not a descent direction on geff
-      pairs.clear();
-      d = geff;
-      scale(d, 1.0 / (4.0 * c));
-    }
-    const double big = largestBeadNorm(d);
-    if (big > options.maxStep) {
-      scale(d, options.maxStep / big);
-    }
-    for (size_t k = 0; k < x.size(); ++k) {
-      trial[k] = x[k] - d[k];
-    }
-    symmetrize(trial);
-    projectFold(trial);
-    RingEval next = evaluateRing(trial, c, evalPot, options.energyShift,
-                                 frictionEta(options, trial.size()));
-    const double prevCurv = curvature;
-    const long restart = options.lanczosRestart;
-    curvature = lowestMode(trial, next, c, evalPot, mode, restart,
-                           options.lanczosStep, fold);
-    std::vector<VectorXd> geffNext = effective(next.grad);
-    if ((prevCurv < 0.0) != (curvature < 0.0)) {
-      pairs.clear();
-    } else {
-      std::vector<VectorXd> sk(x.size()), yk(x.size());
-      for (size_t k = 0; k < x.size(); ++k) {
-        sk[k] = trial[k] - x[k];
-        yk[k] = geffNext[k] - geff[k];
-      }
-      if (dot(sk, yk) > 0.0) {
-        pairs.emplace_back(std::move(sk), std::move(yk));
-        if (static_cast<long>(pairs.size()) > options.memory) {
-          pairs.pop_front();
-        }
-      }
-    }
-    x = std::move(trial);
-    cur = std::move(next);
-    geff = std::move(geffNext);
   }
-  if (!inst.converged && curvature < 0.0 &&
-      largestBeadNorm(cur.grad) < options.forceTolerance) {
-    inst.converged = true;
-  }
-  inst.beads = x;
-  inst.energies = cur.v;
-  inst.ringPotential = cur.u;
-  inst.bN = 0.0;
-  for (size_t j = 0; j < x.size(); ++j) {
-    inst.bN += (x[(j + 1) % x.size()] - x[j]).squaredNorm();
-  }
+  const double barrierCurvature = std::abs(es.eigenvalues()(0));
+  const SearchedRing found =
+      searchRingWithDimer(std::move(x), c, potential, options, dir, fold,
+                          inst.betaN, barrierCurvature);
+  inst.beads = found.beads;
+  inst.energies = found.energies;
+  inst.ringPotential = found.ringPotential;
+  inst.bN = found.bN;
+  inst.iterations = found.iterations;
+  inst.converged = found.converged;
   return inst;
 }
+
 
 namespace {
 

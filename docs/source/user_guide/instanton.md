@@ -227,7 +227,10 @@ An odd count keeps every bead. `energy_shift` (default 0, in eV) is
 subtracted from every bead potential and from the reactant and saddle
 energies in the rate.
 
-The search is an index-1 Newton step on the ring Hessian. Without an
+The search is an index-1 Newton step on the ring Hessian while the active
+coordinate count is within the Newton limit. Past that limit the ring is one
+structure and the dimer follows its unstable mode, with the beads in one force
+batch. Without an
 `initial_path`, the rate job traces a steepest-descent path out of the
 saddle along both signs of its unstable mode and seeds the ring from it by
 the period condition below. That path is written to `instanton_sd_path.con`,
