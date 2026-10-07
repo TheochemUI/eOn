@@ -163,6 +163,13 @@ public:
            caps.reentrancy == rgpot::Reentrancy::PerInstance;
   }
 
+  [[nodiscard]] bool isSharedInstanceThreadSafe() const noexcept override {
+    if (pot_.caps().reentrancy != rgpot::Reentrancy::SharedInstance) {
+      return false;
+    }
+    return eonc::Potential::isSharedInstanceThreadSafe();
+  }
+
   [[nodiscard]] const RPot &kernel() const noexcept { return pot_; }
 
   /// Classical kernels expose ``config().cutoff``. Anything else is not

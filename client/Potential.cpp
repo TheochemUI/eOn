@@ -34,8 +34,7 @@
 #include "eon/potentials/GPRPotential/GPRPotential.h"
 #endif
 
-#include "eon/potentials/EAM/EAM.h"
-#include "eon/potentials/EMT/EffectiveMediumTheory.h"
+#include "rgpot/EMT/EMTPot.hpp"
 #include "eon/potentials/ExtPot/ExtPot.h"
 #include "eon/potentials/PluginLoader.h"
 #include "eon/potentials/RgpotAdapter/RgpotAdapter.h"
@@ -261,7 +260,9 @@ std::unique_ptr<Potential> makePotential(PotType ptype,
   switch (ptype) {
   // TODO: Every potential must know their own type
   case PotType::EMT: {
-    return (std::make_unique<EffectiveMediumTheory>(params));
+    return makeRgpot<rgpot::EMTPot>(
+        PotType::EMT, params,
+        rgpot::EMTConfig{.rasmussen = params.potential_options().EMTRasmussen});
     break;
   }
   case PotType::EXT_POT: {

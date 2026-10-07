@@ -855,8 +855,7 @@ endif
 _deps += [readcon_db_dep]
 
 # Potentials
-subdir('potentials/EAM')
-subdir('potentials/EMT')
+
 subdir('potentials/ExtPot')
 if not is_windows
     subdir('potentials/SocketNWChem')
@@ -960,10 +959,8 @@ if not is_windows
     subdir('potentials/Rgpot')
 endif
 
-# LJ, LJCluster, Morse, and ZBL live in librgpot (RgpotAdapter arms).
+# LJ, LJCluster, Morse, ZBL, and EMT live in librgpot (RgpotAdapter arms).
 potentials = [
-    eam,
-    emt,
     extpot,
 ]
 if not is_windows

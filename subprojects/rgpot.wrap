@@ -4,6 +4,6 @@ url = https://github.com/OmniPotentRPC/rgpot.git
 # rgpot main after 3.4.0 (merge of #95): librgpot carries no MPI and loads
 # librgpot_mpi on demand, and a CPMD force call keeps its collectives inside
 # its calculator, so calculator groups with unequal work no longer deadlock.
-revision = 004707295af9253047129a723ae79f0c1bc5afa2
+revision = d475f890dd3e3ee6b58643da0d2b9c92608b6476
 depth = 1
 diff_files = rgpot-capnp-includes.patch
