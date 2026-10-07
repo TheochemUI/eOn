@@ -11,6 +11,7 @@
 */
 #include "eon/Matter.h"
 #include "TestUtils.hpp"
+#include "eon/HelperFunctions.h"
 
 #include <cmath>
 #include "catch2/catch_amalgamated.hpp"
@@ -67,6 +68,26 @@ TEST_CASE("Matter takes exclusive Potential ownership", "[MatterTest]") {
   REQUIRE(a.getPotential().get() == raw);
   REQUIRE(a.getPotential().use_count() == 2);
   REQUIRE(std::isfinite(a.getPotentialEnergy()));
+}
+
+TEST_CASE("A requested cancel stops the next force and relax", "[MatterTest]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  params.optimizer_options().max_iterations = 5;
+  auto owned = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter matter(std::move(owned), params);
+  matter.con2matter(std::string("reactant.con"));
+  CancelToken token;
+  matter.setCancelToken(token);
+  const double energy = matter.getPotentialEnergy();
+  REQUIRE(std::isfinite(energy));
+  token.request();
+  REQUIRE_THROWS_AS(matter.getPotentialEnergy(), JobCancelled);
+  token.reset();
+  REQUIRE(std::isfinite(matter.getPotentialEnergy()));
+  token.request();
+  REQUIRE_THROWS_AS(eonc::helpers::relaxMatter(matter, params, true),
+                    JobCancelled);
 }
 
 TEST_CASE("TestCell", "[MatterTest]") {
