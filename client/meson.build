@@ -1186,6 +1186,17 @@ if get_option('with_xtb')
     _args += ['-DWITH_XTB']
 endif
 
+# The LAMMPS library snapshots _args. EONMPI adds a function pointer to
+# LammpsLoader, and the tests compile with the final _args, so the define
+# has to be set before that library() call.
+if get_option('with_mpi').enabled()
+    mpi_dep = dependency('mpi')
+    # The server rank runs EON_SERVER_PATH through Py_Main (ClientEON.cpp),
+    # so the MPI client embeds the interpreter.
+    _deps += [mpi_dep, py.dependency(embed: true, required: true)]
+    _args += ['-DEONMPI']
+endif
+
 # LAMMPS: always compiled, loaded at runtime via dlopen
 subdir('potentials/LAMMPS')
 potentials += [lammps_pot]
@@ -1204,13 +1215,8 @@ if py_embed
 endif
 
 if get_option('with_mpi').enabled()
-    # library() in the MPIPot subdir snapshots _deps. mpi has to be on
-    # that list first or libmpipot is linked without libmpi.
-    mpi_dep = dependency('mpi')
-    # The server rank runs EON_SERVER_PATH through Py_Main (ClientEON.cpp),
-    # so the MPI client embeds the interpreter.
-    _deps += [mpi_dep, py.dependency(embed: true, required: true)]
-    _args += ['-DEONMPI']
+    # mpi and -DEONMPI were added before the LAMMPS library. This subdir
+    # snapshots _deps, which already contains mpi.
     subdir('potentials/MPIPot')
     potentials += [mpipot]
 endif
