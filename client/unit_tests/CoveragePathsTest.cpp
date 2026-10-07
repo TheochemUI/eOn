@@ -1300,6 +1300,44 @@ TEST_CASE("basin hopping writes a unique minimum from a random start",
   REQUIRE_FALSE(files.empty());
 }
 
+#ifdef WITH_RGPOT
+TEST_CASE("instanton batches beads on a cpmd engine", "[job][instanton][cpmd]") {
+  const char *cpmd = std::getenv("CPMDC_LIBRARY");
+  if (cpmd == nullptr || !std::filesystem::exists(cpmd)) {
+    return;
+  }
+  Workdir work;
+  Parameters params = ljParams();
+  ParametersLoadAccess::potential_options(params).potential = PotType::RGPOT;
+  ParametersLoadAccess::rgpot_options(params).backend = "cpmdc";
+  ParametersLoadAccess::rgpot_options(params).functional = "BLYP";
+  ParametersLoadAccess::rgpot_options(params).cutoff_ry = 20.0;
+  ParametersLoadAccess::rgpot_options(params).engine_path = cpmd;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::RGPOT, params));
+  if (!pot->supportsBatchEvaluation()) {
+    return;
+  }
+  auto reactant = loadReactant(params, pot);
+  auto product = std::make_shared<Matter>(*reactant);
+  auto pos = product->getPositions();
+  pos(0, 0) += 0.4;
+  product->setPositions(pos);
+  REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
+  REQUIRE(eonc::io::io_ok(product->matter2con("product.con", false)));
+  ParametersLoadAccess::main_options(params).job = JobType::Instanton;
+  ParametersLoadAccess::instanton_options(params).beads = 4;
+  ParametersLoadAccess::instanton_options(params).max_iterations = 1;
+  ParametersLoadAccess::instanton_options(params).force_tolerance = 10.0;
+  ParametersLoadAccess::instanton_options(params).hessian_stride = 4;
+  eonc::Runtime runtime;
+  auto owned = std::make_unique<Parameters>(params);
+  eonc::InstantonJob job(std::move(owned), runtime);
+  const auto files = job.run();
+  REQUIRE_FALSE(files.empty());
+}
+#endif
+
 TEST_CASE("rate instanton climbs a short bead ladder", "[job][instanton]") {
   Workdir work;
   static_cast<void>(work);
