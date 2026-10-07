@@ -50,3 +50,14 @@ def test_guide_loads_the_bundle_without_a_second_module():
         assert SEPARATE_LOAD not in text
         assert "capnp-rpc" in text
         assert "foss/2026.1" in text
+
+
+def test_readme_builds_libcpmdc_and_runs_isomer1():
+    text = README.read_text(encoding="utf-8")
+    assert "command -v capnp" in text
+    assert "pkg-config --exists capnp-rpc" in text
+    assert "062582b7cfd832d36f88f504cd08e4ead42eb404" in text
+    assert "libcpmdc" in text
+    assert "scripts/ci/opencpmd_point.sh" in text
+    assert "si3n4_isomer1.con" in text
+    assert "-1396.269526" in text

@@ -113,3 +113,31 @@ Two host settings the module cannot fix:
 - A git `url.<base>.insteadOf` rule that rewrites `https://github.com/` to SSH
   applies to Meson's wrap downloads as well. `GIT_CONFIG_GLOBAL` pointed at an
   empty file drops it for one shell.
+
+## In-process CPMD point job
+
+The bundle load puts the schema compiler on `PATH`. `capnp` answers
+`command -v capnp`, and `pkg-config --exists capnp-rpc` returns 0.
+
+`scripts/ci/opencpmd_point.sh` builds `libcpmdc.so` against OpenCPMD commit
+`062582b7cfd832d36f88f504cd08e4ead42eb404` and cpmdc commit
+`8439c25cf0bd5f4caefd6ed07bebf142e2b181f5`. `KIT` is a checkout of
+`TheochemUI/sige_repro`. The script copies `structures/si3n4_isomer1.con`
+from that tree and runs the isomer 1 point job. The energy must sit within
+1e-6 eV of -1396.269526. The pseudopotential files stay in `KIT`. They are
+not in this repository.
+
+`EONCLIENT` is `build-eessi/client/eonclient` from the configure above.
+
+```bash
+module load eOn-devel/2026.06-GCCcore-15.2.0
+hash -r
+command -v capnp
+pkg-config --exists capnp-rpc
+export OPENCPMD_COMMIT=062582b7cfd832d36f88f504cd08e4ead42eb404
+export CPMDC_COMMIT=8439c25cf0bd5f4caefd6ed07bebf142e2b181f5
+export STACK="$PWD/../eon-opencpmd-stack"
+export KIT=/path/to/sige_repro
+export EONCLIENT="$PWD/build-eessi/client/eonclient"
+scripts/ci/opencpmd_point.sh
+```
