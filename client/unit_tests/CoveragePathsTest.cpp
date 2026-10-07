@@ -1384,15 +1384,15 @@ TEST_CASE("a rate above the crossover uses the parabolic factor",
   auto reactant = loadReactant(params, pot);
   auto saddle = std::make_shared<Matter>(*reactant);
   auto pos = saddle->getPositions();
-  pos(0, 0) += 0.8;
+  pos(0, 0) += 0.12;
   saddle->setPositions(pos);
   REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
   REQUIRE(eonc::io::io_ok(saddle->matter2con("saddle.con", false)));
   ParametersLoadAccess::main_options(params).job = JobType::Instanton;
   ParametersLoadAccess::instanton_options(params).mode = "rate";
-  ParametersLoadAccess::instanton_options(params).temperature = 50000.0;
-  ParametersLoadAccess::instanton_options(params).temperatures = {50000.0,
-                                                                  20000.0};
+  ParametersLoadAccess::instanton_options(params).temperature = 8000.0;
+  ParametersLoadAccess::instanton_options(params).temperatures = {8000.0,
+                                                                  4000.0};
   ParametersLoadAccess::instanton_options(params).beads = 8;
   ParametersLoadAccess::instanton_options(params).max_iterations = 2;
   ParametersLoadAccess::instanton_options(params).force_tolerance = 10.0;
