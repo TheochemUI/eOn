@@ -36,6 +36,16 @@ struct UniformSpring {
                        const std::shared_ptr<Matter> &image) const;
 };
 
+/// Cubic-potential spring. The parallel force is k times the difference
+/// of squared neighbour distances, so a perpendicular step cancels and
+/// the stiffness falls with the image spacing.
+struct GeometricSpring {
+  double ksp;
+
+  SpringResult compute(long i, const AtomMatrix &tangent, double distNext,
+                       double distPrev) const;
+};
+
 /// Energy-weighted spring constants (variable per segment).
 struct WeightedSpring {
   std::vector<double> springConstants;
@@ -55,8 +65,8 @@ struct OnsagerMachlupSpring {
                        const std::shared_ptr<Matter> &image) const;
 };
 
-using SpringStrategy =
-    std::variant<UniformSpring, WeightedSpring, OnsagerMachlupSpring>;
+using SpringStrategy = std::variant<UniformSpring, WeightedSpring,
+                                    GeometricSpring, OnsagerMachlupSpring>;
 
 /// Build the appropriate spring strategy from parameters and current path
 /// state.

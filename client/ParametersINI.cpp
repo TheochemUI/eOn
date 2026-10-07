@@ -1097,6 +1097,9 @@ int load_ini(const INIReader &ini, Parameters &params) {
           neb_section, "ew_ksp_max",
           ParametersLoadAccess::neb_options(params).spring.weighting.k_max);
 
+  ParametersLoadAccess::neb_options(params).spring.geometric = ini.GetBoolean(
+      neb_section, "geometric_spring",
+      ParametersLoadAccess::neb_options(params).spring.geometric);
   ParametersLoadAccess::neb_options(params).spring.om.enabled = ini.GetBoolean(
       neb_section, "onsager_machlup",
       ParametersLoadAccess::neb_options(params).spring.om.enabled);

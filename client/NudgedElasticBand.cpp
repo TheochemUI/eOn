@@ -312,8 +312,9 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
   std::unique_ptr<Optimizer> refine_optim;
 #ifdef WITH_RGSADDLE
   const auto bandMethod = params.neb_options().opt_method;
-  if (bandMethod == OptType::XTSCI || bandMethod == OptType::LBFGS ||
-      bandMethod == OptType::FIRE) {
+  if (!params.neb_options().spring.geometric &&
+      (bandMethod == OptType::XTSCI || bandMethod == OptType::LBFGS ||
+       bandMethod == OptType::FIRE)) {
     rustBand = std::make_unique<XtsciBand>(*this, params);
   } else
 #endif
@@ -864,6 +865,8 @@ void NudgedElasticBand::updateForces(bool ci_active) {
                              posDiffPrev, path[i]);
           } else if constexpr (std::is_same_v<T, eonc::neb::WeightedSpring>) {
             return s.compute(i, *tangent[i], distNext, distPrev);
+          } else if constexpr (std::is_same_v<T, eonc::neb::GeometricSpring>) {
+            return s.compute(i, *tangent[i], distNext, distPrev);
           } else {
             return s.compute(i, *tangent[i], posNext, posPrev, pos, path[i]);
           }
@@ -959,6 +962,10 @@ void refuseSolidStateCombination(const Parameters &params) {
   if (neb.spring.om.enabled) {
     throw std::invalid_argument(
         "solid_state is set and onsager_machlup is true");
+  }
+  if (neb.spring.geometric) {
+    throw std::invalid_argument(
+        "solid_state is set and geometric_spring is true");
   }
   if (neb.spring.doubly_nudged) {
     throw std::invalid_argument(

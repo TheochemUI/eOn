@@ -33,13 +33,14 @@ AtomMatrix DNEB_Projection::project(const ImageForceData &d) const {
 ProjectionStrategy buildProjectionStrategy(const Parameters &params) {
   bool omActive = params.neb_options().spring.om.enabled;
   bool weightedActive = params.neb_options().spring.weighting.enabled;
+  bool geometric = params.neb_options().spring.geometric;
 
   if (params.neb_options().spring.use_elastic_band && !omActive &&
-      !weightedActive) {
+      !weightedActive && !geometric) {
     return PlainEB{};
   }
   if (params.neb_options().spring.doubly_nudged && !omActive &&
-      !weightedActive) {
+      !weightedActive && !geometric) {
     return DNEB_Projection{params.neb_options().spring.use_switching};
   }
   return NEB_Projection{};

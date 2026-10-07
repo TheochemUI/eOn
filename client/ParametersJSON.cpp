@@ -206,8 +206,7 @@ json to_json(const Parameters &p) {
        ParametersLoadAccess::neb_options(p).solid_state.weight},
       {"solid_state_pressure",
        ParametersLoadAccess::neb_options(p).solid_state.pressure},
-      {"temperature",
-       ParametersLoadAccess::neb_options(p).quantum_temperature},
+      {"temperature", ParametersLoadAccess::neb_options(p).quantum_temperature},
   };
   j["Nudged Elastic Band"]["spring"] = {
       {"constant", ParametersLoadAccess::neb_options(p).spring.constant},
@@ -215,6 +214,7 @@ json to_json(const Parameters &p) {
        ParametersLoadAccess::neb_options(p).spring.use_elastic_band},
       {"doubly_nudged",
        ParametersLoadAccess::neb_options(p).spring.doubly_nudged},
+      {"geometric", ParametersLoadAccess::neb_options(p).spring.geometric},
   };
   j["Nudged Elastic Band"]["climbing_image"] = {
       {"enabled", ParametersLoadAccess::neb_options(p).climbing_image.enabled},
@@ -650,6 +650,8 @@ void from_json(const json &j, Parameters &p) {
                ParametersLoadAccess::neb_options(p).spring.use_elastic_band);
       JSON_OPT(sp, "doubly_nudged",
                ParametersLoadAccess::neb_options(p).spring.doubly_nudged);
+      JSON_OPT(sp, "geometric",
+               ParametersLoadAccess::neb_options(p).spring.geometric);
     }
     if (s.contains("climbing_image")) {
       auto &ci = s.at("climbing_image");

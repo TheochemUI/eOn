@@ -534,6 +534,9 @@ struct neb_options_t {
     bool use_elastic_band{false};
     bool doubly_nudged{false};
     bool use_switching{false};
+    /// Parallel force k (d_next^2 - d_prev^2). A perpendicular step
+    /// cancels, and the stiffness scales with the image spacing.
+    bool geometric{false};
 
     struct energy_weighting_t {
       bool enabled{false};

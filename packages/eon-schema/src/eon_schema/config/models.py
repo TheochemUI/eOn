@@ -2316,6 +2316,10 @@ class NudgedElasticBandConfig(BaseModel):
         default=100,
         description="Minimum stiffness.",
     )
+    geometric_spring: bool = Field(
+        default=False,
+        description="Parallel spring from the difference of squared neighbour distances.",
+    )
     energy_weighted: bool = Field(
         default=False, description="Indicates if the energy-weighted method is used."
     )

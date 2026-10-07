@@ -23,6 +23,7 @@
 #include "eon/NEBSplineExtrema.h"
 #include "eon/NEBSpringForce.h"
 #include "eon/NEBTangent.h"
+#include <cmath>
 
 #include <cmath>
 #include <memory>
@@ -426,6 +427,62 @@ TEST_CASE("WeightedSpring: energy-weighted spring force", "[neb]") {
 
   // Full spring force should be zero for weighted springs
   REQUIRE(result.forceSpring.norm() == Catch::Approx(0.0).margin(1e-12));
+}
+
+// ===== GeometricSpring =====================================================
+
+TEST_CASE("GeometricSpring: equal spacing gives zero parallel force",
+          "[neb][GeometricSpring]") {
+  eonc::neb::GeometricSpring spring{5.0};
+  AtomMatrix tangent = make3({1, 0, 0, 0, 0, 0, 0, 0, 0});
+  tangent /= tangent.norm();
+  auto result = spring.compute(1, tangent, 1.0, 1.0);
+  REQUIRE(result.forceSpringPar.norm() == Catch::Approx(0.0).margin(1e-12));
+  REQUIRE(result.forceSpring.norm() == Catch::Approx(0.0).margin(1e-12));
+}
+
+TEST_CASE("GeometricSpring: force is k times the squared-distance difference",
+          "[neb][GeometricSpring]") {
+  eonc::neb::GeometricSpring spring{5.0};
+  AtomMatrix tangent = make3({1, 0, 0, 0, 0, 0, 0, 0, 0});
+  tangent /= tangent.norm();
+  const double distNext = 2.0;
+  const double distPrev = 1.0;
+  auto result = spring.compute(1, tangent, distNext, distPrev);
+  AtomMatrix expected =
+      5.0 * (distNext * distNext - distPrev * distPrev) * tangent;
+  REQUIRE_THAT(result.forceSpringPar,
+               eonc::helpers::test::IsApprox(expected, 1e-12));
+}
+
+TEST_CASE("GeometricSpring: a perpendicular step adds no parallel force",
+          "[neb][GeometricSpring]") {
+  eonc::neb::GeometricSpring spring{5.0};
+  AtomMatrix tangent = make3({1, 0, 0, 0, 0, 0, 0, 0, 0});
+  tangent /= tangent.norm();
+  const double s = 0.05;
+  const double x = 0.0;
+  for (double p : {0.001, 0.05, 0.1, 0.5}) {
+    const double distNext = std::hypot(s - x, p);
+    const double distPrev = std::hypot(s + x, p);
+    auto result = spring.compute(1, tangent, distNext, distPrev);
+    REQUIRE(result.forceSpringPar.norm() == Catch::Approx(0.0).margin(1e-12));
+  }
+}
+
+TEST_CASE("GeometricSpring: parallel stiffness is 4 k s",
+          "[neb][GeometricSpring]") {
+  eonc::neb::GeometricSpring spring{5.0};
+  AtomMatrix tangent = make3({1, 0, 0, 0, 0, 0, 0, 0, 0});
+  tangent /= tangent.norm();
+  const double s = 0.05;
+  const double x = 0.01;
+  const double distNext = s - x;
+  const double distPrev = s + x;
+  auto result = spring.compute(1, tangent, distNext, distPrev);
+  AtomMatrix expected = -4.0 * 5.0 * s * x * tangent;
+  REQUIRE_THAT(result.forceSpringPar,
+               eonc::helpers::test::IsApprox(expected, 1e-12));
 }
 
 // ===== findSplineExtrema ===================================================

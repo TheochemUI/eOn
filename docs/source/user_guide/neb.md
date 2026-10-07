@@ -91,6 +91,13 @@ Via the surrogate potential interface, a native C++ implementation of the Gaussi
 - Modular strategy pattern for tangent, projection, and spring force components.
 ```
 
+### Geometric spring
+
+`geometric_spring = true` replaces the Hookean parallel spring with
+`k` times the difference of the squared neighbour distances. A step
+perpendicular to the band does not change that force, and the
+stiffness falls in proportion to the image spacing.
+
 ### Onsager-Machlup NEB
 
 The Onsager-Machlup variant replaces the standard spring force with an

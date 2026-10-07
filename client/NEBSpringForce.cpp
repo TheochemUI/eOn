@@ -28,6 +28,18 @@ UniformSpring::compute(long i, const AtomMatrix &tangent, double distNext,
   return result;
 }
 
+// --- GeometricSpring ---
+
+SpringResult GeometricSpring::compute(long i, const AtomMatrix &tangent,
+                                      double distNext, double distPrev) const {
+  (void)i;
+  SpringResult result;
+  result.forceSpringPar =
+      ksp * (distNext * distNext - distPrev * distPrev) * tangent;
+  result.forceSpring = AtomMatrix::Zero(tangent.rows(), tangent.cols());
+  return result;
+}
+
 // --- WeightedSpring ---
 
 SpringResult WeightedSpring::compute(long i, const AtomMatrix &tangent,
@@ -71,6 +83,10 @@ SpringStrategy
 buildSpringStrategy(const Parameters &params,
                     const std::vector<std::shared_ptr<Matter>> &path,
                     long numImages, int atoms, double maxEnergy, double E_ref) {
+
+  if (params.neb_options().spring.geometric) {
+    return GeometricSpring{params.neb_options().spring.constant};
+  }
 
   if (params.neb_options().spring.om.enabled) {
     double base_k = params.neb_options().spring.constant;
