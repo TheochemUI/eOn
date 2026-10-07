@@ -1,0 +1,1 @@
+"""Control-plane outcome contract."""
