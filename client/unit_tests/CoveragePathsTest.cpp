@@ -55,6 +55,7 @@
 #include <spawn.h>
 #include <sys/wait.h>
 #include <unistd.h>
+extern char **environ;
 #endif
 #include <vector>
 
@@ -1472,7 +1473,6 @@ TEST_CASE("eonclient stops when the parameter file is missing",
     return;
   }
   Workdir work;
-  extern char **environ;
   char *argv[] = {const_cast<char *>(client), nullptr};
   pid_t pid = 0;
   const int spawned = posix_spawn(&pid, client, nullptr, nullptr, argv, environ);
