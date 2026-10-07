@@ -196,7 +196,15 @@ class ClientMinModeExplorer(MinModeExplorer):
 
         reactIO = io.StringIO()
         io.savecon(reactIO, self.reactant)
-        file_permission = os.stat("pos.con").st_mode
+        inprocess = self.config.comm_type in (
+            "inprocess",
+            "local_inprocess",
+            "local_lib",
+        )
+        if not inprocess:
+            file_permission = os.stat("pos.con").st_mode
+        else:
+            file_permission = 0o644
         invariants['pos.con'] = (reactIO, file_permission)
 
         t1 = time()
@@ -275,14 +283,20 @@ class ClientMinModeExplorer(MinModeExplorer):
     def register_results(self):
         logger.info("Registering results")
         t1 = time()
+        inprocess = self.config.comm_type in (
+            "inprocess",
+            "local_inprocess",
+            "local_lib",
+        )
         jobs_in = Path(self.config.path_jobs_in)
-        if jobs_in.is_dir():
-            try:
-                shutil.rmtree(jobs_in)
-            except (OSError, IOError):
-                pass
-        if not jobs_in.is_dir():
-            jobs_in.mkdir(parents=True)
+        if not inprocess:
+            if jobs_in.is_dir():
+                try:
+                    shutil.rmtree(jobs_in)
+                except (OSError, IOError):
+                    pass
+            if not jobs_in.is_dir():
+                jobs_in.mkdir(parents=True)
 
         # Function used by communicator to determine whether to discard a result
         def keep_result(name):
@@ -353,8 +367,15 @@ class ClientMinModeExplorer(MinModeExplorer):
                 if not self.config.debug_register_extra_results:
                     break
 
-        # Approximate number of searches received
-        tot_searches = len(os.listdir(self.config.path_jobs_in)) * self.config.comm_job_bundle_size
+        # The in-process path has no client workdir, so the count is the
+        # records just read.
+        if inprocess:
+            tot_searches = num_registered
+        else:
+            tot_searches = (
+                len(os.listdir(self.config.path_jobs_in))
+                * self.config.comm_job_bundle_size
+            )
 
         t2 = time()
         logger.info("Processed %i results", num_registered)
