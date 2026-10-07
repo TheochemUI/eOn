@@ -603,7 +603,7 @@ void RingPolymer::thermalMomenta() {
 
 void RingPolymer::toNormal(const std::vector<VectorXd> &src,
                            std::vector<VectorXd> &dst) const {
-  // modes_ is column-major: modes(k, j) lives at k + j * nBeads.
+  // modes_ is row-major: modes(k, j) lives at k * nBeads + j.
   // Fixed coordinates are not ring degrees of freedom, so they stay in
   // bead space and are left out of the multiply.
   const double *mode = modes_.data();
@@ -611,8 +611,9 @@ void RingPolymer::toNormal(const std::vector<VectorXd> &src,
   for (long a : freeIndex_) {
     for (long k = 0; k < n; ++k) {
       double sum = 0.0;
+      const double *row = mode + k * n;
       for (long j = 0; j < n; ++j) {
-        sum += src[static_cast<size_t>(j)][a] * mode[k + j * n];
+        sum += src[static_cast<size_t>(j)][a] * row[j];
       }
       dst[static_cast<size_t>(k)][a] = sum;
     }
@@ -627,7 +628,7 @@ void RingPolymer::fromNormal(const std::vector<VectorXd> &src,
     for (long j = 0; j < n; ++j) {
       double sum = 0.0;
       for (long k = 0; k < n; ++k) {
-        sum += src[static_cast<size_t>(k)][a] * mode[k + j * n];
+        sum += src[static_cast<size_t>(k)][a] * mode[k * n + j];
       }
       dst[static_cast<size_t>(j)][a] = sum;
     }
