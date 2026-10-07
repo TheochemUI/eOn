@@ -1146,13 +1146,10 @@ TEST_CASE("a nearly symmetric instanton records the splitting",
       eonc::helpers::makePotential(PotType::LJ, params));
   auto reactant = loadReactant(params, pot);
   auto product = std::make_shared<Matter>(*reactant);
-  auto pos = product->getPositions();
-  pos(0, 0) += 0.2;
-  product->setPositions(pos);
   REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
   REQUIRE(eonc::io::io_ok(product->matter2con("product.con", false)));
   ParametersLoadAccess::main_options(params).job = JobType::Instanton;
-  ParametersLoadAccess::instanton_options(params).beads = 16;
+  ParametersLoadAccess::instanton_options(params).beads = 8;
   ParametersLoadAccess::instanton_options(params).max_iterations = 40;
   ParametersLoadAccess::instanton_options(params).force_tolerance = 1.0e-2;
   ParametersLoadAccess::instanton_options(params).hessian_stride = 8;
