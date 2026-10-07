@@ -26,7 +26,7 @@ namespace eonc {
 
 class Parameters;
 namespace config {
-int load_ini(::INIReader &, Parameters &);
+int load_ini(const ::INIReader &, Parameters &);
 void apply_ssot_defaults(Parameters &);
 void validate_and_link(Parameters &);
 } // namespace config
@@ -145,7 +145,7 @@ public:
   const oh_tst_options_t &oh_tst_options() const;
   const instanton_options_t &instanton_options() const;
 
-  friend int config::load_ini(::INIReader &, Parameters &);
+  friend int config::load_ini(const ::INIReader &, Parameters &);
   friend void config::apply_ssot_defaults(Parameters &);
   friend void config::validate_and_link(Parameters &);
   friend struct ParametersLoadAccess;

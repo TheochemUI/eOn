@@ -21,7 +21,7 @@ namespace config {
 
 /// Parse all INI sections into the Parameters struct.
 /// Returns 0 on success, nonzero on error.
-int load_ini(INIReader &ini, Parameters &params);
+int load_ini(const INIReader &ini, Parameters &params);
 
 /// Resolve cross-group defaults and time unit conversions.
 /// Called after INI (or JSON) loading to finalize computed fields.

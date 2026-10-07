@@ -43,7 +43,7 @@ namespace eonc::config {
 
 #include "eon/generated/ParametersSSOTIni.inc"
 
-int load_ini(INIReader &ini, Parameters &params) {
+int load_ini(const INIReader &ini, Parameters &params) {
   int error = 0;
 
   // [Main] //

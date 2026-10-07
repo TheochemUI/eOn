@@ -636,7 +636,7 @@ def emit_ini(catalog: dict) -> str:
         "// AUTO-GENERATED from schema/eon_params.capnp — do not edit.",
         "// Regenerate: python tools/params_ssot/codegen.py",
         "// Included inside namespace eonc::config, after toLowerCase.",
-        "inline void project_ssot_ini(INIReader &ini, Parameters &params) {",
+        "inline void project_ssot_ini(const INIReader &ini, Parameters &params) {",
     ]
     for section, data in _projected(catalog):
         if "ini" not in data["project"]:
