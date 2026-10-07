@@ -2211,7 +2211,7 @@ class NudgedElasticBandConfig(BaseModel):
     in the xy plane, so the band cannot rotate as a rigid body. Atomic
     displacements and cell strain share one Jacobian
     (doi:10.1063/1.3684549). Periodic boundaries are required. A potential
-    that does not report the stress tensor is differentiated on the cell.
+    that does not report the Cauchy stress is refused.
     ``ci_mmf``, ``zoom_neb``, ``onsager_machlup``, ``neb_doubly_nudged``,
     and ``neb_elastic_band`` are refused, and ``initializer`` must be
     ``linear`` or ``file``.

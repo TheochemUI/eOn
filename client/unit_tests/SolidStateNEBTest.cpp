@@ -82,6 +82,7 @@ struct Band {
         reactant{nullptr},
         product{nullptr} {
     pot->gamma = gamma;
+    pot->native = solid;
     ParametersLoadAccess::main_options(params).parallel = false;
     ParametersLoadAccess::optimizer_options(params).method = eonc::OptType::SD;
     ParametersLoadAccess::optimizer_options(params).max_move = 0.15;
@@ -356,6 +357,16 @@ TEST_CASE("the interior cell lengthens where the path prefers it",
     REQUIRE(cell(1, 1) == Catch::Approx(4.0).margin(1e-6));
     REQUIRE(cell(2, 2) == Catch::Approx(4.0).margin(1e-6));
   }
+}
+
+TEST_CASE("solid_state refuses a potential that does not report stress",
+          "[neb][solid_state]") {
+  Band missing(true);
+  missing.pot->native = false;
+  auto neb = missing.neb();
+  REQUIRE_THROWS_WITH(
+      neb->updateForces(),
+      "solid_state NEB requires a potential that reports the Cauchy stress");
 }
 
 TEST_CASE("solid_state refuses a nonperiodic band and OCINEB",
