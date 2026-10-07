@@ -13,6 +13,7 @@ import numpy as np
 
 from eon import atoms, state
 from eon import fileio as io
+from eon.approach import prepared_imbalance
 from eon.config import ConfigClass  # Typing
 
 
@@ -526,6 +527,22 @@ class AKMCState(state.State):
             return self.config.akmc_eq_rate * (forward_rate / reverse_rate)
         return forward_rate
 
+    def population_gap(self, proc, reactant_energy):
+        """Decay time, in seconds, of a prepared imbalance on *proc*.
+
+        A process whose product is this state returns to the same basin and
+        has no population mode. The forward rate is the table rate, including
+        the equilibrium clamp. The reverse rate is the Arrhenius rate of the
+        reverse barrier.
+        """
+        if proc["product"] == self.number:
+            return None
+        forward = self.rate_at_kT(proc, reactant_energy)
+        if reactant_energy is None:
+            raise ValueError("a population gap needs the reactant energy")
+        reverse_barrier = proc["barrier"] - (proc["product_energy"] - reactant_energy)
+        reverse = proc["product_prefactor"] * math.exp(-reverse_barrier / self.statelist.kT)
+        return prepared_imbalance(forward, reverse)
 
     def save_process_table(self):
         """ If the processtable is present in memory, writes it to disk. """

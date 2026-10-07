@@ -61,6 +61,15 @@ rate of escape from the state.
 
 A complete tutorial is [also provided](project:../tutorials/akmc.md).
 
+## Prepared imbalance
+
+A two-state channel relaxes a prepared population imbalance as
+{math}`\exp(-t/\tau)` with {math}`\tau = 1/(k_f + k_b)`. Both rates are the
+harmonic transition-state rates the process table already stores. A saddle
+that returns to the same basin has no population mode. Its mean return time
+is {math}`1/k`. A cluster has no box length, so this time is not converted
+to a conductivity. The dynamics job keeps its one bath.
+
 ## Configuration
 
 Start the aKMC server with `python -m eon.server`.
