@@ -3158,7 +3158,7 @@ pi_time_step = 1.0
 TEST_CASE_METHOD(JobIntegrationFixture,
                  "GlobalOptimizationJob records a random hop and an MD hop",
                  "[job][global_optimization]") {
-  EON_REQUIRE_TEST_DATA(".");
+  EON_REQUIRE_TEST_DATA("neb_morse");
   const auto runOne = [&](const std::string &move, const std::string &decision,
                           long mdmin) {
     writeConfig("[Main]\n"
@@ -3202,7 +3202,7 @@ TEST_CASE_METHOD(JobIntegrationFixture,
 TEST_CASE_METHOD(JobIntegrationFixture,
                  "Basin hopping keeps a unique minimum",
                  "[job][basin_hopping]") {
-  EON_REQUIRE_TEST_DATA(".");
+  EON_REQUIRE_TEST_DATA("neb_morse");
   writeConfig(R"(
 [Main]
 job = basin_hopping
