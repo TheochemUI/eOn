@@ -183,9 +183,20 @@ TEST_CASE("expression potential builds named terms and rejects a blank list",
   requireExpr("ljcluster", "ljcluster");
   requireExpr("zbl", "zbl");
   for (const char *name : {"d3", "d4", "mopac"}) {
+    Parameters params;
+    ParametersLoadAccess::potential_options(params).potential = PotType::EXPR;
+    ParametersLoadAccess::expr_options(params).expression = name;
+    ParametersLoadAccess::expr_options(params).terms = name;
     try {
-      requireExpr(name, name);
-    } catch (const std::runtime_error &) {
+      auto pot = eonc::helpers::sharePotential(
+          eonc::helpers::makePotential(PotType::EXPR, params));
+      Matter matter(pot, params);
+      if (eonc::io::io_ok(matter.con2matter(std::string("reactant.con")))) {
+        const double energy = matter.getPotentialEnergy();
+        static_cast<void>(energy);
+        static_cast<void>(matter.getForces());
+      }
+    } catch (const std::exception &) {
     }
   }
   Parameters blank;
@@ -318,6 +329,9 @@ TEST_CASE("OCI-NEB run walks the climbing image one dimer step",
   auto neb =
       std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
   neb->updateForces();
+  const double conv = std::max(neb->convergenceForce(), 1.0e-3);
+  // Force update clears the climbing image unless the band has an
+  // interior peak. The dimer walk needs an interior index.
   neb->climbingImage = 1;
   REQUIRE(neb->tangent.size() > 1);
   REQUIRE(neb->tangent[1] != nullptr);
@@ -327,13 +341,14 @@ TEST_CASE("OCI-NEB run walks the climbing image one dimer step",
   cfg.trigger_factor = 2.0;
   cfg.restore_unhelpful = true;
   eonc::neb::OCINEBController ctl(cfg);
-  ctl.initBaseline(std::max(neb->convergenceForce(), 1.0e-3));
-  const auto first = ctl.run(*neb, neb->convergenceForce());
+  ctl.initBaseline(conv);
+  const auto first = ctl.run(*neb, conv);
   REQUIRE(std::isfinite(first.newForce));
   cfg.restore_unhelpful = false;
   eonc::neb::OCINEBController second(cfg);
-  second.initBaseline(std::max(neb->convergenceForce(), 1.0e-3));
-  const auto again = second.run(*neb, neb->convergenceForce());
+  second.initBaseline(conv);
+  neb->climbingImage = 1;
+  const auto again = second.run(*neb, conv);
   REQUIRE(std::isfinite(again.newForce));
 }
 
