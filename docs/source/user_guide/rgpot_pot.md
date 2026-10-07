@@ -232,6 +232,27 @@ capnp encode schema/Potentials.capnp CPMDParams \
 `capnp encode` writes the flat message `eonclient` reads. A field name
 that is not in the schema fails at this step.
 
+### One job TOML
+
+Write the method once. `tools/job_toml.py` in cpmdc compiles that file
+to CPMDParams text. The in-process route encodes the text and sets
+`params_path` to the binary. The file route renders that same message
+with `cpmdc_params_render_input_deck`.
+
+```toml
+functional = "BLYP"
+cutoff_ry = 70.0
+charge = 0
+
+[dft]
+newcode = true
+gc_cutoff = 1.0e-7
+```
+
+`examples/si3n4-isomer1.toml` is the isomer 1 method. `examples/asin-tls.toml`
+is the a-SiN two-level system. Both routes read the compiled message, so
+they do not keep a second copy of the cutoff or the functional.
+
 ### Environment
 
 ```{code-block} bash
