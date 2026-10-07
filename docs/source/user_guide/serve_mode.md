@@ -264,7 +264,7 @@ custom `AtomMatrix` by never allowing both types to coexist in the same
 translation unit. The capnp schema code is compiled in a separate TU
 (`ServeRpcServer.cpp`) from the eOn potential wrapper (`ServeMode.cpp`). For
 more on the integration pattern, see the
-[rgpot integration guide](https://rgpot.rgoswami.me/integration_guide.html).
+[rgpot integration guide](https://rgpot.rgoswami.me/howto/integration.html).
 
 ## Command reference
 

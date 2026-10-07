@@ -8,7 +8,7 @@ concurrency:
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
     tags: ["*"]
   pull_request:
     # Check all PR
