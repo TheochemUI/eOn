@@ -1,0 +1,760 @@
+/*
+** This file is part of eOn.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eOn Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eOn
+*/
+
+#include "TestUtils.hpp"
+#include "catch2/catch_amalgamated.hpp"
+#include "eon/EpiCenters.h"
+#include "eon/GeometryAnalysis.h"
+#include "eon/HelperFunctions.h"
+#include "eon/IRACompare.h"
+#include "eon/Matter.h"
+#include "eon/MinModeSaddleSearch.h"
+#include "eon/NEBInitialPaths.hpp"
+#include "eon/NEBOcinebController.h"
+#include "eon/NudgedElasticBand.h"
+#include "eon/NudgedElasticBandJob.h"
+#include "eon/OHTSTJob.h"
+#include "eon/Parameters.h"
+#include "eon/ProcessSearchJob.h"
+#include "eon/QuantumFreeEnergy.h"
+#include "eon/Runtime.h"
+#include "eon/TestJob.h"
+#include "eon/potentials/Metatomic/MetatomicLoader.h"
+#include "eon/potentials/PluginLoader.h"
+#include "eon/potentials/Rgpot/GenericEngineLoader.h"
+#include "eon/potentials/Rgpot/MetatomicEngineLoader.h"
+#include "eon/potentials/Rgpot/XTBEngineLoader.h"
+
+#include <cstdlib>
+#include <filesystem>
+#include <fstream>
+#include <memory>
+#include <string>
+
+#ifndef _WIN32
+#include <unistd.h>
+#endif
+
+namespace tests {
+
+static eonc::helpers::test::QuillTestLogger _quill_setup;
+
+namespace {
+
+class Workdir {
+public:
+  Workdir()
+      : original_(std::filesystem::current_path()) {
+    dir_ = std::filesystem::temp_directory_path() /
+           ("eon_covpaths_" + std::to_string(++seq_));
+    std::filesystem::create_directories(dir_);
+    std::filesystem::copy_file(original_ / "reactant.con",
+                               dir_ / "reactant.con");
+    std::filesystem::current_path(dir_);
+  }
+
+  ~Workdir() {
+    std::error_code ec;
+    std::filesystem::current_path(original_, ec);
+    std::filesystem::remove_all(dir_, ec);
+  }
+
+  const std::filesystem::path &dir() const { return dir_; }
+
+  Workdir(const Workdir &) = delete;
+  Workdir &operator=(const Workdir &) = delete;
+
+private:
+  static int seq_;
+  std::filesystem::path original_;
+  std::filesystem::path dir_;
+};
+
+int Workdir::seq_ = 0;
+
+class EnvGuard {
+public:
+  EnvGuard(const char *key, const char *value)
+      : key_(key) {
+    if (const char *old = std::getenv(key)) {
+      had_ = true;
+      old_ = old;
+    }
+    set(value);
+  }
+
+  ~EnvGuard() { set(had_ ? old_.c_str() : nullptr); }
+
+  EnvGuard(const EnvGuard &) = delete;
+  EnvGuard &operator=(const EnvGuard &) = delete;
+
+private:
+  void set(const char *value) {
+#ifndef _WIN32
+    if (value != nullptr) {
+      setenv(key_, value, 1);
+    } else {
+      unsetenv(key_);
+    }
+#else
+    _putenv_s(key_, value != nullptr ? value : "");
+#endif
+  }
+
+  const char *key_;
+  bool had_{false};
+  std::string old_;
+};
+
+Parameters ljParams() {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  return params;
+}
+
+std::shared_ptr<Matter> loadReactant(const Parameters &params,
+                                     std::shared_ptr<Potential> pot) {
+  auto matter = std::make_shared<Matter>(pot, params);
+  REQUIRE(eonc::io::io_ok(matter->con2matter(std::string("reactant.con"))));
+  return matter;
+}
+
+void relaxLbfgs(const char *step, const char *precon, const char *curvature,
+                const char *secant, const char *metric) {
+  Parameters params = ljParams();
+  ParametersLoadAccess::optimizer_options(params).method = OptType::LBFGS;
+  ParametersLoadAccess::optimizer_options(params).converged_force = 1.0e-12;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 3;
+  ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
+  ParametersLoadAccess::optimizer_options(params).convergence_metric = metric;
+  auto &lbfgs = ParametersLoadAccess::optimizer_options(params).lbfgs;
+  lbfgs.step = step;
+  lbfgs.precon = precon;
+  lbfgs.curvature = curvature;
+  lbfgs.secant = secant;
+  lbfgs.project_rigid = true;
+  lbfgs.auto_scale = true;
+  lbfgs.h0 = "adaptive";
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  Matter matter(pot, params);
+  REQUIRE(eonc::io::io_ok(matter.con2matter(std::string("reactant.con"))));
+  auto pos = matter.getPositions();
+  pos(0, 0) += 0.2;
+  matter.setPositions(pos);
+  const double before = matter.getPotentialEnergy();
+  REQUIRE(std::isfinite(before));
+  matter.relax(true);
+  REQUIRE(std::isfinite(matter.getPotentialEnergy()));
+}
+
+#ifdef RGPOT_HAS_EXPR
+void requireExpr(const std::string &expression, const std::string &terms) {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::EXPR;
+  ParametersLoadAccess::expr_options(params).expression = expression;
+  ParametersLoadAccess::expr_options(params).terms = terms;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::EXPR, params));
+  REQUIRE(pot->getType() == PotType::EXPR);
+  Matter matter(pot, params);
+  REQUIRE(eonc::io::io_ok(matter.con2matter(std::string("reactant.con"))));
+  REQUIRE(std::isfinite(matter.getPotentialEnergy()));
+  REQUIRE(matter.getForces().allFinite());
+}
+#endif
+
+} // namespace
+
+#ifdef RGPOT_HAS_EXPR
+TEST_CASE("expression potential builds named terms and rejects a blank list",
+          "[pot][expr]") {
+  requireExpr("lj", "lj");
+  requireExpr("lj+morse", " lj , morse ");
+  requireExpr("ljcluster", "ljcluster");
+  requireExpr("zbl", "zbl");
+  for (const char *name : {"d3", "d4", "mopac"}) {
+    try {
+      requireExpr(name, name);
+    } catch (const std::runtime_error &) {
+    }
+  }
+  Parameters blank;
+  ParametersLoadAccess::potential_options(blank).potential = PotType::EXPR;
+  ParametersLoadAccess::expr_options(blank).expression = "";
+  ParametersLoadAccess::expr_options(blank).terms = "lj";
+  REQUIRE_THROWS_AS(eonc::helpers::makePotential(PotType::EXPR, blank),
+                    std::runtime_error);
+  ParametersLoadAccess::expr_options(blank).expression = "lj";
+  ParametersLoadAccess::expr_options(blank).terms = "";
+  REQUIRE_THROWS_AS(eonc::helpers::makePotential(PotType::EXPR, blank),
+                    std::runtime_error);
+  ParametersLoadAccess::expr_options(blank).expression = "nope";
+  ParametersLoadAccess::expr_options(blank).terms = "nope";
+  REQUIRE_THROWS_AS(eonc::helpers::makePotential(PotType::EXPR, blank),
+                    std::runtime_error);
+}
+#endif
+
+TEST_CASE("preconditioned LBFGS takes Newton and RFO steps", "[optim][lbfgs]") {
+  relaxLbfgs("newton", "exp", "reset", "standard", "norm");
+  relaxLbfgs("rfo", "pair", "damped", "zhangxu", "rms");
+  relaxLbfgs("lbfgs", "lindh", "cautious", "standard", "max_atom");
+  relaxLbfgs("lbfgs", "c1", "skip", "standard", "max_component");
+  relaxLbfgs("newton", "pair_full", "reset", "standard", "norm");
+  relaxLbfgs("rfo", "fischer", "damped", "zhangxu", "norm");
+}
+
+TEST_CASE("min-mode confine and an LBFGS dimer rotation stay finite",
+          "[saddle_search][coverage]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::optimizer_options(params).method = OptType::CG;
+  ParametersLoadAccess::optimizer_options(params).max_move = 0.05;
+  ParametersLoadAccess::optimizer_options(params).converged_force = 1.0e-8;
+  ParametersLoadAccess::dimer_options(params).improved = false;
+  ParametersLoadAccess::dimer_options(params).max_iterations = 4;
+  ParametersLoadAccess::saddle_search_options(params).minmode_method =
+      LowestEigenmode::MINMODE_DIMER;
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 2;
+  ParametersLoadAccess::saddle_search_options(params).converged_force = 1.0e-8;
+  ParametersLoadAccess::saddle_search_options(params).max_energy = 50.0;
+  ParametersLoadAccess::saddle_search_options(params).perp_force_ratio = 0.0;
+  ParametersLoadAccess::saddle_search_options(params).confine_positive.enabled =
+      true;
+  ParametersLoadAccess::saddle_search_options(params)
+      .confine_positive.bowl_breakout = true;
+  ParametersLoadAccess::saddle_search_options(params)
+      .confine_positive.bowl_active = 3;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto matter = loadReactant(params, pot);
+  const long nAtoms = matter->numberOfAtoms();
+  AtomMatrix mode = AtomMatrix::Random(nAtoms, 3);
+  mode.normalize();
+  MinModeSaddleSearch bowl(matter, mode, matter->getPotentialEnergy(), params,
+                           pot);
+  const int bowlStatus = bowl.run();
+  REQUIRE(std::isfinite(matter->getPotentialEnergy()));
+  REQUIRE(bowlStatus != MinModeSaddleSearch::STATUS_INIT);
+
+  matter = loadReactant(params, pot);
+  ParametersLoadAccess::saddle_search_options(params)
+      .confine_positive.bowl_breakout = false;
+  ParametersLoadAccess::saddle_search_options(params)
+      .confine_positive.min_force = 1.0e-6;
+  ParametersLoadAccess::saddle_search_options(params)
+      .confine_positive.min_active = 1;
+  ParametersLoadAccess::saddle_search_options(params).confine_positive.boost =
+      1.5;
+  ParametersLoadAccess::saddle_search_options(params)
+      .confine_positive.scale_ratio = 0.5;
+  MinModeSaddleSearch confine(matter, mode, matter->getPotentialEnergy(),
+                              params, pot);
+  REQUIRE(confine.run() != MinModeSaddleSearch::STATUS_INIT);
+
+  matter = loadReactant(params, pot);
+  ParametersLoadAccess::saddle_search_options(params).confine_positive.enabled =
+      false;
+  ParametersLoadAccess::saddle_search_options(params).perp_force_ratio = 0.4;
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 1;
+  MinModeSaddleSearch perp(matter, mode, matter->getPotentialEnergy(), params,
+                           pot);
+  REQUIRE(perp.run() != MinModeSaddleSearch::STATUS_INIT);
+
+  matter = loadReactant(params, pot);
+  ParametersLoadAccess::saddle_search_options(params).perp_force_ratio = 0.0;
+  ParametersLoadAccess::dimer_options(params).improved = true;
+  ParametersLoadAccess::dimer_options(params).opt_method = OptType::LBFGS;
+  ParametersLoadAccess::dimer_options(params).max_iterations = 6;
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 2;
+  MinModeSaddleSearch lbfgsDimer(matter, mode, matter->getPotentialEnergy(),
+                                 params, pot);
+  REQUIRE(lbfgsDimer.run() != MinModeSaddleSearch::STATUS_INIT);
+
+  matter = loadReactant(params, pot);
+  ParametersLoadAccess::dimer_options(params).rotation_backend =
+      DimerRotationBackend::LOR;
+  ParametersLoadAccess::dimer_options(params).max_iterations = 3;
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 1;
+  MinModeSaddleSearch lor(matter, mode, matter->getPotentialEnergy(), params,
+                          pot);
+  REQUIRE(lor.run() != MinModeSaddleSearch::STATUS_INIT);
+}
+
+TEST_CASE("OCI-NEB run walks the climbing image one dimer step",
+          "[neb][ocineb]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::optimizer_options(params).method = OptType::LBFGS;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 5;
+  ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
+  ParametersLoadAccess::neb_options(params).image_count = 3;
+  ParametersLoadAccess::neb_options(params).force_tolerance = 0.01;
+  ParametersLoadAccess::neb_options(params).endpoints.minimize = false;
+  ParametersLoadAccess::neb_options(params).initialization.method =
+      NEBInit::LINEAR;
+  ParametersLoadAccess::dimer_options(params).improved = false;
+  ParametersLoadAccess::dimer_options(params).max_iterations = 3;
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 1;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, pot);
+  auto product = std::make_shared<Matter>(*reactant);
+  auto pos = product->getPositions();
+  pos(0, 0) += 0.6;
+  product->setPositions(pos);
+  auto neb =
+      std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
+  neb->updateForces();
+  neb->climbingImage = 1;
+  REQUIRE(neb->tangent.size() > 1);
+  REQUIRE(neb->tangent[1] != nullptr);
+  auto cfg = eonc::neb::OCINEBController::fromParams(params);
+  cfg.max_steps = 1;
+  cfg.force_tolerance = 0.01;
+  cfg.trigger_factor = 2.0;
+  cfg.restore_unhelpful = true;
+  eonc::neb::OCINEBController ctl(cfg);
+  ctl.initBaseline(std::max(neb->convergenceForce(), 1.0e-3));
+  const auto first = ctl.run(*neb, neb->convergenceForce());
+  REQUIRE(std::isfinite(first.newForce));
+  cfg.restore_unhelpful = false;
+  eonc::neb::OCINEBController second(cfg);
+  second.initBaseline(std::max(neb->convergenceForce(), 1.0e-3));
+  const auto again = second.run(*neb, neb->convergenceForce());
+  REQUIRE(std::isfinite(again.newForce));
+}
+
+TEST_CASE("geometry helpers and a resampled band stay finite",
+          "[geometry][neb]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, pot);
+  auto shifted = std::make_shared<Matter>(*reactant);
+  auto pos = shifted->getPositions();
+  pos(0, 0) += 0.4;
+  shifted->setPositions(pos);
+  REQUIRE(eonc::geometry::rotationMatch(*reactant, *shifted, 5.0));
+  eonc::geometry::rotationRemove(reactant, shifted);
+  eonc::geometry::translationRemove(*shifted, *reactant);
+  REQUIRE(std::isfinite(shifted->getPotentialEnergy()));
+
+  std::vector<std::shared_ptr<Matter>> path;
+  for (int i = 0; i < 4; ++i) {
+    auto image = std::make_shared<Matter>(*reactant);
+    auto ip = image->getPositions();
+    ip(0, 0) += 0.15 * i;
+    image->setPositions(ip);
+    path.push_back(image);
+  }
+  eonc::helpers::neb_paths::resamplePathInPlace(path);
+  REQUIRE(path.size() == 4);
+  REQUIRE(std::isfinite(path[1]->getPotentialEnergy()));
+
+  std::vector<std::shared_ptr<AtomMatrix>> tangents(path.size());
+  const auto freeEnergy =
+      eonc::quantumFreeEnergies(path, tangents, 300.0, params);
+  REQUIRE(freeEnergy.size() == path.size());
+  for (double value : freeEnergy) {
+    REQUIRE(std::isfinite(value));
+  }
+}
+
+TEST_CASE("client displacement, masses, and mode files round-trip",
+          "[helpers]") {
+  Workdir work;
+  Parameters params = ljParams();
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto initial = loadReactant(params, pot);
+  Matter target(pot, params);
+  AtomMatrix mode;
+  ParametersLoadAccess::saddle_search_options(params).displace_radius = 4.0;
+  ParametersLoadAccess::saddle_search_options(params).displace_magnitude = 0.05;
+  ParametersLoadAccess::saddle_search_options(params).displace_type = "load";
+  REQUIRE_FALSE(
+      eonc::helpers::applyClientDisplacement(target, *initial, params, &mode));
+  const char *kinds[] = {"listed_atoms",
+                         "random",
+                         "last_atom",
+                         "least_coordinated",
+                         "not_fcc_hcp_coordinated",
+                         "no_such_displace"};
+  ParametersLoadAccess::saddle_search_options(params).displace_atom_list = {0};
+  ParametersLoadAccess::main_options(params).randomSeed = 3;
+  for (const char *kind : kinds) {
+    ParametersLoadAccess::saddle_search_options(params).displace_type = kind;
+    const bool ok =
+        eonc::helpers::applyClientDisplacement(target, *initial, params, &mode);
+    if (std::string(kind) == "no_such_displace" ||
+        std::string(kind) == "load") {
+      REQUIRE_FALSE(ok);
+    } else {
+      REQUIRE(ok);
+      REQUIRE(mode.rows() == initial->numberOfAtoms());
+    }
+  }
+
+  {
+    std::ofstream masses(work.dir() / "masses.dat");
+    for (long i = 0; i < initial->numberOfAtoms(); ++i) {
+      masses << "1.0\n";
+    }
+  }
+  const auto loaded =
+      eonc::helpers::loadMasses((work.dir() / "masses.dat").string(),
+                                static_cast<int>(initial->numberOfAtoms()));
+  REQUIRE(loaded.size() == initial->numberOfAtoms());
+  REQUIRE_THROWS_AS(
+      eonc::helpers::loadMasses((work.dir() / "masses.dat").string(), 1000),
+      std::runtime_error);
+
+  AtomMatrix written = AtomMatrix::Ones(initial->numberOfAtoms(), 3);
+  eonc::helpers::saveMode((work.dir() / "mode.dat").string(), initial, written);
+  REQUIRE(std::filesystem::file_size(work.dir() / "mode.dat") > 0);
+  REQUIRE(eonc::helpers::getRelevantFile("mode.dat") == "mode.dat");
+  std::filesystem::copy_file(work.dir() / "mode.dat",
+                             work.dir() / "mode_cp.dat");
+  REQUIRE(eonc::helpers::getRelevantFile("mode.dat") == "mode_cp.dat");
+  std::filesystem::remove(work.dir() / "mode_cp.dat");
+  std::filesystem::copy_file(work.dir() / "mode.dat",
+                             work.dir() / "mode_in.dat");
+  REQUIRE(eonc::helpers::getRelevantFile("mode.dat") == "mode_in.dat");
+}
+
+TEST_CASE("IRA match on two structures returns a result", "[ira]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto left = loadReactant(params, pot);
+  auto right = std::make_shared<Matter>(*left);
+  IRACompare compare;
+  const auto matched = compare.match(*left, *right, 0.1);
+  REQUIRE(matched.error == 0 || matched.error == -1);
+}
+
+TEST_CASE("TestJob writes a result row for each built-in potential",
+          "[job][testjob]") {
+  Workdir work;
+  std::filesystem::copy_file(work.dir() / "reactant.con",
+                             work.dir() / "pos_test.con");
+  auto params = std::make_unique<Parameters>();
+  ParametersLoadAccess::potential_options(*params).potential = PotType::LJ;
+  eonc::Runtime runtime;
+  eonc::TestJob job(std::move(params), runtime);
+  const auto files = job.run();
+  REQUIRE_FALSE(files.empty());
+  REQUIRE(std::filesystem::file_size(work.dir() / "results.dat") > 0);
+  std::ifstream in(work.dir() / "results.dat");
+  const std::string body((std::istreambuf_iterator<char>(in)),
+                         std::istreambuf_iterator<char>());
+  REQUIRE(body.find("lj") != std::string::npos);
+}
+
+TEST_CASE("process search builds a one-step min-mode and rejects ARTn",
+          "[job][process_search]") {
+  Workdir work;
+  std::filesystem::copy_file(work.dir() / "reactant.con",
+                             work.dir() / "pos.con");
+  {
+    auto params = std::make_unique<Parameters>();
+    ParametersLoadAccess::potential_options(*params).potential = PotType::LJ;
+    ParametersLoadAccess::main_options(*params).job = JobType::Process_Search;
+    ParametersLoadAccess::process_search_options(*params).minimize_first =
+        false;
+    ParametersLoadAccess::saddle_search_options(*params).method = "artn";
+    eonc::Runtime runtime;
+    eonc::ProcessSearchJob job(std::move(params), runtime);
+    REQUIRE_THROWS_WITH(job.run(), Catch::Matchers::ContainsSubstring("ARTn"));
+  }
+  auto params = std::make_unique<Parameters>();
+  ParametersLoadAccess::potential_options(*params).potential = PotType::LJ;
+  ParametersLoadAccess::main_options(*params).job = JobType::Process_Search;
+  ParametersLoadAccess::saddle_search_options(*params).method = "min_mode";
+  ParametersLoadAccess::saddle_search_options(*params).max_iterations = 1;
+  ParametersLoadAccess::dimer_options(*params).improved = false;
+  ParametersLoadAccess::dimer_options(*params).max_iterations = 3;
+  ParametersLoadAccess::optimizer_options(*params).max_iterations = 5;
+  eonc::Runtime runtime;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, *params));
+  auto seed = std::make_shared<Matter>(pot, *params);
+  REQUIRE(eonc::io::io_ok(seed->con2matter(std::string("reactant.con"))));
+  eonc::ProcessSearchJob job(pot, *params);
+  auto product = job.runFromMatter(seed);
+  REQUIRE(product != nullptr);
+  REQUIRE(std::isfinite(product->getPotentialEnergy()));
+}
+
+TEST_CASE("NEB job interpolates through an explicit transition structure",
+          "[job][neb]") {
+  Workdir work;
+  Parameters params = ljParams();
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, pot);
+  auto product = std::make_shared<Matter>(*reactant);
+  auto mid = std::make_shared<Matter>(*reactant);
+  auto ts = std::make_shared<Matter>(*reactant);
+  auto ppos = product->getPositions();
+  ppos(0, 0) += 1.2;
+  product->setPositions(ppos);
+  auto mpos = mid->getPositions();
+  mpos(0, 0) += 0.6;
+  mid->setPositions(mpos);
+  auto tpos = ts->getPositions();
+  tpos(0, 0) += 0.7;
+  tpos(1, 1) += 0.2;
+  ts->setPositions(tpos);
+  REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
+  REQUIRE(eonc::io::io_ok(product->matter2con("product.con", false)));
+  REQUIRE(eonc::io::io_ok(mid->matter2con("mid.con", false)));
+  REQUIRE(eonc::io::io_ok(ts->matter2con("ts.con", false)));
+  {
+    std::ofstream list(work.dir() / "images.lst");
+    list << "reactant.con\nmid.con\nproduct.con\n";
+  }
+  auto owned = std::make_unique<Parameters>(params);
+  ParametersLoadAccess::main_options(*owned).job = JobType::Nudged_Elastic_Band;
+  ParametersLoadAccess::neb_options(*owned).image_count = 3;
+  ParametersLoadAccess::neb_options(*owned).force_tolerance = 1.0;
+  ParametersLoadAccess::optimizer_options(*owned).max_iterations = 1;
+  ParametersLoadAccess::neb_options(*owned).max_iterations = 1;
+  ParametersLoadAccess::neb_options(*owned).endpoints.minimize = false;
+  ParametersLoadAccess::neb_options(*owned).initialization.method =
+      NEBInit::FILE;
+  ParametersLoadAccess::neb_options(*owned).initialization.input_path =
+      "images.lst";
+  eonc::Runtime runtime;
+  eonc::NudgedElasticBandJob job(std::move(owned), runtime);
+  const auto files = job.run();
+  REQUIRE_FALSE(files.empty());
+}
+
+TEST_CASE("OH-TST loads one extra symmetry product", "[job][oh_tst]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, pot);
+  auto product = std::make_shared<Matter>(*reactant);
+  auto sym = std::make_shared<Matter>(*reactant);
+  auto ppos = product->getPositions();
+  ppos(0, 0) += 3.0;
+  product->setPositions(ppos);
+  auto spos = sym->getPositions();
+  spos(1, 1) += 2.5;
+  sym->setPositions(spos);
+  REQUIRE(eonc::io::io_ok(product->matter2con("product.con", false)));
+  REQUIRE(eonc::io::io_ok(sym->matter2con("sym.con", false)));
+  auto owned = std::make_unique<Parameters>(params);
+  ParametersLoadAccess::main_options(*owned).job = JobType::OH_TST;
+  ParametersLoadAccess::main_options(*owned).temperature = 0.01;
+  ParametersLoadAccess::oh_tst_options(*owned).reactant_filename =
+      "reactant.con";
+  ParametersLoadAccess::oh_tst_options(*owned).product_filename = "product.con";
+  ParametersLoadAccess::oh_tst_options(*owned).symmetry_products = "sym.con";
+  ParametersLoadAccess::oh_tst_options(*owned).equil_steps = 0;
+  ParametersLoadAccess::oh_tst_options(*owned).sample_steps = 1;
+  ParametersLoadAccess::oh_tst_options(*owned).reactant_md_steps = 1;
+  ParametersLoadAccess::oh_tst_options(*owned).max_planes = 2;
+  ParametersLoadAccess::oh_tst_options(*owned).force_tol = 1.0e6;
+  ParametersLoadAccess::oh_tst_options(*owned).max_delta_a = 1000;
+  ParametersLoadAccess::oh_tst_options(*owned).time_step = 0.05;
+  eonc::Runtime runtime;
+  eonc::OHTSTJob job(std::move(owned), runtime);
+  const auto files = job.run();
+  REQUIRE_FALSE(files.empty());
+}
+
+#ifndef _WIN32
+TEST_CASE("stand-in engines cover loader success and failure",
+          "[pot][engine]") {
+  const char *fake = std::getenv("EON_FAKE_ENGINE_SO");
+  const bool have = fake != nullptr && std::filesystem::exists(fake);
+  {
+    EnvGuard pots("EON_POTENTIALS_PATH", "/tmp/eon-cov-empty");
+    EnvGuard peng("RGPOT_ENGINE_PATH", "/tmp/eon-cov-empty");
+    EnvGuard xtb("RGPOT_XTB_ENGINE", nullptr);
+    EnvGuard xtb2("XTB_ENGINE", nullptr);
+    EnvGuard mta("RGPOT_METATOMIC_ENGINE", nullptr);
+    EnvGuard mta2("METATOMIC_ENGINE", nullptr);
+    XTBEngineOptions missing;
+    missing.engine_path = "/no/such/librgpot_xtb_engine.so";
+    REQUIRE_THROWS_AS(XTBEngineLoader(missing), std::runtime_error);
+    MetatomicEngineOptions missingMta;
+    missingMta.engine_path = "/no/such/libmetatomic_engine.so";
+    REQUIRE_THROWS_AS(MetatomicEngineLoader(missingMta), std::runtime_error);
+    GenericEngineOptions missingGen;
+    missingGen.library = "libno_such_engine.so";
+    missingGen.env_var = "EON_FAKE_GENERIC_ENV";
+    missingGen.tag = "cov";
+    EnvGuard genv("EON_FAKE_GENERIC_ENV", "/no/such/libno_such_engine.so");
+    REQUIRE_THROWS_AS(GenericEngineLoader(missingGen), std::runtime_error);
+  }
+  if (!have) {
+    return;
+  }
+  XTBEngineOptions xtbOpt;
+  xtbOpt.engine_path = fake;
+  {
+    EnvGuard abi("EON_FAKE_XTB_ABI", "99");
+    REQUIRE_THROWS_AS(XTBEngineLoader(xtbOpt), std::runtime_error);
+  }
+  {
+    EnvGuard abi("EON_FAKE_XTB_ABI", "1");
+    EnvGuard fail("EON_FAKE_XTB_CREATE_FAIL", "1");
+    REQUIRE_THROWS_AS(XTBEngineLoader(xtbOpt), std::runtime_error);
+  }
+  {
+    EnvGuard abi("EON_FAKE_XTB_ABI", "1");
+    EnvGuard fail("EON_FAKE_XTB_CREATE_FAIL", nullptr);
+    XTBEngineLoader loader(xtbOpt);
+    const double R[6] = {0, 0, 0, 1.2, 0, 0};
+    const int z[2] = {1, 1};
+    double F[6] = {};
+    double energy = 0;
+    const double box[9] = {10, 0, 0, 0, 10, 0, 0, 0, 10};
+    {
+      EnvGuard rc("EON_FAKE_XTB_FORCE_RC", "1");
+      REQUIRE_THROWS_AS(loader.force(2, R, z, F, &energy, nullptr, box),
+                        std::runtime_error);
+    }
+    double variance = -1;
+    loader.force(2, R, z, F, &energy, &variance, box);
+    REQUIRE(energy == Catch::Approx(0.5));
+    REQUIRE(variance == Catch::Approx(0.25));
+    loader.force(2, R, z, F, &energy, nullptr, box);
+  }
+
+  MetatomicEngineOptions mtaOpt;
+  mtaOpt.engine_path = fake;
+  mtaOpt.model_path = "model";
+  mtaOpt.device = "cpu";
+  {
+    EnvGuard abi("EON_FAKE_MTA_ABI", "99");
+    REQUIRE_THROWS_AS(MetatomicEngineLoader(mtaOpt), std::runtime_error);
+  }
+  {
+    EnvGuard abi("EON_FAKE_MTA_ABI", "1");
+    EnvGuard fail("EON_FAKE_MTA_CREATE_FAIL", "1");
+    REQUIRE_THROWS_AS(MetatomicEngineLoader(mtaOpt), std::runtime_error);
+  }
+  {
+    EnvGuard abi("EON_FAKE_MTA_ABI", "1");
+    EnvGuard fail("EON_FAKE_MTA_CREATE_FAIL", nullptr);
+    MetatomicEngineLoader loader(mtaOpt);
+    const double R[6] = {0, 0, 0, 1.2, 0, 0};
+    const int z[2] = {1, 1};
+    double F[6] = {};
+    double energy = 0;
+    double variance = -1;
+    const double box[9] = {10, 0, 0, 0, 10, 0, 0, 0, 10};
+    {
+      EnvGuard rc("EON_FAKE_MTA_FORCE_RC", "1");
+      REQUIRE_THROWS_AS(loader.force(2, R, z, F, &energy, &variance, box),
+                        std::runtime_error);
+    }
+    loader.force(2, R, z, F, &energy, &variance, box);
+    REQUIRE(energy == Catch::Approx(0.5));
+    loader.force(2, R, z, F, &energy, nullptr, box);
+  }
+
+  GenericEngineOptions gen;
+  gen.library = "libcov_engines.so";
+  gen.engine_path = fake;
+  gen.env_var = "EON_UNUSED_ENGINE";
+  gen.tag = "cov";
+  gen.config = {1, 2, 3, 4};
+  {
+    EnvGuard abi("EON_FAKE_ENGINE_ABI", "99");
+    REQUIRE_THROWS_AS(GenericEngineLoader(gen), std::runtime_error);
+  }
+  {
+    EnvGuard abi("EON_FAKE_ENGINE_ABI", "1");
+    EnvGuard fail("EON_FAKE_ENGINE_CREATE_FAIL", "1");
+    REQUIRE_THROWS_AS(GenericEngineLoader(gen), std::runtime_error);
+  }
+  {
+    EnvGuard abi("EON_FAKE_ENGINE_ABI", "1");
+    EnvGuard fail("EON_FAKE_ENGINE_CREATE_FAIL", nullptr);
+    GenericEngineLoader loader(gen);
+    const double R[6] = {0, 0, 0, 1.2, 0, 0};
+    const int z[2] = {1, 1};
+    double F[6] = {};
+    double energy = 0;
+    double variance = -1;
+    const double box[9] = {10, 0, 0, 0, 10, 0, 0, 0, 10};
+    {
+      EnvGuard rc("EON_FAKE_ENGINE_FORCE_RC", "1");
+      REQUIRE_THROWS_AS(loader.force(2, R, z, F, &energy, &variance, box),
+                        std::runtime_error);
+    }
+    loader.force(2, R, z, F, &energy, &variance, box);
+    REQUIRE(energy == Catch::Approx(0.5));
+    REQUIRE(loader.available());
+    loader.force(2, R, z, F, &energy, nullptr, box);
+  }
+}
+
+TEST_CASE("plugin loader opens a present library and reports a bad file",
+          "[plugin]") {
+  const char *fake = std::getenv("EON_FAKE_ENGINE_SO");
+  if (fake == nullptr || !std::filesystem::exists(fake)) {
+    return;
+  }
+  const auto dir = std::filesystem::temp_directory_path() / "eon_covplug_dir";
+  std::filesystem::create_directories(dir);
+  std::filesystem::copy_file(fake, dir / "libeon_covplug.so",
+                             std::filesystem::copy_options::overwrite_existing);
+  {
+    std::ofstream bad(dir / "libeon_badplug.so");
+    bad << "not an elf\n";
+  }
+  auto &loader = eonc::PluginLoader::instance();
+  loader.add_config_paths(dir.string());
+  using Marker = int (*)();
+  auto marker = loader.load_sym<Marker>("eon_covplug", "eon_covplug_marker");
+  REQUIRE(marker != nullptr);
+  REQUIRE(marker() == 7);
+  auto again = loader.load_sym<Marker>("eon_covplug", "eon_covplug_marker");
+  REQUIRE(again == marker);
+  REQUIRE(loader.load_sym<Marker>("eon_badplug", "missing") == nullptr);
+  REQUIRE_THROWS_AS(loader.throw_not_found("eon_badplug", "coverage plugin"),
+                    std::runtime_error);
+  REQUIRE(loader.load_sym<Marker>("eon_absent_covplug", "missing") == nullptr);
+
+  std::filesystem::copy_file(fake, dir / "libmetatomic_pot.so",
+                             std::filesystem::copy_options::overwrite_existing);
+  auto &mta = eonc::MetatomicLoader::instance();
+  if (!mta.is_loaded()) {
+    {
+      EnvGuard abi("EON_FAKE_EON_MTA_ABI", "9");
+      REQUIRE_FALSE(mta.try_load());
+    }
+    REQUIRE(mta.try_load());
+    mta.require_loaded();
+    REQUIRE(mta.is_loaded());
+  }
+}
+#endif
+
+} // namespace tests
