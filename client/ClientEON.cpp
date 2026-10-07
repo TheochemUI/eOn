@@ -146,6 +146,25 @@ static int eonClientMain(int argc, char **argv) {
     return 0;
   }
 
+  // A missing parameter file is not a job. Reject it before the log
+  // thread and the file sinks. Help and version already returned above.
+  if (!serverRank) {
+    std::string configName = parameters.main_options().iniFilename;
+#ifdef EONMPI
+    if (eonc::helpers::existsFile("config_0.ini")) {
+      configName = "config_0.ini";
+    } else
+#endif
+    {
+      configName = eonc::helpers::getRelevantFile(configName);
+    }
+    if (!eonc::helpers::existsFile(configName)) {
+      std::cerr << "Can't load INI file: " << configName << '\n'
+                << "problem loading parameter file, stopping\n";
+      return 1;
+    }
+  }
+
   // Quill backend, file sinks, and the combi logger. Deferred until a job
   // path actually runs so process start is not dominated by the log thread.
   auto *logger = eonc::log::init_client();
