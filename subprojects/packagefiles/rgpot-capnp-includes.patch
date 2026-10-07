@@ -1,9 +1,9 @@
 --- a/CppCore/meson.build
 +++ b/CppCore/meson.build
-@@ -517,7 +517,7 @@
-         cpmdc_fake_engine = shared_library(
+@@ -851,7 +851,7 @@
              'cpmdc_fake_engine',
              sources: ['tests/cpmdc_fake_engine.cc'],
+             cpp_args: _build_identity_args,
 -            dependencies: [ptlrpc_dep],
 +            dependencies: [ptlrpc_dep, capnp_rpc_dep],
              include_directories: _incdirs + ['.'] + include_directories(
