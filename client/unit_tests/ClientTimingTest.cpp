@@ -151,3 +151,42 @@ TEST_CASE("bundled jobs record their own time_seconds", "[client][timing]") {
   SKIP("eonclient spawn covers the POSIX client");
 #endif
 }
+
+TEST_CASE("eonclient prints version and help", "[client][timing]") {
+#ifndef _WIN32
+  const char *client = std::getenv("EONCLIENT");
+  if (client == nullptr) {
+    SKIP("EONCLIENT is set by meson test");
+  }
+  extern char **environ;
+  auto run = [&](const char *flag) {
+    char *argv[] = {const_cast<char *>(client), const_cast<char *>(flag),
+                    nullptr};
+    posix_spawn_file_actions_t actions;
+    posix_spawn_file_actions_init(&actions);
+    const fs::path sink =
+        fs::temp_directory_path() / "eon-client-flag.out";
+    posix_spawn_file_actions_addopen(&actions, STDOUT_FILENO,
+                                     sink.string().c_str(),
+                                     O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    pid_t pid = 0;
+    const int spawned =
+        posix_spawn(&pid, client, &actions, nullptr, argv, environ);
+    posix_spawn_file_actions_destroy(&actions);
+    REQUIRE(spawned == 0);
+    int status = 1;
+    REQUIRE(waitpid(pid, &status, 0) > 0);
+    REQUIRE(WIFEXITED(status));
+    REQUIRE(WEXITSTATUS(status) == 0);
+    std::ifstream in(sink);
+    std::stringstream buffer;
+    buffer << in.rdbuf();
+    fs::remove(sink);
+    return buffer.str();
+  };
+  REQUIRE_FALSE(run("--version").empty());
+  REQUIRE(run("--help").find("eOn") != std::string::npos);
+#else
+  SKIP("eonclient spawn covers the POSIX client");
+#endif
+}

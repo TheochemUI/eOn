@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 
+#include "eon/GleThermostat.h"
 #include "eon/PathIntegral.h"
 
 #include "catch2/catch_amalgamated.hpp"
@@ -148,6 +149,27 @@ void writeGle(const std::filesystem::path &path, long nModes, double tk) {
 }
 
 } // namespace
+
+TEST_CASE("GLE white-noise drift takes one half-step", "[gle]") {
+  const auto path =
+      std::filesystem::temp_directory_path() / "eon-gle-white.txt";
+  {
+    std::ofstream out(path);
+    out << "1.0\n";
+  }
+  const Eigen::MatrixXd drift =
+      eonc::GleThermostat::loadDriftMatrix(path.string());
+  REQUIRE(drift.rows() == 1);
+  REQUIRE(drift(0, 0) == Catch::Approx(1.0));
+  eonc::GleThermostat gle(drift, 0.025, 0.001, 3);
+  REQUIRE(gle.valid());
+  Eigen::VectorXd vel(3);
+  vel << 0.1, -0.2, 0.0;
+  const Eigen::VectorXd mass = Eigen::VectorXd::Constant(3, 1.0);
+  gle.apply(vel, mass, []() { return 0.0; });
+  REQUIRE(vel.allFinite());
+  std::filesystem::remove(path);
+}
 
 TEST_CASE("Normal mode matrix is orthogonal", "[path-integral]") {
   for (long n : {1, 2, 7, 8}) {

@@ -2285,6 +2285,39 @@ steps = 5
 // SafeHyperJob requires element-specific BondBoost parameters (SIGFPE on
 // generic LJ clusters). Needs a metallic test system.
 
+TEST_CASE_METHOD(JobIntegrationFixture, "SafeHyperJob runs on Morse Pt",
+                 "[job][safehyper][integration]") {
+  EON_REQUIRE_TEST_DATA("../Pt_Heptamer_FrozenLayers");
+  writeConfig(R"(
+[Main]
+job = safe_hyperdynamics
+temperature = 300
+random_seed = 42
+
+[Potential]
+potential = morse_pt
+
+[Dynamics]
+time_step = 1.0
+time = 20.0
+thermostat = andersen
+andersen_collision_steps = 10
+andersen_alpha = 1.0
+
+[Hyperdynamics]
+bias_potential = bond_boost
+
+[Parallel Replica]
+state_check_interval = 20.0
+record_interval = 5.0
+refine_transition = true
+)");
+
+  auto results = runJob();
+  REQUIRE(results.count("potential_energy_reactant") > 0);
+  REQUIRE(std::isfinite(std::stod(results["potential_energy_reactant"])));
+}
+
 TEST_CASE_METHOD(JobIntegrationFixture,
                  "StructureComparisonJob matches identical structures",
                  "[job][structure_comparison][integration]") {
