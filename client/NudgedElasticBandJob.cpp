@@ -200,6 +200,7 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
             : RunStatus::FAIL_MAX_ITERATIONS,
         params.potential_options().potential,
         PotRegistry::get().total_force_calls(), true, neb->reactantEnergy);
+    env.provenance = provenanceForJob(params);
     env.job_type = "neb";
     env.extras.emplace_back("force_calls_neb", static_cast<double>(fCallsNEB));
     env.extras.emplace_back("energy_reference", neb->reactantEnergy);

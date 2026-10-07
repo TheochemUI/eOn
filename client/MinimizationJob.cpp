@@ -90,6 +90,7 @@ std::vector<std::string> MinimizationJob::run() {
   auto env = JobResultEnvelope::fromMinimization(
       status, params.potential_options().potential,
       pos->getPotential()->forceCallCounter.load(), hasE, energy);
+  env.provenance = provenanceForJob(params);
   env.tags.emplace_back("optimizer", std::string(magic_enum::enum_name(
                                          params.optimizer_options().method)));
   if (params.optimizer_options().method == OptType::XTSCI) {

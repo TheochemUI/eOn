@@ -468,6 +468,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     auto env = JobResultEnvelope::fromMinimization(
         status, params.potential_options().potential,
         PotRegistry::get().total_force_calls(), false, 0.0);
+    env.provenance = provenanceForJob(params);
     env.job_type = "instanton";
     env.extras.emplace_back("force_calls",
                             static_cast<double>(env.force_calls));
@@ -1186,6 +1187,7 @@ std::vector<std::string> InstantonJob::run(void) {
   auto env = JobResultEnvelope::fromMinimization(
       status, params.potential_options().potential,
       PotRegistry::get().total_force_calls(), false, 0.0);
+  env.provenance = provenanceForJob(params);
   env.job_type = "instanton";
   env.extras.emplace_back("force_calls", static_cast<double>(env.force_calls));
   env.extras.emplace_back("instanton_iterations",

@@ -1048,6 +1048,7 @@ eonclib_sources = [
     'BiasedGradientSquaredDescent.cpp',
     'SafeHyperJob.cpp',
     'MinimizationJob.cpp',
+    'JobResultProvenance.cpp',
     'Quickmin.cpp',
     'ParallelReplicaJob.cpp',
     'Potential.cpp',

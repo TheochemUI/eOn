@@ -112,6 +112,12 @@ struct JobResultProvenance {
   }
 };
 
+class Parameters;
+
+/// Optimizer backend, engine identity, rgpot pin, and xts ABI from a job.
+/// eindir fields stay at zero unless a real stamp filled them.
+JobResultProvenance provenanceForJob(const Parameters &params);
+
 /// In-memory JobResult scalars. Matches schema/eon_job_result.capnp
 /// field names as results.dat keys. Geometries stay on Matter until capnp
 /// codegen lands.
@@ -183,6 +189,7 @@ struct JobResultEnvelope {
                        prefactor_reactant_to_product);
     out << std::format("{:.12e} prefactor_product_to_reactant\n",
                        prefactor_product_to_reactant);
+    out << provenance.text();
     return out.str();
   }
 

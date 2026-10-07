@@ -44,6 +44,7 @@ std::vector<std::string> PointJob::run() {
   auto env = JobResultEnvelope::fromMinimization(
       RunStatus::GOOD, params.potential_options().potential,
       PotRegistry::get().total_force_calls(), true, pos->getPotentialEnergy());
+  env.provenance = provenanceForJob(params);
   env.job_type = "point";
   env.extras.emplace_back("Energy", pos->getPotentialEnergy());
   env.extras.emplace_back("Max_Force", pos->maxForce());
