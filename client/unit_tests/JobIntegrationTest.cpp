@@ -1196,7 +1196,10 @@ andersen_alpha = 1.0
   REQUIRE(std::filesystem::exists(workdir / "final.con"));
   REQUIRE(results["job_type"] == "dynamics");
   REQUIRE(results.count("potential_energy") > 0);
-  REQUIRE(std::isfinite(std::stod(results["potential_energy"])));
+  // Seeded Andersen dynamics on the LJ cluster, 10 steps.
+  double energy = std::stod(results["potential_energy"]);
+  REQUIRE(energy == Catch::Approx(-23.58285447425).epsilon(1e-8));
+  REQUIRE(std::stoi(results["total_force_calls"]) == 11);
   auto fsize = std::filesystem::file_size(workdir / "final.con");
   REQUIRE(fsize > 100);
 }
@@ -1724,7 +1727,7 @@ exchange_period = 25.0
 
   REQUIRE(results.count("force_calls_sampling") > 0);
   int samplingCalls = std::stoi(results["force_calls_sampling"]);
-  REQUIRE(samplingCalls > 0);
+  REQUIRE(samplingCalls == 161);
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture, "TADJob runs on Morse Pt",
