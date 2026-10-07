@@ -732,16 +732,31 @@ if not readcon_db_dep.found()
             'default_library': 'shared',
         },
     )
-    readcon_db_dep = readcon_db_proj.get_variable('readcon_dep')
+    _readcon_db_inner = readcon_db_proj.get_variable('readcon_dep')
+    _readcon_db_so = readcon_db_proj.get_variable('readcon_cargo')[0]
+    _readcon_db_version = _readcon_db_inner.version()
+    # --as-needed drops the shared library: the mirror resolves rkrdb_open
+    # at load time, so the link line has to keep the library anyway.
+    readcon_db_dep = declare_dependency(
+        link_args: [
+            '-Wl,--no-as-needed',
+            _readcon_db_so.full_path(),
+            '-Wl,--as-needed',
+        ],
+        sources: [_readcon_db_so],
+        compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
+    )
+else
+    _readcon_db_version = readcon_db_dep.version()
+    if _readcon_db_version == ''
+        _readcon_db_version = '0.1.6'
+    endif
+    readcon_db_dep = declare_dependency(
+        dependencies: [readcon_db_dep],
+        link_args: ['-Wl,--no-as-needed', '-lreadcon_db', '-Wl,--as-needed'],
+        compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
+    )
 endif
-_readcon_db_version = readcon_db_dep.version()
-if _readcon_db_version == ''
-    _readcon_db_version = '0.1.6'
-endif
-readcon_db_dep = declare_dependency(
-    dependencies: [readcon_db_dep],
-    compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
-)
 _deps += [readcon_db_dep]
 
 # Potentials

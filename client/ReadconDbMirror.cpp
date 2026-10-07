@@ -28,6 +28,12 @@
 
 #if !defined(_WIN32)
 #include <dlfcn.h>
+
+extern "C" int rkrdb_open(const char *, std::size_t *);
+// The mirror looks the symbol up with dlsym. Naming it here keeps the
+// linked libreadcon_db.so on the link line under --as-needed.
+[[maybe_unused]] static int (*const kLinkedOpen)(const char *,
+                                                  std::size_t *) = rkrdb_open;
 #endif
 
 namespace eonc::io {
