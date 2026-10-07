@@ -67,6 +67,15 @@ private:
   MetatomicLoader() = default;
   friend class Runtime;
 
+public:
+  class Key {
+    friend class Runtime;
+    Key() = default;
+  };
+  explicit MetatomicLoader(Key) : MetatomicLoader() {}
+
+private:
+
   bool m_loaded{false};
   dynlib::Handle m_handle{};
 };

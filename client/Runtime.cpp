@@ -21,10 +21,10 @@ namespace eonc {
 
 Runtime::Runtime()
     : pots_(std::make_unique<PotRegistry>()),
-      ira_(std::unique_ptr<IRAResource>(new IRAResource())),
-      artn_(std::unique_ptr<ARTnResource>(new ARTnResource())),
-      plugins_(std::unique_ptr<PluginLoader>(new PluginLoader())),
-      metatomic_(std::unique_ptr<MetatomicLoader>(new MetatomicLoader())) {}
+      ira_(std::make_unique<IRAResource>(IRAResource::Key{})),
+      artn_(std::make_unique<ARTnResource>(ARTnResource::Key{})),
+      plugins_(std::make_unique<PluginLoader>(PluginLoader::Key{})),
+      metatomic_(std::make_unique<MetatomicLoader>(MetatomicLoader::Key{})) {}
 
 Runtime::Runtime(Runtime &&) noexcept = default;
 Runtime &Runtime::operator=(Runtime &&) noexcept = default;

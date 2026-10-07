@@ -20,6 +20,8 @@ IRAResource &IRAResource::instance() {
   return resource;
 }
 
+IRAResource::IRAResource(Key) : IRAResource() {}
+
 IRAResource::IRAResource() {
 #ifdef _WIN32
   const char *names[] = {"ira.dll", "libira.dll", nullptr};

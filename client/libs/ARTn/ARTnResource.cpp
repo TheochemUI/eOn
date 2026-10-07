@@ -20,6 +20,8 @@ ARTnResource &ARTnResource::instance() {
   return resource;
 }
 
+ARTnResource::ARTnResource(Key) : ARTnResource() {}
+
 ARTnResource::ARTnResource() {
 #ifdef _WIN32
   const char *names[] = {"artn.dll", "libartn.dll", nullptr};

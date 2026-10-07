@@ -22,6 +22,8 @@ PluginLoader &PluginLoader::instance() {
   return loader;
 }
 
+PluginLoader::PluginLoader(Key) : PluginLoader() {}
+
 PluginLoader::PluginLoader() {
   // Seed from EON_POTENTIALS_PATH env var (colon-separated on POSIX).
   // Config-file paths are prepended later via add_config_paths().

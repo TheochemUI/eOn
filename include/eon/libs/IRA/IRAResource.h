@@ -108,6 +108,15 @@ private:
   IRAResource();
   friend class Runtime;
 
+public:
+  class Key {
+    friend class Runtime;
+    Key() = default;
+  };
+  explicit IRAResource(Key);
+
+private:
+
   bool m_loaded{false};
   dynlib::Handle m_handle{};
 
