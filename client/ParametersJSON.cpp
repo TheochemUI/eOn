@@ -324,6 +324,7 @@ json to_json(const Parameters &p) {
         {"half_ring", o.half_ring},
         {"initial_hessians", o.initial_hessians},
         {"energy_shift", o.energy_shift},
+        {"discretization", o.discretization},
         {"friction", o.friction},
         {"friction_eta", o.friction_eta},
         {"friction_eta_beads", o.friction_eta_beads},
@@ -793,6 +794,12 @@ void from_json(const json &j, Parameters &p) {
           o.initial_hessians);
     }
     JSON_OPT(s, "energy_shift", o.energy_shift);
+    if (s.contains("discretization")) {
+      o.discretization.clear();
+      for (const auto &item : s.at("discretization")) {
+        o.discretization.push_back(item.get<double>());
+      }
+    }
     if (s.contains("friction")) {
       o.friction = lowerCopy(s.at("friction").get<std::string>());
     }

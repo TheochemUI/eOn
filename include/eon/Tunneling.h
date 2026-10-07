@@ -284,6 +284,10 @@ struct RateInstantonOptions {
   /// schedule probes only its last temperature.
   bool checkOddSector = true;
   double energyShift = 0.0; ///< subtracted from every bead potential, eV
+  /// Empty keeps every spring equal. Otherwise one positive weight per
+  /// bead: the spring from bead j to bead j + 1 is divided by that weight.
+  /// A half ring keeps the uniform spring and refuses a weight list.
+  std::vector<double> discretization;
   /// Active coordinates at or below this take the Newton step. Zero keeps
   /// minimum-mode following. The step solves through the block chain, so
   /// the default admits every size a batch potential can evaluate.
@@ -319,6 +323,13 @@ void addFrictionBath(const std::vector<VectorXd> &q, double &u,
                      std::vector<VectorXd> &grad,
                      const std::vector<double> &eta);
 
+/// U_N of a closed ring. An empty discretization is the uniform spring.
+/// Otherwise one positive weight per bead divides the spring that leaves
+/// that bead.
+double closedRingPotential(const std::vector<VectorXd> &beads, double spring,
+                           const BatchPotential &potential,
+                           const std::vector<double> &discretization = {});
+
 /// Spectrum of a closed ring's Hessian without forming it.
 struct RingSpectrum {
   /// ln |det' J|: the product over every eigenvalue but the one along tau.
@@ -347,6 +358,8 @@ struct RateInstanton {
   double crossover = 0.0;          ///< T_c, K
   double ringPotential = 0.0;      ///< U_N, eV
   double bN = 0.0;                 ///< sum_j |q_{j+1} - q_j|^2, amu Angstrom^2
+  /// Empty keeps every spring equal. Otherwise one positive weight per bead.
+  std::vector<double> discretization;
   double negativeEigenvalue = 0.0; ///< of the ring Hessian, 1 / time^2
   double zeroEigenvalue = 0.0;     ///< the eigenvalue left out
   long negativeModes = 0;          ///< eigenvalues below the zero mode

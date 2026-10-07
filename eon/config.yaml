@@ -1255,6 +1255,12 @@ Instanton:
             kind: float
             default: 0.0
 
+        # Empty keeps every spring equal. One positive weight per bead
+        # divides the spring from that bead to the next.
+        discretization:
+            kind: string
+            default: ""
+
         # Mode rate: Litman friction bath. none, implicit (one eta on
         # every bead) or explicit (one eta per bead).
         friction:

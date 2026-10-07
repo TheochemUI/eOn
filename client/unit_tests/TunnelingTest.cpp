@@ -1749,3 +1749,25 @@ TEST_CASE("The seed ring meets its period across a jump in the orbit",
     REQUIRE_THAT(seed.period, WithinRel(bh, 1e-6));
   }
 }
+
+TEST_CASE("A link weight divides one spring of a closed ring",
+          "[Tunneling][Instanton]") {
+  const BatchPotential flat = [](const std::vector<VectorXd> &q,
+                                 std::vector<double> &v,
+                                 std::vector<VectorXd> &g) {
+    v.assign(q.size(), 0.0);
+    g.assign(q.size(), VectorXd::Zero(1));
+  };
+  std::vector<VectorXd> beads(4, VectorXd::Zero(1));
+  beads[1](0) = 1.0;
+  beads[2](0) = 1.0;
+  const double c = 2.0;
+  const double uniform = closedRingPotential(beads, c, flat);
+  const double weighted =
+      closedRingPotential(beads, c, flat, std::vector<double>{2.0, 1.0, 1.0, 1.0});
+  REQUIRE_THAT(uniform, Catch::Matchers::WithinAbs(c, 1e-12));
+  REQUIRE_THAT(weighted, Catch::Matchers::WithinAbs(0.75 * c, 1e-12));
+  REQUIRE_THROWS_AS(
+      closedRingPotential(beads, c, flat, std::vector<double>{0.0, 1.0, 1.0, 1.0}),
+      std::invalid_argument);
+}

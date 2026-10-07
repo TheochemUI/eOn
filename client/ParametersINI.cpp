@@ -1791,6 +1791,28 @@ int load_ini(INIReader &ini, Parameters &params) {
                                   o.initial_hessians);
     }
     o.energy_shift = ini.GetReal("Instanton", "energy_shift", o.energy_shift);
+    o.discretization.clear();
+    {
+      const std::string list = ini.Get("Instanton", "discretization", "");
+      std::stringstream ss(list);
+      std::string token;
+      while (std::getline(ss, token, ',')) {
+        const size_t start = token.find_first_not_of(" \t");
+        const size_t end = token.find_last_not_of(" \t");
+        if (start == std::string::npos) {
+          continue;
+        }
+        try {
+          o.discretization.push_back(
+              std::stod(token.substr(start, end - start + 1)));
+        } catch (const std::exception &) {
+          throw std::invalid_argument(
+              "[Instanton] discretization must be comma-separated positive "
+              "link weights, not " +
+              token);
+        }
+      }
+    }
     o.friction = toLowerCase(ini.Get("Instanton", "friction", o.friction));
     if (o.friction != "none" && o.friction != "implicit" &&
         o.friction != "explicit") {

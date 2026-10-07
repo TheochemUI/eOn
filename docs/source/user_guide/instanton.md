@@ -225,7 +225,9 @@ on one ring are that mode. The search steps along it and continues on
 the whole ring.
 An odd count keeps every bead. `energy_shift` (default 0, in eV) is
 subtracted from every bead potential and from the reactant and saddle
-energies in the rate.
+energies in the rate. An empty `discretization` keeps every spring equal.
+A comma-separated list of one positive weight per bead divides the spring
+from that bead to the next. A half ring keeps the uniform spring.
 
 The search is an index-1 Newton step on the ring Hessian while the active
 coordinate count is within the Newton limit. Past that limit the ring is one

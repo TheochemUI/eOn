@@ -833,6 +833,9 @@ struct instanton_options_t {
   // and copies it. An odd count evaluates every bead.
   bool half_ring{true};
   double energy_shift{0.0}; // eV, subtracted from each bead potential
+  // Empty keeps every spring equal. Otherwise one positive weight per
+  // bead: the spring from that bead to the next is divided by the weight.
+  std::vector<double> discretization{};
   // Mode rate: Litman friction bath. none, implicit (one eta on every
   // bead) or explicit (friction_eta_beads, one value per bead).
   std::string friction{"none"};

@@ -2707,6 +2707,13 @@ class InstantonConfig(BaseModel):
         default=0.0,
         description="Subtracted from every bead potential, in eV.",
     )
+    discretization: str = Field(
+        default="",
+        description=(
+            "Empty keeps every spring equal. One positive weight per bead,"
+            " comma-separated, divides the spring from that bead to the next."
+        ),
+    )
     friction: Literal["none", "implicit", "explicit"] = Field(
         default="none",
         description=(
