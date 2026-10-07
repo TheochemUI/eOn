@@ -22,14 +22,25 @@ def test_rgpot_params_path_replaces_the_ini_key():
     assert "replaces the ini key" in text
 
 
+def _header_ranks_comment() -> str:
+    lines = HEADER.read_text(encoding="utf-8").splitlines()
+    index = next(i for i, line in enumerate(lines) if "ranks_per_image{0}" in line)
+    words = []
+    cursor = index - 1
+    while cursor >= 0 and lines[cursor].strip().startswith("//"):
+        words.append(lines[cursor].split("//", 1)[1].strip())
+        cursor -= 1
+    return " ".join(reversed(words))
+
+
 def test_ranks_description_matches_the_header():
-    header = HEADER.read_text(encoding="utf-8")
+    comment = _header_ranks_comment()
     models = MODELS.read_text(encoding="utf-8")
     start = models.index("ranks_per_image: int")
-    chunk = models[start : start + 500]
+    chunk = " ".join(models[start : start + 500].split())
     for phrase in (
         "spread NEB images over the groups",
         "0 keeps one session on every rank",
     ):
-        assert phrase in header
+        assert phrase in comment
         assert phrase in chunk
