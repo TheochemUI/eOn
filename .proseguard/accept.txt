@@ -1,6 +1,7 @@
 # Terms defined in docs/source/glossary.md.
 # NEW is the English word in the release notes.
 # PET and MAD are the two pieces of the single model name PET-MAD.
+# PI is the path-integral piece of PI-QTST.
 # GNU appears inside the GPG entry.
 AKMC
 AMS
@@ -33,6 +34,7 @@ ORCA
 PBC
 PDM
 PET
+PI
 QTST
 RFO
 RMS
