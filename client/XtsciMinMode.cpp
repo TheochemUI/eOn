@@ -110,9 +110,9 @@ void XtsciMinMode::compute(std::shared_ptr<Matter> matter,
   rgsaddle_minmode_config_t config{};
   config.version = RGSADDLE_VERSION_INIT;
   config.flags = 0;
-  // Dimer rotation. Lanczos is the same session with kind Lanczos when
-  // the host dimer flag is off and the optimizer method is "lanczos".
-  const bool lanczos = params.optimizer_options().xtsci.method == "lanczos";
+  // Dimer rotation. Lanczos is the same session with kind Lanczos.
+  const bool lanczos = params.saddle_search_options().minmode_method ==
+                       LowestEigenmode::MINMODE_LANCZOS;
   config.kind = lanczos ? RGSADDLE_MINMODE_LANCZOS : RGSADDLE_MINMODE_DIMER;
   config.method = params.optimizer_options().xtsci.method == "lbfgs"
                       ? RGSADDLE_METHOD_LBFGS
@@ -165,7 +165,7 @@ void XtsciMinMode::compute(std::shared_ptr<Matter> matter,
       rgsaddle_minmode_set_position(m_session, saved.data(), gradient.data()),
       "rgsaddle_minmode_set_position");
   const int rc =
-      rgsaddle_minmode_estimate(m_session, surfaceCallback, &ctx, &report);
+      xts_minmode_estimate(m_session, surfaceCallback, &ctx, &report);
   checkStatus(rc, "rgsaddle_minmode_estimate");
   checkStatus(rgsaddle_minmode_mode(m_session, mode.data()),
               "rgsaddle_minmode_mode");

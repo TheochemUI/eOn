@@ -208,7 +208,11 @@ TEST_CASE_METHOD(DimerFixture,
 
   auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
   REQUIRE(strategy != nullptr);
+#ifdef WITH_RGSADDLE
+  REQUIRE(dynamic_cast<XtsciMinMode *>(strategy.get()) != nullptr);
+#else
   REQUIRE(dynamic_cast<ImprovedDimer *>(strategy.get()) != nullptr);
+#endif
 }
 
 TEST_CASE_METHOD(DimerFixture,
@@ -220,7 +224,11 @@ TEST_CASE_METHOD(DimerFixture,
 
   auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
   REQUIRE(strategy != nullptr);
+#ifdef WITH_RGSADDLE
+  REQUIRE(dynamic_cast<XtsciMinMode *>(strategy.get()) != nullptr);
+#else
   REQUIRE(dynamic_cast<Dimer *>(strategy.get()) != nullptr);
+#endif
 }
 
 TEST_CASE_METHOD(DimerFixture, "buildEigenmodeStrategy returns Lanczos variant",
@@ -230,7 +238,11 @@ TEST_CASE_METHOD(DimerFixture, "buildEigenmodeStrategy returns Lanczos variant",
 
   auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
   REQUIRE(strategy != nullptr);
+#ifdef WITH_RGSADDLE
+  REQUIRE(dynamic_cast<XtsciMinMode *>(strategy.get()) != nullptr);
+#else
   REQUIRE(dynamic_cast<Lanczos *>(strategy.get()) != nullptr);
+#endif
 }
 
 TEST_CASE_METHOD(DimerFixture,
@@ -306,6 +318,28 @@ TEST_CASE_METHOD(DimerFixture, "gprdimer force box follows Matter periodicity",
 }
 #endif
 
+#ifdef WITH_RGSADDLE
+TEST_CASE_METHOD(DimerFixture, "xtsci min-mode rotates the default dimer",
+                 "[eigenmode][rgsaddle][xtsci]") {
+  ParametersLoadAccess::saddle_search_options(params).minmode_method =
+      LowestEigenmode::MINMODE_DIMER;
+  auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
+  REQUIRE(dynamic_cast<XtsciMinMode *>(strategy.get()) != nullptr);
+  eonc::eigenmodeCompute(*strategy, matter, mode);
+  const double curvature = eonc::eigenmodeGetEigenvalue(*strategy);
+  REQUIRE(std::isfinite(curvature));
+  const AtomMatrix direction = eonc::eigenmodeGetEigenvector(*strategy);
+  REQUIRE(direction.rows() == matter->numberOfAtoms());
+  REQUIRE(direction.norm() > 0.0);
+
+  ParametersLoadAccess::saddle_search_options(params).minmode_method =
+      LowestEigenmode::MINMODE_LANCZOS;
+  auto lanczos = eonc::buildEigenmodeStrategy(matter, params, pot);
+  REQUIRE(dynamic_cast<XtsciMinMode *>(lanczos.get()) != nullptr);
+  REQUIRE(dynamic_cast<Lanczos *>(lanczos.get()) == nullptr);
+}
+#endif
+
 // --- asImprovedDimer tests ---
 
 TEST_CASE_METHOD(DimerFixture,
@@ -317,7 +351,11 @@ TEST_CASE_METHOD(DimerFixture,
 
   auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
   auto *ptr = eonc::asImprovedDimer(*strategy);
+#ifdef WITH_RGSADDLE
+  REQUIRE(ptr == nullptr);
+#else
   REQUIRE(ptr != nullptr);
+#endif
 }
 
 TEST_CASE_METHOD(DimerFixture,
@@ -1033,11 +1071,19 @@ TEST_CASE_METHOD(DimerFixture,
                                                1e-12));
   REQUIRE(batched.getEigenvalue() ==
           Catch::Approx(serial.getEigenvalue()).margin(1e-10));
+#ifdef WITH_RGSADDLE
+  // The session requests one geometry at a time, so each round is one
+  // system and the round count matches the serial evaluations.
+  REQUIRE(batchPot->largestBatch == 1);
+  REQUIRE(batchPot->rounds == serialCalls);
+  REQUIRE(batchPot->systems == serialCalls);
+#else
   // Centre and first displaced image share a batch once per step, so there
   // are fewer rounds than serial calls; at most the last image is spare.
   REQUIRE(batchPot->largestBatch == 2);
   REQUIRE(batchPot->rounds < serialCalls);
   REQUIRE(batchPot->systems <= serialCalls + 1);
+#endif
 }
 
 #ifdef WITH_RGSADDLE

@@ -33,14 +33,22 @@ buildEigenmodeStrategy(std::shared_ptr<Matter> matter, const Parameters &params,
                        std::shared_ptr<Potential> pot) {
   if (params.saddle_search_options().minmode_method ==
       LowestEigenmode::MINMODE_DIMER) {
+#ifdef WITH_RGSADDLE
+    return std::make_shared<XtsciMinMode>(matter, params, pot);
+#else
     if (params.dimer_options().improved) {
       return std::make_shared<ImprovedDimer>(matter, params, pot);
     }
     return std::make_shared<Dimer>(matter, params, pot);
+#endif
   }
   if (params.saddle_search_options().minmode_method ==
       LowestEigenmode::MINMODE_LANCZOS) {
+#ifdef WITH_RGSADDLE
+    return std::make_shared<XtsciMinMode>(matter, params, pot);
+#else
     return std::make_shared<Lanczos>(matter, params, pot);
+#endif
   }
   if (params.saddle_search_options().minmode_method ==
       LowestEigenmode::MINMODE_DAVIDSON) {
