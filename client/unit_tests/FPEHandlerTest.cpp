@@ -114,6 +114,23 @@ TEST_CASE("enableFPE integer divide does not restart the faulting instruction",
 #endif
 }
 
+TEST_CASE("enableFPE reports overflow and an invalid operation once",
+          "[fpe]") {
+#if defined(__APPLE__) && defined(__aarch64__)
+  SKIP("Apple Silicon raises SIGILL for FE traps, not SIGFPE");
+#else
+  eonc::enableFPE();
+  volatile double huge = 1.0e300;
+  volatile double overflow = huge * huge;
+  REQUIRE(std::isinf(overflow));
+  volatile double zero = 0.0;
+  volatile double invalid = zero / zero;
+  REQUIRE(std::isnan(invalid));
+  eonc::disableFPE();
+  feclearexcept(FE_ALL_EXCEPT);
+#endif
+}
+
 TEST_CASE("safe_div returns fallback on zero denom without trapping",
           "[fpe][safemath]") {
   eonc::enableFPE();

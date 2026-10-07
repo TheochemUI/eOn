@@ -919,4 +919,65 @@ multiplicity = 1
   REQUIRE(search.describeStatus(99) == "Unknown status");
 }
 
+TEST_CASE("dynamics basin and gradient-squared searches take one short step",
+          "[job][dynamics][coverage]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters base = ljParams();
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, base));
+  auto seed = loadReactant(base, pot);
+
+  {
+    Parameters params = base;
+    ParametersLoadAccess::saddle_search_options(params).method = "dynamics";
+    ParametersLoadAccess::saddle_search_options(params).dynamics.temperature =
+        300.0;
+    ParametersLoadAccess::saddle_search_options(params)
+        .dynamics.record_interval = 1.0;
+    ParametersLoadAccess::saddle_search_options(params)
+        .dynamics.state_check_interval = 1.0;
+    ParametersLoadAccess::saddle_search_options(params)
+        .dynamics.linear_interpolation = false;
+    ParametersLoadAccess::dynamics_options(params).time_step = 1.0;
+    ParametersLoadAccess::dynamics_options(params).steps = 2;
+    ParametersLoadAccess::parallel_replica_options(params).dephase_time = 0.0;
+    ParametersLoadAccess::optimizer_options(params).max_iterations = 0;
+    ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
+    ParametersLoadAccess::neb_options(params).image_count = 3;
+    ParametersLoadAccess::neb_options(params).max_iterations = 1;
+    ParametersLoadAccess::neb_options(params).endpoints.minimize = false;
+    ParametersLoadAccess::debug_options(params).write_movies = true;
+    eonc::ProcessSearchJob job(pot, params);
+    auto found = job.runFromMatter(seed);
+    REQUIRE(found != nullptr);
+    REQUIRE(std::isfinite(found->getPotentialEnergy()));
+  }
+  {
+    Parameters params = base;
+    ParametersLoadAccess::saddle_search_options(params).method =
+        "basin_hopping";
+    ParametersLoadAccess::main_options(params).temperature = 0.0;
+    ParametersLoadAccess::optimizer_options(params).max_iterations = 5;
+    ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
+    ParametersLoadAccess::neb_options(params).image_count = 1;
+    ParametersLoadAccess::neb_options(params).max_iterations = 1;
+    ParametersLoadAccess::neb_options(params).endpoints.minimize = false;
+    eonc::ProcessSearchJob job(pot, params);
+    auto found = job.runFromMatter(std::make_shared<Matter>(*seed));
+    REQUIRE(found != nullptr);
+  }
+  {
+    Parameters params = base;
+    ParametersLoadAccess::saddle_search_options(params).method = "bgsd";
+    ParametersLoadAccess::optimizer_options(params).method = OptType::CG;
+    ParametersLoadAccess::optimizer_options(params).max_iterations = 2;
+    ParametersLoadAccess::optimizer_options(params).max_move = 0.05;
+    eonc::ProcessSearchJob job(pot, params);
+    auto found = job.runFromMatter(std::make_shared<Matter>(*seed));
+    REQUIRE(found != nullptr);
+    REQUIRE(std::isfinite(found->getPotentialEnergy()));
+  }
+}
+
 } // namespace tests
