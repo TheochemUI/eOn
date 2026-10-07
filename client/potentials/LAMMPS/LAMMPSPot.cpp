@@ -292,13 +292,18 @@ void LAMMPSPot::ensureWorker() {
   workerSpawned = true;
 }
 
-extern "C" void __gcov_dump(void) __attribute__((weak));
+// A weak reference does not pull the counter writer out of libgcov, and the
+// child then leaves its counters at zero. The strong call is compiled only
+// into a coverage build, which links that writer.
+#ifdef EON_GCOV_DUMP
+extern "C" void __gcov_dump(void);
+#endif
 
 namespace {
 void workerExit(int code) {
-  if (__gcov_dump != nullptr) {
-    __gcov_dump();
-  }
+#ifdef EON_GCOV_DUMP
+  __gcov_dump();
+#endif
   _exit(code);
 }
 } // namespace
