@@ -447,7 +447,8 @@ TEST_CASE("IRA match on two structures returns a result", "[ira]") {
   auto right = std::make_shared<Matter>(*left);
   IRACompare compare;
   const auto matched = compare.match(*left, *right, 0.1);
-  REQUIRE(matched.error == 0 || matched.error == -1);
+  const int iraError = matched.error;
+  REQUIRE((iraError == 0 || iraError == -1));
 }
 
 TEST_CASE("TestJob writes a result row for each built-in potential",
