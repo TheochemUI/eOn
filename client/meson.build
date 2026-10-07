@@ -547,6 +547,7 @@ if not _rgpot_pkg.found()
         # SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, and TIP4P-H are
         # Fortran kernels inside librgpot.
         'with_fortran_pots': 'enabled',
+        'with_water': get_option('with_water'),
     }
     if get_option('with_rgpot_mpi').enabled()
         rgpot_opts += {'with_mpi': 'enabled'}
@@ -907,6 +908,16 @@ if _rgpot_pkg.found()
             + 'PKG_CONFIG_PATH at one that has them.',
         )
     endif
+    if get_option('with_water') and cppc.get_define(
+        'RGPOT_HAS_WATER',
+        dependencies: _rgpot_pkg,
+    ) == ''
+        error(
+            'installed rgpot was built without the flexible water kernels '
+            + '(rgpot.pc does not define RGPOT_HAS_WATER). '
+            + 'Rebuild rgpot with -Dwith_water=true.',
+        )
+    endif
 else
     # 2) wrap / multi-source fallback, configured next to the vesin choice
     # above; here it only takes on its eOn roles.
@@ -926,6 +937,13 @@ else
         error(
             'rgpot subproject built without Fortran potentials. '
             + 'Reconfigure with -Drgpot:with_fortran_pots=enabled, '
+            + 'or wipe the build directory.',
+        )
+    endif
+    if get_option('with_water') and not _rgpot_proj.get_variable('has_water')
+        error(
+            'rgpot subproject built without the flexible water kernels. '
+            + 'Reconfigure with -Drgpot:with_water=true, '
             + 'or wipe the build directory.',
         )
     endif
@@ -1164,9 +1182,7 @@ if get_option('with_vasp')
 endif
 
 if get_option('with_water')
-    subdir('potentials/Water')
-    subdir('potentials/Water_Pt')
-    potentials += [water, water_pt]
+    # The kernels live in librgpot. This flag only selects the factory arms.
     _args += ['-DWITH_WATER']
 endif
 
@@ -2247,23 +2263,26 @@ if get_option('with_tests')
             depends: _case_depends,
         )
     endforeach
-    # potential_base.cpp is enough for computePt. The rest of the water
-    # library is not part of the default build.
-    test(
-        'test_compute_pt',
-        executable(
-            'test_compute_pt',
-            sources: [
-                'unit_tests/ComputePtTest.cpp',
-                'potentials/Water/potential_base.cpp',
-                'thirdparty/catch2/catch_amalgamated.cpp',
-            ],
-            include_directories: _incdirs,
-            cpp_args: test_args,
-        ),
-        timeout: 30,
-        env: _test_env,
-    )
+    if get_option('with_water')
+        test(
+            'test_water_cutover',
+            executable(
+                'test_water_cutover',
+                sources: [
+                    'unit_tests/WaterCutoverTest.cpp',
+                    'thirdparty/catch2/catch_amalgamated.cpp',
+                ],
+                include_directories: _incdirs,
+                cpp_args: test_args,
+                link_args: _linkargs,
+                dependencies: test_deps,
+                link_with: test_link,
+                build_rpath: ':'.join(_runtime_rpath),
+            ),
+            timeout: 60,
+            env: _test_env,
+        )
+    endif
     if get_option('with_xtb')
         # Timing harness for linked ship vs rgpot dlopen (not a Catch suite).
         executable(

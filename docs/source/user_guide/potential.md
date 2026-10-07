@@ -110,7 +110,7 @@ EDIP {cite:p}`pot-justoInteratomicPotentialSilicon1998`
 : Environment-Dependent Interatomic Potential, for carbon.
 
 TIP4P {cite:p}`pot-jorgensenComparisonSimplePotential1983`
-: Point charge model for water, also for water-hydrogen and water on platinum. Source builds need `-Dwith_water=true` because `with_water` defaults false.
+: Point charge model for water and for water on platinum. Source builds need `-Dwith_water=true` because `with_water` defaults false. Water with an extra hydrogen is the Fortran kernel and follows `with_fortran`.
 
 SPCE {cite:p}`pot-berendsenMissingTermEffective1987`
 : Extended simple point charge model for water. Source builds need `-Dwith_water=true` because `with_water` defaults false.

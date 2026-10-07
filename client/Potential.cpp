@@ -98,10 +98,7 @@
 #endif
 
 #ifdef WITH_WATER
-#include "eon/potentials/Water/Water.hpp"
-#ifdef WITH_FORTRAN
-#endif
-#include "eon/potentials/Water_Pt/Tip4p_Pt.hpp"
+#include "rgpot/Water/WaterPots.hpp"
 #endif
 
 // Should respect Fortran availability
@@ -291,24 +288,27 @@ std::unique_ptr<Potential> makePotential(PotType ptype,
 #endif
 #ifdef WITH_WATER
   case PotType::TIP4P: {
-    return (std::make_unique<Tip4p>(params));
+    return makeRgpot<rgpot::TIP4PPot>(PotType::TIP4P, params,
+                                      rgpot::WaterConfig{});
     break;
   }
   case PotType::SPCE: {
-    return (std::make_unique<SpceCcl>(params));
+    return makeRgpot<rgpot::SPCEPot>(PotType::SPCE, params,
+                                     rgpot::WaterConfig{});
     break;
   }
-#ifdef WITH_FORTRAN
   case PotType::TIP4P_PT: {
-    return (std::make_unique<Tip4p_Pt>(params));
+    return makeRgpot<rgpot::TIP4PPtPot>(PotType::TIP4P_PT, params,
+                                        rgpot::WaterConfig{});
     break;
   }
+#endif
+#ifdef WITH_FORTRAN
   case PotType::TIP4P_H: {
     return makeRgpotDefault<rgpot::fortranpots::WaterHPot>(PotType::TIP4P_H,
                                                            params);
     break;
   }
-#endif
 #endif
   // Fortran potentials: always available, loaded at runtime via dlopen
   case PotType::EAM_AL: {

@@ -1,0 +1,1 @@
+TIP4P, SPC/E and water on platinum call the rgpot kernels. Source builds still pass `-Dwith_water=true`, and that option still defaults false. Water with an extra hydrogen stays on the Fortran kernel.
