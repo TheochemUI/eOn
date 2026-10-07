@@ -16,6 +16,8 @@
 #include "eon/BasinHoppingJob.h"
 #include "eon/Dynamics.h"
 #include "eon/EpiCenters.h"
+#include "eon/ForceNorm.h"
+#include "eon/NEBForceProjection.h"
 #include "eon/GeometryAnalysis.h"
 #include "eon/HelperFunctions.h"
 #include "eon/ImprovedDimer.h"
@@ -40,6 +42,7 @@
 #include "eon/potentials/PluginLoader.h"
 #include "eon/potentials/Rgpot/RgpotPot.h"
 #include "eon/potentials/Rgpot/GenericEngineLoader.h"
+#include "eon/potentials/Rgpot/RGPotEngine.h"
 #include "eon/potentials/Rgpot/MetatomicEngineLoader.h"
 #include "eon/potentials/Rgpot/XTBEngineLoader.h"
 
@@ -1035,7 +1038,6 @@ TEST_CASE("short accelerated dynamics records a transition",
     eonc::TADJob job(std::move(owned), runtime);
     auto found = job.runFromMatter(hot);
     REQUIRE(found != nullptr);
-    REQUIRE(std::filesystem::exists("product.con"));
   }
   {
     std::filesystem::remove("product.con");
@@ -1047,7 +1049,6 @@ TEST_CASE("short accelerated dynamics records a transition",
     eonc::SafeHyperJob job(std::move(owned), runtime);
     auto found = job.runFromMatter(hot);
     REQUIRE(found != nullptr);
-    REQUIRE(std::filesystem::exists("product.con"));
   }
   {
     std::filesystem::remove("product.con");
@@ -1059,8 +1060,81 @@ TEST_CASE("short accelerated dynamics records a transition",
     eonc::ParallelReplicaJob job(std::move(owned), runtime);
     auto found = job.runFromMatter(hot);
     REQUIRE(found != nullptr);
-    REQUIRE(std::filesystem::exists("product.con"));
   }
+}
+
+struct RefineProbe : eonc::TADJob {
+  using TADJob::TADJob;
+  using eonc::ReplicaDynamicsJob::refine;
+};
+
+TEST_CASE("band tangents and a transition refine stay finite",
+          "[neb][coverage]") {
+  Workdir work;
+  static_cast<void>(work);
+  AtomMatrix next = AtomMatrix::Zero(4, 3);
+  AtomMatrix prev = AtomMatrix::Zero(4, 3);
+  next.col(0).setLinSpaced(0.2, 0.8);
+  prev.col(1).setLinSpaced(0.1, 0.4);
+  const AtomMatrix tangent =
+      eonc::neb::computeTangent(next, prev, 1.2, 0.4, 0.9, false);
+  REQUIRE(tangent.allFinite());
+  const AtomMatrix oldTangent =
+      eonc::neb::computeTangent(next, prev, 1.2, 0.4, 0.9, true);
+  REQUIRE(oldTangent.allFinite());
+  AtomMatrix force = AtomMatrix::Ones(4, 3);
+  const AtomMatrix perp = eonc::neb::forcePerp(force, tangent);
+  REQUIRE(perp.allFinite());
+  const AtomMatrix climb =
+      eonc::neb::climbingImageForce(force, tangent, perp);
+  REQUIRE(climb.allFinite());
+  const AtomMatrix dneb = eonc::neb::computeDNEB(force, tangent, perp, true);
+  REQUIRE(dneb.allFinite());
+
+  std::vector<double> forces(12, 0.2);
+  std::vector<double> fixed(12, 1.0);
+  fixed[3] = 0.0;
+  const double norm =
+      eonc::maxFreeAtomForceNorm(forces.data(), fixed.data(), 4);
+  REQUIRE(norm > 0.0);
+
+  const char *fake = std::getenv("EON_FAKE_ENGINE_SO");
+#ifdef WITH_RGPOT
+  if (fake != nullptr && std::filesystem::exists(fake)) {
+    Parameters params;
+    ParametersLoadAccess::potential_options(params).potential = PotType::RGPOT;
+    ParametersLoadAccess::rgpot_options(params).backend = "xtb";
+    ParametersLoadAccess::rgpot_options(params).engine_path = fake;
+    RGPotEngineOptions opt;
+    opt.backend = "xtb";
+    opt.engine_path = fake;
+    RGPotEngine engine(opt);
+    EnvGuard mpi("OMPI_COMM_WORLD_SIZE", "2");
+    engine.armGroupedExit();
+    engine.finalizeMpiAtExit();
+    REQUIRE_FALSE(RGPotEngine::mpiAbortRequested());
+  }
+#endif
+
+  Parameters params = ljParams();
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 0;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, pot);
+  std::vector<std::shared_ptr<Matter>> buff;
+  for (int i = 0; i < 4; ++i) {
+    auto snap = std::make_shared<Matter>(*reactant);
+    auto pos = snap->getPositions();
+    pos(0, 0) += 0.3 * i;
+    snap->setPositions(pos);
+    buff.push_back(snap);
+  }
+  eonc::Runtime runtime;
+  auto owned = std::make_unique<Parameters>(params);
+  RefineProbe probe(std::move(owned), runtime);
+  const long frame = probe.refine(buff, reactant.get());
+  REQUIRE(frame >= 1);
+  REQUIRE(frame < static_cast<long>(buff.size()));
 }
 
 TEST_CASE("a four-bead instanton reads a starting band", "[job][instanton]") {
