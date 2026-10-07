@@ -1796,7 +1796,7 @@ int load_ini(INIReader &ini, Parameters &params) {
           o.friction);
     }
     o.friction_eta = ini.GetReal("Instanton", "friction_eta", o.friction_eta);
-    if (ini.KeyExists("Instanton", "friction_eta_beads")) {
+    {
       const std::string list = ini.Get("Instanton", "friction_eta_beads", "");
       o.friction_eta_beads.clear();
       size_t start = 0;
