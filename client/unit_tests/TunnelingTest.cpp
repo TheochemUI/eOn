@@ -1795,7 +1795,7 @@ TEST_CASE("A long ring takes the chain inertia instead of a dense factor",
   opt.lanczosFirst = 2;
   opt.lanczosRestart = 2;
   const RateInstanton inst =
-      optimizeRateInstanton(saddle, hs, 1.0, {}, hook, opt);
+      optimizeRateInstanton(saddle, hs, 60.0 / kHbar, {}, hook, opt);
   REQUIRE(inst.iterations >= 0);
   REQUIRE(std::isfinite(inst.ringPotential));
 }
