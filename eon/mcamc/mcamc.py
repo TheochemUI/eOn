@@ -6,13 +6,26 @@ import logging
 logger = logging.getLogger('mcamc')
 
 
+def _numpy_condition(Q, R):
+    rates = np.asarray(Q, dtype=float) + 0.0
+    exits = np.asarray(R, dtype=float)
+    scale = rates.sum(axis=1) + exits.sum(axis=1)
+    scale = np.where(scale == 0.0, 1.0, scale)
+    rates = rates / scale[:, None]
+    transient = np.eye(rates.shape[0]) - rates
+    return float(np.linalg.cond(transient))
+
+
 def estimate_condition(Q, R):
-    Qflat = list(Q.ravel())
+    native = globals().get("libmcamc")
+    if native is None:
+        return _numpy_condition(Q, R)
+    Qflat = list(np.asarray(Q, dtype=float).ravel())
     Qflat = (ctypes.c_double * len(Qflat))(*Qflat)
-    Rflat = list(R.ravel())
+    Rflat = list(np.asarray(R, dtype=float).ravel())
     Rflat = (ctypes.c_double * len(Rflat))(*Rflat)
-    libmcamc.estimate_condition.restype = ctypes.c_double
-    return libmcamc.estimate_condition(Q.shape[0], Qflat, R.shape[1], Rflat)
+    native.estimate_condition.restype = ctypes.c_double
+    return native.estimate_condition(Q.shape[0], Qflat, R.shape[1], Rflat)
 
 
 def guess_precision(Q, R):
