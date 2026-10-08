@@ -301,10 +301,15 @@ def insert(state, process_id, config) -> bool:
     except Exception:
         logger.exception("saddle frame did not take the mode")
         return False
+    # The mode lives on the catalog row. A corpus that rejects the
+    # displacements section still stores the saddle geometry.
+    saddle_for_corpus = saddle_text
+    if store_frame_text(saddle_path, saddle_text) is None:
+        saddle_for_corpus = saddle_path.read_text()
     keys = []
     for path, text in (
         (reactant_path, reactant_text),
-        (saddle_path, saddle_text),
+        (saddle_path, saddle_for_corpus),
         (product_path, product_text),
     ):
         key = store_frame_text(path, text)
