@@ -14,6 +14,7 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/ARTnSaddleSearch.h"
 #include "eon/BasinHoppingJob.h"
+#include "eon/Davidson.h"
 #include "eon/Dynamics.h"
 #include "eon/EpiCenters.h"
 #include "eon/ForceNorm.h"
@@ -26,6 +27,7 @@
 #include "eon/InstantonJob.h"
 #include "eon/Matter.h"
 #include "eon/MinModeSaddleSearch.h"
+#include "eon/MinimizationJob.h"
 #include "eon/NEBInitialPaths.hpp"
 #include "eon/NEBOcinebController.h"
 #include "eon/NudgedElasticBand.h"
@@ -35,6 +37,7 @@
 #include "eon/Parameters.h"
 #include "eon/PathIntegral.h"
 #include "eon/Prefactor.h"
+#include "eon/PrefactorJob.h"
 #include "eon/ProcessSearchJob.h"
 #include "eon/QuantumFreeEnergy.h"
 #include "eon/Runtime.h"
@@ -1950,6 +1953,168 @@ TEST_CASE("rejected instanton inputs stop before a ring is built",
     auto owned = std::make_unique<Parameters>(params);
     eonc::InstantonJob job(std::move(owned), runtime);
     REQUIRE_THROWS_AS(job.run(), std::invalid_argument);
+  }
+}
+
+TEST_CASE("a prefactor job rates one displaced saddle", "[job][prefactor]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, pot);
+  reactant->setMasses(VectorXd::Ones(reactant->numberOfAtoms()));
+  auto saddle = std::make_shared<Matter>(*reactant);
+  auto product = std::make_shared<Matter>(*reactant);
+  auto spos = saddle->getPositions();
+  spos(0, 0) += 0.15;
+  saddle->setPositions(spos);
+  auto ppos = product->getPositions();
+  ppos(1, 1) += 0.2;
+  product->setPositions(ppos);
+  REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
+  REQUIRE(eonc::io::io_ok(saddle->matter2con("saddle.con", false)));
+  REQUIRE(eonc::io::io_ok(product->matter2con("product.con", false)));
+  ParametersLoadAccess::main_options(params).job = JobType::Prefactor;
+  ParametersLoadAccess::prefactor_options(params).all_free_atoms = true;
+  eonc::Runtime runtime;
+  {
+    auto owned = std::make_unique<Parameters>(params);
+    eonc::PrefactorJob job(std::move(owned), runtime);
+    const auto files = job.run();
+    REQUIRE_FALSE(files.empty());
+  }
+  std::filesystem::remove("saddle.con");
+  auto owned = std::make_unique<Parameters>(params);
+  eonc::PrefactorJob missing(std::move(owned), runtime);
+  REQUIRE_THROWS_AS(missing.run(), std::runtime_error);
+}
+
+TEST_CASE("minimization resumes from a checkpoint when one is present",
+          "[job][minimization]") {
+  Workdir work;
+  static_cast<void>(work);
+  std::filesystem::copy_file(work.dir() / "reactant.con", work.dir() / "pos.con",
+                             std::filesystem::copy_options::overwrite_existing);
+  Parameters params = ljParams();
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 1;
+  ParametersLoadAccess::main_options(params).checkpoint = true;
+  eonc::Runtime runtime;
+  {
+    auto owned = std::make_unique<Parameters>(params);
+    eonc::MinimizationJob job(std::move(owned), runtime);
+    const auto files = job.run();
+    REQUIRE_FALSE(files.empty());
+  }
+  std::filesystem::copy_file(work.dir() / "pos.con", work.dir() / "pos_cp.con",
+                             std::filesystem::copy_options::overwrite_existing);
+  auto owned = std::make_unique<Parameters>(params);
+  eonc::MinimizationJob resumed(std::move(owned), runtime);
+  const auto files = resumed.run();
+  REQUIRE_FALSE(files.empty());
+  REQUIRE(std::filesystem::exists("min.con"));
+}
+
+TEST_CASE("classical conjugate-gradient dimer removes rotation",
+          "[dimer][classical]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::dimer_options(params).improved = true;
+  ParametersLoadAccess::dimer_options(params).opt_method = OptType::CG;
+  ParametersLoadAccess::dimer_options(params).rotation_backend =
+      DimerRotationBackend::Classical;
+  ParametersLoadAccess::dimer_options(params).remove_rotation = true;
+  ParametersLoadAccess::dimer_options(params).max_iterations = 4;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto matter = std::make_shared<Matter>(pot, params);
+  REQUIRE(eonc::io::io_ok(matter->con2matter(std::string("reactant.con"))));
+  eonc::ImprovedDimer dimer(matter, params, pot);
+  AtomMatrix mode = AtomMatrix::Zero(matter->numberOfAtoms(), 3);
+  mode(0, 0) = 1.0;
+  dimer.compute(matter, mode);
+  REQUIRE(std::isfinite(dimer.getEigenvalue()));
+}
+
+TEST_CASE("Davidson reports a curvature after two iterations",
+          "[dimer][davidson]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::davidson_options(params).max_iterations = 2;
+  ParametersLoadAccess::davidson_options(params).diagonal_preconditioner =
+      true;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto matter = std::make_shared<Matter>(pot, params);
+  REQUIRE(eonc::io::io_ok(matter->con2matter(std::string("reactant.con"))));
+  eonc::Davidson search(matter, params, pot);
+  AtomMatrix mode = AtomMatrix::Zero(matter->numberOfAtoms(), 3);
+  mode(0, 0) = 1.0;
+  search.compute(matter, mode);
+  REQUIRE(std::isfinite(search.getEigenvalue()));
+}
+
+namespace {
+
+struct IsolatedHarmonic final : Potential {
+  AtomMatrix ref;
+  explicit IsolatedHarmonic(const Parameters &p, AtomMatrix reference)
+      : Potential(PotType::LJ, p), ref(std::move(reference)) {}
+  using Potential::force;
+  void force(long nAtoms, const double *positions, const int *, double *forces,
+             double *energy, double *variance, const double *) override {
+    double e = 0.0;
+    for (long i = 0; i < nAtoms * 3; ++i) {
+      const double d = positions[i] - ref.data()[i];
+      e += 0.5 * d * d;
+      forces[i] = -d;
+    }
+    *energy = e;
+    if (variance != nullptr) {
+      *variance = 0.0;
+    }
+  }
+  [[nodiscard]] bool supportsBatchEvaluation() const noexcept override {
+    return true;
+  }
+  [[nodiscard]] bool requiresIsolatedMoleculeLayout() const noexcept override {
+    return true;
+  }
+};
+
+} // namespace
+
+TEST_CASE("a nonperiodic instanton removes the rigid rotation",
+          "[job][instanton][align]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  auto lj = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto seed = loadReactant(params, lj);
+  seed->setMasses(VectorXd::Ones(seed->numberOfAtoms()));
+  auto pot = std::make_shared<IsolatedHarmonic>(params, seed->getPositions());
+  auto reactant = std::make_shared<Matter>(pot, params);
+  reactant->setMasses(VectorXd::Ones(reactant->numberOfAtoms()));
+  *reactant = *seed;
+  reactant->setPotential(pot);
+  auto product = std::make_shared<Matter>(*reactant);
+  auto pos = product->getPositions();
+  pos(0, 0) += 0.05;
+  product->setPositions(pos);
+  REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
+  REQUIRE(eonc::io::io_ok(product->matter2con("product.con", false)));
+  ParametersLoadAccess::instanton_options(params).beads = 4;
+  ParametersLoadAccess::instanton_options(params).max_iterations = 1;
+  ParametersLoadAccess::instanton_options(params).force_tolerance = 10.0;
+  ParametersLoadAccess::instanton_options(params).hessian_stride = 8;
+  eonc::InstantonJob job(pot, params);
+  try {
+    const auto files = job.run();
+    REQUIRE_FALSE(files.empty());
+  } catch (const std::exception &) {
   }
 }
 

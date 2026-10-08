@@ -147,6 +147,37 @@ TEST_CASE("enableFPE steps past a prefixed integer divide", "[fpe][prefix]") {
                : "edx", "cc");
   int marker = 7;
   REQUIRE(marker == 7);
+  asm volatile("xorl %%edx, %%edx\n\t"
+               ".byte 0x67\n\t"
+               "idivl %%ecx\n\t"
+               : "=a"(quot)
+               : "a"(num), "c"(den)
+               : "edx", "cc");
+  asm volatile("xorl %%edx, %%edx\n\t"
+               ".byte 0xf3\n\t"
+               "idivl %%ecx\n\t"
+               : "=a"(quot)
+               : "a"(num), "c"(den)
+               : "edx", "cc");
+  asm volatile("xorl %%edx, %%edx\n\t"
+               ".byte 0x48\n\t"
+               "idivl %%ecx\n\t"
+               : "=a"(quot)
+               : "a"(num), "c"(den)
+               : "edx", "cc");
+  asm volatile("xorl %%edx, %%edx\n\t"
+               ".byte 0x64\n\t"
+               "idivl %%ecx\n\t"
+               : "=a"(quot)
+               : "a"(num), "c"(den)
+               : "edx", "cc");
+  int mem = 0;
+  asm volatile("xorl %%edx, %%edx\n\t"
+               "idivl %2\n\t"
+               : "=a"(quot)
+               : "a"(num), "m"(mem)
+               : "edx", "cc");
+  REQUIRE(marker == 7);
   eonc::disableFPE();
   feclearexcept(FE_ALL_EXCEPT);
 #endif
