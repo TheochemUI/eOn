@@ -23,16 +23,18 @@ fi
 export PYTHONPATH="${ROOT}${PYTHONPATH:+:$PYTHONPATH}"
 
 echo "==> pytest eon package coverage"
+# Every module under eon/ is in the line total. The suite is tests/ and
+# eon/tests. eon/tests stays out of the percent, matching the coverage
+# ignore for that tree.
 python3 -m pytest \
-  tests/test_config_metadata.py \
-  tests/test_displacement_atom_list.py \
-  tests/test_job_runners.py \
-  eon/tests/unit/test_config_di.py \
+  tests \
+  eon/tests \
   -q --tb=short \
   --cov=eon \
   --cov-report=xml:"$ROOT/$OUT_XML" \
   --cov-report=term-missing \
-  --cov-branch
+  --cov-branch \
+  --cov-config="$ROOT/scripts/eon-coverage.cfg"
 
 test -s "$ROOT/$OUT_XML"
 python3 - "$ROOT/$OUT_XML" <<'PY'
