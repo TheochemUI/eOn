@@ -350,6 +350,8 @@ class AKMCState(state.State):
             repeats = {}
             for event in rt:
                 id = event[0]
+                if id not in all_repeats:
+                    continue
                 repeats[id] = all_repeats[id]
             # number of events
             m = len(repeats)
@@ -398,13 +400,17 @@ class AKMCState(state.State):
                 if T2_time == 0.0:
                     continue
 
-                # rates are at T1
-                rates = np.array([ p[1] for p in rt ])
-                prefactors = np.array([ p[2] for p in rt ])
+                # rates are at T1. A non-positive prefactor has no Arrhenius
+                # extrapolation and must not turn the confidence into NaN.
+                rates = np.array([ p[1] for p in rt ], dtype=float)
+                prefactors = np.array([ p[2] for p in rt ], dtype=float)
+                usable = prefactors > 0.0
+                rates = rates[usable]
+                prefactors = prefactors[usable]
                 if len(rates) == 0: return 0.0
 
                 # extrapolate to T2
-                rates_md = prefactors*(rates/prefactors)**(T1/T2)
+                rates_md = prefactors * (rates / prefactors) ** (T1 / T2)
 
                 time = T2_time*1e-15
                 C = 1.0-np.exp(-time*rates_md)
