@@ -581,14 +581,23 @@ class Dynamics:
 
         # read last lines of the file to determine iteration nr
         else:
-            f = open(self.filename,'r')
-            f.seek(0,2)	#seek to EOF
-            fsize = f.tell()
-            # seek 1024 bytes back (or to beginning of file if fsize < 1024 )
-            # last line must be contained in this block
-            f.seek( max( fsize - 1024 , 0 ) , 0)
-            lines = f.readlines()
-            self.next_step = int ( lines[-1].split()[0] ) + 1 # determine iteration nr of next step
+            with open(self.filename, "r") as handle:
+                handle.seek(0, 2)
+                fsize = handle.tell()
+                # The last step number has to sit inside this block.
+                handle.seek(max(fsize - 1024, 0), 0)
+                lines = handle.readlines()
+            step = None
+            for line in reversed(lines):
+                parts = line.split()
+                if not parts:
+                    continue
+                token = parts[0]
+                if token.lstrip("-").isdigit():
+                    step = int(token)
+                    break
+            # A header and a rule, with no steps yet, is step 0.
+            self.next_step = 0 if step is None else step + 1
 
     def append(self, reactant_id, process_id, product_id, step_time, total_time, barrier, rate, energy):
         f = open(self.filename, 'a')
@@ -609,13 +618,15 @@ class Dynamics:
         data = []
         for line in lines:
             split = line.split()
+            rate = float(split[7])
             data.append({"reactant":    int(split[1]),
                          "process":     int(split[2]),
                          "product":     int(split[3]),
                          "steptime":    float(split[4]),
                          "totaltime":   float(split[5]),
                          "barrier":     float(split[6]),
-                         "prefactor":   float(split[7])})
+                         "rate":        rate,
+                         "prefactor":   rate})
         return data
 
 def load_potfiles(pot_dir):
