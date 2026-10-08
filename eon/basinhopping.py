@@ -91,8 +91,9 @@ def basinhopping(config: ConfigClass = None):
     logger.info('Eon version: %s', version)
     # First of all, does the root directory even exist?
     if not Path(config.path_root).is_dir():
-        logger.critical("Root directory does not exist")
-        sys.exit(1)
+        raise FileNotFoundError(
+            f"root directory does not exist: {config.path_root}"
+        )
 
     # load metadata
     bhstates = BHStates(config)
@@ -150,8 +151,7 @@ def make_searches(comm, wuid, bhstates, config: ConfigClass):
             if reactIO is None:
                 reactIO = initial_react
         else:
-            logger.fatal("Initial state pool size negative")
-            sys.exit(1)
+            raise ValueError("initial state pool size is negative")
 
         search['pos.con'] = reactIO
         search['config.ini'] = io.modify_config(config.config_path, ini_changes)
