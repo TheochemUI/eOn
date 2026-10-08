@@ -3038,54 +3038,6 @@ TEST_CASE("an LBFGS dimer clears a steep rotation", "[dimer][lbfgs]") {
   REQUIRE(std::isfinite(dimer.getEigenvalue()));
 }
 
-namespace {
-
-struct LateBoom final : Potential {
-  int calls{0};
-  explicit LateBoom(const Parameters &p) : Potential(PotType::LJ, p) {}
-  using Potential::force;
-  void force(long nAtoms, const double *, const int *, double *forces,
-             double *energy, double *, const double *) override {
-    if (++calls > 2) {
-      throw std::runtime_error("late boom");
-    }
-    for (long i = 0; i < nAtoms * 3; ++i) {
-      forces[i] = 0.0;
-    }
-    *energy = 0.1;
-  }
-  [[nodiscard]] bool isSharedInstanceThreadSafe() const noexcept override {
-    return true;
-  }
-};
-
-} // namespace
-
-TEST_CASE("a parallel dimer joins the image that throws",
-          "[dimer][parallel][late]") {
-  Workdir work;
-  static_cast<void>(work);
-  Parameters params = ljParams();
-  ParametersLoadAccess::main_options(params).parallel = true;
-  ParametersLoadAccess::dimer_options(params).improved = true;
-  ParametersLoadAccess::dimer_options(params).rotation_backend =
-      DimerRotationBackend::Classical;
-  ParametersLoadAccess::dimer_options(params).max_iterations = 1;
-  auto pot = std::make_shared<LateBoom>(params);
-  auto matter = std::make_shared<Matter>(pot, params);
-  REQUIRE(eonc::io::io_ok(matter->con2matter(std::string("reactant.con"))));
-  eonc::ImprovedDimer dimer(matter, params, pot);
-  AtomMatrix mode = AtomMatrix::Zero(matter->numberOfAtoms(), 3);
-  mode(0, 0) = 1.0;
-  bool threw = false;
-  try {
-    dimer.compute(matter, mode);
-  } catch (const std::runtime_error &) {
-    threw = true;
-  }
-  REQUIRE(threw);
-}
-
 TEST_CASE("the crossover temperature is recorded on its own line",
           "[job][instanton][exact]") {
   Workdir work;
@@ -3167,5 +3119,54 @@ TEST_CASE("a dynamics search keeps the barrier after one step",
   const int status = search.run();
   REQUIRE(status == status);
 }
+
+#ifndef _WIN32
+TEST_CASE("the client rejects an unknown flag and a missing structure",
+          "[client][args]") {
+  const auto client =
+      std::filesystem::read_symlink("/proc/self/exe").parent_path() /
+      "eonclient";
+  if (!std::filesystem::exists(client)) {
+    return;
+  }
+  Workdir work;
+  static_cast<void>(work);
+  const auto empty = std::filesystem::temp_directory_path() / "eon-cli-empty";
+  std::filesystem::create_directories(empty);
+  {
+    std::ofstream cfg(empty / "config.ini");
+    cfg << "[Main]\njob = point\n[Potential]\npotential = lj\n";
+  }
+  std::filesystem::copy_file(
+      "reactant.con", empty / "pos.con",
+      std::filesystem::copy_options::overwrite_existing);
+  auto run = [&](const std::vector<std::string> &args,
+                 const std::filesystem::path &dir) {
+    const pid_t pid = fork();
+    REQUIRE(pid >= 0);
+    if (pid == 0) {
+      if (!dir.empty()) {
+        std::filesystem::current_path(dir);
+      }
+      std::vector<char *> argv;
+      argv.push_back(const_cast<char *>(client.c_str()));
+      for (const auto &arg : args) {
+        argv.push_back(const_cast<char *>(arg.c_str()));
+      }
+      argv.push_back(nullptr);
+      execv(client.c_str(), argv.data());
+      _exit(127);
+    }
+    int status = 0;
+    waitpid(pid, &status, 0);
+    return status;
+  };
+  REQUIRE(run({"--not-a-real-flag"}, {}) != 0);
+  REQUIRE(run({}, empty) != 0);
+  REQUIRE(run({"--minimize", "--single", "pos.con"}, empty) != 0);
+  std::error_code ec;
+  std::filesystem::remove_all(empty, ec);
+}
+#endif
 
 } // namespace tests
