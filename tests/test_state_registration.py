@@ -209,6 +209,27 @@ def test_explorer_records_a_bad_saddle_and_queues_a_search(tmp_path, monkeypatch
     assert "displacement.con" in comm.submitted[0]
 
 
+def test_catalog_insert_without_the_store_returns_false(tmp_path):
+    from pathlib import Path
+
+    from eon.process_catalog import insert
+
+    reactant = _atoms(2.5)
+    saddle = _atoms(2.7)
+    product = _atoms(3.1)
+    con = tmp_path / "reactant.con"
+    io.savecon(str(con), reactant)
+    cfg = _config(tmp_path)
+    cfg.kdb_path = str(tmp_path / "kdb")
+    Path(cfg.kdb_path).mkdir()
+    states = AKMCStateList(
+        300.0 / 11604.5, 20.0, 40.0, initial_state=str(con), config=cfg
+    )
+    state = states.get_state(0)
+    proc_id = state.add_process(_result(reactant, saddle, product, -0.7))
+    assert insert(state, proc_id, cfg) is False
+
+
 def test_numpy_markov_times_are_finite():
     q_matrix = np.array([[0.0, 0.1], [0.2, 0.0]])
     exit_matrix = np.array([[0.9], [0.8]])
