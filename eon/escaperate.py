@@ -27,8 +27,9 @@ def parallelreplica(config: ConfigClass = None):
     logger.info('Eon version: %s', version)
     # First of all, does the root directory even exist?
     if not Path(config.path_root).is_dir():
-        logger.critical("Root directory does not exist")
-        sys.exit(1)
+        raise FileNotFoundError(
+            f"root directory does not exist: {config.path_root}"
+        )
 
     # load metadata
     start_state_num, time, wuid = get_pr_metadata(config)
