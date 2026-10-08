@@ -2982,4 +2982,60 @@ TEST_CASE("a broken trajectory and an unknown metric are rejected",
   REQUIRE(rejected);
 }
 
+namespace {
+
+struct BoomPot final : Potential {
+  explicit BoomPot(const Parameters &p) : Potential(PotType::LJ, p) {}
+  using Potential::force;
+  void force(long, const double *, const int *, double *, double *, double *,
+             const double *) override {
+    throw std::runtime_error("boom");
+  }
+  [[nodiscard]] bool isSharedInstanceThreadSafe() const noexcept override {
+    return true;
+  }
+};
+
+} // namespace
+
+TEST_CASE("a parallel dimer reports a force thrown on both images",
+          "[dimer][parallel][throw]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::main_options(params).parallel = true;
+  ParametersLoadAccess::dimer_options(params).improved = true;
+  ParametersLoadAccess::dimer_options(params).rotation_backend =
+      DimerRotationBackend::Classical;
+  ParametersLoadAccess::dimer_options(params).max_iterations = 1;
+  auto pot = std::make_shared<BoomPot>(params);
+  auto matter = std::make_shared<Matter>(pot, params);
+  REQUIRE(eonc::io::io_ok(matter->con2matter(std::string("reactant.con"))));
+  eonc::ImprovedDimer dimer(matter, params, pot);
+  AtomMatrix mode = AtomMatrix::Zero(matter->numberOfAtoms(), 3);
+  mode(0, 0) = 1.0;
+  REQUIRE_THROWS_AS(dimer.compute(matter, mode), std::runtime_error);
+}
+
+TEST_CASE("an LBFGS dimer clears a steep rotation", "[dimer][lbfgs]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::dimer_options(params).improved = true;
+  ParametersLoadAccess::dimer_options(params).opt_method = OptType::LBFGS;
+  ParametersLoadAccess::dimer_options(params).rotation_backend =
+      DimerRotationBackend::Classical;
+  ParametersLoadAccess::dimer_options(params).rotations_max = 6;
+  ParametersLoadAccess::dimer_options(params).max_iterations = 1;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto matter = std::make_shared<Matter>(pot, params);
+  REQUIRE(eonc::io::io_ok(matter->con2matter(std::string("reactant.con"))));
+  eonc::ImprovedDimer dimer(matter, params, pot);
+  AtomMatrix mode = AtomMatrix::Zero(matter->numberOfAtoms(), 3);
+  mode(0, 0) = 1.0;
+  dimer.compute(matter, mode);
+  REQUIRE(std::isfinite(dimer.getEigenvalue()));
+}
+
 } // namespace tests
