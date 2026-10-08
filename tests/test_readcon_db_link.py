@@ -33,6 +33,7 @@ def test_wrap_revision_matches_the_python_package():
     assert "'readcon-db'" in db
     assert "subproject(\n        'readcon-db'" in meson or "subproject(\n    'readcon-db'" in meson
     assert f"'readcon-db',\n    version: '>={pin}'" in meson
+    assert "'-lreadcon_db'" not in meson
 
 
 def test_missing_library_leaves_iostatus_and_fails_the_check():

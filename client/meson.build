@@ -847,9 +847,31 @@ else
     if _readcon_db_version == ''
         _readcon_db_version = '0.1.6'
     endif
+    # A wrap fallback is already found(), and its link line is the cdylib
+    # path. A bare -lreadcon_db has no -L under the wheel's conda linker.
+    # An installed pkg-config file is kept by that same path when libdir
+    # names the shared library.
+    _readcon_db_keep = []
+    _pc_libdir = readcon_db_dep.get_variable(
+        pkgconfig: 'libdir',
+        default_value: '',
+    )
+    if _pc_libdir != ''
+        foreach _name : ['libreadcon_db.so', 'libreadcon_db.dylib']
+            _cand = _pc_libdir / _name
+            if fs.exists(_cand)
+                _readcon_db_keep = [
+                    '-Wl,--no-as-needed',
+                    _cand,
+                    '-Wl,--as-needed',
+                ]
+                break
+            endif
+        endforeach
+    endif
     readcon_db_dep = declare_dependency(
         dependencies: [readcon_db_dep],
-        link_args: ['-Wl,--no-as-needed', '-lreadcon_db', '-Wl,--as-needed'],
+        link_args: _readcon_db_keep,
         compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
     )
 endif
