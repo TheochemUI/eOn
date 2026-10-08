@@ -1658,40 +1658,40 @@ TEST_CASE("rate instanton climbs a short bead ladder", "[job][instanton]") {
   REQUIRE_FALSE(files.empty());
 }
 
-TEST_CASE("a recorded replica buffer refines the crossing",
-          "[job][replica][coverage]") {
+TEST_CASE("one climb iteration keeps the frames it wrote",
+          "[saddle_search][coverage]") {
   Workdir work;
   static_cast<void>(work);
   Parameters params = ljParams();
-  ParametersLoadAccess::dynamics_options(params).time_step = 1.0;
-  ParametersLoadAccess::dynamics_options(params).steps = 4;
-  ParametersLoadAccess::main_options(params).temperature = 800.0;
-  ParametersLoadAccess::optimizer_options(params).max_iterations = 0;
-  ParametersLoadAccess::parallel_replica_options(params).dephase_time = 0.0;
-  ParametersLoadAccess::parallel_replica_options(params).refine_transition =
-      true;
-  ParametersLoadAccess::parallel_replica_options(params).state_check_interval =
-      100.0;
-  ParametersLoadAccess::parallel_replica_options(params).record_interval = 1.0;
-  ParametersLoadAccess::structure_comparison_options(params)
-      .distance_difference = 1.0e-8;
-  ParametersLoadAccess::structure_comparison_options(params).remove_translation =
-      false;
-  ParametersLoadAccess::structure_comparison_options(params).check_rotation =
-      false;
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 1;
+  ParametersLoadAccess::dimer_options(params).max_iterations = 2;
   auto pot = eonc::helpers::sharePotential(
       eonc::helpers::makePotential(PotType::LJ, params));
-  auto hot = std::make_shared<Matter>(pot, params);
-  REQUIRE(eonc::io::io_ok(hot->con2matter(std::string("reactant.con"))));
-  hot->setMasses(VectorXd::Ones(hot->numberOfAtoms()));
-  eonc::Runtime runtime;
-  {
-    auto owned = std::make_unique<Parameters>(params);
-    eonc::ParallelReplicaJob job(std::move(owned), runtime);
-    auto found = job.runFromMatter(hot);
-    REQUIRE(found != nullptr);
-    found.reset();
-  }
+  auto matter = loadReactant(params, pot);
+  AtomMatrix mode = AtomMatrix::Zero(matter->numberOfAtoms(), 3);
+  mode(0, 0) = 1.0;
+  eonc::MinModeSaddleSearch search(matter, mode, matter->getPotentialEnergy(),
+                                   params, pot);
+  const int status = search.runRetainFrames(1);
+  REQUIRE(status != eonc::MinModeSaddleSearch::STATUS_INIT);
+  REQUIRE(std::isfinite(matter->getPotentialEnergy()));
+}
+
+TEST_CASE("a short displacement list is refused", "[io][coverage]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto matter = loadReactant(params, pot);
+  eonc::io::ConFrameMetadata meta;
+  meta.displacements.assign(3, 0.1);
+  REQUIRE_THROWS_AS(matter->matter2con("bad-disp.con", false, &meta),
+                    std::invalid_argument);
+  meta.displacements.clear();
+  meta.spreads.assign(1, 0.1);
+  REQUIRE_THROWS_AS(matter->matter2con("bad-spread.con", false, &meta),
+                    std::invalid_argument);
 }
 
 TEST_CASE("rejected parameter text names the field", "[parameters][coverage]") {
