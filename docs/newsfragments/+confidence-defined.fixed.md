@@ -1,1 +1,1 @@
-Sampling confidence treats an uncounted process as no evidence, and a zero prefactor does not make the dynamics confidence NaN.
+Sampling confidence ignores a process with no repeat count. A zero prefactor leaves the dynamics confidence finite.

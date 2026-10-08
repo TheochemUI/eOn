@@ -1,1 +1,1 @@
-An empty rate table does not count a KMC step, and the default trajectory flag stays off.
+An empty rate table does not count a kinetic Monte Carlo step. The default trajectory flag stays off.
