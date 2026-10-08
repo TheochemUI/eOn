@@ -17,6 +17,7 @@
 #include "eon/BasinHoppingJob.h"
 #include "eon/Davidson.h"
 #include "eon/Dynamics.h"
+#include "eon/DynamicsSaddleSearch.h"
 #include "eon/EpiCenters.h"
 #include "eon/ForceNorm.h"
 #include "eon/NEBForceProjection.h"
@@ -2970,7 +2971,9 @@ TEST_CASE("a broken trajectory and an unknown metric are rejected",
   ParametersLoadAccess::saddle_search_options(params).displace_type = "last_atom";
   ParametersLoadAccess::saddle_search_options(params).displace_magnitude = 0.0;
   Matter displaced(pot, params);
-  REQUIRE(eonc::helpers::applyClientDisplacement(displaced, *matter, params));
+  AtomMatrix written = AtomMatrix::Zero(matter->numberOfAtoms(), 3);
+  REQUIRE(eonc::helpers::applyClientDisplacement(displaced, *matter, params,
+                                                 &written));
   REQUIRE(displaced.numberOfAtoms() == matter->numberOfAtoms());
 }
 
