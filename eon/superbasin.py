@@ -126,6 +126,9 @@ class Superbasin:
                 else:
                     R[st2i[number], st2col[(number, id)]] += proc['rate']
 
+        if not col2st:
+            raise ValueError(f"superbasin {self.id} has no exit process")
+
         t, B, residual = mcamc(Q, R, c)
         logger.debug("residual %e" % residual)
 

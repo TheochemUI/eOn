@@ -48,9 +48,9 @@ def akmc(config: ConfigClass = None, steps=0):
 
     # First of all, does the root directory even exist?
     if not Path(config.path_root).is_dir():
-        logger.critical("Root directory does not exist, as such the " \
-                        "reactant cannot exist. Exiting...")
-        sys.exit(1)
+        raise FileNotFoundError(
+            f"root directory does not exist: {config.path_root}"
+        )
 
     # If we are saving debug results, create the directory if it does not exist.
     if config.debug_keep_all_results:
@@ -392,7 +392,9 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
 
         #criterion used to stop the job: currently an energy limit is used as criterion
         if current_state.get_energy() > config.debug_stop_criterion:
-           sys.exit()
+            raise RuntimeError(
+                f"energy {current_state.get_energy()} exceeds the stop criterion"
+            )
 
         previous_state = current_state
         current_state = next_state

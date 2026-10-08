@@ -143,7 +143,13 @@ class SB_Recycling:
         if not self.in_progress:
             self.write_metadata()
             return None, None
-        ref_state_index = [pair[1] for pair in self.sb_state_nums].index(self.current_state.number)
+        targets = [pair[1] for pair in self.sb_state_nums]
+        try:
+            ref_state_index = targets.index(self.current_state.number)
+        except ValueError as exc:
+            raise ValueError(
+                f"state {self.current_state.number} is not a recycling target"
+            ) from exc
         ref_state = self.sb_states[ref_state_index][0]
         cfg = getattr(self.states, "config", None)
         if cfg is None:
