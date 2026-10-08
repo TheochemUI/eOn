@@ -246,6 +246,9 @@ class SB_Recycling:
         # First, find the process that got us from the previous state to the current state.
         self.previous_state.load_process_table()
         ref_pid = self.get_process_id(self.previous_state.procs, self.current_state.number)
+        if ref_pid is None:
+            self.in_progress = False
+            return
         ref_rate = self.previous_state.procs[ref_pid]["rate"]
         ref_barrier = self.previous_state.procs[ref_pid]["barrier"]
         # Then, if we find a similar process from the other sb_states, which leads to a
@@ -257,7 +260,10 @@ class SB_Recycling:
             product_con = None
             for process_id in list(sb_state.procs.keys()):
                 # If the process "looks" similar -- it has a rate less than an order of magnitude different, and a barrier less than 0.2 eV different.
-                if (max(sb_state.procs[process_id]["rate"] / ref_rate, ref_rate / sb_state.procs[process_id]["rate"]) < 10
+                other_rate = sb_state.procs[process_id]["rate"]
+                if ref_rate <= 0.0 or other_rate <= 0.0:
+                    continue
+                if (max(other_rate / ref_rate, ref_rate / other_rate) < 10
                   and abs(sb_state.procs[process_id]["barrier"] - ref_barrier) < 0.2):
                     # Manually load the product.con for the process id and see if it's similar to the "state_possibility"
                     product_path = (
