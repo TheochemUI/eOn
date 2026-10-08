@@ -47,7 +47,7 @@ def parallelreplica(config: ConfigClass = None):
 
     if num_registered >= 1:
         avg_spdup = sum_spdup/num_registered
-        logger.info("Total speedup is %f",avg_spdup)
+        logger.info("Average speedup is %f", avg_spdup)
     if transition:
         #current_state, previous_state = step(time, current_state, states, transition)
         time += transition['time']
