@@ -241,3 +241,28 @@ def test_numpy_markov_times_are_finite():
     assert np.isfinite(residual)
     assert guess_precision(q_matrix, exit_matrix) in {"f", "d", "dd", "qd"}
     assert estimate_condition(q_matrix, exit_matrix) > 0.0
+
+
+def test_numpy_condition_follows_the_row_sum(monkeypatch):
+    import sys
+
+    markov = sys.modules["eon.mcamc.mcamc"]
+    # The package attribute of the same name is the solver, not this module.
+    bound = "libmcamc" in vars(markov)
+    monkeypatch.setattr(markov, "libmcamc", None, raising=False)
+    stiff = np.array([[0.0, 1.0e14], [0.0, 0.1]])
+    stiff_exit = np.array([[1.0], [0.9]])
+    cond = markov.estimate_condition(stiff, stiff_exit)
+    assert 1.0e14 < cond < 1.001e14
+    assert markov.guess_precision(stiff, stiff_exit) == "dd"
+
+    quiet = np.zeros((2, 2))
+    one_exit = np.array([[0.0], [1.0]])
+    infinite = markov.estimate_condition(quiet, one_exit)
+    assert not np.isfinite(infinite)
+    assert markov.guess_precision(quiet, one_exit) == "-"
+
+    agreed = markov.estimate_condition(np.zeros((2, 2)), np.ones((2, 1)))
+    assert agreed == pytest.approx(1.0)
+    assert markov.guess_precision(np.zeros((2, 2)), np.ones((2, 1))) == "d"
+    assert bound

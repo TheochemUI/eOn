@@ -7,25 +7,33 @@ logger = logging.getLogger('mcamc')
 
 
 def _numpy_condition(Q, R):
-    rates = np.asarray(Q, dtype=float) + 0.0
-    exits = np.asarray(R, dtype=float)
+    """Largest 1/|1 - row sum| after scaling each rate row.
+
+    The scale of a row is the sum of that row of Q and of R, the same
+    estimate the native helper uses. A zero row total is a divide by
+    zero, so the condition is infinite.
+    """
+    rates = np.array(Q, dtype=float, copy=True)
+    exits = np.array(R, dtype=float, copy=True)
     scale = rates.sum(axis=1) + exits.sum(axis=1)
-    scale = np.where(scale == 0.0, 1.0, scale)
-    rates = rates / scale[:, None]
-    transient = np.eye(rates.shape[0]) - rates
-    return float(np.linalg.cond(transient))
+    if np.any(scale == 0.0):
+        return float("inf")
+    rates /= scale[:, None]
+    gap = np.abs(1.0 - rates.sum(axis=1))
+    if np.any(gap == 0.0):
+        return float("inf")
+    return float(np.max(1.0 / gap))
 
 
 def estimate_condition(Q, R):
-    native = globals().get("libmcamc")
-    if native is None:
+    if libmcamc is None:
         return _numpy_condition(Q, R)
     Qflat = list(np.asarray(Q, dtype=float).ravel())
     Qflat = (ctypes.c_double * len(Qflat))(*Qflat)
     Rflat = list(np.asarray(R, dtype=float).ravel())
     Rflat = (ctypes.c_double * len(Rflat))(*Rflat)
-    native.estimate_condition.restype = ctypes.c_double
-    return native.estimate_condition(Q.shape[0], Qflat, R.shape[1], Rflat)
+    libmcamc.estimate_condition.restype = ctypes.c_double
+    return libmcamc.estimate_condition(Q.shape[0], Qflat, R.shape[1], Rflat)
 
 
 def guess_precision(Q, R):
@@ -90,6 +98,7 @@ def np_mcamc(Q, R, c, prec="NA"):
 
 
 libpath = join(dirname(abspath(__file__)), 'libmcamc.so')
+libmcamc = None
 try:
     libmcamc = ctypes.CDLL(libpath)
     mcamc = c_mcamc

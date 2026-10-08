@@ -91,19 +91,54 @@ def test_catalog_insert_survives_a_raised_store(tmp_path, monkeypatch):
 
 
 def test_displacement_benchmark_reads_a_configuration(tmp_path, monkeypatch, capsys):
+    from eon import atoms
     from eon import displace
 
     root = tmp_path / "bench"
     root.mkdir()
     cfg = _config(root)
+    ini = Path(cfg.config_path)
+    ini.write_text(
+        ini.read_text()
+        + "\n".join(
+            [
+                "",
+                "[Saddle Search]",
+                "displace_magnitude = 0.17",
+                "displace_radius = 2.25",
+                "",
+            ]
+        )
+    )
     con = root / "reactant.con"
     io.savecon(str(con), _atoms(2.5))
     out = root / "out.con"
+    radii = []
+    scales = []
+    real_neighbors = atoms.neighbor_list
+    real_normal = np.random.normal
+
+    def neighbors(reactant, radius, brute=False, periodic=None):
+        radii.append(float(radius))
+        return real_neighbors(reactant, radius, brute, periodic)
+
+    def normal(*args, **kwargs):
+        if "scale" in kwargs:
+            scales.append(float(kwargs["scale"]))
+        elif len(args) >= 2:
+            scales.append(float(args[1]))
+        return real_normal(*args, **kwargs)
+
+    monkeypatch.setattr(atoms, "neighbor_list", neighbors)
+    monkeypatch.setattr(np.random, "normal", normal)
     monkeypatch.setattr(
         sys,
         "argv",
-        ["displace", str(con), str(out), cfg.config_path],
+        ["displace", str(con), str(out), str(ini)],
     )
     runpy.run_path(displace.__file__, run_name="__main__")
     assert out.is_file()
     assert "displacements per second" in capsys.readouterr().out
+    assert radii == [2.25]
+    assert scales
+    assert scales == [0.17] * len(scales)
