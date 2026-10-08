@@ -23,6 +23,8 @@
 #include "eon/potentials/LAMMPS/LAMMPSPot.h"
 
 #include <cmath>
+#include <cstdlib>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <stdexcept>
@@ -92,6 +94,103 @@ TEST_CASE("a missing LAMMPS variable rejects the geometry",
   REQUIRE(energy == Catch::Approx(1.0e6));
   REQUIRE(forces[0] == Catch::Approx(1.0));
   REQUIRE(forces[3] == Catch::Approx(-1.0));
+  fs::current_path(previous);
+  std::error_code ec;
+  fs::remove_all(dir, ec);
+}
+
+void *lammpsExtractValues(void *, const char *, const char *style) {
+  if (style != nullptr && std::strcmp(style, "all") == 0) {
+    auto *values = static_cast<double *>(std::malloc(2 * sizeof(double)));
+    values[0] = 23.0609;
+    values[1] = -23.0609;
+    return values;
+  }
+  auto *value = static_cast<double *>(std::malloc(sizeof(double)));
+  *value = 23.0609;
+  return value;
+}
+
+void runLammpsForce(const eonc::Parameters &params, MockLammpsLoader &mock,
+                    const double *box) {
+  const long n = 2;
+  const double positions[6] = {0.0, 0.0, 0.0, 1.5, 0.0, 0.0};
+  const int atomic[2] = {1, 1};
+  double forces[6] = {};
+  double energy = 0.0;
+  LAMMPSPot pot(params, mock);
+  pot.force(n, positions, atomic, forces, &energy, nullptr, box);
+  REQUIRE(std::isfinite(energy));
+}
+
+TEST_CASE("real LAMMPS units convert a finite stress", "[lammps][worker][real]") {
+  namespace fs = std::filesystem;
+  const fs::path previous = fs::current_path();
+  const fs::path dir = fs::temp_directory_path() / "eon-lmp-real";
+  fs::create_directories(dir);
+  fs::current_path(dir);
+  {
+    std::ofstream input("in.lammps");
+    input << "#!units real\n";
+  }
+  MockLammpsLoader mock;
+  mock.open_no_mpi = lammpsOpenStub;
+  mock.close = lammpsCloseStub;
+  mock.command = lammpsCommandStub;
+  mock.scatter_atoms = lammpsScatterStub;
+  mock.file = lammpsFileStub;
+  mock.extract_variable = lammpsExtractValues;
+  eonc::Parameters params;
+  eonc::ParametersLoadAccess::potential_options(params).LAMMPSThreads = 2;
+  const double box[9] = {10.0, 0.0, 0.0, 0.0, 10.0, 0.0, 0.0, 0.0, 10.0};
+  runLammpsForce(params, mock, box);
+  fs::current_path(previous);
+  std::error_code ec;
+  fs::remove_all(dir, ec);
+}
+
+TEST_CASE("a tilted LAMMPS cell and a missing script reject the geometry",
+          "[lammps][worker][tilt]") {
+  namespace fs = std::filesystem;
+  const fs::path previous = fs::current_path();
+  const fs::path dir = fs::temp_directory_path() / "eon-lmp-tilt";
+  fs::create_directories(dir);
+  fs::current_path(dir);
+  {
+    std::ofstream input("in.lammps");
+    input << "pair_style none\n";
+  }
+  MockLammpsLoader mock;
+  mock.open_no_mpi = lammpsOpenStub;
+  mock.close = lammpsCloseStub;
+  mock.command = lammpsCommandStub;
+  mock.scatter_atoms = lammpsScatterStub;
+  mock.file = lammpsFileStub;
+  mock.extract_variable = lammpsExtractValues;
+  eonc::Parameters params;
+  const double tilted[9] = {10.0, 0.2, 0.0, 0.0, 10.0, 0.0, 0.0, 0.0, 10.0};
+  {
+    LAMMPSPot pot(params, mock);
+    const long n = 2;
+    const double positions[6] = {0.0, 0.0, 0.0, 1.5, 0.0, 0.0};
+    const int atomic[2] = {1, 1};
+    double forces[6] = {};
+    double energy = 0.0;
+    pot.force(n, positions, atomic, forces, &energy, nullptr, tilted);
+    REQUIRE(energy == Catch::Approx(1.0e6));
+  }
+  fs::remove("in.lammps");
+  {
+    LAMMPSPot pot(params, mock);
+    const long n = 2;
+    const double positions[6] = {0.0, 0.0, 0.0, 1.5, 0.0, 0.0};
+    const int atomic[2] = {1, 1};
+    double forces[6] = {};
+    double energy = 0.0;
+    const double box[9] = {10.0, 0.0, 0.0, 0.0, 10.0, 0.0, 0.0, 0.0, 10.0};
+    pot.force(n, positions, atomic, forces, &energy, nullptr, box);
+    REQUIRE(energy == Catch::Approx(1.0e6));
+  }
   fs::current_path(previous);
   std::error_code ec;
   fs::remove_all(dir, ec);
