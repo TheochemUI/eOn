@@ -220,6 +220,11 @@ multiplicity = 1
 That example is the scalar layer. The point, minimization, and band
 examples below keep `params_path`, which is the file layer.
 
+`examples/rgpot-point/config.ini` is the point job. It sets
+`potential = RGPOT` and `params_path` to the Si3N4 isomer message.
+`CPMDC_DECK_OUT` for that job writes `SYMMETRY` with value 1, `NEWCODE`,
+`GC-CUTOFF`, and `KLEINMAN-BYLANDER` on the Si and N pseudopotential lines.
+
 Write the message as Cap'n Proto text. The field names are in the
 [write-cpmdparams how-to](https://github.com/OmniPotentRPC/cpmdc/blob/main/docs/source/howto/write-cpmdparams.rst).
 From a cpmdc checkout, encode it:
