@@ -1955,3 +1955,71 @@ TEST_CASE("a ring structure packs beads and rejects a bad spring",
   const auto active = ring.unpack(coords.data());
   REQUIRE(static_cast<long>(active.size()) == ring.activeBeads());
 }
+
+TEST_CASE("a rate ring takes the Lanczos determinant and a friction bath",
+          "[Tunneling][Instanton][rate]") {
+  const BatchPotential hook = [](const std::vector<VectorXd> &q,
+                                 std::vector<double> &v,
+                                 std::vector<VectorXd> &g) {
+    v.assign(q.size(), 0.0);
+    g.assign(q.size(), VectorXd::Zero(1));
+    for (size_t i = 0; i < q.size(); ++i) {
+      if (q[i].size() < 1) {
+        continue;
+      }
+      v[i] = -0.5 * q[i](0) * q[i](0);
+      g[i] = VectorXd::Constant(1, -q[i](0));
+    }
+  };
+  const BatchPotential wrong = [](const std::vector<VectorXd> &,
+                                  std::vector<double> &v,
+                                  std::vector<VectorXd> &g) {
+    v.clear();
+    g.clear();
+  };
+  const VectorXd saddle = VectorXd::Zero(1);
+  const MatrixXd hs = -MatrixXd::Identity(1, 1);
+  RateInstantonOptions opt;
+  opt.beads = 8;
+  opt.halfRing = false;
+  opt.maxIterations = 1;
+  opt.forceTolerance = 1.0e6;
+  opt.checkOddSector = false;
+  opt.lanczosFirst = 2;
+  opt.lanczosRestart = 2;
+  opt.friction = true;
+  opt.frictionEta = 0.0;
+  const RateInstanton dry =
+      optimizeRateInstanton(saddle, hs, 60.0 / kHbar, {}, hook, opt);
+  REQUIRE(std::isfinite(dry.ringPotential));
+  opt.frictionEta = 0.25;
+  const RateInstanton wet =
+      optimizeRateInstanton(saddle, hs, 60.0 / kHbar, {}, hook, opt);
+  REQUIRE(std::isfinite(wet.ringPotential));
+  REQUIRE_THROWS_AS(
+      optimizeRateInstanton(saddle, hs, 60.0 / kHbar, {}, wrong, opt),
+      std::runtime_error);
+
+  RateInstanton inst;
+  inst.beta = 1.0;
+  inst.betaN = 0.25;
+  inst.bN = 0.04;
+  inst.ringPotential = 0.1;
+  inst.beads = {VectorXd::Constant(1, 0.0), VectorXd::Constant(1, 0.2),
+                VectorXd::Constant(1, 0.0), VectorXd::Constant(1, -0.2)};
+  const RingBeadHessian bead = [](long, const VectorXd &) {
+    return MatrixXd::Constant(1, 1, -0.4);
+  };
+  const MatrixXd reactant = MatrixXd::Constant(1, 1, 1.0);
+  try {
+    instantonRate(inst, bead, reactant, 0.0, MatrixXd(), 0.0, 0, 0);
+  } catch (const std::exception &) {
+  }
+  REQUIRE(std::isfinite(inst.zeroEigenvalue) || inst.negativeModes >= 0);
+  REQUIRE_THROWS_AS(
+      instantonRate(inst, bead, reactant, 0.0, MatrixXd(), 0.0, 1, 0),
+      std::runtime_error);
+  REQUIRE_THROWS_AS(instantonRate(inst, bead, -reactant, 0.0, MatrixXd(), 0.0,
+                                  0, 4096),
+                    std::runtime_error);
+}

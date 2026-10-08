@@ -2118,6 +2118,34 @@ TEST_CASE("a nonperiodic instanton removes the rigid rotation",
   }
 }
 
+TEST_CASE("an instanton refuses a fixed cluster and a missing product",
+          "[job][instanton]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, pot);
+  reactant->setMasses(VectorXd::Ones(reactant->numberOfAtoms()));
+  for (long i = 0; i < reactant->numberOfAtoms(); ++i) {
+    reactant->setFixed(i, 1);
+  }
+  REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
+  eonc::Runtime runtime;
+  {
+    auto owned = std::make_unique<Parameters>(params);
+    eonc::InstantonJob job(std::move(owned), runtime);
+    REQUIRE_THROWS_AS(job.run(), std::invalid_argument);
+  }
+  for (long i = 0; i < reactant->numberOfAtoms(); ++i) {
+    reactant->setFixed(i, 0);
+  }
+  REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
+  auto owned = std::make_unique<Parameters>(params);
+  eonc::InstantonJob job(std::move(owned), runtime);
+  REQUIRE_THROWS_AS(job.run(), std::runtime_error);
+}
+
 TEST_CASE("a short band seeds a rate and a ladder when the orbit fails",
           "[job][instanton][ladder]") {
   Workdir work;
