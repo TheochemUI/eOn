@@ -199,8 +199,10 @@ class ASKMC:
         elif flag == "find":
             for process_id in list(current_state_procs.keys()):
                 if current_state_procs[process_id]["product"] == next_state_num:
-                    next_state_process_id = process_id
-                    break
+                    return process_id
+            raise KeyError(f"no process to state {next_state_num}")
+        else:
+            raise ValueError(f"unknown process lookup {flag}")
         return next_state_process_id
 
     def register_transition(self, current_state, next_state):
