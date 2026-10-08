@@ -2914,4 +2914,34 @@ TEST_CASE("a bare path is evaluated and the crossover temperature is recorded",
   REQUIRE(std::filesystem::exists("results.dat"));
 }
 
+TEST_CASE("a broken trajectory and an unknown metric are rejected",
+          "[io][optim][metric]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto matter = loadReactant(params, pot);
+  {
+    std::ofstream broken("broken.con.gz");
+    broken << "not a compressed trajectory\n";
+  }
+  REQUIRE(matter->matter2con("broken.con.gz", true) ==
+          eonc::io::IoStatus::AppendError);
+  {
+    std::ofstream broken("broken.con");
+    broken << "not a con file\n";
+  }
+  REQUIRE(matter->matter2con("broken.con", true) ==
+          eonc::io::IoStatus::AppendError);
+
+  matter->setFixed(1, 1);
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 1;
+  ParametersLoadAccess::optimizer_options(params).convergence_metric = "rms";
+  matter->relax(false, false);
+
+  ParametersLoadAccess::optimizer_options(params).convergence_metric = "banana";
+  REQUIRE_THROWS_AS(matter->relax(false, false), std::invalid_argument);
+}
+
 } // namespace tests
