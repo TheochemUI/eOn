@@ -3038,4 +3038,103 @@ TEST_CASE("an LBFGS dimer clears a steep rotation", "[dimer][lbfgs]") {
   REQUIRE(std::isfinite(dimer.getEigenvalue()));
 }
 
+namespace {
+
+struct LateBoom final : Potential {
+  int calls{0};
+  explicit LateBoom(const Parameters &p) : Potential(PotType::LJ, p) {}
+  using Potential::force;
+  void force(long nAtoms, const double *, const int *, double *forces,
+             double *energy, double *, const double *) override {
+    if (++calls > 2) {
+      throw std::runtime_error("late boom");
+    }
+    for (long i = 0; i < nAtoms * 3; ++i) {
+      forces[i] = 0.0;
+    }
+    *energy = 0.1;
+  }
+  [[nodiscard]] bool isSharedInstanceThreadSafe() const noexcept override {
+    return true;
+  }
+};
+
+} // namespace
+
+TEST_CASE("a parallel dimer joins the image that throws",
+          "[dimer][parallel][late]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::main_options(params).parallel = true;
+  ParametersLoadAccess::dimer_options(params).improved = true;
+  ParametersLoadAccess::dimer_options(params).rotation_backend =
+      DimerRotationBackend::Classical;
+  ParametersLoadAccess::dimer_options(params).max_iterations = 1;
+  auto pot = std::make_shared<LateBoom>(params);
+  auto matter = std::make_shared<Matter>(pot, params);
+  REQUIRE(eonc::io::io_ok(matter->con2matter(std::string("reactant.con"))));
+  eonc::ImprovedDimer dimer(matter, params, pot);
+  AtomMatrix mode = AtomMatrix::Zero(matter->numberOfAtoms(), 3);
+  mode(0, 0) = 1.0;
+  bool threw = false;
+  try {
+    dimer.compute(matter, mode);
+  } catch (const std::runtime_error &) {
+    threw = true;
+  }
+  REQUIRE(threw);
+}
+
+TEST_CASE("the crossover temperature is recorded on its own line",
+          "[job][instanton][exact]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, pot);
+  reactant->setMasses(VectorXd::Ones(reactant->numberOfAtoms()));
+  auto saddle = std::make_shared<Matter>(*reactant);
+  auto pos = saddle->getPositions();
+  pos(0, 0) += 0.8;
+  saddle->setPositions(pos);
+  REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
+  REQUIRE(eonc::io::io_ok(saddle->matter2con("saddle.con", false)));
+  ParametersLoadAccess::instanton_options(params).mode = "rate";
+  ParametersLoadAccess::instanton_options(params).temperature = 200.0;
+  ParametersLoadAccess::instanton_options(params).beads = 4;
+  ParametersLoadAccess::instanton_options(params).max_iterations = 1;
+  ParametersLoadAccess::instanton_options(params).force_tolerance = 10.0;
+  eonc::InstantonJob first(pot, params);
+  try {
+    static_cast<void>(first.run());
+  } catch (const std::exception &) {
+  }
+  double tc = 0.0;
+  {
+    std::ifstream in("results.dat");
+    std::string line;
+    while (std::getline(in, line)) {
+      const auto key = line.find("instanton_crossover_K");
+      if (key == std::string::npos) {
+        continue;
+      }
+      const auto eq = line.find_first_of("= ", key);
+      if (eq != std::string::npos) {
+        tc = std::strtod(line.c_str() + eq + 1, nullptr);
+      }
+    }
+  }
+  REQUIRE(tc > 0.0);
+  ParametersLoadAccess::instanton_options(params).temperatures = {tc};
+  ParametersLoadAccess::instanton_options(params).temperature = tc;
+  eonc::InstantonJob second(pot, params);
+  try {
+    static_cast<void>(second.run());
+  } catch (const std::exception &) {
+  }
+  REQUIRE(std::filesystem::exists("results.dat"));
+}
+
 } // namespace tests
