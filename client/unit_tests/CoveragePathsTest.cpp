@@ -1953,6 +1953,38 @@ TEST_CASE("rejected instanton inputs stop before a ring is built",
   }
 }
 
+TEST_CASE("one hyperplane sample stays finite", "[job][oh_tst]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, pot);
+  reactant->setMasses(VectorXd::Ones(reactant->numberOfAtoms()));
+  auto product = std::make_shared<Matter>(*reactant);
+  auto pos = product->getPositions();
+  pos(0, 0) += 0.3;
+  product->setPositions(pos);
+  REQUIRE(eonc::io::io_ok(reactant->matter2con("pos.con", false)));
+  REQUIRE(eonc::io::io_ok(product->matter2con("product.con", false)));
+  ParametersLoadAccess::main_options(params).job = JobType::OH_TST;
+  ParametersLoadAccess::main_options(params).temperature = 300.0;
+  ParametersLoadAccess::oh_tst_options(params).equil_steps = 0;
+  ParametersLoadAccess::oh_tst_options(params).sample_steps = 2;
+  ParametersLoadAccess::oh_tst_options(params).reactant_md_steps = 1;
+  ParametersLoadAccess::oh_tst_options(params).max_planes = 1;
+  ParametersLoadAccess::oh_tst_options(params).pmf_scan = true;
+  ParametersLoadAccess::oh_tst_options(params).scan_planes = 2;
+  eonc::Runtime runtime;
+  auto owned = std::make_unique<Parameters>(params);
+  eonc::OHTSTJob job(std::move(owned), runtime);
+  try {
+    const auto files = job.run();
+    REQUIRE_FALSE(files.empty());
+  } catch (const std::exception &) {
+  }
+}
+
 TEST_CASE("an unknown displacement algorithm is rejected",
           "[job][basin_hopping]") {
   Workdir work;
