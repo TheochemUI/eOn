@@ -9,6 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+#include "eon/RingPolymerPotential.h"
 #include "eon/Tunneling.h"
 #include "EckartBarrier.hpp"
 #include "TestUtils.hpp"
@@ -1898,4 +1899,59 @@ TEST_CASE("instanton checks reject a short path and a bad friction list",
     instantonRate(bare, bead, MatrixXd::Identity(1, 1), 0.0);
   } catch (const std::exception &) {
   }
+}
+
+TEST_CASE("a ring structure packs beads and rejects a bad spring",
+          "[Tunneling][Ring]") {
+  const BatchPotential hook = [](const std::vector<VectorXd> &q,
+                                 std::vector<double> &v,
+                                 std::vector<VectorXd> &g) {
+    v.resize(q.size());
+    g.resize(q.size());
+    for (size_t i = 0; i < q.size(); ++i) {
+      v[i] = 0.5 * q[i].squaredNorm();
+      g[i] = q[i];
+    }
+  };
+  const VectorXd mode = VectorXd::Ones(1);
+  REQUIRE_THROWS_AS(RingPolymerPotential(hook, 4, 1, 0.0, 0.0, {}, false, mode),
+                    std::invalid_argument);
+  REQUIRE_THROWS_AS(RingPolymerPotential(hook, 3, 1, 1.0, 0.0, {}, false, mode),
+                    std::invalid_argument);
+  REQUIRE_THROWS_AS(RingPolymerPotential(hook, 5, 1, 1.0, 0.0, {}, true, mode),
+                    std::invalid_argument);
+
+  RingPolymerPotential ring(hook, 4, 1, 1.0, 0.0, {0.1}, false, mode);
+  REQUIRE(ring.structureAtoms() > 0);
+  std::vector<double> coords(static_cast<size_t>(3 * ring.structureAtoms()),
+                             0.0);
+  std::vector<double> forces(coords.size(), 0.0);
+  double energy = 0.0;
+  double variance = 0.0;
+  ring.force(ring.structureAtoms(), coords.data(), nullptr, forces.data(),
+             &energy, &variance, nullptr);
+  REQUIRE(std::isfinite(energy));
+
+  std::vector<double> coords2 = coords;
+  coords2[0] = 0.2;
+  const double *pos[2] = {coords.data(), coords2.data()};
+  double *frc[2] = {forces.data(), forces.data()};
+  double energies[2] = {};
+  double variances[2] = {};
+  ring.forceBatch(2, ring.structureAtoms(), pos, nullptr, frc, energies,
+                  variances, nullptr);
+  REQUIRE(std::isfinite(energies[0]));
+  REQUIRE(std::isfinite(energies[1]));
+
+  REQUIRE_THROWS_AS(ring.unpack(nullptr), std::invalid_argument);
+  REQUIRE_THROWS_AS(ring.packActive({}, coords.data()), std::invalid_argument);
+  AtomMatrix bad(1, 3);
+  REQUIRE_THROWS_AS(ring.packMode(mode, bad), std::invalid_argument);
+  AtomMatrix packed(ring.structureAtoms(), 3);
+  REQUIRE_THROWS_AS(ring.packMode(VectorXd::Zero(1), packed),
+                    std::invalid_argument);
+  ring.packMode(mode, packed);
+  REQUIRE(packed.norm() == Catch::Approx(1.0));
+  const auto active = ring.unpack(coords.data());
+  REQUIRE(static_cast<long>(active.size()) == ring.activeBeads());
 }
