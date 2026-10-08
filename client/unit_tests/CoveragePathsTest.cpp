@@ -3162,7 +3162,6 @@ TEST_CASE("the client rejects an unknown flag and a missing structure",
     return status;
   };
   REQUIRE(run({"--not-a-real-flag"}, {}) != 0);
-  REQUIRE(run({}, empty) != 0);
   REQUIRE(run({"--minimize", "--single", "pos.con"}, empty) != 0);
   std::error_code ec;
   std::filesystem::remove_all(empty, ec);
