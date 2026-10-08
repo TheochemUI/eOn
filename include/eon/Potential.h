@@ -48,6 +48,7 @@ protected:
 
 private:
   IPotRegistry &registry_;
+  std::shared_ptr<RegistryLifetime> lifetime_;
   uint64_t m_registry_id;
   IPotRegistry::TimePoint m_created_at;
   bool force_serial_{false};
@@ -60,7 +61,7 @@ public:
 
   /// Test seam: injected registry, no process-default get() counters.
   Potential(PotType a_ptype, IPotRegistry &registry)
-      : ptype{a_ptype}, registry_{registry},
+      : ptype{a_ptype}, registry_{registry}, lifetime_{registry.lifetime()},
         m_registry_id{registry.on_created(a_ptype)},
         m_created_at{IPotRegistry::Clock::now()}, forceCallCounter{0} {}
 
@@ -71,8 +72,12 @@ public:
   explicit Potential(const Parameters &a_params);
 
   virtual ~Potential() {
-    registry_.on_destroyed(m_registry_id, ptype, forceCallCounter,
-                           m_created_at);
+    // The registry reference dangles once its owner is gone. The lifetime
+    // flag is a separate allocation and stays readable.
+    if (lifetime_ && lifetime_->alive.load(std::memory_order_acquire)) {
+      registry_.on_destroyed(m_registry_id, ptype, forceCallCounter,
+                             m_created_at);
+    }
   }
 
   // Does not take into account the fixed / free atoms

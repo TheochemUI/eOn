@@ -1658,6 +1658,55 @@ TEST_CASE("rate instanton climbs a short bead ladder", "[job][instanton]") {
   REQUIRE_FALSE(files.empty());
 }
 
+TEST_CASE("a recorded replica buffer refines the crossing",
+          "[job][replica][coverage]") {
+  Workdir work;
+  static_cast<void>(work);
+  // The runtime owns the registry the job's potential records on. It has
+  // to outlive every Matter that setPotential() pointed at that potential.
+  eonc::Runtime runtime;
+  Parameters params = ljParams();
+  ParametersLoadAccess::dynamics_options(params).time_step = 1.0;
+  ParametersLoadAccess::dynamics_options(params).steps = 4;
+  ParametersLoadAccess::main_options(params).temperature = 800.0;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 0;
+  ParametersLoadAccess::parallel_replica_options(params).dephase_time = 0.0;
+  ParametersLoadAccess::parallel_replica_options(params).refine_transition =
+      true;
+  ParametersLoadAccess::parallel_replica_options(params).state_check_interval =
+      100.0;
+  ParametersLoadAccess::parallel_replica_options(params).record_interval = 1.0;
+  ParametersLoadAccess::structure_comparison_options(params)
+      .distance_difference = 1.0e-8;
+  ParametersLoadAccess::structure_comparison_options(params).remove_translation =
+      false;
+  ParametersLoadAccess::structure_comparison_options(params).check_rotation =
+      false;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto hot = std::make_shared<Matter>(pot, params);
+  REQUIRE(eonc::io::io_ok(hot->con2matter(std::string("reactant.con"))));
+  hot->setMasses(VectorXd::Ones(hot->numberOfAtoms()));
+  {
+    auto owned = std::make_unique<Parameters>(params);
+    eonc::ParallelReplicaJob job(std::move(owned), runtime);
+    auto found = job.runFromMatter(hot);
+    REQUIRE(found != nullptr);
+  }
+  {
+    Parameters loose = params;
+    ParametersLoadAccess::structure_comparison_options(loose)
+        .distance_difference = 100.0;
+    auto still = std::make_shared<Matter>(pot, loose);
+    REQUIRE(eonc::io::io_ok(still->con2matter(std::string("reactant.con"))));
+    still->setMasses(VectorXd::Ones(still->numberOfAtoms()));
+    auto owned = std::make_unique<Parameters>(loose);
+    eonc::ParallelReplicaJob job(std::move(owned), runtime);
+    auto found = job.runFromMatter(still);
+    REQUIRE(found != nullptr);
+  }
+}
+
 TEST_CASE("one climb iteration keeps the frames it wrote",
           "[saddle_search][coverage]") {
   Workdir work;
@@ -1686,12 +1735,12 @@ TEST_CASE("a short displacement list is refused", "[io][coverage]") {
   auto matter = loadReactant(params, pot);
   eonc::io::ConFrameMetadata meta;
   meta.displacements.assign(3, 0.1);
-  REQUIRE_THROWS_AS(matter->matter2con("bad-disp.con", false, &meta),
-                    std::invalid_argument);
+  REQUIRE(matter->matter2con("bad-disp.con", false, &meta) ==
+          eonc::io::IoStatus::InvalidArgument);
   meta.displacements.clear();
   meta.spreads.assign(1, 0.1);
-  REQUIRE_THROWS_AS(matter->matter2con("bad-spread.con", false, &meta),
-                    std::invalid_argument);
+  REQUIRE(matter->matter2con("bad-spread.con", false, &meta) ==
+          eonc::io::IoStatus::InvalidArgument);
 }
 
 TEST_CASE("rejected parameter text names the field", "[parameters][coverage]") {

@@ -15,11 +15,18 @@
 #include <array>
 #include <atomic>
 #include <chrono>
+#include <memory>
 #include <mutex>
 #include <string>
 #include <vector>
 
 namespace eonc {
+
+/// Outlives the registry object. A Potential copies this pointer and
+/// skips on_destroyed once the registry has started to tear down.
+struct RegistryLifetime {
+  std::atomic<bool> alive{true};
+};
 
 // ---------------------------------------------------------------------------
 // IPotRegistry: injectable ABI. Production uses PotRegistry::get().
@@ -29,7 +36,14 @@ public:
   using Clock = std::chrono::system_clock;
   using TimePoint = Clock::time_point;
 
-  virtual ~IPotRegistry() = default;
+  virtual ~IPotRegistry() {
+    if (lifetime_)
+      lifetime_->alive.store(false, std::memory_order_release);
+  }
+
+  [[nodiscard]] std::shared_ptr<RegistryLifetime> lifetime() const {
+    return lifetime_;
+  }
   [[nodiscard]] virtual uint64_t on_created(PotType t) noexcept = 0;
   virtual void on_destroyed(uint64_t id, PotType t, size_t force_calls,
                             TimePoint created_at) = 0;
@@ -40,6 +54,9 @@ public:
 
 protected:
   IPotRegistry() = default;
+
+  std::shared_ptr<RegistryLifetime> lifetime_{
+      std::make_shared<RegistryLifetime>()};
 };
 
 class PotRegistry : public IPotRegistry {
@@ -70,6 +87,12 @@ private:
 
 public:
   PotRegistry() = default;
+  ~PotRegistry() override {
+    // Members are still intact. Mark the registry dead before they go,
+    // so a Potential destroyed from here does not lock a dead mutex.
+    if (lifetime_)
+      lifetime_->alive.store(false, std::memory_order_release);
+  }
 
   /// Process-lifetime singleton. The instance is allocated on the heap
   /// and never destroyed, so Potential destructors can still record

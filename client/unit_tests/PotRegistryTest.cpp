@@ -12,8 +12,10 @@
 
 #include "eon/PotRegistry.h"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/HelperFunctions.h"
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
+#include "eon/Runtime.h"
 #include <fstream>
 #include <memory>
 
@@ -295,4 +297,18 @@ TEST_CASE("PotRegistry instance records capture correct force_calls",
 
   REQUIRE(content.find("\"force_calls\": 5") != std::string::npos);
   REQUIRE(content.find("\"force_calls\": 0") != std::string::npos);
+}
+
+TEST_CASE("a potential outlives the runtime that recorded it",
+          "[PotRegistry][lifetime]") {
+  std::unique_ptr<Potential> held;
+  {
+    Runtime runtime;
+    Parameters params;
+    ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+    held = helpers::makePotential(PotType::LJ, params, runtime);
+    REQUIRE(held != nullptr);
+  }
+  held.reset();
+  REQUIRE(held == nullptr);
 }
