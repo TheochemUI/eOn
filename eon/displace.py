@@ -205,10 +205,6 @@ class DisplacementManager:
         raise DisplaceError()
 
 
-class NotImplementedError(Exception):
-    pass
-
-
 class DisplaceError(Exception):
     pass
 
@@ -250,7 +246,7 @@ class Displace:
         displacement_norm = 0.0
         displacement = np.zeros(self.reactant.r.shape)
         if hasattr(atom_index, "__getitem__"):
-            logger.debug("Displacement epicenters: ", atom_index)
+            logger.debug("Displacement epicenters: %s", atom_index)
             neighbors = [
                 self.neighbors_list[i]
                 for i in range(len(self.neighbors_list))
@@ -301,15 +297,15 @@ class Displace:
                         np.linalg.norm(vec) + 1e-6
                     )  # I just want to prevent NaNs in perfectly symmetric situations
                     pseudoelectrostatic_force[atom_index] += -vec / (mag**3)
-            # now we norm it for mixing
-            void_vec = pseudoelectrostatic_force / np.linalg.norm(
-                pseudoelectrostatic_force
-            )
-
-            displacement = (
-                self.void_bias_fraction * displacement_norm * void_vec
-                + (1 - self.void_bias_fraction) * displacement
-            )
+            # A symmetric shell cancels. Dividing by that norm writes NaN
+            # into the mode, so the bias is skipped when there is no direction.
+            force_norm = np.linalg.norm(pseudoelectrostatic_force)
+            if force_norm > 0.0:
+                void_vec = pseudoelectrostatic_force / force_norm
+                displacement = (
+                    self.void_bias_fraction * displacement_norm * void_vec
+                    + (1.0 - self.void_bias_fraction) * displacement
+                )
 
         displacement_atoms = self.reactant.copy()
         displacement_atoms.r += displacement
