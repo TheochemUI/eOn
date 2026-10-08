@@ -34,6 +34,7 @@
 #include "eon/ParallelReplicaJob.h"
 #include "eon/Parameters.h"
 #include "eon/PathIntegral.h"
+#include "eon/Prefactor.h"
 #include "eon/ProcessSearchJob.h"
 #include "eon/QuantumFreeEnergy.h"
 #include "eon/Runtime.h"
@@ -1824,6 +1825,24 @@ TEST_CASE("an instanton batches every bead of one iteration",
 }
 
 } // namespace
+
+TEST_CASE("a prefactor refuses a missing or unmoved endpoint",
+          "[prefactor][coverage]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto matter = loadReactant(params, pot);
+  double forward = 0.0;
+  double backward = 0.0;
+  REQUIRE(eonc::Prefactor::getPrefactors(params, nullptr, matter.get(),
+                                         matter.get(), forward,
+                                         backward) == -1);
+  REQUIRE(eonc::Prefactor::getPrefactors(params, matter.get(), matter.get(),
+                                         matter.get(), forward,
+                                         backward) == -1);
+}
 
 TEST_CASE("unknown hopping feedback stops the optimizer",
           "[job][global_opt]") {
