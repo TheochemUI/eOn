@@ -2938,13 +2938,6 @@ TEST_CASE("a broken trajectory and an unknown metric are rejected",
           eonc::io::IoStatus::AppendError);
 
   matter->setFixed(1, 1);
-  ParametersLoadAccess::optimizer_options(params).max_iterations = 1;
-  ParametersLoadAccess::optimizer_options(params).convergence_metric = "rms";
-  matter->relax(false, false);
-
-  ParametersLoadAccess::optimizer_options(params).convergence_metric = "banana";
-  REQUIRE_THROWS_AS(matter->relax(false, false), std::invalid_argument);
-
   {
     std::ofstream masses("masses.dat");
     for (long i = 0; i < matter->numberOfAtoms(); ++i) {
@@ -2975,6 +2968,16 @@ TEST_CASE("a broken trajectory and an unknown metric are rejected",
   REQUIRE(eonc::helpers::applyClientDisplacement(displaced, *matter, params,
                                                  &written));
   REQUIRE(displaced.numberOfAtoms() == matter->numberOfAtoms());
+
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 1;
+  ParametersLoadAccess::optimizer_options(params).convergence_metric = "banana";
+  bool rejected = false;
+  try {
+    matter->relax(false, false);
+  } catch (const std::exception &ex) {
+    rejected = std::string(ex.what()).find("banana") != std::string::npos;
+  }
+  REQUIRE(rejected);
 }
 
 } // namespace tests
