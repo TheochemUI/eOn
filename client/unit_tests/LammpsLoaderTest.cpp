@@ -17,6 +17,9 @@
 #include "eon/potentials/LAMMPS/LammpsLoader.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include <cstdint>
+#include <filesystem>
+#include <fstream>
 #include "eon/potentials/LAMMPS/LAMMPSPot.h"
 
 #include <cmath>
@@ -48,6 +51,50 @@ private:
   std::string err_{};
 };
 } // namespace
+
+#ifndef _WIN32
+void *lammpsOpenStub(int, char **, void **) {
+  return reinterpret_cast<void *>(static_cast<std::uintptr_t>(1));
+}
+void lammpsCloseStub(void *) {}
+char *lammpsCommandStub(void *, const char *) { return nullptr; }
+void lammpsScatterStub(void *, const char *, int, int, void *) {}
+void *lammpsExtractNull(void *, const char *, const char *) { return nullptr; }
+
+TEST_CASE("a missing LAMMPS variable rejects the geometry",
+          "[lammps][worker]") {
+  namespace fs = std::filesystem;
+  const fs::path previous = fs::current_path();
+  const fs::path dir = fs::temp_directory_path() / "eon-lmp-null";
+  fs::create_directories(dir);
+  fs::current_path(dir);
+  {
+    std::ofstream input("in.lammps");
+    input << "pair_style none\n";
+  }
+  MockLammpsLoader mock;
+  mock.open_no_mpi = lammpsOpenStub;
+  mock.close = lammpsCloseStub;
+  mock.command = lammpsCommandStub;
+  mock.scatter_atoms = lammpsScatterStub;
+  mock.extract_variable = lammpsExtractNull;
+  eonc::Parameters params;
+  LAMMPSPot pot(params, mock);
+  const long n = 2;
+  const double positions[6] = {0.0, 0.0, 0.0, 1.5, 0.0, 0.0};
+  const int atomic[2] = {1, 1};
+  double forces[6] = {};
+  double energy = 0.0;
+  const double box[9] = {10.0, 0.0, 0.0, 0.0, 10.0, 0.0, 0.0, 0.0, 10.0};
+  pot.force(n, positions, atomic, forces, &energy, nullptr, box);
+  REQUIRE(energy == Catch::Approx(1.0e6));
+  REQUIRE(forces[0] == Catch::Approx(1.0));
+  REQUIRE(forces[3] == Catch::Approx(-1.0));
+  fs::current_path(previous);
+  std::error_code ec;
+  fs::remove_all(dir, ec);
+}
+#endif
 
 TEST_CASE("LAMMPSPot constructs with injected loader mock",
           "[lammps][loader][inject]") {

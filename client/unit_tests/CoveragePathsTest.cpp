@@ -1296,6 +1296,58 @@ struct BatchLJ final : Potential {
 
 } // namespace
 
+TEST_CASE("a solid-state band takes one cell step", "[neb][solid]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::neb_options(params).image_count = 3;
+  ParametersLoadAccess::neb_options(params).max_iterations = 1;
+  ParametersLoadAccess::neb_options(params).endpoints.minimize = false;
+  ParametersLoadAccess::neb_options(params).climbing_image.enabled = false;
+  ParametersLoadAccess::neb_options(params).solid_state.enabled = true;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 1;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, pot);
+  reactant->setPeriodic(true);
+  auto product = std::make_shared<Matter>(*reactant);
+  auto pos = product->getPositions();
+  pos(0, 0) += 0.3;
+  product->setPositions(pos);
+  auto cell = product->getCell();
+  cell(0, 0) += 0.05;
+  product->setCell(cell);
+  auto neb =
+      std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
+  REQUIRE(neb->solidState());
+  const auto status = neb->compute();
+  const bool known = status == NudgedElasticBand::NEBStatus::GOOD ||
+                     status == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS ||
+                     status == NudgedElasticBand::NEBStatus::RUNNING ||
+                     status == NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY ||
+                     status == NudgedElasticBand::NEBStatus::INIT;
+  REQUIRE(known);
+}
+
+TEST_CASE("ranks per image need an MPI build of the calculator",
+          "[rgpot][mpi]") {
+#ifdef WITH_RGPOT
+  const char *fake = std::getenv("CPMDC_LIBRARY");
+  if (fake != nullptr && std::filesystem::exists(fake)) {
+    RGPotEngineOptions opt;
+    opt.backend = "cpmdc";
+    opt.engine_path = fake;
+    opt.ranks_per_image = 2;
+    REQUIRE_THROWS_AS(RGPotEngine(opt), std::runtime_error);
+  }
+  RGPotEngineOptions unknown;
+  unknown.backend = "no-such-backend";
+  REQUIRE_THROWS_AS(RGPotEngine(unknown), std::runtime_error);
+#else
+  SUCCEED("rgpot is not in this build");
+#endif
+}
+
 TEST_CASE("solid-state bands refuse climbs that do not move the cell",
           "[neb][solid]") {
   Workdir work;
