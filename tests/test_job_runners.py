@@ -132,7 +132,7 @@ def test_bh_register_and_make_searches(tmp_path):
     assert comm.submitted[0]["id"] == "4"
 
     cfg.bh_initial_state_pool_size = -1
-    with pytest.raises(SystemExit):
+    with pytest.raises(ValueError, match="negative"):
         make_searches(comm, 9, states, cfg)
 
 
