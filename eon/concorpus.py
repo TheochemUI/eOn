@@ -177,7 +177,7 @@ def mirror_con_path(path) -> None:
     con_path = Path(path)
     try:
         text = con_path.read_text()
-    except OSError:
+    except (OSError, UnicodeDecodeError):
         return
     mirror_con_text(con_path, text)
 
