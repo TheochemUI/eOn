@@ -19,6 +19,7 @@
 #include "eon/ForceNorm.h"
 #include "eon/NEBForceProjection.h"
 #include "eon/GeometryAnalysis.h"
+#include "eon/GlobalOptimizationJob.h"
 #include "eon/HelperFunctions.h"
 #include "eon/ImprovedDimer.h"
 #include "eon/IRACompare.h"
@@ -1823,5 +1824,17 @@ TEST_CASE("an instanton batches every bead of one iteration",
 }
 
 } // namespace
+
+TEST_CASE("unknown hopping feedback stops the optimizer",
+          "[job][global_opt]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  eonc::Runtime runtime;
+  auto owned = std::make_unique<Parameters>(params);
+  eonc::GlobalOptimizationJob job(std::move(owned), runtime);
+  job.applyMoveFeedbackMD();
+  REQUIRE_THROWS_AS(job.applyMoveFeedbackMD(), std::runtime_error);
+}
 
 } // namespace tests
