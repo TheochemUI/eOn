@@ -99,10 +99,12 @@ void GlobalOptimizationJob::analyze(Matter &matter_cur, Matter &matter_hop) {
     insert(matter_cur);
   } else if (decisionResult == "rejected") {
   } else {
-    log = eonc::log::traceback();
-    QUILL_LOG_CRITICAL(
-        log,
-        "ERROR: new minimum is neither accepted nor rejected: client stops.");
+    if (quill::Logger *trace = eonc::log::traceback()) {
+      log = trace;
+      QUILL_LOG_CRITICAL(
+          log,
+          "ERROR: new minimum is neither accepted nor rejected: client stops.");
+    }
     throw std::runtime_error(
         "[Global Optimization] new minimum is neither accepted nor rejected");
   }
@@ -133,10 +135,12 @@ void GlobalOptimizationJob::applyMoveFeedbackMD() {
   } else if (hoppingResult == "new") {
     ekin *= beta3;
   } else {
-    log = eonc::log::traceback();
-    QUILL_LOG_CRITICAL(log,
-                       "ERROR: client does not know what to do with ekin.");
-    QUILL_LOG_CRITICAL(log, "ERROR: client stops in applyMoveFeedbackMD.");
+    if (quill::Logger *trace = eonc::log::traceback()) {
+      log = trace;
+      QUILL_LOG_CRITICAL(log,
+                         "ERROR: client does not know what to do with ekin.");
+      QUILL_LOG_CRITICAL(log, "ERROR: client stops in applyMoveFeedbackMD.");
+    }
     throw std::runtime_error(std::format(
         "[Global Optimization] unknown hoppingResult: {}", hoppingResult));
   }

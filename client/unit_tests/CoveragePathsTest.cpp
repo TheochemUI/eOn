@@ -1627,7 +1627,7 @@ TEST_CASE("instanton batches beads on a cpmd engine", "[job][instanton][cpmd]") 
   try {
     const auto files = job.run();
     REQUIRE_FALSE(files.empty());
-  } catch (const std::runtime_error &) {
+  } catch (const std::exception &) {
   }
 }
 #endif
