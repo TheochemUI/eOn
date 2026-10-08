@@ -84,26 +84,28 @@ def _queried_path(config) -> Path:
     return Path(config.kdb_scratch_path) / "queried"
 
 
+def _integer_tokens(text: str) -> list[int]:
+    numbers = []
+    for token in text.split():
+        try:
+            numbers.append(int(token))
+        except ValueError:
+            continue
+    return numbers
+
+
 def was_queried(state, config) -> bool:
     path = _queried_path(config)
     if not path.is_file():
         return False
-    try:
-        numbers = [int(line) for line in path.read_text().split() if line.strip()]
-    except ValueError:
-        return False
+    numbers = _integer_tokens(path.read_text())
     return int(state.number) in numbers
 
 
 def _mark_queried(state, config) -> None:
     path = _queried_path(config)
     path.parent.mkdir(parents=True, exist_ok=True)
-    numbers = []
-    if path.is_file():
-        try:
-            numbers = [int(line) for line in path.read_text().split() if line.strip()]
-        except ValueError:
-            numbers = []
+    numbers = _integer_tokens(path.read_text()) if path.is_file() else []
     number = int(state.number)
     if number not in numbers:
         numbers.append(number)
