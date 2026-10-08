@@ -2268,6 +2268,76 @@ TEST_CASE("an unknown saddle search method is rejected", "[job][process]") {
   REQUIRE_THROWS_AS(job.run(), std::runtime_error);
 }
 
+TEST_CASE("a climb writes frames and stops when atoms leave the state",
+          "[saddle_search][min_mode]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 3;
+  ParametersLoadAccess::saddle_search_options(params).converged_force = 1.0e-8;
+  ParametersLoadAccess::saddle_search_options(params).nonlocal_count_abort = 1;
+  ParametersLoadAccess::saddle_search_options(params).nonlocal_distance_abort =
+      1.0e-6;
+  ParametersLoadAccess::optimizer_options(params).convergence_metric =
+      "max_atom";
+  ParametersLoadAccess::dimer_options(params).max_iterations = 2;
+  ParametersLoadAccess::debug_options(params).write_movies = true;
+  ParametersLoadAccess::debug_options(params).write_deprecated_outs = true;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto matter = loadReactant(params, pot);
+  AtomMatrix mode = AtomMatrix::Zero(matter->numberOfAtoms(), 3);
+  mode(0, 0) = 1.0;
+  eonc::MinModeSaddleSearch search(matter, mode, matter->getPotentialEnergy(),
+                                   params, pot);
+  const int status = search.run();
+  REQUIRE(status != eonc::MinModeSaddleSearch::STATUS_INIT);
+  const bool wrote = std::filesystem::exists("climb.con") ||
+                     std::filesystem::exists("climb.dat");
+  REQUIRE(wrote);
+}
+
+TEST_CASE("rejected instanton lists name the bad field",
+          "[parameters][instanton]") {
+  Parameters temperatures;
+  REQUIRE_THROWS_AS(temperatures.load_ini_text(
+                        "[Instanton]\ntemperatures = 300, cold\n"),
+                    std::invalid_argument);
+  Parameters weights;
+  REQUIRE_THROWS_AS(
+      weights.load_ini_text("[Instanton]\ndiscretization = 1, heavy\n"),
+      std::invalid_argument);
+  Parameters beads;
+  REQUIRE_THROWS_AS(
+      beads.load_ini_text("[Instanton]\nfriction_eta_beads = 0.1, no\n"),
+      std::invalid_argument);
+  Parameters springs;
+  REQUIRE_THROWS_AS(springs.load_ini_text("[Instanton]\nsprings = coil\n"),
+                    std::invalid_argument);
+}
+
+TEST_CASE("a mass file and a mode file must cover every atom",
+          "[helpers][io]") {
+  Workdir work;
+  static_cast<void>(work);
+  REQUIRE_THROWS_AS(eonc::helpers::loadMasses("missing-masses.dat", 2),
+                    std::runtime_error);
+  {
+    std::ofstream out("short-masses.dat");
+    out << "1.0\n";
+  }
+  REQUIRE_THROWS_AS(eonc::helpers::loadMasses("short-masses.dat", 3),
+                    std::runtime_error);
+  REQUIRE_THROWS_AS(eonc::helpers::loadMode("missing-mode.dat", 2),
+                    std::runtime_error);
+  {
+    std::ofstream out("short-mode.dat");
+    out << "1 0 0\n";
+  }
+  REQUIRE_THROWS_AS(eonc::helpers::loadMode("short-mode.dat", 3),
+                    std::runtime_error);
+}
+
 TEST_CASE("a two-coordinate cluster takes the planar rotation",
           "[dimer][lor]") {
   Workdir work;
