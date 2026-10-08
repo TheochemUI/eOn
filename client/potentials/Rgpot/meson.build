@@ -29,12 +29,17 @@ rgpot_pot = library(
 )
 
 if _rgpot_group_mpi.found()
+    # _Exit in the grouped handler skips the counter flush.
+    _rgpot_mpi_cpp = _rgpot_cpp
+    if get_option('b_coverage')
+        _rgpot_mpi_cpp += ['-DEON_GCOV_DUMP']
+    endif
     rgpot_pot_mpi = shared_library(
         'rgpot_pot_mpi',
         sources: ['RgpotGroupMpi.cpp'],
         include_directories: _incdirs,
         dependencies: _rgpot_deps + [_rgpot_group_mpi],
-        cpp_args: _rgpot_cpp,
+        cpp_args: _rgpot_mpi_cpp,
         link_with: _linkto,
         install: true,
     )

@@ -16,6 +16,11 @@
 
 #include "rgpot/CalculatorGroup.hpp"
 
+// _Exit skips the counter flush. A coverage build writes the counters first.
+#ifdef EON_GCOV_DUMP
+extern "C" void __gcov_dump(void);
+#endif
+
 namespace {
 
 // Every rank calls this. A rank that failed locally still enters, so nobody
@@ -64,6 +69,9 @@ int agree(const char *local, char *shared, std::size_t cap) {
 // engine call the peers can sit in a collective, and MPI_Finalize would
 // wait for them until the walltime kill.
 void hardExit(int status, void *) {
+#ifdef EON_GCOV_DUMP
+  __gcov_dump();
+#endif
   int inited = 0;
   int finalized = 0;
   MPI_Initialized(&inited);
