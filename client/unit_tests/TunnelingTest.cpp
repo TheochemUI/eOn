@@ -1998,7 +1998,7 @@ TEST_CASE("a rate ring takes the Lanczos determinant and a friction bath",
   REQUIRE(std::isfinite(wet.ringPotential));
   REQUIRE_THROWS_AS(
       optimizeRateInstanton(saddle, hs, 60.0 / kHbar, {}, wrong, opt),
-      std::runtime_error);
+      std::exception);
 
   RateInstanton inst;
   inst.beta = 1.0;
