@@ -314,9 +314,10 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
                     stateid = 0
                 try:
                     procid = targetdynamics[current_step]['process']
-                except:
-                    print("Can no longer follow target trajectory")
-                    sys.exit(1)
+                except (IndexError, KeyError, TypeError) as exc:
+                    raise RuntimeError(
+                        "Can no longer follow target trajectory"
+                    ) from exc
                 # Load the con file for that process saddle.
                 procdata = Path(config.debug_target_trajectory) / "states" / str(stateid) / "procdata"
                 targetSaddleCon = io.loadcon(str(procdata / ("saddle_%d.con" % procid)))
@@ -337,8 +338,7 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
                             nsid = i
                             break
                 else:
-                    print("Can no longer follow target trajectory")
-                    sys.exit(1)
+                    raise RuntimeError("Can no longer follow target trajectory")
 
             # We are not following another trajectory:
             else:
@@ -622,12 +622,14 @@ def main(config: ConfigClass = None):
                     if Path(config.sb_path).is_dir():
                         io.remove_tree_and_empty_parents(config.sb_path)
 
-                    for state_dir in Path(config.path_states).iterdir():
-                        if state_dir.name == 'state_table':
-                            continue
-                        superbasin_file = state_dir / config.sb_state_file
-                        if superbasin_file.is_file():
-                            superbasin_file.unlink()
+                    states_root = Path(config.path_states)
+                    if states_root.is_dir():
+                        for state_dir in states_root.iterdir():
+                            if state_dir.name == 'state_table':
+                                continue
+                            superbasin_file = state_dir / config.sb_state_file
+                            if superbasin_file.is_file():
+                                superbasin_file.unlink()
 
                     string_sb_clear = " with directory 'superbasins' and files named '"
                     string_sb_clear += str(config.sb_state_file) + "' removed"
