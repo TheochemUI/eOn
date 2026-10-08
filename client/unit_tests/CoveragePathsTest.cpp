@@ -2960,6 +2960,8 @@ TEST_CASE("a broken trajectory and an unknown metric are rejected",
   eonc::helpers::saveMode(modeFile, matter, mode);
   std::fclose(modeFile);
   REQUIRE(std::filesystem::exists("saved-mode.dat"));
+  eonc::helpers::saveMode("missing-dir/saved-mode.dat", matter, mode);
+  REQUIRE_FALSE(std::filesystem::exists("missing-dir/saved-mode.dat"));
 
   ParametersLoadAccess::saddle_search_options(params).displace_type = "last_atom";
   ParametersLoadAccess::saddle_search_options(params).displace_magnitude = 0.0;
