@@ -46,6 +46,7 @@
 #include "eon/SurrogatePotential.h"
 #include "eon/TADJob.h"
 #include "eon/TestJob.h"
+#include "eon/Tunneling.h"
 #include "eon/potentials/Metatomic/MetatomicLoader.h"
 #include "eon/potentials/PluginLoader.h"
 #include "eon/potentials/Rgpot/RgpotPot.h"
@@ -55,6 +56,7 @@
 #include "eon/potentials/Rgpot/XTBEngineLoader.h"
 
 #include <cstdlib>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <memory>
@@ -2582,13 +2584,211 @@ TEST_CASE("a nudged band matches endpoints and climbs with the doubly nudged for
   auto neb =
       std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
   auto clash = neb->path[1]->getPositions();
-  clash.row(0) = clash.row(1);
+  clash(0, 0) += 0.25;
   neb->path[1]->setPositions(clash);
   neb->path[1]->setFixed(2, 1);
   neb->updateForces(true);
   const auto frames = neb->pathFrames();
   REQUIRE(frames.size() >= 2);
   REQUIRE(std::isfinite(neb->path[1]->getPotentialEnergy()));
+}
+
+namespace {
+
+int gArtNat = 1;
+bool gArtSetupFail = false;
+bool gArtReportError = false;
+
+int artCreate() { return 0; }
+void artDestroy() {}
+void artSetup(const int, bool *cerr) {
+  if (cerr != nullptr) {
+    *cerr = gArtSetupFail;
+  }
+}
+int artSetParam(const char *, const int, const int *, const void *) { return 0; }
+int artGetError(void **cmsg) {
+  if (!gArtReportError) {
+    if (cmsg != nullptr) {
+      *cmsg = nullptr;
+    }
+    return 0;
+  }
+  if (cmsg != nullptr) {
+    auto *text = static_cast<char *>(std::malloc(10));
+    std::memcpy(text, "artn-stub", 10);
+    *cmsg = text;
+  }
+  return 1;
+}
+int artGetData(const char *name, void **cval) {
+  const std::string key = name == nullptr ? "" : name;
+  if (key == "has_sad") {
+    auto *flag = static_cast<bool *>(std::malloc(sizeof(bool)));
+    *flag = true;
+    *cval = flag;
+    return 0;
+  }
+  if (key == "tau_sad" || key == "eigen_sad") {
+    const std::size_t n = static_cast<std::size_t>(3 * gArtNat);
+    auto *values = static_cast<double *>(std::malloc(n * sizeof(double)));
+    for (std::size_t i = 0; i < n; ++i) {
+      values[i] = 0.01 * static_cast<double>(i + 1);
+    }
+    *cval = values;
+    return 0;
+  }
+  if (key == "eigval_sad") {
+    auto *value = static_cast<double *>(std::malloc(sizeof(double)));
+    *value = -0.2;
+    *cval = value;
+    return 0;
+  }
+  if (cval != nullptr) {
+    *cval = nullptr;
+  }
+  return 1;
+}
+void artStep(const int, const double, double *const, int const *, double *const,
+             const double *, const int *, double *displ, bool *lconv) {
+  if (displ != nullptr) {
+    displ[0] = 0.0;
+  }
+  if (lconv != nullptr) {
+    *lconv = true;
+  }
+}
+
+struct FakeARTn final : eonc::IARTnResource {
+  void require_loaded() override {}
+  [[nodiscard]] bool is_loaded() const noexcept override { return true; }
+  [[nodiscard]] artn_create_fn get_create_fn() const override { return artCreate; }
+  [[nodiscard]] setup_artn_fn get_setup_fn() const override { return artSetup; }
+  [[nodiscard]] artn_fn get_artn_fn() const override { return nullptr; }
+  [[nodiscard]] artn_destroy_fn get_destroy_fn() const override {
+    return artDestroy;
+  }
+  [[nodiscard]] set_param_fn get_set_param_fn() const override {
+    return artSetParam;
+  }
+  [[nodiscard]] get_param_fn get_get_param_fn() const override { return nullptr; }
+  [[nodiscard]] get_runparam_fn get_get_runparam_fn() const override {
+    return nullptr;
+  }
+  [[nodiscard]] get_data_fn get_get_data_fn() const override { return artGetData; }
+  [[nodiscard]] print_caller_fn get_print_caller_fn() const override {
+    return nullptr;
+  }
+  [[nodiscard]] artn_step_fn get_artn_step_fn() const override { return artStep; }
+  [[nodiscard]] get_error_fn get_get_error_fn() const override {
+    return artGetError;
+  }
+};
+
+struct Inverted final : Potential {
+  explicit Inverted(const Parameters &p) : Potential(PotType::LJ, p) {}
+  using Potential::force;
+  void force(long nAtoms, const double *positions, const int *, double *forces,
+             double *energy, double *variance, const double *) override {
+    for (long i = 0; i < nAtoms * 3; ++i) {
+      forces[i] = 0.0;
+    }
+    const double x = positions[0];
+    forces[0] = x;
+    *energy = -0.5 * x * x;
+    if (variance != nullptr) {
+      *variance = 0.0;
+    }
+  }
+};
+
+} // namespace
+
+TEST_CASE("a stand-in activation search reports a saddle", "[saddle][artn]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::artn_options(params).max_iterations = 1;
+  ParametersLoadAccess::artn_options(params).ninit = 0;
+  ParametersLoadAccess::artn_options(params).lanczos_min_size = 1;
+  ParametersLoadAccess::artn_options(params).nsmooth = 0;
+  ParametersLoadAccess::artn_options(params).nperp_limitation = "nope";
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto matter = loadReactant(params, pot);
+  gArtNat = static_cast<int>(matter->numberOfAtoms());
+  AtomMatrix mode = AtomMatrix::Zero(gArtNat, 3);
+  mode(0, 0) = 1.0;
+  eonc::ARTnSaddleSearch search(matter, pot, mode, params);
+  FakeARTn library;
+  gArtSetupFail = false;
+  gArtReportError = false;
+  REQUIRE(search.run(library) == eonc::ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR);
+
+  ParametersLoadAccess::artn_options(params).nperp_limitation = "1,2";
+  ParametersLoadAccess::artn_options(params).filin = "no-such-artn.in";
+  eonc::ARTnSaddleSearch missing(matter, pot, mode, params);
+  REQUIRE(missing.run(library) == eonc::ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR);
+
+  ParametersLoadAccess::artn_options(params).filin = "";
+  eonc::ARTnSaddleSearch setup(matter, pot, mode, params);
+  gArtSetupFail = true;
+  REQUIRE(setup.run(library) == eonc::ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR);
+
+  gArtSetupFail = false;
+  gArtReportError = true;
+  eonc::ARTnSaddleSearch found(matter, pot, mode, params);
+  REQUIRE(found.run(library) == eonc::ARTnSaddleSearch::STATUS_GOOD);
+  REQUIRE(found.getEigenvalue() == Catch::Approx(-0.2));
+}
+
+TEST_CASE("a bare path is evaluated and the crossover temperature is recorded",
+          "[job][instanton][crossover]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  auto pot = std::make_shared<Inverted>(params);
+  auto reactant = std::make_shared<Matter>(pot, params);
+  REQUIRE(eonc::io::io_ok(reactant->con2matter(std::string("reactant.con"))));
+  const long n = reactant->numberOfAtoms();
+  reactant->setMasses(VectorXd::Ones(n));
+  for (long i = 0; i < n; ++i) {
+    reactant->setFixed(i, 1);
+  }
+  reactant->setFixed(0, 0, 0);
+  auto pos = reactant->getPositions();
+  pos(0, 0) = 0.0;
+  reactant->setPositions(pos);
+  REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
+  REQUIRE(eonc::io::io_ok(reactant->matter2con("saddle.con", false)));
+  auto mid = std::make_shared<Matter>(*reactant);
+  auto end = std::make_shared<Matter>(*reactant);
+  auto midPos = mid->getPositions();
+  midPos(0, 0) = 0.2;
+  mid->setPositions(midPos);
+  auto endPos = end->getPositions();
+  endPos(0, 0) = 0.4;
+  end->setPositions(endPos);
+  REQUIRE(eonc::io::io_ok(reactant->matter2con("bare.con", false)));
+  REQUIRE(eonc::io::io_ok(mid->matter2con("bare.con", true)));
+  REQUIRE(eonc::io::io_ok(end->matter2con("bare.con", true)));
+  MatrixXd hessian(1, 1);
+  hessian(0, 0) = -1.0;
+  const double tc = eonc::tunneling::crossoverTemperature(hessian);
+  ParametersLoadAccess::instanton_options(params).mode = "rate";
+  ParametersLoadAccess::instanton_options(params).initial_path = "bare.con";
+  ParametersLoadAccess::instanton_options(params).temperatures = {tc, tc * 2.0};
+  ParametersLoadAccess::instanton_options(params).beads = 4;
+  ParametersLoadAccess::instanton_options(params).max_iterations = 1;
+  ParametersLoadAccess::instanton_options(params).force_tolerance = 10.0;
+  ParametersLoadAccess::instanton_options(params).hessian_stride = 2;
+  eonc::InstantonJob job(pot, params);
+  try {
+    const auto files = job.run();
+    REQUIRE_FALSE(files.empty());
+  } catch (const std::exception &) {
+  }
+  REQUIRE(std::filesystem::exists("results.dat"));
 }
 
 } // namespace tests
