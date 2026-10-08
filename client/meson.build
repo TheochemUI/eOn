@@ -830,10 +830,19 @@ if not readcon_db_dep.found()
     _readcon_db_inner = readcon_db_proj.get_variable('readcon_dep')
     _readcon_db_so = readcon_db_proj.get_variable('readcon_cargo')[0]
     _readcon_db_version = _readcon_db_inner.version()
-    # --as-needed drops the shared library: the mirror resolves rkrdb_open
-    # at load time, so the link line has to keep the library anyway.
     _runtime_rpath += [fs.parent(_readcon_db_so.full_path())]
+    # full_path() in link_args is a string, so ninja has no edge to the
+    # cargo target and a parallel link runs while that library is absent.
+    # link_with is the order edge. The --no-as-needed path stays: the
+    # mirror resolves rkrdb_open at load time, and --as-needed drops a
+    # library with no link-time use. Windows keeps the DLL off link_with
+    # because link.exe rejects a DLL input (LNK1107).
+    _readcon_db_order = []
+    if not is_windows
+        _readcon_db_order = [_readcon_db_so]
+    endif
     readcon_db_dep = declare_dependency(
+        link_with: _readcon_db_order,
         link_args: [
             '-Wl,--no-as-needed',
             _readcon_db_so.full_path(),

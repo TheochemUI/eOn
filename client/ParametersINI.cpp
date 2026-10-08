@@ -259,7 +259,9 @@ int load_ini(const INIReader &ini, Parameters &params) {
                 ParametersLoadAccess::mopac_options(params).engine_path);
   }
   // [SocketNWChemPot]
-  if (params.potential_options().potential == PotType::SocketNWChem) {
+  // The section is stored even when another potential is selected. A
+  // later switch still sees the socket path and the unix mode.
+  {
     ParametersLoadAccess::socket_nwchem_options(params).host =
         ini.Get("SocketNWChemPot", "host",
                 ParametersLoadAccess::socket_nwchem_options(params).host);
