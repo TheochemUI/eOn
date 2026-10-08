@@ -2066,4 +2066,15 @@ TEST_CASE("a double well cools a short rate ring",
       optimizeRateInstanton(saddle, hs, 40.0 / kHbar, {}, well, opt);
   REQUIRE(inst.iterations >= 1);
   REQUIRE(std::isfinite(inst.ringPotential));
+
+  const VectorXd left = VectorXd::Constant(1, -1.0);
+  const VectorXd right = VectorXd::Constant(1, 1.0);
+  InstantonOptions split;
+  split.beads = 8;
+  split.maxIterations = 6;
+  split.forceTolerance = 1.0e-2;
+  const Instanton pair =
+      optimizeInstanton(left, right, 8.0, {}, well, split);
+  REQUIRE(pair.iterations >= 1);
+  REQUIRE(std::isfinite(pair.action));
 }
