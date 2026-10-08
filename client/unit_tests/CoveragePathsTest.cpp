@@ -3120,10 +3120,7 @@ TEST_CASE("the crossover temperature is recorded on its own line",
       if (key == std::string::npos) {
         continue;
       }
-      const auto eq = line.find_first_of("= ", key);
-      if (eq != std::string::npos) {
-        tc = std::strtod(line.c_str() + eq + 1, nullptr);
-      }
+      tc = std::strtod(line.c_str(), nullptr);
     }
   }
   REQUIRE(tc > 0.0);
