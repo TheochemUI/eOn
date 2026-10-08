@@ -9,7 +9,14 @@
 #include <fstream>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <utility>
+
+namespace eonc::config {
+JobType job_from_ssot(std::string_view);
+PotType pot_from_ssot(std::string_view);
+OptType opt_from_ssot(std::string_view);
+} // namespace eonc::config
 
 namespace tests {
 static eonc::helpers::test::QuillTestLogger _quill_setup;
@@ -29,6 +36,56 @@ TEST_CASE("Parameters constructor applies Cap'n Proto SSoT defaults",
           Catch::Approx(0.1));
   REQUIRE(p.rgpot_options().backend == "nwchemc");
   REQUIRE(p.rgpot_options().cutoff_ry == Catch::Approx(70.0));
+}
+
+TEST_CASE("schema names map onto job, potential, and optimizer types",
+          "[params][ssot][names]") {
+  using eonc::config::job_from_ssot;
+  using eonc::config::opt_from_ssot;
+  using eonc::config::pot_from_ssot;
+  REQUIRE(job_from_ssot("process_search") == JobType::Process_Search);
+  REQUIRE(job_from_ssot("minimization") == JobType::Minimization);
+  REQUIRE(job_from_ssot("saddle_search") == JobType::Saddle_Search);
+  REQUIRE(job_from_ssot("basin_hopping") == JobType::Basin_Hopping);
+  REQUIRE(job_from_ssot("parallel_replica") == JobType::Parallel_Replica);
+  REQUIRE(job_from_ssot("unbiased_parallel_replica") ==
+          JobType::Parallel_Replica);
+  REQUIRE(job_from_ssot("nudged_elastic_band") == JobType::Nudged_Elastic_Band);
+  REQUIRE(job_from_ssot("dynamics") == JobType::Dynamics);
+  REQUIRE(job_from_ssot("molecular_dynamics") == JobType::Dynamics);
+  REQUIRE(job_from_ssot("hessian") == JobType::Hessian);
+  REQUIRE(job_from_ssot("point") == JobType::Point);
+  REQUIRE(job_from_ssot("prefactor") == JobType::Prefactor);
+  REQUIRE(job_from_ssot("monte_carlo") == JobType::Monte_Carlo);
+  REQUIRE(job_from_ssot("structure_comparison") ==
+          JobType::Structure_Comparison);
+  REQUIRE(job_from_ssot("gp_surrogate") == JobType::GP_Surrogate);
+  REQUIRE(job_from_ssot("safe_hyperdynamics") == JobType::Safe_Hyperdynamics);
+  REQUIRE(job_from_ssot("tad") == JobType::TAD);
+  REQUIRE(job_from_ssot("replica_exchange") == JobType::Replica_Exchange);
+  REQUIRE(job_from_ssot("finite_difference") == JobType::Finite_Difference);
+  REQUIRE(job_from_ssot("finite_differences") == JobType::Finite_Difference);
+  REQUIRE(job_from_ssot("global_optimization") == JobType::Global_Optimization);
+  REQUIRE(job_from_ssot("instanton") == JobType::Instanton);
+  REQUIRE(job_from_ssot("no-such-job") == JobType::Process_Search);
+  REQUIRE(pot_from_ssot("lj") == PotType::LJ);
+  REQUIRE(pot_from_ssot("eam_al") == PotType::EAM_AL);
+  REQUIRE(pot_from_ssot("emt") == PotType::EMT);
+  REQUIRE(pot_from_ssot("lammps") == PotType::LAMMPS);
+  REQUIRE(pot_from_ssot("morse_pt") == PotType::MORSE_PT);
+  REQUIRE(pot_from_ssot("metatomic") == PotType::METATOMIC);
+  REQUIRE(pot_from_ssot("xtb") == PotType::XTB);
+  REQUIRE(pot_from_ssot("rgpot") == PotType::RGPOT);
+  REQUIRE(pot_from_ssot("ext_pot") == PotType::EXT_POT);
+  REQUIRE(pot_from_ssot("no-such-pot") == PotType::LJ);
+  REQUIRE(opt_from_ssot("cg") == OptType::CG);
+  REQUIRE(opt_from_ssot("lbfgs") == OptType::LBFGS);
+  REQUIRE(opt_from_ssot("qm") == OptType::QM);
+  REQUIRE(opt_from_ssot("quickmin") == OptType::QM);
+  REQUIRE(opt_from_ssot("sd") == OptType::SD);
+  REQUIRE(opt_from_ssot("fire") == OptType::FIRE);
+  REQUIRE(opt_from_ssot("xtsci") == OptType::XTSCI);
+  REQUIRE(opt_from_ssot("no-such-opt") == OptType::CG);
 }
 
 TEST_CASE("ssot_has_field knows covered catalog keys", "[params][ssot]") {

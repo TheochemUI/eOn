@@ -11,8 +11,6 @@
 namespace eonc::config {
 namespace {
 
-using GD = eonc::params_ssot::GeneratedDefaults;
-
 // Catalog field index for ssot_has_field (mirrors generated catalog sections).
 const std::unordered_set<std::string> &field_index() {
   static const std::unordered_set<std::string> idx = {
@@ -20,6 +18,8 @@ const std::unordered_set<std::string> &field_index() {
   };
   return idx;
 }
+
+} // namespace
 
 JobType job_from_ssot(std::string_view j) {
   if (j == "process_search")
@@ -101,7 +101,7 @@ OptType opt_from_ssot(std::string_view m) {
   return OptType::CG;
 }
 
-} // namespace
+using GD = eonc::params_ssot::GeneratedDefaults;
 
 void apply_ssot_defaults(Parameters &p) {
   ParametersLoadAccess::main_options(p).job = job_from_ssot(GD::MAIN_JOB);
