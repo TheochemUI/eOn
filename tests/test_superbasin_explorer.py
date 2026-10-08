@@ -133,10 +133,13 @@ def test_client_registers_a_basin_result_and_a_catalog_mode(tmp_path, monkeypatc
     assert mode.shape[1] == 3
 
 
-def test_precision_script_stops_after_the_residual_table(monkeypatch):
-    monkeypatch.setattr(
-        sys, "exit", lambda code=0: (_ for _ in ()).throw(SystemExit(code))
-    )
-    with pytest.raises(SystemExit) as caught:
-        import eon.mcamc.test  # noqa: F401
-    assert caught.value.code == 0
+def test_precision_script_runs_both_tables(capsys):
+    from eon.mcamc.test import main, random_chain
+
+    rates, exits, _absorb = random_chain(3, 1, 1e-3)
+    assert rates.shape == (3, 3)
+    assert exits.shape == (3, 1)
+    assert main() is None
+    printed = capsys.readouterr().out
+    assert "PRECISION TESTING" in printed
+    assert "PERFORMANCE TESTING" in printed

@@ -35,8 +35,6 @@ def main():
         print(fmt % (p,errors[0],errors[1],errors[2],errors[3],
                      guess_precision(Q,R)))
 
-    import sys;sys.exit(0)
-
     print('\nPERFORMANCE TESTING')
     print('-------------------')
 
@@ -54,4 +52,6 @@ def main():
         fmt = '%8i %8.3f %8.3f %8.3f %8.3f'
         print(fmt % (Ntrans,times[0],times[1],times[2],times[3]))
 
-main()
+
+if __name__ == "__main__":
+    main()
