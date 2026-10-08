@@ -127,6 +127,11 @@ from that tree and runs the isomer 1 point job. The energy must sit within
 1e-6 eV of -1396.269526. The pseudopotential files stay in `KIT`. They are
 not in this repository.
 
+`scripts/build-client.sh` checks `eonclient` and `libcpmdc.so` after the
+build. Their run path must not contain a `/home/` directory. `--sanitize`
+rewrites a run path that does. The stack directory is an argument. It is
+not taken from a home scratch tree.
+
 `EONCLIENT` is `build-eessi/client/eonclient` from the configure above.
 
 ```bash
