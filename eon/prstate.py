@@ -4,6 +4,8 @@
 import logging
 logger = logging.getLogger('state')
 
+from pathlib import Path
+
 from eon import fileio as io
 from eon import state
 
@@ -56,7 +58,9 @@ class PRState(state.State):
         product_bytes = result['product.con'].getvalue()
         id = self.allocate_process_id(b"pr-product", product_bytes)
 
-        # Move the relevant files into the procdata directory.
+        # A directory that already exists was not staged, so procdata
+        # may be absent. The product files have to land there.
+        Path(self.procdata_path).mkdir(parents=True, exist_ok=True)
         for path, content in ((self.proc_reactant_path(id), result['reactant.con'].getvalue()),
                               (self.proc_product_path(id), product_bytes),
                               (self.proc_results_path(id), result['results.dat'].getvalue())):
@@ -75,6 +79,9 @@ class PRState(state.State):
     def load_process_table(self, force=False):
         """Load the process table from disk (see AKMCState.load_process_table)."""
         if self.procs is not None and not force:
+            return
+        if not Path(self.proctable_path).is_file():
+            self.procs = {}
             return
         f = open(self.proctable_path)
         lines = f.readlines()
@@ -115,6 +122,8 @@ class PRState(state.State):
     def append_process_table(self, id, product, product_energy, time):
         """ Append to the process table.  Append a single line to the process table file.  If we
             have loaded the process table, also append it to the process table in memory. """
+        if not Path(self.proctable_path).is_file():
+            Path(self.proctable_path).write_text(self.processtable_header)
         self.load_process_table(force=True)
         if id in self.procs:
             raise RuntimeError(
