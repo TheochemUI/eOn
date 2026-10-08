@@ -108,10 +108,6 @@ def get_communicator(config: ConfigClass):
     return comm
 
 
-class NotImplementedError(Exception):
-    pass
-
-
 class CommunicatorError(Exception):
     pass
 
