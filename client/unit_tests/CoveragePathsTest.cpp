@@ -2590,3 +2590,5 @@ TEST_CASE("a nudged band matches endpoints and climbs with the doubly nudged for
   REQUIRE(frames.size() >= 2);
   REQUIRE(std::isfinite(neb->path[1]->getPotentialEnergy()));
 }
+
+} // namespace tests
