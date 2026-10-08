@@ -858,6 +858,14 @@ class ProcessSearch:
         for k in result:
             if hasattr(result[k], "getvalue"):
                 (dir_path / k).write_text(result[k].getvalue())
+        # A mapping under results is the in-process record. The next
+        # minimum is loaded from disk, and that load only sees files.
+        scalars = result.get("results")
+        results_dat = result.get("results.dat")
+        if isinstance(scalars, dict) and not hasattr(results_dat, "getvalue"):
+            buf = io.StringIO()
+            io.save_results_dat(buf, scalars)
+            (dir_path / "results.dat").write_text(buf.getvalue())
 
     def load_result(self, result_name):
         dir_path = Path(self.config.path_incomplete) / result_name
