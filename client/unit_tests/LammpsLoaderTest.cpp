@@ -59,6 +59,7 @@ void *lammpsOpenStub(int, char **, void **) {
 void lammpsCloseStub(void *) {}
 char *lammpsCommandStub(void *, const char *) { return nullptr; }
 void lammpsScatterStub(void *, const char *, int, int, void *) {}
+void lammpsFileStub(void *, const char *) {}
 void *lammpsExtractNull(void *, const char *, const char *) { return nullptr; }
 
 TEST_CASE("a missing LAMMPS variable rejects the geometry",
@@ -77,6 +78,7 @@ TEST_CASE("a missing LAMMPS variable rejects the geometry",
   mock.close = lammpsCloseStub;
   mock.command = lammpsCommandStub;
   mock.scatter_atoms = lammpsScatterStub;
+  mock.file = lammpsFileStub;
   mock.extract_variable = lammpsExtractNull;
   eonc::Parameters params;
   LAMMPSPot pot(params, mock);
