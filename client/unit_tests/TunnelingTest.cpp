@@ -2023,3 +2023,38 @@ TEST_CASE("a rate ring takes the Lanczos determinant and a friction bath",
                                   0, 4096),
                     std::runtime_error);
 }
+
+TEST_CASE("a double well cools a short rate ring",
+          "[Tunneling][Instanton][well]") {
+  const BatchPotential well = [](const std::vector<VectorXd> &q,
+                                 std::vector<double> &v,
+                                 std::vector<VectorXd> &g) {
+    v.resize(q.size());
+    g.resize(q.size());
+    for (size_t i = 0; i < q.size(); ++i) {
+      const double x = q[i].size() > 0 ? q[i](0) : 0.0;
+      const double x2 = x * x;
+      v[i] = (x2 - 1.0) * (x2 - 1.0);
+      g[i] = VectorXd::Constant(q[i].size() > 0 ? q[i].size() : 1,
+                                4.0 * x * (x2 - 1.0));
+      if (q[i].size() == 0) {
+        g[i].resize(0);
+      }
+    }
+  };
+  const VectorXd saddle = VectorXd::Zero(1);
+  const MatrixXd hs = MatrixXd::Constant(1, 1, -4.0);
+  RateInstantonOptions opt;
+  opt.beads = 16;
+  opt.halfRing = false;
+  opt.maxIterations = 12;
+  opt.forceTolerance = 1.0e-2;
+  opt.checkOddSector = true;
+  opt.lanczosFirst = 6;
+  opt.lanczosRestart = 4;
+  opt.newtonLimit = 64;
+  const RateInstanton inst =
+      optimizeRateInstanton(saddle, hs, 40.0 / kHbar, {}, well, opt);
+  REQUIRE(inst.iterations >= 1);
+  REQUIRE(std::isfinite(inst.ringPotential));
+}
