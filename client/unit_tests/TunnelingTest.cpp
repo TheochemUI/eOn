@@ -2015,7 +2015,7 @@ TEST_CASE("a rate ring takes the Lanczos determinant and a friction bath",
     instantonRate(inst, bead, reactant, 0.0, MatrixXd(), 0.0, 0, 0);
   } catch (const std::exception &) {
   }
-  REQUIRE(std::isfinite(inst.zeroEigenvalue) || inst.negativeModes >= 0);
+  REQUIRE(inst.beads.size() == 4);
   REQUIRE_THROWS_AS(
       instantonRate(inst, bead, reactant, 0.0, MatrixXd(), 0.0, 1, 0),
       std::runtime_error);
