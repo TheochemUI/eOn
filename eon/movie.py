@@ -6,7 +6,6 @@ not go through readcon: external viewers read POSCAR, and `loadposcar`
 accepts both this VASP 5 layout and the VASP 4 files kdb produces.
 """
 
-import sys
 from io import StringIO
 from pathlib import Path
 
@@ -29,34 +28,25 @@ def make_movie(movie_type, path_root, states, separate_files=False):
         atoms_list = fastest_path(path_root, states, full=True)
         movie_path = "fastestfullpath.poscar"
     elif movie_type.split(",")[0] == "processes":
+        parts = movie_type.split(",")
+        if len(parts) < 2 or parts[1] == "":
+            raise ValueError("must give a state number")
         try:
-            statenr = int(movie_type.split(",")[1])
-        except ValueError:
-            print("state number must be an integer")
-            sys.exit(1)
-        except IndexError:
-            print("must give a state number")
-            sys.exit(1)
-        print("making process movie for state %i" % statenr)
-        if len(movie_type.split(",")) > 2:
-            limit = int(movie_type.split(",")[2])
-        else:
-            limit = 0
+            statenr = int(parts[1])
+        except ValueError as exc:
+            raise ValueError("state number must be an integer") from exc
+        limit = int(parts[2]) if len(parts) > 2 else 0
         atoms_list = processes(states, statenr, limit)
         movie_path = "processes_%i.poscar" % statenr
     elif movie_type == "graph":
         s = dot(path_root, states)
         graph = Path("graph.dot")
         if graph.is_file():
-            print("File %s already exists" % graph)
-            sys.exit(1)
+            raise FileExistsError(f"file {graph} already exists")
         graph.write_text(s)
-        print("If you have graphviz installed:")
-        print("dot graph.dot -Tpng -o graph.png")
-        sys.exit(0)
+        return
     else:
-        print("Unknown MOVIE_TYPE")
-        sys.exit(1)
+        raise ValueError(f"unknown movie type {movie_type}")
     movie_path = Path(movie_path)
     if separate_files:
         movie_dir = Path("movies")
@@ -96,9 +86,10 @@ def get_trajectory(trajectory_path):
 def processes(states, statenr, limit):
     try:
         state = states.get_state(statenr)
-    except IOError:
-        print("error: Cannot make movie for non-existant state")
-        sys.exit(1)
+    except OSError as exc:
+        raise FileNotFoundError(
+            f"cannot make a movie for state {statenr}"
+        ) from exc
 
     process_table = state.get_process_table()
     for k, v in list(process_table.items()):
@@ -140,8 +131,7 @@ def dynamics(path_root, states, unique=False):
         trajectory = list(range(states.get_num_states()))
 
     if len(trajectory) == 0:
-        print("error: There have been no dynamics steps")
-        sys.exit(1)
+        raise ValueError("there have been no dynamics steps")
 
     paths = []
     for n in trajectory:
@@ -160,9 +150,14 @@ def make_graph(states):
         ptable = state.get_process_table()
         for i, p in list(ptable.items()):
             if p["product"] != -1:
+                rate = p["rate"]
+                if rate <= 0:
+                    raise ValueError(
+                        f"state {state.number} process {i} has no positive rate"
+                    )
                 neighbor_state = states.get_state(p["product"])
                 G.add_node(neighbor_state)
-                G.add_edge(state, neighbor_state, weight=1.0 / p["rate"])
+                G.add_edge(state, neighbor_state, weight=1.0 / rate)
     return G
 
 
