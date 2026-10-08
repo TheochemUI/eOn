@@ -1954,6 +1954,15 @@ TEST_CASE("a ring structure packs beads and rejects a bad spring",
   REQUIRE(packed.norm() == Catch::Approx(1.0));
   const auto active = ring.unpack(coords.data());
   REQUIRE(static_cast<long>(active.size()) == ring.activeBeads());
+
+  RingPolymerPotential folded(hook, 4, 1, 1.0, 0.0, {}, true, mode);
+  std::vector<double> foldCoords(
+      static_cast<size_t>(3 * folded.structureAtoms()), 0.0);
+  std::vector<double> foldForces(foldCoords.size(), 0.0);
+  double foldEnergy = 0.0;
+  folded.force(folded.structureAtoms(), foldCoords.data(), nullptr,
+               foldForces.data(), &foldEnergy, nullptr, nullptr);
+  REQUIRE(std::isfinite(foldEnergy));
 }
 
 TEST_CASE("a rate ring takes the Lanczos determinant and a friction bath",

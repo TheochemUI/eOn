@@ -1296,6 +1296,39 @@ struct BatchLJ final : Potential {
 
 } // namespace
 
+TEST_CASE("a band with the hybrid dimer takes two steps", "[neb][mmf]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::neb_options(params).image_count = 5;
+  ParametersLoadAccess::neb_options(params).max_iterations = 2;
+  ParametersLoadAccess::neb_options(params).endpoints.minimize = false;
+  ParametersLoadAccess::neb_options(params).climbing_image.enabled = true;
+  ParametersLoadAccess::neb_options(params).climbing_image.ocineb.use_mmf =
+      true;
+  ParametersLoadAccess::neb_options(params).climbing_image.ocineb.max_steps = 1;
+  ParametersLoadAccess::neb_options(params)
+      .climbing_image.ocineb.trigger_force = 1.0e6;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 1;
+  ParametersLoadAccess::dimer_options(params).max_iterations = 1;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, pot);
+  auto product = std::make_shared<Matter>(*reactant);
+  auto pos = product->getPositions();
+  pos(0, 0) += 0.5;
+  product->setPositions(pos);
+  auto neb =
+      std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
+  const auto status = neb->compute();
+  const bool known = status == NudgedElasticBand::NEBStatus::GOOD ||
+                     status == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS ||
+                     status == NudgedElasticBand::NEBStatus::RUNNING ||
+                     status == NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY ||
+                     status == NudgedElasticBand::NEBStatus::INIT;
+  REQUIRE(known);
+}
+
 TEST_CASE("a solid-state band takes one cell step", "[neb][solid]") {
   Workdir work;
   static_cast<void>(work);
