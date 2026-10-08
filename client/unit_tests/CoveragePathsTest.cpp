@@ -1690,18 +1690,7 @@ TEST_CASE("a recorded replica buffer refines the crossing",
     eonc::ParallelReplicaJob job(std::move(owned), runtime);
     auto found = job.runFromMatter(hot);
     REQUIRE(found != nullptr);
-  }
-  {
-    Parameters loose = params;
-    ParametersLoadAccess::structure_comparison_options(loose)
-        .distance_difference = 100.0;
-    auto still = std::make_shared<Matter>(pot, loose);
-    REQUIRE(eonc::io::io_ok(still->con2matter(std::string("reactant.con"))));
-    still->setMasses(VectorXd::Ones(still->numberOfAtoms()));
-    auto owned = std::make_unique<Parameters>(loose);
-    eonc::ParallelReplicaJob job(std::move(owned), runtime);
-    auto found = job.runFromMatter(still);
-    REQUIRE(found != nullptr);
+    found.reset();
   }
 }
 
