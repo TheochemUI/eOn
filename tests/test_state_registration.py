@@ -256,6 +256,13 @@ def test_numpy_condition_follows_the_row_sum(monkeypatch):
     assert 1.0e14 < cond < 1.001e14
     assert markov.guess_precision(stiff, stiff_exit) == "dd"
 
+    tiny = np.array([[0.0, 1.0], [0.0, 0.0]])
+    tiny_exit = np.array([[1.0e-20], [1.0]])
+    tiny_cond = markov.estimate_condition(tiny, tiny_exit)
+    assert np.isfinite(tiny_cond)
+    assert tiny_cond == pytest.approx(1.0e20)
+    assert markov.guess_precision(tiny, tiny_exit) == "dd"
+
     quiet = np.zeros((2, 2))
     one_exit = np.array([[0.0], [1.0]])
     infinite = markov.estimate_condition(quiet, one_exit)

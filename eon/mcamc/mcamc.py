@@ -7,22 +7,21 @@ logger = logging.getLogger('mcamc')
 
 
 def _numpy_condition(Q, R):
-    """Largest 1/|1 - row sum| after scaling each rate row.
+    """Largest absolute row scale divided by that row's exit sum.
 
-    The scale of a row is the sum of that row of Q and of R, the same
-    estimate the native helper uses. A zero row total is a divide by
-    zero, so the condition is infinite.
+    The scale of a row is the sum of that row of Q and of R. The exit
+    sum is that row of R. A zero scale or a zero exit makes the
+    condition non-finite.
     """
     rates = np.array(Q, dtype=float, copy=True)
     exits = np.array(R, dtype=float, copy=True)
     scale = rates.sum(axis=1) + exits.sum(axis=1)
-    if np.any(scale == 0.0):
+    exit_sum = exits.sum(axis=1)
+    zero_scale = bool(np.any(scale == 0.0))
+    zero_exit = bool(np.any(exit_sum == 0.0))
+    if zero_scale or zero_exit:
         return float("inf")
-    rates /= scale[:, None]
-    gap = np.abs(1.0 - rates.sum(axis=1))
-    if np.any(gap == 0.0):
-        return float("inf")
-    return float(np.max(1.0 / gap))
+    return float(np.max(np.abs(scale / exit_sum)))
 
 
 def estimate_condition(Q, R):
