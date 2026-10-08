@@ -1908,6 +1908,81 @@ TEST_CASE("an unknown convergence metric is rejected", "[optim][matter]") {
   REQUIRE_THROWS_AS(matter->relax(true), std::invalid_argument);
 }
 
+TEST_CASE("rejected instanton inputs stop before a ring is built",
+          "[job][instanton]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, pot);
+  reactant->setMasses(VectorXd::Ones(reactant->numberOfAtoms()));
+  REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
+  eonc::Runtime runtime;
+  {
+    Parameters rate = params;
+    ParametersLoadAccess::instanton_options(rate).mode = "rate";
+    auto owned = std::make_unique<Parameters>(rate);
+    eonc::InstantonJob job(std::move(owned), runtime);
+    REQUIRE_THROWS_AS(job.run(), std::runtime_error);
+  }
+  {
+    auto saddle = std::make_shared<Matter>(*reactant);
+    REQUIRE(eonc::io::io_ok(saddle->matter2con("saddle.con", false)));
+    Parameters rate = params;
+    ParametersLoadAccess::instanton_options(rate).mode = "rate";
+    ParametersLoadAccess::instanton_options(rate).hessian_final = "cached";
+    auto owned = std::make_unique<Parameters>(rate);
+    eonc::InstantonJob job(std::move(owned), runtime);
+    REQUIRE_THROWS_AS(job.run(), std::invalid_argument);
+  }
+  {
+    Parameters cold = params;
+    ParametersLoadAccess::instanton_options(cold).mode = "rate";
+    ParametersLoadAccess::instanton_options(cold).temperature = 0.0;
+    auto owned = std::make_unique<Parameters>(cold);
+    eonc::InstantonJob job(std::move(owned), runtime);
+    REQUIRE_THROWS_AS(job.run(), std::exception);
+  }
+  {
+    reactant->setMasses(VectorXd::Zero(reactant->numberOfAtoms()));
+    REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
+    auto owned = std::make_unique<Parameters>(params);
+    eonc::InstantonJob job(std::move(owned), runtime);
+    REQUIRE_THROWS_AS(job.run(), std::invalid_argument);
+  }
+}
+
+TEST_CASE("an unknown displacement algorithm is rejected",
+          "[job][basin_hopping]") {
+  Workdir work;
+  static_cast<void>(work);
+  std::filesystem::copy_file(work.dir() / "reactant.con", work.dir() / "pos.con",
+                             std::filesystem::copy_options::overwrite_existing);
+  Parameters params = ljParams();
+  ParametersLoadAccess::main_options(params).job = JobType::Basin_Hopping;
+  ParametersLoadAccess::basin_hopping_options(params).steps = 1;
+  ParametersLoadAccess::basin_hopping_options(params).displacement_algorithm =
+      "sideways";
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 0;
+  eonc::Runtime runtime;
+  auto owned = std::make_unique<Parameters>(params);
+  eonc::BasinHoppingJob job(std::move(owned), runtime);
+  REQUIRE_THROWS_AS(job.run(), std::invalid_argument);
+}
+
+TEST_CASE("an unknown saddle search method is rejected", "[job][process]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::main_options(params).job = JobType::Process_Search;
+  ParametersLoadAccess::saddle_search_options(params).method = "nope";
+  eonc::Runtime runtime;
+  auto owned = std::make_unique<Parameters>(params);
+  eonc::ProcessSearchJob job(std::move(owned), runtime);
+  REQUIRE_THROWS_AS(job.run(), std::runtime_error);
+}
+
 TEST_CASE("unknown hopping feedback stops the optimizer",
           "[job][global_opt]") {
   Workdir work;

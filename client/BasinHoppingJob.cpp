@@ -373,8 +373,10 @@ AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {
           disp = curDisplacement * scale * scale;
         }
       } else {
-        log = eonc::log::traceback();
-        QUILL_LOG_CRITICAL(log, "Unknown displacement_algorithm\n");
+        if (quill::Logger *trace = eonc::log::traceback()) {
+          log = trace;
+          QUILL_LOG_CRITICAL(log, "Unknown displacement_algorithm\n");
+        }
         throw std::invalid_argument(
             std::format("[Basin Hopping] unknown displacement_algorithm: {}",
                         params.basin_hopping_options().displacement_algorithm));
@@ -387,8 +389,10 @@ AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {
                    "gaussian") {
           displacement(i, j) = eonc::rng::gaussRandom(0.0, disp);
         } else {
-          log = eonc::log::traceback();
-          QUILL_LOG_CRITICAL(log, "Unknown displacement_distribution\n");
+          if (quill::Logger *trace = eonc::log::traceback()) {
+            log = trace;
+            QUILL_LOG_CRITICAL(log, "Unknown displacement_distribution\n");
+          }
           throw std::invalid_argument(std::format(
               "[Basin Hopping] unknown displacement_distribution: {}",
               params.basin_hopping_options().displacement_distribution));
