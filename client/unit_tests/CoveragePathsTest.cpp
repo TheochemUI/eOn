@@ -2599,6 +2599,7 @@ namespace {
 int gArtNat = 1;
 bool gArtSetupFail = false;
 bool gArtReportError = false;
+bool gArtRefuse = false;
 
 int artCreate() { return 0; }
 void artDestroy() {}
@@ -2607,7 +2608,12 @@ void artSetup(const int, bool *cerr) {
     *cerr = gArtSetupFail;
   }
 }
-int artSetParam(const char *, const int, const int *, const void *) { return 0; }
+int artSetParam(const char *name, const int, const int *, const void *) {
+  if (name != nullptr && std::strcmp(name, "filin") == 0) {
+    return 1;
+  }
+  return 0;
+}
 int artGetError(void **cmsg) {
   if (!gArtReportError) {
     if (cmsg != nullptr) {
@@ -2661,7 +2667,11 @@ void artStep(const int, const double, double *const, int const *, double *const,
 }
 
 struct FakeARTn final : eonc::IARTnResource {
-  void require_loaded() override {}
+  void require_loaded() override {
+    if (gArtRefuse) {
+      throw std::runtime_error("artn library is not available");
+    }
+  }
   [[nodiscard]] bool is_loaded() const noexcept override { return true; }
   [[nodiscard]] artn_create_fn get_create_fn() const override { return artCreate; }
   [[nodiscard]] setup_artn_fn get_setup_fn() const override { return artSetup; }
@@ -2741,6 +2751,79 @@ TEST_CASE("a stand-in activation search reports a saddle", "[saddle][artn]") {
   eonc::ARTnSaddleSearch found(matter, pot, mode, params);
   REQUIRE(found.run(library) == eonc::ARTnSaddleSearch::STATUS_GOOD);
   REQUIRE(found.getEigenvalue() == Catch::Approx(-0.2));
+
+  gArtRefuse = true;
+  eonc::ARTnSaddleSearch missingLib(matter, pot, mode, params);
+  REQUIRE(missingLib.run(library) ==
+          eonc::ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR);
+  gArtRefuse = false;
+  {
+    std::ofstream filin("artn-present.in");
+    filin << "\n";
+  }
+  ParametersLoadAccess::artn_options(params).filin = "artn-present.in";
+  eonc::ARTnSaddleSearch rejected(matter, pot, mode, params);
+  REQUIRE(rejected.run(library) == eonc::ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR);
+}
+
+TEST_CASE("a batching dimer rotates only the forward image",
+          "[dimer][batch][forward]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::dimer_options(params).improved = true;
+  ParametersLoadAccess::dimer_options(params).rotation_backend =
+      DimerRotationBackend::Classical;
+  ParametersLoadAccess::dimer_options(params).remove_rotation = true;
+  ParametersLoadAccess::dimer_options(params).max_iterations = 2;
+  ParametersLoadAccess::dimer_options(params).rotations_max = 2;
+  ParametersLoadAccess::main_options(params).finiteDifference = 1.0e-3;
+  auto batch = std::make_shared<BatchLJ>(params);
+  auto matter = std::make_shared<Matter>(batch, params);
+  REQUIRE(eonc::io::io_ok(matter->con2matter(std::string("reactant.con"))));
+  eonc::ImprovedDimer dimer(matter, params, batch);
+  AtomMatrix mode = AtomMatrix::Zero(matter->numberOfAtoms(), 3);
+  mode(0, 0) = 1.0;
+  dimer.compute(matter, mode);
+  REQUIRE(std::isfinite(dimer.getEigenvalue()));
+}
+
+TEST_CASE("an image dependent band estimates a mode at every image",
+          "[neb][idpp][eigen]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::neb_options(params).image_count = 3;
+  ParametersLoadAccess::neb_options(params).max_iterations = 2;
+  ParametersLoadAccess::neb_options(params).endpoints.minimize = false;
+  ParametersLoadAccess::neb_options(params).initialization.method =
+      NEBInit::IDPP;
+  ParametersLoadAccess::neb_options(params).initialization.max_iterations = 1;
+  ParametersLoadAccess::debug_options(params).estimate_neb_eigenvalues = true;
+  ParametersLoadAccess::neb_options(params).climbing_image.ocineb.use_mmf =
+      true;
+  ParametersLoadAccess::neb_options(params).climbing_image.ocineb
+      .ci_stability_count = 0;
+  ParametersLoadAccess::neb_options(params).climbing_image.ocineb.max_steps = 1;
+  ParametersLoadAccess::dimer_options(params).max_iterations = 1;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 1;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, pot);
+  auto product = std::make_shared<Matter>(*reactant);
+  auto pos = product->getPositions();
+  pos(0, 0) += 0.4;
+  product->setPositions(pos);
+  auto neb =
+      std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
+  const auto status = neb->compute();
+  const bool known = status == NudgedElasticBand::NEBStatus::GOOD ||
+                     status == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS ||
+                     status == NudgedElasticBand::NEBStatus::RUNNING ||
+                     status == NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY ||
+                     status == NudgedElasticBand::NEBStatus::INIT;
+  REQUIRE(known);
+  REQUIRE_FALSE(neb->pathFrames().empty());
 }
 
 TEST_CASE("a bare path is evaluated and the crossover temperature is recorded",
