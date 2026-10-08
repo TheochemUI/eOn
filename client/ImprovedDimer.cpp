@@ -149,13 +149,80 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     x1->setEvaluation(forward->getForcesRaw(), forward->getPotentialEnergy());
   }
 
-  // A batching potential evaluates both images in the block below.
-  // evaluateTogether would clear the dirty flags first, and that block
-  // would then see nothing to do.
+  // A batching potential evaluates both images in evaluatePair.
+  // evaluateTogether would clear the dirty flags first, and that
+  // function would then see nothing to do.
   if (!pot->supportsBatchEvaluation()) {
     Matter *const ends[] = {x0.get(), x1.get()};
     eonc::evaluateTogether(*pot, ends);
   }
+
+  bool canParallel = eonc::potAllowsSharedInstance(*pot) ||
+                     (pot->needsPerImageInstance() &&
+                      x0->getPotential().get() != x1->getPotential().get());
+  VectorXd g0, g1;
+  auto evaluatePair = [&]() {
+    // Prefer batched evaluation when the potential supports it.
+    // Else fall back to thread-parallel when the potential is thread-safe or
+    // wants per-image instances. Otherwise sequential.
+    if (pot->supportsBatchEvaluation()) {
+      long n = x0->numberOfAtoms();
+      bool x0dirty = x0->needsForceUpdate();
+      bool x1dirty = x1->needsForceUpdate();
+
+      if (x0dirty && x1dirty) {
+        auto nrs0 = x0->getAtomicNrs();
+        auto nrs1 = x1->getAtomicNrs();
+        auto box0 = x0->getCell();
+        auto box1 = x1->getCell();
+        const double *posVec[] = {x0->getPositions().data(),
+                                  x1->getPositions().data()};
+        const int *nrsVec[] = {nrs0.data(), nrs1.data()};
+        double *frcVec[] = {x0->forcesData(), x1->forcesData()};
+        double energies[2], vars[2];
+        const double *boxVec[] = {box0.data(), box1.data()};
+        pot->forceBatch(2, n, posVec, nrsVec, frcVec, energies, vars, boxVec);
+        x0->setComputedPotential(energies[0], vars[0]);
+        x1->setComputedPotential(energies[1], vars[1]);
+      } else if (x1dirty) {
+        auto nrs = x1->getAtomicNrs();
+        auto box = x1->getCell();
+        const double *posVec[] = {x1->getPositions().data()};
+        const int *nrsVec[] = {nrs.data()};
+        double *frcVec[] = {x1->forcesData()};
+        double energies[1], vars[1];
+        const double *boxVec[] = {box.data()};
+        pot->forceBatch(1, n, posVec, nrsVec, frcVec, energies, vars, boxVec);
+        x1->setComputedPotential(energies[0], vars[0]);
+      } else if (x0dirty) {
+        x0->getForcesRaw();
+      }
+      g0 = -x0->getForcesV();
+      g1 = -x1->getForcesV();
+    } else if (params.main_options().parallel && canParallel) {
+      std::exception_ptr t0Error;
+      std::thread t0([&] {
+        try {
+          g0 = -x0->getForcesV();
+        } catch (...) {
+          t0Error = std::current_exception();
+        }
+      });
+      try {
+        g1 = -x1->getForcesV();
+      } catch (...) {
+        t0.join();
+        throw;
+      }
+      t0.join();
+      if (t0Error)
+        std::rethrow_exception(t0Error);
+    } else {
+      g0 = -x0->getForcesV();
+      g1 = -x1->getForcesV();
+    }
+  };
+  evaluatePair();
 
   // If we stepped into a high-energy wall, flip the tangent immediately
   if (x1->getPotentialEnergy() - x0->getPotentialEnergy() > 10.0 * delta) {
@@ -217,77 +284,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     x1->setPositionsV(x1_r);
   }
 
-  // Calculate gradients on x0 and x1.
-  // Prefer batched evaluation when the potential supports it (single
-  // model.forward() call for both replicas, e.g. MetatomicPotential on GPU).
-  // Else fall back to thread-parallel when the potential is thread-safe or
-  // wants per-image instances. Otherwise sequential.
-  VectorXd g0, g1;
-  // Two threads may share an instance only when it is thread safe; a
-  // per-image potential needs x0 and x1 to hold distinct instances.
-  bool canParallel = eonc::potAllowsSharedInstance(*pot) ||
-                     (pot->needsPerImageInstance() &&
-                      x0->getPotential().get() != x1->getPotential().get());
-  if (pot->supportsBatchEvaluation()) {
-    long n = x0->numberOfAtoms();
-    bool x0dirty = x0->needsForceUpdate();
-    bool x1dirty = x1->needsForceUpdate();
-
-    if (x0dirty && x1dirty) {
-      auto nrs0 = x0->getAtomicNrs();
-      auto nrs1 = x1->getAtomicNrs();
-      auto box0 = x0->getCell();
-      auto box1 = x1->getCell();
-      const double *posVec[] = {x0->getPositions().data(),
-                                x1->getPositions().data()};
-      const int *nrsVec[] = {nrs0.data(), nrs1.data()};
-      double *frcVec[] = {x0->forcesData(), x1->forcesData()};
-      double energies[2], vars[2];
-      const double *boxVec[] = {box0.data(), box1.data()};
-      pot->forceBatch(2, n, posVec, nrsVec, frcVec, energies, vars, boxVec);
-      x0->setComputedPotential(energies[0], vars[0]);
-      x1->setComputedPotential(energies[1], vars[1]);
-    } else if (x1dirty) {
-      auto nrs = x1->getAtomicNrs();
-      auto box = x1->getCell();
-      const double *posVec[] = {x1->getPositions().data()};
-      const int *nrsVec[] = {nrs.data()};
-      double *frcVec[] = {x1->forcesData()};
-      double energies[1], vars[1];
-      const double *boxVec[] = {box.data()};
-      pot->forceBatch(1, n, posVec, nrsVec, frcVec, energies, vars, boxVec);
-      x1->setComputedPotential(energies[0], vars[0]);
-    } else if (x0dirty) {
-      x0->getForcesRaw(); // through computePotential
-    }
-    g0 = -x0->getForcesV();
-    g1 = -x1->getForcesV();
-  } else if (params.main_options().parallel && canParallel) {
-    // std::thread instead of std::jthread (Apple Clang libc++). Guard so an
-    // exception from the foreground call still joins t0 before rethrow.
-    // An exception may not leave a thread function (std::terminate), so t0
-    // hands its error back and the caller rethrows after the join.
-    std::exception_ptr t0Error;
-    std::thread t0([&] {
-      try {
-        g0 = -x0->getForcesV();
-      } catch (...) {
-        t0Error = std::current_exception();
-      }
-    });
-    try {
-      g1 = -x1->getForcesV();
-    } catch (...) {
-      t0.join();
-      throw;
-    }
-    t0.join();
-    if (t0Error)
-      std::rethrow_exception(t0Error);
-  } else {
-    g0 = -x0->getForcesV();
-    g1 = -x1->getForcesV();
-  }
+  evaluatePair();
 
   bestG0 = g0;
   bestG1 = g1;

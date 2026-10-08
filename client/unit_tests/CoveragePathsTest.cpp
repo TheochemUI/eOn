@@ -39,6 +39,7 @@
 #include "eon/QuantumFreeEnergy.h"
 #include "eon/Runtime.h"
 #include "eon/SafeHyperJob.h"
+#include "eon/SurrogatePotential.h"
 #include "eon/TADJob.h"
 #include "eon/TestJob.h"
 #include "eon/potentials/Metatomic/MetatomicLoader.h"
@@ -1842,6 +1843,69 @@ TEST_CASE("a prefactor refuses a missing or unmoved endpoint",
   REQUIRE(eonc::Prefactor::getPrefactors(params, matter.get(), matter.get(),
                                          matter.get(), forward,
                                          backward) == -1);
+}
+
+namespace {
+
+struct ToySurrogate final : SurrogatePotential {
+  explicit ToySurrogate(const Parameters &p)
+      : SurrogatePotential(PotType::LJ, p) {}
+  void force(long nAtoms, const double * /*positions*/, const int * /*z*/,
+             double *forces, double *energy, double *variance,
+             const double * /*box*/) override {
+    *energy = 0.25;
+    if (variance != nullptr) {
+      *variance = 0.0;
+    }
+    for (long i = 0; i < nAtoms * 3; ++i) {
+      forces[i] = 0.0;
+    }
+  }
+  void train_optimize(const MatrixXd &, const MatrixXd &) override {}
+};
+
+} // namespace
+
+TEST_CASE("a surrogate potential fills free-atom forces",
+          "[matter][surrogate]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  auto pot = std::make_shared<ToySurrogate>(params);
+  auto matter = loadReactant(params, pot);
+  REQUIRE(std::isfinite(matter->getPotentialEnergy()));
+  REQUIRE(matter->getForces().allFinite());
+}
+
+TEST_CASE("a mass-weighted manifold reads free-atom masses",
+          "[optim][xtsci]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::optimizer_options(params).method = OptType::XTSCI;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 1;
+  ParametersLoadAccess::optimizer_options(params).xtsci.manifold = "eckart";
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto matter = loadReactant(params, pot);
+  matter->setMasses(VectorXd::Ones(matter->numberOfAtoms()));
+  try {
+    matter->relax(true);
+  } catch (const std::exception &) {
+  }
+  REQUIRE(std::isfinite(matter->getPotentialEnergy()));
+}
+
+TEST_CASE("an unknown convergence metric is rejected", "[optim][matter]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::optimizer_options(params).convergence_metric = "bogus";
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 1;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto matter = loadReactant(params, pot);
+  REQUIRE_THROWS_AS(matter->relax(true), std::invalid_argument);
 }
 
 TEST_CASE("unknown hopping feedback stops the optimizer",
