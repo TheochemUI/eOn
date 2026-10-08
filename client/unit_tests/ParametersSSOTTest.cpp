@@ -287,7 +287,7 @@ TEST_CASE("Parameters INI reads instanton, OH-TST, and socket keys",
                           "job = instanton\n"
                           "temperature = 250\n"
                           "[Potential]\n"
-                          "potential = SocketNWChem\n"
+                          "potential = lj\n"
                           "lammps_threads = 2\n"
                           "lammps_logging = true\n"
                           "[Instanton]\n"
@@ -405,4 +405,5 @@ TEST_CASE("Parameters INI reads the optional potential sections",
   REQUIRE(sections.saddle_search_options().confine_positive.enabled);
   REQUIRE(sections.saddle_search_options().confine_positive.min_active == 2);
 }
+
 } // namespace tests
