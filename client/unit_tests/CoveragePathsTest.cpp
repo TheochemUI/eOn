@@ -13,6 +13,7 @@
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/ARTnSaddleSearch.h"
+#include "eon/libs/ARTn/ARTnResource.h"
 #include "eon/BasinHoppingJob.h"
 #include "eon/Davidson.h"
 #include "eon/Dynamics.h"
