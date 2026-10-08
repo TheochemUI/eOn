@@ -824,7 +824,19 @@ if __name__ == "__main__":
         sys.exit(1)
 
     reactant = io.loadcon(sys.argv[1])
-    d = Random(reactant, 0.05, 5.0)
+    if len(sys.argv) > 3:
+        from eon.config import ConfigClass
+
+        cfg = ConfigClass()
+        cfg.init(sys.argv[3])
+        d = Random(
+            reactant,
+            float(cfg.disp_magnitude),
+            float(cfg.disp_radius),
+            config=cfg,
+        )
+    else:
+        d = Random(reactant, 0.05, 5.0)
     # d = Undercoordinated(reactant, 11, 0.05, 5.0)
     t0 = time.time()
     ntimes = 1000
