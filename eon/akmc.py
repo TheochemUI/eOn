@@ -286,13 +286,19 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
                              "has been reached")
 
             ratesum = sum((row[1] for row in rate_table), 0.0)
+            if len(rate_table) == 0 or ratesum == 0.0:
+                # The confidence gate already counted this attempt.
+                steps -= 1
+                break
 
             u = np.random.random_sample()
             p = 0.0
             nsid = 1.1 # Next state process id, will throw exception if remains unchanged.
 
-            # If we are following another trajectory:
-            if config.debug_target_trajectory != "False":
+            # A boolean false and the historical string False both mean off.
+            # The string compare alone treats the boolean default as on.
+            target = config.debug_target_trajectory
+            if target and str(target) != "False":
                 # Get the Dynamics objects.
                 owndynamics = io.Dynamics(str(Path(config.path_results) / "dynamics.txt")).get()
                 targetdynamics = io.Dynamics(str(Path(config.debug_target_trajectory) / "dynamics.txt")).get()
