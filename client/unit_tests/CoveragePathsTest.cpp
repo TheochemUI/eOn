@@ -3137,4 +3137,38 @@ TEST_CASE("the crossover temperature is recorded on its own line",
   REQUIRE(std::filesystem::exists("results.dat"));
 }
 
+TEST_CASE("a dynamics search keeps the barrier after one step",
+          "[dynamics][saddle][barrier]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto matter = loadReactant(params, pot);
+  {
+    std::ofstream masses("masses.dat");
+    for (long i = 0; i < matter->numberOfAtoms(); ++i) {
+      masses << "1.0\n";
+    }
+  }
+  ParametersLoadAccess::dynamics_options(params).time_step = 1.0;
+  ParametersLoadAccess::dynamics_options(params).steps = 1;
+  ParametersLoadAccess::parallel_replica_options(params).dephase_time = 0.0;
+  ParametersLoadAccess::saddle_search_options(params).dynamics.temperature =
+      500.0;
+  ParametersLoadAccess::saddle_search_options(params).dynamics
+      .state_check_interval = 1.0;
+  ParametersLoadAccess::saddle_search_options(params).dynamics.record_interval =
+      1.0;
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 1;
+  ParametersLoadAccess::saddle_search_options(params).converged_force = 1.0e6;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 0;
+  ParametersLoadAccess::neb_options(params).max_iterations = 0;
+  ParametersLoadAccess::neb_options(params).image_count = 3;
+  ParametersLoadAccess::dimer_options(params).max_iterations = 1;
+  eonc::DynamicsSaddleSearch search(matter, params);
+  const int status = search.run();
+  REQUIRE(status == status);
+}
+
 } // namespace tests
