@@ -3,6 +3,7 @@
 # Geometry is flat C-order positions (len=3N) and box (len=9), not .con text.
 # ConFrame remains the on-disk codec. The wire also carries forces, atom ids,
 # and a per-axis fixed bitmask when those lists are non-empty.
+# Geometry drops ConFrame charges, spins, magmoms, angles, headers, and specVersion.
 # Wire ordinals are API: never renumber existing fields.
 #
 # statusCode preserves historical results.dat integer termination_reason values.

@@ -11,6 +11,19 @@ from eon.cancel import Cancelled
 from eon.communicator_inprocess import LocalInProcess
 
 
+class _WireStructure:
+    """The wire lists read length, atom ids, and free axes from the structure."""
+
+    atom_ids: list[int] = []
+    _free: list[float] = []
+
+    def __len__(self) -> int:
+        return 0
+
+    def to_conframe(self) -> str:
+        return "frame"
+
+
 class _PC:
     class JobType:
         Minimization = 1
@@ -45,9 +58,7 @@ def test_cancel_state_stops_the_following_job(monkeypatch):
         positions = None
 
     bridge.structure_to_matter = lambda *args, **kwargs: _Matter()
-    bridge.matter_to_structure = lambda matter: types.SimpleNamespace(
-        to_conframe=lambda: "frame"
-    )
+    bridge.matter_to_structure = lambda matter: _WireStructure()
     monkeypatch.setitem(sys.modules, "pyeonclient.bridge", bridge)
 
     comm = LocalInProcess("scratch", config=object())
@@ -99,9 +110,7 @@ def test_idle_cancel_does_not_block_later_jobs(monkeypatch):
         positions = None
 
     bridge.structure_to_matter = lambda *args, **kwargs: _Matter()
-    bridge.matter_to_structure = lambda matter: types.SimpleNamespace(
-        to_conframe=lambda: "frame"
-    )
+    bridge.matter_to_structure = lambda matter: _WireStructure()
     monkeypatch.setitem(sys.modules, "pyeonclient.bridge", bridge)
 
     comm = LocalInProcess("scratch", config=object())
