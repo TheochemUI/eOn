@@ -14,5 +14,7 @@ def test_coverage_script_runs_the_package_suite():
     assert "test_config_metadata.py" not in text
     assert "test_job_runners.py" not in text
     assert "scripts/eon-coverage.cfg" in text
+    assert 'version = "0.dev-coverage"' in text
+    assert "__version__" not in text
     cfg = (ROOT / "scripts" / "eon-coverage.cfg").read_text(encoding="utf-8")
     assert "*/eon/tests/*" in cfg

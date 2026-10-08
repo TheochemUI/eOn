@@ -14,9 +14,9 @@ python3 -m pip install -q pytest pytest-cov coverage numpy pyyaml \
 if [[ ! -f eon/version.py ]]; then
   if [[ -x tools/gitversion.py ]] || [[ -f tools/gitversion.py ]]; then
     python3 tools/gitversion.py --write eon/version.py || \
-      printf '__version__ = "0.dev-coverage"\n' > eon/version.py
+      printf 'version = "0.dev-coverage"\n' > eon/version.py
   else
-    printf '__version__ = "0.dev-coverage"\n' > eon/version.py
+    printf 'version = "0.dev-coverage"\n' > eon/version.py
   fi
 fi
 
