@@ -2505,4 +2505,88 @@ TEST_CASE("unknown hopping feedback stops the optimizer",
   REQUIRE_THROWS_AS(job.applyMoveFeedbackMD(), std::runtime_error);
 }
 
-} // namespace tests
+namespace {
+
+struct Shear final : Potential {
+  explicit Shear(const Parameters &p) : Potential(PotType::LJ, p) {}
+  using Potential::force;
+  void force(long nAtoms, const double *positions, const int *, double *forces,
+             double *energy, double *variance, const double *) override {
+    for (long i = 0; i < nAtoms * 3; ++i) {
+      forces[i] = 0.0;
+    }
+    const double x = positions[0];
+    const double y = positions[1];
+    forces[0] = -y;
+    forces[1] = -x;
+    *energy = x * y;
+    if (variance != nullptr) {
+      *variance = 0.0;
+    }
+  }
+};
+
+} // namespace
+
+TEST_CASE("a planar shear takes the two-by-two rotation fallback",
+          "[dimer][lor][planar]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::main_options(params).finiteDifference = 1.0e-4;
+  ParametersLoadAccess::dimer_options(params).rotations_max = 3;
+  ParametersLoadAccess::dimer_options(params).lor_residual_tol = 1.0e-6;
+  auto pot = std::make_shared<Shear>(params);
+  auto matter = std::make_shared<Matter>(pot, params);
+  REQUIRE(eonc::io::io_ok(matter->con2matter(std::string("reactant.con"))));
+  const long n = matter->numberOfAtoms();
+  for (long i = 0; i < n; ++i) {
+    matter->setFixed(i, 1);
+  }
+  matter->setFixed(0, 0, 0);
+  matter->setFixed(0, 1, 0);
+  auto pos = matter->getPositions();
+  pos(0, 0) = 0.0;
+  pos(0, 1) = 1.0;
+  matter->setPositions(pos);
+  eonc::LORRotation lor(matter, params, pot);
+  AtomMatrix mode = AtomMatrix::Zero(n, 3);
+  mode(0, 0) = 1.0;
+  lor.compute(matter, mode);
+  REQUIRE(std::isfinite(lor.getEigenvalue()));
+}
+
+TEST_CASE("a nudged band matches endpoints and climbs with the doubly nudged force",
+          "[neb][dneb][match]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::neb_options(params).image_count = 3;
+  ParametersLoadAccess::neb_options(params).max_iterations = 1;
+  ParametersLoadAccess::neb_options(params).endpoints.minimize = false;
+  ParametersLoadAccess::neb_options(params).match_endpoints = true;
+  ParametersLoadAccess::neb_options(params).spring.doubly_nudged = true;
+  ParametersLoadAccess::neb_options(params).spring.geometric = false;
+  ParametersLoadAccess::neb_options(params).spring.weighting.enabled = false;
+  ParametersLoadAccess::neb_options(params).spring.use_elastic_band = false;
+  ParametersLoadAccess::neb_options(params).climbing_image.enabled = true;
+  ParametersLoadAccess::neb_options(params).climbing_image.converged_only =
+      false;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, pot);
+  auto product = std::make_shared<Matter>(*reactant);
+  auto shifted = product->getPositions();
+  shifted(1, 0) += 0.4;
+  product->setPositions(shifted);
+  auto neb =
+      std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
+  auto clash = neb->path[1]->getPositions();
+  clash.row(0) = clash.row(1);
+  neb->path[1]->setPositions(clash);
+  neb->path[1]->setFixed(2, 1);
+  neb->updateForces(true);
+  const auto frames = neb->pathFrames();
+  REQUIRE(frames.size() >= 2);
+  REQUIRE(std::isfinite(neb->path[1]->getPotentialEnergy()));
+}
