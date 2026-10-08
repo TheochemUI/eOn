@@ -56,6 +56,7 @@
 #include "eon/potentials/Rgpot/MetatomicEngineLoader.h"
 #include "eon/potentials/Rgpot/XTBEngineLoader.h"
 
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
@@ -2942,6 +2943,35 @@ TEST_CASE("a broken trajectory and an unknown metric are rejected",
 
   ParametersLoadAccess::optimizer_options(params).convergence_metric = "banana";
   REQUIRE_THROWS_AS(matter->relax(false, false), std::invalid_argument);
+
+  {
+    std::ofstream masses("masses.dat");
+    for (long i = 0; i < matter->numberOfAtoms(); ++i) {
+      masses << "1.0\n";
+    }
+  }
+  ParametersLoadAccess::dynamics_options(params).time_step = 1.0;
+  ParametersLoadAccess::parallel_replica_options(params).dephase_time = 0.0;
+  ParametersLoadAccess::saddle_search_options(params).dynamics.temperature =
+      1.0;
+  eonc::DynamicsSaddleSearch weighted(matter, params);
+  const int weightedStatus = weighted.run();
+  REQUIRE(weighted.getEigenvector().rows() == matter->numberOfAtoms());
+  static_cast<void>(weightedStatus);
+
+  AtomMatrix mode = AtomMatrix::Zero(matter->numberOfAtoms(), 3);
+  mode(0, 0) = 1.0;
+  FILE *modeFile = std::fopen("saved-mode.dat", "w");
+  REQUIRE(modeFile != nullptr);
+  eonc::helpers::saveMode(modeFile, matter, mode);
+  std::fclose(modeFile);
+  REQUIRE(std::filesystem::exists("saved-mode.dat"));
+
+  ParametersLoadAccess::saddle_search_options(params).displace_type = "last_atom";
+  ParametersLoadAccess::saddle_search_options(params).displace_magnitude = 0.0;
+  Matter displaced(pot, params);
+  REQUIRE(eonc::helpers::applyClientDisplacement(displaced, *matter, params));
+  REQUIRE(displaced.numberOfAtoms() == matter->numberOfAtoms());
 }
 
 } // namespace tests
