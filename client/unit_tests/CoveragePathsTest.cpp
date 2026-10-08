@@ -32,6 +32,7 @@
 #include "eon/OHTSTJob.h"
 #include "eon/ParallelReplicaJob.h"
 #include "eon/Parameters.h"
+#include "eon/PathIntegral.h"
 #include "eon/ProcessSearchJob.h"
 #include "eon/QuantumFreeEnergy.h"
 #include "eon/Runtime.h"
@@ -951,6 +952,9 @@ TEST_CASE("dynamics basin and gradient-squared searches take one short step",
         .dynamics.state_check_interval = 1.0;
     ParametersLoadAccess::saddle_search_options(params)
         .dynamics.linear_interpolation = false;
+    ParametersLoadAccess::saddle_search_options(params)
+        .dynamics.max_init_curvature = 1.0e6;
+    ParametersLoadAccess::saddle_search_options(params).max_iterations = 1;
     ParametersLoadAccess::dynamics_options(params).time_step = 2.0;
     ParametersLoadAccess::dynamics_options(params).steps = 3;
     ParametersLoadAccess::parallel_replica_options(params).dephase_time = 0.0;
@@ -1028,6 +1032,16 @@ TEST_CASE("short accelerated dynamics records a transition",
   {
     std::filesystem::remove("product.con");
     Parameters tadParams = shortMolecularDynamics(base);
+    ParametersLoadAccess::main_options(tadParams).temperature = 800.0;
+    ParametersLoadAccess::tad_options(tadParams).low_temperature = 800.0;
+    ParametersLoadAccess::parallel_replica_options(tadParams)
+        .state_check_interval = 2.0;
+    ParametersLoadAccess::parallel_replica_options(tadParams).record_interval =
+        1.0;
+    ParametersLoadAccess::structure_comparison_options(tadParams)
+        .remove_translation = false;
+    ParametersLoadAccess::structure_comparison_options(tadParams)
+        .check_rotation = false;
     auto hot = std::make_shared<Matter>(pot, tadParams);
     REQUIRE(eonc::io::io_ok(hot->con2matter(std::string("reactant.con"))));
     hot->setMasses(VectorXd::Ones(hot->numberOfAtoms()));
@@ -1044,10 +1058,21 @@ TEST_CASE("short accelerated dynamics records a transition",
     eonc::TADJob job(std::move(owned), runtime);
     auto found = job.runFromMatter(hot);
     REQUIRE(found != nullptr);
+    REQUIRE(std::filesystem::exists("product.con"));
   }
   {
     std::filesystem::remove("product.con");
     Parameters safeParams = shortMolecularDynamics(base);
+    ParametersLoadAccess::main_options(safeParams).temperature = 800.0;
+    ParametersLoadAccess::dynamics_options(safeParams).steps = 6;
+    ParametersLoadAccess::parallel_replica_options(safeParams)
+        .state_check_interval = 2.0;
+    ParametersLoadAccess::parallel_replica_options(safeParams).record_interval =
+        1.0;
+    ParametersLoadAccess::structure_comparison_options(safeParams)
+        .remove_translation = false;
+    ParametersLoadAccess::structure_comparison_options(safeParams)
+        .check_rotation = false;
     auto hot = std::make_shared<Matter>(pot, safeParams);
     REQUIRE(eonc::io::io_ok(hot->con2matter(std::string("reactant.con"))));
     hot->setMasses(VectorXd::Ones(hot->numberOfAtoms()));
@@ -1055,6 +1080,7 @@ TEST_CASE("short accelerated dynamics records a transition",
     eonc::SafeHyperJob job(std::move(owned), runtime);
     auto found = job.runFromMatter(hot);
     REQUIRE(found != nullptr);
+    REQUIRE(std::filesystem::exists("product.con"));
   }
   {
     std::filesystem::remove("product.con");
@@ -1631,5 +1657,133 @@ TEST_CASE("rate instanton climbs a short bead ladder", "[job][instanton]") {
   const auto files = job.run();
   REQUIRE_FALSE(files.empty());
 }
+
+TEST_CASE("a recorded replica buffer refines the crossing",
+          "[job][replica][coverage]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::dynamics_options(params).time_step = 1.0;
+  ParametersLoadAccess::dynamics_options(params).steps = 4;
+  ParametersLoadAccess::main_options(params).temperature = 800.0;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 0;
+  ParametersLoadAccess::parallel_replica_options(params).dephase_time = 0.0;
+  ParametersLoadAccess::parallel_replica_options(params).refine_transition =
+      true;
+  ParametersLoadAccess::parallel_replica_options(params).state_check_interval =
+      100.0;
+  ParametersLoadAccess::parallel_replica_options(params).record_interval = 1.0;
+  ParametersLoadAccess::structure_comparison_options(params)
+      .distance_difference = 1.0e-8;
+  ParametersLoadAccess::structure_comparison_options(params).remove_translation =
+      false;
+  ParametersLoadAccess::structure_comparison_options(params).check_rotation =
+      false;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto hot = std::make_shared<Matter>(pot, params);
+  REQUIRE(eonc::io::io_ok(hot->con2matter(std::string("reactant.con"))));
+  hot->setMasses(VectorXd::Ones(hot->numberOfAtoms()));
+  eonc::Runtime runtime;
+  {
+    auto owned = std::make_unique<Parameters>(params);
+    eonc::ParallelReplicaJob job(std::move(owned), runtime);
+    auto found = job.runFromMatter(hot);
+    REQUIRE(found != nullptr);
+  }
+  {
+    Parameters loose = params;
+    ParametersLoadAccess::structure_comparison_options(loose)
+        .distance_difference = 100.0;
+    auto still = std::make_shared<Matter>(pot, loose);
+    REQUIRE(eonc::io::io_ok(still->con2matter(std::string("reactant.con"))));
+    still->setMasses(VectorXd::Ones(still->numberOfAtoms()));
+    auto owned = std::make_unique<Parameters>(loose);
+    eonc::ParallelReplicaJob job(std::move(owned), runtime);
+    auto found = job.runFromMatter(still);
+    REQUIRE(found != nullptr);
+  }
+}
+
+TEST_CASE("rejected parameter text names the field", "[parameters][coverage]") {
+  Parameters surrogate;
+  REQUIRE_THROWS_AS(surrogate.load_ini_text("[Surrogate]\npotential = lj\n"),
+                    std::runtime_error);
+  Parameters springs;
+  REQUIRE_THROWS_AS(springs.load_ini_text("[Dynamics]\npath_springs = coil\n"),
+                    std::invalid_argument);
+  Parameters seed;
+  REQUIRE_THROWS_AS(seed.load_ini_text("[Dynamics]\npath_seed = -3\n"),
+                    std::invalid_argument);
+  Parameters mode;
+  REQUIRE_THROWS_AS(mode.load_ini_text("[Instanton]\nmode = banana\n"),
+                    std::invalid_argument);
+  Parameters friction;
+  REQUIRE_THROWS_AS(
+      friction.load_ini_text("[Instanton]\nfriction = sticky\n"),
+      std::invalid_argument);
+  Parameters hessians;
+  REQUIRE_THROWS_AS(
+      hessians.load_ini_text("[Instanton]\ninitial_hessians = guessed\n"),
+      std::invalid_argument);
+}
+
+TEST_CASE("path integral constructors reject an empty ring",
+          "[pathintegral][coverage]") {
+  using eonc::pathintegral::Options;
+  using eonc::pathintegral::RingPolymer;
+  using eonc::pathintegral::Springs;
+  using eonc::pathintegral::Thermostat;
+  REQUIRE_THROWS_AS(eonc::pathintegral::requireTrotterSprings("eco", "instanton"),
+                    std::invalid_argument);
+  REQUIRE_THROWS_AS(eonc::pathintegral::trotterEigenvalues(0),
+                    std::invalid_argument);
+  REQUIRE_THROWS_AS(eonc::pathintegral::ecoEigenvalues(4, 0.0),
+                    std::invalid_argument);
+  Options opt;
+  REQUIRE_THROWS_AS(RingPolymer(0, {}, {}, {}, opt), std::invalid_argument);
+  opt.temperature = -1.0;
+  REQUIRE_THROWS_AS(RingPolymer(1, {1.0}, {1}, {1, 1, 1}, opt),
+                    std::invalid_argument);
+  opt.temperature = 1.0;
+  opt.springs = Springs::Eco;
+  opt.thermostat = Thermostat::Piglet;
+  REQUIRE_THROWS_AS(RingPolymer(1, {1.0}, {1}, {1, 1, 1}, opt),
+                    std::invalid_argument);
+  opt.springs = Springs::Trotter;
+  opt.thermostat = Thermostat::Pile;
+  REQUIRE_THROWS_AS(RingPolymer(1, {0.0}, {1}, {1, 1, 1}, opt),
+                    std::invalid_argument);
+  REQUIRE_THROWS_AS(RingPolymer(1, {1.0}, {1}, {0, 0, 0}, opt),
+                    std::invalid_argument);
+}
+
+namespace {
+
+TEST_CASE("an instanton batches every bead of one iteration",
+          "[job][instanton][batch]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  auto batch = std::make_shared<BatchLJ>(params);
+  auto reactant = loadReactant(params, batch);
+  reactant->setMasses(VectorXd::Ones(reactant->numberOfAtoms()));
+  auto product = std::make_shared<Matter>(*reactant);
+  auto pos = product->getPositions();
+  pos(0, 0) += 0.05;
+  product->setPositions(pos);
+  REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
+  REQUIRE(eonc::io::io_ok(product->matter2con("product.con", false)));
+  ParametersLoadAccess::instanton_options(params).beads = 4;
+  ParametersLoadAccess::instanton_options(params).max_iterations = 1;
+  ParametersLoadAccess::instanton_options(params).force_tolerance = 10.0;
+  ParametersLoadAccess::instanton_options(params).hessian_stride = 4;
+  eonc::InstantonJob job(batch, params);
+  const auto files = job.run();
+  REQUIRE_FALSE(files.empty());
+  REQUIRE(std::filesystem::exists("results.dat"));
+}
+
+} // namespace
 
 } // namespace tests

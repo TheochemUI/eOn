@@ -24,6 +24,9 @@ class InstantonJob : public Job {
 public:
   InstantonJob(std::unique_ptr<Parameters> parameters, Runtime &rt)
       : Job(std::move(parameters), rt) {}
+  InstantonJob(std::shared_ptr<Potential> potPassed,
+               const Parameters &parameters)
+      : Job(std::move(potPassed), parameters) {}
   ~InstantonJob(void) = default;
   std::vector<std::string> run(void) override;
 };

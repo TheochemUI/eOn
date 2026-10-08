@@ -138,7 +138,11 @@ int SafeHyperJob::dynamics() {
       }
     }
 
+    // The snapshots taken during this interval are the refine window.
+    // Clearing the count before the transition drops that window.
+    long recordedThisInterval = 0;
     if ((nCheck == StateCheckInterval) && !newStateFlag) {
+      recordedThisInterval = nRecord;
       nCheck = 0;
       nRecord = 0;
       {
@@ -159,7 +163,8 @@ int SafeHyperJob::dynamics() {
     if (transitionFlag) {
       QUILL_LOG_TRACE_L1(log, "Refining transition time.");
       const bool can_refine =
-          params.parallel_replica_options().refine_transition && nRecord >= 2;
+          params.parallel_replica_options().refine_transition &&
+          recordedThisInterval >= 2;
       if (can_refine) {
         eonc::ForceCallTimer timer(refineFCalls);
         refineStep = refine(mdBuffer, reactant.get());

@@ -246,6 +246,7 @@ int DynamicsSaddleSearch::run() {
               eonc::buildEigenmodeStrategy(saddle, params, pot);
 
           neb.compute();
+          neb.findExtrema();
           neb.printImageData(true);
           int extremumImage = -1;
           int jExt = 0;

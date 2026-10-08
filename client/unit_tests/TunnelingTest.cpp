@@ -1799,3 +1799,103 @@ TEST_CASE("A long ring takes the chain inertia instead of a dense factor",
   REQUIRE(inst.iterations >= 0);
   REQUIRE(std::isfinite(inst.ringPotential));
 }
+
+TEST_CASE("instanton checks reject a short path and a bad friction list",
+          "[Tunneling][Instanton]") {
+  auto params = std::make_shared<Parameters>();
+  ParametersLoadAccess::potential_options(*params).potential = PotType::LJ;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, *params));
+  Matter few(pot, *params);
+  few.resize(1);
+  few.setMasses(VectorXd::Ones(1));
+  Matter more(pot, *params);
+  more.resize(2);
+  more.setMasses(VectorXd::Ones(2));
+  REQUIRE_THROWS_AS(massWeightedDistance(few, more), std::invalid_argument);
+
+  std::vector<VectorXd> path;
+  std::vector<double> energies;
+  for (int i = 0; i < 4; ++i) {
+    path.push_back(VectorXd::Constant(1, static_cast<double>(i)));
+    energies.push_back(static_cast<double>(i));
+  }
+  REQUIRE_THROWS_AS(ringFromPath(path, energies, 30.0, 8),
+                    std::invalid_argument);
+  path[2] = VectorXd::Zero(2);
+  REQUIRE_THROWS_AS(ringFromPath(path, energies, 30.0, 8),
+                    std::invalid_argument);
+
+  Instanton blank;
+  BeadHessian hess = [](long, const VectorXd &) {
+    return MatrixXd::Zero(1, 1);
+  };
+  REQUIRE_THROWS_AS(instantonSplitting(blank, hess, MatrixXd::Zero(1, 1),
+                                       MatrixXd::Zero(1, 1)),
+                    std::invalid_argument);
+  blank.dtau = 0.2;
+  blank.path.assign(5, VectorXd::Zero(1));
+  BeadHessian wide = [](long, const VectorXd &) {
+    return MatrixXd::Zero(2, 2);
+  };
+  REQUIRE_THROWS_AS(instantonSplitting(blank, wide, MatrixXd::Zero(1, 1),
+                                       MatrixXd::Zero(1, 1)),
+                    std::runtime_error);
+
+  const BatchPotential hook = [](const std::vector<VectorXd> &q,
+                                 std::vector<double> &v,
+                                 std::vector<VectorXd> &g) {
+    v.resize(q.size());
+    g.resize(q.size());
+    for (size_t i = 0; i < q.size(); ++i) {
+      v[i] = 0.5 * q[i].squaredNorm();
+      g[i] = q[i];
+    }
+  };
+  const VectorXd saddle = VectorXd::Zero(1);
+  const MatrixXd hs = -MatrixXd::Identity(1, 1);
+  RateInstantonOptions opt;
+  opt.beads = 8;
+  opt.halfRing = false;
+  opt.maxIterations = 1;
+  opt.forceTolerance = 1.0e6;
+  opt.checkOddSector = false;
+  opt.lanczosFirst = 2;
+  opt.lanczosRestart = 2;
+  opt.friction = true;
+  opt.frictionExplicit = true;
+  opt.frictionEtaBeads = {0.1};
+  REQUIRE_THROWS_AS(
+      optimizeRateInstanton(saddle, hs, 60.0 / kHbar, {}, hook, opt),
+      std::invalid_argument);
+
+  opt.friction = false;
+  opt.frictionExplicit = false;
+  opt.frictionEtaBeads.clear();
+  opt.discretization.assign(8, 1.0);
+  const RateInstanton weighted =
+      optimizeRateInstanton(saddle, hs, 60.0 / kHbar, {}, hook, opt);
+  REQUIRE(std::isfinite(weighted.ringPotential));
+
+  const std::vector<MatrixXd> blocks(2, MatrixXd::Identity(1, 1));
+  const std::vector<VectorXd> tau(1, VectorXd::Ones(1));
+  REQUIRE_THROWS_AS(ringSpectrum(blocks, 1.0, tau), std::invalid_argument);
+  REQUIRE_THROWS_AS(cyclicRingLogAbsDet(-1.0, blocks), std::invalid_argument);
+
+  RateInstanton bare;
+  RingBeadHessian bead = [](long, const VectorXd &) {
+    return MatrixXd::Identity(1, 1);
+  };
+  REQUIRE_THROWS_AS(instantonRate(bare, bead, MatrixXd::Identity(1, 1), 0.0),
+                    std::invalid_argument);
+  bare.beads.assign(4, VectorXd::Zero(1));
+  bare.betaN = 1.0;
+  bare.discretization = {1.0, 1.0, 1.0, -1.0};
+  REQUIRE_THROWS_AS(instantonRate(bare, bead, MatrixXd::Identity(1, 1), 0.0),
+                    std::invalid_argument);
+  bare.discretization = {1.0, 1.0, 1.0, 1.0};
+  try {
+    instantonRate(bare, bead, MatrixXd::Identity(1, 1), 0.0);
+  } catch (const std::exception &) {
+  }
+}

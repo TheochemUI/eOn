@@ -327,6 +327,62 @@ TEST_CASE("relax engine destroy NULL is a no-op", "[relax][abi]") {
   REQUIRE(eon_relax_reset(nullptr) == EON_RELAX_NULL_ENGINE);
 }
 
+TEST_CASE("relax step rejects a band before it builds a path",
+          "[relax][abi]") {
+  REQUIRE(eon_relax_step(nullptr, nullptr, nullptr, nullptr, nullptr) ==
+          EON_RELAX_NULL_ENGINE);
+  EonRelaxEngine *eng = eon_relax_create(nullptr, 0, nullptr, 0);
+  REQUIRE(eng != nullptr);
+  eon_relax_outcome_t out{};
+  out.version = eon_relax_version_t EON_RELAX_VERSION_INIT;
+  REQUIRE(eon_relax_step(eng, nullptr, surface_fail, nullptr, &out) ==
+          EON_RELAX_NULL_BAND);
+  eon_relax_band_t band{};
+  band.version = eon_relax_version_t EON_RELAX_VERSION_INIT;
+  band.n_images = 3;
+  band.n_atoms = 1;
+  REQUIRE(eon_relax_step(eng, &band, nullptr, nullptr, &out) ==
+          EON_RELAX_NULL_SURFACE);
+  REQUIRE(eon_relax_step(eng, &band, surface_fail, nullptr, nullptr) ==
+          EON_RELAX_NULL_OUTCOME);
+  REQUIRE(eon_relax_run(eng, &band, nullptr, nullptr, &out) ==
+          EON_RELAX_NULL_SURFACE);
+  REQUIRE(eon_relax_run(eng, &band, surface_fail, nullptr, nullptr) ==
+          EON_RELAX_NULL_OUTCOME);
+  band.n_atoms = 0;
+  REQUIRE(eon_relax_step(eng, &band, surface_fail, nullptr, &out) ==
+          EON_RELAX_NATOMS);
+  band.n_atoms = 1;
+  double pos[9]{};
+  int32_t atomic[1]{1};
+  double boxes[27]{};
+  band.atomic_nrs = atomic;
+  band.boxes = boxes;
+  REQUIRE(eon_relax_step(eng, &band, surface_fail, nullptr, &out) ==
+          EON_RELAX_NULL_POSITIONS);
+  band.positions = pos;
+  band.atomic_nrs = nullptr;
+  REQUIRE(eon_relax_step(eng, &band, surface_fail, nullptr, &out) ==
+          EON_RELAX_NULL_ATOMIC_NRS);
+  band.atomic_nrs = atomic;
+  band.boxes = nullptr;
+  REQUIRE(eon_relax_step(eng, &band, surface_fail, nullptr, &out) ==
+          EON_RELAX_NULL_BOXES);
+  band.boxes = boxes;
+  band.version.major = 0;
+  REQUIRE(eon_relax_step(eng, &band, surface_fail, nullptr, &out) ==
+          EON_RELAX_ABI_MISMATCH);
+  REQUIRE(std::string(eon_relax_status_name(EON_RELAX_KIND_NEB,
+                                            EON_RELAX_NEB_INIT)) == "INIT");
+  REQUIRE(std::string(eon_relax_status_name(
+              EON_RELAX_KIND_NEB, EON_RELAX_NEB_BAD_MAX_ITERATIONS)) ==
+          "BAD_MAX_ITERATIONS");
+  REQUIRE(std::string(eon_relax_status_name(EON_RELAX_KIND_NEB,
+                                            EON_RELAX_NEB_RUNNING)) ==
+          "RUNNING");
+  eon_relax_destroy(eng);
+}
+
 TEST_CASE("relax engine status_name is fail-closed", "[relax][abi]") {
   REQUIRE(std::string(eon_relax_status_name(EON_RELAX_KIND_NEB,
                                             EON_RELAX_NEB_GOOD)) == "GOOD");

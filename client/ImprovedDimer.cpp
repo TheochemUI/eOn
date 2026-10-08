@@ -149,9 +149,10 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     x1->setEvaluation(forward->getForcesRaw(), forward->getPotentialEnergy());
   }
 
-  // x0 and x1 in one call when both need one, so two calculator groups
-  // take one each; a cached x0 costs nothing.
-  {
+  // A batching potential evaluates both images in the block below.
+  // evaluateTogether would clear the dirty flags first, and that block
+  // would then see nothing to do.
+  if (!pot->supportsBatchEvaluation()) {
     Matter *const ends[] = {x0.get(), x1.get()};
     eonc::evaluateTogether(*pot, ends);
   }
