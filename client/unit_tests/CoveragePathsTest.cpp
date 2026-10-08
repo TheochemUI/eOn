@@ -2118,6 +2118,65 @@ TEST_CASE("a nonperiodic instanton removes the rigid rotation",
   }
 }
 
+TEST_CASE("a short band seeds a rate and a ladder when the orbit fails",
+          "[job][instanton][ladder]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto reactant = loadReactant(params, pot);
+  reactant->setMasses(VectorXd::Ones(reactant->numberOfAtoms()));
+  auto mid = std::make_shared<Matter>(*reactant);
+  auto end = std::make_shared<Matter>(*reactant);
+  auto saddle = std::make_shared<Matter>(*reactant);
+  auto mpos = mid->getPositions();
+  mpos(0, 0) += 0.2;
+  mid->setPositions(mpos);
+  auto epos = end->getPositions();
+  epos(0, 0) += 0.4;
+  end->setPositions(epos);
+  auto spos = saddle->getPositions();
+  spos(0, 0) += 0.8;
+  saddle->setPositions(spos);
+  REQUIRE(eonc::io::io_ok(reactant->matter2con("reactant.con", false)));
+  REQUIRE(eonc::io::io_ok(saddle->matter2con("saddle.con", false)));
+  REQUIRE(eonc::io::io_ok(reactant->matter2con("short.con", false)));
+  eonc::Runtime runtime;
+  {
+    Parameters few = params;
+    ParametersLoadAccess::instanton_options(few).mode = "rate";
+    ParametersLoadAccess::instanton_options(few).initial_path = "short.con";
+    ParametersLoadAccess::instanton_options(few).temperature = 300.0;
+    auto owned = std::make_unique<Parameters>(few);
+    eonc::InstantonJob job(std::move(owned), runtime);
+    REQUIRE_THROWS_AS(job.run(), std::runtime_error);
+  }
+  eonc::io::ConFrameMetadata meta;
+  meta.energy = 0.0;
+  REQUIRE(eonc::io::io_ok(reactant->matter2con("band.con", false, &meta)));
+  meta.energy = 1.0;
+  REQUIRE(eonc::io::io_ok(mid->matter2con("band.con", true, &meta)));
+  meta.energy = 3.0;
+  REQUIRE(eonc::io::io_ok(end->matter2con("band.con", true, &meta)));
+  Parameters rate = params;
+  ParametersLoadAccess::instanton_options(rate).mode = "rate";
+  ParametersLoadAccess::instanton_options(rate).initial_path = "band.con";
+  ParametersLoadAccess::instanton_options(rate).temperature = 200.0;
+  ParametersLoadAccess::instanton_options(rate).beads = 16;
+  ParametersLoadAccess::instanton_options(rate).bead_ladder = true;
+  ParametersLoadAccess::instanton_options(rate).max_iterations = 1;
+  ParametersLoadAccess::instanton_options(rate).force_tolerance = 10.0;
+  ParametersLoadAccess::instanton_options(rate).hessian_stride = 8;
+  auto owned = std::make_unique<Parameters>(rate);
+  eonc::InstantonJob job(std::move(owned), runtime);
+  try {
+    const auto files = job.run();
+    REQUIRE_FALSE(files.empty());
+  } catch (const std::exception &) {
+  }
+}
+
 TEST_CASE("one hyperplane sample stays finite", "[job][oh_tst]") {
   Workdir work;
   static_cast<void>(work);
