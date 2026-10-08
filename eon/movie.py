@@ -210,6 +210,10 @@ def get_fastest_process_id(state1, state2):
         if p["product"] == state2.number:
             if not fastest or fastest[1] < p["rate"]:
                 fastest = (i, p["rate"])
+    if fastest is None:
+        raise ValueError(
+            f"no process from state {state1.number} to {state2.number}"
+        )
     return fastest[0]
 
 
@@ -220,6 +224,10 @@ def get_fastest_process_rate(state1, state2):
         if p["product"] == state2.number:
             if not fastest or fastest[1] < p["rate"]:
                 fastest = (i, p["rate"])
+    if fastest is None:
+        raise ValueError(
+            f"no process from state {state1.number} to {state2.number}"
+        )
     return fastest[1]
 
 
