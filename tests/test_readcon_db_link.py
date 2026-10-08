@@ -34,6 +34,9 @@ def test_wrap_revision_matches_the_python_package():
     assert "subproject(\n        'readcon-db'" in meson or "subproject(\n    'readcon-db'" in meson
     assert f"'readcon-db',\n    version: '>={pin}'" in meson
     assert "'-lreadcon_db'" not in meson
+    fallback = meson.split("if not readcon_db_dep.found()", 1)[1].split("else", 1)[0]
+    assert "link_with: _readcon_db_order" in fallback
+    assert "_readcon_db_order = [_readcon_db_so]" in fallback
 
 
 def test_missing_library_leaves_iostatus_and_fails_the_check():
