@@ -24,6 +24,7 @@
 #include "eon/HelperFunctions.h"
 #include "eon/ImprovedDimer.h"
 #include "eon/IRACompare.h"
+#include "eon/LORRotation.h"
 #include "eon/InstantonJob.h"
 #include "eon/Matter.h"
 #include "eon/MinModeSaddleSearch.h"
@@ -2265,6 +2266,76 @@ TEST_CASE("an unknown saddle search method is rejected", "[job][process]") {
   auto owned = std::make_unique<Parameters>(params);
   eonc::ProcessSearchJob job(std::move(owned), runtime);
   REQUIRE_THROWS_AS(job.run(), std::runtime_error);
+}
+
+TEST_CASE("a two-coordinate cluster takes the planar rotation",
+          "[dimer][lor]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::dimer_options(params).rotations_max = 4;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, params));
+  auto matter = std::make_shared<Matter>(pot, params);
+  REQUIRE(eonc::io::io_ok(matter->con2matter(std::string("reactant.con"))));
+  const long n = matter->numberOfAtoms();
+  for (long i = 0; i < n; ++i) {
+    matter->setFixed(i, 1);
+  }
+  matter->setFixed(0, 0, 0);
+  matter->setFixed(0, 1, 0);
+  eonc::LORRotation lor(matter, params, pot);
+  AtomMatrix mode = AtomMatrix::Zero(n, 3);
+  mode(0, 0) = 1.0;
+  lor.compute(matter, mode);
+  REQUIRE(std::isfinite(lor.getEigenvalue()));
+}
+
+TEST_CASE("a batching dimer keeps a probed forward image",
+          "[dimer][batch]") {
+  Workdir work;
+  static_cast<void>(work);
+  Parameters params = ljParams();
+  ParametersLoadAccess::dimer_options(params).improved = true;
+  ParametersLoadAccess::dimer_options(params).rotation_backend =
+      eonc::DimerRotationBackend::Classical;
+  ParametersLoadAccess::dimer_options(params).remove_rotation = false;
+  ParametersLoadAccess::dimer_options(params).max_iterations = 2;
+  auto batch = std::make_shared<BatchLJ>(params);
+  auto matter = std::make_shared<Matter>(batch, params);
+  REQUIRE(eonc::io::io_ok(matter->con2matter(std::string("reactant.con"))));
+  auto pos = matter->getPositions();
+  pos(0, 0) += 0.01;
+  matter->setPositions(pos);
+  eonc::ImprovedDimer dimer(matter, params, batch);
+  AtomMatrix mode = AtomMatrix::Zero(matter->numberOfAtoms(), 3);
+  mode(0, 0) = 1.0;
+  dimer.evaluateWithProbe(matter, mode);
+  dimer.compute(matter, mode);
+  REQUIRE(std::isfinite(dimer.getEigenvalue()));
+}
+
+TEST_CASE("a rejected hop jumps and pushes the atoms apart",
+          "[job][basin_hopping]") {
+  Workdir work;
+  static_cast<void>(work);
+  std::filesystem::copy_file(work.dir() / "reactant.con", work.dir() / "pos.con",
+                             std::filesystem::copy_options::overwrite_existing);
+  Parameters params = ljParams();
+  ParametersLoadAccess::main_options(params).temperature = 1.0e-8;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 0;
+  ParametersLoadAccess::basin_hopping_options(params).steps = 3;
+  ParametersLoadAccess::basin_hopping_options(params).jump_max = 1;
+  ParametersLoadAccess::basin_hopping_options(params).jump_steps = 1;
+  ParametersLoadAccess::basin_hopping_options(params).significant_structure =
+      true;
+  ParametersLoadAccess::basin_hopping_options(params).displacement = 0.4;
+  ParametersLoadAccess::basin_hopping_options(params).stop_energy = -1.0e9;
+  eonc::Runtime runtime;
+  auto owned = std::make_unique<Parameters>(params);
+  eonc::BasinHoppingJob job(std::move(owned), runtime);
+  const auto files = job.run();
+  REQUIRE_FALSE(files.empty());
 }
 
 TEST_CASE("unknown hopping feedback stops the optimizer",
