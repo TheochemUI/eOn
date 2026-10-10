@@ -2026,6 +2026,43 @@ TEST_CASE("A converged ring is classified with exact Hessians and leaves a "
   REQUIRE(inst.ringPotential < 10.18);
 }
 
+TEST_CASE("A converged half ring is probed for an unstable odd mode",
+          "[Tunneling][Instanton]") {
+  // The probe sits behind every converged half ring of the Newton search:
+  // its Lanczos run costs ring evaluations, and on the Eckart barrier,
+  // where the one-bounce ring is the instanton, it leaves the ring alone.
+  const eonc::testing::Eckart pes;
+  VectorXd saddle = VectorXd::Zero(1);
+  MatrixXd hs(1, 1);
+  hs(0, 0) = pes.curvature(0.0);
+  const double beta = 1.0 / (kBoltzmann * 0.5 * crossoverTemperature(hs));
+  auto run = [&](bool probe, long &calls) {
+    const BatchPotential bare = pes.batch();
+    calls = 0;
+    const BatchPotential counted = [&](const std::vector<VectorXd> &q,
+                                       std::vector<double> &v,
+                                       std::vector<VectorXd> &g) {
+      ++calls;
+      bare(q, v, g);
+    };
+    RateInstantonOptions opt;
+    opt.beads = 32;
+    opt.forceTolerance = 1e-8;
+    opt.checkOddSector = probe;
+    return optimizeRateInstanton(saddle, hs, beta, {}, counted, opt);
+  };
+  long plainCalls = 0;
+  long probedCalls = 0;
+  const RateInstanton plain = run(false, plainCalls);
+  const RateInstanton probed = run(true, probedCalls);
+  CAPTURE(plainCalls, probedCalls, plain.ringPotential, probed.ringPotential);
+  REQUIRE(plain.converged);
+  REQUIRE(probed.converged);
+  REQUIRE(probedCalls > plainCalls);
+  REQUIRE_THAT(probed.ringPotential,
+               Catch::Matchers::WithinAbs(plain.ringPotential, 1e-12));
+}
+
 // A ring in a harmonic well, V = q^2 / 2, searched with a saddle Hessian
 // whose barrier curvature is -1: the well has no index-1 ring, the index-1
 // step climbs the centroid and takes exact Newton on every internal mode,

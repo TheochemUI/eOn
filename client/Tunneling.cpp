@@ -3219,6 +3219,48 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
 
   const bool cool = static_cast<long>(guess.size()) != nBeads &&
                     inst.temperature < 0.75 * inst.crossover;
+  // A half ring cannot see modes odd under j -> N-j, so two copies of the
+  // instanton are a stationary point it can accept or sit on. An unstable
+  // odd mode there sends the search onto the whole ring from a kick along
+  // that mode.
+  auto probeOddSector = [&](NewtonOut &got, double spring) {
+    const long nGot = static_cast<long>(got.beads.size());
+    bool mirrored = (got.converged || got.stalledHalf) && options.halfRing &&
+                    options.checkOddSector && nGot == nBeads && nGot % 2 == 0;
+    for (long j = 1; mirrored && j < nGot / 2; ++j) {
+      mirrored = (got.beads[static_cast<size_t>(j)] -
+                  got.beads[static_cast<size_t>(nGot - j)])
+                     .norm() <= 1e-8;
+    }
+    if (!mirrored) {
+      return;
+    }
+    const Eigen::SelfAdjointEigenSolver<MatrixXd> es0(
+        0.5 * (hessSaddle + hessSaddle.transpose()));
+    const double barrierCurvature = std::abs(es0.eigenvalues()(0));
+    const RingEval here =
+        evaluateRing(got.beads, spring, potential, options.energyShift,
+                     frictionEta(options, got.beads.size()));
+    std::vector<VectorXd> oddMode;
+    const double oddCurv =
+        lowestOddMode(got.beads, here, spring, potential, oddMode,
+                      options.lanczosFirst, options.lanczosStep);
+    if (!(oddCurv < -1e-3 * barrierCurvature) ||
+        oddMode.size() != got.beads.size()) {
+      return;
+    }
+    std::vector<VectorXd> kicked = got.beads;
+    const double kick = std::sqrt(2.0 / (inst.betaN * -oddCurv));
+    for (size_t k = 0; k < kicked.size(); ++k) {
+      kicked[k] += kick * oddMode[k];
+    }
+    RateInstantonOptions whole = options;
+    whole.halfRing = false;
+    const long before = got.iterations;
+    got = newtonInstanton(std::move(kicked), spring, hessSaddle, whole,
+                          potential);
+    got.iterations += before;
+  };
   // One dimension solves the requested temperature before any walk. A
   // higher-dimensional empty guess below 0.75 Tc keeps the walk, which
   // starts from a curvature copied off the saddle.
@@ -3231,8 +3273,9 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
     }
     const double bnh = inst.betaN * kHbar;
     const double spring = 1.0 / (bnh * bnh);
-    const NewtonOut got = newtonInstanton(std::move(guess), spring, hessSaddle,
-                                          options, potential);
+    NewtonOut got = newtonInstanton(std::move(guess), spring, hessSaddle,
+                                    options, potential);
+    probeOddSector(got, spring);
     inst.beads = got.beads;
     inst.energies = got.energies;
     inst.ringPotential = got.ringPotential;
@@ -3244,7 +3287,7 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
       return inst;
     }
   }
-  if (cool) {
+  {
     std::vector<double> temps;
     for (double t = 0.85 * inst.crossover; t > inst.temperature * 1.05;
          t *= 0.75) {
@@ -3253,7 +3296,12 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
     temps.push_back(inst.temperature);
     std::vector<VectorXd> beads;
     RateInstanton last;
-    long used = 0;
+    // A one-dimensional first try spent part of the budget already; with
+    // nothing left it is the answer.
+    long used = saddle.size() == 1 ? inst.iterations : 0;
+    if (used >= options.maxIterations) {
+      return inst;
+    }
     bool targetRan = false;
     const ColMajorXd hS = 0.5 * (hessSaddle + hessSaddle.transpose());
     const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(hS);
@@ -3295,63 +3343,6 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
     }
     return last;
   }
-
-  if (static_cast<long>(guess.size()) != nBeads) {
-    const ColMajorXd hS = 0.5 * (hessSaddle + hessSaddle.transpose());
-    const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(hS);
-    guess = cosineSeed(saddle, es.eigenvectors().col(0), es.eigenvalues()(0),
-                       inst.temperature, inst.crossover, nBeads, potential);
-  }
-  const double bnh = inst.betaN * kHbar;
-  const double spring = 1.0 / (bnh * bnh);
-  NewtonOut got =
-      newtonInstanton(std::move(guess), spring, hessSaddle, options, potential);
-  // A half ring cannot see modes odd under j -> N-j, so two copies of the
-  // instanton are a stationary point it can accept or sit on. An unstable
-  // odd mode there sends the search onto the whole ring from a kick along
-  // that mode.
-  const long nGot = static_cast<long>(got.beads.size());
-  bool mirrored = (got.converged || got.stalledHalf) && options.halfRing &&
-                  options.checkOddSector && nGot == nBeads && nGot % 2 == 0;
-  for (long j = 1; mirrored && j < nGot / 2; ++j) {
-    mirrored = (got.beads[static_cast<size_t>(j)] -
-                got.beads[static_cast<size_t>(nGot - j)])
-                   .norm() <= 1e-8;
-  }
-  if (mirrored) {
-    const Eigen::SelfAdjointEigenSolver<MatrixXd> es0(
-        0.5 * (hessSaddle + hessSaddle.transpose()));
-    const double barrierCurvature = std::abs(es0.eigenvalues()(0));
-    const RingEval here =
-        evaluateRing(got.beads, spring, potential, options.energyShift,
-                     frictionEta(options, got.beads.size()));
-    std::vector<VectorXd> oddMode;
-    const double oddCurv =
-        lowestOddMode(got.beads, here, spring, potential, oddMode,
-                      options.lanczosFirst, options.lanczosStep);
-    if (oddCurv < -1e-3 * barrierCurvature &&
-        oddMode.size() == got.beads.size()) {
-      std::vector<VectorXd> kicked = got.beads;
-      const double kick = std::sqrt(2.0 / (inst.betaN * -oddCurv));
-      for (size_t k = 0; k < kicked.size(); ++k) {
-        kicked[k] += kick * oddMode[k];
-      }
-      RateInstantonOptions whole = options;
-      whole.halfRing = false;
-      const long before = got.iterations;
-      got = newtonInstanton(std::move(kicked), spring, hessSaddle, whole,
-                            potential);
-      got.iterations += before;
-    }
-  }
-  inst.beads = got.beads;
-  inst.energies = got.energies;
-  inst.ringPotential = got.ringPotential;
-  inst.bN = got.bN;
-  inst.iterations = got.iterations;
-  inst.converged = got.converged;
-  inst.collapsed = got.collapsed;
-  return inst;
 }
 
 } // namespace
