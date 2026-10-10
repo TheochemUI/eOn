@@ -134,16 +134,19 @@ Eigen::VectorXd complementEigenvalues(const Eigen::MatrixXd &hessian,
   }
   const Eigen::MatrixXd sym = 0.5 * (hessian + hessian.transpose());
   // Unit columns, so that the rank decision compares directions and not
-  // their lengths; a zero column (the rotation a linear molecule lacks)
-  // removes nothing.
+  // their lengths. A column at round-off of the longest (the rotation about
+  // a linear molecule's axis) removes nothing, rather than a direction of
+  // noise scaled up.
   Eigen::MatrixXd unit(n, removed.cols());
   long kept = 0;
+  const double largest =
+      removed.cols() > 0 ? removed.colwise().norm().maxCoeff() : 0.0;
+  if (!std::isfinite(largest)) {
+    throw std::invalid_argument("a removed direction is not finite");
+  }
   for (long c = 0; c < removed.cols(); ++c) {
     const double norm = removed.col(c).norm();
-    if (!std::isfinite(norm)) {
-      throw std::invalid_argument("a removed direction is not finite");
-    }
-    if (norm > 0.0) {
+    if (norm > 1e-8 * largest) {
       unit.col(kept++) = removed.col(c) / norm;
     }
   }
