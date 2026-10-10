@@ -130,8 +130,9 @@ calculator groups the same way a NEB spreads its images.
 | `tunnel_asymmetry_zpe` | Asymmetry of the local ground states: {math}`V_p - V_r + \tfrac{\hbar}{2}\left(\sum_k \omega_k^{p} - \sum_k \omega_k^{r}\right)` over every vibration of the two minimum Hessians, eV |
 | `instanton_temperature_K` | Temperature: {math}`1/(k_B \beta)` for the imaginary time used |
 | `instanton_mode_separation` | Separation: how well the kink's translation separates from the other modes |
-| `instanton_symmetric` | Symmetry: 1 when {math}`\beta|\Delta| < 0.1` |
-| `instanton_beta_asymmetry` | Magnitude: {math}`\beta|\Delta|` |
+| `instanton_symmetric` | Symmetry: 1 when {math}`\beta|V_p - V_r| < 0.1` |
+| `instanton_beta_asymmetry` | Magnitude: {math}`\beta|V_p - V_r|` |
+| `instanton_symmetrized` | Levelled: 1 when the instanton ran on the levelled surface below |
 
 Two minima of one energy can still hold different zero-point energies,
 when an isotope or the cage around a defect makes one well stiffer than the
@@ -145,9 +146,30 @@ difference splits the levels 140 times further than tunnelling does, and
 {math}`\sqrt{\Delta^2 + \Delta_0^2}` lands within 6 percent of the exact
 gap.
 
-The propagator ratio measures the splitting {math}`\Delta_0` when the two wells lie within
-a small fraction of {math}`k_B T` of each other. `instanton_symmetric = 0`
-flags a pair outside that window. The job still writes the path and the
+Most two-level systems in a glass also have minima of different energy,
+with the asymmetry comparable to the splitting. On such a surface no kink
+joins the two minima at rest, and the propagator ratio measures
+{math}`\Delta_0` only while the wells lie within a small fraction of
+{math}`k_B T` of each other. The job therefore levels the wells first. It
+subtracts {math}`(V_p - V_r)\,\sigma(\xi)`, with {math}`\xi` the projection
+of {math}`q` on the line from the reactant to the product (0 at one, 1 at
+the other) and {math}`\sigma = 6\xi^5 - 15\xi^4 + 10\xi^3`. Both minima
+stay stationary with their Hessians, since {math}`\sigma`, {math}`\sigma'`
+and {math}`\sigma''` vanish at both ends, and the instanton of the levelled
+surface gives the tunnelling matrix element. The difference of the minima
+goes back into {math}`\Delta`, so moving the bias out of the path and into
+the asymmetry, as
+{cite:t}`inst-erakovicVibrationalTunnelingSpectra2022` do for the coupling
+of nondegenerate well states. That holds while {math}`|V_p - V_r|` is small
+against the barrier, the regime of a two-level system. On a quartic double
+well tilted until {math}`\beta |V_p - V_r| = 0.47`, the matrix element stays
+within 1 percent of the level wells' and {math}`\sqrt{\Delta^2 + \Delta_0^2}`
+within 2 percent of the exact gap. `instanton_action` is then the action on
+the levelled surface, and the frames of `instanton.con` keep the energies of
+the real one.
+
+`symmetrize = false` keeps the bare surface. `instanton_symmetric = 0` then
+flags a pair outside the window. The job still writes the path and the
 action, but no `tunnel_splitting_instanton`, and reports success: the flag
 says why. For such a pair, set `mode = rate`, give the saddle and a
 temperature below the crossover, and read the rate in the next sections.

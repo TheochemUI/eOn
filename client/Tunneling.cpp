@@ -999,6 +999,37 @@ double zeroPointDifference(const MatrixXd &hessStart, const MatrixXd &hessEnd,
   return zeroPoint(hessEnd) - zeroPoint(hessStart);
 }
 
+EnergyBias::EnergyBias(const VectorXd &start, const VectorXd &end, double delta)
+    : start_(start),
+      d_(end - start),
+      dd_(d_.squaredNorm()),
+      delta_(delta) {
+  if (start.size() != end.size() || !(dd_ > 0.0) || !std::isfinite(delta)) {
+    throw std::invalid_argument(
+        "EnergyBias: two distinct minima of one dimension and a finite delta");
+  }
+}
+
+double EnergyBias::xi(const VectorXd &q) const {
+  return std::clamp((q - start_).dot(d_) / dd_, 0.0, 1.0);
+}
+
+double EnergyBias::value(const VectorXd &q) const {
+  const double x = xi(q);
+  return delta_ * x * x * x * (10.0 + x * (-15.0 + 6.0 * x));
+}
+
+VectorXd EnergyBias::gradient(const VectorXd &q) const {
+  const double x = xi(q);
+  return (delta_ * 30.0 * x * x * (1.0 - x) * (1.0 - x) / dd_) * d_;
+}
+
+MatrixXd EnergyBias::hessian(const VectorXd &q) const {
+  const double x = xi(q);
+  return (delta_ * 60.0 * x * (1.0 - x) * (1.0 - 2.0 * x) / (dd_ * dd_)) *
+         (d_ * d_.transpose());
+}
+
 double crossoverTemperature(const MatrixXd &hessSaddle) {
   const Eigen::SelfAdjointEigenSolver<MatrixXd> es(
       0.5 * (hessSaddle + hessSaddle.transpose()));

@@ -569,6 +569,101 @@ TEST_CASE("The instanton TLS energy carries the zero-point asymmetry of every "
   REQUIRE(std::hypot(inst.asymmetry, inst.delta0) < 0.01 * exact);
 }
 
+TEST_CASE("The energy bias levels two wells and leaves both minima alone",
+          "[Tunneling][Instanton]") {
+  VectorXd a(2), b(2);
+  a << -1.0, 0.2;
+  b << 1.5, -0.4;
+  const EnergyBias bias(a, b, 0.03);
+  REQUIRE(bias.value(a) == 0.0);
+  REQUIRE_THAT(bias.value(b), WithinRel(0.03, 1e-15));
+  for (const VectorXd &end : {a, b}) {
+    REQUIRE(bias.gradient(end).norm() == 0.0);
+    REQUIRE(bias.hessian(end).norm() == 0.0);
+  }
+  // Past either minimum the bias stays flat.
+  REQUIRE(bias.value(a - 0.3 * (b - a)) == 0.0);
+  REQUIRE_THAT(bias.value(b + 0.3 * (b - a)), WithinRel(0.03, 1e-15));
+  // Gradient and Hessian against central differences inside the segment.
+  VectorXd q(2);
+  q << 0.1, 0.35;
+  const double h = 1e-5;
+  for (int i = 0; i < 2; ++i) {
+    VectorXd e = VectorXd::Zero(2);
+    e(i) = h;
+    REQUIRE_THAT(
+        bias.gradient(q)(i),
+        WithinRel((bias.value(q + e) - bias.value(q - e)) / (2 * h), 1e-7));
+    const VectorXd column =
+        (bias.gradient(q + e) - bias.gradient(q - e)) / (2 * h);
+    REQUIRE(((bias.hessian(q).col(i) - column).norm()) <
+            1e-6 * bias.hessian(q).norm());
+  }
+  REQUIRE_THROWS_AS(EnergyBias(a, a, 0.1), std::invalid_argument);
+}
+
+TEST_CASE("Wells of different depth tunnel on the levelled surface",
+          "[Tunneling][Instanton]") {
+  // The tilted quartic has beta |dV| = 0.47, past the 0.1 the propagator
+  // ratio of the bare surface needs; the skewed valley adds a 3 meV
+  // zero-point split to a smaller tilt. On the levelled surface the matrix
+  // element stays at that of level wells, and with the zero-point asymmetry
+  // the energy lands on the exact gap.
+  struct Case {
+    double kappa, eps, tolerance;
+  };
+  for (const Case c : {Case{0.0, 1e-3, 0.02}, Case{0.05, 2e-4, 0.08}}) {
+    CAPTURE(c.kappa, c.eps);
+    const SkewedValley pes{0.12, 4.0, c.kappa, c.eps};
+    const VectorXd a = pes.minimum(-1.0);
+    const VectorXd b = pes.minimum(1.0);
+    const double dV = pes.value(b) - pes.value(a);
+    const EnergyBias bias(a, b, dV);
+    const BatchPotential bare = pes.batch();
+    const BatchPotential surface = [&](const std::vector<VectorXd> &q,
+                                       std::vector<double> &v,
+                                       std::vector<VectorXd> &g) {
+      bare(q, v, g);
+      for (size_t j = 0; j < q.size(); ++j) {
+        v[j] -= bias.value(q[j]);
+        g[j] -= bias.gradient(q[j]);
+      }
+    };
+    const double omega = pathOmega(pes.hessian(a), pes.hessian(b), a, b);
+    const double betaHbar = 30.0 / omega;
+    InstantonOptions opt;
+    opt.beads = 192;
+    opt.forceTolerance = 1e-7;
+    opt.maxIterations = 20000;
+    Instanton inst = optimizeInstanton(a, b, betaHbar, {}, surface, opt);
+    REQUIRE(inst.converged);
+    REQUIRE(inst.symmetricEnough);
+    instantonSplitting(
+        inst,
+        [&](long, const VectorXd &q) {
+          return MatrixXd(pes.hessian(q) - bias.hessian(q));
+        },
+        pes.hessian(a), pes.hessian(b));
+    const double zpe = zeroPointDifference(pes.hessian(a), pes.hessian(b), 0);
+    const double exact = pes.adiabaticGap();
+    CAPTURE(dV, zpe, inst.delta0, exact);
+    REQUIRE_THAT(std::hypot(dV + zpe, inst.delta0),
+                 WithinRel(exact, c.tolerance));
+    if (c.kappa == 0.0) {
+      REQUIRE(std::abs(dV) * betaHbar / kHbar > 0.1);
+      const SkewedValley level{0.12, 4.0, 0.0, 0.0};
+      Instanton flat =
+          optimizeInstanton(level.minimum(-1.0), level.minimum(1.0), betaHbar,
+                            {}, level.batch(), opt);
+      instantonSplitting(
+          flat, [&](long, const VectorXd &q) { return level.hessian(q); },
+          level.hessian(level.minimum(-1.0)),
+          level.hessian(level.minimum(1.0)));
+      REQUIRE_THAT(inst.delta0, WithinRel(flat.delta0, 0.01));
+    }
+  }
+}
+
 TEST_CASE("Instanton inputs are checked", "[Tunneling][Instanton]") {
   const CurvedValley pes{0.12, 4.0, 0.0};
   VectorXd a(2);

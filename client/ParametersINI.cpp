@@ -1787,6 +1787,7 @@ int load_ini(const INIReader &ini, Parameters &params) {
       }
     }
     o.half_ring = ini.GetBoolean("Instanton", "half_ring", o.half_ring);
+    o.symmetrize = ini.GetBoolean("Instanton", "symmetrize", o.symmetrize);
     o.initial_hessians =
         ini.Get("Instanton", "initial_hessians", o.initial_hessians);
     if (o.initial_hessians != "saddle" &&

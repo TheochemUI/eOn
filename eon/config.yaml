@@ -1219,6 +1219,13 @@ Instanton:
             kind: int
             default: 1
 
+        # Mode splitting: minima of different energy tunnel on the surface
+        # with the difference switched off along the path. false writes no
+        # splitting once beta |dV| reaches 0.1.
+        symmetrize:
+            kind: bool
+            default: true
+
         saddle_filename:
             kind: string
             default: saddle.con

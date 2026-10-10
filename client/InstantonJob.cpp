@@ -1107,32 +1107,58 @@ std::vector<std::string> InstantonJob::run(void) {
                 "of freedom",
                 o.beads, betaHbar * kTimeUnitFs, n);
 
-  tunneling::Instanton inst = tunneling::optimizeInstanton(
-      qStart, qEnd, betaHbar, guess, evaluate, opt);
-  EONC_LOG_INFO("[Instanton] action {:.6f} after {} iterations{}", inst.action,
-                inst.iterations, inst.converged ? "" : " (not converged)");
+  // Minima of different energy tunnel on the surface with that difference
+  // switched off along the path; the bias leaves both minima and their
+  // Hessians alone.
+  std::vector<double> vEnds;
+  std::vector<VectorXd> gEnds;
+  evaluate({qStart, qEnd}, vEnds, gEnds);
+  const double dV = vEnds.at(1) - vEnds.at(0);
+  const bool symmetrized = o.symmetrize && dV != 0.0;
+  const tunneling::EnergyBias bias(qStart, qEnd, symmetrized ? dV : 0.0);
+  const tunneling::BatchPotential surface = [&](const std::vector<VectorXd> &q,
+                                                std::vector<double> &v,
+                                                std::vector<VectorXd> &grad) {
+    evaluate(q, v, grad);
+    for (size_t j = 0; symmetrized && j < q.size(); ++j) {
+      v[j] -= bias.value(q[j]);
+      grad[j] -= bias.gradient(q[j]);
+    }
+  };
+  tunneling::Instanton inst =
+      tunneling::optimizeInstanton(qStart, qEnd, betaHbar, guess, surface, opt);
+  inst.asymmetry = dV;
+  for (size_t j = 0; j < inst.path.size(); ++j) {
+    inst.energies[j] += bias.value(inst.path[j]);
+  }
+  EONC_LOG_INFO("[Instanton] action {:.6f} after {} iterations{}{}",
+                inst.action, inst.iterations,
+                inst.converged ? "" : " (not converged)",
+                symmetrized ? ", wells levelled" : "");
 
   bool splitOk = false;
   std::string failure;
-  // beta |delta|: the propagator ratio reads delta0 only when the wells
-  // lie within a small fraction of kB T of each other.
-  const double betaAsymmetry =
-      std::abs(inst.asymmetry) * betaHbar / tunneling::kHbar;
-  if (inst.converged && !inst.symmetricEnough) {
+  // beta |delta|: without the levelled surface, the propagator ratio reads
+  // delta0 only when the wells lie within a small fraction of kB T of each
+  // other.
+  const double betaAsymmetry = std::abs(dV) * betaHbar / tunneling::kHbar;
+  inst.symmetricEnough = betaAsymmetry < 0.1;
+  const bool splittable = symmetrized || inst.symmetricEnough;
+  if (inst.converged && !splittable) {
     EONC_LOG_WARNING("[Instanton] beta |delta| = {:.3g}: the wells differ by "
                      "{:.4g} eV, too far for the splitting; the path and "
                      "action are written, the splitting is not",
                      betaAsymmetry, inst.asymmetry);
   }
-  if (inst.converged && inst.symmetricEnough) {
+  if (inst.converged && splittable) {
     const long stride = std::max<long>(1, o.hessian_stride);
     const long P = o.beads;
     std::map<long, MatrixXd> anchors;
     auto anchor = [&](long j) -> const MatrixXd & {
       auto it = anchors.find(j);
       if (it == anchors.end()) {
-        it = anchors.emplace(j, hessianAt(inst.path[static_cast<size_t>(j)]))
-                 .first;
+        const VectorXd &q = inst.path[static_cast<size_t>(j)];
+        it = anchors.emplace(j, hessianAt(q) - bias.hessian(q)).first;
       }
       return it->second;
     };
@@ -1179,6 +1205,8 @@ std::vector<std::string> InstantonJob::run(void) {
           {"instanton_converged", inst.converged ? 1.0 : 0.0});
       meta.scalars.push_back({"tunnel_asymmetry", inst.asymmetry});
       meta.scalars.push_back({"tunnel_asymmetry_zpe", asymmetryZpe});
+      meta.scalars.push_back(
+          {"instanton_symmetrized", symmetrized ? 1.0 : 0.0});
       if (splitOk) {
         meta.scalars.push_back({"tunnel_splitting_instanton", inst.delta0});
         meta.scalars.push_back(
@@ -1202,7 +1230,7 @@ std::vector<std::string> InstantonJob::run(void) {
 
   // A converged path between wells too far apart is a result, not a
   // failure: the flags say why no splitting was written.
-  const bool good = splitOk || (inst.converged && !inst.symmetricEnough);
+  const bool good = splitOk || (inst.converged && !splittable);
   const auto status = good ? RunStatus::GOOD
                            : (inst.converged ? RunStatus::FAIL_POTENTIAL_FAILED
                                              : RunStatus::FAIL_MAX_ITERATIONS);
@@ -1221,6 +1249,7 @@ std::vector<std::string> InstantonJob::run(void) {
   env.extras.emplace_back("instanton_beta_asymmetry", betaAsymmetry);
   env.extras.emplace_back("instanton_symmetric",
                           inst.symmetricEnough ? 1.0 : 0.0);
+  env.extras.emplace_back("instanton_symmetrized", symmetrized ? 1.0 : 0.0);
   if (splitOk) {
     env.extras.emplace_back("tunnel_splitting_instanton", inst.delta0);
     env.extras.emplace_back("tls_energy_instanton",

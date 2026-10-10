@@ -2940,8 +2940,9 @@ TEST_CASE_METHOD(JobIntegrationFixture,
   if (!copyTestData("neb_lj13")) {
     SKIP("neb_lj13 test system not found");
   }
-  // The two LJ13 minima differ by 0.86 eV: the path converges, and the
-  // splitting is withheld because beta |delta| is far above 0.1.
+  // The two LJ13 minima differ by 0.86 eV. Without the levelled surface the
+  // path converges and the splitting is withheld, because beta |delta| is
+  // far above 0.1.
   writeConfig(R"(
 [Main]
 job = instanton
@@ -2954,6 +2955,7 @@ beads = 64
 beta_hbar_omega = 30
 max_iterations = 4000
 force_tolerance = 1e-3
+symmetrize = false
 )");
   auto results = runJob();
   REQUIRE(results.at("termination_reason") == "0");
@@ -2978,6 +2980,49 @@ force_tolerance = 1e-3
   REQUIRE(resultsDatKeyCount(dat, "instanton_beta_asymmetry") == 1);
   REQUIRE(resultsDatKeyCount(dat, "instanton_symmetric") == 1);
   REQUIRE(resultsDatKeyCount(dat, "tunnel_asymmetry_zpe") == 1);
+  REQUIRE(std::stod(results.at("instanton_symmetrized")) == 0.0);
+}
+
+TEST_CASE_METHOD(
+    JobIntegrationFixture,
+    "InstantonJob levels an asymmetric pair and writes its splitting",
+    "[job][instanton][integration]") {
+  if (!copyTestData("neb_lj13")) {
+    SKIP("neb_lj13 test system not found");
+  }
+  // The same 0.86 eV pair on the levelled surface: the splitting is written,
+  // and the energy is dominated by the asymmetry. In these reduced units
+  // (unit masses) the zero-point difference alone moves the asymmetry by
+  // 0.4 eV.
+  writeConfig(R"(
+[Main]
+job = instanton
+
+[Potential]
+potential = lj
+
+[Instanton]
+beads = 64
+beta_hbar_omega = 30
+max_iterations = 4000
+force_tolerance = 1e-3
+)");
+  auto results = runJob();
+  REQUIRE(results.at("termination_reason") == "0");
+  REQUIRE(std::stod(results.at("instanton_symmetrized")) == 1.0);
+  REQUIRE(std::stod(results.at("instanton_symmetric")) == 0.0);
+  REQUIRE_THAT(std::stod(results.at("tunnel_asymmetry")),
+               Catch::Matchers::WithinAbs(0.8634, 1e-3));
+  REQUIRE(results.count("tunnel_splitting_instanton") == 1);
+  const double delta0 = std::stod(results.at("tunnel_splitting_instanton"));
+  const double asym = std::stod(results.at("tunnel_asymmetry_zpe"));
+  CAPTURE(delta0, asym);
+  REQUIRE(std::isfinite(delta0));
+  REQUIRE(delta0 > 0.0);
+  REQUIRE(delta0 < 1e-2 * std::abs(asym));
+  REQUIRE(std::abs(asym - 0.8634) > 0.1);
+  REQUIRE_THAT(std::stod(results.at("tls_energy_instanton")),
+               Catch::Matchers::WithinRel(std::hypot(asym, delta0), 1e-9));
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,

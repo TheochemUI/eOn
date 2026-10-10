@@ -220,6 +220,30 @@ void instantonSplitting(Instanton &inst, const BeadHessian &hessian,
 double zeroPointDifference(const MatrixXd &hessStart, const MatrixXd &hessEnd,
                            long rigidModes);
 
+/// delta sigma(xi) between two minima, xi = (q - start) . d / |d|^2 with
+/// d = end - start, and sigma = 6 xi^5 - 15 xi^4 + 10 xi^3 clamped to
+/// [0, 1]. sigma, sigma' and sigma'' vanish at both ends, so V - bias keeps
+/// both minima stationary with their Hessians, and with delta = V(end) -
+/// V(start) it puts the two wells at one energy. The instanton of that
+/// surface gives the tunnelling matrix element of a pair whose minima differ
+/// in energy, the bias moved out of the path and into the asymmetry; it
+/// stays a perturbation while |delta| is small against the barrier, the
+/// regime of a two-level system.
+class EnergyBias {
+public:
+  EnergyBias(const VectorXd &start, const VectorXd &end, double delta);
+  double value(const VectorXd &q) const;
+  VectorXd gradient(const VectorXd &q) const;
+  MatrixXd hessian(const VectorXd &q) const;
+  double delta() const { return delta_; }
+
+private:
+  double xi(const VectorXd &q) const;
+  VectorXd start_, d_;
+  double dd_ = 0.0;
+  double delta_ = 0.0;
+};
+
 // Ring-polymer instanton for the thermal rate below the crossover
 // temperature (Richardson and Althorpe, J. Chem. Phys. 131, 214106 (2009)).
 //

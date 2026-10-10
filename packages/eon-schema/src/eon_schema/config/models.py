@@ -2669,6 +2669,14 @@ class InstantonConfig(BaseModel):
             " between; 1 takes one on every bead."
         ),
     )
+    symmetrize: bool = Field(
+        default=True,
+        description=(
+            "Mode splitting: minima of different energy tunnel on the surface"
+            " with the difference switched off along the path. False writes"
+            " no splitting once beta |dV| reaches 0.1."
+        ),
+    )
     saddle_filename: str = Field(
         default="saddle.con",
         description="Mode rate: the first-order saddle out of the reactant.",

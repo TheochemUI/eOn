@@ -322,6 +322,7 @@ json to_json(const Parameters &p) {
         {"temperature", o.temperature},
         {"temperatures", o.temperatures},
         {"half_ring", o.half_ring},
+        {"symmetrize", o.symmetrize},
         {"initial_hessians", o.initial_hessians},
         {"energy_shift", o.energy_shift},
         {"discretization", o.discretization},
@@ -785,6 +786,7 @@ void from_json(const json &j, Parameters &p) {
       o.temperatures = temperaturesFromJson(s.at("temperatures"));
     }
     JSON_OPT(s, "half_ring", o.half_ring);
+    JSON_OPT(s, "symmetrize", o.symmetrize);
     if (s.contains("initial_hessians")) {
       o.initial_hessians = s.at("initial_hessians").get<std::string>();
     }
