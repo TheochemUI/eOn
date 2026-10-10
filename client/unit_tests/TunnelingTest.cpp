@@ -874,10 +874,11 @@ TEST_CASE("The ring spectrum from the block chain matches the dense Hessian",
   for (long b = 0; b < n; ++b) {
     tauFlat.segment(b * f, f) = tau[static_cast<size_t>(b)];
   }
-  const MatrixXd primed = dense + tauFlat * tauFlat.transpose();
+  const MatrixXd primed = dense + c * tauFlat * tauFlat.transpose();
   const Eigen::SelfAdjointEigenSolver<MatrixXd> es(primed,
                                                    Eigen::EigenvaluesOnly);
-  double logDet = 0.0;
+  const double lambda0 = tauFlat.dot(dense * tauFlat);
+  double logDet = -std::log(std::abs(c + lambda0));
   long negative = 0;
   for (long i = 0; i < es.eigenvalues().size(); ++i) {
     logDet += std::log(std::abs(es.eigenvalues()(i)));
@@ -886,8 +887,23 @@ TEST_CASE("The ring spectrum from the block chain matches the dense Hessian",
   const RingSpectrum spec = ringSpectrum(h, c, tau);
   REQUIRE_THAT(spec.logDetPrime, WithinRel(logDet, 1e-9));
   REQUIRE(spec.negativeModes == negative);
-  REQUIRE_THAT(spec.zeroEigenvalue,
-               WithinRel(tauFlat.dot(dense * tauFlat), 1e-9));
+  REQUIRE_THAT(spec.zeroEigenvalue, WithinRel(lambda0, 1e-9));
+
+  // Along an eigenvector the lift comes off exactly, whatever the units:
+  // det' is the product of the other eigenvalues.
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> full(dense);
+  const VectorXd v = full.eigenvectors().col(3);
+  std::vector<VectorXd> along(static_cast<size_t>(n));
+  for (long b = 0; b < n; ++b) {
+    along[static_cast<size_t>(b)] = v.segment(b * f, f);
+  }
+  double others = 0.0;
+  for (long i = 0; i < full.eigenvalues().size(); ++i) {
+    if (i != 3) {
+      others += std::log(std::abs(full.eigenvalues()(i)));
+    }
+  }
+  REQUIRE_THAT(ringSpectrum(h, c, along).logDetPrime, WithinRel(others, 1e-9));
 }
 
 // The instanton flux through the Eckart barrier against the exact quantum
@@ -1349,6 +1365,50 @@ TEST_CASE("The cyclic ring determinant matches a dense factorisation",
   }
   REQUIRE(zeros == 1);
   REQUIRE(std::abs(cyclicRingLogAbsDet(cf, reduced) + spring - kept) < 1e-8);
+
+  // The flat ring itself is singular: its closing pivot is round-off of the
+  // corner, never an exact zero, and it is still a singular ring.
+  REQUIRE(cyclicRingLogAbsDet(cf, flat) ==
+          -std::numeric_limits<double>::infinity());
+  REQUIRE_THROWS_AS(
+      cyclicRingSolve(cf, flat, std::vector<VectorXd>(nn, VectorXd::Ones(nf))),
+      std::runtime_error);
+}
+
+// A potential that answers a batch with fewer values than points is refused
+// at the scan that seeds the ring, not read past its end, and a Lanczos
+// budget of zero leaves the odd-sector probe out instead of reading an
+// empty Ritz basis.
+TEST_CASE("The ring seed refuses a short batch and a zero Lanczos budget",
+          "[Tunneling][Instanton]") {
+  const double omega0 = 1.0;
+  const double hw = kHbar * omega0;
+  const double vb = 16.0 * hw;
+  const CubicWell pes{omega0, std::sqrt(std::pow(omega0, 6) / (6.0 * vb))};
+  const VectorXd saddle = VectorXd::Constant(1, pes.qb());
+  const MatrixXd hs = pes.hessian(saddle);
+  const double beta = 20.0 / hw;
+  const BatchPotential full = pes.batch();
+  const BatchPotential shortBatch = [&](const std::vector<VectorXd> &q,
+                                        std::vector<double> &v,
+                                        std::vector<VectorXd> &g) {
+    full(q, v, g);
+    if (q.size() > 3) {
+      v.resize(3);
+      g.resize(3);
+    }
+  };
+  RateInstantonOptions opt;
+  opt.beads = 16;
+  opt.forceTolerance = 1e-8;
+  REQUIRE_THROWS_AS(
+      optimizeRateInstanton(saddle, hs, beta, {}, shortBatch, opt),
+      std::runtime_error);
+
+  opt.lanczosFirst = 0;
+  const RateInstanton ring =
+      optimizeRateInstanton(saddle, hs, beta, {}, full, opt);
+  REQUIRE(ring.converged);
 }
 
 TEST_CASE("A flat coordinate cancels in the instanton rate",

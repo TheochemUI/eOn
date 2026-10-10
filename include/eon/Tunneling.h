@@ -469,9 +469,10 @@ struct RingSpectrum {
 
 /// The ring Hessian of bead Hessians `beadHessians` (d2V/dq2 at each of the
 /// N beads) and spring constant c, with the normalised direction `tau`
-/// (N beads) projected out through the determinant lemma
-/// det(J + tau tau^T) = det' J when J tau = 0. Block LU of the open chain
-/// plus a low-rank correction for the closure and tau, O(N f^3).
+/// (N beads) lifted by c and taken out again through the determinant lemma
+/// det(J + c tau tau^T) = (c + lambda_0) det' J, exact when J tau =
+/// lambda_0 tau. Block LU of the open chain plus a low-rank correction for
+/// the closure and tau, O(N f^3).
 RingSpectrum ringSpectrum(const std::vector<MatrixXd> &beadHessians, double c,
                           const std::vector<VectorXd> &tau);
 
@@ -617,8 +618,9 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
 
 /// log|det| of the cyclic block-tridiagonal ring Hessian. Each diag[j]
 /// already contains the bead Hessian plus 2 c I, and the neighbour coupling
-/// is -c I, including the corner that closes the ring. A singular ring
-/// returns -infinity. Throws when the open chain is singular.
+/// is -c I, including the corner that closes the ring. A singular ring,
+/// one whose closing pivot falls to 1e-12 of the corner's scale, returns
+/// -infinity. Throws when the open chain is singular.
 double cyclicRingLogAbsDet(double c, const std::vector<MatrixXd> &diag);
 
 /// Solves that same cyclic ring Hessian. Throws when the ring is singular

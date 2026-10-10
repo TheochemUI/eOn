@@ -770,17 +770,17 @@ namespace {
 /// and a dense solve; beyond, the block chain and Lanczos.
 constexpr long kDenseRing = 4096;
 
+/// Overlap with the last climb below which the lowest mode takes over.
+constexpr double kTrackOverlap = 0.3;
 /// Lanczos steps a large ring's Newton view grows to at most; the basis
 /// holds that many ring vectors.
-// Overlap with the last climb below which the lowest mode takes over.
-constexpr double kTrackOverlap = 0.3;
 constexpr long kRitzCap = 400;
 
 using ColMajorXd =
     Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
 
-// J = c T (x) I + blockdiag(A_k), T the tridiagonal (2, -1) spring matrix;
-// the diagonal blocks hold 2c already, the off-diagonal blocks are -c I.
+// The open chain J with diagonal blocks A_k, each already holding the bead
+// Hessian plus 2 c I, and -c I between neighbours.
 // Block LU: D_1 = A_1, D_k = A_k - c^2 D_{k-1}^-1.
 class BlockChain {
 public:
@@ -1516,11 +1516,15 @@ RingEval evaluateRing(const std::vector<VectorXd> &x, double c,
 // orthogonal to the cycle mode x[j+1] - x[j-1], at a mirror-symmetric ring
 // of even N. A search confined to the even sector cannot see these. The
 // products move the ring off the mirror, so `potential` evaluates every bead.
-// Returns +inf when no odd direction is left to probe.
+// Returns +inf when no odd direction is left to probe, or no Lanczos step
+// is allowed.
 double lowestOddMode(const std::vector<VectorXd> &x, const RingEval &here,
                      double c, const BatchPotential &potential,
                      std::vector<VectorXd> &mode, long steps, double eps,
                      const std::vector<double> &eta = {}) {
+  if (steps < 1) {
+    return std::numeric_limits<double>::infinity();
+  }
   const size_t n = x.size();
   const size_t m = n / 2;
   std::vector<VectorXd> cycle(n);
@@ -1625,9 +1629,16 @@ double lowestOddMode(const std::vector<VectorXd> &x, const RingEval &here,
 // Distance along +dir (sign = 1) or -dir (sign = -1) from the saddle at which
 // V has dropped by `drop`, from a scan in steps of h; the lowest point found
 // when V never drops that far.
-double turningDistance(const VectorXd &saddle, const VectorXd &dir,
-                       double vSaddle, double drop, double sign, double h,
-                       long maxPoints, const BatchPotential &potential) {
+// Energies along +dir (sign = 1) or -dir (sign = -1) from the saddle, in
+// steps of h.
+std::vector<double> scanFromSaddle(const VectorXd &saddle, const VectorXd &dir,
+                                   double sign, double h, long maxPoints,
+                                   const BatchPotential &potential) {
+  if (!(h > 0.0) || !std::isfinite(h) || maxPoints < 1) {
+    throw std::invalid_argument(
+        "rate instanton: the scan from the saddle needs a positive step and "
+        "at least one point");
+  }
   std::vector<VectorXd> pts;
   for (long k = 1; k <= maxPoints; ++k) {
     pts.push_back(saddle + sign * h * static_cast<double>(k) * dir);
@@ -1635,6 +1646,21 @@ double turningDistance(const VectorXd &saddle, const VectorXd &dir,
   std::vector<double> v;
   std::vector<VectorXd> g;
   potential(pts, v, g);
+  if (v.size() != pts.size()) {
+    throw std::runtime_error(
+        "rate instanton: potential returned the wrong count");
+  }
+  return v;
+}
+
+double turningDistance(const VectorXd &saddle, const VectorXd &dir,
+                       double vSaddle, double drop, double sign, double h,
+                       long maxPoints, const BatchPotential &potential) {
+  if (!(drop > 0.0)) {
+    return 0.0;
+  }
+  const std::vector<double> v =
+      scanFromSaddle(saddle, dir, sign, h, maxPoints, potential);
   double prevV = vSaddle, prevS = 0.0, best = 0.0, bestV = vSaddle;
   for (long k = 0; k < maxPoints; ++k) {
     const double sk = h * static_cast<double>(k + 1);
@@ -1659,13 +1685,8 @@ double turningDistance(const VectorXd &saddle, const VectorXd &dir,
 double sideDrop(const VectorXd &saddle, const VectorXd &dir, double vSaddle,
                 double sign, double h, long maxPoints,
                 const BatchPotential &potential) {
-  std::vector<VectorXd> pts;
-  for (long k = 1; k <= maxPoints; ++k) {
-    pts.push_back(saddle + sign * h * static_cast<double>(k) * dir);
-  }
-  std::vector<double> v;
-  std::vector<VectorXd> g;
-  potential(pts, v, g);
+  const std::vector<double> v =
+      scanFromSaddle(saddle, dir, sign, h, maxPoints, potential);
   double lowest = vSaddle;
   for (long k = 0; k < maxPoints; ++k) {
     const double vk = v[static_cast<size_t>(k)];
@@ -1791,9 +1812,12 @@ struct CyclicFactor {
     cornerLu.compute(ColMajorXd(corner));
     logAbs = open.logAbsDet() + 2.0 * static_cast<double>(f) * std::log(c);
     const MatrixXd &upper = cornerLu.matrixLU();
+    // A pivot at round-off of the corner's own scale is a singular ring: a
+    // zero mode leaves exactly that, never an exact zero.
+    const double floor = 1e-12 * corner.cwiseAbs().maxCoeff();
     for (long i = 0; i < upper.rows(); ++i) {
       const double pivot = upper(i, i);
-      if (pivot == 0.0) {
+      if (!(std::abs(pivot) > floor)) {
         singular = true;
         logAbs = -std::numeric_limits<double>::infinity();
         return;
@@ -2067,14 +2091,17 @@ RingSpectrum ringSpectrum(const std::vector<MatrixXd> &beadHessians, double c,
         "ringSpectrum: N bead Hessians and N tau blocks");
   }
   const std::vector<MatrixXd> diag = ringDiagonal(beadHessians, c, false);
-  const WoodburyRing ring(c, diag, true, {tau}, {1.0}, true);
+  // Lifted by the spring, as the rate lifts it: a unit lift would leave
+  // ln|1 + lambda_0| in det', a unit-dependent amount.
+  const WoodburyRing ring(c, diag, true, {tau}, {c}, true);
   if (!ring.ok()) {
     throw std::runtime_error("ringSpectrum: singular ring");
   }
   RingSpectrum out;
-  out.logDetPrime = ring.logAbsDet();
-  out.negativeModes = ring.negative();
   out.zeroEigenvalue = dot(tau, applyDiagonal(diag, c, true, tau));
+  out.logDetPrime =
+      ring.logAbsDet() - std::log(std::abs(c + out.zeroEigenvalue));
+  out.negativeModes = ring.negative();
   return out;
 }
 
@@ -2184,11 +2211,6 @@ bool finiteBeads(const std::vector<VectorXd> &x) {
     }
   }
   return true;
-}
-
-template <typename Derived>
-bool overlapsTau(const Eigen::MatrixBase<Derived> &mode, const VectorXd &tau) {
-  return tau.size() == mode.size() && std::abs(mode.dot(tau)) > 0.5;
 }
 
 // Bead velocity times beta_N hbar: (q_{j+1} - q_{j-1}) / 2 on a uniform
@@ -2568,8 +2590,24 @@ ringRigidBasis(const std::vector<VectorXd> &q,
       }
     }
   }
-  const ColMajorXd gc = g;
-  const Eigen::ColPivHouseholderQR<ColMajorXd> qr(gc);
+  // Unit columns and a relative cut, so that translations and rotations
+  // compete as directions. A rotation about the axis of a ring that is
+  // straight to round-off has a generator of round-off size; it is no
+  // rigid motion and must not be scaled up into one.
+  ColMajorXd gc(dim, g.cols());
+  long kept = 0;
+  const double largest = g.colwise().norm().maxCoeff();
+  for (long col = 0; col < g.cols(); ++col) {
+    const double norm = g.col(col).norm();
+    if (norm > 1e-8 * largest) {
+      gc.col(kept++) = g.col(col) / norm;
+    }
+  }
+  if (kept == 0) {
+    return out;
+  }
+  Eigen::ColPivHouseholderQR<ColMajorXd> qr(gc.leftCols(kept));
+  qr.setThreshold(1e-8);
   const long rank = qr.rank();
   const ColMajorXd basis = qr.householderQ() * ColMajorXd::Identity(dim, rank);
   for (long r = 0; r < rank; ++r) {
