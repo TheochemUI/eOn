@@ -322,6 +322,23 @@ energies in the rate. An empty `discretization` keeps every spring equal.
 A comma-separated list of one positive weight per bead divides the spring
 from that bead to the next. A half ring keeps the uniform spring.
 
+`friction` adds the electronic-friction bath of
+{cite:t}`inst-litmanDissipativeTunnelingRates2022` to the ring,
+{math}`\sum_{l \ne 0} \tfrac{\omega_l}{2} |G_l|^2` over the ring's normal
+modes with {math}`\omega_l = 2\omega_P |\sin(\pi l / N)|`,
+{math}`\omega_P = 1/(\beta_N \hbar)`, and {math}`G` the normal modes of the
+line integral of {math}`\sqrt{\eta}` along the ring (their Eqs. 20 and 35).
+{math}`\eta` is a friction per unit mass in inverse time units of
+{math}`\sqrt{\mathrm{amu}\,\mathrm{Å}^2/\mathrm{eV}}` (10.18 fs): one value
+on every bead with `friction = implicit` and `friction_eta`, or one per
+bead with `friction = explicit` and `friction_eta_beads`, whose links are
+closed around the ring so that no bead is its start. The bath couples every
+bead to every other, so the ring is searched with the dimer on its
+gradients, and the rate takes the bath's curvature from the dense ring
+Hessian and adds {math}`\eta\,\omega_k` to every {math}`k > 0` mode of
+{math}`Z_r` (their Eq. 36). A bead-wise bath gives the reactant no friction
+of its own, so with `friction = explicit` the ring is written but no rate.
+
 The search is an index-1 Newton step on the ring Hessian while the active
 coordinate count is within the Newton limit. Past that limit the ring is one
 structure and the dimer follows its unstable mode, with the beads in one force

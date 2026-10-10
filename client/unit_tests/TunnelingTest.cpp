@@ -2109,30 +2109,181 @@ TEST_CASE("friction bath adds a positive term and its gradient",
   q[3](0) = 0.1;
   std::vector<VectorXd> grad(4, VectorXd::Zero(1));
   double flat = 0.0;
-  addFrictionBath(q, flat, grad, {0.0});
+  addFrictionBath(q, flat, grad, {0.0}, 1.0);
   REQUIRE(flat == 0.0);
 
+  // One eta: (eta / 2) sum_k omega_k |Q_k|^2 over the ring's normal modes,
+  // omega_k = 2 omega_P |sin(pi k / N)| (Litman et al. 2022, Eq. 20).
+  const double omegaP = 2.5;
   double implicit = 0.0;
   grad.assign(4, VectorXd::Zero(1));
-  addFrictionBath(q, implicit, grad, {0.25});
-  REQUIRE(implicit > 0.0);
+  addFrictionBath(q, implicit, grad, {0.25}, omegaP);
+  double modes = 0.0;
+  for (int k = 1; k < 4; ++k) {
+    double re = 0.0, im = 0.0;
+    for (int j = 0; j < 4; ++j) {
+      re += q[j](0) * std::cos(2.0 * std::numbers::pi * k * j / 4.0) / 2.0;
+      im -= q[j](0) * std::sin(2.0 * std::numbers::pi * k * j / 4.0) / 2.0;
+    }
+    modes += 0.5 * 0.25 * 2.0 * omegaP *
+             std::abs(std::sin(std::numbers::pi * k / 4.0)) *
+             (re * re + im * im);
+  }
+  REQUIRE_THAT(implicit, WithinRel(modes, 1e-12));
 
-  const double eps = 1e-6;
-  std::vector<VectorXd> shifted = q;
-  shifted[1](0) += eps;
-  double shiftedEnergy = 0.0;
-  std::vector<VectorXd> shiftedGrad(4, VectorXd::Zero(1));
-  addFrictionBath(shifted, shiftedEnergy, shiftedGrad, {0.25});
-  REQUIRE(grad[1](0) ==
-          Catch::Approx((shiftedEnergy - implicit) / eps).margin(1e-4));
+  // Both gradients against central differences.
+  auto energy = [&](const std::vector<VectorXd> &x,
+                    const std::vector<double> &eta) {
+    double u = 0.0;
+    std::vector<VectorXd> g(x.size(), VectorXd::Zero(1));
+    addFrictionBath(x, u, g, eta, omegaP);
+    return u;
+  };
+  for (const std::vector<double> &eta :
+       {std::vector<double>{0.25}, std::vector<double>{0.1, 0.2, 0.4, 0.05}}) {
+    std::vector<VectorXd> g(4, VectorXd::Zero(1));
+    double u = 0.0;
+    addFrictionBath(q, u, g, eta, omegaP);
+    for (int j = 0; j < 4; ++j) {
+      std::vector<VectorXd> up = q, down = q;
+      up[j](0) += 1e-6;
+      down[j](0) -= 1e-6;
+      REQUIRE_THAT(g[j](0),
+                   Catch::Matchers::WithinAbs(
+                       (energy(up, eta) - energy(down, eta)) / 2e-6, 1e-7));
+    }
+  }
 
-  double explicitBath = 0.0;
-  grad.assign(4, VectorXd::Zero(1));
-  addFrictionBath(q, explicitBath, grad, {0.1, 0.2, 0.4, 0.05});
+  // A bead-wise bath does not care which bead is called 0.
+  const std::vector<double> eta{0.1, 0.2, 0.4, 0.05};
+  const double explicitBath = energy(q, eta);
   REQUIRE(explicitBath > 0.0);
   REQUIRE(explicitBath != Catch::Approx(implicit));
-  REQUIRE_THROWS_AS(addFrictionBath(q, explicitBath, grad, {-0.1}),
+  for (int r = 1; r < 4; ++r) {
+    std::vector<VectorXd> qr(4);
+    std::vector<double> er(4);
+    for (int j = 0; j < 4; ++j) {
+      qr[j] = q[(j + r) % 4];
+      er[j] = eta[(j + r) % 4];
+    }
+    REQUIRE_THAT(energy(qr, er), WithinRel(explicitBath, 1e-12));
+  }
+  REQUIRE_THROWS_AS(addFrictionBath(q, flat, grad, {-0.1}, omegaP),
                     std::invalid_argument);
+  REQUIRE_THROWS_AS(addFrictionBath(q, flat, grad, {0.1}, 0.0),
+                    std::invalid_argument);
+}
+
+TEST_CASE("The rate under a friction bath carries the bath's curvature",
+          "[Tunneling][Instanton]") {
+  // A cubic well at 0.6 T_c with eta = 0.5 omega0. The ring is searched
+  // under the bath, half ring requested, and is stationary for U_N plus the
+  // bath; the rate takes det' of the ring Hessian with the bath and Z_r
+  // with eta omega_k on every k > 0 mode, as a dense finite-difference
+  // Hessian of the same sum gives. Friction slows the rate.
+  const double omega0 = 1.0;
+  const double hw = kHbar * omega0;
+  const double vb = 8.0 * hw;
+  const CubicWell pes{omega0, std::sqrt(std::pow(omega0, 6) / (6.0 * vb))};
+  const VectorXd saddle = VectorXd::Constant(1, pes.qb());
+  const MatrixXd hs = pes.hessian(saddle);
+  const double beta = 1.0 / (kBoltzmann * 0.6 * crossoverTemperature(hs));
+  const double eta = 0.5;
+  RateInstantonOptions opt;
+  opt.beads = 32;
+  opt.forceTolerance = 1e-8;
+  opt.friction = true;
+  opt.frictionEta = eta;
+  RateInstanton wet =
+      optimizeRateInstanton(saddle, hs, beta, {}, pes.batch(), opt);
+  const long n = static_cast<long>(wet.beads.size());
+  const double bnh = wet.betaN * kHbar;
+  const double c = 1.0 / (bnh * bnh);
+  auto total = [&](const std::vector<VectorXd> &x, double &u) {
+    std::vector<double> v;
+    std::vector<VectorXd> g;
+    pes.batch()(x, v, g);
+    u = 0.0;
+    for (long j = 0; j < n; ++j) {
+      const VectorXd &prev = x[static_cast<size_t>((j + n - 1) % n)];
+      const VectorXd &next = x[static_cast<size_t>((j + 1) % n)];
+      g[static_cast<size_t>(j)] +=
+          c * (2.0 * x[static_cast<size_t>(j)] - prev - next);
+      u += v[static_cast<size_t>(j)] +
+           0.5 * c * (next - x[static_cast<size_t>(j)]).squaredNorm();
+    }
+    addFrictionBath(x, u, g, {eta}, std::sqrt(c));
+    return g;
+  };
+  double u = 0.0;
+  const std::vector<VectorXd> g = total(wet.beads, u);
+  double residual = 0.0;
+  for (const auto &gj : g) {
+    residual = std::max(residual, gj.norm());
+  }
+  CAPTURE(wet.converged, wet.iterations, residual);
+  REQUIRE(wet.converged);
+  REQUIRE(wet.frictionEta == std::vector<double>{eta});
+  REQUIRE(residual < 1e-6);
+  REQUIRE_THAT(wet.ringPotential, WithinRel(u, 1e-10));
+
+  instantonRate(
+      wet, [&](long, const VectorXd &q) { return pes.hessian(q); },
+      pes.hessian(VectorXd::Zero(1)), 0.0, hs, vb);
+  REQUIRE(wet.negativeModes == 1);
+  // The dense Hessian of U_N plus the bath by central differences.
+  MatrixXd hmat(n, n);
+  for (long j = 0; j < n; ++j) {
+    std::vector<VectorXd> up = wet.beads, down = wet.beads;
+    up[static_cast<size_t>(j)](0) += 1e-5;
+    down[static_cast<size_t>(j)](0) -= 1e-5;
+    double scratch = 0.0;
+    const auto gu = total(up, scratch);
+    const auto gd = total(down, scratch);
+    for (long i = 0; i < n; ++i) {
+      hmat(i, j) =
+          (gu[static_cast<size_t>(i)](0) - gd[static_cast<size_t>(i)](0)) /
+          2e-5;
+    }
+  }
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> es(0.5 *
+                                                   (hmat + hmat.transpose()));
+  long zero = 0;
+  for (long i = 1; i < n; ++i) {
+    if (std::abs(es.eigenvalues()(i)) < std::abs(es.eigenvalues()(zero))) {
+      zero = i;
+    }
+  }
+  double logDetPrime = 0.0;
+  for (long i = 0; i < n; ++i) {
+    if (i != zero) {
+      logDetPrime += std::log(std::abs(es.eigenvalues()(i)));
+    }
+  }
+  const double omegaR2 = pes.hessian(VectorXd::Zero(1))(0, 0);
+  double logZr = 0.0;
+  for (long k = 0; k < n; ++k) {
+    const double wk =
+        2.0 * std::sqrt(c) * std::abs(std::sin(std::numbers::pi * k / n));
+    logZr -= std::log(bnh) + 0.5 * std::log(omegaR2 + wk * wk + eta * wk);
+  }
+  const double logRate =
+      -std::log(bnh) +
+      0.5 * std::log(wet.bN / (2.0 * std::numbers::pi * bnh * kHbar)) -
+      (static_cast<double>(n - 1) * std::log(bnh) + 0.5 * logDetPrime) -
+      wet.betaN * u - logZr;
+  CAPTURE(wet.logRate, logRate, wet.logZr, logZr, wet.zeroEigenvalue);
+  REQUIRE_THAT(wet.logZr, WithinRel(logZr, 1e-10));
+  REQUIRE_THAT(wet.logRate, Catch::Matchers::WithinAbs(logRate, 1e-5));
+
+  opt.friction = false;
+  RateInstanton dry =
+      optimizeRateInstanton(saddle, hs, beta, {}, pes.batch(), opt);
+  REQUIRE(dry.converged);
+  instantonRate(
+      dry, [&](long, const VectorXd &q) { return pes.hessian(q); },
+      pes.hessian(VectorXd::Zero(1)), 0.0, hs, vb);
+  REQUIRE(wet.logRate < dry.logRate);
 }
 
 namespace {

@@ -1292,10 +1292,13 @@ struct RingEval {
 
 void addFrictionBath(const std::vector<VectorXd> &q, double &u,
                      std::vector<VectorXd> &grad,
-                     const std::vector<double> &eta) {
+                     const std::vector<double> &eta, double omegaP) {
   const size_t n = q.size();
   if (n < 2 || eta.empty() || grad.size() != n) {
     return;
+  }
+  if (!(omegaP > 0.0)) {
+    throw std::invalid_argument("addFrictionBath: omega_P must be positive");
   }
   std::vector<double> s(n, eta.size() == 1 ? eta[0] : 0.0);
   if (eta.size() == n) {
@@ -1314,18 +1317,32 @@ void addFrictionBath(const std::vector<VectorXd> &q, double &u,
   for (size_t j = 0; j < n; ++j) {
     root[j] = std::sqrt(s[j]);
   }
+  // Link l joins bead l - 1 to bead l, and link n bead n - 1 to bead 0;
+  // each carries the mean root of its ends. Around a closed ring g returns
+  // to where it started: the loop's mismatch, nonzero only for bead-wise
+  // eta, is spread evenly over the links, so no bead is the start.
+  std::vector<double> mid(n + 1, 0.0);
+  std::vector<VectorXd> step(n + 1, VectorXd::Zero(f));
+  VectorXd loop = VectorXd::Zero(f);
+  for (size_t l = 1; l <= n; ++l) {
+    const size_t a = l - 1;
+    const size_t b = l % n;
+    mid[l] = 0.5 * (root[a] + root[b]);
+    step[l] = mid[l] * (q[b] - q[a]);
+    loop += step[l];
+  }
+  const VectorXd share = loop / static_cast<double>(n);
   std::vector<VectorXd> g(n, VectorXd::Zero(f));
-  std::vector<double> mid(n, 0.0);
   for (size_t j = 1; j < n; ++j) {
-    mid[j] = 0.5 * (root[j - 1] + root[j]);
-    g[j] = g[j - 1] + mid[j] * (q[j] - q[j - 1]);
+    g[j] = g[j - 1] + step[j] - share;
   }
   std::vector<VectorXd> dUdg(n, VectorXd::Zero(f));
   const double scale = 1.0 / std::sqrt(static_cast<double>(n));
   for (size_t k = 1; k < n; ++k) {
-    const double omega = 2.0 * std::abs(std::sin(std::numbers::pi *
-                                                  static_cast<double>(k) /
-                                                  static_cast<double>(n)));
+    const double omega =
+        2.0 * omegaP *
+        std::abs(std::sin(std::numbers::pi * static_cast<double>(k) /
+                          static_cast<double>(n)));
     VectorXd real = VectorXd::Zero(f);
     VectorXd imag = VectorXd::Zero(f);
     for (size_t j = 0; j < n; ++j) {
@@ -1343,15 +1360,23 @@ void addFrictionBath(const std::vector<VectorXd> &q, double &u,
       dUdg[j] += omega * scale * (std::cos(ang) * real + std::sin(ang) * imag);
     }
   }
+  // g_j sums links 1..j less j shares, so dU/d(step_l) is the sum of dU/dg
+  // from bead l on, less the share every link pays.
+  std::vector<VectorXd> suffix(n + 1, VectorXd::Zero(f));
   for (size_t j = n - 1; j >= 1; --j) {
-    dUdg[j - 1] += dUdg[j];
-    if (j == 1) {
-      break;
-    }
+    suffix[j] = suffix[j + 1] + dUdg[j];
   }
+  VectorXd common = VectorXd::Zero(f);
   for (size_t j = 1; j < n; ++j) {
-    grad[j] += mid[j] * dUdg[j];
-    grad[j - 1] -= mid[j] * dUdg[j];
+    common -= static_cast<double>(j) * dUdg[j];
+  }
+  common /= static_cast<double>(n);
+  for (size_t l = 1; l <= n; ++l) {
+    const VectorXd dUdStep = suffix[l < n ? l : n] + common;
+    const size_t a = l - 1;
+    const size_t b = l % n;
+    grad[b] += mid[l] * dUdStep;
+    grad[a] -= mid[l] * dUdStep;
   }
 }
 
@@ -1423,7 +1448,7 @@ RingEval evaluateRing(const std::vector<VectorXd> &x, double c,
     }
   }
   if (!eta.empty()) {
-    addFrictionBath(x, out.u, out.grad, eta);
+    addFrictionBath(x, out.u, out.grad, eta, std::sqrt(c));
   }
   return out;
 }
@@ -1435,7 +1460,8 @@ RingEval evaluateRing(const std::vector<VectorXd> &x, double c,
 // Returns +inf when no odd direction is left to probe.
 double lowestOddMode(const std::vector<VectorXd> &x, const RingEval &here,
                      double c, const BatchPotential &potential,
-                     std::vector<VectorXd> &mode, long steps, double eps) {
+                     std::vector<VectorXd> &mode, long steps, double eps,
+                     const std::vector<double> &eta = {}) {
   const size_t n = x.size();
   const size_t m = n / 2;
   std::vector<VectorXd> cycle(n);
@@ -1470,7 +1496,7 @@ double lowestOddMode(const std::vector<VectorXd> &x, const RingEval &here,
     for (size_t j = 0; j < n; ++j) {
       xp[j] = x[j] + eps * u[j];
     }
-    const RingEval e = evaluateRing(xp, c, potential);
+    const RingEval e = evaluateRing(xp, c, potential, 0.0, eta);
     std::vector<VectorXd> out(n);
     for (size_t j = 0; j < n; ++j) {
       out[j] = (e.grad[j] - here.grad[j]) / eps;
@@ -3243,9 +3269,9 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
         evaluateRing(got.beads, spring, potential, options.energyShift,
                      frictionEta(options, got.beads.size()));
     std::vector<VectorXd> oddMode;
-    const double oddCurv =
-        lowestOddMode(got.beads, here, spring, potential, oddMode,
-                      options.lanczosFirst, options.lanczosStep);
+    const double oddCurv = lowestOddMode(
+        got.beads, here, spring, potential, oddMode, options.lanczosFirst,
+        options.lanczosStep, frictionEta(options, got.beads.size()));
     if (!(oddCurv < -1e-3 * barrierCurvature) ||
         oddMode.size() != got.beads.size()) {
       return;
@@ -3758,7 +3784,7 @@ SearchedRing searchRingWithDimer(std::vector<VectorXd> full, double c,
   std::vector<VectorXd> oddMode;
   const double oddCurv =
       lowestOddMode(out.beads, here, c, potential, oddMode,
-                    options.lanczosFirst, options.lanczosStep);
+                    options.lanczosFirst, options.lanczosStep, eta);
   if (!(oddCurv < -1.0e-3 * barrierCurvature) ||
       oddMode.size() != out.beads.size()) {
     return out;
@@ -3811,11 +3837,16 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
     }
   }
   const long active = mirror ? (N / 2 + 1) : N;
-  if (options.newtonLimit > 0 &&
+  // A friction bath couples every bead to every other, which the Newton
+  // step's block-tridiagonal model cannot hold; the dimer needs gradients
+  // only, and the rate takes the bath's curvature from the dense ring.
+  const std::vector<double> bath = frictionEta(options, N);
+  if (bath.empty() && options.newtonLimit > 0 &&
       active * saddle.size() <= options.newtonLimit) {
     return optimizeRateByNewton(saddle, hessSaddle, beta, std::move(guess),
                                 potential, options);
   }
+  inst.frictionEta = bath;
   const double bnh = inst.betaN * kHbar;
   const double c = 1.0 / (bnh * bnh);
 
@@ -3855,8 +3886,16 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
   }
 
   // An even count whose beads already match under j -> N-j is the
-  // out-and-back instanton. The shared dimer sees one half of that ring.
-  const bool wantMirror = options.halfRing && N % 2 == 0;
+  // out-and-back instanton. The shared dimer sees one half of that ring,
+  // which a bead-wise bath allows only when it matches under the mirror too.
+  bool bathMirrored = true;
+  if (bath.size() == static_cast<size_t>(N)) {
+    for (long j = 1; j < N / 2 && bathMirrored; ++j) {
+      bathMirrored =
+          bath[static_cast<size_t>(j)] == bath[static_cast<size_t>(N - j)];
+    }
+  }
+  const bool wantMirror = options.halfRing && N % 2 == 0 && bathMirrored;
   std::vector<VectorXd> x = std::move(guess);
   bool fold = false;
   if (wantMirror) {
@@ -3929,6 +3968,65 @@ double closedRingPotential(const std::vector<VectorXd> &beads, double spring,
   }
   return evaluateRing(beads, spring, potential, 0.0, {}, discretization).u;
 }
+
+namespace {
+
+// The rate from det' of the ring Hessian: the prefactor, and Z_r of the
+// harmonic reactant ring under the same bath, eta omega_k added to every
+// k > 0 mode (Litman et al., J. Chem. Phys. 156, 194106 (2022), Eq. 36).
+void finishRate(RateInstanton &inst, double logDetPrime, long nDrop, long f,
+                const VectorXd &lr, const std::vector<bool> &rigidR,
+                double vReactant, const MatrixXd &hessReactant,
+                const MatrixXd &hessSaddle, double vSaddle, long rigidModes,
+                double eta) {
+  const long N = static_cast<long>(inst.beads.size());
+  const double bnh = inst.betaN * kHbar;
+  const double c = 1.0 / (bnh * bnh);
+  const double logProd =
+      static_cast<double>(N * f - nDrop) * std::log(bnh) + 0.5 * logDetPrime;
+
+  inst.logRateTimesZr = -std::log(bnh) +
+                        0.5 * std::log(inst.bN / (2.0 * std::numbers::pi *
+                                                  inst.betaN * kHbar * kHbar)) -
+                        logProd - inst.betaN * inst.ringPotential;
+
+  for (long m = 0; m < lr.size(); ++m) {
+    if (!rigidR[static_cast<size_t>(m)] && !(lr(m) > 0.0)) {
+      throw std::runtime_error(
+          "instantonRate: the reactant Hessian is not positive definite");
+    }
+  }
+  // The rigid modes leave the centroid (k = 0) factor, as the ring's own
+  // rigid modes leave its product; both carry them as free particles for
+  // k > 0.
+  double logZr = -inst.beta * vReactant;
+  for (long k = 0; k < N; ++k) {
+    const double sk = std::abs(std::sin(
+        std::numbers::pi * static_cast<double>(k) / static_cast<double>(N)));
+    for (long m = 0; m < lr.size(); ++m) {
+      if (k == 0 && rigidR[static_cast<size_t>(m)]) {
+        continue;
+      }
+      const double l = rigidR[static_cast<size_t>(m)] ? 0.0 : lr(m);
+      logZr -= std::log(bnh) + 0.5 * std::log(l + 4.0 * c * sk * sk +
+                                              2.0 * eta * std::sqrt(c) * sk);
+    }
+  }
+  inst.logZr = logZr;
+  inst.logRate = inst.logRateTimesZr - logZr;
+  inst.rate = std::exp(inst.logRate) / kTimeUnitSeconds;
+  inst.effectiveBarrier =
+      -std::log(2.0 * std::numbers::pi * kHbar * inst.beta) / inst.beta -
+      inst.logRate / inst.beta;
+
+  if (hessSaddle.size() > 0) {
+    inst.classicalLogRate = harmonicTstLogRate(
+        hessReactant, hessSaddle, inst.beta, vSaddle - vReactant, rigidModes);
+    inst.classicalRate = std::exp(inst.classicalLogRate) / kTimeUnitSeconds;
+  }
+}
+
+} // namespace
 
 void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
                    const MatrixXd &hessReactant, double vReactant,
@@ -4044,6 +4142,98 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
     scale(v, 1.0 / vn);
   };
   offRigid(cycle);
+  const long nDrop = 1 + nullBasis.cols();
+  if (!inst.frictionEta.empty()) {
+    // The bath couples every bead to every other: eta C (x) I with C the
+    // circulant of the ring's frequencies omega_k = 2 omega_P |sin(pi k /
+    // N)|. Its ring is solved densely, the rigid modes lifted by c and the
+    // cycle taken as the eigenvector that overlaps tau most.
+    if (inst.frictionEta.size() != 1) {
+      throw std::runtime_error(
+          "instantonRate: a bead-wise bath gives the reactant no friction to "
+          "compare with; the rate takes one eta");
+    }
+    if (!inst.discretization.empty()) {
+      throw std::runtime_error(
+          "instantonRate: a friction bath takes the uniform spring");
+    }
+    const long dim = N * f;
+    if (!(denseLimit < 0 || dim <= denseLimit)) {
+      throw std::runtime_error(
+          "instantonRate: a ring with a friction bath is solved densely, and "
+          "this one has more coordinates than the dense limit");
+    }
+    const double eta = inst.frictionEta.front();
+    const double omegaP = std::sqrt(c);
+    ColMajorXd full = ColMajorXd::Zero(dim, dim);
+    for (long j = 0; j < N; ++j) {
+      full.block(j * f, j * f, f, f) = diag[static_cast<size_t>(j)];
+      const long k = (j + 1) % N;
+      full.block(j * f, k * f, f, f) -= c * eye;
+      full.block(k * f, j * f, f, f) -= c * eye;
+    }
+    for (long d = 0; d < N; ++d) {
+      double cd = 0.0;
+      for (long k = 1; k < N; ++k) {
+        const double angle =
+            std::numbers::pi * static_cast<double>(k) / static_cast<double>(N);
+        cd += 2.0 * omegaP * std::abs(std::sin(angle)) *
+              std::cos(2.0 * angle * static_cast<double>(d));
+      }
+      cd *= eta / static_cast<double>(N);
+      for (long j = 0; j < N; ++j) {
+        const long l = (j + d) % N;
+        full.block(j * f, l * f, f, f) += cd * eye;
+      }
+    }
+    auto flat = [&](const std::vector<VectorXd> &v) {
+      VectorXd out(dim);
+      for (long j = 0; j < N; ++j) {
+        out.segment(j * f, f) = v[static_cast<size_t>(j)];
+      }
+      return out;
+    };
+    for (const auto &u : rigid) {
+      const VectorXd uf = flat(u);
+      full += c * uf * uf.transpose();
+    }
+    const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(full);
+    const VectorXd tau = flat(cycle);
+    long zero = 0;
+    for (long i = 1; i < dim; ++i) {
+      if (std::abs(es.eigenvectors().col(i).dot(tau)) >
+          std::abs(es.eigenvectors().col(zero).dot(tau))) {
+        zero = i;
+      }
+    }
+    const VectorXd &lam = es.eigenvalues();
+    inst.zeroEigenvalue = lam(zero);
+    double logDetPrime = -static_cast<double>(nDrop - 1) * std::log(c);
+    inst.negativeEigenvalue = 0.0;
+    long negative = 0;
+    for (long i = 0; i < dim; ++i) {
+      if (i == zero) {
+        continue;
+      }
+      logDetPrime += std::log(std::abs(lam(i)));
+      if (lam(i) < 0.0) {
+        ++negative;
+        inst.negativeEigenvalue = std::min(inst.negativeEigenvalue, lam(i));
+      }
+    }
+    long tiny = 0;
+    for (long i = 0; i < dim; ++i) {
+      if (i != zero && lam(i) < 0.0 &&
+          lam(i) > 1e-3 * inst.negativeEigenvalue) {
+        ++tiny;
+      }
+    }
+    inst.negativeModes =
+        negative > 1 ? std::max(1L, negative - tiny) : negative;
+    finishRate(inst, logDetPrime, nDrop, f, lr, rigidR, vReactant, hessReactant,
+               hessSaddle, vSaddle, rigidModes, eta);
+    return;
+  }
   // On a discrete ring the time shift is only nearly a symmetry, so the
   // central difference tau is not quite the eigenvector of J's near-zero
   // eigenvalue, and lifting tau would leave out cos^2 of their angle
@@ -4180,54 +4370,14 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
       inst.negativeModes = std::max(1L, inst.negativeModes - tiny);
     }
   }
-  const long nDrop = 1 + nullBasis.cols();
   // Along an eigenvector the lift adds c to its eigenvalue, so it comes off
   // as c + lambda_0 for the cycle (lambda_0 is not zero on a discrete ring)
   // and as c for the exact rigid zeros.
   const double logDetPrime = logAbsDet -
                              std::log(std::abs(c + inst.zeroEigenvalue)) -
                              static_cast<double>(nDrop - 1) * std::log(c);
-  const double logProd =
-      static_cast<double>(N * f - nDrop) * std::log(bnh) + 0.5 * logDetPrime;
-
-  inst.logRateTimesZr = -std::log(bnh) +
-                        0.5 * std::log(inst.bN / (2.0 * std::numbers::pi *
-                                                  inst.betaN * kHbar * kHbar)) -
-                        logProd - inst.betaN * inst.ringPotential;
-
-  for (long m = 0; m < lr.size(); ++m) {
-    if (!rigidR[static_cast<size_t>(m)] && !(lr(m) > 0.0)) {
-      throw std::runtime_error(
-          "instantonRate: the reactant Hessian is not positive definite");
-    }
-  }
-  // The rigid modes leave the centroid (k = 0) factor, as the ring's own
-  // rigid modes leave its product; both carry them as free particles for
-  // k > 0.
-  double logZr = -inst.beta * vReactant;
-  for (long k = 0; k < N; ++k) {
-    const double sk = std::sin(std::numbers::pi * static_cast<double>(k) /
-                               static_cast<double>(N));
-    for (long m = 0; m < lr.size(); ++m) {
-      if (k == 0 && rigidR[static_cast<size_t>(m)]) {
-        continue;
-      }
-      const double l = rigidR[static_cast<size_t>(m)] ? 0.0 : lr(m);
-      logZr -= std::log(bnh) + 0.5 * std::log(l + 4.0 * c * sk * sk);
-    }
-  }
-  inst.logZr = logZr;
-  inst.logRate = inst.logRateTimesZr - logZr;
-  inst.rate = std::exp(inst.logRate) / kTimeUnitSeconds;
-  inst.effectiveBarrier =
-      -std::log(2.0 * std::numbers::pi * kHbar * inst.beta) / inst.beta -
-      inst.logRate / inst.beta;
-
-  if (hessSaddle.size() > 0) {
-    inst.classicalLogRate = harmonicTstLogRate(
-        hessReactant, hessSaddle, inst.beta, vSaddle - vReactant, rigidModes);
-    inst.classicalRate = std::exp(inst.classicalLogRate) / kTimeUnitSeconds;
-  }
+  finishRate(inst, logDetPrime, nDrop, f, lr, rigidR, vReactant, hessReactant,
+             hessSaddle, vSaddle, rigidModes, 0.0);
 }
 
 RotationZeroModes rotationZeroModes(const MatrixXd &hess,

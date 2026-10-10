@@ -428,12 +428,17 @@ struct RateInstantonOptions {
   std::vector<double> frictionEtaBeads;
 };
 
-/// Position-independent (one eta) or bead-wise friction on a closed ring.
-/// Empty or all-zero eta leaves u and grad unchanged. A negative eta is
-/// refused. J. Chem. Phys. 156, 194106 (2022).
+/// The friction bath of a closed ring, Litman et al., J. Chem. Phys. 156,
+/// 194106 (2022), Eqs. 20 and 35: sum_l (omega_l / 2) |G_l|^2 over the
+/// ring's normal modes l != 0, with omega_l = 2 omega_P |sin(pi l / N)|,
+/// omega_P = 1 / (beta_N hbar), and G the normal modes of g_j, the line
+/// integral of sqrt(eta) up to bead j. eta is a friction per unit mass in
+/// 1 / time: one value, position-independent, or one per bead, whose links
+/// are closed around the ring so that no bead is the start. Empty or
+/// all-zero eta leaves u and grad unchanged; a negative eta is refused.
 void addFrictionBath(const std::vector<VectorXd> &q, double &u,
                      std::vector<VectorXd> &grad,
-                     const std::vector<double> &eta);
+                     const std::vector<double> &eta, double omegaP);
 
 /// U_N of a closed ring. An empty discretization is the uniform spring.
 /// Otherwise one positive weight per bead divides the spring that leaves
@@ -472,6 +477,9 @@ struct RateInstanton {
   double bN = 0.0;                 ///< sum_j |q_{j+1} - q_j|^2, amu Angstrom^2
   /// Empty keeps every spring equal. Otherwise one positive weight per bead.
   std::vector<double> discretization;
+  /// The friction bath the ring was found under (addFrictionBath's eta);
+  /// empty without one.
+  std::vector<double> frictionEta;
   double negativeEigenvalue = 0.0; ///< of the ring Hessian, 1 / time^2
   double zeroEigenvalue = 0.0;     ///< the eigenvalue left out
   long negativeModes = 0;          ///< eigenvalues below the zero mode

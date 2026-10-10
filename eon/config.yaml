@@ -1277,7 +1277,8 @@ Instanton:
             default: ""
 
         # Mode rate: Litman friction bath. none, implicit (one eta on
-        # every bead) or explicit (one eta per bead).
+        # every bead) or explicit (one eta per bead; the ring is searched
+        # under it, but the rate needs one eta and is not written).
         friction:
             kind: string
             default: none
@@ -1286,11 +1287,14 @@ Instanton:
                 - implicit
                 - explicit
 
+        # Friction per unit mass, eta / m, in 1 / time with time in
+        # sqrt(amu Angstrom^2 / eV) (10.18 fs).
         friction_eta:
             kind: float
             default: 0.0
 
-        # Explicit bath: comma-separated eta, one value per bead.
+        # Explicit bath: comma-separated eta, one value per bead, in the
+        # units of friction_eta.
         friction_eta_beads:
             kind: string
             default: ""
