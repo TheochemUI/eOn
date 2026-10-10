@@ -1040,6 +1040,13 @@ int load_ini(const INIReader &ini, Parameters &params) {
   ParametersLoadAccess::neb_options(params).quantum_temperature = ini.GetReal(
       neb_section, "temperature",
       ParametersLoadAccess::neb_options(params).quantum_temperature);
+  ParametersLoadAccess::neb_options(params).tunnel_wall_points = ini.GetInteger(
+      neb_section, "tunnel_wall_points",
+      ParametersLoadAccess::neb_options(params).tunnel_wall_points);
+  if (ParametersLoadAccess::neb_options(params).tunnel_wall_points < 0) {
+    throw std::invalid_argument(
+        "[Nudged Elastic Band] tunnel_wall_points must be 0 or more");
+  }
   ParametersLoadAccess::neb_options(params).max_iterations = ini.GetInteger(
       neb_section, "max_iterations",
       ParametersLoadAccess::optimizer_options(params).max_iterations);
@@ -1787,6 +1794,7 @@ int load_ini(const INIReader &ini, Parameters &params) {
       }
     }
     o.half_ring = ini.GetBoolean("Instanton", "half_ring", o.half_ring);
+    o.symmetrize = ini.GetBoolean("Instanton", "symmetrize", o.symmetrize);
     o.initial_hessians =
         ini.Get("Instanton", "initial_hessians", o.initial_hessians);
     if (o.initial_hessians != "saddle" &&

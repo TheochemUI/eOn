@@ -282,6 +282,11 @@ runAfterInstanton(const Parameters &params, Potential &pot,
     throw std::runtime_error("piqtst: cannot write " + tableFile);
   }
   const bool kappaOn = o.pi_recrossing_parents > 0;
+  if (kappaOn && o.pi_thermostat == "piglet") {
+    EONC_LOG_WARNING("[Instanton] piqtst: the transmission factor's parents "
+                     "take pile; RPMD needs the ring polymer's own "
+                     "distribution, which piglet does not sample");
+  }
   table << "# T_K s_amu05A dF_ds_eV_per_amu05A dF_ds_error F_eV F_error_eV "
            "spread_max_A";
   if (kappaOn) {
@@ -426,6 +431,12 @@ runAfterInstanton(const Parameters &params, Potential &pot,
                   "{:.5f} eV), ln(k s) = {:.4f} +- {:.4f}",
                   t, r.barrier, r.barrierError, vSaddle - vReactant, effective,
                   lnPerSecond, r.logRateError);
+    if (!(r.barrier > 0.0)) {
+      EONC_LOG_WARNING("[Instanton] piqtst {:.4g} K: F(s*) is {:.4g} eV "
+                       "against the lowest plane before it; s* is no barrier "
+                       "on the centroid free energy",
+                       t, r.barrier);
+    }
     if (r.firstPlaneHeight < 5.0) {
       EONC_LOG_WARNING("[Instanton] piqtst {:.4g} K: the first plane is "
                        "{:.3g} kT above the reactant minimum of F; the "

@@ -207,6 +207,8 @@ json to_json(const Parameters &p) {
       {"solid_state_pressure",
        ParametersLoadAccess::neb_options(p).solid_state.pressure},
       {"temperature", ParametersLoadAccess::neb_options(p).quantum_temperature},
+      {"tunnel_wall_points",
+       ParametersLoadAccess::neb_options(p).tunnel_wall_points},
   };
   j["Nudged Elastic Band"]["spring"] = {
       {"constant", ParametersLoadAccess::neb_options(p).spring.constant},
@@ -322,6 +324,7 @@ json to_json(const Parameters &p) {
         {"temperature", o.temperature},
         {"temperatures", o.temperatures},
         {"half_ring", o.half_ring},
+        {"symmetrize", o.symmetrize},
         {"initial_hessians", o.initial_hessians},
         {"energy_shift", o.energy_shift},
         {"discretization", o.discretization},
@@ -642,6 +645,8 @@ void from_json(const json &j, Parameters &p) {
              ParametersLoadAccess::neb_options(p).solid_state.pressure);
     JSON_OPT(s, "temperature",
              ParametersLoadAccess::neb_options(p).quantum_temperature);
+    JSON_OPT(s, "tunnel_wall_points",
+             ParametersLoadAccess::neb_options(p).tunnel_wall_points);
     if (s.contains("spring")) {
       auto &sp = s.at("spring");
       JSON_OPT(sp, "constant",
@@ -785,6 +790,7 @@ void from_json(const json &j, Parameters &p) {
       o.temperatures = temperaturesFromJson(s.at("temperatures"));
     }
     JSON_OPT(s, "half_ring", o.half_ring);
+    JSON_OPT(s, "symmetrize", o.symmetrize);
     if (s.contains("initial_hessians")) {
       o.initial_hessians = s.at("initial_hessians").get<std::string>();
     }

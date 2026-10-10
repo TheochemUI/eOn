@@ -19,9 +19,9 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/BaseStructures.h"
 #include "eon/BasinHoppingJob.h"
-#include "eon/GlobalOptimizationJob.h"
 #include "eon/Bundling.h"
 #include "eon/ConFileIO.h"
+#include "eon/GlobalOptimizationJob.h"
 #include "eon/Job.h"
 #include "eon/Matter.h"
 #include "eon/OHTSTJob.h"
@@ -36,6 +36,9 @@
 #include "eon/libs/ARTn/ARTnResource.h"
 #endif
 
+#include <Eigen/Geometry>
+#include <nlohmann/json.hpp>
+
 #include <algorithm>
 #include <array>
 #include <cfenv>
@@ -43,8 +46,10 @@
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
+#include <functional>
 #include <iterator>
 #include <memory>
+#include <numbers>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -2940,8 +2945,291 @@ TEST_CASE_METHOD(JobIntegrationFixture,
   if (!copyTestData("neb_lj13")) {
     SKIP("neb_lj13 test system not found");
   }
-  // The two LJ13 minima differ by 0.86 eV: the path converges, and the
-  // splitting is withheld because beta |delta| is far above 0.1.
+  // The two LJ13 minima differ by 0.86 eV. Without the levelled surface the
+  // path converges and the splitting is withheld, because beta |delta| is
+  // far above 0.1.
+  writeConfig(R"(
+[Main]
+job = instanton
+
+[Potential]
+potential = lj
+
+[Instanton]
+beads = 64
+beta_hbar_omega = 30
+max_iterations = 4000
+force_tolerance = 1e-3
+symmetrize = false
+)");
+  auto results = runJob();
+  REQUIRE(results.at("termination_reason") == "0");
+  REQUIRE(std::filesystem::exists(workdir / "instanton.con"));
+  const auto frames =
+      readcon::read_all_frames((workdir / "instanton.con").string());
+  REQUIRE(frames.size() == 65);
+  // The path's first frame says why no splitting was written, as
+  // results.dat does.
+  const auto head = nlohmann::json::parse(frames.front().metadata_json());
+  REQUIRE(head.at("instanton_symmetric").get<double>() == 0.0);
+  REQUIRE(head.at("instanton_beta_asymmetry").get<double>() > 0.1);
+  REQUIRE(std::isfinite(std::stod(results.at("instanton_action"))));
+  REQUIRE_THAT(std::stod(results.at("tunnel_asymmetry")),
+               Catch::Matchers::WithinAbs(0.8634, 1e-3));
+  // The two minima hold different zero-point energies as well.
+  const double zpe = std::stod(results.at("tunnel_asymmetry_zpe")) -
+                     std::stod(results.at("tunnel_asymmetry"));
+  CAPTURE(zpe);
+  REQUIRE(std::isfinite(zpe));
+  REQUIRE(std::abs(zpe) > 1e-4);
+  REQUIRE(std::stod(results.at("instanton_symmetric")) == 0.0);
+  REQUIRE(std::stod(results.at("instanton_beta_asymmetry")) > 0.1);
+  REQUIRE(results.count("tunnel_splitting_instanton") == 0);
+  // results.dat is a list. A map keeps the second copy of a repeated key.
+  const auto dat = workdir / "results.dat";
+  REQUIRE(resultsDatKeyCount(dat, "instanton_beta_asymmetry") == 1);
+  REQUIRE(resultsDatKeyCount(dat, "instanton_symmetric") == 1);
+  REQUIRE(resultsDatKeyCount(dat, "tunnel_asymmetry_zpe") == 1);
+  REQUIRE(std::stod(results.at("instanton_symmetrized")) == 0.0);
+}
+
+namespace {
+
+// Rewrites a con file with its positions mapped by `move`; a periodic cell
+// wraps them back into the cell.
+void rewriteCon(const std::filesystem::path &file,
+                const std::function<AtomMatrix(const Matter &)> &move) {
+  Parameters p;
+  ParametersLoadAccess::potential_options(p).potential = PotType::LJ;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, p));
+  Matter m(pot, p);
+  REQUIRE(eonc::io::io_ok(m.con2matter(file.string())));
+  m.setPositions(move(m));
+  REQUIRE(eonc::io::io_ok(m.matter2con(file.string())));
+}
+
+Eigen::RowVector3d centreOfMass(const Matter &m) {
+  Eigen::RowVector3d com = Eigen::RowVector3d::Zero();
+  double total = 0.0;
+  for (long i = 0; i < m.numberOfAtoms(); ++i) {
+    com += m.getMass(i) * m.getPositions().row(i);
+    total += m.getMass(i);
+  }
+  return com / total;
+}
+
+} // namespace
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "InstantonJob splitting does not depend on the product's turn",
+                 "[job][instanton][integration]") {
+  if (!copyTestData("neb_lj13")) {
+    SKIP("neb_lj13 test system not found");
+  }
+  // The LJ13 cell is periodic, but the cluster in it turns freely, which
+  // its reactant Hessian says. A product turned 20 degrees about its centre
+  // of mass is the same minimum and must give the same path.
+  const std::string config = R"(
+[Main]
+job = instanton
+
+[Potential]
+potential = lj
+
+[Instanton]
+beads = 64
+beta_hbar_omega = 30
+max_iterations = 4000
+force_tolerance = 1e-3
+)";
+  writeConfig(config);
+  auto straight = runJob();
+  rewriteCon(workdir / "product.con", [](const Matter &m) {
+    const Eigen::Matrix3d turn =
+        Eigen::AngleAxisd(20.0 * std::numbers::pi / 180.0,
+                          Eigen::Vector3d(0.3, -0.5, 0.8).normalized())
+            .toRotationMatrix();
+    const Eigen::RowVector3d com = centreOfMass(m);
+    AtomMatrix r = m.getPositions();
+    for (long i = 0; i < r.rows(); ++i) {
+      r.row(i) = (r.row(i) - com) * turn.transpose() + com;
+    }
+    return r;
+  });
+  writeConfig(config);
+  auto turned = runJob();
+  REQUIRE(straight.at("termination_reason") == "0");
+  REQUIRE(turned.at("termination_reason") == "0");
+  for (const char *key :
+       {"instanton_action", "instanton_temperature_K",
+        "tunnel_splitting_instanton", "tunnel_asymmetry_zpe"}) {
+    CAPTURE(key);
+    REQUIRE_THAT(std::stod(turned.at(key)),
+                 Catch::Matchers::WithinRel(std::stod(straight.at(key)), 1e-5));
+  }
+}
+
+TEST_CASE_METHOD(
+    JobIntegrationFixture,
+    "InstantonJob rate is the same for a cluster across a cell face",
+    "[job][instanton][integration]") {
+  if (!copyTestData("neb_lj13")) {
+    SKIP("neb_lj13 test system not found");
+  }
+  // Moved so its centre of mass sits on the x = 0 face, the cluster is
+  // wrapped into two pieces at opposite sides of the cell. Its rotations
+  // are zero modes all the same, and the rate cannot change.
+  const std::string config = R"(
+[Main]
+job = instanton
+
+[Potential]
+potential = lj
+
+[Instanton]
+mode = rate
+temperature = 198
+beads = 16
+max_iterations = 3000
+force_tolerance = 1e-6
+)";
+  writeConfig(config);
+  auto inside = runJob();
+  double shift = 0.0;
+  {
+    Parameters p;
+    ParametersLoadAccess::potential_options(p).potential = PotType::LJ;
+    auto pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, p));
+    Matter reactant(pot, p);
+    REQUIRE(eonc::io::io_ok(
+        reactant.con2matter((workdir / "reactant.con").string())));
+    shift = -centreOfMass(reactant)(0);
+  }
+  for (const char *name : {"reactant.con", "product.con", "saddle.con"}) {
+    rewriteCon(workdir / name, [&](const Matter &m) {
+      AtomMatrix r = m.getPositions();
+      r.col(0).array() += shift;
+      return r;
+    });
+  }
+  writeConfig(config);
+  auto across = runJob();
+  REQUIRE(inside.at("termination_reason") == "0");
+  REQUIRE(across.at("termination_reason") == "0");
+  REQUIRE(std::stod(across.at("instanton_negative_modes")) == 1.0);
+  REQUIRE_THAT(std::stod(across.at("rate_instanton_log")),
+               Catch::Matchers::WithinAbs(
+                   std::stod(inside.at("rate_instanton_log")), 1e-6));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "InstantonJob skips the bead ladder for one value per bead",
+                 "[job][instanton][integration]") {
+  if (!copyTestData("neb_lj13")) {
+    SKIP("neb_lj13 test system not found");
+  }
+  // A list of one weight per bead has no values for the ladder's coarser
+  // rungs; the ladder steps aside instead of aborting the job.
+  auto rate = [&](const std::string &extra) {
+    writeConfig(R"(
+[Main]
+job = instanton
+
+[Potential]
+potential = lj
+
+[Instanton]
+mode = rate
+temperature = 198
+beads = 16
+half_ring = false
+max_iterations = 3000
+force_tolerance = 1e-6
+)" + extra);
+    return runJob();
+  };
+  const auto plain = rate("");
+  const auto laddered =
+      rate("bead_ladder = true\n"
+           "discretization = 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1\n");
+  REQUIRE(plain.at("termination_reason") == "0");
+  REQUIRE(laddered.at("termination_reason") == "0");
+  REQUIRE_THAT(std::stod(laddered.at("rate_instanton_log")),
+               Catch::Matchers::WithinAbs(
+                   std::stod(plain.at("rate_instanton_log")), 1e-6));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "NEB writes the one-dimensional tunnelling levels of its band",
+                 "[job][neb][tunneling][integration]") {
+  if (!copyTestData("neb_lj13")) {
+    SKIP("neb_lj13 test system not found");
+  }
+  auto band = [&](const std::string &wallPoints) {
+    writeConfig(R"(
+[Main]
+job = nudged_elastic_band
+
+[Potential]
+potential = lj
+
+[Nudged Elastic Band]
+images = 7
+max_iterations = 400
+tunnel_wall_points = )" +
+                wallPoints + R"(
+
+[Optimizer]
+opt_method = lbfgs
+converged_force = 0.01
+max_move = 0.1
+)");
+    // results.dat reports the process-wide count; this run's share is the
+    // count it ends at minus the one it starts from.
+    const auto before =
+        static_cast<double>(PotRegistry::get().total_force_calls());
+    auto results = runJob();
+    REQUIRE(results.at("termination_reason") == "0");
+    const auto frames =
+        readcon::read_all_frames((workdir / "neb.con").string());
+    REQUIRE(frames.size() == 9);
+    return std::pair{nlohmann::json::parse(frames.front().metadata_json()),
+                     std::stod(results.at("total_force_calls")) - before};
+  };
+  const auto [fit, fitCalls] = band("0");
+  const auto [walled, walledCalls] = band("6");
+  for (const auto *head : {&fit, &walled}) {
+    for (const char *key :
+         {"tls_energy_dvr", "tunnel_asymmetry_dvr", "tunnel_splitting_dvr",
+          "tunnel_asymmetry_zpe", "tunnel_double_well"}) {
+      CAPTURE(key);
+      REQUIRE(head->contains(key));
+      REQUIRE(std::isfinite(head->at(key).get<double>()));
+    }
+    REQUIRE_THAT(std::hypot(head->at("tunnel_asymmetry_dvr").get<double>(),
+                            head->at("tunnel_splitting_dvr").get<double>()),
+                 Catch::Matchers::WithinRel(
+                     head->at("tls_energy_dvr").get<double>(), 1e-9));
+  }
+  REQUIRE(fit.at("tunnel_wall_sampled").get<double>() == 0.0);
+  REQUIRE(walled.at("tunnel_wall_sampled").get<double>() == 1.0);
+  // Six samples past each of the two minima, and nothing else changes.
+  REQUIRE(walledCalls - fitCalls == Catch::Approx(12.0).margin(0.5));
+}
+
+TEST_CASE_METHOD(
+    JobIntegrationFixture,
+    "InstantonJob levels an asymmetric pair and writes its splitting",
+    "[job][instanton][integration]") {
+  if (!copyTestData("neb_lj13")) {
+    SKIP("neb_lj13 test system not found");
+  }
+  // The same 0.86 eV pair on the levelled surface: the splitting is written,
+  // and the energy is dominated by the asymmetry. In these reduced units
+  // (unit masses) the zero-point difference alone moves the asymmetry by
+  // 0.4 eV.
   writeConfig(R"(
 [Main]
 job = instanton
@@ -2957,20 +3245,20 @@ force_tolerance = 1e-3
 )");
   auto results = runJob();
   REQUIRE(results.at("termination_reason") == "0");
-  REQUIRE(std::filesystem::exists(workdir / "instanton.con"));
-  const auto frames =
-      readcon::read_all_frames((workdir / "instanton.con").string());
-  REQUIRE(frames.size() == 65);
-  REQUIRE(std::isfinite(std::stod(results.at("instanton_action"))));
+  REQUIRE(std::stod(results.at("instanton_symmetrized")) == 1.0);
+  REQUIRE(std::stod(results.at("instanton_symmetric")) == 0.0);
   REQUIRE_THAT(std::stod(results.at("tunnel_asymmetry")),
                Catch::Matchers::WithinAbs(0.8634, 1e-3));
-  REQUIRE(std::stod(results.at("instanton_symmetric")) == 0.0);
-  REQUIRE(std::stod(results.at("instanton_beta_asymmetry")) > 0.1);
-  REQUIRE(results.count("tunnel_splitting_instanton") == 0);
-  // results.dat is a list. A map keeps the second copy of a repeated key.
-  const auto dat = workdir / "results.dat";
-  REQUIRE(resultsDatKeyCount(dat, "instanton_beta_asymmetry") == 1);
-  REQUIRE(resultsDatKeyCount(dat, "instanton_symmetric") == 1);
+  REQUIRE(results.count("tunnel_splitting_instanton") == 1);
+  const double delta0 = std::stod(results.at("tunnel_splitting_instanton"));
+  const double asym = std::stod(results.at("tunnel_asymmetry_zpe"));
+  CAPTURE(delta0, asym);
+  REQUIRE(std::isfinite(delta0));
+  REQUIRE(delta0 > 0.0);
+  REQUIRE(delta0 < 1e-2 * std::abs(asym));
+  REQUIRE(std::abs(asym - 0.8634) > 0.1);
+  REQUIRE_THAT(std::stod(results.at("tls_energy_instanton")),
+               Catch::Matchers::WithinRel(std::hypot(asym, delta0), 1e-9));
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
@@ -3079,7 +3367,8 @@ force_tolerance = 1e-6
   REQUIRE(std::filesystem::exists(pathFile));
   const auto saved = readcon::read_all_frames(pathFile.string());
   REQUIRE(saved.size() >= 3);
-  const std::string text = (std::stringstream{} << std::ifstream(pathFile).rdbuf()).str();
+  const std::string text =
+      (std::stringstream{} << std::ifstream(pathFile).rdbuf()).str();
   REQUIRE(text.find("arc_length") != std::string::npos);
   for (const auto &frame : saved) {
     REQUIRE(frame.energy_opt().has_value());
@@ -3201,8 +3490,7 @@ TEST_CASE_METHOD(JobIntegrationFixture,
   runOne("md", "npew", 1);
 }
 
-TEST_CASE_METHOD(JobIntegrationFixture,
-                 "Basin hopping keeps a unique minimum",
+TEST_CASE_METHOD(JobIntegrationFixture, "Basin hopping keeps a unique minimum",
                  "[job][basin_hopping]") {
   EON_REQUIRE_TEST_DATA("neb_morse");
   writeConfig(R"(

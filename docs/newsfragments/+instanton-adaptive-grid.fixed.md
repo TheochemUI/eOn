@@ -1,0 +1,1 @@
+`[Instanton] discretization` is the adaptive imaginary-time grid of Rommel and Kaestner: weights scaled to a mean of one, spring c / w_j, each bead's potential weighted by the mean of its two steps, and the same grid in the rate's Hessian, B_N and Z_r. Weighted rings converge to the continuum instanton; they keep the whole ring and take no friction bath.

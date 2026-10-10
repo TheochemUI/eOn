@@ -1,0 +1,1 @@
+The band's quantum free energy leaves out the translations and a free cluster's rotations instead of summing them as near-zero frequencies, and keeps every vibration at the end minima, so `zpe_corrected_barrier` counts the reactant's zero-point energy along the band.
