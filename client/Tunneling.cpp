@@ -2937,6 +2937,19 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
                    "trust {:.3e}",
                    it, half ? 2.0 * cur.u : cur.u, v.gmax, length,
                    v.climb.curvature, v.climb.negative, trust);
+    // A converged gradient is classified with exact bead Hessians before it
+    // counts, as i-PI's hessian_final does. A Bofill block learns curvature
+    // only along the steps taken, so it can miss a negative curvature as
+    // well as invent one: on a ring that never moved off a mirror plane the
+    // held blocks kept one negative curvature where the surface had three.
+    if (f > 1 && v.ok && v.gmax < options.forceTolerance && !exactAtX) {
+      const double eps = options.lanczosStep > 0.0 ? options.lanczosStep : 1e-4;
+      for (size_t j = 0; j < x.size(); ++j) {
+        physical[j] = fdPhysicalHessian(x[j], potential, eps);
+      }
+      exactAtX = true;
+      continue;
+    }
     if (done(v)) {
       converged = true;
       break;
@@ -3050,21 +3063,9 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       }
       return true;
     };
-    // A converged gradient is classified with exact bead Hessians, as
-    // i-PI's hessian_final does: the Bofill blocks can carry negative
-    // curvatures the surface does not have. A second negative curvature
-    // that survives the rebuild is a higher-index stationary ring, where
-    // the flipped Newton step vanishes; a trust-sized displacement down
-    // that mode leaves it.
-    if (v.ok && v.gmax < options.forceTolerance && v.climb.negative != 1 &&
-        !exactAtX) {
-      const double eps = options.lanczosStep > 0.0 ? options.lanczosStep : 1e-4;
-      for (size_t j = 0; j < x.size(); ++j) {
-        physical[j] = fdPhysicalHessian(x[j], potential, eps);
-      }
-      exactAtX = true;
-      continue;
-    }
+    // A second negative curvature that survives the exact classification is
+    // a higher-index stationary ring, where the flipped Newton step
+    // vanishes; a trust-sized displacement down that mode leaves it.
     if (v.ok && v.gmax < options.forceTolerance && v.climb.negative > 1) {
       long down = -1;
       for (size_t i = 0; i < v.ritz.size(); ++i) {
@@ -3086,10 +3087,15 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       }
       if (down >= 0) {
         trust = options.maxStep;
-        const VectorXd mode =
-            packBeads(v.ritz[static_cast<size_t>(down)].vector);
-        if (accept(mode) || accept(-mode)) {
-          continue;
+        // The Ritz vector has unit norm over every bead; scaled so its
+        // largest bead moves the trust radius, as the Newton step is.
+        VectorXd mode = packBeads(v.ritz[static_cast<size_t>(down)].vector);
+        const double big = packedBeadNorm(mode, f);
+        if (big > 0.0) {
+          mode *= trust / big;
+          if (accept(mode) || accept(-mode)) {
+            continue;
+          }
         }
       }
     }
@@ -3130,12 +3136,23 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
         for (size_t j = 0; j < x.size(); ++j) {
           physical[j] = fdPhysicalHessian(x[j], potential, eps);
         }
+        exactAtX = true;
         trust = options.maxStep;
       }
     }
   }
-  if (!converged && done(viewOf(cur))) {
-    converged = true;
+  // A budget that ends on a converged gradient still classifies it with
+  // exact blocks.
+  if (!converged) {
+    View last = viewOf(cur);
+    if (f > 1 && last.ok && last.gmax < options.forceTolerance && !exactAtX) {
+      const double eps = options.lanczosStep > 0.0 ? options.lanczosStep : 1e-4;
+      for (size_t j = 0; j < x.size(); ++j) {
+        physical[j] = fdPhysicalHessian(x[j], potential, eps);
+      }
+      last = viewOf(cur);
+    }
+    converged = done(last);
   }
 
   NewtonOut out;

@@ -1921,6 +1921,111 @@ TEST_CASE("Finite-difference initial bead Hessians find the same ring",
   REQUIRE_THAT(fd.bN, WithinRel(copied.bN, 1e-6));
 }
 
+namespace {
+
+// The Eckart barrier along x with a transverse mode whose curvature is
+// positive at the saddle and at a short ring's turning points but turns
+// negative where the instanton turns: V = V0 sech^2(x / a) + k(x) y^2 / 2 +
+// 5 y^4, k(x) = 1 - 2 [exp(-((x - x0) / w)^2) + exp(-((x + x0) / w)^2)].
+// y = 0 is a mirror plane, so a search that starts on it never moves y.
+struct TransverseDip {
+  double v0 = 0.425, a = 0.734, x0 = 0.95, w = 0.15;
+  double k(double x) const {
+    return 1.0 - 2.0 * (std::exp(-std::pow((x - x0) / w, 2)) +
+                        std::exp(-std::pow((x + x0) / w, 2)));
+  }
+  double dk(double x) const {
+    return 4.0 *
+           ((x - x0) * std::exp(-std::pow((x - x0) / w, 2)) +
+            (x + x0) * std::exp(-std::pow((x + x0) / w, 2))) /
+           (w * w);
+  }
+  VectorXd gradient(const VectorXd &q) const {
+    const double x = q(0), y = q(1), ch = std::cosh(x / a);
+    VectorXd g(2);
+    g << -2.0 * v0 * std::tanh(x / a) / (a * ch * ch) + 0.5 * dk(x) * y * y,
+        k(x) * y + 20.0 * y * y * y;
+    return g;
+  }
+  BatchPotential batch() const {
+    return [this](const std::vector<VectorXd> &q, std::vector<double> &v,
+                  std::vector<VectorXd> &g) {
+      v.resize(q.size());
+      g.resize(q.size());
+      for (size_t i = 0; i < q.size(); ++i) {
+        const double x = q[i](0), y = q[i](1), ch = std::cosh(x / a);
+        v[i] = v0 / (ch * ch) + 0.5 * k(x) * y * y + 5.0 * y * y * y * y;
+        g[i] = gradient(q[i]);
+      }
+    };
+  }
+  MatrixXd hessian(const VectorXd &q) const {
+    MatrixXd h(2, 2);
+    for (int i = 0; i < 2; ++i) {
+      VectorXd e = VectorXd::Zero(2);
+      e(i) = 1e-6;
+      h.col(i) = (gradient(q + e) - gradient(q - e)) / 2e-6;
+    }
+    return 0.5 * (h + h.transpose());
+  }
+};
+
+} // namespace
+
+TEST_CASE("A converged ring is classified with exact Hessians and leaves a "
+          "higher-index point",
+          "[Tunneling][Instanton]") {
+  // On the mirror plane the steps never carry a y component, so Bofill
+  // blocks keep the transverse curvature of the start, positive, where the
+  // surface has turned negative. Counted on those blocks the y = 0 ring
+  // has one negative curvature and passes for the instanton; exactly it
+  // has three. Classified exactly and left by a trust-sized step down the
+  // second mode, the search reaches the lower ring off the plane.
+  const TransverseDip pes;
+  const VectorXd saddle = VectorXd::Zero(2);
+  const MatrixXd hs = pes.hessian(saddle);
+  const double beta = 1.0 / (kBoltzmann * 0.5 * crossoverTemperature(hs));
+  const long n = 32;
+  std::vector<VectorXd> guess(static_cast<size_t>(n), VectorXd::Zero(2));
+  for (long j = 0; j < n; ++j) {
+    guess[static_cast<size_t>(j)](0) =
+        0.647 * std::cos(2.0 * std::numbers::pi * j / n);
+  }
+  RateInstantonOptions opt;
+  opt.beads = n;
+  opt.forceTolerance = 1e-6;
+  const RateInstanton inst =
+      optimizeRateInstanton(saddle, hs, beta, guess, pes.batch(), opt);
+  const double bnh = inst.betaN * kHbar;
+  const double c = 1.0 / (bnh * bnh);
+  MatrixXd ring = MatrixXd::Zero(2 * n, 2 * n);
+  for (long j = 0; j < n; ++j) {
+    const long nx = (j + 1) % n;
+    ring.block(2 * j, 2 * j, 2, 2) =
+        pes.hessian(inst.beads[static_cast<size_t>(j)]) +
+        2.0 * c * MatrixXd::Identity(2, 2);
+    ring.block(2 * j, 2 * nx, 2, 2) -= c * MatrixXd::Identity(2, 2);
+    ring.block(2 * nx, 2 * j, 2, 2) -= c * MatrixXd::Identity(2, 2);
+  }
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> es(ring,
+                                                   Eigen::EigenvaluesOnly);
+  long negative = 0;
+  for (long i = 0; i < es.eigenvalues().size(); ++i) {
+    negative += es.eigenvalues()(i) < -1e-3 ? 1 : 0;
+  }
+  double offPlane = 0.0;
+  for (const auto &q : inst.beads) {
+    offPlane = std::max(offPlane, std::abs(q(1)));
+  }
+  CAPTURE(inst.converged, inst.ringPotential, offPlane, negative,
+          es.eigenvalues().head(4).transpose());
+  REQUIRE(inst.converged);
+  REQUIRE(negative == 1);
+  REQUIRE(offPlane > 0.05);
+  // The y = 0 ring sits at 10.1856 eV; the instanton below it.
+  REQUIRE(inst.ringPotential < 10.18);
+}
+
 // A ring in a harmonic well, V = q^2 / 2, searched with a saddle Hessian
 // whose barrier curvature is -1: the well has no index-1 ring, the index-1
 // step climbs the centroid and takes exact Newton on every internal mode,
