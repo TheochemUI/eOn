@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+message: "If you use eOn, please cite the paper below."
+title: eOn
+type: software
+authors:
+  - name: eOn Development Team
+repository-code: "https://github.com/TheochemUI/eOn"
+url: "https://eondocs.org"
+license: BSD-3-Clause
+preferred-citation:
+  type: article
+  title: "EON: Software for Long Time Simulations of Atomic Scale Systems"
+  authors:
+    - family-names: Chill
+      given-names: Samuel T.
+    - family-names: Welborn
+      given-names: Matthew
+    - family-names: Terrell
+      given-names: Rye
+    - family-names: Zhang
+      given-names: Liang
+    - family-names: Berthet
+      given-names: Jean-Claude
+    - family-names: Pedersen
+      given-names: Andreas
+    - family-names: Jónsson
+      given-names: Hannes
+    - family-names: Henkelman
+      given-names: Graeme
+  journal: Modelling and Simulation in Materials Science and Engineering
+  volume: 22
+  issue: 5
+  start: "055002"
+  year: 2014
+  doi: 10.1088/0965-0393/22/5/055002

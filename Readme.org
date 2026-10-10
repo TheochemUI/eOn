@@ -87,6 +87,32 @@ We have both ~Catch2~ unit tests, and also ~ApprovalTests~. For adding new
 approval tests, first build them with ~meson compile~, run them to approve, and
 then re-run to make sure things pass with ~meson test~.
 
+* Citing eOn
+
+If eOn helps your work, please cite:
+
+#+begin_quote
+S. T. Chill, M. Welborn, R. Terrell, L. Zhang, J.-C. Berthet, A. Pedersen,
+H. Jónsson and G. Henkelman, "EON: software for long time simulations of
+atomic scale systems", /Modelling Simul. Mater. Sci. Eng./ *22*, 055002
+(2014). [[https://doi.org/10.1088/0965-0393/22/5/055002][doi:10.1088/0965-0393/22/5/055002]]
+#+end_quote
+
+#+begin_src bibtex
+@article{chillEONSoftwareLong2014,
+  title = {{EON}: Software for Long Time Simulations of Atomic Scale Systems},
+  author = {Chill, Samuel T and Welborn, Matthew and Terrell, Rye and Zhang, Liang and Berthet, Jean-Claude and Pedersen, Andreas and J{\'o}nsson, Hannes and Henkelman, Graeme},
+  year = {2014},
+  journal = {Modelling and Simulation in Materials Science and Engineering},
+  volume = {22},
+  number = {5},
+  pages = {055002},
+  doi = {10.1088/0965-0393/22/5/055002}
+}
+#+end_src
+
+GitHub reads the same reference from ~CITATION.cff~.
+
 * License
 
 [[https://opensource.org/licenses/BSD-3-Clause][BSD-3 clause]].
