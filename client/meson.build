@@ -841,13 +841,19 @@ if not readcon_db_dep.found()
     if not is_windows
         _readcon_db_order = [_readcon_db_so]
     endif
-    readcon_db_dep = declare_dependency(
-        link_with: _readcon_db_order,
-        link_args: [
+    # ld64 has no --as-needed and keeps every dylib it is given, so macOS
+    # takes the bare path.
+    _readcon_db_link = [_readcon_db_so.full_path()]
+    if host_system != 'darwin'
+        _readcon_db_link = [
             '-Wl,--no-as-needed',
             _readcon_db_so.full_path(),
             '-Wl,--as-needed',
-        ],
+        ]
+    endif
+    readcon_db_dep = declare_dependency(
+        link_with: _readcon_db_order,
+        link_args: _readcon_db_link,
         sources: [_readcon_db_so],
         compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
     )
@@ -869,11 +875,14 @@ else
         foreach _name : ['libreadcon_db.so', 'libreadcon_db.dylib']
             _cand = _pc_libdir / _name
             if fs.exists(_cand)
-                _readcon_db_keep = [
-                    '-Wl,--no-as-needed',
-                    _cand,
-                    '-Wl,--as-needed',
-                ]
+                _readcon_db_keep = [_cand]
+                if host_system != 'darwin'
+                    _readcon_db_keep = [
+                        '-Wl,--no-as-needed',
+                        _cand,
+                        '-Wl,--as-needed',
+                    ]
+                endif
                 break
             endif
         endforeach
