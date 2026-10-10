@@ -36,6 +36,7 @@
 #include "eon/libs/ARTn/ARTnResource.h"
 #endif
 
+#include <Eigen/Geometry>
 #include <nlohmann/json.hpp>
 
 #include <algorithm>
@@ -45,8 +46,10 @@
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
+#include <functional>
 #include <iterator>
 #include <memory>
+#include <numbers>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -2983,6 +2986,137 @@ symmetrize = false
   REQUIRE(resultsDatKeyCount(dat, "instanton_symmetric") == 1);
   REQUIRE(resultsDatKeyCount(dat, "tunnel_asymmetry_zpe") == 1);
   REQUIRE(std::stod(results.at("instanton_symmetrized")) == 0.0);
+}
+
+namespace {
+
+// Rewrites a con file with its positions mapped by `move`; a periodic cell
+// wraps them back into the cell.
+void rewriteCon(const std::filesystem::path &file,
+                const std::function<AtomMatrix(const Matter &)> &move) {
+  Parameters p;
+  ParametersLoadAccess::potential_options(p).potential = PotType::LJ;
+  auto pot = eonc::helpers::sharePotential(
+      eonc::helpers::makePotential(PotType::LJ, p));
+  Matter m(pot, p);
+  REQUIRE(eonc::io::io_ok(m.con2matter(file.string())));
+  m.setPositions(move(m));
+  REQUIRE(eonc::io::io_ok(m.matter2con(file.string())));
+}
+
+Eigen::RowVector3d centreOfMass(const Matter &m) {
+  Eigen::RowVector3d com = Eigen::RowVector3d::Zero();
+  double total = 0.0;
+  for (long i = 0; i < m.numberOfAtoms(); ++i) {
+    com += m.getMass(i) * m.getPositions().row(i);
+    total += m.getMass(i);
+  }
+  return com / total;
+}
+
+} // namespace
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "InstantonJob splitting does not depend on the product's turn",
+                 "[job][instanton][integration]") {
+  if (!copyTestData("neb_lj13")) {
+    SKIP("neb_lj13 test system not found");
+  }
+  // The LJ13 cell is periodic, but the cluster in it turns freely, which
+  // its reactant Hessian says. A product turned 20 degrees about its centre
+  // of mass is the same minimum and must give the same path.
+  const std::string config = R"(
+[Main]
+job = instanton
+
+[Potential]
+potential = lj
+
+[Instanton]
+beads = 64
+beta_hbar_omega = 30
+max_iterations = 4000
+force_tolerance = 1e-3
+)";
+  writeConfig(config);
+  auto straight = runJob();
+  rewriteCon(workdir / "product.con", [](const Matter &m) {
+    const Eigen::Matrix3d turn =
+        Eigen::AngleAxisd(20.0 * std::numbers::pi / 180.0,
+                          Eigen::Vector3d(0.3, -0.5, 0.8).normalized())
+            .toRotationMatrix();
+    const Eigen::RowVector3d com = centreOfMass(m);
+    AtomMatrix r = m.getPositions();
+    for (long i = 0; i < r.rows(); ++i) {
+      r.row(i) = (r.row(i) - com) * turn.transpose() + com;
+    }
+    return r;
+  });
+  writeConfig(config);
+  auto turned = runJob();
+  REQUIRE(straight.at("termination_reason") == "0");
+  REQUIRE(turned.at("termination_reason") == "0");
+  for (const char *key :
+       {"instanton_action", "instanton_temperature_K",
+        "tunnel_splitting_instanton", "tunnel_asymmetry_zpe"}) {
+    CAPTURE(key);
+    REQUIRE_THAT(std::stod(turned.at(key)),
+                 Catch::Matchers::WithinRel(std::stod(straight.at(key)), 1e-5));
+  }
+}
+
+TEST_CASE_METHOD(
+    JobIntegrationFixture,
+    "InstantonJob rate is the same for a cluster across a cell face",
+    "[job][instanton][integration]") {
+  if (!copyTestData("neb_lj13")) {
+    SKIP("neb_lj13 test system not found");
+  }
+  // Moved so its centre of mass sits on the x = 0 face, the cluster is
+  // wrapped into two pieces at opposite sides of the cell. Its rotations
+  // are zero modes all the same, and the rate cannot change.
+  const std::string config = R"(
+[Main]
+job = instanton
+
+[Potential]
+potential = lj
+
+[Instanton]
+mode = rate
+temperature = 198
+beads = 16
+max_iterations = 3000
+force_tolerance = 1e-6
+)";
+  writeConfig(config);
+  auto inside = runJob();
+  double shift = 0.0;
+  {
+    Parameters p;
+    ParametersLoadAccess::potential_options(p).potential = PotType::LJ;
+    auto pot = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(PotType::LJ, p));
+    Matter reactant(pot, p);
+    REQUIRE(eonc::io::io_ok(
+        reactant.con2matter((workdir / "reactant.con").string())));
+    shift = -centreOfMass(reactant)(0);
+  }
+  for (const char *name : {"reactant.con", "product.con", "saddle.con"}) {
+    rewriteCon(workdir / name, [&](const Matter &m) {
+      AtomMatrix r = m.getPositions();
+      r.col(0).array() += shift;
+      return r;
+    });
+  }
+  writeConfig(config);
+  auto across = runJob();
+  REQUIRE(inside.at("termination_reason") == "0");
+  REQUIRE(across.at("termination_reason") == "0");
+  REQUIRE(std::stod(across.at("instanton_negative_modes")) == 1.0);
+  REQUIRE_THAT(std::stod(across.at("rate_instanton_log")),
+               Catch::Matchers::WithinAbs(
+                   std::stod(inside.at("rate_instanton_log")), 1e-6));
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,

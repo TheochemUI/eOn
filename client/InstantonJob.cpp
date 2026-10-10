@@ -46,6 +46,18 @@ namespace {
 /// One unit of imaginary time, sqrt(amu Angstrom^2 / eV), in fs.
 constexpr double kTimeUnitFs = 10.180505717871193;
 
+/// The positions of m with every atom at its minimum image from atom 0. A
+/// cluster that straddles a cell face is wrapped into the cell on read;
+/// whole again, a rotation about its centre of mass is a rotation of it.
+AtomMatrix wholePositions(const Matter &m) {
+  const AtomMatrix r = m.getPositions();
+  AtomMatrix diff = r;
+  diff.rowwise() -= r.row(0);
+  AtomMatrix out = m.pbc(diff);
+  out.rowwise() += r.row(0);
+  return out;
+}
+
 /// Mass-weighted coordinates over the free atoms, measured from a reference
 /// structure under its minimum image.
 class MassWeighted {
@@ -126,7 +138,7 @@ public:
   MatrixXd rigidGenerators(const Matter &m) const {
     const long n = dimension();
     MatrixXd b = MatrixXd::Zero(n, 6);
-    const AtomMatrix r = m.getPositions();
+    const AtomMatrix r = wholePositions(m);
     Eigen::RowVector3d com = Eigen::RowVector3d::Zero();
     double total = 0.0;
     for (size_t k = 0; k < free_.size(); ++k) {
@@ -188,9 +200,10 @@ public:
     return qr.householderQ() * MatrixXd::Identity(n, rank);
   }
   const std::vector<double> &sqrtMasses() const { return sqrtMass_; }
-  /// Cartesian positions of the free atoms of the reference, 3 per atom.
+  /// Cartesian positions of the free atoms of the reference, made whole, 3
+  /// per atom.
   VectorXd referenceFree() const {
-    const AtomMatrix r = ref_.getPositions();
+    const AtomMatrix r = wholePositions(ref_);
     VectorXd out(dimension());
     for (size_t k = 0; k < free_.size(); ++k) {
       for (int c = 0; c < 3; ++c) {
@@ -216,10 +229,12 @@ private:
 };
 
 /// With no atom fixed, removes the rigid part of m's displacement from
-/// ref: the mass-weighted mean (translation), and for a cluster the
+/// ref: the mass-weighted mean (translation), and with `rotate` the
 /// mass-weighted best rotation (Kabsch). A path that carried either would
-/// pay kinetic action for motion that costs no energy.
-void alignRigid(const Matter &ref, Matter &m) {
+/// pay kinetic action for motion that costs no energy. Whether the
+/// structure turns freely is the reactant Hessian's call (a cluster in a
+/// periodic cell does), not the periodic flag.
+void alignRigid(const Matter &ref, Matter &m, bool rotate) {
   const long n = ref.numberOfAtoms();
   for (long i = 0; i < n; ++i) {
     if (ref.getFixed(i)) {
@@ -234,9 +249,9 @@ void alignRigid(const Matter &ref, Matter &m) {
   const double total = w.sum();
   const Eigen::RowVector3d shift = (w.transpose() * d) / total;
   d.rowwise() -= shift;
-  if (!ref.getPeriodic()) {
-    const Eigen::RowVector3d com = (w.transpose() * ref.getPositions()) / total;
-    AtomMatrix x = ref.getPositions();
+  if (rotate) {
+    AtomMatrix x = wholePositions(ref);
+    const Eigen::RowVector3d com = (w.transpose() * x) / total;
     x.rowwise() -= com;
     const AtomMatrix y = x + d;
     const Eigen::Matrix3d h = y.transpose() * w.asDiagonal() * x;
@@ -431,12 +446,15 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
   }
   // Highest first, so each ring can start the colder one.
   std::sort(temperatures.begin(), temperatures.end(), std::greater<>());
-  alignRigid(reactant, saddle);
   const long n = mw.dimension();
+  // The reactant Hessian decides which rotations are free before anything
+  // is aligned to the reactant.
+  const MatrixXd hReactant = hessianAt(VectorXd::Zero(n));
+  const bool rotate = rotationZero[0] || rotationZero[1] || rotationZero[2];
+  alignRigid(reactant, saddle, rotate);
   const VectorXd qSaddle = mw.toQ(saddle);
   const double vReactant = Matter(reactant).getPotentialEnergy();
   const double vSaddle = saddle.getPotentialEnergy();
-  const MatrixXd hReactant = hessianAt(VectorXd::Zero(n));
   const MatrixXd hSaddle = hessianAt(qSaddle);
   const VectorXd unstableMode = Eigen::SelfAdjointEigenSolver<MatrixXd>(
                                     0.5 * (hSaddle + hSaddle.transpose()))
@@ -497,7 +515,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         throw std::runtime_error("instanton: " + o.initial_path +
                                  " differs in atom count");
       }
-      alignRigid(reactant, image);
+      alignRigid(reactant, image, rotate);
       pathQ.push_back(mw.toQ(image));
       const auto energy = frame.energy_opt();
       haveEnergies = haveEnergies && energy.has_value();
@@ -1086,7 +1104,11 @@ std::vector<std::string> InstantonJob::run(void) {
   if (reactant->numberOfAtoms() != product->numberOfAtoms()) {
     throw std::runtime_error("instanton: the minima differ in atom count");
   }
-  alignRigid(*reactant, *product);
+  // The reactant Hessian decides which rotations are free before anything
+  // is aligned to the reactant.
+  const MatrixXd hStart = hessianAt(qStart);
+  const bool rotate = rotationZero[0] || rotationZero[1] || rotationZero[2];
+  alignRigid(*reactant, *product, rotate);
   const VectorXd qEnd = mw.toQ(*product);
 
   // Starting path: a band from file, else the straight line.
@@ -1098,7 +1120,7 @@ std::vector<std::string> InstantonJob::run(void) {
       if (!io::io_ok(io::con2matter(m, frame))) {
         throw std::runtime_error("instanton: cannot read " + o.initial_path);
       }
-      alignRigid(*reactant, m);
+      alignRigid(*reactant, m, rotate);
       guess.push_back(mw.toQ(m));
     }
     if (guess.size() >= 2) {
@@ -1107,7 +1129,6 @@ std::vector<std::string> InstantonJob::run(void) {
     }
   }
 
-  const MatrixXd hStart = hessianAt(qStart);
   const MatrixXd hEnd = hessianAt(qEnd);
   // Both Hessians lost the same rigid motions. The zero-point energy the
   // product well holds above the reactant's belongs in the asymmetry.
