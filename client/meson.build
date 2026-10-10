@@ -835,12 +835,7 @@ if not readcon_db_dep.found()
     # cargo target and a parallel link runs while that library is absent.
     # link_with is the order edge. The --no-as-needed path stays: the
     # mirror resolves rkrdb_open at load time, and --as-needed drops a
-    # library with no link-time use. Windows keeps the DLL off link_with
-    # because link.exe rejects a DLL input (LNK1107).
-    _readcon_db_order = []
-    if not is_windows
-        _readcon_db_order = [_readcon_db_so]
-    endif
+    # library with no link-time use.
     # ld64 has no --as-needed and keeps every dylib it is given, so macOS
     # takes the bare path.
     _readcon_db_link = [_readcon_db_so.full_path()]
@@ -851,12 +846,22 @@ if not readcon_db_dep.found()
             '-Wl,--as-needed',
         ]
     endif
-    readcon_db_dep = declare_dependency(
-        link_with: _readcon_db_order,
-        link_args: _readcon_db_link,
-        sources: [_readcon_db_so],
-        compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
-    )
+    if is_windows
+        # The mirror is compiled out on Windows (ReadconDbMirror.cpp guards
+        # every rkrdb_* use with _WIN32), so nothing links readcon-db there.
+        # link.exe cannot take the DLL, and without a link_with edge the
+        # path is also absent when the first DLL links (LNK1181).
+        readcon_db_dep = declare_dependency(
+            compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
+        )
+    else
+        readcon_db_dep = declare_dependency(
+            link_with: [_readcon_db_so],
+            link_args: _readcon_db_link,
+            sources: [_readcon_db_so],
+            compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
+        )
+    endif
 else
     _readcon_db_version = readcon_db_dep.version()
     if _readcon_db_version == ''
