@@ -225,6 +225,7 @@ def test_server_explorer_and_a_cancelled_result(tmp_path):
 
 
 def test_inprocess_queue_is_idle(tmp_path):
+    pytest.importorskip("pyeonclient")
     cfg = _config(tmp_path)
     comm = LocalInProcess(cfg.path_scratch, config=cfg)
     assert comm.get_queue_size() == 0

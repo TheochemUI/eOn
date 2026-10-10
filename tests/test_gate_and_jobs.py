@@ -129,6 +129,7 @@ def test_gate_splits_rejects_and_remembers(tmp_path):
 
 
 def test_inprocess_job_types_and_con_text(tmp_path):
+    pytest.importorskip("pyeonclient")
     cfg = _config(tmp_path)
     scratch = tmp_path / "scratch"
     scratch.mkdir()
