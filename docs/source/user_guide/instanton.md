@@ -30,6 +30,10 @@ mass-weighted lengths are in amu^0.5 Å.
 
 Every nudged elastic band (NEB) job writes `reaction_coordinate_mw`, the mass-weighted arc length, on
 each frame of `neb.con`. The first frame also carries the band's Wentzel-Kramers-Brillouin (WKB) estimate.
+Every band variant eOn runs carries them, the off-path climbing image band
+{cite:p}`inst-goswamiEnhancedClimbingImage2026` among them. How eOn finds the
+minima and saddles these jobs start from is set out in
+{cite:t}`inst-goswamiEfficientExplorationChemical2025`.
 The keys are:
 
 | Key | Meaning |
@@ -246,6 +250,9 @@ different calculation again, and this page does not implement it.
 ## The rate below the crossover
 
 `mode = rate` reads the reactant and `saddle_filename` (default `saddle.con`).
+Any eOn saddle search can supply it, the Gaussian process accelerated dimer
+{cite:p}`inst-goswamiEfficientImplementationGaussian2025,inst-goswamiAdaptivePruningIncreased2025b`
+among them.
 The instanton is a closed ring, a first-order saddle of the ring-polymer
 potential, with one negative eigenvalue and one zero eigenvalue that cycles
 the beads. {cite:t}`inst-richardsonRingpolymerMolecularDynamics2009` give
