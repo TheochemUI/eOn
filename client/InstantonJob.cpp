@@ -563,6 +563,14 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     steepestDescentPath(qSaddle, vSaddle, hSaddle, mw.sqrtMasses(), evaluate,
                         pathQ, pathV);
     sdPathForceCalls = PotRegistry::get().total_force_calls() - before;
+    // A path read back from file is aligned frame by frame; this one is
+    // aligned the same way, so a job that reuses it starts from this ring.
+    for (auto &q : pathQ) {
+      Matter image(reactant);
+      mw.place(q, image);
+      alignRigid(reactant, image, rotate);
+      q = mw.toQ(image);
+    }
     std::vector<double> arc(pathQ.size(), 0.0);
     for (size_t k = 1; k < pathQ.size(); ++k) {
       arc[k] = arc[k - 1] + (pathQ[k] - pathQ[k - 1]).norm();
