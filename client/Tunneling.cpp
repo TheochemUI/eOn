@@ -843,21 +843,45 @@ private:
   int sign_ = 1;
 };
 
+// Spring of every link j (bead j to bead j + 1, the last closing the ring):
+// c, or c / w_j under link weights.
+std::vector<double> linkSprings(double c, size_t n,
+                                const std::vector<double> *weight) {
+  std::vector<double> out(n, c);
+  if (weight == nullptr || weight->empty()) {
+    return out;
+  }
+  if (weight->size() != n) {
+    throw std::invalid_argument(
+        "link weights must be one positive value per bead");
+  }
+  for (size_t j = 0; j < n; ++j) {
+    if (!((*weight)[j] > 0.0)) {
+      throw std::invalid_argument(
+          "link weights must be one positive value per bead");
+    }
+    out[j] = c / (*weight)[j];
+  }
+  return out;
+}
+
 // Block LU of an open block-tridiagonal chain with given diagonal blocks
-// and -c I between neighbours. Solves, and the inertia and log-determinant
-// from the Schur complements (Haynsworth: the inertia of the chain is the
-// sum over its Schur blocks).
+// and -c_j I between bead j and j + 1. Solves, and the inertia and
+// log-determinant from the Schur complements (Haynsworth: the inertia of
+// the chain is the sum over its Schur blocks).
 class HaynsworthChain {
 public:
-  HaynsworthChain(double c, const std::vector<MatrixXd> &diag, bool spectrum)
-      : c_(c) {
+  HaynsworthChain(double c, const std::vector<MatrixXd> &diag, bool spectrum,
+                  const std::vector<double> *weight = nullptr)
+      : link_(linkSprings(c, diag.size(), weight)) {
     lu_.reserve(diag.size());
     for (size_t k = 0; k < diag.size(); ++k) {
       const long f = diag[k].rows();
       MatrixXd d = 0.5 * (diag[k] + diag[k].transpose());
       if (k > 0) {
         const MatrixXd inv = lu_.back().inverse();
-        d -= c * c * 0.5 * (inv + inv.transpose());
+        const double ck = link_[k - 1];
+        d -= ck * ck * 0.5 * (inv + inv.transpose());
       }
       if (spectrum) {
         const ColMajorXd sym = d;
@@ -884,17 +908,18 @@ public:
     std::vector<VectorXd> y(m), x(m);
     y[0] = b[0];
     for (size_t k = 1; k < m; ++k) {
-      y[k] = b[k] + c_ * lu_[k - 1].solve(y[k - 1]);
+      y[k] = b[k] + link_[k - 1] * lu_[k - 1].solve(y[k - 1]);
     }
     x[m - 1] = lu_[m - 1].solve(y[m - 1]);
     for (size_t k = m - 1; k-- > 0;) {
-      x[k] = lu_[k].solve(y[k] + c_ * x[k + 1]);
+      x[k] = lu_[k].solve(y[k] + link_[k] * x[k + 1]);
     }
     return x;
   }
+  double closingSpring() const { return link_.back(); }
 
 private:
-  double c_;
+  std::vector<double> link_;
   std::vector<Eigen::PartialPivLU<ColMajorXd>> lu_;
   double logAbsDet_ = 0.0;
   long negative_ = 0;
@@ -1283,10 +1308,37 @@ double crossoverTemperature(const MatrixXd &hessSaddle) {
 namespace {
 
 struct RingEval {
-  double u = 0.0;             // U_N
-  std::vector<double> v;      // V at each bead
-  std::vector<VectorXd> grad; // dU_N/dq at each bead
+  double u = 0.0;                // U_N
+  std::vector<double> v;         // V at each bead
+  std::vector<VectorXd> grad;    // dU_N/dq at each bead
+  std::vector<VectorXd> potGrad; // dV/dq at each bead
 };
+
+// Link weights as relative imaginary-time steps, scaled to a mean of one so
+// that the ring still spans beta hbar. Empty stays empty.
+std::vector<double> timeSteps(const std::vector<double> &weights, size_t n) {
+  if (weights.empty()) {
+    return {};
+  }
+  if (weights.size() != n) {
+    throw std::invalid_argument(
+        "link weights must be one positive value per bead");
+  }
+  double sum = 0.0;
+  for (const double w : weights) {
+    if (!(w > 0.0) || !std::isfinite(w)) {
+      throw std::invalid_argument(
+          "link weights must be one positive value per bead");
+    }
+    sum += w;
+  }
+  const double mean = sum / static_cast<double>(n);
+  std::vector<double> out = weights;
+  for (double &w : out) {
+    w /= mean;
+  }
+  return out;
+}
 
 } // namespace
 
@@ -1432,6 +1484,11 @@ RingEval evaluateRing(const std::vector<VectorXd> &x, double c,
       throw std::invalid_argument(
           "link weights must be one positive value per bead");
     }
+    if (!eta.empty()) {
+      throw std::invalid_argument("a friction bath takes the uniform ring");
+    }
+    // Trapezoidal imaginary time: link j lasts w_j beta_N hbar, and bead j
+    // carries the mean of the two links that meet at it.
     for (size_t j = 0; j < n; ++j) {
       const double wj = discretization[j];
       const double wp = discretization[(j + n - 1) % n];
@@ -1443,13 +1500,15 @@ RingEval evaluateRing(const std::vector<VectorXd> &x, double c,
       const VectorXd &next = x[(j + 1) % n];
       const double cj = c / wj;
       const double cp = c / wp;
-      out.grad[j] = gv[j] + cj * (x[j] - next) + cp * (x[j] - prev);
-      out.u += out.v[j] + 0.5 * cj * (next - x[j]).squaredNorm();
+      const double share = 0.5 * (wj + wp);
+      out.grad[j] = share * gv[j] + cj * (x[j] - next) + cp * (x[j] - prev);
+      out.u += share * out.v[j] + 0.5 * cj * (next - x[j]).squaredNorm();
     }
   }
   if (!eta.empty()) {
     addFrictionBath(x, out.u, out.grad, eta, std::sqrt(c));
   }
+  out.potGrad = std::move(gv);
   return out;
 }
 
@@ -1764,30 +1823,31 @@ struct CyclicFactor {
 };
 
 // J = T + G K G^T over the chain T: the closure blocks (-c I between the
-// last bead and the first) when `closed`, and symmetric rank-one terms
-// kappa_i u_i u_i^T. Woodbury gives J^{-1} b, the determinant lemma
-// ln|det J| and Haynsworth the inertia, all O(N f^3), so the N f by N f
-// matrix is never formed.
+// last bead and the first, c / w_{N-1} under link weights) when `closed`,
+// and symmetric rank-one terms kappa_i u_i u_i^T. Woodbury gives J^{-1} b,
+// the determinant lemma ln|det J| and Haynsworth the inertia, all
+// O(N f^3), so the N f by N f matrix is never formed.
 class WoodburyRing {
 public:
   WoodburyRing(double c, const std::vector<MatrixXd> &diag, bool closed,
                const std::vector<std::vector<VectorXd>> &extras,
-               const std::vector<double> &kappas, bool spectrum)
-      : c_(c),
-        n_(static_cast<long>(diag.size())),
+               const std::vector<double> &kappas, bool spectrum,
+               const std::vector<double> *weight = nullptr)
+      : n_(static_cast<long>(diag.size())),
         f_(diag.front().rows()),
         closed_(closed),
-        chain_(c, diag, spectrum),
+        chain_(c, diag, spectrum, weight),
         extras_(extras) {
     const long base = closed ? 2 * f_ : 0;
     const long m = base + static_cast<long>(extras.size());
     kinv_ = MatrixXd::Zero(m, m);
     MatrixXd k = MatrixXd::Zero(m, m);
     if (closed) {
-      kinv_.block(0, f_, f_, f_) = -MatrixXd::Identity(f_, f_) / c;
-      kinv_.block(f_, 0, f_, f_) = -MatrixXd::Identity(f_, f_) / c;
-      k.block(0, f_, f_, f_) = -c * MatrixXd::Identity(f_, f_);
-      k.block(f_, 0, f_, f_) = -c * MatrixXd::Identity(f_, f_);
+      const double cl = chain_.closingSpring();
+      kinv_.block(0, f_, f_, f_) = -MatrixXd::Identity(f_, f_) / cl;
+      kinv_.block(f_, 0, f_, f_) = -MatrixXd::Identity(f_, f_) / cl;
+      k.block(0, f_, f_, f_) = -cl * MatrixXd::Identity(f_, f_);
+      k.block(f_, 0, f_, f_) = -cl * MatrixXd::Identity(f_, f_);
     }
     for (size_t i = 0; i < extras.size(); ++i) {
       const long r = base + static_cast<long>(i);
@@ -1886,7 +1946,6 @@ private:
     return g;
   }
 
-  double c_;
   long n_, f_;
   bool closed_;
   HaynsworthChain chain_;
@@ -1899,7 +1958,8 @@ private:
 };
 
 // Diagonal blocks of the closed ring (H + 2 c I) or of the half chain from
-// one turning point to the other (end blocks H / 2 + c I).
+// one turning point to the other (end blocks H / 2 + c I). Under link
+// weights bead j holds (w_{j-1} + w_j) / 2 of H and c / w_{j-1} + c / w_j.
 std::vector<MatrixXd> ringDiagonal(const std::vector<MatrixXd> &physical,
                                    double c, bool half,
                                    const std::vector<double> *weight = nullptr) {
@@ -1927,6 +1987,7 @@ std::vector<MatrixXd> ringDiagonal(const std::vector<MatrixXd> &physical,
         throw std::invalid_argument(
             "link weights must be one positive value per bead");
       }
+      block *= 0.5 * (wj + wp);
       add = c / wj + c / wp;
     }
     block += add * MatrixXd::Identity(f, f);
@@ -2130,15 +2191,38 @@ bool overlapsTau(const Eigen::MatrixBase<Derived> &mode, const VectorXd &tau) {
   return tau.size() == mode.size() && std::abs(mode.dot(tau)) > 0.5;
 }
 
-// Normalised bead velocity q_{j+1} - q_{j-1}. Empty when the beads coincide.
-VectorXd timeTranslation(const std::vector<VectorXd> &x) {
+// Bead velocity times beta_N hbar: (q_{j+1} - q_{j-1}) / 2 on a uniform
+// ring, the three-point derivative over the two time steps under link
+// weights.
+std::vector<VectorXd> beadVelocities(const std::vector<VectorXd> &x,
+                                     const std::vector<double> *weight) {
+  const size_t n = x.size();
+  const bool weighted = weight != nullptr && !weight->empty();
+  std::vector<VectorXd> out(n);
+  for (size_t j = 0; j < n; ++j) {
+    const size_t prev = (j + n - 1) % n;
+    const size_t next = (j + 1) % n;
+    if (!weighted) {
+      out[j] = 0.5 * (x[next] - x[prev]);
+    } else {
+      const double a = (*weight)[prev];
+      const double b = (*weight)[j];
+      out[j] = (a * a * (x[next] - x[j]) + b * b * (x[j] - x[prev])) /
+               (a * b * (a + b));
+    }
+  }
+  return out;
+}
+
+// Normalised bead velocity. Empty when the beads coincide.
+VectorXd timeTranslation(const std::vector<VectorXd> &x,
+                         const std::vector<double> *weight = nullptr) {
   const long n = static_cast<long>(x.size());
   const long f = x.front().size();
+  const std::vector<VectorXd> vel = beadVelocities(x, weight);
   VectorXd tau(n * f);
   for (long j = 0; j < n; ++j) {
-    const size_t prev = static_cast<size_t>((j + n - 1) % n);
-    const size_t next = static_cast<size_t>((j + 1) % n);
-    tau.segment(j * f, f) = 0.5 * (x[next] - x[prev]);
+    tau.segment(j * f, f) = vel[static_cast<size_t>(j)];
   }
   const double nrm = tau.norm();
   if (!(nrm > 0.0)) {
@@ -2148,23 +2232,17 @@ VectorXd timeTranslation(const std::vector<VectorXd> &x) {
   return tau;
 }
 
-std::vector<VectorXd> physicalGradient(
-    const std::vector<VectorXd> &x, const std::vector<VectorXd> &ringGrad,
-    double c, const std::vector<double> &discretization = {}) {
-  const size_t n = x.size();
-  std::vector<VectorXd> g(n);
-  for (size_t j = 0; j < n; ++j) {
-    const size_t prev = (j + n - 1) % n;
-    const size_t next = (j + 1) % n;
-    if (discretization.empty()) {
-      g[j] = ringGrad[j] - c * (2.0 * x[j] - x[prev] - x[next]);
-    } else {
-      const double cj = c / discretization[j];
-      const double cp = c / discretization[prev];
-      g[j] = ringGrad[j] - cj * (x[j] - x[next]) - cp * (x[j] - x[prev]);
-    }
+// B_N, sum_j |q_{j+1} - q_j|^2: the squared speed of the ring's time shift
+// times (beta_N hbar)^2. Link j of a weighted ring lasts w_j, so its
+// velocity is the difference over w_j.
+double ringSpeed(const std::vector<VectorXd> &x,
+                 const std::vector<double> &weight) {
+  double b = 0.0;
+  for (size_t j = 0; j < x.size(); ++j) {
+    const double d = (x[(j + 1) % x.size()] - x[j]).squaredNorm();
+    b += weight.empty() ? d : d / (weight[j] * weight[j]);
   }
-  return g;
+  return b;
 }
 
 struct Climb {
@@ -2174,11 +2252,13 @@ struct Climb {
 };
 
 // Cosine between the turning points, opened by (1 - T / Tc) of the lower
-// barrier. The far turning point sits on bead 0.
+// barrier, over each bead's imaginary time. The far turning point sits on
+// bead 0.
 std::vector<VectorXd> cosineSeed(const VectorXd &saddle, const VectorXd &dir,
                                  double lambda0, double temperature,
                                  double crossover, long nBeads,
-                                 const BatchPotential &potential) {
+                                 const BatchPotential &potential,
+                                 const std::vector<double> &weight = {}) {
   std::vector<double> v0;
   std::vector<VectorXd> g0;
   potential({saddle}, v0, g0);
@@ -2195,11 +2275,13 @@ std::vector<VectorXd> cosineSeed(const VectorXd &saddle, const VectorXd &dir,
   const double sMinus =
       turningDistance(saddle, dir, vS, drop, -1.0, h, pts, potential);
   std::vector<VectorXd> guess(static_cast<size_t>(nBeads));
+  double time = 0.0;
   for (long j = 0; j < nBeads; ++j) {
-    const double ct = std::cos(2.0 * std::numbers::pi * static_cast<double>(j) /
-                               static_cast<double>(nBeads));
+    const double ct =
+        std::cos(2.0 * std::numbers::pi * time / static_cast<double>(nBeads));
     guess[static_cast<size_t>(j)] =
         saddle + dir * (ct >= 0.0 ? sPlus * ct : sMinus * ct);
+    time += weight.empty() ? 1.0 : weight[static_cast<size_t>(j)];
   }
   return guess;
 }
@@ -2299,7 +2381,8 @@ VectorXd chainIndexOneStep(const std::vector<RingMode> &ritz,
     if (dim <= kDenseRing) {
       throw std::runtime_error("small ring: dense solve");
     }
-    const WoodburyRing ring(spring, diag, closed, extras, kappas, false);
+    const WoodburyRing ring(spring, diag, closed, extras, kappas, false,
+                            weight);
     if (ring.ok()) {
       stepRing = ring.solve(rhs);
       // Cutting the ring open can leave a Schur pivot near zero next to
@@ -2528,9 +2611,10 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
                           const BatchPotential &potential) {
   const long nBeads = options.beads;
   // Fold only an even ring that already matches under j -> N - j. An empty
-  // guess is seeded into that shape before this call.
-  bool half = options.halfRing && nBeads % 2 == 0 &&
-              static_cast<long>(guess.size()) == nBeads;
+  // guess is seeded into that shape before this call. Link weights keep the
+  // whole ring: the fold's energy is that of the uniform one.
+  bool half = options.halfRing && options.discretization.empty() &&
+              nBeads % 2 == 0 && static_cast<long>(guess.size()) == nBeads;
   if (half) {
     const long m = nBeads / 2;
     for (long j = 1; j < m; ++j) {
@@ -2541,10 +2625,6 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
         break;
       }
     }
-  }
-  if (half && !options.discretization.empty()) {
-    throw std::invalid_argument(
-        "link weights need the full ring; a half ring keeps the uniform spring");
   }
   const std::vector<double> *linkWeight =
       options.discretization.empty() ? nullptr : &options.discretization;
@@ -2674,7 +2754,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
                        frictionEta(options, q.size()), options.discretization);
       out.u = ev.u;
       out.grad = ev.grad;
-      out.gradPot = physicalGradient(q, ev.grad, c, options.discretization);
+      out.gradPot = ev.potGrad;
       out.energies = ev.v;
     }
     return out;
@@ -2732,7 +2812,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
   auto viewOf = [&](const Obj &ev) {
     nullRing = ringRigid(x);
     View v;
-    v.tau = half ? VectorXd() : timeTranslation(x);
+    v.tau = half ? VectorXd() : timeTranslation(x, linkWeight);
     std::vector<MatrixXd> pinned = physical;
     if (!rigid.empty()) {
       const double pin = std::max(1.0, c);
@@ -2788,7 +2868,8 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
         }
         try {
           negatives =
-              WoodburyRing(c, v.diag, !half, lift, kap, true).negative();
+              WoodburyRing(c, v.diag, !half, lift, kap, true, linkWeight)
+                  .negative();
         } catch (const std::runtime_error &) {
           negatives = 0;
         }
@@ -3045,7 +3126,8 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
         for (size_t k = 0; k < x.size(); ++k) {
           dirRing[k] = dir.segment(static_cast<long>(k) * f, f);
         }
-        const VectorXd jd = packBeads(applyDiagonal(v.diag, c, !half, dirRing));
+        const VectorXd jd =
+            packBeads(applyDiagonal(v.diag, c, !half, dirRing, linkWeight));
         const double pred = gflat.dot(dir) + 0.5 * dir.dot(jd);
         const double actual = next.u - cur.u;
         // Predicted and actual changes below the energy resolution are
@@ -3208,11 +3290,7 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     out.ringPotential = cur.u;
     out.energies = std::move(cur.energies);
   }
-  out.bN = 0.0;
-  for (size_t j = 0; j < out.beads.size(); ++j) {
-    const size_t next = (j + 1) % out.beads.size();
-    out.bN += (out.beads[next] - out.beads[j]).squaredNorm();
-  }
+  out.bN = ringSpeed(out.beads, options.discretization);
   return out;
 }
 
@@ -3253,7 +3331,8 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
   auto probeOddSector = [&](NewtonOut &got, double spring) {
     const long nGot = static_cast<long>(got.beads.size());
     bool mirrored = (got.converged || got.stalledHalf) && options.halfRing &&
-                    options.checkOddSector && nGot == nBeads && nGot % 2 == 0;
+                    options.discretization.empty() && options.checkOddSector &&
+                    nGot == nBeads && nGot % 2 == 0;
     for (long j = 1; mirrored && j < nGot / 2; ++j) {
       mirrored = (got.beads[static_cast<size_t>(j)] -
                   got.beads[static_cast<size_t>(nGot - j)])
@@ -3296,7 +3375,8 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
       const ColMajorXd hS = 0.5 * (hessSaddle + hessSaddle.transpose());
       const Eigen::SelfAdjointEigenSolver<ColMajorXd> es(hS);
       guess = cosineSeed(saddle, es.eigenvectors().col(0), es.eigenvalues()(0),
-                         inst.temperature, inst.crossover, nBeads, potential);
+                         inst.temperature, inst.crossover, nBeads, potential,
+                         options.discretization);
     }
     const double bnh = inst.betaN * kHbar;
     const double spring = 1.0 / (bnh * bnh);
@@ -3344,9 +3424,9 @@ RateInstanton optimizeRateByNewton(const VectorXd &saddle,
       const double betaStage = target ? beta : 1.0 / (kBoltzmann * temps[s]);
       std::vector<VectorXd> stageGuess = beads;
       if (static_cast<long>(stageGuess.size()) != nBeads) {
-        stageGuess =
-            cosineSeed(saddle, es.eigenvectors().col(0), es.eigenvalues()(0),
-                       temps[s], inst.crossover, nBeads, potential);
+        stageGuess = cosineSeed(saddle, es.eigenvectors().col(0),
+                                es.eigenvalues()(0), temps[s], inst.crossover,
+                                nBeads, potential, options.discretization);
       }
       last = optimizeRateInstanton(saddle, hessSaddle, betaStage,
                                    std::move(stageGuess), potential, opt);
@@ -3806,12 +3886,24 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
                                     const MatrixXd &hessSaddle, double beta,
                                     std::vector<VectorXd> guess,
                                     const BatchPotential &potential,
-                                    const RateInstantonOptions &options) {
-  const long N = options.beads;
+                                    const RateInstantonOptions &request) {
+  const long N = request.beads;
   if (N < 4 || !(beta > 0.0) || hessSaddle.rows() != saddle.size()) {
     throw std::invalid_argument(
         "optimizeRateInstanton: need N >= 4, beta > 0 and a saddle Hessian "
         "of the saddle's dimension");
+  }
+  RateInstantonOptions options = request;
+  options.discretization =
+      timeSteps(request.discretization, static_cast<size_t>(N));
+  // A friction bath couples every bead to every other, which the Newton
+  // step's block-tridiagonal model cannot hold; the dimer needs gradients
+  // only, and the rate takes the bath's curvature from the dense ring.
+  const std::vector<double> bath = frictionEta(options, N);
+  if (!bath.empty() && !options.discretization.empty()) {
+    throw std::invalid_argument(
+        "optimizeRateInstanton: the friction bath's frequencies are those of "
+        "the uniform ring, so it takes no link weights");
   }
   RateInstanton inst;
   inst.discretization = options.discretization;
@@ -3826,7 +3918,8 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
         "parabolic barrier correction, of which classical transition-state "
         "theory is only the one-bead limit");
   }
-  bool mirror = options.halfRing && N % 2 == 0;
+  bool mirror =
+      options.halfRing && options.discretization.empty() && N % 2 == 0;
   if (mirror && static_cast<long>(guess.size()) == N) {
     const long mid = N / 2;
     for (long j = 1; j < mid && mirror; ++j) {
@@ -3837,16 +3930,17 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
     }
   }
   const long active = mirror ? (N / 2 + 1) : N;
-  // A friction bath couples every bead to every other, which the Newton
-  // step's block-tridiagonal model cannot hold; the dimer needs gradients
-  // only, and the rate takes the bath's curvature from the dense ring.
-  const std::vector<double> bath = frictionEta(options, N);
   if (bath.empty() && options.newtonLimit > 0 &&
       active * saddle.size() <= options.newtonLimit) {
     return optimizeRateByNewton(saddle, hessSaddle, beta, std::move(guess),
                                 potential, options);
   }
   inst.frictionEta = bath;
+  if (!options.discretization.empty()) {
+    throw std::invalid_argument(
+        "optimizeRateInstanton: link weights take the Newton search; "
+        "minimum-mode following keeps the uniform ring");
+  }
   const double bnh = inst.betaN * kHbar;
   const double c = 1.0 / (bnh * bnh);
 
@@ -3936,7 +4030,6 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
   return inst;
 }
 
-
 namespace {
 
 /// Flags the count entries of lam nearest zero, among the entries from
@@ -3966,7 +4059,9 @@ double closedRingPotential(const std::vector<VectorXd> &beads, double spring,
     throw std::invalid_argument(
         "closedRingPotential: need two beads and a positive spring");
   }
-  return evaluateRing(beads, spring, potential, 0.0, {}, discretization).u;
+  return evaluateRing(beads, spring, potential, 0.0, {},
+                      timeSteps(discretization, beads.size()))
+      .u;
 }
 
 namespace {
@@ -3974,21 +4069,28 @@ namespace {
 // The rate from det' of the ring Hessian: the prefactor, and Z_r of the
 // harmonic reactant ring under the same bath, eta omega_k added to every
 // k > 0 mode (Litman et al., J. Chem. Phys. 156, 194106 (2022), Eq. 36).
+// Link weights w_j scale the free-particle measure of link j by
+// w_j^{-f/2}, in Z_r and in k Z_r alike, and leave the reactant ring's
+// modes coupled by the time steps.
 void finishRate(RateInstanton &inst, double logDetPrime, long nDrop, long f,
                 const VectorXd &lr, const std::vector<bool> &rigidR,
                 double vReactant, const MatrixXd &hessReactant,
                 const MatrixXd &hessSaddle, double vSaddle, long rigidModes,
-                double eta) {
+                double eta, const std::vector<double> &weight) {
   const long N = static_cast<long>(inst.beads.size());
   const double bnh = inst.betaN * kHbar;
   const double c = 1.0 / (bnh * bnh);
   const double logProd =
       static_cast<double>(N * f - nDrop) * std::log(bnh) + 0.5 * logDetPrime;
+  double logMeasure = 0.0;
+  for (const double w : weight) {
+    logMeasure -= 0.5 * static_cast<double>(f) * std::log(w);
+  }
 
   inst.logRateTimesZr = -std::log(bnh) +
                         0.5 * std::log(inst.bN / (2.0 * std::numbers::pi *
                                                   inst.betaN * kHbar * kHbar)) -
-                        logProd - inst.betaN * inst.ringPotential;
+                        logProd - inst.betaN * inst.ringPotential + logMeasure;
 
   for (long m = 0; m < lr.size(); ++m) {
     if (!rigidR[static_cast<size_t>(m)] && !(lr(m) > 0.0)) {
@@ -3999,17 +4101,53 @@ void finishRate(RateInstanton &inst, double logDetPrime, long nDrop, long f,
   // The rigid modes leave the centroid (k = 0) factor, as the ring's own
   // rigid modes leave its product; both carry them as free particles for
   // k > 0.
-  double logZr = -inst.beta * vReactant;
-  for (long k = 0; k < N; ++k) {
-    const double sk = std::abs(std::sin(
-        std::numbers::pi * static_cast<double>(k) / static_cast<double>(N)));
+  double logZr = -inst.beta * vReactant + logMeasure;
+  if (weight.empty()) {
+    for (long k = 0; k < N; ++k) {
+      const double sk = std::abs(std::sin(
+          std::numbers::pi * static_cast<double>(k) / static_cast<double>(N)));
+      for (long m = 0; m < lr.size(); ++m) {
+        if (k == 0 && rigidR[static_cast<size_t>(m)]) {
+          continue;
+        }
+        const double l = rigidR[static_cast<size_t>(m)] ? 0.0 : lr(m);
+        logZr -= std::log(bnh) + 0.5 * std::log(l + 4.0 * c * sk * sk +
+                                                2.0 * eta * std::sqrt(c) * sk);
+      }
+    }
+  } else {
+    // Mode m of the reactant is the cyclic chain lambda_m diag(w_hat) + L_w
+    // over the beads, L_w the ring Laplacian of springs c / w_j. A rigid
+    // mode keeps L_w alone, whose nonzero eigenvalues multiply to N times
+    // its spanning-tree weight, prod_j (c / w_j) sum_j (w_j / c).
+    double logTree = 0.0;
+    double sumSteps = 0.0;
+    for (const double w : weight) {
+      logTree += std::log(c / w);
+      sumSteps += w / c;
+    }
+    const double logLaplacian =
+        std::log(static_cast<double>(N)) + logTree + std::log(sumSteps);
     for (long m = 0; m < lr.size(); ++m) {
-      if (k == 0 && rigidR[static_cast<size_t>(m)]) {
+      if (rigidR[static_cast<size_t>(m)]) {
+        logZr -=
+            static_cast<double>(N - 1) * std::log(bnh) + 0.5 * logLaplacian;
         continue;
       }
-      const double l = rigidR[static_cast<size_t>(m)] ? 0.0 : lr(m);
-      logZr -= std::log(bnh) + 0.5 * std::log(l + 4.0 * c * sk * sk +
-                                              2.0 * eta * std::sqrt(c) * sk);
+      std::vector<MatrixXd> blocks(static_cast<size_t>(N));
+      for (long j = 0; j < N; ++j) {
+        const double wj = weight[static_cast<size_t>(j)];
+        const double wp = weight[static_cast<size_t>((j + N - 1) % N)];
+        blocks[static_cast<size_t>(j)] =
+            MatrixXd::Constant(1, 1, 0.5 * (wj + wp) * lr(m) + c / wj + c / wp);
+      }
+      const WoodburyRing chain(c, blocks, true, {}, {}, true, &weight);
+      if (!chain.ok() || chain.negative() != 0) {
+        throw std::runtime_error(
+            "instantonRate: the weighted reactant ring is not positive "
+            "definite");
+      }
+      logZr -= static_cast<double>(N) * std::log(bnh) + 0.5 * chain.logAbsDet();
     }
   }
   inst.logZr = logZr;
@@ -4044,34 +4182,21 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
   const double bnh = inst.betaN * kHbar;
   const double c = 1.0 / (bnh * bnh);
   const MatrixXd eye = MatrixXd::Identity(f, f);
+  const std::vector<double> steps =
+      timeSteps(inst.discretization, static_cast<size_t>(N));
+  const std::vector<double> *linkWeight = steps.empty() ? nullptr : &steps;
+  const std::vector<double> springs =
+      linkSprings(c, static_cast<size_t>(N), linkWeight);
 
   std::vector<MatrixXd> hBead(static_cast<size_t>(N));
-  std::vector<MatrixXd> diag(static_cast<size_t>(N));
   for (long j = 0; j < N; ++j) {
     const MatrixXd h = hessian(j, inst.beads[static_cast<size_t>(j)]);
     if (h.rows() != f || h.cols() != f) {
       throw std::runtime_error("instantonRate: bead Hessian size");
     }
     hBead[static_cast<size_t>(j)] = 0.5 * (h + h.transpose());
-    double add = 2.0 * c;
-    if (!inst.discretization.empty()) {
-      if (inst.discretization.size() != static_cast<size_t>(N)) {
-        throw std::invalid_argument(
-            "link weights must be one positive value per bead");
-      }
-      const double wj = inst.discretization[static_cast<size_t>(j)];
-      const double wp =
-          inst.discretization[static_cast<size_t>((j + N - 1) % N)];
-      if (!(wj > 0.0) || !(wp > 0.0)) {
-        throw std::invalid_argument(
-            "link weights must be one positive value per bead");
-      }
-      add = c / wj + c / wp;
-    }
-    diag[static_cast<size_t>(j)] = hBead[static_cast<size_t>(j)] + add * eye;
   }
-  const std::vector<double> *linkWeight =
-      inst.discretization.empty() ? nullptr : &inst.discretization;
+  const std::vector<MatrixXd> diag = ringDiagonal(hBead, c, false, linkWeight);
 
   const Eigen::SelfAdjointEigenSolver<MatrixXd> er(
       0.5 * (hessReactant + hessReactant.transpose()));
@@ -4094,14 +4219,8 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
   // det' through the block chain: the cyclic zero mode and the rigid null
   // vectors leave the product by the determinant lemma, the inertia comes
   // from the Schur complements, and the N f by N f matrix is never formed.
-  std::vector<VectorXd> cycle(static_cast<size_t>(N));
-  double cycleNorm = 0.0;
-  for (long j = 0; j < N; ++j) {
-    cycle[static_cast<size_t>(j)] =
-        0.5 * (inst.beads[static_cast<size_t>((j + 1) % N)] -
-               inst.beads[static_cast<size_t>((j + N - 1) % N)]);
-    cycleNorm += cycle[static_cast<size_t>(j)].squaredNorm();
-  }
+  std::vector<VectorXd> cycle = beadVelocities(inst.beads, linkWeight);
+  const double cycleNorm = dot(cycle, cycle);
   if (!(cycleNorm > 0.0)) {
     throw std::runtime_error(
         "instantonRate: the beads coincide, so the ring has collapsed");
@@ -4153,9 +4272,10 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
           "instantonRate: a bead-wise bath gives the reactant no friction to "
           "compare with; the rate takes one eta");
     }
-    if (!inst.discretization.empty()) {
+    if (linkWeight != nullptr) {
       throw std::runtime_error(
-          "instantonRate: a friction bath takes the uniform spring");
+          "instantonRate: the friction bath's frequencies are those of the "
+          "uniform ring, so it takes no link weights");
     }
     const long dim = N * f;
     if (!(denseLimit < 0 || dim <= denseLimit)) {
@@ -4231,7 +4351,7 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
     inst.negativeModes =
         negative > 1 ? std::max(1L, negative - tiny) : negative;
     finishRate(inst, logDetPrime, nDrop, f, lr, rigidR, vReactant, hessReactant,
-               hessSaddle, vSaddle, rigidModes, eta);
+               hessSaddle, vSaddle, rigidModes, eta, steps);
     return;
   }
   // On a discrete ring the time shift is only nearly a symmetry, so the
@@ -4242,7 +4362,8 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
   // when the iteration fails or wanders off it.
   {
     const std::vector<double> rigidKappas(rigid.size(), c);
-    const WoodburyRing lifted(c, diag, true, rigid, rigidKappas, false);
+    const WoodburyRing lifted(c, diag, true, rigid, rigidKappas, false,
+                              linkWeight);
     std::vector<VectorXd> v = cycle;
     bool good = lifted.ok();
     for (int it = 0; good && it < 12; ++it) {
@@ -4274,7 +4395,7 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
     dropped.push_back(std::move(u));
     kappas.push_back(c);
   }
-  const WoodburyRing ring(c, diag, true, dropped, kappas, true);
+  const WoodburyRing ring(c, diag, true, dropped, kappas, true, linkWeight);
   if (!ring.ok() || !std::isfinite(ring.logAbsDet())) {
     throw std::runtime_error(
         "instantonRate: the ring Hessian is singular and the zero mode was "
@@ -4292,8 +4413,8 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
     for (long j = 0; j < N; ++j) {
       full.block(j * f, j * f, f, f) = diag[static_cast<size_t>(j)];
       const long k = (j + 1) % N;
-      full.block(j * f, k * f, f, f) -= c * eye;
-      full.block(k * f, j * f, f, f) -= c * eye;
+      full.block(j * f, k * f, f, f) -= springs[static_cast<size_t>(j)] * eye;
+      full.block(k * f, j * f, f, f) -= springs[static_cast<size_t>(j)] * eye;
     }
     for (size_t d = 0; d < dropped.size(); ++d) {
       VectorXd u(dim);
@@ -4377,7 +4498,7 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
                              std::log(std::abs(c + inst.zeroEigenvalue)) -
                              static_cast<double>(nDrop - 1) * std::log(c);
   finishRate(inst, logDetPrime, nDrop, f, lr, rigidR, vReactant, hessReactant,
-             hessSaddle, vSaddle, rigidModes, 0.0);
+             hessSaddle, vSaddle, rigidModes, 0.0, steps);
 }
 
 RotationZeroModes rotationZeroModes(const MatrixXd &hess,

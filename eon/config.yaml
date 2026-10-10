@@ -1270,8 +1270,11 @@ Instanton:
             kind: float
             default: 0.0
 
-        # Empty keeps every spring equal. One positive weight per bead
-        # divides the spring from that bead to the next.
+        # Mode rate: empty keeps every imaginary-time step equal. One
+        # positive weight per bead, scaled to a mean of one, is the time
+        # step of the link to the next bead (an adaptive grid: spring
+        # c / w_j, bead potential weighted (w_{j-1} + w_j) / 2). Weights
+        # keep the whole ring and take no friction bath.
         discretization:
             kind: string
             default: ""

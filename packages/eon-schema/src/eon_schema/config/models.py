@@ -2732,8 +2732,12 @@ class InstantonConfig(BaseModel):
     discretization: str = Field(
         default="",
         description=(
-            "Empty keeps every spring equal. One positive weight per bead,"
-            " comma-separated, divides the spring from that bead to the next."
+            "Mode rate: empty keeps every imaginary-time step equal. One"
+            " positive weight per bead, comma-separated and scaled to a mean"
+            " of one, is the time step of the link to the next bead: an"
+            " adaptive grid whose spring is c / w_j and whose bead potential"
+            " is weighted (w_{j-1} + w_j) / 2. Weights keep the whole ring"
+            " and take no friction bath."
         ),
     )
     friction: Literal["none", "implicit", "explicit"] = Field(

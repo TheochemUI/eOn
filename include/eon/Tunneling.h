@@ -392,9 +392,13 @@ struct RateInstantonOptions {
   /// schedule probes only its last temperature.
   bool checkOddSector = true;
   double energyShift = 0.0; ///< subtracted from every bead potential, eV
-  /// Empty keeps every spring equal. Otherwise one positive weight per
-  /// bead: the spring from bead j to bead j + 1 is divided by that weight.
-  /// A half ring keeps the uniform spring and refuses a weight list.
+  /// Empty keeps every time step beta_N hbar. Otherwise one positive weight
+  /// per bead, scaled to a mean of one: the link from bead j to bead j + 1
+  /// lasts w_j beta_N hbar, so its spring is c / w_j, and bead j carries
+  /// (w_{j-1} + w_j) / 2 of its potential (the trapezoidal action of the
+  /// adaptive grid, Rommel and Kaestner, J. Chem. Phys. 134, 184107
+  /// (2011)). Weights keep the whole ring, take the Newton search and no
+  /// friction bath.
   std::vector<double> discretization;
   /// Active coordinates at or below this take the Newton step. Zero keeps
   /// minimum-mode following. The step solves through the block chain, so
@@ -440,9 +444,10 @@ void addFrictionBath(const std::vector<VectorXd> &q, double &u,
                      std::vector<VectorXd> &grad,
                      const std::vector<double> &eta, double omegaP);
 
-/// U_N of a closed ring. An empty discretization is the uniform spring.
-/// Otherwise one positive weight per bead divides the spring that leaves
-/// that bead.
+/// U_N of a closed ring. An empty discretization is the uniform ring.
+/// Otherwise one positive weight per bead, scaled to a mean of one, is the
+/// time step of the link that leaves that bead, as in
+/// RateInstantonOptions::discretization.
 double closedRingPotential(const std::vector<VectorXd> &beads, double spring,
                            const BatchPotential &potential,
                            const std::vector<double> &discretization = {});
@@ -474,8 +479,11 @@ struct RateInstanton {
   double temperature = 0.0;        ///< K
   double crossover = 0.0;          ///< T_c, K
   double ringPotential = 0.0;      ///< U_N, eV
-  double bN = 0.0;                 ///< sum_j |q_{j+1} - q_j|^2, amu Angstrom^2
-  /// Empty keeps every spring equal. Otherwise one positive weight per bead.
+  /// sum_j |q_{j+1} - q_j|^2 / w_j^2, amu Angstrom^2: the squared speed of
+  /// the ring's time shift times (beta_N hbar)^2, w_j = 1 on a uniform ring.
+  double bN = 0.0;
+  /// The time steps the ring was found on, scaled to a mean of one; empty
+  /// for the uniform ring.
   std::vector<double> discretization;
   /// The friction bath the ring was found under (addFrictionBath's eta);
   /// empty without one.

@@ -2419,6 +2419,10 @@ TEST_CASE("The seed ring meets its period across a jump in the orbit",
   }
 }
 
+// Link weights are the ring's imaginary-time steps, scaled to fill beta
+// hbar: link j lasts w_j beta_N hbar, so its spring is c / w_j, and bead j
+// holds (w_{j-1} + w_j) / 2 of its potential (the trapezoidal action of
+// Rommel and Kaestner, J. Chem. Phys. 134, 184107 (2011)).
 TEST_CASE("A link weight divides one spring of a closed ring",
           "[Tunneling][Instanton]") {
   const BatchPotential flat = [](const std::vector<VectorXd> &q,
@@ -2432,13 +2436,177 @@ TEST_CASE("A link weight divides one spring of a closed ring",
   beads[2](0) = 1.0;
   const double c = 2.0;
   const double uniform = closedRingPotential(beads, c, flat);
-  const double weighted =
-      closedRingPotential(beads, c, flat, std::vector<double>{2.0, 1.0, 1.0, 1.0});
+  // Steps 4/3, 2/3, 4/3, 2/3 once scaled to a mean of one.
+  const double weighted = closedRingPotential(
+      beads, c, flat, std::vector<double>{2.0, 1.0, 2.0, 1.0});
   REQUIRE_THAT(uniform, Catch::Matchers::WithinAbs(c, 1e-12));
   REQUIRE_THAT(weighted, Catch::Matchers::WithinAbs(0.75 * c, 1e-12));
+  REQUIRE_THAT(closedRingPotential(beads, c, flat,
+                                   std::vector<double>{4.0, 2.0, 4.0, 2.0}),
+               Catch::Matchers::WithinAbs(weighted, 1e-12));
   REQUIRE_THROWS_AS(
       closedRingPotential(beads, c, flat, std::vector<double>{0.0, 1.0, 1.0, 1.0}),
       std::invalid_argument);
+
+  // V = q on beads 0, 1, 1, 0 with steps 2, 2/3, 2/3, 2/3: the beads hold
+  // 4/3, 4/3, 2/3, 2/3 of their potential, and the two stretched links
+  // last 2 and 2/3.
+  const BatchPotential slope = [](const std::vector<VectorXd> &q,
+                                  std::vector<double> &v,
+                                  std::vector<VectorXd> &g) {
+    v.resize(q.size());
+    g.assign(q.size(), VectorXd::Ones(1));
+    for (size_t j = 0; j < q.size(); ++j) {
+      v[j] = q[j](0);
+    }
+  };
+  REQUIRE_THAT(closedRingPotential(beads, c, slope,
+                                   std::vector<double>{3.0, 1.0, 1.0, 1.0}),
+               Catch::Matchers::WithinAbs(
+                   4.0 / 3.0 + 2.0 / 3.0 + c / 4.0 + 0.75 * c, 1e-12));
+}
+
+// The same ring with every weight 1 is the uniform ring, through the search
+// and through the rate.
+TEST_CASE("A ring of unit link weights is the uniform ring",
+          "[Tunneling][Instanton]") {
+  const double omega0 = 1.0;
+  const double hw = kHbar * omega0;
+  const double vb = 16.0 * hw;
+  const CubicWell pes{omega0, std::sqrt(std::pow(omega0, 6) / (6.0 * vb))};
+  const VectorXd saddle = VectorXd::Constant(1, pes.qb());
+  const MatrixXd hs = pes.hessian(saddle);
+  const double beta = 20.0 / hw;
+  RateInstantonOptions opt;
+  opt.beads = 48;
+  opt.forceTolerance = 1e-9;
+  opt.halfRing = false;
+  auto rate = [&](const RateInstantonOptions &o, long denseLimit) {
+    RateInstanton inst =
+        optimizeRateInstanton(saddle, hs, beta, {}, pes.batch(), o);
+    REQUIRE(inst.converged);
+    instantonRate(
+        inst, [&](long, const VectorXd &q) { return pes.hessian(q); },
+        pes.hessian(VectorXd::Zero(1)), 0.0, hs, vb, 0, denseLimit);
+    return inst;
+  };
+  const RateInstanton plain = rate(opt, -1);
+  RateInstantonOptions ones = opt;
+  ones.discretization.assign(48, 1.0);
+  const RateInstanton unit = rate(ones, -1);
+  CAPTURE(plain.logRate, unit.logRate, plain.logZr, unit.logZr);
+  REQUIRE_THAT(unit.logRate, Catch::Matchers::WithinAbs(plain.logRate, 1e-10));
+  REQUIRE_THAT(unit.logZr, Catch::Matchers::WithinAbs(plain.logZr, 1e-10));
+  REQUIRE_THAT(unit.bN, Catch::Matchers::WithinRel(plain.bN, 1e-12));
+  // The same weight everywhere is the same grid.
+  RateInstantonOptions twos = opt;
+  twos.discretization.assign(48, 2.0);
+  REQUIRE_THAT(rate(twos, 0).logRate,
+               Catch::Matchers::WithinAbs(plain.logRate, 1e-8));
+
+  // The bath's frequencies belong to the uniform ring, and minimum-mode
+  // following has no weighted ring to follow.
+  RateInstantonOptions bath = ones;
+  bath.friction = true;
+  bath.frictionEta = 0.1;
+  REQUIRE_THROWS_AS(
+      optimizeRateInstanton(saddle, hs, beta, {}, pes.batch(), bath),
+      std::invalid_argument);
+  RateInstantonOptions dimer = ones;
+  dimer.newtonLimit = 0;
+  REQUIRE_THROWS_AS(
+      optimizeRateInstanton(saddle, hs, beta, {}, pes.batch(), dimer),
+      std::invalid_argument);
+  RateInstantonOptions shortList = opt;
+  shortList.discretization.assign(47, 1.0);
+  REQUIRE_THROWS_AS(
+      optimizeRateInstanton(saddle, hs, beta, {}, pes.batch(), shortList),
+      std::invalid_argument);
+}
+
+// A trapezoidal grid of unequal time steps is another discretisation of the
+// same path integral: its rate and its harmonic Z_r converge to the
+// continuum ones at second order, as the uniform ring's do, and the block
+// chain gives the dense ring's rate. Deep below the crossover the beads of a
+// uniform ring crowd the turning points; longer steps there and shorter
+// ones across the barrier spread them along the path, the adaptive grid of
+// Rommel and Kaestner, J. Chem. Phys. 134, 184107 (2011).
+TEST_CASE("A ring of unequal time steps converges to the continuum instanton",
+          "[Tunneling][Instanton]") {
+  const Eckart pes;
+  const MatrixXd hs = pes.hessian_at_top();
+  const double tc = crossoverTemperature(hs);
+  // w_j = 1 + a cos(4 pi (j + 1/2) / N): longest at the turning points
+  // (beads 0 and N/2) for a > 0.
+  auto grid = [](long n, double a) {
+    std::vector<double> w(static_cast<size_t>(n));
+    for (long j = 0; j < n; ++j) {
+      w[static_cast<size_t>(j)] =
+          1.0 +
+          a * std::cos(4.0 * std::numbers::pi * (static_cast<double>(j) + 0.5) /
+                       static_cast<double>(n));
+    }
+    return w;
+  };
+  auto solve = [&](double beta, long n, double a, long denseLimit) {
+    RateInstantonOptions opt;
+    opt.forceTolerance = 1e-9;
+    opt.beads = n;
+    if (a != 0.0) {
+      opt.discretization = grid(n, a);
+    }
+    RateInstanton inst = optimizeRateInstanton(VectorXd::Zero(1), hs, beta, {},
+                                               pes.batch(), opt);
+    REQUIRE(inst.converged);
+    instantonRate(
+        inst, [&](long, const VectorXd &q) { return pes.hessian_at(q); },
+        MatrixXd::Identity(1, 1), 0.0, MatrixXd(), 0.0, 0, denseLimit);
+    REQUIRE(inst.negativeModes == 1);
+    return inst;
+  };
+
+  const double beta = 1.0 / (kBoltzmann * 0.5 * tc);
+  const double analytic = -50.7985982061252;
+  const double u = beta * kHbar;
+  const double logZ = -std::log(2.0 * std::sinh(0.5 * u));
+  for (const double a : {0.5, -0.5}) {
+    std::vector<double> err, errZ;
+    for (const long n : {32L, 64L, 128L}) {
+      const RateInstanton inst = solve(beta, n, a, -1);
+      err.push_back(inst.logRateTimesZr - analytic);
+      errZ.push_back(inst.logZr - logZ);
+      // Time translation is a symmetry of the continuum only; on unequal
+      // steps the cycle keeps a curvature that falls as 1 / N^2.
+      CAPTURE(a, n, err.back(), errZ.back(), inst.zeroEigenvalue);
+      REQUIRE(std::abs(inst.zeroEigenvalue) <
+              2.0 * 0.0006 * 128 * 128 / static_cast<double>(n * n));
+    }
+    const double order = std::log2(err[1] / err[2]);
+    const double orderZ = std::log2(errZ[1] / errZ[2]);
+    const double extrapolated = (4.0 * err[2] - err[1]) / 3.0;
+    CAPTURE(a, err[1], err[2], errZ[1], errZ[2], order, orderZ, extrapolated);
+    REQUIRE(order > 1.9);
+    REQUIRE(order < 2.1);
+    REQUIRE(orderZ > 1.9);
+    REQUIRE(orderZ < 2.1);
+    REQUIRE(std::abs(extrapolated) < 2e-4);
+  }
+  const RateInstanton dense = solve(beta, 64, 0.5, -1);
+  const RateInstanton chain = solve(beta, 64, 0.5, 0);
+  REQUIRE_THAT(chain.logRate, Catch::Matchers::WithinAbs(dense.logRate, 1e-8));
+
+  // At 0.2 T_c, against the uniform ring extrapolated from 256 and 512
+  // beads.
+  const double cold = 1.0 / (kBoltzmann * 0.2 * tc);
+  const double ref = (4.0 * solve(cold, 512, 0.0, -1).logRateTimesZr -
+                      solve(cold, 256, 0.0, -1).logRateTimesZr) /
+                     3.0;
+  for (const long n : {48L, 96L}) {
+    const double uniform = solve(cold, n, 0.0, -1).logRateTimesZr - ref;
+    const double adaptive = solve(cold, n, 0.3, -1).logRateTimesZr - ref;
+    CAPTURE(n, uniform, adaptive);
+    REQUIRE(std::abs(adaptive) < 0.6 * std::abs(uniform));
+  }
 }
 
 TEST_CASE("A long ring takes the chain inertia instead of a dense factor",

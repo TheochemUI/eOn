@@ -318,9 +318,23 @@ on one ring are that mode. The search steps along it and continues on
 the whole ring.
 An odd count keeps every bead. `energy_shift` (default 0, in eV) is
 subtracted from every bead potential and from the reactant and saddle
-energies in the rate. An empty `discretization` keeps every spring equal.
-A comma-separated list of one positive weight per bead divides the spring
-from that bead to the next. A half ring keeps the uniform spring.
+energies in the rate. An empty `discretization` keeps every imaginary-time
+step at {math}`\beta_N \hbar`. A comma-separated list of one positive weight
+per bead makes the ring an adaptive grid
+{cite:p}`inst-rommelAdaptiveIntegrationGrids2011`: the weights are scaled to
+a mean of one, the link from bead {math}`j` to bead {math}`j+1` lasts
+{math}`w_j \beta_N \hbar`, so its spring is {math}`c / w_j`, and bead
+{math}`j` carries {math}`(w_{j-1} + w_j)/2` of its potential, the
+trapezoidal rule over unequal steps. The rate keeps the same grid: the
+ring Hessian, the speed {math}`B_N = \sum_j |q_{j+1} - q_j|^2 / w_j^2` of
+the time shift, and the harmonic reactant ring of {math}`Z_r`. Below about
+a fifth of {math}`T_c` the beads of a uniform ring crowd the turning
+points; longer steps there and shorter ones where the ring crosses the
+barrier spread them along the path, and on the Eckart barrier at
+{math}`0.2\,T_c` steps {math}`1 + 0.3 \cos(4\pi (j + 1/2)/N)` cut the
+error of 48 beads fourfold. Weights keep the whole ring (no `half_ring`),
+need the Newton search, and take no friction bath, whose frequencies
+belong to the uniform ring.
 
 `friction` adds the electronic-friction bath of
 {cite:t}`inst-litmanDissipativeTunnelingRates2022` to the ring,
