@@ -1192,6 +1192,9 @@ std::vector<std::string> InstantonJob::run(void) {
     const long stride = std::max<long>(1, o.hessian_stride);
     const long P = o.beads;
     std::map<long, MatrixXd> anchors;
+    // The splitting is the J = 0 one: every bead loses its rotations, as the
+    // two minima do. A closed rate ring keeps them on its beads, because
+    // there a rotation of every bead at once is the zero mode it lifts.
     auto anchor = [&](long j) -> const MatrixXd & {
       auto it = anchors.find(j);
       if (it == anchors.end()) {
@@ -1245,6 +1248,9 @@ std::vector<std::string> InstantonJob::run(void) {
       meta.scalars.push_back({"tunnel_asymmetry_zpe", asymmetryZpe});
       meta.scalars.push_back(
           {"instanton_symmetrized", symmetrized ? 1.0 : 0.0});
+      meta.scalars.push_back(
+          {"instanton_symmetric", inst.symmetricEnough ? 1.0 : 0.0});
+      meta.scalars.push_back({"instanton_beta_asymmetry", betaAsymmetry});
       if (splitOk) {
         meta.scalars.push_back({"tunnel_splitting_instanton", inst.delta0});
         meta.scalars.push_back(
@@ -1252,8 +1258,6 @@ std::vector<std::string> InstantonJob::run(void) {
         meta.scalars.push_back({"instanton_zero_mode", inst.zeroMode});
         meta.scalars.push_back(
             {"instanton_mode_separation", inst.modeSeparation});
-        meta.scalars.push_back(
-            {"instanton_symmetric", inst.symmetricEnough ? 1.0 : 0.0});
       }
     }
     if (!io::io_ok(frame.matter2con(pathFile, j > 0, &meta))) {

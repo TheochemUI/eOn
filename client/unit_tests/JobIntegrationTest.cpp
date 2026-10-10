@@ -2968,6 +2968,11 @@ symmetrize = false
   const auto frames =
       readcon::read_all_frames((workdir / "instanton.con").string());
   REQUIRE(frames.size() == 65);
+  // The path's first frame says why no splitting was written, as
+  // results.dat does.
+  const auto head = nlohmann::json::parse(frames.front().metadata_json());
+  REQUIRE(head.at("instanton_symmetric").get<double>() == 0.0);
+  REQUIRE(head.at("instanton_beta_asymmetry").get<double>() > 0.1);
   REQUIRE(std::isfinite(std::stod(results.at("instanton_action"))));
   REQUIRE_THAT(std::stod(results.at("tunnel_asymmetry")),
                Catch::Matchers::WithinAbs(0.8634, 1e-3));
