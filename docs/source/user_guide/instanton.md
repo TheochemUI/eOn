@@ -506,9 +506,10 @@ amu^0.5 Å. The reactant sits at {math}`s = 0` and the saddle at
 default) takes {math}`\hat n` from the unstable eigenvector of the saddle's
 mass-weighted Hessian, oriented toward the saddle, so the last plane is the
 dividing surface normal to the barrier mode. When that mode makes more than
-60 degrees with the reactant-saddle line, or the saddle has no negative
-eigenvalue, the job warns and uses `pi_direction = line`, the straight
-mass-weighted line from the reactant to the saddle. One normal serves every
+60 degrees with the reactant-saddle line, the job warns and uses
+`pi_direction = line`, the straight mass-weighted line from the reactant to
+the saddle. (A saddle with no negative eigenvalue has no crossover
+temperature, and the job stops before the planes.) One normal serves every
 plane, so {math}`s` is a linear coordinate and its mean force integrates to
 its free energy with no metric correction. The planes are fixed in the reactant's frame. Translations
 of a structure with no atom fixed lie within every plane, because the
@@ -527,29 +528,39 @@ the next plane and its internal modes keep their thermalised state.
 The free-ring springs are propagated exactly, so `pi_time_step` is
 limited by the physical vibrations, as for classical dynamics.
 `pi_equilibration_steps` are discarded, then `pi_sampling_steps` steps of
-`pi_time_step` fs record {math}`n \cdot f_c`, the centroid force along the
-plane normal. The bead forces of a step are one batch, so a calculator
-group carries the beads. `pi_thermostat = pile` puts PILE on the internal
+`pi_time_step` fs record {math}`\hat a \cdot f_c`, the centroid force along
+the plane's Cartesian normal {math}`a = M^{1/2} \hat n`. The bead forces of
+a step are one batch, so a calculator group carries the beads. `pi_thermostat = pile` puts PILE on the internal
 modes and a Langevin thermostat of time `pi_pile_tau` fs on the centroid
 within the plane, and `pi_pile_scale` (default 1) scales the critical
 damping of the internal modes. Below the crossover the lowest ring modes
 are soft at the barrier and overdamped at critical damping; on the Eckart
 check 0.5 cuts the mean-force error at 0.7 {math}`T_c` by a third. `piglet` reads a normal-mode GLE from `pi_gle_file`, in
 the same format and with the same meaning as `[Dynamics] path_gle_file`.
-`pi_seed` seeds the noise.
+`pi_seed` seeds the noise. PIGLET tunes the internal modes so that bead
+averages converge with fewer beads; the centroid free energy assumes the
+ring polymer's own Boltzmann distribution, so treat a `piglet` barrier as
+an approximation and check it against `pile`. The transmission factor's
+parents always take `pile`.
 
 The free energy. The mean force on the plane at {math}`s` is
 
 ```{math}
-F'(s) = -\left\langle \hat n \cdot M^{-1/2} f_c \right\rangle_s ,
+F'(s) = -\frac{\left\langle a \cdot f_c \right\rangle_s}{|a|^2} ,
+\qquad a = M^{1/2} \hat n ,
 ```
 
-in eV per amu^0.5 Å, and {math}`F(s)` is its trapezoid integral from
+in eV per amu^0.5 Å. Any vector {math}`u` with {math}`a \cdot u = 1`,
+{math}`M^{-1/2} \hat n` among them, gives the same mean, because the force
+within the plane averages to zero; the normal component is the estimator
+the job records. {math}`F(s)` is the trapezoid integral of {math}`F'` from
 {math}`s_0`. The production run is cut into ten equal blocks. The standard
 error of the block means is the error of {math}`F'(s)`. The errors of
 {math}`F` and of the rate follow by linear propagation, with the planes
 taken as independent. The quantum free-energy barrier is
-{math}`\Delta F = F(s^*) - \min_{s < s^*} F(s)`. The log and `results.dat`
+{math}`\Delta F = F(s^*) - \min_{s < s^*} F(s)`, the minimum over the
+planes before {math}`s^*`; the job warns when it is not positive, since
+{math}`s^*` is then no barrier on the centroid free energy. The log and `results.dat`
 give it beside the classical barrier
 {math}`V(\mathrm{saddle}) - V(\mathrm{reactant})` and the instanton's
 effective barrier.
@@ -602,8 +613,9 @@ the bead count. A run at more than one temperature also writes
 | `piqtst_first_plane_kT` | {math}`\beta (F(s_0) - \min F)` |
 | `piqtst_temperature_K`, `piqtst_planes`, `piqtst_beads` | the run |
 
-Cost: `pi_planes` times (`pi_equilibration_steps` plus `pi_sampling_steps`)
-steps per temperature, each step two force batches of `pi_beads` beads.
+Cost: `pi_planes` times (`pi_equilibration_steps` plus `pi_sampling_steps`
+plus 1) force batches of `pi_beads` beads per temperature: one per step,
+and one when the ring moves to a plane.
 
 ### Recrossing and the RPMD rate
 
@@ -627,8 +639,10 @@ pi_recrossing_spacing = 50
 ```
 
 The parents. A ring with its centroid held on the top plane {math}`s^*`,
-the dividing surface of the scan, is thermostatted as in the scan for
-`pi_equilibration_steps`. Every `pi_recrossing_spacing` steps after that its
+the dividing surface of the scan, is thermostatted with PILE for
+`pi_equilibration_steps`, as the scan's `pile` is: Bennett-Chandler needs
+the ring polymer's own constrained distribution, which PIGLET does not
+sample. Every `pi_recrossing_spacing` steps after that its
 beads are one parent, `pi_recrossing_parents` in all.
 
 The children. Each parent launches `pi_recrossing_children` momentum draws.
@@ -686,10 +700,11 @@ plane of a temperature. `results.dat` gains:
 | `pi_recrossing_time` | 100 | fs per child, at least four `pi_time_step` |
 | `pi_recrossing_spacing` | 50 | thermostatted steps between parents |
 
-Cost: `pi_equilibration_steps` plus `pi_recrossing_parents` times
-`pi_recrossing_spacing` constrained steps (two force batches each), and
-`2 * pi_recrossing_parents * pi_recrossing_children * pi_recrossing_time /
-pi_time_step` child steps (one force batch each) per temperature.
+Cost per temperature: `pi_equilibration_steps` plus
+`pi_recrossing_parents` times `pi_recrossing_spacing` constrained steps,
+one force batch each, and `2 * pi_recrossing_parents * pi_recrossing_children`
+child runs of `pi_recrossing_time / pi_time_step + 1` force batches each,
+the first at the parent's beads.
 
 ## Centroid and spread
 

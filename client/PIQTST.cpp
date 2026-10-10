@@ -221,15 +221,18 @@ Rate rate(const std::vector<Plane> &planes, double beta) {
   const MatrixXd w = trapezoidWeights(planes);
   const VectorXd errors = forceErrors(planes);
   Rate r;
+  // The reactant is the lowest F before the dividing plane; s* itself is
+  // the top, and a minimum there is a plane that is no barrier, which the
+  // barrier's sign then shows.
+  const long top = n - 1;
   double fMin = std::numeric_limits<double>::infinity();
-  for (long j = 0; j < n; ++j) {
+  for (long j = 0; j < top; ++j) {
     const double f = planes[static_cast<size_t>(j)].freeEnergy;
     if (f < fMin) {
       fMin = f;
       r.reactant = j;
     }
   }
-  const long top = n - 1;
   const double fTop = planes[static_cast<size_t>(top)].freeEnergy;
   r.barrier = fTop - fMin;
   r.barrierError =
@@ -278,8 +281,14 @@ Recrossing recrossing(Potential &pot, const Coordinate &c,
       throw std::invalid_argument("piqtst: a seed has the wrong length");
     }
   }
+  // Bennett-Chandler needs parents from the ring polymer's own constrained
+  // Boltzmann distribution. PIGLET's coloured noise samples another one,
+  // tuned for bead averages, so the parents always take PILE.
+  pathintegral::Options parentOptions = o.ring;
+  parentOptions.thermostat = pathintegral::Thermostat::Pile;
+  parentOptions.gleFile.clear();
   pathintegral::RingPolymer parent(c.atoms, c.masses, c.numbers, c.free,
-                                   o.ring);
+                                   parentOptions);
   parent.setAllBeads(start.data());
   parent.setHyperplane(ax.a, origin);
   for (long step = 0; step < o.equilibration; ++step) {
