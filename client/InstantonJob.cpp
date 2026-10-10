@@ -739,7 +739,16 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       }
     }
     long ladderIterations = 0;
-    if (guess.empty() && o.bead_ladder && o.beads >= 16) {
+    // Lists of one value per bead belong to the full ring; a coarser rung
+    // has no values for its beads, so the ladder is skipped.
+    const bool beadLists =
+        !o.discretization.empty() || o.friction == "explicit";
+    if (guess.empty() && o.bead_ladder && beadLists) {
+      EONC_LOG_INFO("[Instanton] bead_ladder skipped: discretization and "
+                    "explicit friction give one value per bead of the full "
+                    "ring");
+    }
+    if (guess.empty() && o.bead_ladder && o.beads >= 16 && !beadLists) {
       long coarse = o.beads / 4;
       if (coarse % 2 != 0) {
         ++coarse;

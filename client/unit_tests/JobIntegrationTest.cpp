@@ -3125,6 +3125,43 @@ force_tolerance = 1e-6
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
+                 "InstantonJob skips the bead ladder for one value per bead",
+                 "[job][instanton][integration]") {
+  if (!copyTestData("neb_lj13")) {
+    SKIP("neb_lj13 test system not found");
+  }
+  // A list of one weight per bead has no values for the ladder's coarser
+  // rungs; the ladder steps aside instead of aborting the job.
+  auto rate = [&](const std::string &extra) {
+    writeConfig(R"(
+[Main]
+job = instanton
+
+[Potential]
+potential = lj
+
+[Instanton]
+mode = rate
+temperature = 198
+beads = 16
+half_ring = false
+max_iterations = 3000
+force_tolerance = 1e-6
+)" + extra);
+    return runJob();
+  };
+  const auto plain = rate("");
+  const auto laddered =
+      rate("bead_ladder = true\n"
+           "discretization = 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1\n");
+  REQUIRE(plain.at("termination_reason") == "0");
+  REQUIRE(laddered.at("termination_reason") == "0");
+  REQUIRE_THAT(std::stod(laddered.at("rate_instanton_log")),
+               Catch::Matchers::WithinAbs(
+                   std::stod(plain.at("rate_instanton_log")), 1e-6));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
                  "NEB writes the one-dimensional tunnelling levels of its band",
                  "[job][neb][tunneling][integration]") {
   if (!copyTestData("neb_lj13")) {
