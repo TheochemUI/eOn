@@ -223,13 +223,12 @@ jobs:
               echo "TORCH_LIB=${TORCH_LIB}"
               ls "${TORCH_LIB}"/libc10* "${TORCH_LIB}"/libtorch* 2>/dev/null | head
             fi
-          CIBW_BEFORE_BUILD_WINDOWS: |
+          # cmd runs only the first line of a multi-line before-build, so the
+          # Windows commands are one && chain.
+          CIBW_BEFORE_BUILD_WINDOWS: >-
             python -m pip install -U pip "nanobind>=2.4,<3" meson ninja meson-python
-            python -m pip install --only-binary=:all: numpy
-            if "${{ matrix.variant }}"=="metatomic" (
-              python -m pip install --only-binary=:all: torch --index-url https://download.pytorch.org/whl/cpu
-              python -m pip install metatensor metatensor-torch metatomic-torch vesin
-            )
+            && python -m pip install --only-binary=:all: numpy
+            ${{ matrix.variant == 'metatomic' && '&& python -m pip install --only-binary=:all: torch --index-url https://download.pytorch.org/whl/cpu && python -m pip install metatensor metatensor-torch metatomic-torch vesin' || '' }}
           # The private-SONAME step first (it renames librgpot and rewrites
           # RECORD), then auditwheel, which vendors the Fortran, OpenMP and
           # Cap'n Proto runtimes and sets the manylinux tag. A failed repair
