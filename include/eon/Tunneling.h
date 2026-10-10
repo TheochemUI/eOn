@@ -68,6 +68,9 @@ private:
 /// fold into the curvature.
 double wellCurvature(const Profile &p, bool leftEnd);
 
+/// {a, b} of that fit, s measured inward from the end: wellCurvature is 2 a.
+std::array<double, 2> wellFit(const Profile &p, bool leftEnd);
+
 /// hbar omega in eV for a mass-weighted curvature.
 double hbarOmega(double curvature);
 
@@ -102,6 +105,72 @@ Splitting wkbSplitting(const Profile &p, double hwReactant, double hwProduct);
 /// band's curvature at each end.
 Splitting bandSplitting(const std::vector<std::shared_ptr<Matter>> &band,
                         double referenceEnergy);
+
+/// The energy of a band against its mass-weighted arc length, measured from
+/// referenceEnergy.
+Profile bandProfile(const std::vector<std::shared_ptr<Matter>> &band,
+                    double referenceEnergy);
+
+/// The two lowest levels of a one-dimensional double well, in eV. gap is
+/// E2 - E1, the energy of the two-level system. Rotating the two lowest
+/// states into the pair most localised on either side of the barrier top,
+/// |r> = cos(theta) |1> - sin(theta) |2>, splits it into the two-state parts:
+/// asymmetry = gap cos(2 theta), positive when the product well lies higher,
+/// and delta0 = gap sin(2 theta). The rotation cancels the tail each state
+/// leaves across the barrier, so delta0 holds when the asymmetry is
+/// thousands of times larger.
+struct Levels {
+  double gap = 0.0;
+  double asymmetry = 0.0;
+  double delta0 = 0.0;
+};
+
+/// Grid points per oscillator length hbar / sqrt(hbar omega) of the stiffer
+/// well. Fourth-order differences at this spacing put a quartic double
+/// well's gap within 2e-5.
+inline constexpr long kDvrPointsPerLength = 20;
+/// Oscillator lengths the grid reaches past each minimum.
+inline constexpr double kDvrPadLengths = 7.0;
+/// Largest grid; a longer path takes a coarser spacing.
+inline constexpr long kDvrMaxPoints = 1500;
+
+/// The levels of -hbar^2/2 d2/ds2 + V(s) at unit mass on a mass-weighted
+/// path coordinate s, with V defined past both minima: fourth-order central
+/// differences on a uniform grid from kDvrPadLengths oscillator lengths
+/// before the reactant minimum to as far past the product's.
+Levels dvrLevels(const std::function<double(double)> &v, double sReactant,
+                 double sProduct, double sTop, double hwReactant,
+                 double hwProduct);
+
+/// One well's outer wall: increasing mass-weighted distances outward from
+/// the minimum along the reaction path, and the energies there on the scale
+/// of the band's profile.
+struct BandWall {
+  std::vector<double> distance;
+  std::vector<double> energy;
+};
+struct BandWalls {
+  BandWall reactant;
+  BandWall product;
+};
+
+/// dvrLevels on a band: the profile between the images, and past each end
+/// the well's fit a s^2 + b s^3 continued, never softer than its parabola.
+/// A sampled wall adds the residual of its samples against that fit, a
+/// cubic spline flat at the minimum and straight past the last sample.
+Levels bandLevels(const Profile &p, const BandWalls *walls = nullptr);
+
+/// The walls of both ends of a band, after Khomenko et al. (PRL 124, 225901
+/// (2020), SI): the potential at `points` distances past each minimum, along
+/// the band's end segment continued outward, out to kDvrPadLengths
+/// oscillator lengths of that well. Each point is one force call.
+BandWalls bandWalls(const std::vector<std::shared_ptr<Matter>> &band,
+                    double referenceEnergy, long points);
+
+/// Whether a profile is one double well: its images rise to exactly one
+/// maximum between the two ends. A path with an intermediate minimum is no
+/// two-level system.
+bool singleBarrier(const Profile &p);
 
 /// Closed ring of `beads` samples of `path` whose imaginary-time period is
 /// `betaHbar`. Bead 0 is the reactant-side turning point and bead N/2 the

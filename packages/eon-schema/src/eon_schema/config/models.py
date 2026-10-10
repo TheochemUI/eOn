@@ -2230,6 +2230,16 @@ class NudgedElasticBandConfig(BaseModel):
             "along the band. Zero leaves the profile on the potential energy."
         ),
     )
+    tunnel_wall_points: int = Field(
+        default=0,
+        ge=0,
+        description=(
+            "Force calls past each end minimum of the converged band, along "
+            "its end segment continued outward, for the outer walls of the "
+            "one-dimensional tunnelling levels. 0 continues each well by its "
+            "fit."
+        ),
+    )
     solid_state_pressure: float = Field(
         default=0.0,
         description=(

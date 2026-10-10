@@ -283,6 +283,106 @@ TEST_CASE("The TLS energy of a tilted double well carries the zero-point "
   }
 }
 
+namespace {
+
+// E2 - E1 of -hbar^2/2 d2/dx2 + V on [-half, half] from second-order
+// differences on n points.
+double gridGap(const std::function<double(double)> &v, double half,
+               int n = 1600) {
+  const double h = 2.0 * half / (n - 1);
+  const double t = kHbar * kHbar / (2.0 * h * h);
+  Eigen::MatrixXd hmat = Eigen::MatrixXd::Zero(n, n);
+  for (int i = 0; i < n; ++i) {
+    hmat(i, i) = 2.0 * t + v(-half + i * h);
+    if (i + 1 < n) {
+      hmat(i, i + 1) = -t;
+      hmat(i + 1, i) = -t;
+    }
+  }
+  const Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> es(
+      hmat, Eigen::EigenvaluesOnly);
+  return es.eigenvalues()(1) - es.eigenvalues()(0);
+}
+
+// The minimum or the barrier top of V0 (x^2 - 1)^2 + eps x / 2 nearest x.
+double tiltedRoot(double v0, double eps, double x) {
+  for (int k = 0; k < 60; ++k) {
+    x -= (4.0 * v0 * x * (x * x - 1.0) + 0.5 * eps) /
+         (v0 * (12.0 * x * x - 4.0));
+  }
+  return x;
+}
+
+} // namespace
+
+TEST_CASE("The one-dimensional levels of a double well match a fine grid",
+          "[Tunneling]") {
+  // A linear tilt leaves the tunnelling matrix element at the gap of the
+  // level wells, so delta0 has to stay there however large the asymmetry
+  // grows, while the energy follows the exact gap.
+  const double v0 = 0.12;
+  const double level = gridGap(
+      [&](double x) { return v0 * (x * x - 1.0) * (x * x - 1.0); }, 2.4);
+  for (double eps : {0.0, 1e-4, 1e-3}) {
+    CAPTURE(eps);
+    auto v = [&](double x) {
+      return v0 * (x * x - 1.0) * (x * x - 1.0) + 0.5 * eps * x;
+    };
+    const double xl = tiltedRoot(v0, eps, -1.0);
+    const double xr = tiltedRoot(v0, eps, 1.0);
+    const double top = tiltedRoot(v0, eps, 0.0);
+    auto hw = [&](double x) {
+      return kHbar * std::sqrt(v0 * (12.0 * x * x - 4.0));
+    };
+    const Levels lv = dvrLevels(v, xl, xr, top, hw(xl), hw(xr));
+    REQUIRE_THAT(lv.gap, WithinRel(gridGap(v, 2.4), 2e-4));
+    REQUIRE_THAT(lv.delta0, WithinRel(level, 1e-3));
+    REQUIRE_THAT(std::hypot(lv.asymmetry, lv.delta0), WithinRel(lv.gap, 1e-12));
+    REQUIRE(lv.asymmetry > -1e-9);
+  }
+  REQUIRE_THROWS_AS(
+      dvrLevels([](double) { return 0.0; }, 1.0, -1.0, 0.0, 0.1, 0.1),
+      std::invalid_argument);
+}
+
+TEST_CASE("The band's levels continue its wells and take sampled walls",
+          "[Tunneling]") {
+  // A band from minimum to minimum never sees the outer walls. Continued by
+  // each well's fit the levels sit within 6 percent of the exact gap; with
+  // eight samples of the real wall past each end, within 1.5 percent, the
+  // rest being the band's own images.
+  const double v0 = 0.12;
+  auto v = [&](double x) { return v0 * (x * x - 1.0) * (x * x - 1.0); };
+  const double exact = gridGap(v, 2.4);
+  for (int images : {13, 41}) {
+    CAPTURE(images);
+    const Profile p = quarticBand(v0, 1.0, images);
+    REQUIRE(singleBarrier(p));
+    REQUIRE_THAT(bandLevels(p).gap, WithinRel(exact, 0.06));
+    const double ell = kHbar / std::sqrt(hbarOmega(2.0 * wellFit(p, true)[0]));
+    BandWalls walls;
+    for (int k = 1; k <= 8; ++k) {
+      const double u = kDvrPadLengths * ell * k / 8.0;
+      walls.reactant.distance.push_back(u);
+      walls.reactant.energy.push_back(v(-1.0 - u));
+      walls.product.distance.push_back(u);
+      walls.product.energy.push_back(v(1.0 + u));
+    }
+    REQUIRE_THAT(bandLevels(p, &walls).gap, WithinRel(exact, 0.015));
+  }
+  REQUIRE_THAT(
+      wellCurvature(quarticBand(v0, 1.0, 41), true),
+      WithinRel(2.0 * wellFit(quarticBand(v0, 1.0, 41), true)[0], 1e-15));
+  // Two barriers with a well between them are no two-level system.
+  REQUIRE_FALSE(singleBarrier(
+      Profile({0.0, 1.0, 2.0, 3.0, 4.0}, {0.0, 0.1, 0.02, 0.1, 0.0})));
+  BandWalls bad;
+  bad.reactant.distance = {0.1, 0.05};
+  bad.reactant.energy = {0.01, 0.02};
+  REQUIRE_THROWS_AS(bandLevels(quarticBand(v0, 1.0, 21), &bad),
+                    std::invalid_argument);
+}
+
 TEST_CASE("A shallow double well is flagged", "[Tunneling]") {
   const Profile p = quarticBand(0.005, 1.0, 21);
   const double hw = hbarOmega(wellCurvature(p, true));

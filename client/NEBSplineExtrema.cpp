@@ -313,7 +313,8 @@ std::vector<readcon::ConFrame> pathToConFrames(
     const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
     const std::vector<std::shared_ptr<EigenmodeStrategy>> &eigenmode_solvers,
     long numImages, bool estimateEigenvalues, std::optional<size_t> bandIndex,
-    double referenceEnergy, const std::vector<double> *quantumFreeEnergy) {
+    double referenceEnergy, const std::vector<double> *quantumFreeEnergy,
+    const eonc::tunneling::BandWalls *walls) {
   const size_t nframes = static_cast<size_t>(numImages) + 2;
   if (path.size() < nframes) {
     return {};
@@ -364,6 +365,17 @@ std::vector<readcon::ConFrame> pathToConFrames(
       head.push_back({"tunnel_asymmetry_zpe", split.asymmetry()});
       head.push_back({"tls_energy", split.tlsEnergy()});
       head.push_back({"tunnel_deep_wells", split.deepWells ? 1.0 : 0.0});
+      // The same band solved exactly in one dimension: the energy of the
+      // two-level system and its two parts.
+      const auto profile = eonc::tunneling::bandProfile(
+          ends, referenceOrFirst(path, referenceEnergy));
+      const auto levels = eonc::tunneling::bandLevels(profile, walls);
+      head.push_back({"tls_energy_dvr", levels.gap});
+      head.push_back({"tunnel_asymmetry_dvr", levels.asymmetry});
+      head.push_back({"tunnel_splitting_dvr", levels.delta0});
+      head.push_back({"tunnel_wall_sampled", walls != nullptr ? 1.0 : 0.0});
+      head.push_back({"tunnel_double_well",
+                      eonc::tunneling::singleBarrier(profile) ? 1.0 : 0.0});
     } catch (const std::invalid_argument &) {
     }
   }
@@ -390,11 +402,11 @@ eonc::io::IoStatus writePathCon(
     const std::vector<std::shared_ptr<EigenmodeStrategy>> &eigenmode_solvers,
     long numImages, bool estimateEigenvalues, std::string filename,
     std::optional<size_t> bandIndex, double referenceEnergy,
-    const std::vector<double> *quantumFreeEnergy) {
-  auto frames =
-      pathToConFrames(path, tangent, eigenmode_solvers, numImages,
-                      estimateEigenvalues, bandIndex, referenceEnergy,
-                      quantumFreeEnergy);
+    const std::vector<double> *quantumFreeEnergy,
+    const eonc::tunneling::BandWalls *walls) {
+  auto frames = pathToConFrames(path, tangent, eigenmode_solvers, numImages,
+                                estimateEigenvalues, bandIndex, referenceEnergy,
+                                quantumFreeEnergy, walls);
   if (frames.empty()) {
     return eonc::io::IoStatus::InvalidArgument;
   }

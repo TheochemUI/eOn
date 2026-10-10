@@ -36,6 +36,8 @@
 #include "eon/libs/ARTn/ARTnResource.h"
 #endif
 
+#include <nlohmann/json.hpp>
+
 #include <algorithm>
 #include <array>
 #include <cfenv>
@@ -2981,6 +2983,64 @@ symmetrize = false
   REQUIRE(resultsDatKeyCount(dat, "instanton_symmetric") == 1);
   REQUIRE(resultsDatKeyCount(dat, "tunnel_asymmetry_zpe") == 1);
   REQUIRE(std::stod(results.at("instanton_symmetrized")) == 0.0);
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "NEB writes the one-dimensional tunnelling levels of its band",
+                 "[job][neb][tunneling][integration]") {
+  if (!copyTestData("neb_lj13")) {
+    SKIP("neb_lj13 test system not found");
+  }
+  auto band = [&](const std::string &wallPoints) {
+    writeConfig(R"(
+[Main]
+job = nudged_elastic_band
+
+[Potential]
+potential = lj
+
+[Nudged Elastic Band]
+images = 7
+max_iterations = 400
+tunnel_wall_points = )" +
+                wallPoints + R"(
+
+[Optimizer]
+opt_method = lbfgs
+converged_force = 0.01
+max_move = 0.1
+)");
+    // results.dat reports the process-wide count; this run's share is the
+    // count it ends at minus the one it starts from.
+    const auto before =
+        static_cast<double>(PotRegistry::get().total_force_calls());
+    auto results = runJob();
+    REQUIRE(results.at("termination_reason") == "0");
+    const auto frames =
+        readcon::read_all_frames((workdir / "neb.con").string());
+    REQUIRE(frames.size() == 9);
+    return std::pair{nlohmann::json::parse(frames.front().metadata_json()),
+                     std::stod(results.at("total_force_calls")) - before};
+  };
+  const auto [fit, fitCalls] = band("0");
+  const auto [walled, walledCalls] = band("6");
+  for (const auto *head : {&fit, &walled}) {
+    for (const char *key :
+         {"tls_energy_dvr", "tunnel_asymmetry_dvr", "tunnel_splitting_dvr",
+          "tunnel_asymmetry_zpe", "tunnel_double_well"}) {
+      CAPTURE(key);
+      REQUIRE(head->contains(key));
+      REQUIRE(std::isfinite(head->at(key).get<double>()));
+    }
+    REQUIRE_THAT(std::hypot(head->at("tunnel_asymmetry_dvr").get<double>(),
+                            head->at("tunnel_splitting_dvr").get<double>()),
+                 Catch::Matchers::WithinRel(
+                     head->at("tls_energy_dvr").get<double>(), 1e-9));
+  }
+  REQUIRE(fit.at("tunnel_wall_sampled").get<double>() == 0.0);
+  REQUIRE(walled.at("tunnel_wall_sampled").get<double>() == 1.0);
+  // Six samples past each of the two minima, and nothing else changes.
+  REQUIRE(walledCalls - fitCalls == Catch::Approx(12.0).margin(0.5));
 }
 
 TEST_CASE_METHOD(

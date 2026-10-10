@@ -230,6 +230,14 @@ Nudged Elastic Band:
             kind: float
             default: 0.0
 
+        # Force calls past each end minimum of the converged band, along
+        # its end segment continued outward, for the outer walls of the
+        # one-dimensional tunnelling levels. 0 continues each well by its
+        # fit.
+        tunnel_wall_points:
+            kind: int
+            default: 0
+
         climbing_image_method:
             kind: boolean
             default: true

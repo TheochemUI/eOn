@@ -628,6 +628,11 @@ struct neb_options_t {
   /// Temperature in kelvin for the harmonic quantum free-energy profile.
   /// Zero leaves the band on the potential energy.
   double quantum_temperature{0.0};
+
+  /// Force calls past each end minimum of the converged band, along its end
+  /// segment continued outward, for the outer walls of the one-dimensional
+  /// tunnelling levels. Zero continues each well by its fit.
+  long tunnel_wall_points{0};
 };
 
 // [Molecular Dynamics] //

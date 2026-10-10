@@ -32,6 +32,7 @@
 #include <limits>
 #include <numbers>
 #include <numeric>
+#include <optional>
 #include <stdexcept>
 #include <utility>
 
@@ -108,6 +109,10 @@ double Profile::operator()(double x) const {
 }
 
 double wellCurvature(const Profile &p, bool leftEnd) {
+  return 2.0 * wellFit(p, leftEnd)[0];
+}
+
+std::array<double, 2> wellFit(const Profile &p, bool leftEnd) {
   const auto &s = p.s();
   const auto &v = p.v();
   const size_t n = s.size();
@@ -137,14 +142,13 @@ double wellCurvature(const Profile &p, bool leftEnd) {
     // through it is all the band says about this well.
     const size_t i = leftEnd ? 1 : n - 2;
     const double x = leftEnd ? s[i] - s.front() : s.back() - s[i];
-    return 2.0 * (v[i] - floor) / (x * x);
+    return {(v[i] - floor) / (x * x), 0.0};
   }
   if (used == 1) {
-    return 2.0 * sy2 / s44;
+    return {sy2 / s44, 0.0};
   }
   const double det = s44 * s55 - s45 * s45;
-  const double a = (sy2 * s55 - sy3 * s45) / det;
-  return 2.0 * a;
+  return {(sy2 * s55 - sy3 * s45) / det, (sy3 * s44 - sy2 * s45) / det};
 }
 
 double hbarOmega(double curvature) {
@@ -513,16 +517,251 @@ double wkbLogRateAlongPath(const Profile &profile, double beta,
   return logFlux + std::log(2.0 * std::sinh(0.5 * beta * hwReactant));
 }
 
-Splitting bandSplitting(const std::vector<std::shared_ptr<Matter>> &band,
-                        double referenceEnergy) {
+Profile bandProfile(const std::vector<std::shared_ptr<Matter>> &band,
+                    double referenceEnergy) {
   std::vector<double> v;
   v.reserve(band.size());
   for (const auto &image : band) {
     v.push_back(image->getPotentialEnergy() - referenceEnergy);
   }
-  const Profile p(massWeightedPath(band), std::move(v));
+  return Profile(massWeightedPath(band), std::move(v));
+}
+
+Splitting bandSplitting(const std::vector<std::shared_ptr<Matter>> &band,
+                        double referenceEnergy) {
+  const Profile p = bandProfile(band, referenceEnergy);
   return wkbSplitting(p, hbarOmega(wellCurvature(p, true)),
                       hbarOmega(wellCurvature(p, false)));
+}
+
+bool singleBarrier(const Profile &p) {
+  const auto &v = p.v();
+  long peaks = 0;
+  long valleys = 0;
+  int last = 0;
+  for (size_t k = 1; k < v.size(); ++k) {
+    const int step = v[k] > v[k - 1] ? 1 : (v[k] < v[k - 1] ? -1 : 0);
+    if (step == 0) {
+      continue;
+    }
+    peaks += (last == 1 && step == -1) ? 1 : 0;
+    valleys += (last == -1 && step == 1) ? 1 : 0;
+    last = step;
+  }
+  return peaks == 1 && valleys == 0;
+}
+
+Levels dvrLevels(const std::function<double(double)> &v, double sReactant,
+                 double sProduct, double sTop, double hwReactant,
+                 double hwProduct) {
+  if (!(hwReactant > 0.0) || !(hwProduct > 0.0) || !(sProduct > sReactant)) {
+    throw std::invalid_argument(
+        "dvrLevels: two wells with positive hbar omega along an increasing "
+        "path");
+  }
+  const double ellR = kHbar / std::sqrt(hwReactant);
+  const double ellP = kHbar / std::sqrt(hwProduct);
+  const double lo = sReactant - kDvrPadLengths * ellR;
+  const double hi = sProduct + kDvrPadLengths * ellP;
+  const long n = std::clamp<long>(
+      static_cast<long>(
+          std::ceil((hi - lo) * kDvrPointsPerLength / std::min(ellR, ellP))) +
+          1,
+      64, kDvrMaxPoints);
+  const double h = (hi - lo) / static_cast<double>(n - 1);
+  const double c = kHbar * kHbar / (2.0 * h * h);
+  MatrixXd hmat = MatrixXd::Zero(n, n);
+  for (long i = 0; i < n; ++i) {
+    hmat(i, i) = v(lo + static_cast<double>(i) * h) + 2.5 * c;
+    if (i + 1 < n) {
+      hmat(i, i + 1) = hmat(i + 1, i) = -4.0 * c / 3.0;
+    }
+    if (i + 2 < n) {
+      hmat(i, i + 2) = hmat(i + 2, i) = c / 12.0;
+    }
+  }
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> es(hmat);
+  // The overlaps of the two lowest states on the reactant side; their
+  // leading eigenvector is the rotation onto the reactant-localised state.
+  Eigen::Matrix2d side = Eigen::Matrix2d::Zero();
+  for (long i = 0; i < n && lo + static_cast<double>(i) * h < sTop; ++i) {
+    const double a = es.eigenvectors()(i, 0);
+    const double b = es.eigenvectors()(i, 1);
+    side(0, 0) += a * a;
+    side(0, 1) += a * b;
+    side(1, 1) += b * b;
+  }
+  side(1, 0) = side(0, 1);
+  const Eigen::SelfAdjointEigenSolver<Eigen::Matrix2d> rotation(side);
+  const double cosine = rotation.eigenvectors()(0, 1);
+  const double sine = rotation.eigenvectors()(1, 1);
+  Levels out;
+  out.gap = es.eigenvalues()(1) - es.eigenvalues()(0);
+  out.asymmetry = out.gap * (cosine * cosine - sine * sine);
+  out.delta0 = 2.0 * out.gap * std::abs(cosine * sine);
+  return out;
+}
+
+namespace {
+
+// The cubic spline through (0, 0) and the given points, flat at 0 and
+// natural at the last point; past it, straight along its end slope.
+class FlatStartSpline {
+public:
+  FlatStartSpline(std::vector<double> x, std::vector<double> y)
+      : x_(std::move(x)),
+        y_(std::move(y)) {
+    const size_t m = x_.size() - 1;
+    for (size_t i = 0; i < m; ++i) {
+      if (!(x_[i + 1] > x_[i])) {
+        throw std::invalid_argument(
+            "a wall needs increasing distances past the minimum");
+      }
+    }
+    // Moments M_0 .. M_{m-1} from the tridiagonal system, M_m = 0.
+    std::vector<double> sub(m, 0.0), dia(m, 0.0), sup(m, 0.0), rhs(m, 0.0);
+    auto h = [&](size_t i) { return x_[i + 1] - x_[i]; };
+    auto slope = [&](size_t i) { return (y_[i + 1] - y_[i]) / h(i); };
+    dia[0] = 2.0 * h(0);
+    sup[0] = h(0);
+    rhs[0] = 6.0 * slope(0);
+    for (size_t i = 1; i < m; ++i) {
+      sub[i] = h(i - 1);
+      dia[i] = 2.0 * (h(i - 1) + h(i));
+      sup[i] = h(i);
+      rhs[i] = 6.0 * (slope(i) - slope(i - 1));
+    }
+    for (size_t i = 1; i < m; ++i) {
+      const double w = sub[i] / dia[i - 1];
+      dia[i] -= w * sup[i - 1];
+      rhs[i] -= w * rhs[i - 1];
+    }
+    m_.assign(m + 1, 0.0);
+    for (size_t i = m; i-- > 0;) {
+      m_[i] = (rhs[i] - (i + 1 < m ? sup[i] * m_[i + 1] : 0.0)) / dia[i];
+    }
+    endSlope_ = slope(m - 1) + m_[m - 1] * h(m - 1) / 6.0;
+  }
+  double operator()(double u) const {
+    if (u >= x_.back()) {
+      return y_.back() + endSlope_ * (u - x_.back());
+    }
+    const auto it = std::upper_bound(x_.begin(), x_.end(), u);
+    const size_t i =
+        std::clamp<size_t>(static_cast<size_t>(std::distance(x_.begin(), it)),
+                           1, x_.size() - 1) -
+        1;
+    const double h = x_[i + 1] - x_[i];
+    const double a = x_[i + 1] - u;
+    const double b = u - x_[i];
+    return (m_[i] * a * a * a + m_[i + 1] * b * b * b) / (6.0 * h) +
+           (y_[i] - m_[i] * h * h / 6.0) * a / h +
+           (y_[i + 1] - m_[i + 1] * h * h / 6.0) * b / h;
+  }
+
+private:
+  std::vector<double> x_, y_, m_;
+  double endSlope_ = 0.0;
+};
+
+} // namespace
+
+Levels bandLevels(const Profile &p, const BandWalls *walls) {
+  const std::array<double, 2> fitR = wellFit(p, true);
+  const std::array<double, 2> fitP = wellFit(p, false);
+  const double hwR = hbarOmega(2.0 * fitR[0]);
+  const double hwP = hbarOmega(2.0 * fitP[0]);
+  const double s0 = p.s().front();
+  const double s1 = p.s().back();
+  double sTop = s0;
+  double vTop = -std::numeric_limits<double>::infinity();
+  constexpr int grid = 4000;
+  for (int k = 0; k <= grid; ++k) {
+    const double sk = s0 + (s1 - s0) * static_cast<double>(k) / grid;
+    if (p(sk) > vTop) {
+      vTop = p(sk);
+      sTop = sk;
+    }
+  }
+  // Past each end the well's fit, its parabola or its cubic, whichever is
+  // stiffer. A sampled wall adds the residual of its samples, a spline flat
+  // at the minimum: the fit already bends like the potential where the
+  // ground state lives, so the residual is small there and smooth beyond.
+  auto model = [](double u, const std::array<double, 2> &fit) {
+    return std::max(fit[0] * u * u - fit[1] * u * u * u, fit[0] * u * u);
+  };
+  auto residual = [&](const BandWall *wall, const std::array<double, 2> &fit,
+                      double floor) -> std::optional<FlatStartSpline> {
+    if (wall == nullptr || wall->distance.empty()) {
+      return std::nullopt;
+    }
+    if (wall->distance.size() != wall->energy.size()) {
+      throw std::invalid_argument("a wall needs one energy per distance");
+    }
+    std::vector<double> x{0.0};
+    std::vector<double> y{0.0};
+    for (size_t k = 0; k < wall->distance.size(); ++k) {
+      x.push_back(wall->distance[k]);
+      y.push_back(wall->energy[k] - floor - model(wall->distance[k], fit));
+    }
+    return FlatStartSpline(std::move(x), std::move(y));
+  };
+  const std::optional<FlatStartSpline> wallR =
+      residual(walls ? &walls->reactant : nullptr, fitR, p.v().front());
+  const std::optional<FlatStartSpline> wallP =
+      residual(walls ? &walls->product : nullptr, fitP, p.v().back());
+  auto outer = [&](double u, const std::array<double, 2> &fit, double floor,
+                   const std::optional<FlatStartSpline> &wall) {
+    return floor + model(u, fit) + (wall ? (*wall)(u) : 0.0);
+  };
+  auto v = [&](double s) {
+    if (s < s0) {
+      return outer(s0 - s, fitR, p.v().front(), wallR);
+    }
+    if (s > s1) {
+      return outer(s - s1, fitP, p.v().back(), wallP);
+    }
+    return p(s);
+  };
+  return dvrLevels(v, s0, s1, sTop, hwR, hwP);
+}
+
+BandWalls bandWalls(const std::vector<std::shared_ptr<Matter>> &band,
+                    double referenceEnergy, long points) {
+  if (band.size() < 3 || points < 1) {
+    throw std::invalid_argument(
+        "bandWalls: a band of three images or more and a point per wall");
+  }
+  const Profile p = bandProfile(band, referenceEnergy);
+  auto wall = [&](const Matter &end, const Matter &next, double a) {
+    const double ell = kHbar / std::sqrt(hbarOmega(2.0 * a));
+    const AtomMatrix step = end.pbc(end.getPositions() - next.getPositions());
+    const auto mass = end.getMasses();
+    double norm2 = 0.0;
+    for (long i = 0; i < end.numberOfAtoms(); ++i) {
+      norm2 += mass(i) * step.row(i).squaredNorm();
+    }
+    if (!(norm2 > 0.0)) {
+      throw std::invalid_argument("bandWalls: an end segment has no length");
+    }
+    // One unit of mass-weighted length along the end segment, outward.
+    const AtomMatrix direction = step / std::sqrt(norm2);
+    BandWall out;
+    Matter probe(end);
+    for (long k = 1; k <= points; ++k) {
+      const double u = kDvrPadLengths * ell * static_cast<double>(k) /
+                       static_cast<double>(points);
+      probe.setPositions(end.getPositions() + u * direction);
+      out.distance.push_back(u);
+      out.energy.push_back(probe.getPotentialEnergy() - referenceEnergy);
+    }
+    return out;
+  };
+  BandWalls out;
+  out.reactant = wall(*band.front(), *band[1], wellFit(p, true)[0]);
+  out.product =
+      wall(*band.back(), *band[band.size() - 2], wellFit(p, false)[0]);
+  return out;
 }
 
 namespace {

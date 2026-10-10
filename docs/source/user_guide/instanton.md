@@ -52,11 +52,57 @@ curvature of each well as well as its depth: on a quartic double well tilted
 by 1 meV, the difference of the minima alone puts the energy 6 percent above
 the exact gap, and {math}`\Delta` within 0.6 percent.
 
-WKB along the band is exact in one dimension up to its semiclassical error.
-When the path curves, the tunnelling cuts the corner, and the transverse
-zero-point energy changes along the way. In the two-dimensional test valley
-below, both effects together put the band estimate a factor of 2.8 below the
-exact splitting.
+## The band solved in one dimension
+
+The same frame carries the exact levels of the one-dimensional problem
+along the band, {math}`-\tfrac{\hbar^2}{2} \partial_s^2 + V(s)` in the
+mass-weighted coordinate, the protocol of the glass two-level-system
+studies {cite:p}`inst-khomenkoDepletionTwoLevelSystems2020,inst-mocanuMicroscopicObservationTwolevel2023`.
+The keys are:
+
+| Key | Meaning |
+|---|---|
+| `tls_energy_dvr` | Energy: {math}`E_2 - E_1` of the two lowest levels, eV |
+| `tunnel_asymmetry_dvr` | Asymmetry: {math}`E \cos 2\theta`, positive when the product well lies higher, eV |
+| `tunnel_splitting_dvr` | Matrix element: {math}`\Delta_0 = E \sin 2\theta`, eV |
+| `tunnel_wall_sampled` | Flag: 1 when the outer walls were sampled, below |
+| `tunnel_double_well` | Flag: 1 when the images rise to one maximum and fall, a double well and no more |
+
+The kinetic energy is the fourth-order central difference on a uniform grid
+of 20 points per oscillator length {math}`\hbar / \sqrt{\hbar\omega}` of the
+stiffer well, at most 1500 points, reaching seven such lengths past each
+minimum. On a quartic double well, symmetric or tilted, the gap lands
+within {math}`10^{-5}` of a converged grid. {math}`\theta` rotates the two
+lowest states into the pair most localised on either side of the barrier
+top. That rotation cancels the tail each state leaves across the barrier,
+so on a tilted quartic {math}`\Delta_0` stays within {math}`10^{-3}` of the
+gap of the level wells with the asymmetry thousands of times larger, where
+the ground state's weight on each side alone would overshoot fourfold.
+
+A band runs from minimum to minimum and never sees the outer walls. Past
+each end the profile continues by the fit of that well, its cubic or its
+parabola, whichever is stiffer; on a quartic double well that keeps the gap
+within 6 percent. `[Nudged Elastic Band] tunnel_wall_points` above 0 samples
+the real walls instead, the linear extrapolation of the reaction path of
+{cite:t}`inst-khomenkoDepletionTwoLevelSystems2020`: that many force calls
+past each minimum along the band's end segment continued outward, out to
+seven oscillator lengths, once the band has converged. The fit stays as the
+model and the residual of the samples, a cubic spline flat at the minimum,
+is added to it. Eight samples bring the quartic within 1.5 percent of the
+exact gap, the rest being the band's own images.
+
+```{code-block} ini
+[Nudged Elastic Band]
+images = 13
+tunnel_wall_points = 8
+```
+
+Either solution stays one-dimensional; WKB along the band is exact in one
+dimension up to its semiclassical error. When the path curves, the
+tunnelling cuts the corner, and the transverse zero-point energy changes
+along the way. In the two-dimensional test valley below, both effects
+together put the WKB band estimate a factor of 2.8 below the exact
+splitting. For both, run the instanton job on the pair.
 
 ## The instanton job
 
