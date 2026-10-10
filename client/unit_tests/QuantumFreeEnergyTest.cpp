@@ -1,7 +1,7 @@
+#include "eon/QuantumFreeEnergy.h"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Hessian.h"
 #include "eon/Potential.h"
-#include "eon/QuantumFreeEnergy.h"
 #include "eon/Tunneling.h"
 
 #include <Eigen/Eigenvalues>
@@ -15,7 +15,8 @@ struct CurvedValley final : eonc::Potential {
   double kz{3.0};
   double alpha{0.5};
 
-  CurvedValley() : Potential(eonc::PotType::LJ) {}
+  CurvedValley()
+      : Potential(eonc::PotType::LJ) {}
 
   void force(long nAtoms, const double *positions, const int *, double *forces,
              double *energy, double *variance, const double *) override {
@@ -150,8 +151,7 @@ TEST_CASE("curved valley free energy matches a direct sum over normal modes",
   constexpr double kA = 2.0;
   constexpr double kP = 8.0;
   constexpr double kZ = 3.0;
-  const Eigen::Matrix3d hessian =
-      analyticHessian(kX, kAlpha, kA, kP, kZ);
+  const Eigen::Matrix3d hessian = analyticHessian(kX, kAlpha, kA, kP, kZ);
   const Eigen::Vector3d tangent(1.0, 2.0 * kAlpha * kX, 0.0);
   constexpr double kTemperature = 300.0;
   const double summed = directSum(hessian, tangent, kTemperature);
@@ -159,7 +159,8 @@ TEST_CASE("curved valley free energy matches a direct sum over normal modes",
       eonc::perpendicularHarmonicFreeEnergy(hessian, tangent, kTemperature);
   REQUIRE(profile == Catch::Approx(summed).margin(1e-10));
 
-  const double zpe = eonc::perpendicularHarmonicFreeEnergy(hessian, tangent, 0.0);
+  const double zpe =
+      eonc::perpendicularHarmonicFreeEnergy(hessian, tangent, 0.0);
   REQUIRE(zpe == Catch::Approx(directSum(hessian, tangent, 0.0)).margin(1e-12));
   constexpr double kValleyEnergy = 0.5 * kA * kX * kX;
   REQUIRE(kValleyEnergy + zpe ==
@@ -186,8 +187,9 @@ TEST_CASE("curved valley free energy matches a direct sum over normal modes",
   const Eigen::MatrixXd weighted = numerical.getHessian(&matter, mobile);
   REQUIRE(weighted.rows() == 3);
   REQUIRE((weighted - hessian).norm() < 1e-6);
-  REQUIRE(eonc::perpendicularHarmonicFreeEnergy(weighted, tangent, kTemperature) ==
-          Catch::Approx(summed).margin(1e-5));
+  REQUIRE(
+      eonc::perpendicularHarmonicFreeEnergy(weighted, tangent, kTemperature) ==
+      Catch::Approx(summed).margin(1e-5));
 }
 
 // A free cluster's band: the end images are minima and keep all three

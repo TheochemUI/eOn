@@ -261,8 +261,8 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   const double quantumTemperature = params.neb_options().quantum_temperature;
   const std::vector<double> *quantumPtr = nullptr;
   if (quantumTemperature > 0.0) {
-    quantumFreeEnergy = eonc::quantumFreeEnergies(
-        neb->path, neb->tangent, quantumTemperature, params);
+    quantumFreeEnergy = eonc::quantumFreeEnergies(neb->path, neb->tangent,
+                                                  quantumTemperature, params);
     quantumPtr = &quantumFreeEnergy;
   }
   if (!eonc::io::io_ok(eonc::neb::writePathCon(

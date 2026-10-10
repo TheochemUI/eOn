@@ -381,9 +381,9 @@ std::vector<readcon::ConFrame> pathToConFrames(
   }
   if (quantumFreeEnergy != nullptr && quantumFreeEnergy->size() == nframes) {
     const double reactant = quantumFreeEnergy->front();
-    const double barrier =
-        *std::max_element(quantumFreeEnergy->begin(), quantumFreeEnergy->end()) -
-        reactant;
+    const double barrier = *std::max_element(quantumFreeEnergy->begin(),
+                                             quantumFreeEnergy->end()) -
+                           reactant;
     for (size_t i = 0; i < nframes; ++i) {
       metas[i].scalars.push_back(
           {"quantum_free_energy", (*quantumFreeEnergy)[i]});

@@ -9,12 +9,12 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "eon/RingPolymerPotential.h"
 #include "eon/Tunneling.h"
 #include "EckartBarrier.hpp"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Parameters.h"
+#include "eon/RingPolymerPotential.h"
 
 #include <Eigen/Eigenvalues>
 #include <cmath>
@@ -2570,7 +2570,8 @@ TEST_CASE("A link weight divides one spring of a closed ring",
                                    std::vector<double>{4.0, 2.0, 4.0, 2.0}),
                Catch::Matchers::WithinAbs(weighted, 1e-12));
   REQUIRE_THROWS_AS(
-      closedRingPotential(beads, c, flat, std::vector<double>{0.0, 1.0, 1.0, 1.0}),
+      closedRingPotential(beads, c, flat,
+                          std::vector<double>{0.0, 1.0, 1.0, 1.0}),
       std::invalid_argument);
 
   // V = q on beads 0, 1, 1, 0 with steps 2, 2/3, 2/3, 2/3: the beads hold
@@ -2989,9 +2990,9 @@ TEST_CASE("a rate ring takes the Lanczos determinant and a friction bath",
   REQUIRE_THROWS_AS(
       instantonRate(inst, bead, reactant, 0.0, MatrixXd(), 0.0, 1, 0),
       std::runtime_error);
-  REQUIRE_THROWS_AS(instantonRate(inst, bead, -reactant, 0.0, MatrixXd(), 0.0,
-                                  0, 4096),
-                    std::runtime_error);
+  REQUIRE_THROWS_AS(
+      instantonRate(inst, bead, -reactant, 0.0, MatrixXd(), 0.0, 0, 4096),
+      std::runtime_error);
 }
 
 TEST_CASE("a double well cools a short rate ring",
@@ -3034,8 +3035,7 @@ TEST_CASE("a double well cools a short rate ring",
   split.beads = 8;
   split.maxIterations = 6;
   split.forceTolerance = 1.0e-2;
-  const Instanton pair =
-      optimizeInstanton(left, right, 8.0, {}, well, split);
+  const Instanton pair = optimizeInstanton(left, right, 8.0, {}, well, split);
   REQUIRE(pair.iterations >= 1);
   REQUIRE(std::isfinite(pair.action));
 }
