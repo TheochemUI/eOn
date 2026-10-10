@@ -226,9 +226,62 @@ TEST_CASE("An asymmetric pair tunnels from the higher ground level",
   REQUIRE_THAT(
       sp.referenceEnergy,
       WithinRel(std::max(v.front() + 0.5 * hwL, v.back() + 0.5 * hwR), 1e-12));
-  REQUIRE(sp.tlsEnergy() > sp.delta);
+  REQUIRE_THAT(sp.asymmetry(),
+               WithinRel(sp.delta + 0.5 * (hwR - hwL), 1e-12));
   REQUIRE_THAT(sp.tlsEnergy(),
-               WithinRel(std::hypot(sp.delta, sp.delta0), 1e-12));
+               WithinRel(std::hypot(sp.asymmetry(), sp.delta0), 1e-12));
+}
+
+TEST_CASE("The TLS energy of a tilted double well carries the zero-point "
+          "difference",
+          "[Tunneling]") {
+  // V0 (x^2 - 1)^2 + eps x / 2 sampled minimum to minimum. The tilt also
+  // changes the curvature of each well, so the local ground states differ
+  // by more than the minima: with the minima alone the energy sits 6
+  // percent above the exact gap at every image count.
+  const double v0 = 0.12;
+  const double eps = 1e-3;
+  auto v = [&](double x) {
+    return v0 * (x * x - 1.0) * (x * x - 1.0) + 0.5 * eps * x;
+  };
+  auto minimum = [&](double x) {
+    for (int k = 0; k < 50; ++k) {
+      x -= (4.0 * v0 * x * (x * x - 1.0) + 0.5 * eps) /
+           (v0 * (12.0 * x * x - 4.0));
+    }
+    return x;
+  };
+  const double xl = minimum(-1.0);
+  const double xr = minimum(1.0);
+  const int n = 1600;
+  const double half = 2.4;
+  const double h = 2.0 * half / (n - 1);
+  const double t = kHbar * kHbar / (2.0 * h * h);
+  Eigen::MatrixXd hmat = Eigen::MatrixXd::Zero(n, n);
+  for (int i = 0; i < n; ++i) {
+    hmat(i, i) = 2.0 * t + v(-half + i * h);
+    if (i + 1 < n) {
+      hmat(i, i + 1) = -t;
+      hmat(i + 1, i) = -t;
+    }
+  }
+  const Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> es(
+      hmat, Eigen::EigenvaluesOnly);
+  const double exact = es.eigenvalues()(1) - es.eigenvalues()(0);
+  for (int images : {21, 41}) {
+    std::vector<double> s, e;
+    for (int i = 0; i < images; ++i) {
+      const double x = xl + (xr - xl) * i / (images - 1);
+      s.push_back(x - xl);
+      e.push_back(v(x));
+    }
+    const Profile p(s, e);
+    const Splitting sp = wkbSplitting(p, hbarOmega(wellCurvature(p, true)),
+                                      hbarOmega(wellCurvature(p, false)));
+    INFO(images << " images: " << sp.tlsEnergy() << " against " << exact);
+    REQUIRE_THAT(sp.tlsEnergy(), WithinRel(exact, 0.015));
+    REQUIRE(std::abs(std::hypot(sp.delta, sp.delta0) / exact - 1.0) > 0.04);
+  }
 }
 
 TEST_CASE("A shallow double well is flagged", "[Tunneling]") {

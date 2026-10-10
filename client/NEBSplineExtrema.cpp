@@ -361,6 +361,7 @@ std::vector<readcon::ConFrame> pathToConFrames(
       head.push_back({"hbar_omega_product", split.hwProduct});
       head.push_back({"tunnel_action", split.action});
       head.push_back({"tunnel_splitting", split.delta0});
+      head.push_back({"tunnel_asymmetry_zpe", split.asymmetry()});
       head.push_back({"tls_energy", split.tlsEnergy()});
       head.push_back({"tunnel_deep_wells", split.deepWells ? 1.0 : 0.0});
     } catch (const std::invalid_argument &) {

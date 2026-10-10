@@ -85,7 +85,11 @@ struct Splitting {
   /// Both barriers stand above hbar omega; below that WKB is not the right
   /// tool and the number is reported but flagged.
   bool deepWells = false;
-  double tlsEnergy() const; ///< sqrt(delta^2 + delta0^2), eV
+  /// The diagonal term of the two-level Hamiltonian, the difference of the
+  /// two local ground states: delta + (hwProduct - hwReactant) / 2
+  /// (Anderson, Halperin and Varma 1972; Khomenko et al. 2020, SI eq. S9).
+  double asymmetry() const;
+  double tlsEnergy() const; ///< sqrt(asymmetry()^2 + delta0^2), eV
 };
 
 /// delta0 = (hbar omega / pi) exp(-S) with the Landau and Lifshitz

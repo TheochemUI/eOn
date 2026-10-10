@@ -167,7 +167,11 @@ double wkbAction(const Profile &p, double energy, int points) {
   return sum * h / kHbar;
 }
 
-double Splitting::tlsEnergy() const { return std::hypot(delta, delta0); }
+double Splitting::asymmetry() const {
+  return delta + 0.5 * (hwProduct - hwReactant);
+}
+
+double Splitting::tlsEnergy() const { return std::hypot(asymmetry(), delta0); }
 
 Splitting wkbSplitting(const Profile &p, double hwReactant, double hwProduct) {
   const auto &v = p.v();

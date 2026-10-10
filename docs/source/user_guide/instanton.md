@@ -37,12 +37,20 @@ The keys are:
 | `hbar_omega_reactant`, `hbar_omega_product` | Wells: {math}`\hbar\omega` of each well along the band, from a fit of {math}`a s^2 + b s^3` to the images within half the barrier |
 | `tunnel_action` | Action: {math}`S = \hbar^{-1} \int \sqrt{2 (V(s) - E)}\, ds` over the forbidden region |
 | `tunnel_splitting` | Estimate: {math}`\Delta_0 = (\hbar\omega / \pi) e^{-S}`, with {math}`\omega` the geometric mean of the wells |
+| `tunnel_asymmetry_zpe` | Asymmetry: {math}`\Delta = V_p - V_r + (\hbar\omega_p - \hbar\omega_r)/2`, the difference of the two local ground states |
 | `tls_energy` | Energy: {math}`\sqrt{\Delta^2 + \Delta_0^2}` |
 | `tunnel_deep_wells` | Flag: 1 when both barriers exceed {math}`\hbar\omega`; below that, WKB is the wrong tool |
 
 The profile between images is a monotone cubic, so it cannot dip below the
 data. The level {math}`E` is the higher of the two harmonic ground states. A
 structure without masses, or a band whose end is flat, leaves these keys out.
+
+{math}`\Delta` is the diagonal term of the two-level Hamiltonian
+{cite:p}`inst-andersonAnomalousLowtemperatureThermal1972`, the eq. S9 of
+{cite:t}`inst-khomenkoDepletionTwoLevelSystems2020`. A tilt changes the
+curvature of each well as well as its depth: on a quartic double well tilted
+by 1 meV, the difference of the minima alone puts the energy 6 percent above
+the exact gap, and {math}`\Delta` within 0.6 percent.
 
 WKB along the band is exact in one dimension up to its semiclassical error.
 When the path curves, the tunnelling cuts the corner, and the transverse
