@@ -226,8 +226,7 @@ TEST_CASE("An asymmetric pair tunnels from the higher ground level",
   REQUIRE_THAT(
       sp.referenceEnergy,
       WithinRel(std::max(v.front() + 0.5 * hwL, v.back() + 0.5 * hwR), 1e-12));
-  REQUIRE_THAT(sp.asymmetry(),
-               WithinRel(sp.delta + 0.5 * (hwR - hwL), 1e-12));
+  REQUIRE_THAT(sp.asymmetry(), WithinRel(sp.delta + 0.5 * (hwR - hwL), 1e-12));
   REQUIRE_THAT(sp.tlsEnergy(),
                WithinRel(std::hypot(sp.asymmetry(), sp.delta0), 1e-12));
 }
