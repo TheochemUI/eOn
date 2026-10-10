@@ -125,12 +125,25 @@ calculator groups the same way a NEB spreads its images.
 |---|---|
 | `tunnel_splitting_instanton` | Splitting: {math}`\Delta_0`, eV |
 | `instanton_action` | Action: {math}`(S - S_\text{well})/\hbar` |
-| `tls_energy_instanton` | Energy: {math}`\sqrt{\Delta^2 + \Delta_0^2}`, eV |
+| `tls_energy_instanton` | Energy: {math}`\sqrt{\Delta^2 + \Delta_0^2}` with {math}`\Delta` the zero-point asymmetry below, eV |
 | `tunnel_asymmetry` | Asymmetry: {math}`V(\text{product}) - V(\text{reactant})`, eV |
+| `tunnel_asymmetry_zpe` | Asymmetry of the local ground states: {math}`V_p - V_r + \tfrac{\hbar}{2}\left(\sum_k \omega_k^{p} - \sum_k \omega_k^{r}\right)` over every vibration of the two minimum Hessians, eV |
 | `instanton_temperature_K` | Temperature: {math}`1/(k_B \beta)` for the imaginary time used |
 | `instanton_mode_separation` | Separation: how well the kink's translation separates from the other modes |
 | `instanton_symmetric` | Symmetry: 1 when {math}`\beta|\Delta| < 0.1` |
 | `instanton_beta_asymmetry` | Magnitude: {math}`\beta|\Delta|` |
+
+Two minima of one energy can still hold different zero-point energies,
+when an isotope or the cage around a defect makes one well stiffer than the
+other. Then {math}`\Delta_0` is the tunnelling matrix element taken with the
+geometric mean of the two well kernels, and the levels split by
+{math}`\sqrt{\Delta^2 + \Delta_0^2}` with the harmonic zero-point
+difference in {math}`\Delta`
+{cite:p}`inst-jahrInstantonTheoryTunneling2020`. On a valley whose
+transverse stiffness differs by 10 percent between the wells, that
+difference splits the levels 140 times further than tunnelling does, and
+{math}`\sqrt{\Delta^2 + \Delta_0^2}` lands within 6 percent of the exact
+gap.
 
 The propagator ratio measures the splitting {math}`\Delta_0` when the two wells lie within
 a small fraction of {math}`k_B T` of each other. `instanton_symmetric = 0`

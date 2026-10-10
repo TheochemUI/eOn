@@ -441,6 +441,134 @@ TEST_CASE("The instanton cuts the corner the minimum energy path takes",
   REQUIRE_THAT(inst.delta0, WithinRel(exact, 0.2));
 }
 
+namespace {
+
+// V0 (x^2 - 1)^2 + (K / 2) (1 + kappa x) y^2 + eps x / 2 at unit mass. The
+// transverse stiffness differs between the wells by 2 kappa K, so their
+// zero-point energies differ too, and eps tilts one well below the other.
+// The y mode is harmonic at every x, so the lowest levels are those of the
+// one-dimensional V0 (x^2 - 1)^2 + eps x / 2 + hbar sqrt(K (1 + kappa x)) / 2
+// to 1e-5 of the gap.
+struct SkewedValley {
+  double v0, k, kappa, eps;
+  double value(const VectorXd &q) const {
+    const double x = q(0), y = q(1);
+    return v0 * (x * x - 1.0) * (x * x - 1.0) +
+           0.5 * k * (1.0 + kappa * x) * y * y + 0.5 * eps * x;
+  }
+  VectorXd gradient(const VectorXd &q) const {
+    const double x = q(0), y = q(1);
+    VectorXd g(2);
+    g << 4.0 * v0 * x * (x * x - 1.0) + 0.5 * k * kappa * y * y + 0.5 * eps,
+        k * (1.0 + kappa * x) * y;
+    return g;
+  }
+  MatrixXd hessian(const VectorXd &q) const {
+    const double x = q(0), y = q(1);
+    MatrixXd h(2, 2);
+    h(0, 0) = v0 * (12.0 * x * x - 4.0);
+    h(0, 1) = h(1, 0) = k * kappa * y;
+    h(1, 1) = k * (1.0 + kappa * x);
+    return h;
+  }
+  BatchPotential batch() const {
+    return [this](const std::vector<VectorXd> &q, std::vector<double> &v,
+                  std::vector<VectorXd> &g) {
+      v.resize(q.size());
+      g.resize(q.size());
+      for (size_t i = 0; i < q.size(); ++i) {
+        v[i] = value(q[i]);
+        g[i] = gradient(q[i]);
+      }
+    };
+  }
+  VectorXd minimum(double x) const {
+    for (int it = 0; it < 60; ++it) {
+      x -= (4.0 * v0 * x * (x * x - 1.0) + 0.5 * eps) /
+           (v0 * (12.0 * x * x - 4.0));
+    }
+    VectorXd q(2);
+    q << x, 0.0;
+    return q;
+  }
+  double adiabaticGap() const {
+    const int n = 1600;
+    const double half = 2.4;
+    const double h = 2.0 * half / (n - 1);
+    const double t = kHbar * kHbar / (2.0 * h * h);
+    Eigen::MatrixXd hmat = Eigen::MatrixXd::Zero(n, n);
+    for (int i = 0; i < n; ++i) {
+      const double x = -half + i * h;
+      hmat(i, i) = 2.0 * t + v0 * (x * x - 1.0) * (x * x - 1.0) +
+                   0.5 * eps * x +
+                   0.5 * kHbar * std::sqrt(k * (1.0 + kappa * x));
+      if (i + 1 < n) {
+        hmat(i, i + 1) = -t;
+        hmat(i + 1, i) = -t;
+      }
+    }
+    const Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> es(
+        hmat, Eigen::EigenvaluesOnly);
+    return es.eigenvalues()(1) - es.eigenvalues()(0);
+  }
+};
+
+} // namespace
+
+TEST_CASE("The zero-point difference sums the vibrations of each minimum",
+          "[Tunneling][Instanton]") {
+  // Two translations at zero (one slightly negative, as a finite-difference
+  // Hessian leaves it), then the vibrations; a soft negative mode at the end
+  // well is no vibration.
+  MatrixXd a = MatrixXd::Zero(5, 5);
+  MatrixXd b = MatrixXd::Zero(5, 5);
+  a.diagonal() << 1e-9, -2e-9, 4.0, 9.0, 1.0;
+  b.diagonal() << -1e-9, 3e-9, 4.41, 8.0, -0.25;
+  const double expected =
+      0.5 * kHbar * ((2.1 + std::sqrt(8.0)) - (2.0 + 3.0 + 1.0));
+  REQUIRE_THAT(zeroPointDifference(a, b, 2), WithinRel(expected, 1e-12));
+  REQUIRE_THAT(zeroPointDifference(b, a, 2), WithinRel(-expected, 1e-12));
+  REQUIRE_THAT(zeroPointDifference(a, a, 2),
+               Catch::Matchers::WithinAbs(0.0, 1e-15));
+  REQUIRE_THROWS_AS(zeroPointDifference(a, MatrixXd::Zero(4, 4), 0),
+                    std::invalid_argument);
+  REQUIRE_THROWS_AS(zeroPointDifference(a, b, 6), std::invalid_argument);
+}
+
+TEST_CASE("The instanton TLS energy carries the zero-point asymmetry of every "
+          "mode",
+          "[Tunneling][Instanton]") {
+  // Degenerate minima whose transverse stiffness differs by 10 percent: the
+  // transverse zero-point energies split the levels by 3 meV, 140 times the
+  // tunnelling splitting. hypot(dV, delta0) alone reads under 1 percent of
+  // the gap; with the harmonic zero-point difference the energy lands within
+  // the 6 percent the harmonic picture leaves.
+  const SkewedValley pes{0.12, 4.0, 0.05, 0.0};
+  const VectorXd a = pes.minimum(-1.0);
+  const VectorXd b = pes.minimum(1.0);
+  const double omega = pathOmega(pes.hessian(a), pes.hessian(b), a, b);
+  InstantonOptions opt;
+  opt.beads = 192;
+  opt.forceTolerance = 1e-7;
+  opt.maxIterations = 20000;
+  Instanton inst = optimizeInstanton(a, b, 30.0 / omega, {}, pes.batch(), opt);
+  REQUIRE(inst.converged);
+  REQUIRE(inst.symmetricEnough);
+  instantonSplitting(
+      inst, [&](long, const VectorXd &q) { return pes.hessian(q); },
+      pes.hessian(a), pes.hessian(b));
+  const double zpe = zeroPointDifference(pes.hessian(a), pes.hessian(b), 0);
+  REQUIRE_THAT(
+      zpe,
+      WithinRel(0.5 * kHbar * (std::sqrt(4.0 * 1.05) - std::sqrt(4.0 * 0.95)),
+                1e-10));
+  const double exact = pes.adiabaticGap();
+  CAPTURE(inst.delta0, zpe, exact);
+  REQUIRE_THAT(std::hypot(inst.asymmetry + zpe, inst.delta0),
+               WithinRel(exact, 0.08));
+  REQUIRE(std::hypot(inst.asymmetry, inst.delta0) < 0.01 * exact);
+}
+
 TEST_CASE("Instanton inputs are checked", "[Tunneling][Instanton]") {
   const CurvedValley pes{0.12, 4.0, 0.0};
   VectorXd a(2);

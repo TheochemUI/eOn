@@ -976,6 +976,29 @@ void instantonSplitting(Instanton &inst, const BeadHessian &hessian,
                 std::exp(0.5 * (logDetWell - logDetPrime) - inst.action);
 }
 
+double zeroPointDifference(const MatrixXd &hessStart, const MatrixXd &hessEnd,
+                           long rigidModes) {
+  if (hessStart.rows() != hessEnd.rows() || rigidModes < 0 ||
+      rigidModes > hessStart.rows()) {
+    throw std::invalid_argument("zeroPointDifference: Hessians of one size and "
+                                "a rigid count within it");
+  }
+  auto zeroPoint = [&](const MatrixXd &h) {
+    const Eigen::SelfAdjointEigenSolver<MatrixXd> es(0.5 * (h + h.transpose()),
+                                                     Eigen::EigenvaluesOnly);
+    std::vector<double> lam(es.eigenvalues().data(),
+                            es.eigenvalues().data() + es.eigenvalues().size());
+    std::sort(lam.begin(), lam.end(),
+              [](double a, double b) { return std::abs(a) < std::abs(b); });
+    double sum = 0.0;
+    for (size_t k = static_cast<size_t>(rigidModes); k < lam.size(); ++k) {
+      sum += std::sqrt(std::max(lam[k], 0.0));
+    }
+    return 0.5 * kHbar * sum;
+  };
+  return zeroPoint(hessEnd) - zeroPoint(hessStart);
+}
+
 double crossoverTemperature(const MatrixXd &hessSaddle) {
   const Eigen::SelfAdjointEigenSolver<MatrixXd> es(
       0.5 * (hessSaddle + hessSaddle.transpose()));

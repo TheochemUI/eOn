@@ -209,6 +209,17 @@ Instanton optimizeInstanton(const VectorXd &start, const VectorXd &end,
 void instantonSplitting(Instanton &inst, const BeadHessian &hessian,
                         const MatrixXd &hessStart, const MatrixXd &hessEnd);
 
+/// Harmonic zero-point energy of the end minimum minus that of the start, in
+/// eV: (hbar / 2) times the difference of the sums of the vibrational
+/// frequencies of the two mass-weighted Hessians. At each, the rigidModes
+/// eigenvalues nearest zero are left out, and another eigenvalue below zero
+/// is no vibration. Added to V(end) - V(start) it is the diagonal term of
+/// the two-level Hamiltonian, the asymmetry of the local ground states
+/// (Anderson, Halperin and Varma 1972; Jahr, Laude and Richardson, J. Chem.
+/// Phys. 153, 094101 (2020)).
+double zeroPointDifference(const MatrixXd &hessStart, const MatrixXd &hessEnd,
+                           long rigidModes);
+
 // Ring-polymer instanton for the thermal rate below the crossover
 // temperature (Richardson and Althorpe, J. Chem. Phys. 131, 214106 (2009)).
 //

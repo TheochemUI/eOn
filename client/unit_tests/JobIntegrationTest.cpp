@@ -2964,6 +2964,12 @@ force_tolerance = 1e-3
   REQUIRE(std::isfinite(std::stod(results.at("instanton_action"))));
   REQUIRE_THAT(std::stod(results.at("tunnel_asymmetry")),
                Catch::Matchers::WithinAbs(0.8634, 1e-3));
+  // The two minima hold different zero-point energies as well.
+  const double zpe = std::stod(results.at("tunnel_asymmetry_zpe")) -
+                     std::stod(results.at("tunnel_asymmetry"));
+  CAPTURE(zpe);
+  REQUIRE(std::isfinite(zpe));
+  REQUIRE(std::abs(zpe) > 1e-4);
   REQUIRE(std::stod(results.at("instanton_symmetric")) == 0.0);
   REQUIRE(std::stod(results.at("instanton_beta_asymmetry")) > 0.1);
   REQUIRE(results.count("tunnel_splitting_instanton") == 0);
@@ -2971,6 +2977,7 @@ force_tolerance = 1e-3
   const auto dat = workdir / "results.dat";
   REQUIRE(resultsDatKeyCount(dat, "instanton_beta_asymmetry") == 1);
   REQUIRE(resultsDatKeyCount(dat, "instanton_symmetric") == 1);
+  REQUIRE(resultsDatKeyCount(dat, "tunnel_asymmetry_zpe") == 1);
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,

@@ -1092,6 +1092,10 @@ std::vector<std::string> InstantonJob::run(void) {
 
   const MatrixXd hStart = hessianAt(qStart);
   const MatrixXd hEnd = hessianAt(qEnd);
+  // Both Hessians lost the same rigid motions. The zero-point energy the
+  // product well holds above the reactant's belongs in the asymmetry.
+  const double zeroPoint = tunneling::zeroPointDifference(
+      hStart, hEnd, mw.rigidBasis(*reactant, rotationZero).cols());
   const double omega = tunneling::pathOmega(hStart, hEnd, qStart, qEnd);
   const double betaHbar = o.beta_hbar_omega / omega;
   tunneling::InstantonOptions opt;
@@ -1156,6 +1160,7 @@ std::vector<std::string> InstantonJob::run(void) {
 
   // The path, one frame per bead; the splitting on the first frame.
   const double kelvin = tunneling::kHbar / (tunneling::kBoltzmann * betaHbar);
+  const double asymmetryZpe = inst.asymmetry + zeroPoint;
   Matter frame(*reactant);
   for (size_t j = 0; j < inst.path.size(); ++j) {
     mw.place(inst.path[j], frame);
@@ -1173,10 +1178,11 @@ std::vector<std::string> InstantonJob::run(void) {
       meta.scalars.push_back(
           {"instanton_converged", inst.converged ? 1.0 : 0.0});
       meta.scalars.push_back({"tunnel_asymmetry", inst.asymmetry});
+      meta.scalars.push_back({"tunnel_asymmetry_zpe", asymmetryZpe});
       if (splitOk) {
         meta.scalars.push_back({"tunnel_splitting_instanton", inst.delta0});
         meta.scalars.push_back(
-            {"tls_energy_instanton", std::hypot(inst.asymmetry, inst.delta0)});
+            {"tls_energy_instanton", std::hypot(asymmetryZpe, inst.delta0)});
         meta.scalars.push_back({"instanton_zero_mode", inst.zeroMode});
         meta.scalars.push_back(
             {"instanton_mode_separation", inst.modeSeparation});
@@ -1211,11 +1217,14 @@ std::vector<std::string> InstantonJob::run(void) {
   env.extras.emplace_back("instanton_action", inst.action);
   env.extras.emplace_back("instanton_temperature_K", kelvin);
   env.extras.emplace_back("tunnel_asymmetry", inst.asymmetry);
+  env.extras.emplace_back("tunnel_asymmetry_zpe", asymmetryZpe);
   env.extras.emplace_back("instanton_beta_asymmetry", betaAsymmetry);
   env.extras.emplace_back("instanton_symmetric",
                           inst.symmetricEnough ? 1.0 : 0.0);
   if (splitOk) {
     env.extras.emplace_back("tunnel_splitting_instanton", inst.delta0);
+    env.extras.emplace_back("tls_energy_instanton",
+                            std::hypot(asymmetryZpe, inst.delta0));
     env.extras.emplace_back("instanton_mode_separation", inst.modeSeparation);
   }
   env.writeResultsDat(resultsFile);
