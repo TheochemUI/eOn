@@ -1,0 +1,1 @@
+The NEB solves the band's double well exactly in one dimension (fourth-order finite differences along the mass-weighted path, walls fitted or sampled with `tunnel_wall_points`) and writes `tls_energy_dvr`, `tunnel_asymmetry_dvr` and `tunnel_splitting_dvr`.

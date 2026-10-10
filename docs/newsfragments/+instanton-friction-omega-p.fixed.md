@@ -1,0 +1,1 @@
+The friction bath uses omega_P = 1 / (beta_N hbar) in its frequencies, routes the search to minimum-mode following, and enters the rate through the dense ring Hessian and Z_r; a bead-wise bath skips the bead ladder.

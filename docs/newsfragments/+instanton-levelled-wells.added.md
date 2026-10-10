@@ -1,0 +1,1 @@
+`[Instanton] symmetrize = true` (the default) computes the splitting of wells of different depth on a surface levelled by a quintic switch between them, which keeps both minima and their Hessians, and reports the TLS energy from that delta0 and the zero-point-corrected asymmetry.
