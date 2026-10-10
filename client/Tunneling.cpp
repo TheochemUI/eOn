@@ -4604,6 +4604,38 @@ double parabolicFactor(double temperature, double crossover) {
   return phase / s;
 }
 
+namespace {
+
+// Harmonic TST needs a minimum, every vibration positive, and a first-order
+// saddle, one unstable mode and the rest positive; the rigid modes are
+// those nearestZero flagged. A second negative curvature taken by its
+// absolute value would hand back a finite rate for the wrong stationary
+// point.
+void requireHarmonicStationaryPoints(const VectorXd &lr,
+                                     const std::vector<bool> &rigidR,
+                                     const VectorXd &ls,
+                                     const std::vector<bool> &rigidS,
+                                     const char *what) {
+  for (long m = 0; m < lr.size(); ++m) {
+    if (!rigidR[static_cast<size_t>(m)] && !(lr(m) > 0.0)) {
+      throw std::invalid_argument(
+          std::string(what) +
+          ": the reactant Hessian has a vibration that is not positive, so "
+          "the reactant is no minimum");
+    }
+  }
+  for (long m = 1; m < ls.size(); ++m) {
+    if (!rigidS[static_cast<size_t>(m)] && !(ls(m) > 0.0)) {
+      throw std::invalid_argument(
+          std::string(what) +
+          ": the saddle Hessian has a second curvature that is not "
+          "positive, so the saddle is not of first order");
+    }
+  }
+}
+
+} // namespace
+
 double harmonicTstLogRate(const MatrixXd &hessReactant,
                           const MatrixXd &hessSaddle, double beta,
                           double barrier, long rigidModes) {
@@ -4627,6 +4659,7 @@ double harmonicTstLogRate(const MatrixXd &hessReactant,
   }
   const std::vector<bool> rigidR = nearestZero(lr, rigidModes);
   const std::vector<bool> rigidS = nearestZero(ls, rigidModes, 1);
+  requireHarmonicStationaryPoints(lr, rigidR, ls, rigidS, "harmonicTstLogRate");
   double logRatio = 0.0;
   for (long m = 0; m < lr.size(); ++m) {
     if (!rigidR[static_cast<size_t>(m)]) {
@@ -4667,6 +4700,8 @@ double quantumHarmonicTstLogRate(const MatrixXd &hessReactant,
   }
   const std::vector<bool> rigidR = nearestZero(lr, rigidModes);
   const std::vector<bool> rigidS = nearestZero(ls, rigidModes, 1);
+  requireHarmonicStationaryPoints(lr, rigidR, ls, rigidS,
+                                  "quantumHarmonicTstLogRate");
   const double bh = beta * kHbar;
   // ln(2 sinh(x / 2)) without overflow for large x, and without the
   // cancellation of 1 - exp(-x) for small x.

@@ -353,7 +353,9 @@ double parabolicFactor(double temperature, double crossover);
 /// ln(k) for classical harmonic transition-state theory, k in 1/time.
 /// rigidModes eigenvalues nearest zero are omitted at each Hessian. The
 /// saddle's most negative eigenvalue is the barrier mode and leaves the
-/// product.
+/// product. Throws std::invalid_argument when another reactant or saddle
+/// eigenvalue off the rigid modes is not positive: the reactant is then no
+/// minimum, or the saddle not of first order.
 double harmonicTstLogRate(const MatrixXd &hessReactant,
                           const MatrixXd &hessSaddle, double beta,
                           double barrier, long rigidModes);
@@ -363,9 +365,11 @@ double harmonicTstLogRate(const MatrixXd &hessReactant,
 /// prod'_s 2 sinh(beta hbar omega_s / 2) exp(-beta barrier), the
 /// zero-point and quantised partition functions of every bound mode; the
 /// saddle's unstable mode leaves the product. Times the parabolic factor it
-/// is the N -> infinity ring-polymer rate above T_c, so it joins the
-/// instanton rate at the crossover; its high-temperature limit is
-/// harmonicTstLogRate.
+/// is the steepest-descent ring-polymer rate above T_c as N -> infinity.
+/// That factor diverges at T_c, as the instanton's fluctuation prefactor
+/// does from below, so neither rate holds near the crossover and the two
+/// do not join there. Its high-temperature limit is harmonicTstLogRate.
+/// Checks the Hessians as harmonicTstLogRate does.
 double quantumHarmonicTstLogRate(const MatrixXd &hessReactant,
                                  const MatrixXd &hessSaddle, double beta,
                                  double barrier, long rigidModes);

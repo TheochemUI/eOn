@@ -680,13 +680,15 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
           }
           wrote = true;
         } catch (const std::exception &ex) {
-          EONC_LOG_ERROR("[Instanton] {}", ex.what());
+          EONC_LOG_ERROR("[Instanton] no parabolic rate at {:.4g} K: {}",
+                         temperature, ex.what());
         }
-      }
-      if (!wrote) {
+      } else {
         EONC_LOG_ERROR("[Instanton] {:.4g} K is at the crossover temperature "
                        "{:.4g} K; the parabolic factor diverges there",
                        temperature, tc);
+      }
+      if (!wrote) {
         table << temperature << ' ' << tc << ' ' << o.beads
               << " 0 0 nan 0 nan nan nan nan " << wkbLog << " nan nan\n";
         rateFailed = true;
@@ -878,7 +880,7 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
                          "not one: the ring is not a first-order saddle of U_N",
                          inst.negativeModes);
         }
-      } catch (const std::runtime_error &ex) {
+      } catch (const std::exception &ex) {
         EONC_LOG_ERROR("[Instanton] {}", ex.what());
       }
     }

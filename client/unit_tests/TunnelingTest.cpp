@@ -1437,6 +1437,43 @@ TEST_CASE("Quantum harmonic TST has its closed form and the classical limit",
                Catch::Matchers::WithinAbs(0.0, 1e-6));
 }
 
+// A reactant with a negative vibration is no minimum, and a saddle with a
+// second negative curvature is not of first order: both refuse, where the
+// logarithm of a negative curvature was NaN and its absolute value a
+// finite rate for the wrong stationary point.
+TEST_CASE("Harmonic TST refuses a reactant or a saddle of the wrong index",
+          "[Tunneling][Instanton]") {
+  MatrixXd hr = MatrixXd::Zero(2, 2);
+  hr(0, 0) = 4.0;
+  hr(1, 1) = 9.0;
+  MatrixXd hs = MatrixXd::Zero(2, 2);
+  hs(0, 0) = -2.0;
+  hs(1, 1) = 1.0;
+  MatrixXd notMinimum = hr;
+  notMinimum(1, 1) = -0.5;
+  MatrixXd secondOrder = hs;
+  secondOrder(1, 1) = -0.25;
+  for (const double beta : {5.0, 40.0}) {
+    REQUIRE_THROWS_AS(harmonicTstLogRate(notMinimum, hs, beta, 0.3, 0),
+                      std::invalid_argument);
+    REQUIRE_THROWS_AS(quantumHarmonicTstLogRate(notMinimum, hs, beta, 0.3, 0),
+                      std::invalid_argument);
+    REQUIRE_THROWS_AS(harmonicTstLogRate(hr, secondOrder, beta, 0.3, 0),
+                      std::invalid_argument);
+    REQUIRE_THROWS_AS(quantumHarmonicTstLogRate(hr, secondOrder, beta, 0.3, 0),
+                      std::invalid_argument);
+  }
+  // A rigid mode may sit just below zero; it leaves before the check.
+  MatrixXd rigid = MatrixXd::Zero(3, 3);
+  rigid(0, 0) = -1e-9;
+  rigid.bottomRightCorner(2, 2) = hr;
+  MatrixXd rigidSaddle = MatrixXd::Zero(3, 3);
+  rigidSaddle(0, 0) = -2.0;
+  rigidSaddle(1, 1) = -1e-9;
+  rigidSaddle(2, 2) = 1.0;
+  REQUIRE(std::isfinite(harmonicTstLogRate(rigid, rigidSaddle, 5.0, 0.3, 1)));
+}
+
 // A soft barrier: the saddle's unstable curvature, -1e-8, lies closer to
 // zero than the finite-difference residue of its rigid mode, 1e-6. The
 // rigid mode is the one to leave, and the barrier mode leaves as the
