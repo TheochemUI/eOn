@@ -24,6 +24,13 @@ namespace eonc {
 static_assert(sizeof(Parameters) == sizeof(std::unique_ptr<int>),
               "Parameters layout is the Impl pointer");
 
+Parameters::Parameters(FieldDefaults)
+    : impl_(std::make_unique<Impl>()) {}
+
+Parameters ParametersLoadAccess::field_defaults() {
+  return Parameters(Parameters::FieldDefaults{});
+}
+
 Parameters::~Parameters() = default;
 Parameters::Parameters(Parameters &&) noexcept = default;
 Parameters &Parameters::operator=(Parameters &&) noexcept = default;
