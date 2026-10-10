@@ -755,6 +755,17 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
                   "iterations{}",
                   temperature, inst.ringPotential, inst.iterations,
                   inst.converged ? "" : " (not converged)");
+    // A cooling walk whose budget ran out early returns the coldest ring
+    // it reached, which belongs to that stage's temperature.
+    const bool reached =
+        std::abs(inst.temperature - temperature) <= 1e-9 * temperature;
+    if (!reached) {
+      EONC_LOG_WARNING("[Instanton] {:.4g} K: the cooling walk stopped at "
+                       "{:.4g} K; that ring is written under its own "
+                       "temperature",
+                       temperature, inst.temperature);
+      inst.converged = false;
+    }
 
     if (inst.collapsed) {
       EONC_LOG_ERROR("[Instanton] {:.4g} K: the ring collapsed after {} "
@@ -843,8 +854,13 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
                     inst.classicalLogRate - logSecond, inst.effectiveBarrier);
     }
     table << temperature << ' ' << tc << ' ' << o.beads << ' '
-          << (inst.converged ? 1 : 0) << ' ' << inst.iterations << ' '
-          << inst.ringPotential << ' ' << inst.negativeModes << ' ';
+          << (inst.converged ? 1 : 0) << ' ' << inst.iterations << ' ';
+    if (reached) {
+      table << inst.ringPotential;
+    } else {
+      table << "nan";
+    }
+    table << ' ' << inst.negativeModes << ' ';
     if (rateOk) {
       table << inst.logRate - logSecond << ' ' << inst.rate << ' '
             << inst.classicalLogRate - logSecond << ' '
@@ -877,7 +893,8 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
               {"imaginary_time_fs", static_cast<double>(j) * inst.betaN *
                                         tunneling::kHbar * kTimeUnitFs}};
           if (j == 0) {
-            meta.scalars.push_back({"instanton_temperature_K", temperature});
+            meta.scalars.push_back(
+                {"instanton_temperature_K", inst.temperature});
             meta.scalars.push_back({"instanton_crossover_K", tc});
             meta.scalars.push_back(
                 {"instanton_converged", inst.converged ? 1.0 : 0.0});
