@@ -17,10 +17,10 @@
 #include "eon/potentials/LAMMPS/LammpsLoader.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/potentials/LAMMPS/LAMMPSPot.h"
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
-#include "eon/potentials/LAMMPS/LAMMPSPot.h"
 
 #include <cmath>
 #include <cstdlib>
@@ -123,7 +123,8 @@ void runLammpsForce(const eonc::Parameters &params, MockLammpsLoader &mock,
   REQUIRE(std::isfinite(energy));
 }
 
-TEST_CASE("real LAMMPS units convert a finite stress", "[lammps][worker][real]") {
+TEST_CASE("real LAMMPS units convert a finite stress",
+          "[lammps][worker][real]") {
   namespace fs = std::filesystem;
   const fs::path previous = fs::current_path();
   const fs::path dir = fs::temp_directory_path() / "eon-lmp-real";
@@ -317,7 +318,8 @@ TEST_CASE("LAMMPSPot Morse pair returns a finite energy", "[lammps][force]") {
 
   struct Cwd {
     fs::path previous;
-    explicit Cwd(const fs::path &next) : previous(fs::current_path()) {
+    explicit Cwd(const fs::path &next)
+        : previous(fs::current_path()) {
       fs::current_path(next);
     }
     ~Cwd() {

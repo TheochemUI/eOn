@@ -358,10 +358,9 @@ TEST_CASE("Parameters INI reads the optional potential sections",
   REQUIRE(expr.expr_options().terms == "pair");
 
   Parameters mopac;
-  REQUIRE(mopac.load_ini_text(
-              "[Potential]\npotential = mopac\n"
-              "[MOPACPot]\ncharge = -1\nspin = 1\nmodel = 2\n"
-              "engine_path = libmopac.so\n") == 0);
+  REQUIRE(mopac.load_ini_text("[Potential]\npotential = mopac\n"
+                              "[MOPACPot]\ncharge = -1\nspin = 1\nmodel = 2\n"
+                              "engine_path = libmopac.so\n") == 0);
   REQUIRE(mopac.mopac_options().charge == -1);
   REQUIRE(mopac.mopac_options().engine_path == "libmopac.so");
 

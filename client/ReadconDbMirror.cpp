@@ -34,7 +34,7 @@ extern "C" int rkrdb_open(const char *, std::size_t *);
 // The mirror looks the symbol up with dlsym. Naming it here keeps the
 // linked libreadcon_db.so on the link line under --as-needed.
 [[maybe_unused]] static int (*const kLinkedOpen)(const char *,
-                                                  std::size_t *) = rkrdb_open;
+                                                 std::size_t *) = rkrdb_open;
 #endif
 
 namespace eonc::io {
@@ -103,8 +103,8 @@ void clear_api(Api &out) {
 
 bool resolve_symbols(Api &out, void *handle) {
   out.open = reinterpret_cast<OpenFn>(dlsym(handle, "rkrdb_open"));
-  out.append_str = reinterpret_cast<AppendFn>(
-      dlsym(handle, "rkrdb_append_trajectory_str"));
+  out.append_str =
+      reinterpret_cast<AppendFn>(dlsym(handle, "rkrdb_append_trajectory_str"));
   return out.open != nullptr && out.append_str != nullptr;
 }
 

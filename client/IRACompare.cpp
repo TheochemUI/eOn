@@ -369,10 +369,9 @@ IRACompare::alignReactantToProduct(Matter &reactant, const Matter &product,
   }
   const double *pos1 = nat1 > 0 ? reactant.getPositions().data() : nullptr;
   const double *pos2 = nat2 > 0 ? product.getPositions().data() : nullptr;
-  MatchResult result =
-      matchArrays(nat1, typ1.empty() ? nullptr : typ1.data(), pos1, nat2,
-                  typ2.empty() ? nullptr : typ2.data(), pos2, distThreshold,
-                  res);
+  MatchResult result = matchArrays(
+      nat1, typ1.empty() ? nullptr : typ1.data(), pos1, nat2,
+      typ2.empty() ? nullptr : typ2.data(), pos2, distThreshold, res);
   if (result.error != 0) {
     return result;
   }

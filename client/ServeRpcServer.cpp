@@ -22,11 +22,11 @@
  * eOn's Eigen-based AtomMatrix and rgpot's custom AtomMatrix.
  */
 
+#include "eon/ServeRpcServer.h"
 #include "RpcCapabilitiesProbe.h"
 #include "RpcServerHandshake.h"
 #include "eon/BaseStructures.h"
 #include "eon/EonLogger.h"
-#include "eon/ServeRpcServer.h"
 
 #include <atomic>
 #include <capnp/ez-rpc.h>

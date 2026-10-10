@@ -46,7 +46,8 @@ TEST_CASE("missing readcon-db leaves IoStatus unchanged", "[readcon-db]") {
   auto pot = eonc::helpers::sharePotential(
       eonc::helpers::makePotential(PotType::LJ, params));
   Matter matter(pot, params);
-  const eonc::io::IoStatus status = matter.con2matter(std::string("reactant.con"));
+  const eonc::io::IoStatus status =
+      matter.con2matter(std::string("reactant.con"));
   REQUIRE(status == eonc::io::IoStatus::Ok);
   REQUIRE_FALSE(eonc::io::readcon_db_mirror_ok());
 }
