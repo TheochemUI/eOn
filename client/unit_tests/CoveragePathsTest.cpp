@@ -13,24 +13,23 @@
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/ARTnSaddleSearch.h"
-#include "eon/libs/ARTn/ARTnResource.h"
 #include "eon/BasinHoppingJob.h"
 #include "eon/Davidson.h"
 #include "eon/Dynamics.h"
 #include "eon/DynamicsSaddleSearch.h"
 #include "eon/EpiCenters.h"
 #include "eon/ForceNorm.h"
-#include "eon/NEBForceProjection.h"
 #include "eon/GeometryAnalysis.h"
 #include "eon/GlobalOptimizationJob.h"
 #include "eon/HelperFunctions.h"
-#include "eon/ImprovedDimer.h"
 #include "eon/IRACompare.h"
-#include "eon/LORRotation.h"
+#include "eon/ImprovedDimer.h"
 #include "eon/InstantonJob.h"
+#include "eon/LORRotation.h"
 #include "eon/Matter.h"
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/MinimizationJob.h"
+#include "eon/NEBForceProjection.h"
 #include "eon/NEBInitialPaths.hpp"
 #include "eon/NEBOcinebController.h"
 #include "eon/NudgedElasticBand.h"
@@ -49,12 +48,13 @@
 #include "eon/TADJob.h"
 #include "eon/TestJob.h"
 #include "eon/Tunneling.h"
+#include "eon/libs/ARTn/ARTnResource.h"
 #include "eon/potentials/Metatomic/MetatomicLoader.h"
 #include "eon/potentials/PluginLoader.h"
-#include "eon/potentials/Rgpot/RgpotPot.h"
 #include "eon/potentials/Rgpot/GenericEngineLoader.h"
-#include "eon/potentials/Rgpot/RGPotEngine.h"
 #include "eon/potentials/Rgpot/MetatomicEngineLoader.h"
+#include "eon/potentials/Rgpot/RGPotEngine.h"
+#include "eon/potentials/Rgpot/RgpotPot.h"
 #include "eon/potentials/Rgpot/XTBEngineLoader.h"
 
 #include <cstdio>
@@ -939,8 +939,9 @@ multiplicity = 1
   REQUIRE(search.describeStatus(
               eonc::ARTnSaddleSearch::STATUS_BAD_MAX_ITERATIONS) ==
           "Too many iterations");
-  REQUIRE(search.describeStatus(eonc::ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR) ==
-          "ARTn backend error");
+  REQUIRE(
+      search.describeStatus(eonc::ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR) ==
+      "ARTn backend error");
   REQUIRE(search.describeStatus(99) == "Unknown status");
 }
 
@@ -1108,8 +1109,8 @@ TEST_CASE("short accelerated dynamics records a transition",
 }
 
 struct RefineProbe : eonc::TADJob {
-  using TADJob::TADJob;
   using eonc::ReplicaDynamicsJob::refine;
+  using TADJob::TADJob;
 };
 
 TEST_CASE("band tangents and a transition refine stay finite",
@@ -1129,8 +1130,7 @@ TEST_CASE("band tangents and a transition refine stay finite",
   AtomMatrix force = AtomMatrix::Ones(4, 3);
   const AtomMatrix perp = eonc::neb::forcePerp(force, tangent);
   REQUIRE(perp.allFinite());
-  const AtomMatrix climb =
-      eonc::neb::climbingImageForce(force, tangent, perp);
+  const AtomMatrix climb = eonc::neb::climbingImageForce(force, tangent, perp);
   REQUIRE(climb.allFinite());
   const AtomMatrix dneb = eonc::neb::computeDNEB(force, tangent, perp, true);
   REQUIRE(dneb.allFinite());
@@ -1326,11 +1326,12 @@ TEST_CASE("a band with the hybrid dimer takes two steps", "[neb][mmf]") {
   auto neb =
       std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
   const auto status = neb->compute();
-  const bool known = status == NudgedElasticBand::NEBStatus::GOOD ||
-                     status == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS ||
-                     status == NudgedElasticBand::NEBStatus::RUNNING ||
-                     status == NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY ||
-                     status == NudgedElasticBand::NEBStatus::INIT;
+  const bool known =
+      status == NudgedElasticBand::NEBStatus::GOOD ||
+      status == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS ||
+      status == NudgedElasticBand::NEBStatus::RUNNING ||
+      status == NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY ||
+      status == NudgedElasticBand::NEBStatus::INIT;
   REQUIRE(known);
 }
 
@@ -1359,11 +1360,12 @@ TEST_CASE("a solid-state band takes one cell step", "[neb][solid]") {
       std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
   REQUIRE(neb->solidState());
   const auto status = neb->compute();
-  const bool known = status == NudgedElasticBand::NEBStatus::GOOD ||
-                     status == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS ||
-                     status == NudgedElasticBand::NEBStatus::RUNNING ||
-                     status == NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY ||
-                     status == NudgedElasticBand::NEBStatus::INIT;
+  const bool known =
+      status == NudgedElasticBand::NEBStatus::GOOD ||
+      status == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS ||
+      status == NudgedElasticBand::NEBStatus::RUNNING ||
+      status == NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY ||
+      status == NudgedElasticBand::NEBStatus::INIT;
   REQUIRE(known);
 }
 
@@ -1481,7 +1483,8 @@ TEST_CASE("improved dimer batches the centre and the forward image",
 TEST_CASE("basin hopping writes a unique minimum from a random start",
           "[job][basin_hopping]") {
   Workdir work;
-  std::filesystem::copy_file(work.dir() / "reactant.con", work.dir() / "pos.con",
+  std::filesystem::copy_file(work.dir() / "reactant.con",
+                             work.dir() / "pos.con",
                              std::filesystem::copy_options::overwrite_existing);
   Parameters params = ljParams();
   ParametersLoadAccess::main_options(params).job = JobType::Basin_Hopping;
@@ -1591,10 +1594,11 @@ TEST_CASE("a doubly nudged band projects one spring step", "[neb][dneb]") {
   auto neb =
       std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
   const auto status = neb->compute();
-  const bool known = status == NudgedElasticBand::NEBStatus::GOOD ||
-                     status == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS ||
-                     status == NudgedElasticBand::NEBStatus::RUNNING ||
-                     status == NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY;
+  const bool known =
+      status == NudgedElasticBand::NEBStatus::GOOD ||
+      status == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS ||
+      status == NudgedElasticBand::NEBStatus::RUNNING ||
+      status == NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY;
   REQUIRE(known);
   REQUIRE(std::isfinite(neb->path[1]->getPotentialEnergy()));
 }
@@ -1609,7 +1613,8 @@ TEST_CASE("eonclient stops when the parameter file is missing",
   Workdir work;
   char *argv[] = {const_cast<char *>(client), nullptr};
   pid_t pid = 0;
-  const int spawned = posix_spawn(&pid, client, nullptr, nullptr, argv, environ);
+  const int spawned =
+      posix_spawn(&pid, client, nullptr, nullptr, argv, environ);
   REQUIRE(spawned == 0);
   int status = 0;
   REQUIRE(waitpid(pid, &status, 0) > 0);
@@ -1687,7 +1692,8 @@ TEST_CASE("const parameter views are readable", "[parameters][coverage]") {
 }
 
 #ifdef WITH_RGPOT
-TEST_CASE("instanton batches beads on a cpmd engine", "[job][instanton][cpmd]") {
+TEST_CASE("instanton batches beads on a cpmd engine",
+          "[job][instanton][cpmd]") {
   const char *cpmd = std::getenv("CPMDC_LIBRARY");
   if (cpmd == nullptr || !std::filesystem::exists(cpmd)) {
     return;
@@ -1775,8 +1781,8 @@ TEST_CASE("a recorded replica buffer refines the crossing",
   ParametersLoadAccess::parallel_replica_options(params).record_interval = 1.0;
   ParametersLoadAccess::structure_comparison_options(params)
       .distance_difference = 1.0e-8;
-  ParametersLoadAccess::structure_comparison_options(params).remove_translation =
-      false;
+  ParametersLoadAccess::structure_comparison_options(params)
+      .remove_translation = false;
   ParametersLoadAccess::structure_comparison_options(params).check_rotation =
       false;
   auto pot = eonc::helpers::sharePotential(
@@ -1854,9 +1860,8 @@ TEST_CASE("rejected parameter text names the field", "[parameters][coverage]") {
   REQUIRE_THROWS_AS(mode.load_ini_text("[Instanton]\nmode = banana\n"),
                     std::invalid_argument);
   Parameters friction;
-  REQUIRE_THROWS_AS(
-      friction.load_ini_text("[Instanton]\nfriction = sticky\n"),
-      std::invalid_argument);
+  REQUIRE_THROWS_AS(friction.load_ini_text("[Instanton]\nfriction = sticky\n"),
+                    std::invalid_argument);
   Parameters hessians;
   REQUIRE_THROWS_AS(
       hessians.load_ini_text("[Instanton]\ninitial_hessians = guessed\n"),
@@ -1869,8 +1874,9 @@ TEST_CASE("path integral constructors reject an empty ring",
   using eonc::pathintegral::RingPolymer;
   using eonc::pathintegral::Springs;
   using eonc::pathintegral::Thermostat;
-  REQUIRE_THROWS_AS(eonc::pathintegral::requireTrotterSprings("eco", "instanton"),
-                    std::invalid_argument);
+  REQUIRE_THROWS_AS(
+      eonc::pathintegral::requireTrotterSprings("eco", "instanton"),
+      std::invalid_argument);
   REQUIRE_THROWS_AS(eonc::pathintegral::trotterEigenvalues(0),
                     std::invalid_argument);
   REQUIRE_THROWS_AS(eonc::pathintegral::ecoEigenvalues(4, 0.0),
@@ -1971,8 +1977,7 @@ TEST_CASE("a surrogate potential fills free-atom forces",
   REQUIRE(matter->getForces().allFinite());
 }
 
-TEST_CASE("a mass-weighted manifold reads free-atom masses",
-          "[optim][xtsci]") {
+TEST_CASE("a mass-weighted manifold reads free-atom masses", "[optim][xtsci]") {
   Workdir work;
   static_cast<void>(work);
   Parameters params = ljParams();
@@ -2085,7 +2090,8 @@ TEST_CASE("minimization resumes from a checkpoint when one is present",
           "[job][minimization]") {
   Workdir work;
   static_cast<void>(work);
-  std::filesystem::copy_file(work.dir() / "reactant.con", work.dir() / "pos.con",
+  std::filesystem::copy_file(work.dir() / "reactant.con",
+                             work.dir() / "pos.con",
                              std::filesystem::copy_options::overwrite_existing);
   Parameters params = ljParams();
   ParametersLoadAccess::optimizer_options(params).max_iterations = 1;
@@ -2134,8 +2140,7 @@ TEST_CASE("Davidson reports a curvature after two iterations",
   static_cast<void>(work);
   Parameters params = ljParams();
   ParametersLoadAccess::davidson_options(params).max_iterations = 2;
-  ParametersLoadAccess::davidson_options(params).diagonal_preconditioner =
-      true;
+  ParametersLoadAccess::davidson_options(params).diagonal_preconditioner = true;
   auto pot = eonc::helpers::sharePotential(
       eonc::helpers::makePotential(PotType::LJ, params));
   auto matter = std::make_shared<Matter>(pot, params);
@@ -2152,7 +2157,8 @@ namespace {
 struct IsolatedHarmonic final : Potential {
   AtomMatrix ref;
   explicit IsolatedHarmonic(const Parameters &p, AtomMatrix reference)
-      : Potential(PotType::LJ, p), ref(std::move(reference)) {}
+      : Potential(PotType::LJ, p),
+        ref(std::move(reference)) {}
   using Potential::force;
   void force(long nAtoms, const double *positions, const int *, double *forces,
              double *energy, double *variance, const double *) override {
@@ -2332,7 +2338,8 @@ TEST_CASE("an unknown displacement algorithm is rejected",
           "[job][basin_hopping]") {
   Workdir work;
   static_cast<void>(work);
-  std::filesystem::copy_file(work.dir() / "reactant.con", work.dir() / "pos.con",
+  std::filesystem::copy_file(work.dir() / "reactant.con",
+                             work.dir() / "pos.con",
                              std::filesystem::copy_options::overwrite_existing);
   Parameters params = ljParams();
   ParametersLoadAccess::main_options(params).job = JobType::Basin_Hopping;
@@ -2390,9 +2397,9 @@ TEST_CASE("a climb writes frames and stops when atoms leave the state",
 TEST_CASE("rejected instanton lists name the bad field",
           "[parameters][instanton]") {
   Parameters temperatures;
-  REQUIRE_THROWS_AS(temperatures.load_ini_text(
-                        "[Instanton]\ntemperatures = 300, cold\n"),
-                    std::invalid_argument);
+  REQUIRE_THROWS_AS(
+      temperatures.load_ini_text("[Instanton]\ntemperatures = 300, cold\n"),
+      std::invalid_argument);
   Parameters weights;
   REQUIRE_THROWS_AS(
       weights.load_ini_text("[Instanton]\ndiscretization = 1, heavy\n"),
@@ -2451,8 +2458,7 @@ TEST_CASE("a two-coordinate cluster takes the planar rotation",
   REQUIRE(std::isfinite(lor.getEigenvalue()));
 }
 
-TEST_CASE("a batching dimer keeps a probed forward image",
-          "[dimer][batch]") {
+TEST_CASE("a batching dimer keeps a probed forward image", "[dimer][batch]") {
   Workdir work;
   static_cast<void>(work);
   Parameters params = ljParams();
@@ -2479,7 +2485,8 @@ TEST_CASE("a rejected hop jumps and pushes the atoms apart",
           "[job][basin_hopping]") {
   Workdir work;
   static_cast<void>(work);
-  std::filesystem::copy_file(work.dir() / "reactant.con", work.dir() / "pos.con",
+  std::filesystem::copy_file(work.dir() / "reactant.con",
+                             work.dir() / "pos.con",
                              std::filesystem::copy_options::overwrite_existing);
   Parameters params = ljParams();
   ParametersLoadAccess::main_options(params).temperature = 1.0e-8;
@@ -2498,8 +2505,7 @@ TEST_CASE("a rejected hop jumps and pushes the atoms apart",
   REQUIRE_FALSE(files.empty());
 }
 
-TEST_CASE("unknown hopping feedback stops the optimizer",
-          "[job][global_opt]") {
+TEST_CASE("unknown hopping feedback stops the optimizer", "[job][global_opt]") {
   Workdir work;
   static_cast<void>(work);
   Parameters params = ljParams();
@@ -2513,7 +2519,8 @@ TEST_CASE("unknown hopping feedback stops the optimizer",
 namespace {
 
 struct CubicShear final : Potential {
-  explicit CubicShear(const Parameters &p) : Potential(PotType::LJ, p) {}
+  explicit CubicShear(const Parameters &p)
+      : Potential(PotType::LJ, p) {}
   using Potential::force;
   void force(long nAtoms, const double *positions, const int *, double *forces,
              double *energy, double *variance, const double *) override {
@@ -2532,7 +2539,8 @@ struct CubicShear final : Potential {
 };
 
 struct Shear final : Potential {
-  explicit Shear(const Parameters &p) : Potential(PotType::LJ, p) {}
+  explicit Shear(const Parameters &p)
+      : Potential(PotType::LJ, p) {}
   using Potential::force;
   void force(long nAtoms, const double *positions, const int *, double *forces,
              double *energy, double *variance, const double *) override {
@@ -2600,8 +2608,9 @@ TEST_CASE("a planar shear takes the two-by-two rotation fallback",
   REQUIRE(std::isfinite(cubicLor.getEigenvalue()));
 }
 
-TEST_CASE("a nudged band matches endpoints and climbs with the doubly nudged force",
-          "[neb][dneb][match]") {
+TEST_CASE(
+    "a nudged band matches endpoints and climbs with the doubly nudged force",
+    "[neb][dneb][match]") {
   Workdir work;
   static_cast<void>(work);
   Parameters params = ljParams();
@@ -2714,7 +2723,9 @@ struct FakeARTn final : eonc::IARTnResource {
     }
   }
   [[nodiscard]] bool is_loaded() const noexcept override { return true; }
-  [[nodiscard]] artn_create_fn get_create_fn() const override { return artCreate; }
+  [[nodiscard]] artn_create_fn get_create_fn() const override {
+    return artCreate;
+  }
   [[nodiscard]] setup_artn_fn get_setup_fn() const override { return artSetup; }
   [[nodiscard]] artn_fn get_artn_fn() const override { return nullptr; }
   [[nodiscard]] artn_destroy_fn get_destroy_fn() const override {
@@ -2723,22 +2734,29 @@ struct FakeARTn final : eonc::IARTnResource {
   [[nodiscard]] set_param_fn get_set_param_fn() const override {
     return artSetParam;
   }
-  [[nodiscard]] get_param_fn get_get_param_fn() const override { return nullptr; }
+  [[nodiscard]] get_param_fn get_get_param_fn() const override {
+    return nullptr;
+  }
   [[nodiscard]] get_runparam_fn get_get_runparam_fn() const override {
     return nullptr;
   }
-  [[nodiscard]] get_data_fn get_get_data_fn() const override { return artGetData; }
+  [[nodiscard]] get_data_fn get_get_data_fn() const override {
+    return artGetData;
+  }
   [[nodiscard]] print_caller_fn get_print_caller_fn() const override {
     return nullptr;
   }
-  [[nodiscard]] artn_step_fn get_artn_step_fn() const override { return artStep; }
+  [[nodiscard]] artn_step_fn get_artn_step_fn() const override {
+    return artStep;
+  }
   [[nodiscard]] get_error_fn get_get_error_fn() const override {
     return artGetError;
   }
 };
 
 struct Inverted final : Potential {
-  explicit Inverted(const Parameters &p) : Potential(PotType::LJ, p) {}
+  explicit Inverted(const Parameters &p)
+      : Potential(PotType::LJ, p) {}
   using Potential::force;
   void force(long nAtoms, const double *positions, const int *, double *forces,
              double *energy, double *variance, const double *) override {
@@ -2780,7 +2798,8 @@ TEST_CASE("a stand-in activation search reports a saddle", "[saddle][artn]") {
   ParametersLoadAccess::artn_options(params).nperp_limitation = "1,2";
   ParametersLoadAccess::artn_options(params).filin = "no-such-artn.in";
   eonc::ARTnSaddleSearch missing(matter, pot, mode, params);
-  REQUIRE(missing.run(library) == eonc::ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR);
+  REQUIRE(missing.run(library) ==
+          eonc::ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR);
 
   ParametersLoadAccess::artn_options(params).filin = "";
   eonc::ARTnSaddleSearch setup(matter, pot, mode, params);
@@ -2844,8 +2863,8 @@ TEST_CASE("an image dependent band estimates a mode at every image",
   ParametersLoadAccess::debug_options(params).estimate_neb_eigenvalues = true;
   ParametersLoadAccess::neb_options(params).climbing_image.ocineb.use_mmf =
       true;
-  ParametersLoadAccess::neb_options(params).climbing_image.ocineb
-      .ci_stability_count = 0;
+  ParametersLoadAccess::neb_options(params)
+      .climbing_image.ocineb.ci_stability_count = 0;
   ParametersLoadAccess::neb_options(params).climbing_image.ocineb.max_steps = 1;
   ParametersLoadAccess::dimer_options(params).max_iterations = 1;
   ParametersLoadAccess::optimizer_options(params).max_iterations = 1;
@@ -2859,11 +2878,12 @@ TEST_CASE("an image dependent band estimates a mode at every image",
   auto neb =
       std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
   const auto status = neb->compute();
-  const bool known = status == NudgedElasticBand::NEBStatus::GOOD ||
-                     status == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS ||
-                     status == NudgedElasticBand::NEBStatus::RUNNING ||
-                     status == NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY ||
-                     status == NudgedElasticBand::NEBStatus::INIT;
+  const bool known =
+      status == NudgedElasticBand::NEBStatus::GOOD ||
+      status == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS ||
+      status == NudgedElasticBand::NEBStatus::RUNNING ||
+      status == NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY ||
+      status == NudgedElasticBand::NEBStatus::INIT;
   REQUIRE(known);
 }
 
@@ -2963,7 +2983,8 @@ TEST_CASE("a broken trajectory and an unknown metric are rejected",
   eonc::helpers::saveMode("missing-dir/saved-mode.dat", matter, mode);
   REQUIRE_FALSE(std::filesystem::exists("missing-dir/saved-mode.dat"));
 
-  ParametersLoadAccess::saddle_search_options(params).displace_type = "last_atom";
+  ParametersLoadAccess::saddle_search_options(params).displace_type =
+      "last_atom";
   ParametersLoadAccess::saddle_search_options(params).displace_magnitude = 0.0;
   Matter displaced(pot, params);
   AtomMatrix written = AtomMatrix::Zero(matter->numberOfAtoms(), 3);
@@ -2985,7 +3006,8 @@ TEST_CASE("a broken trajectory and an unknown metric are rejected",
 namespace {
 
 struct BoomPot final : Potential {
-  explicit BoomPot(const Parameters &p) : Potential(PotType::LJ, p) {}
+  explicit BoomPot(const Parameters &p)
+      : Potential(PotType::LJ, p) {}
   using Potential::force;
   void force(long, const double *, const int *, double *, double *, double *,
              const double *) override {
@@ -3105,8 +3127,8 @@ TEST_CASE("a dynamics search keeps the barrier after one step",
   ParametersLoadAccess::parallel_replica_options(params).dephase_time = 0.0;
   ParametersLoadAccess::saddle_search_options(params).dynamics.temperature =
       500.0;
-  ParametersLoadAccess::saddle_search_options(params).dynamics
-      .state_check_interval = 1.0;
+  ParametersLoadAccess::saddle_search_options(params)
+      .dynamics.state_check_interval = 1.0;
   ParametersLoadAccess::saddle_search_options(params).dynamics.record_interval =
       1.0;
   ParametersLoadAccess::saddle_search_options(params).max_iterations = 1;
@@ -3137,9 +3159,8 @@ TEST_CASE("the client rejects an unknown flag and a missing structure",
     std::ofstream cfg(empty / "config.ini");
     cfg << "[Main]\njob = point\n[Potential]\npotential = lj\n";
   }
-  std::filesystem::copy_file(
-      "reactant.con", empty / "pos.con",
-      std::filesystem::copy_options::overwrite_existing);
+  std::filesystem::copy_file("reactant.con", empty / "pos.con",
+                             std::filesystem::copy_options::overwrite_existing);
   auto run = [&](const std::vector<std::string> &args,
                  const std::filesystem::path &dir) {
     const pid_t pid = fork();

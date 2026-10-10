@@ -11,8 +11,8 @@
 */
 #include "eon/PotRegistry.h"
 #include <fstream>
-#include <memory>
 #include <iomanip>
+#include <memory>
 #include <sstream>
 
 namespace eonc {

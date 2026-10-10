@@ -34,10 +34,10 @@
 #include "eon/potentials/GPRPotential/GPRPotential.h"
 #endif
 
-#include "rgpot/EMT/EMTPot.hpp"
 #include "eon/potentials/ExtPot/ExtPot.h"
 #include "eon/potentials/PluginLoader.h"
 #include "eon/potentials/RgpotAdapter/RgpotAdapter.h"
+#include "rgpot/EMT/EMTPot.hpp"
 #include "rgpot/LennardJones/LJClusterPot.hpp"
 #include "rgpot/LennardJones/LJPot.hpp"
 #include "rgpot/Morse/MorsePot.hpp"

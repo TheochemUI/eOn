@@ -87,9 +87,7 @@ int rgpot_mta_force(void *pot, long n, const double *r, const int *z, double *f,
   return fill_force("EON_FAKE_MTA_FORCE_RC", n, f, u, var);
 }
 
-int rgpot_engine_abi_version(void) {
-  return env_int("EON_FAKE_ENGINE_ABI", 1);
-}
+int rgpot_engine_abi_version(void) { return env_int("EON_FAKE_ENGINE_ABI", 1); }
 
 void *rgpot_engine_create(const void *cfg, size_t len, char *err,
                           size_t errlen) {
