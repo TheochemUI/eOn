@@ -2181,8 +2181,9 @@ std::vector<VectorXd> cosineSeed(const VectorXd &saddle, const VectorXd &dir,
 // Index-1 Newton step through the block chain: a negative climb eigenvalue
 // stays and a raw Newton step climbs it; a positive one is flipped, as is
 // every other negative Ritz value off the cycle; a tiny one is parked at a
-// spring-sized curvature; the cycle itself is held with a spring-sized
-// curvature and its component removed from the step. Each flip is a
+// spring-sized curvature. The cycle keeps its component of the step, on its
+// own curvature, and is lifted to a spring-sized one only while that
+// curvature is near zero; the rigid modes are projected out. Each flip is a
 // rank-one term in the Woodbury correction, so the solve stays O(N f^3).
 VectorXd chainIndexOneStep(const std::vector<RingMode> &ritz,
                            const Climb &climb,

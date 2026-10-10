@@ -401,14 +401,18 @@ struct RateInstantonOptions {
   /// the default admits every size a batch potential can evaluate.
   long newtonLimit = std::numeric_limits<long>::max();
   /// Where the bead Hessian blocks start: "saddle" copies the saddle's
-  /// Hessian to every bead and lets the Bofill update carry it, at no force
-  /// calls; "finite_difference" takes 2 f gradient calls per bead first.
+  /// Hessian to every bead and lets the Bofill update carry it;
+  /// "finite_difference" takes 2 f gradient calls per bead first. Below the
+  /// crossover the copied blocks already hold a negative k = 1 ring mode,
+  /// which counts as drift, so "saddle" rebuilds them from finite
+  /// differences on the first entry and costs the same.
   std::string initialHessians = "saddle";
   /// Rigid motions of the ring: a translation, or one rotation about the
   /// ring's centre of mass, applied to every bead alike leaves U_N
   /// unchanged. The search rebuilds those directions from the current beads
   /// at every step (the rigid quotient) and keeps them out of the step and
-  /// out of the classification, as it does the imaginary-time cycle. Empty
+  /// out of the classification; the imaginary-time cycle stays out of the
+  /// classification only. Empty
   /// masses switch it off (atoms fixed). rigidSqrtMasses holds sqrt(m) per
   /// atom, rigidReference the Cartesian positions q is measured from (3 per
   /// atom), rigidRotations which rotations are free (a free cluster).

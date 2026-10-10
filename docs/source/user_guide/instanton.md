@@ -338,13 +338,17 @@ the saddle as the temperature drops. Where it does not, the search walks
 to a neighbouring saddle, so a converged ring that fails the channel test
 described with the `results.dat` keys below is refused and no rate is
 written. The step climbs the mode that overlaps
-the last climb and turns every other negative curvature downhill; the
-imaginary-time cycle and the rigid motions of the whole ring, rebuilt
-from the current beads, are held in place and left out of the step. A
-converged gradient is classified with finite-difference bead Hessians,
-since the Bofill blocks can carry negative curvatures the surface does
-not have; a second negative curvature that survives is a higher-index
-stationary ring, and the search steps down that mode. The ring Hessian is block cyclic
+the last climb and turns every other negative curvature downhill. The
+rigid motions of the whole ring, rebuilt from the current beads, are left
+out of the step; the imaginary-time cycle keeps its component, on its own
+curvature, and is lifted to a spring-sized curvature only while that
+curvature is near zero. A
+converged gradient is classified with finite-difference bead Hessians
+before it counts: the Bofill blocks learn curvature only along the steps
+taken, so they can carry negative curvatures the surface does not have and
+miss ones it does. A second negative curvature that survives is a
+higher-index stationary ring, and the search steps down that mode by a
+trust-sized displacement. The ring Hessian is block cyclic
 tridiagonal in the beads, and every solve, determinant and inertia count
 goes through a block LU of the open chain plus a low-rank Woodbury
 correction for the closure, the cycle, the rigid modes and each
@@ -352,10 +356,13 @@ eigenvector-following flip: {math}`O(N f^3)` for {math}`f` degrees of
 freedom, and the {math}`Nf \times Nf` matrix is never formed, so the same
 step serves a seven-atom cluster and a 254-atom cell. The lowest ring
 modes come from Lanczos on matrix-vector products. The bead curvature
-blocks start from the saddle Hessian (`initial_hessians = saddle`, no force
-calls) and follow accepted moves with a Bofill update, rebuilt from
-finite differences up to three times when the trust radius reaches its
-floor. Near-zero eigenvectors of the saddle Hessian are held at a
+blocks start from the saddle Hessian (`initial_hessians = saddle`) and
+follow accepted moves with a Bofill update, rebuilt from finite
+differences when their count of negative curvatures grows and up to three
+times when the trust radius reaches its floor. Below the crossover the
+copied blocks already hold a negative curvature in the ring's slowest
+mode, so the first entry rebuilds them, and `saddle` costs the same force
+calls as `finite_difference`. Near-zero eigenvectors of the saddle Hessian are held at a
 spring-sized curvature in the Newton step, so a rigid displacement does
 not singularize the chain. `initial_hessians = finite_difference` takes
 {math}`2f` gradient calls per
