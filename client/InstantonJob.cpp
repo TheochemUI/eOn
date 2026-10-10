@@ -643,6 +643,17 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     }
   };
 
+  // A free cluster's rigid bodies: its rotational partition functions enter
+  // the rates as ratios of the ring's, or the saddle's, moments of inertia
+  // to the reactant's.
+  tunneling::RingRigidBodies freeBodies;
+  if (static_cast<long>(mw.sqrtMasses().size()) == reactant.numberOfAtoms()) {
+    freeBodies.sqrtMasses = mw.sqrtMasses();
+    freeBodies.reference = mw.referenceFree();
+    freeBodies.rotations = rotationZero;
+    freeBodies.saddle = qSaddle;
+  }
+
   std::vector<VectorXd> ring;
   RunStatus status = RunStatus::GOOD;
   bool rateFailed = false;
@@ -659,8 +670,10 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       if (temperature > tc) {
         try {
           const double factor = tunneling::parabolicFactor(temperature, tc);
-          const double logQhtst = tunneling::quantumHarmonicTstLogRate(
-              hReactant, hSaddle, beta, vSaddle - vReactant, rigidModes);
+          const double logQhtst =
+              tunneling::quantumHarmonicTstLogRate(
+                  hReactant, hSaddle, beta, vSaddle - vReactant, rigidModes) +
+              tunneling::logRotationalRatio({qSaddle}, freeBodies);
           const double logPar = logQhtst + std::log(factor);
           const double kPar = std::exp(logPar) / tunneling::kTimeUnitSeconds;
           EONC_LOG_INFO("[Instanton] {:.4g} K is above the crossover {:.4g} "
@@ -715,10 +728,10 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
     ro.frictionExplicit = o.friction == "explicit";
     ro.frictionEta = o.friction_eta;
     ro.frictionEtaBeads = o.friction_eta_beads;
-    if (static_cast<long>(mw.sqrtMasses().size()) == reactant.numberOfAtoms()) {
-      ro.rigidSqrtMasses = mw.sqrtMasses();
-      ro.rigidReference = mw.referenceFree();
-      ro.rigidRotations = rotationZero;
+    if (!freeBodies.sqrtMasses.empty()) {
+      ro.rigidSqrtMasses = freeBodies.sqrtMasses;
+      ro.rigidReference = freeBodies.reference;
+      ro.rigidRotations = freeBodies.rotations;
     }
     std::vector<VectorXd> guess = ring;
     if (guess.empty() && profile) {
@@ -867,13 +880,9 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
         return (1.0 - t) * anchor(lo) + t * anchor(hi);
       };
       try {
-        tunneling::RingRigidBodies bodies;
-        bodies.sqrtMasses = ro.rigidSqrtMasses;
-        bodies.reference = ro.rigidReference;
-        bodies.rotations = ro.rigidRotations;
         tunneling::instantonRate(
             inst, beadHessian, hReactant, vReactant - o.energy_shift, hSaddle,
-            vSaddle - o.energy_shift, rigidModes, 4096, bodies);
+            vSaddle - o.energy_shift, rigidModes, 4096, freeBodies);
         rateOk = std::isfinite(inst.logRate) && inst.negativeModes == 1;
         if (inst.negativeModes != 1) {
           EONC_LOG_ERROR("[Instanton] the ring Hessian has {} negative modes, "
@@ -989,6 +998,8 @@ runRate(const Parameters &params, const std::shared_ptr<Potential> &pot,
       extras.emplace_back("instanton_negative_modes",
                           static_cast<double>(inst.negativeModes));
       extras.emplace_back("instanton_zero_mode", inst.zeroEigenvalue);
+      extras.emplace_back("instanton_rotation_ratio_log",
+                          inst.logRotationRatio);
     } else {
       rateFailed = true;
       status = inst.converged ? RunStatus::FAIL_POTENTIAL_FAILED

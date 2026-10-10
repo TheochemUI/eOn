@@ -1713,12 +1713,27 @@ TEST_CASE("The rate lifts the rotations of a free diatomic's ring",
     negative += lam[i] < 0.0 ? 1 : 0;
   }
   REQUIRE(negative == 1);
+  // The two rotations perpendicular to the bond come back as the ratio of
+  // the ring's moment, every bead's atoms about the ring's centre of mass,
+  // to the reactant's on every bead, 2 N (re / 2)^2 = 2 N.
+  double centre = 0.0;
+  for (const auto &q : inst.beads) {
+    centre += q(0) + pes.re + q(3);
+  }
+  centre /= 2.0 * static_cast<double>(n);
+  double moment = 0.0;
+  for (const auto &q : inst.beads) {
+    moment += (q(0) - centre) * (q(0) - centre) +
+              (pes.re + q(3) - centre) * (pes.re + q(3) - centre);
+  }
+  const double rotation = std::log(moment / (2.0 * static_cast<double>(n)));
+  REQUIRE(rotation > 0.05);
   const double expected =
       -std::log(bnh) +
       0.5 * std::log(inst.bN /
                      (2.0 * std::numbers::pi * inst.betaN * kHbar * kHbar)) -
       (static_cast<double>(n * f - 6) * std::log(bnh) + 0.5 * logDetPrime) -
-      inst.betaN * inst.ringPotential;
+      inst.betaN * inst.ringPotential + rotation;
 
   auto hessian = [&](long, const VectorXd &q) { return pes.hessian(q); };
   RateInstanton ring = inst;
@@ -1726,15 +1741,28 @@ TEST_CASE("The rate lifts the rotations of a free diatomic's ring",
   bodies.sqrtMasses = {1.0, 1.0};
   bodies.reference = pes.reference();
   bodies.rotations = {true, true, true};
-  instantonRate(ring, hessian, hr, 0.0, MatrixXd(), 0.0, 5, 4096, bodies);
+  bodies.saddle = saddle;
+  instantonRate(ring, hessian, hr, 0.0, hs, 0.25, 5, 4096, bodies);
   RateInstanton copied = inst;
   instantonRate(copied, hessian, hr, 0.0, MatrixXd(), 0.0, 5);
-  CAPTURE(expected, ring.logRateTimesZr, copied.logRateTimesZr);
+  CAPTURE(expected, ring.logRateTimesZr, copied.logRateTimesZr, rotation,
+          ring.logRotationRatio);
   REQUIRE(ring.negativeModes == 1);
+  REQUIRE_THAT(ring.logRotationRatio,
+               Catch::Matchers::WithinAbs(rotation, 1e-10));
   REQUIRE_THAT(ring.logRateTimesZr, Catch::Matchers::WithinAbs(expected, 1e-6));
   // The reactant's rotation generators on every bead miss the ring's null
-  // space by a stretch-dependent angle.
+  // space by a stretch-dependent angle, and leave the rotations out.
   REQUIRE(std::abs(copied.logRateTimesZr - expected) > 1e-3);
+  REQUIRE(copied.logRotationRatio == 0.0);
+  // The classical comparison takes the saddle's moments: a bond stretched
+  // from re to re + db turns with (1 + db / re)^2 the reactant's moment.
+  const double saddleRotation = 2.0 * std::log(1.0 + db / pes.re);
+  REQUIRE_THAT(logRotationalRatio({saddle}, bodies),
+               Catch::Matchers::WithinAbs(saddleRotation, 1e-12));
+  REQUIRE_THAT(ring.classicalLogRate -
+                   harmonicTstLogRate(hr, hs, inst.beta, 0.25, 5),
+               Catch::Matchers::WithinAbs(saddleRotation, 1e-12));
 }
 
 // Known answers independent of eOn, from

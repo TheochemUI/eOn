@@ -503,6 +503,9 @@ struct RateInstanton {
   /// saddle), which is no instanton.
   bool collapsed = false;
   double logRateTimesZr = 0.0; ///< ln(k Z_r), k in 1 / time
+  /// ln of the ring's rotational partition function over the reactant's,
+  /// included in logRateTimesZr; zero when no rotation is free.
+  double logRotationRatio = 0.0;
   double logZr = 0.0;          ///< ln Z_r
   double logRate = 0.0;        ///< ln k, k in 1 / time
   double rate = 0.0;           ///< k in 1 / s
@@ -578,13 +581,29 @@ using RingBeadHessian = std::function<MatrixXd(long j, const VectorXd &q)>;
 
 /// The atoms behind a ring's mass-weighted coordinates, for its rigid
 /// motions: sqrt(m) per atom, the Cartesian positions q is measured from
-/// (3 per atom), and which rotations are free. Empty masses: the rigid
-/// directions come from the reactant Hessian instead.
+/// (3 per atom; the reactant minimum, q = 0, for the rotational ratio),
+/// and which rotations are free. Empty masses: the rigid directions come
+/// from the reactant Hessian instead. `saddle`, in q, gives the classical
+/// comparison the same rotational ratio; empty leaves it out.
 struct RingRigidBodies {
   std::vector<double> sqrtMasses;
   VectorXd reference;
   std::array<bool, 3> rotations{{false, false, false}};
+  VectorXd saddle;
 };
+
+/// ln of the classical rotational partition function of `beads` over that
+/// of as many copies of the reference (q = 0), for the free rotations:
+/// half the log of the ratio of the products of their principal moments,
+/// the inertia of every bead's atoms about the beads' common centre of
+/// mass, which is the Gram matrix of the ring's rotation generators.
+/// Moments below 1e-8 of the largest (a linear structure's axis) leave both
+/// products. Zero with empty masses or no free rotation; throws when the
+/// beads and the reference turn about different numbers of axes. With one
+/// bead it is the saddle's ratio sqrt(det I_saddle / det I_reactant) of
+/// harmonic TST for a free cluster.
+double logRotationalRatio(const std::vector<VectorXd> &beads,
+                          const RingRigidBodies &bodies);
 
 /// Fills the rate from the bead Hessians, the reactant minimum's Hessian and
 /// energy, and optionally the saddle's Hessian and energy for the classical
@@ -592,10 +611,14 @@ struct RingRigidBodies {
 /// rigid-body zero modes to omit: the translations, plus a rotation only when
 /// the reactant Hessian leaves it null (a free cluster has them, a crystal
 /// does not, and an atom held fixed has none). They leave the centroid
-/// factors, so the rotational and translational partition functions of
-/// reactant and instanton cancel; for rotations that is an approximation,
-/// since the ring's moments of inertia are not the reactant's. On the ring
-/// the omitted directions are its null vectors: with `rigidBodies` given,
+/// factors. The translational partition functions of reactant and
+/// instanton cancel; the rotational ones do not, since the ring's moments
+/// of inertia are not the reactant's. With `rigidBodies` given and a
+/// rotation free, k Z_r carries their ratio, logRotationalRatio of the
+/// beads (Richardson's moments averaged over the ring), and the classical
+/// comparison that of `rigidBodies.saddle`; without it both are left out.
+/// On the ring the omitted directions are its null vectors: with
+/// `rigidBodies` given,
 /// the translations and rotations of the beads themselves about the ring's
 /// centre of mass (a rotation moves each bead differently), otherwise the
 /// reactant Hessian's null vectors copied to every bead, which are exact

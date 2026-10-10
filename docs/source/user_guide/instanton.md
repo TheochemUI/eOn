@@ -433,9 +433,17 @@ the ring's centre of mass: a rotation moves each bead by a different
 amount, so the reactant's rotation copied to every bead is not a zero mode
 of the ring. The bead Hessians keep their rotational curvature, which
 balances the springs on a bead that is not a minimum, and lose only their
-translations. Omitting the rotations on both sides treats the rotational
-partition functions of the ring and the reactant as equal, which neglects
-the change in the moments of inertia along the ring.
+translations. The omitted rotations come back as the ratio of the
+classical rotational partition functions: the square root of the product
+of the ring's principal moments of inertia, every bead's atoms about the
+ring's centre of mass, over the same product for the reactant repeated on
+every bead. That is the moment of inertia of the ring polymer averaged
+over its beads, as the ring-polymer instanton rate takes it for a
+molecule that turns freely. `instanton_rotation_ratio_log` reports its
+logarithm. The classical comparison `rate_htst_log` and the parabolic rate
+above {math}`T_c` take the saddle's ratio, so all three rates count the
+rotations alike. A linear structure keeps the two moments perpendicular to
+its axis.
 
 `results.dat` reports the rate. The keys are:
 
@@ -450,6 +458,7 @@ the change in the moments of inertia along the ring.
 | `instanton_crossover_K` | {math}`T_c`, K |
 | `instanton_negative_modes` | negative eigenvalues of the ring Hessian; a first-order saddle has 1 |
 | `instanton_zero_mode` | the eigenvalue left out |
+| `instanton_rotation_ratio_log` | ln of the ring's rotational partition function over the reactant's; 0 when no rotation is free |
 | `instanton_s_min`, `instanton_s_max` | the turning points along the saddle's unstable mode, amu^0.5 Angstrom from the saddle |
 | `instanton_chord_overlap` | cosine of the angle between the chord joining the turning points and the unstable mode |
 | `instanton_collapsed` | 1 when the search stopped because the beads fell onto one point (B_N below 1e-4 of the starting ring's) |

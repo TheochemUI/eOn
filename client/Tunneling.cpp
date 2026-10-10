@@ -4090,6 +4090,101 @@ std::vector<bool> nearestZero(const VectorXd &lam, long count, long first = 0) {
 
 } // namespace
 
+namespace {
+
+// The principal moments, about the beads' common centre of mass, of the
+// inertia restricted to the free rotation axes, sorted, those under 1e-8
+// of the largest left out.
+std::vector<double> rotationMoments(const std::vector<VectorXd> &beads,
+                                    const RingRigidBodies &bodies) {
+  const long nAtoms = static_cast<long>(bodies.sqrtMasses.size());
+  Eigen::Vector3d centre = Eigen::Vector3d::Zero();
+  double total = 0.0;
+  auto position = [&](const VectorXd &q, long k) {
+    return Eigen::Vector3d(bodies.reference.segment<3>(3 * k) +
+                           q.segment<3>(3 * k) /
+                               bodies.sqrtMasses[static_cast<size_t>(k)]);
+  };
+  for (const auto &q : beads) {
+    for (long k = 0; k < nAtoms; ++k) {
+      const double m = bodies.sqrtMasses[static_cast<size_t>(k)] *
+                       bodies.sqrtMasses[static_cast<size_t>(k)];
+      centre += m * position(q, k);
+      total += m;
+    }
+  }
+  centre /= total;
+  Eigen::Matrix3d inertia = Eigen::Matrix3d::Zero();
+  for (const auto &q : beads) {
+    for (long k = 0; k < nAtoms; ++k) {
+      const double m = bodies.sqrtMasses[static_cast<size_t>(k)] *
+                       bodies.sqrtMasses[static_cast<size_t>(k)];
+      const Eigen::Vector3d x = position(q, k) - centre;
+      inertia += m * (x.squaredNorm() * Eigen::Matrix3d::Identity() -
+                      x * x.transpose());
+    }
+  }
+  std::vector<int> axes;
+  for (int c = 0; c < 3; ++c) {
+    if (bodies.rotations[static_cast<size_t>(c)]) {
+      axes.push_back(c);
+    }
+  }
+  MatrixXd sub(static_cast<long>(axes.size()), static_cast<long>(axes.size()));
+  for (size_t a = 0; a < axes.size(); ++a) {
+    for (size_t b = 0; b < axes.size(); ++b) {
+      sub(static_cast<long>(a), static_cast<long>(b)) =
+          inertia(axes[a], axes[b]);
+    }
+  }
+  const Eigen::SelfAdjointEigenSolver<MatrixXd> es(sub, Eigen::EigenvaluesOnly);
+  const VectorXd &moments = es.eigenvalues();
+  const double largest = moments.size() > 0 ? moments.maxCoeff() : 0.0;
+  std::vector<double> out;
+  for (long i = 0; i < moments.size(); ++i) {
+    if (moments(i) > 1e-8 * largest) {
+      out.push_back(moments(i));
+    }
+  }
+  return out;
+}
+
+} // namespace
+
+double logRotationalRatio(const std::vector<VectorXd> &beads,
+                          const RingRigidBodies &bodies) {
+  const long nAtoms = static_cast<long>(bodies.sqrtMasses.size());
+  const bool anyFree =
+      bodies.rotations[0] || bodies.rotations[1] || bodies.rotations[2];
+  if (nAtoms == 0 || !anyFree || beads.empty()) {
+    return 0.0;
+  }
+  if (bodies.reference.size() != 3 * nAtoms) {
+    throw std::invalid_argument(
+        "logRotationalRatio: the reference needs three coordinates per atom");
+  }
+  for (const auto &q : beads) {
+    if (q.size() != 3 * nAtoms) {
+      throw std::invalid_argument(
+          "logRotationalRatio: a bead needs three coordinates per atom");
+    }
+  }
+  const std::vector<double> ring = rotationMoments(beads, bodies);
+  const std::vector<double> reactant = rotationMoments(
+      std::vector<VectorXd>(beads.size(), VectorXd::Zero(3 * nAtoms)), bodies);
+  if (ring.size() != reactant.size()) {
+    throw std::runtime_error("logRotationalRatio: the beads turn about " +
+                             std::to_string(ring.size()) +
+                             " axes and the reactant about " +
+                             std::to_string(reactant.size()));
+  }
+  double out = 0.0;
+  for (size_t i = 0; i < ring.size(); ++i) {
+    out += 0.5 * (std::log(ring[i]) - std::log(reactant[i]));
+  }
+  return out;
+}
+
 double closedRingPotential(const std::vector<VectorXd> &beads, double spring,
                            const BatchPotential &potential,
                            const std::vector<double> &discretization) {
@@ -4109,12 +4204,15 @@ namespace {
 // k > 0 mode (Litman et al., J. Chem. Phys. 156, 194106 (2022), Eq. 36).
 // Link weights w_j scale the free-particle measure of link j by
 // w_j^{-f/2}, in Z_r and in k Z_r alike, and leave the reactant ring's
-// modes coupled by the time steps.
+// modes coupled by the time steps. The free rotations leave det' and Z_r's
+// centroid factor, and come back as the ratio of the ring's rotational
+// partition function to the reactant's.
 void finishRate(RateInstanton &inst, double logDetPrime, long nDrop, long f,
                 const VectorXd &lr, const std::vector<bool> &rigidR,
                 double vReactant, const MatrixXd &hessReactant,
                 const MatrixXd &hessSaddle, double vSaddle, long rigidModes,
-                double eta, const std::vector<double> &weight) {
+                double eta, const std::vector<double> &weight,
+                const RingRigidBodies &bodies) {
   const long N = static_cast<long>(inst.beads.size());
   const double bnh = inst.betaN * kHbar;
   const double c = 1.0 / (bnh * bnh);
@@ -4124,11 +4222,13 @@ void finishRate(RateInstanton &inst, double logDetPrime, long nDrop, long f,
   for (const double w : weight) {
     logMeasure -= 0.5 * static_cast<double>(f) * std::log(w);
   }
+  inst.logRotationRatio = logRotationalRatio(inst.beads, bodies);
 
   inst.logRateTimesZr = -std::log(bnh) +
                         0.5 * std::log(inst.bN / (2.0 * std::numbers::pi *
                                                   inst.betaN * kHbar * kHbar)) -
-                        logProd - inst.betaN * inst.ringPotential + logMeasure;
+                        logProd - inst.betaN * inst.ringPotential + logMeasure +
+                        inst.logRotationRatio;
 
   for (long m = 0; m < lr.size(); ++m) {
     if (!rigidR[static_cast<size_t>(m)] && !(lr(m) > 0.0)) {
@@ -4198,6 +4298,9 @@ void finishRate(RateInstanton &inst, double logDetPrime, long nDrop, long f,
   if (hessSaddle.size() > 0) {
     inst.classicalLogRate = harmonicTstLogRate(
         hessReactant, hessSaddle, inst.beta, vSaddle - vReactant, rigidModes);
+    if (bodies.saddle.size() > 0) {
+      inst.classicalLogRate += logRotationalRatio({bodies.saddle}, bodies);
+    }
     inst.classicalRate = std::exp(inst.classicalLogRate) / kTimeUnitSeconds;
   }
 }
@@ -4389,7 +4492,7 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
     inst.negativeModes =
         negative > 1 ? std::max(1L, negative - tiny) : negative;
     finishRate(inst, logDetPrime, nDrop, f, lr, rigidR, vReactant, hessReactant,
-               hessSaddle, vSaddle, rigidModes, eta, steps);
+               hessSaddle, vSaddle, rigidModes, eta, steps, rigidBodies);
     return;
   }
   // On a discrete ring the time shift is only nearly a symmetry, so the
@@ -4536,7 +4639,7 @@ void instantonRate(RateInstanton &inst, const RingBeadHessian &hessian,
                              std::log(std::abs(c + inst.zeroEigenvalue)) -
                              static_cast<double>(nDrop - 1) * std::log(c);
   finishRate(inst, logDetPrime, nDrop, f, lr, rigidR, vReactant, hessReactant,
-             hessSaddle, vSaddle, rigidModes, 0.0, steps);
+             hessSaddle, vSaddle, rigidModes, 0.0, steps, rigidBodies);
 }
 
 RotationZeroModes rotationZeroModes(const MatrixXd &hess,
