@@ -262,6 +262,12 @@ jobs:
           else
             CFG+="setup-args=-Dwith_metatomic=false"$'\n'
           fi
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            # Plugin DLLs export nothing, so link.exe writes no import
+            # library and eonclib then fails with LNK1181. The Windows CI
+            # build uses the same static archives.
+            CFG+="setup-args=-Ddefault_library=static"$'\n'
+          fi
           {
             echo "CIBW_CONFIG_SETTINGS<<EOF"
             while IFS= read -r line; do

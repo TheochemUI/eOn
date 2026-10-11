@@ -938,6 +938,15 @@ else
 endif
 _deps += [readcon_db_dep]
 
+# Static archives install under libdir_static. meson-python cannot map
+# that path into a wheel. The pyeonclient wheel links the archives into
+# _core.pyd and does not install the server, so they stay in the build
+# tree. A normal static install still publishes them.
+_client_lib_install = true
+if get_option('default_library') == 'static' and not get_option('install_eon_server')
+    _client_lib_install = false
+endif
+
 # Potentials
 
 subdir('potentials/ExtPot')
@@ -1671,7 +1680,7 @@ for name in ("metatensor", "metatensor_torch", "metatomic", "vesin"):
         cpp_args: _args,
         link_with: _linkto,
         include_directories: _incdirs,
-        install: true,
+        install: _client_lib_install,
     )
     potentials += [metatomic_pot]
 endif
@@ -1914,7 +1923,7 @@ eclib = library(
     link_args: _linkargs,
     build_rpath: ':'.join(_runtime_rpath),
     install_rpath: _lib_install_rpath,
-    install: true,
+    install: _client_lib_install,
 )
 
 # MSVC scans static libraries once, left to right. eonclib references
@@ -1996,7 +2005,7 @@ if get_option('with_metatomic')
         include_directories: _incdirs,
         build_rpath: ':'.join(_runtime_rpath),
         install_rpath: _lib_install_rpath,
-        install: true,
+        install: _client_lib_install,
         gnu_symbol_visibility: 'default',
     )
 

@@ -22,3 +22,6 @@ def test_win64_metatomic_wheel_is_in_the_matrix():
     win = text.split("name: abi3-win-metatomic", 1)[1].split("steps:", 1)[0]
     assert "variant: metatomic" in win
     assert "windows-2022" in win
+    # Shared plugin DLLs export nothing, so MSVC writes no import library.
+    assert 'runner.os }}" == "Windows"' in text
+    assert "setup-args=-Ddefault_library=static" in text
