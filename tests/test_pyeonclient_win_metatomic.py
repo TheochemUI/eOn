@@ -25,3 +25,11 @@ def test_win64_metatomic_wheel_is_in_the_matrix():
     # Shared plugin DLLs export nothing, so MSVC writes no import library.
     assert 'runner.os }}" == "Windows"' in text
     assert "setup-args=-Ddefault_library=static" in text
+    script = (
+        Path(__file__).resolve().parents[1] / "scripts" / "pyeonclient_cibw_test.sh"
+    ).read_text(encoding="utf-8")
+    assert 'OS:-}" = "Windows_NT"' in script
+    assert "PATH_PREFIX" in script
+    assert "_core*.pyd" in script
+    assert "readelf" in script
+    assert "eon-wheel-deps" in script
