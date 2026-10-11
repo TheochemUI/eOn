@@ -9,6 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+// Rule: no MulAdd, NegMulAdd, or MulSub on a result that can reach an output.
 #include "eon/ForceNorm.h"
 
 #include <algorithm>

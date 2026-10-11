@@ -47,7 +47,7 @@ option('stdpar', type : 'combo', choices : ['none', 'cpu', 'gpu'], value : 'none
 option('stdpar_gpu_cc', type : 'string', value : 'cc80,cc90',
        description : 'nvc++ -gpu= arch list when -Dstdpar=gpu. Default is A100+H100 (Snellius/Elja). Set native to omit the flag.')
 option('native_arch', type : 'boolean', value : false, description : 'Use -march=native for CPU-specific optimizations (not portable)')
-option('fast_math', type : 'boolean', value : false, description : 'Enable -ffast-math (unsafe FP reordering, safe for atomic coords)')
+option('fast_math', type : 'boolean', value : false, description : 'Enable -ffast-math. Gives up bit-identical results across CPUs. When false, floating-point contraction is turned off.')
 option('with_artn', type : 'boolean', value : false, description : 'Enable ARTn saddle search method (requires Fortran + LAPACK)')
 option('artn_libdir', type : 'string', value : '', description : 'Path to libartn.so directory (ARTnResource redeclares the C signatures inline, so no include dir is needed)')
 option('with_ira', type : 'boolean', value : false, description : 'Enable IRA structure comparison (requires Fortran + LAPACK)')
