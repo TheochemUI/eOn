@@ -257,7 +257,7 @@ jobs:
           PY
           # Loader order from a failing test_relax_engine PATH: wheel bins,
           # then the pixi prefix, then torch/lib.
-          REPORT_PREFIX="$(python - <<'PY'
+          REPORT_PREFIX="$(PIXI_PRE="${PIXI_PRE}" python - <<'PY'
           import os
           import pathlib
           import torch
