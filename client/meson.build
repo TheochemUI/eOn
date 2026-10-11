@@ -831,6 +831,10 @@ endif
 # readcon-db: corpus mirror. Resolve it the same way as readcon-core
 # (pkg-config, then the wrap). The shared library is not archived beside
 # the static readcon-core.
+# GNU ld drops a library with no link-time use unless --no-as-needed
+# wraps it. ld64 rejects those flags and keeps every dylib, so macOS
+# links the path alone. link.exe rejects -Wl too, so MSVC does the same.
+_readcon_db_as_needed = cppc.get_argument_syntax() == 'gcc' and host_system != 'darwin'
 readcon_db_dep = dependency(
     'readcon-db',
     version: '>=0.1.6',
@@ -854,11 +858,9 @@ if not readcon_db_dep.found()
     # cargo target and a parallel link runs while that library is absent.
     # link_with is the order edge. The --no-as-needed path stays: the
     # mirror resolves rkrdb_open at load time, and --as-needed drops a
-    # library with no link-time use.
-    # ld64 has no --as-needed and keeps every dylib it is given, so macOS
-    # takes the bare path.
+    # library with no link-time use. macOS and MSVC take the bare path.
     _readcon_db_link = [_readcon_db_so.full_path()]
-    if host_system != 'darwin'
+    if _readcon_db_as_needed
         _readcon_db_link = [
             '-Wl,--no-as-needed',
             _readcon_db_so.full_path(),
@@ -900,7 +902,7 @@ else
             _cand = _pc_libdir / _name
             if fs.exists(_cand)
                 _readcon_db_keep = [_cand]
-                if host_system != 'darwin'
+                if _readcon_db_as_needed
                     _readcon_db_keep = [
                         '-Wl,--no-as-needed',
                         _cand,
@@ -1475,9 +1477,15 @@ if get_option('with_metatomic')
     endforeach
 
     torch_inc_args = []
+    # -isystem keeps torch headers out of -Wall on GCC and Clang.
+    # MSVC has no -isystem. /I is the include form.
+    _torch_isystem = cppc.get_argument_syntax() == 'gcc'
     foreach d : LIB_TORCH_INCLUDE_LIST
-        # Reduce the priority of each
-        torch_inc_args += ['-isystem', d]
+        if _torch_isystem
+            torch_inc_args += ['-isystem', d]
+        else
+            torch_inc_args += ['/I' + d]
+        endif
     endforeach
 
     torch_deps = declare_dependency(
@@ -2059,7 +2067,9 @@ ec = executable(
     include_directories: _incdirs,
     dependencies: _exe_deps,
     link_with: _linkto,
-    cpp_args: [_args, '-w'],
+    # -w silences the client executable. It is a GCC/Clang flag. MSVC
+    # accepts the same letter as /w, and the probe keeps it there too.
+    cpp_args: _args + cppc.get_supported_arguments(['-w']),
     link_args: _linkargs,
     build_rpath: ':'.join(_runtime_rpath),
     install_rpath: _exe_install_rpath,
