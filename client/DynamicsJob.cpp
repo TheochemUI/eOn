@@ -36,8 +36,7 @@ std::vector<std::string> DynamicsJob::run(void) {
   d->run();
 
   std::string productFilename("final.con");
-  if (!eonc::io::io_ok(
-          R->matter2con(productFilename, false, nullptr, true))) {
+  if (!eonc::io::io_ok(R->matter2con(productFilename, false, nullptr, true))) {
     EONC_LOG_ERROR("Failed to write {}", productFilename);
   }
 

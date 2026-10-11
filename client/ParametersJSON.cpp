@@ -47,8 +47,8 @@ static void read_explicit_opt(const json &value, eonc::OptType &dest,
     throw std::invalid_argument(std::string(where) + " must be a string");
   }
   const auto text = value.get<std::string>();
-  auto parsed = magic_enum::enum_cast<eonc::OptType>(
-      text, magic_enum::case_insensitive);
+  auto parsed =
+      magic_enum::enum_cast<eonc::OptType>(text, magic_enum::case_insensitive);
   if (!parsed || *parsed == eonc::OptType::Unknown) {
     throw std::invalid_argument(std::string(where) + " '" + text +
                                 "' is not a known optimizer");
@@ -724,8 +724,7 @@ void from_json(const json &j, Parameters &p) {
       const auto text = value.get<std::string>();
       auto parsed =
           magic_enum::enum_cast<OptType>(text, magic_enum::case_insensitive);
-      if (!parsed || *parsed == OptType::Unknown ||
-          *parsed == OptType::None ||
+      if (!parsed || *parsed == OptType::Unknown || *parsed == OptType::None ||
           (*parsed != OptType::SD && *parsed != OptType::CG &&
            *parsed != OptType::LBFGS)) {
         throw std::invalid_argument(

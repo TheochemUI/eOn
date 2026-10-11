@@ -42,8 +42,8 @@ std::string toLowerCase(std::string s) {
 /// an error. An unknown token is.
 void assign_explicit_opt(const std::string &text, eonc::OptType &dest,
                          bool &was_set, int &error, const char *where) {
-  auto parsed = magic_enum::enum_cast<eonc::OptType>(
-      text, magic_enum::case_insensitive);
+  auto parsed =
+      magic_enum::enum_cast<eonc::OptType>(text, magic_enum::case_insensitive);
   if (!parsed || *parsed == eonc::OptType::Unknown) {
     EONC_LOG_ERROR("{} '{}' is not a known optimizer", where, text);
     error = 1;
@@ -1223,8 +1223,8 @@ int load_ini(INIReader &ini, Parameters &params) {
   if (ini.HasValue(neb_section, "ipath_opt_method")) {
     auto &init_method =
         ParametersLoadAccess::neb_options(params).initialization.opt_method;
-    auto &init_set = ParametersLoadAccess::neb_options(params)
-                         .initialization.opt_method_set;
+    auto &init_set =
+        ParametersLoadAccess::neb_options(params).initialization.opt_method_set;
     assign_explicit_opt(ini.Get(neb_section, "ipath_opt_method", ""),
                         init_method, init_set, error,
                         "[Nudged Elastic Band] ipath_opt_method");

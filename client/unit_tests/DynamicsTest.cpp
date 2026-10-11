@@ -519,7 +519,8 @@ TEST_CASE_METHOD(DynamicsFixture,
   const auto path =
       std::filesystem::temp_directory_path() / "eon_md_restart.con";
   std::filesystem::remove(path);
-  REQUIRE(eonc::io::io_ok(first.matter2con(path.string(), false, nullptr, true)));
+  REQUIRE(
+      eonc::io::io_ok(first.matter2con(path.string(), false, nullptr, true)));
 
   std::ifstream in(path);
   const std::string text((std::istreambuf_iterator<char>(in)),
