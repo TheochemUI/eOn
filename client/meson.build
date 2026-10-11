@@ -2061,20 +2061,6 @@ if get_option('with_tests')
         if fs.is_dir(_pbin)
             _stage_search += _pbin
         endif
-        # Prefix bins stay first so capnp and flang win over a
-        # same-named torch DLL. The linked torch and metatomic wheels
-        # come next. Without them the loader took c10.dll and
-        # torch_cpu.dll from PATH and test_relax_engine exited
-        # 0xC0000139.
-        if get_option('with_metatomic') and get_option('pip_metatomic')
-            _stage_search += pip_metatomic_runtime_dirs
-            foreach _d : pip_metatomic_runtime_dirs
-                _wheel_bin = fs.parent(_d) / 'bin'
-                if fs.is_dir(_wheel_bin)
-                    _stage_search += _wheel_bin
-                endif
-            endforeach
-        endif
         _stage_engine_imports = custom_target(
             'stage-engine-dll-imports',
             input: eon_relax_engine,
