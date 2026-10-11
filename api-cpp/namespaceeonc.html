@@ -3626,10 +3626,10 @@ template&lt;typename Work&gt; </div>
 <p>Max Euclidean norm over N x 3 row-major force rows. </p>
 <p>An atom is ignored when <span class="tt">fixed</span> is non-null and all three of its mask entries are greater than 0.5 (fully fixed). <span class="tt">fixed == nullptr</span> keeps every atom. Returns 0 when <span class="tt">nAtoms</span> is not positive, and NaN when any free atom's norm is NaN, on every SIMD target. </p>
 
-<p class="definition">Definition at line <a class="el" href="ForceNorm_8cpp_source.html#l00106">106</a> of file <a class="el" href="ForceNorm_8cpp_source.html">ForceNorm.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  107</span>                                         {</div>
-<div class="line"><span class="lineno">  108</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1detail.html#a80ff6def7130f0f201757f99680ce040">detail::maxFreeAtomForceNormScalar</a>(forces, fixed, 0, nAtoms);</div>
-<div class="line"><span class="lineno">  109</span>}</div>
+<p class="definition">Definition at line <a class="el" href="ForceNorm_8cpp_source.html#l00107">107</a> of file <a class="el" href="ForceNorm_8cpp_source.html">ForceNorm.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  108</span>                                         {</div>
+<div class="line"><span class="lineno">  109</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1detail.html#a80ff6def7130f0f201757f99680ce040">detail::maxFreeAtomForceNormScalar</a>(forces, fixed, 0, nAtoms);</div>
+<div class="line"><span class="lineno">  110</span>}</div>
 <div class="ttc" id="anamespaceeonc_1_1detail_html_a80ff6def7130f0f201757f99680ce040"><div class="ttname"><a href="namespaceeonc_1_1detail.html#a80ff6def7130f0f201757f99680ce040">eonc::detail::maxFreeAtomForceNormScalar</a></div><div class="ttdeci">double maxFreeAtomForceNormScalar(const double *forces, const double *fixed, long begin, long nAtoms)</div><div class="ttdoc">Scalar max of per-atom Euclidean norms on [begin, nAtoms).</div><div class="ttdef"><b>Definition</b> <a href="ForceNorm_8h_source.html#l00025">ForceNorm.h:25</a></div></div>
 </div><!-- fragment -->
 </div>

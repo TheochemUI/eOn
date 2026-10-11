@@ -593,6 +593,7 @@ readcon-core through cargo as part of the wheel.</p>
 <p>The full listing of options is found in the <code class="docutils literal notranslate"><span class="pre">meson_options.txt</span></code> file. These can
 all be turned on and off at the command line. As an example see the <a class="reference internal" href="../user_guide/lammps_pot.html"><span class="std std-doc">LAMMPS
 integration instructions</span></a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">native_arch</span></code> (<code class="docutils literal notranslate"><span class="pre">-march=native</span></code>) and <code class="docutils literal notranslate"><span class="pre">fast_math</span></code> (<code class="docutils literal notranslate"><span class="pre">-ffast-math</span></code>) are off by default. With <code class="docutils literal notranslate"><span class="pre">fast_math</span></code> left off, C++ is compiled with floating-point contraction disabled, so results stay bit-identical across CPUs, and turning <code class="docutils literal notranslate"><span class="pre">fast_math</span></code> on leaves contraction to the compiler and gives up that guarantee.</p>
 <p>For an optional wrapped dependency, download the subproject sources before configuring:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">meson<span class="w"> </span>subprojects<span class="w"> </span>download<span class="w"> </span>artn-plugin<span class="w"> </span>ira
 </span></pre></div>

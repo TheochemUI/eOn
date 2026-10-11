@@ -239,114 +239,115 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('ForceNorm_8cpp
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">** Repo:</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">** https://github.com/TheochemUI/eOn</span></div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">*/</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="ForceNorm_8h.html">eon/ForceNorm.h</a>&quot;</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#ifdef WITH_HIGHWAY</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment">// foreach_target.h re-includes this file once per SIMD target. The path is</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment">// relative to the project include root.</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#undef HWY_TARGET_INCLUDE</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#define HWY_TARGET_INCLUDE &quot;client/ForceNorm.cpp&quot;</span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &lt;hwy/foreach_target.h&gt;</span></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &lt;hwy/highway.h&gt;</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>HWY_BEFORE_NAMESPACE();</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc.html">eonc</a> {</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">namespace </span>HWY_NAMESPACE {</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keyword">namespace </span>hn = hwy::HWY_NAMESPACE;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="keywordtype">double</span> MaxFreeAtomForceNorm(<span class="keyword">const</span> <span class="keywordtype">double</span> *HWY_RESTRICT forces,</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                            <span class="keyword">const</span> <span class="keywordtype">double</span> *HWY_RESTRICT fixed, <span class="keywordtype">long</span> nAtoms) {</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>  <span class="keywordflow">if</span> (forces == <span class="keyword">nullptr</span> || nAtoms &lt;= 0) {</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">return</span> 0.0;</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>  }</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>  <span class="keyword">const</span> hn::ScalableTag&lt;double&gt; d;</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>  <span class="keyword">const</span> <span class="keywordtype">size_t</span> lanes = hn::Lanes(d);</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>  <span class="keyword">const</span> <span class="keywordtype">size_t</span> n = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nAtoms);</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>  <span class="keyword">const</span> <span class="keyword">auto</span> half = hn::Set(d, 0.5);</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  <span class="keyword">auto</span> vmax = hn::Zero(d);</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>  <span class="keywordtype">size_t</span> i = 0;</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>  <span class="keywordflow">for</span> (; i + lanes &lt;= n; i += lanes) {</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">auto</span> x = hn::Zero(d);</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">auto</span> y = hn::Zero(d);</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">auto</span> z = hn::Zero(d);</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    hn::LoadInterleaved3(d, forces + 3 * i, x, y, z);</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="comment">// Mul then Add, not MulAdd. A contracted FMA rounds once; the scalar</span></div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="comment">// tail rounds each product and the sum, and both paths must agree.</span></div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">const</span> <span class="keyword">auto</span> nrm =</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        hn::Sqrt(hn::Add(hn::Add(hn::Mul(x, x), hn::Mul(y, y)), hn::Mul(z, z)));</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">if</span> (fixed != <span class="keyword">nullptr</span>) {</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>      <span class="keyword">auto</span> fx = hn::Zero(d);</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>      <span class="keyword">auto</span> fy = hn::Zero(d);</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>      <span class="keyword">auto</span> fz = hn::Zero(d);</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>      hn::LoadInterleaved3(d, fixed + 3 * i, fx, fy, fz);</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>      <span class="keyword">const</span> <span class="keyword">auto</span> allFixed = hn::And(</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>          hn::Gt(fx, half), hn::And(hn::Gt(fy, half), hn::Gt(fz, half)));</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>      <span class="keyword">const</span> <span class="keyword">auto</span> free = hn::IfThenElseZero(hn::Not(allFixed), nrm);</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>      <span class="comment">// hn::Max keeps or drops a NaN depending on the target (maxpd on x86,</span></div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>      <span class="comment">// vmaxq on NEON), so a NaN is returned before it reaches the max.</span></div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>      <span class="keywordflow">if</span> (!hn::AllFalse(d, hn::IsNaN(free))) {</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordflow">return</span> std::numeric_limits&lt;double&gt;::quiet_NaN();</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>      }</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>      vmax = hn::Max(vmax, free);</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>      <span class="keywordflow">if</span> (!hn::AllFalse(d, hn::IsNaN(nrm))) {</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keywordflow">return</span> std::numeric_limits&lt;double&gt;::quiet_NaN();</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>      }</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>      vmax = hn::Max(vmax, nrm);</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    }</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>  }</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> tail = detail::maxFreeAtomForceNormScalar(</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>      forces, fixed, <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(i), nAtoms);</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>  <span class="keywordflow">if</span> (std::isnan(tail)) {</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordflow">return</span> tail;</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>  }</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>  <span class="keywordflow">return</span> std::max(hn::ReduceMax(d, vmax), tail);</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>}</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>} <span class="comment">// namespace HWY_NAMESPACE</span></div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>} <span class="comment">// namespace eonc</span></div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>HWY_AFTER_NAMESPACE();</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="preprocessor">#if HWY_ONCE</span></div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc.html">eonc</a> {</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>HWY_EXPORT(MaxFreeAtomForceNorm);</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span><span class="keywordtype">double</span> <a class="code hl_function" href="namespaceeonc.html#ad52e6fd72cd768445176672c88a48259">maxFreeAtomForceNorm</a>(<span class="keyword">const</span> <span class="keywordtype">double</span> *forces, <span class="keyword">const</span> <span class="keywordtype">double</span> *fixed,</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                            <span class="keywordtype">long</span> nAtoms) {</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>  <span class="keywordflow">return</span> HWY_DYNAMIC_DISPATCH(MaxFreeAtomForceNorm)(forces, fixed, nAtoms);</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>}</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>} <span class="comment">// namespace eonc</span></div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="preprocessor">#endif </span><span class="comment">// HWY_ONCE</span></div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="preprocessor">#else </span><span class="comment">// !WITH_HIGHWAY</span></div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc.html">eonc</a> {</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
-<div class="foldopen" id="foldopen00106" data-start="{" data-end="}">
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="namespaceeonc.html#ad52e6fd72cd768445176672c88a48259">  106</a></span><span class="keywordtype">double</span> <a class="code hl_function" href="namespaceeonc.html#ad52e6fd72cd768445176672c88a48259">maxFreeAtomForceNorm</a>(<span class="keyword">const</span> <span class="keywordtype">double</span> *forces, <span class="keyword">const</span> <span class="keywordtype">double</span> *fixed,</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                            <span class="keywordtype">long</span> nAtoms) {</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1detail.html#a80ff6def7130f0f201757f99680ce040">detail::maxFreeAtomForceNormScalar</a>(forces, fixed, 0, nAtoms);</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>}</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment">// Rule: no MulAdd, NegMulAdd, or MulSub on a result that can reach an output.</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="ForceNorm_8h.html">eon/ForceNorm.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#ifdef WITH_HIGHWAY</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment">// foreach_target.h re-includes this file once per SIMD target. The path is</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment">// relative to the project include root.</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#undef HWY_TARGET_INCLUDE</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#define HWY_TARGET_INCLUDE &quot;client/ForceNorm.cpp&quot;</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &lt;hwy/foreach_target.h&gt;</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#include &lt;hwy/highway.h&gt;</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>HWY_BEFORE_NAMESPACE();</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc.html">eonc</a> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">namespace </span>HWY_NAMESPACE {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">namespace </span>hn = hwy::HWY_NAMESPACE;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keywordtype">double</span> MaxFreeAtomForceNorm(<span class="keyword">const</span> <span class="keywordtype">double</span> *HWY_RESTRICT forces,</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                            <span class="keyword">const</span> <span class="keywordtype">double</span> *HWY_RESTRICT fixed, <span class="keywordtype">long</span> nAtoms) {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>  <span class="keywordflow">if</span> (forces == <span class="keyword">nullptr</span> || nAtoms &lt;= 0) {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>  }</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>  <span class="keyword">const</span> hn::ScalableTag&lt;double&gt; d;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>  <span class="keyword">const</span> <span class="keywordtype">size_t</span> lanes = hn::Lanes(d);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>  <span class="keyword">const</span> <span class="keywordtype">size_t</span> n = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nAtoms);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  <span class="keyword">const</span> <span class="keyword">auto</span> half = hn::Set(d, 0.5);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>  <span class="keyword">auto</span> vmax = hn::Zero(d);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>  <span class="keywordtype">size_t</span> i = 0;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  <span class="keywordflow">for</span> (; i + lanes &lt;= n; i += lanes) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">auto</span> x = hn::Zero(d);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">auto</span> y = hn::Zero(d);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">auto</span> z = hn::Zero(d);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    hn::LoadInterleaved3(d, forces + 3 * i, x, y, z);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="comment">// Mul then Add, not MulAdd. A contracted FMA rounds once; the scalar</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="comment">// tail rounds each product and the sum, and both paths must agree.</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">const</span> <span class="keyword">auto</span> nrm =</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        hn::Sqrt(hn::Add(hn::Add(hn::Mul(x, x), hn::Mul(y, y)), hn::Mul(z, z)));</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">if</span> (fixed != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>      <span class="keyword">auto</span> fx = hn::Zero(d);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>      <span class="keyword">auto</span> fy = hn::Zero(d);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>      <span class="keyword">auto</span> fz = hn::Zero(d);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>      hn::LoadInterleaved3(d, fixed + 3 * i, fx, fy, fz);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>      <span class="keyword">const</span> <span class="keyword">auto</span> allFixed = hn::And(</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>          hn::Gt(fx, half), hn::And(hn::Gt(fy, half), hn::Gt(fz, half)));</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>      <span class="keyword">const</span> <span class="keyword">auto</span> free = hn::IfThenElseZero(hn::Not(allFixed), nrm);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>      <span class="comment">// hn::Max keeps or drops a NaN depending on the target (maxpd on x86,</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>      <span class="comment">// vmaxq on NEON), so a NaN is returned before it reaches the max.</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>      <span class="keywordflow">if</span> (!hn::AllFalse(d, hn::IsNaN(free))) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordflow">return</span> std::numeric_limits&lt;double&gt;::quiet_NaN();</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>      }</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>      vmax = hn::Max(vmax, free);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>      <span class="keywordflow">if</span> (!hn::AllFalse(d, hn::IsNaN(nrm))) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordflow">return</span> std::numeric_limits&lt;double&gt;::quiet_NaN();</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>      }</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>      vmax = hn::Max(vmax, nrm);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    }</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>  }</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> tail = detail::maxFreeAtomForceNormScalar(</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>      forces, fixed, <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(i), nAtoms);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>  <span class="keywordflow">if</span> (std::isnan(tail)) {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordflow">return</span> tail;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>  }</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>  <span class="keywordflow">return</span> std::max(hn::ReduceMax(d, vmax), tail);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>}</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>} <span class="comment">// namespace HWY_NAMESPACE</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>} <span class="comment">// namespace eonc</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>HWY_AFTER_NAMESPACE();</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="preprocessor">#if HWY_ONCE</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc.html">eonc</a> {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>HWY_EXPORT(MaxFreeAtomForceNorm);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="keywordtype">double</span> <a class="code hl_function" href="namespaceeonc.html#ad52e6fd72cd768445176672c88a48259">maxFreeAtomForceNorm</a>(<span class="keyword">const</span> <span class="keywordtype">double</span> *forces, <span class="keyword">const</span> <span class="keywordtype">double</span> *fixed,</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                            <span class="keywordtype">long</span> nAtoms) {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>  <span class="keywordflow">return</span> HWY_DYNAMIC_DISPATCH(MaxFreeAtomForceNorm)(forces, fixed, nAtoms);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>}</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>} <span class="comment">// namespace eonc</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="preprocessor">#endif </span><span class="comment">// HWY_ONCE</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span><span class="preprocessor">#else </span><span class="comment">// !WITH_HIGHWAY</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc.html">eonc</a> {</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="foldopen" id="foldopen00107" data-start="{" data-end="}">
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="namespaceeonc.html#ad52e6fd72cd768445176672c88a48259">  107</a></span><span class="keywordtype">double</span> <a class="code hl_function" href="namespaceeonc.html#ad52e6fd72cd768445176672c88a48259">maxFreeAtomForceNorm</a>(<span class="keyword">const</span> <span class="keywordtype">double</span> *forces, <span class="keyword">const</span> <span class="keywordtype">double</span> *fixed,</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                            <span class="keywordtype">long</span> nAtoms) {</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1detail.html#a80ff6def7130f0f201757f99680ce040">detail::maxFreeAtomForceNormScalar</a>(forces, fixed, 0, nAtoms);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>}</div>
 </div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>} <span class="comment">// namespace eonc</span></div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span><span class="preprocessor">#endif </span><span class="comment">// WITH_HIGHWAY</span></div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>} <span class="comment">// namespace eonc</span></div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><span class="preprocessor">#endif </span><span class="comment">// WITH_HIGHWAY</span></div>
 <div class="ttc" id="aForceNorm_8h_html"><div class="ttname"><a href="ForceNorm_8h.html">ForceNorm.h</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1detail_html_a80ff6def7130f0f201757f99680ce040"><div class="ttname"><a href="namespaceeonc_1_1detail.html#a80ff6def7130f0f201757f99680ce040">eonc::detail::maxFreeAtomForceNormScalar</a></div><div class="ttdeci">double maxFreeAtomForceNormScalar(const double *forces, const double *fixed, long begin, long nAtoms)</div><div class="ttdoc">Scalar max of per-atom Euclidean norms on [begin, nAtoms).</div><div class="ttdef"><b>Definition</b> <a href="ForceNorm_8h_source.html#l00025">ForceNorm.h:25</a></div></div>
 <div class="ttc" id="anamespaceeonc_html"><div class="ttname"><a href="namespaceeonc.html">eonc</a></div><div class="ttdoc">RAII resource manager for the ARTn C library with global synchronization.</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00023">ARTnSaddleSearch.cpp:23</a></div></div>
-<div class="ttc" id="anamespaceeonc_html_ad52e6fd72cd768445176672c88a48259"><div class="ttname"><a href="namespaceeonc.html#ad52e6fd72cd768445176672c88a48259">eonc::maxFreeAtomForceNorm</a></div><div class="ttdeci">double maxFreeAtomForceNorm(const double *forces, const double *fixed, long nAtoms)</div><div class="ttdoc">Max Euclidean norm over N x 3 row-major force rows.</div><div class="ttdef"><b>Definition</b> <a href="#l00106">ForceNorm.cpp:106</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_ad52e6fd72cd768445176672c88a48259"><div class="ttname"><a href="namespaceeonc.html#ad52e6fd72cd768445176672c88a48259">eonc::maxFreeAtomForceNorm</a></div><div class="ttdeci">double maxFreeAtomForceNorm(const double *forces, const double *fixed, long nAtoms)</div><div class="ttdoc">Max Euclidean norm over N x 3 row-major force rows.</div><div class="ttdef"><b>Definition</b> <a href="#l00107">ForceNorm.cpp:107</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->
