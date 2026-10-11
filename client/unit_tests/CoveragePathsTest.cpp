@@ -69,6 +69,10 @@
 #include <sys/wait.h>
 #include <unistd.h>
 extern char **environ;
+#if defined(__APPLE__)
+#include <limits.h>
+#include <mach-o/dyld.h>
+#endif
 #endif
 #include <vector>
 
@@ -3145,9 +3149,36 @@ TEST_CASE("a dynamics search keeps the barrier after one step",
 #ifndef _WIN32
 TEST_CASE("the client rejects an unknown flag and a missing structure",
           "[client][args]") {
-  const auto client =
-      std::filesystem::read_symlink("/proc/self/exe").parent_path() /
-      "eonclient";
+  std::filesystem::path exe;
+#if defined(__linux__)
+  {
+    std::error_code ec;
+    exe = std::filesystem::read_symlink("/proc/self/exe", ec);
+    if (ec) {
+      FAIL("read_symlink /proc/self/exe: " << ec.message());
+    }
+  }
+#elif defined(__APPLE__)
+  {
+    // macOS has no /proc/self/exe. The buffer grows once if PATH_MAX is short.
+    uint32_t size = PATH_MAX;
+    std::vector<char> buf(size, '\0');
+    if (_NSGetExecutablePath(buf.data(), &size) != 0) {
+      buf.assign(size, '\0');
+      if (_NSGetExecutablePath(buf.data(), &size) != 0) {
+        SKIP("could not resolve the test executable");
+      }
+    }
+    std::error_code ec;
+    exe = std::filesystem::weakly_canonical(buf.data(), ec);
+    if (ec) {
+      exe = buf.data();
+    }
+  }
+#else
+  SKIP("client flag test covers Linux and macOS");
+#endif
+  const auto client = exe.parent_path() / "eonclient";
   if (!std::filesystem::exists(client)) {
     return;
   }
