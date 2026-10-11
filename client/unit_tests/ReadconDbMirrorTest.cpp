@@ -27,7 +27,9 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 TEST_CASE("loaded rkrdb_open matches the python package version",
           "[readcon-db]") {
-#ifndef _WIN32
+#ifdef _WIN32
+  SKIP("ReadconDbMirror.cpp compiles the mirror out on Windows");
+#else
   unsetenv("EON_READCON_DB_LIBRARY");
 #endif
   eonc::io::readcon_db_mirror_reset();
