@@ -37,6 +37,24 @@ std::string toLowerCase(std::string s) {
   }
   return s;
 }
+
+/// "none" is the historical spelling of an omitted optimizer and is not
+/// an error. An unknown token is.
+void assign_explicit_opt(const std::string &text, eonc::OptType &dest,
+                         bool &was_set, int &error, const char *where) {
+  auto parsed = magic_enum::enum_cast<eonc::OptType>(
+      text, magic_enum::case_insensitive);
+  if (!parsed || *parsed == eonc::OptType::Unknown) {
+    EONC_LOG_ERROR("{} '{}' is not a known optimizer", where, text);
+    error = 1;
+    return;
+  }
+  if (*parsed == eonc::OptType::None) {
+    return;
+  }
+  dest = *parsed;
+  was_set = true;
+}
 } // namespace
 
 namespace eonc::config {
@@ -355,12 +373,12 @@ int load_ini(INIReader &ini, Parameters &params) {
                       .minimization_offset);
 
   // [Optimizers] //
-  auto inp_optMethod =
-      magic_enum::enum_cast<OptType>(ini.Get("Optimizer", "opt_method", "none"),
-                                     magic_enum::case_insensitive)
-          .value_or(OptType::Unknown);
-  if (inp_optMethod != OptType::None) {
-    ParametersLoadAccess::optimizer_options(params).method = inp_optMethod;
+  if (ini.HasValue("Optimizer", "opt_method")) {
+    auto &method = ParametersLoadAccess::optimizer_options(params).method;
+    auto &method_set =
+        ParametersLoadAccess::optimizer_options(params).method_set;
+    assign_explicit_opt(ini.Get("Optimizer", "opt_method", ""), method,
+                        method_set, error, "[Optimizer] opt_method");
   }
 
   ParametersLoadAccess::optimizer_options(params).convergence_metric =
@@ -547,10 +565,22 @@ int load_ini(INIReader &ini, Parameters &params) {
   ParametersLoadAccess::dimer_options(params).max_iterations = ini.GetInteger(
       "Dimer", "max_iterations",
       ParametersLoadAccess::dimer_options(params).max_iterations);
-  if (auto dimerOpt = magic_enum::enum_cast<OptType>(
-          ini.Get("Dimer", "opt_method", "cg"), magic_enum::case_insensitive);
-      dimerOpt && *dimerOpt != OptType::Unknown && *dimerOpt != OptType::None) {
-    ParametersLoadAccess::dimer_options(params).opt_method = *dimerOpt;
+  if (ini.HasValue("Dimer", "opt_method")) {
+    auto &dimer = ParametersLoadAccess::dimer_options(params);
+    const std::string text = ini.Get("Dimer", "opt_method", "");
+    auto parsed =
+        magic_enum::enum_cast<OptType>(text, magic_enum::case_insensitive);
+    if (!parsed || *parsed == OptType::Unknown || *parsed == OptType::None ||
+        (*parsed != OptType::SD && *parsed != OptType::CG &&
+         *parsed != OptType::LBFGS)) {
+      EONC_LOG_ERROR(
+          "[Dimer] opt_method '{}' is not a rotation optimizer (sd, cg, lbfgs)",
+          text);
+      error = 1;
+    } else {
+      dimer.opt_method = *parsed;
+      dimer.opt_method_set = true;
+    }
   }
   ParametersLoadAccess::dimer_options(params).rotations_min =
       ini.GetInteger("Dimer", "rotations_min",
@@ -1041,12 +1071,11 @@ int load_ini(INIReader &ini, Parameters &params) {
   ParametersLoadAccess::neb_options(params).force_tolerance = ini.GetReal(
       neb_section, "converged_force",
       ParametersLoadAccess::optimizer_options(params).converged_force);
-  auto neb_optMethod =
-      magic_enum::enum_cast<OptType>(ini.Get(neb_section, "opt_method", "none"),
-                                     magic_enum::case_insensitive)
-          .value_or(OptType::Unknown);
-  if (neb_optMethod != OptType::None) {
-    ParametersLoadAccess::neb_options(params).opt_method = neb_optMethod;
+  if (ini.HasValue(neb_section, "opt_method")) {
+    auto &neb = ParametersLoadAccess::neb_options(params);
+    assign_explicit_opt(ini.Get(neb_section, "opt_method", ""), neb.opt_method,
+                        neb.opt_method_set, error,
+                        "[Nudged Elastic Band] opt_method");
   }
   ParametersLoadAccess::neb_options(params).mmf_peaks.enabled = ini.GetBoolean(
       neb_section, "setup_mmf_peaks",
@@ -1191,14 +1220,14 @@ int load_ini(INIReader &ini, Parameters &params) {
       ini.GetBoolean(neb_section, "sidpp_reparameterize", init.sidpp_reparam);
   init.sidpp_ideal_ksp =
       ini.GetBoolean(neb_section, "sidpp_ideal_ksp", init.sidpp_ideal_ksp);
-  auto neb_ipath_optMethod =
-      magic_enum::enum_cast<OptType>(
-          ini.Get(neb_section, "ipath_opt_method", "none"),
-          magic_enum::case_insensitive)
-          .value_or(OptType::Unknown);
-  if (neb_ipath_optMethod != OptType::None) {
-    ParametersLoadAccess::neb_options(params).initialization.opt_method =
-        neb_ipath_optMethod;
+  if (ini.HasValue(neb_section, "ipath_opt_method")) {
+    auto &init_method =
+        ParametersLoadAccess::neb_options(params).initialization.opt_method;
+    auto &init_set = ParametersLoadAccess::neb_options(params)
+                         .initialization.opt_method_set;
+    assign_explicit_opt(ini.Get(neb_section, "ipath_opt_method", ""),
+                        init_method, init_set, error,
+                        "[Nudged Elastic Band] ipath_opt_method");
   }
   init.oversampling =
       ini.GetBoolean(neb_section, "oversampling", init.oversampling);
@@ -1224,6 +1253,10 @@ int load_ini(INIReader &ini, Parameters &params) {
   ParametersLoadAccess::dynamics_options(params).time_input =
       ini.GetReal("Dynamics", "time",
                   ParametersLoadAccess::dynamics_options(params).time_input);
+  ParametersLoadAccess::dynamics_options(params).use_input_velocities =
+      ini.GetBoolean(
+          "Dynamics", "use_input_velocities",
+          ParametersLoadAccess::dynamics_options(params).use_input_velocities);
   ParametersLoadAccess::dynamics_options(params).time =
       ParametersLoadAccess::dynamics_options(params).time_input /
       ParametersLoadAccess::constants(params).timeUnit;
@@ -1891,7 +1924,33 @@ int load_ini(INIReader &ini, Parameters &params) {
       ini.GetInteger("OH_TST", "scan_planes",
                      ParametersLoadAccess::oh_tst_options(params).scan_planes);
 
+  inherit_job_opt_methods(params);
   return error;
+}
+
+void inherit_job_opt_methods(Parameters &params) {
+  auto &opt = ParametersLoadAccess::optimizer_options(params);
+  auto &neb = ParametersLoadAccess::neb_options(params);
+  if (!neb.opt_method_set && opt.method_set) {
+    neb.opt_method = opt.method;
+  }
+  if (!neb.initialization.opt_method_set &&
+      (neb.opt_method_set || opt.method_set)) {
+    neb.initialization.opt_method = neb.opt_method;
+  }
+  auto &dimer = ParametersLoadAccess::dimer_options(params);
+  if (dimer.opt_method_set || !opt.method_set) {
+    return;
+  }
+  switch (opt.method) {
+  case OptType::SD:
+  case OptType::CG:
+  case OptType::LBFGS:
+    dimer.opt_method = opt.method;
+    break;
+  default:
+    break;
+  }
 }
 
 void validate_and_link(Parameters &params) {
@@ -1961,6 +2020,7 @@ void validate_and_link(Parameters &params) {
       ParametersLoadAccess::optimizer_options(params).max_move;
   ParametersLoadAccess::neb_options(params).force_tolerance =
       ParametersLoadAccess::optimizer_options(params).converged_force;
+  inherit_job_opt_methods(params);
 }
 
 } // namespace eonc::config

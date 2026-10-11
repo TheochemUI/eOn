@@ -27,5 +27,10 @@ int load_ini(INIReader &ini, Parameters &params);
 /// Called after INI (or JSON) loading to finalize computed fields.
 void validate_and_link(Parameters &params);
 
+/// Copy an explicit [Optimizer] opt_method onto job sections that did not
+/// set their own. NEB keeps LBFGS, and the dimer keeps CG, when the
+/// optimizer key was omitted.
+void inherit_job_opt_methods(Parameters &params);
+
 } // namespace config
 } // namespace eonc

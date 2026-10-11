@@ -242,6 +242,17 @@ Nudged Elastic Band:
             kind: int
             default: 1000
 
+        opt_method:
+            kind: string
+            default: lbfgs
+            values:
+                - qm
+                - cg
+                - lbfgs
+                - fire
+                - sd
+                - xtsci
+
         doubly_nudged:
             kind: boolean
             default: false
@@ -541,6 +552,10 @@ Dynamics:
         time:
             kind: float
             default: 1000.0
+
+        use_input_velocities:
+            kind: boolean
+            default: true
 
         thermostat:
             kind: string

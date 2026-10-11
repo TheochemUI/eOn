@@ -112,10 +112,11 @@ the C++ client for trajectory outputs and downstream visualization tooling.
 - **Meson** >= 1.8.0
 
 The `readcon-core` library is fetched as a Meson subproject via
-`subprojects/readcon-core.wrap` and linked statically. The wrap pins release
-the 0.14 line (spec 3, x-only decode from readcon-core #25), and
-`client/meson.build` asks for `>=0.14.2` on both resolution paths.
-`eon/fileio.py` needs the companion `readcon` package at `>=0.14.5`.
+`subprojects/readcon-core.wrap` and linked statically. The wrap pins
+v0.17.0, and `client/meson.build` asks for `>=0.17.0` on both resolution
+paths. A velocities section is labeled with the natural time unit
+`(amu*angstrom^2/eV)^0.5`, which is the unit Matter stores. `eon/fileio.py`
+needs the companion `readcon` package at `>=0.14.5`.
 
 ## Updating the subproject
 

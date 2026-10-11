@@ -509,4 +509,51 @@ TEST_CASE("JSON RgpotPot omits xtb_charge resets it from charge",
   REQUIRE(kept.rgpot_options().xtb_charge == Catch::Approx(2.5));
 }
 
+TEST_CASE("Job opt_method inherits an explicit optimizer method",
+          "[params][opt_method]") {
+  Parameters omitted;
+  REQUIRE(omitted.load_ini_text("[Main]\njob = neb\n") == 0);
+  REQUIRE(omitted.optimizer_options().method == OptType::CG);
+  REQUIRE(omitted.neb_options().opt_method == OptType::LBFGS);
+  REQUIRE(omitted.neb_options().initialization.opt_method == OptType::LBFGS);
+  REQUIRE(omitted.dimer_options().opt_method == OptType::CG);
+  REQUIRE(omitted.dynamics_options().use_input_velocities);
+
+  Parameters inherited;
+  REQUIRE(inherited.load_ini_text("[Optimizer]\nopt_method = sd\n") == 0);
+  REQUIRE(inherited.neb_options().opt_method == OptType::SD);
+  REQUIRE(inherited.neb_options().initialization.opt_method == OptType::SD);
+  REQUIRE(inherited.dimer_options().opt_method == OptType::SD);
+
+  Parameters overridden;
+  REQUIRE(overridden.load_ini_text("[Optimizer]\nopt_method = sd\n\n"
+                                   "[Nudged Elastic Band]\nopt_method = lbfgs\n"
+                                   "ipath_opt_method = cg\n\n"
+                                   "[Dimer]\nopt_method = cg\n") == 0);
+  REQUIRE(overridden.neb_options().opt_method == OptType::LBFGS);
+  REQUIRE(overridden.neb_options().initialization.opt_method == OptType::CG);
+  REQUIRE(overridden.dimer_options().opt_method == OptType::CG);
+
+  Parameters fire;
+  REQUIRE(fire.load_ini_text("[Optimizer]\nopt_method = fire\n") == 0);
+  REQUIRE(fire.neb_options().opt_method == OptType::FIRE);
+  REQUIRE(fire.dimer_options().opt_method == OptType::CG);
+
+  Parameters unknown;
+  REQUIRE(unknown.load_ini_text(
+              "[Nudged Elastic Band]\nopt_method = not_a_method\n") != 0);
+
+  Parameters fromJson;
+  nlohmann::json j = {{"Optimizer", {{"opt_method", "sd"}}}};
+  eonc::config::from_json(j, fromJson);
+  REQUIRE(fromJson.neb_options().opt_method == OptType::SD);
+  REQUIRE(fromJson.neb_options().initialization.opt_method == OptType::SD);
+  REQUIRE(fromJson.dimer_options().opt_method == OptType::SD);
+
+  Parameters redraw;
+  REQUIRE(redraw.load_ini_text("[Dynamics]\nuse_input_velocities = false\n") ==
+          0);
+  REQUIRE_FALSE(redraw.dynamics_options().use_input_velocities);
+}
+
 } /* namespace tests */

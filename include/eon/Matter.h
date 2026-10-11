@@ -282,8 +282,9 @@ public:
   }
   [[nodiscard]] io::IoStatus
   matter2con(std::string filename, bool append = false,
-             const io::ConFrameMetadata *metadata = nullptr) {
-    return io::matter2con(*this, filename, append, metadata);
+             const io::ConFrameMetadata *metadata = nullptr,
+             bool with_velocities = false) {
+    return io::matter2con(*this, filename, append, metadata, with_velocities);
   }
   [[nodiscard]] io::IoStatus matter2convel(std::string filename) {
     return io::matter2convel(*this, filename);

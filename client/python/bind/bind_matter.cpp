@@ -378,10 +378,14 @@ void bind_matter(nb::module_ &m) {
           nb::arg("path"), "Load .con file into this Matter")
       .def(
           "matter2con",
-          [](Matter &self, const std::string &path, bool append) {
-            return self.matter2con(path, append, nullptr);
+          [](Matter &self, const std::string &path, bool append,
+             bool with_velocities) {
+            return self.matter2con(path, append, nullptr, with_velocities);
           },
-          nb::arg("path"), nb::arg("append") = false, "Write Matter to .con")
+          nb::arg("path"), nb::arg("append") = false,
+          nb::arg("with_velocities") = false,
+          "Write Matter to .con. with_velocities adds a CON 3.1 velocities "
+          "section labeled with the natural time unit.")
       .def(
           "convel2matter",
           [](Matter &self, const std::string &path) {

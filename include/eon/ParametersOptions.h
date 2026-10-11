@@ -233,6 +233,9 @@ struct saddle_search_options_t {
 // [Optimizer] //
 struct optimizer_options_t {
   OptType method{OptType::CG};
+  /// True when this run set method explicitly. An omitted key leaves the
+  /// historical default and does not override a job section.
+  bool method_set{false};
   std::string xtsci_method{"lbfgs"};
   struct xtsci_t {
     std::string method{"lbfgs"};
@@ -304,6 +307,9 @@ struct dimer_options_t {
   double converged_angle{5.0};
   long max_iterations{1000};
   OptType opt_method{OptType::CG};
+  /// True when [Dimer] opt_method was set. Otherwise an explicit
+  /// [Optimizer] opt_method of sd, cg, or lbfgs is the rotation method.
+  bool opt_method_set{false};
   long rotations_max{10};
   long rotations_min{1};
   double torque_max{1.0};
@@ -519,6 +525,10 @@ struct neb_options_t {
   long image_count{5};
   long max_iterations{1000};
   OptType opt_method{OptType::LBFGS};
+  /// True when [Nudged Elastic Band] opt_method was set. Otherwise an
+  /// explicit [Optimizer] opt_method is the band optimizer, and an omitted
+  /// optimizer key keeps this LBFGS default.
+  bool opt_method_set{false};
   double force_tolerance{0.01}; // resolved to optimizer_options.converged_force
   struct mmf_peak_options_t {
     bool enabled{true};
@@ -603,6 +613,9 @@ struct neb_options_t {
     bool sidpp_reparam{true};        ///< Reparameterize after growth complete
     bool sidpp_ideal_ksp{false};     ///< Scale spring constant during growth
     OptType opt_method{OptType::LBFGS};
+    /// True when ipath_opt_method was set. Otherwise the path initializer
+    /// uses the band optimizer.
+    bool opt_method_set{false};
     bool oversampling{false};
     int oversampling_factor{3};
   } initialization;
@@ -630,6 +643,10 @@ struct dynamics_options_t {
   double time_input{1000.0};
   double time{0.0}; // computed: input / timeUnit
   long steps{0};    // computed: time / time_step
+  /// When true, Dynamics::run keeps nonzero velocities already on the
+  /// matter. A structure with no velocities is still drawn from the
+  /// Maxwell-Boltzmann distribution at the configured temperature.
+  bool use_input_velocities{true};
 };
 
 // [Parallel Replica] //

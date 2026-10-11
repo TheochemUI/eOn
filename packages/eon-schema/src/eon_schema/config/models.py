@@ -2147,6 +2147,15 @@ class NudgedElasticBandConfig(BaseModel):
     images: int = Field(
         default=5, description="Number of NEB images between the fixed endpoints."
     )
+    opt_method: Literal["qm", "cg", "lbfgs", "fire", "sd", "xtsci"] = Field(
+        default="lbfgs",
+        description=(
+            "Optimizer for the band. When the key is omitted, an explicit "
+            "[Optimizer] opt_method is used. LBFGS remains the band default "
+            "when that key is omitted too. ipath_opt_method follows this "
+            "value unless it is set."
+        ),
+    )
     spring: float = Field(
         default=5.0, description="The spring constant, in eV/Ang^2 between the images."
     )
@@ -2776,6 +2785,15 @@ class DynamicsConfig(BaseModel):
         default=1000.0,
         description="Total MD time, in femtoseconds.",
     )
+    use_input_velocities: bool = Field(
+        default=True,
+        description=(
+            "When true, a classical dynamics run keeps nonzero velocities "
+            "from the input structure. Zero velocities are drawn at the "
+            "configured temperature. False always redraws thermal velocities. "
+            "final.con writes those velocities with the CON 3.1 natural time unit."
+        ),
+    )
     thermostat: Literal[
         "none", "andersen", "langevin", "nose_hoover", "pile", "piglet"
     ] = Field(
@@ -2783,7 +2801,7 @@ class DynamicsConfig(BaseModel):
     )
     """
     Options:
-    - ``none``: NVE dynamics with the verlet algorithm. Initial velocities set by temperature.
+    - ``none``: NVE dynamics with the verlet algorithm. Nonzero input velocities are kept when use_input_velocities is true. Otherwise velocities are drawn at the configured temperature.
     - ``andersen``: Andersen thermostat with the Verlet algorithm.
     - ``langevin``: Langevin thermostat with the Verlet algorithm.
     - ``nose_hoover``: Nosé-Hoover thermostat with the Verlet algorithm.

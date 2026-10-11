@@ -45,6 +45,9 @@ struct DynamicsConfig {
   double path_pile_tau{0.0};
   double path_pile_scale{1.0};
   std::uint64_t path_seed{1};
+  /// Keep nonzero velocities already stored on the matter. Zero velocities
+  /// are still drawn at the configured temperature.
+  bool use_input_velocities{true};
 
   static DynamicsConfig fromParams(const Parameters &p) {
     return {p.dynamics_options().time_step,
@@ -65,7 +68,8 @@ struct DynamicsConfig {
             p.thermostat_options().path_gle_file,
             p.thermostat_options().path_pile_tau,
             p.thermostat_options().path_pile_scale,
-            p.thermostat_options().path_seed};
+            p.thermostat_options().path_seed,
+            p.dynamics_options().use_input_velocities};
   }
 };
 

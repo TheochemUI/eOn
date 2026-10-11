@@ -26,6 +26,7 @@
 #include <format>
 #include <fstream>
 #include <mutex>
+#include <nlohmann/json.hpp>
 #include <numeric>
 #include <optional>
 #include <stdexcept>
@@ -41,6 +42,9 @@ namespace fs = std::filesystem;
 
 constexpr uint8_t kConPrecision = 17;
 constexpr uint8_t kConvelPrecision = 6;
+// CON 3.1 natural time (readcon-core >= 0.17). Matter velocities are
+// stored per this unit, so a velocities section must not be labeled "fs".
+constexpr const char kNaturalTimeUnit[] = "(amu*angstrom^2/eV)^0.5";
 
 std::string strip_nl(const std::string &s) {
   std::string str(s);
@@ -83,12 +87,38 @@ std::vector<double> flat_row_major(const AtomMatrix &m) {
 }
 
 void apply_frame_metadata(readcon::ConFrameBuilder &builder,
-                          const eonc::io::ConFrameMetadata *metadata) {
+                          const eonc::io::ConFrameMetadata *metadata,
+                          bool with_velocities) {
+  if (with_velocities) {
+    nlohmann::json meta = nlohmann::json::object();
+    if (metadata != nullptr && metadata->raw_json &&
+        !metadata->raw_json->empty()) {
+      meta = nlohmann::json::parse(*metadata->raw_json);
+    }
+    if (!meta.is_object()) {
+      throw std::invalid_argument("frame metadata JSON must be an object");
+    }
+    if (!meta.contains("units") || !meta["units"].is_object()) {
+      meta["units"] = nlohmann::json::object();
+    }
+    auto &units = meta["units"];
+    if (!units.contains("length")) {
+      units["length"] = "angstrom";
+    }
+    if (!units.contains("energy")) {
+      units["energy"] = "eV";
+    }
+    if (!units.contains("mass")) {
+      units["mass"] = "amu";
+    }
+    units["time"] = kNaturalTimeUnit;
+    builder.set_metadata_json(meta.dump());
+  } else if (metadata != nullptr && metadata->raw_json &&
+             !metadata->raw_json->empty()) {
+    builder.set_metadata_json(*metadata->raw_json);
+  }
   if (metadata == nullptr) {
     return;
-  }
-  if (metadata->raw_json && !metadata->raw_json->empty()) {
-    builder.set_metadata_json(*metadata->raw_json);
   }
   if (metadata->energy) {
     builder.set_energy(*metadata->energy);
@@ -482,7 +512,7 @@ readcon::ConFrame frame_from_matter(Matter &m,
       meta_ptr = &auto_meta;
     }
   }
-  apply_frame_metadata(builder, meta_ptr);
+  apply_frame_metadata(builder, meta_ptr, with_velocities);
   apply_geometry(builder, m, with_velocities, meta_ptr);
   return builder.build();
 }
@@ -554,7 +584,7 @@ void resetConAppendState() {
 }
 
 IoStatus matter2con(Matter &m, std::string filename, bool append,
-                    const ConFrameMetadata *metadata) {
+                    const ConFrameMetadata *metadata, bool with_velocities) {
   filename = ensure_extension(std::move(filename), ".con");
 
   m.applyPeriodicBoundaryIfEnabled();
@@ -600,7 +630,7 @@ IoStatus matter2con(Matter &m, std::string filename, bool append,
     }
   }
   try {
-    frames.push_back(frame_from_matter(m, metadata, /*with_velocities=*/false));
+    frames.push_back(frame_from_matter(m, metadata, with_velocities));
   } catch (const std::exception &e) {
     EONC_LOG_ERROR("Failed to build frame for {}: {}", filename, e.what());
     return IoStatus::InvalidArgument;
@@ -941,7 +971,7 @@ buildNebPathFrames(const std::vector<std::shared_ptr<Matter>> &path,
         return {};
       }
       auto builder = seed.clone();
-      apply_frame_metadata(builder, &metadata_per_image[i]);
+      apply_frame_metadata(builder, &metadata_per_image[i], false);
       apply_geometry(builder, img, /*with_velocities=*/false,
                      &metadata_per_image[i]);
       frames.push_back(builder.build());

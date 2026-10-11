@@ -240,6 +240,23 @@ nvc++ builds with `-Dstdpar=cpu` / `-Dstdpar=gpu` use
 evaluation unless they report thread-safe shared instances or per-image
 copies. Morse and other host potentials stay on the CPU.
 
+## Band optimizer
+
+`opt_method` under **[Nudged Elastic Band]** chooses the optimizer that
+moves the band. When that key is omitted and **[Optimizer]** `opt_method`
+is set, the band uses that method, and so does `ipath_opt_method` unless
+the path initializer sets its own. When neither key is set, the band stays
+on LBFGS. An explicit NEB key wins over the optimizer section. The same
+rule applies to classical dimer rotation for `sd`, `cg`, and `lbfgs`.
+
+```ini
+[Optimizer]
+opt_method = sd
+```
+
+That file runs the band with steepest descent. Set
+`[Nudged Elastic Band] opt_method` only to override it.
+
 ## Configuration
 
 The NEB section can be specified in `config.ini`:

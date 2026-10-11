@@ -20,7 +20,10 @@
 
 #include <cmath>
 #include <filesystem>
+#include <fstream>
+#include <iterator>
 #include <stdexcept>
+#include <string>
 
 namespace tests {
 
@@ -487,6 +490,63 @@ TEST_CASE_METHOD(DynamicsFixture, "Dynamics run writes a movie when asked",
   fs::current_path(original);
   fs::remove_all(dir);
   REQUIRE(wrote);
+}
+
+TEST_CASE_METHOD(DynamicsFixture,
+                 "Dynamics 5 fs plus 5 fs restart matches one 10 fs run",
+                 "[dynamics][restart]") {
+  auto configure = [&](long steps) {
+    DynamicsConfig cfg = DynamicsConfig::fromParams(params);
+    cfg.thermostat_kind = Dynamics::NONE;
+    cfg.use_input_velocities = true;
+    cfg.temperature = 300.0;
+    cfg.steps = steps;
+    cfg.time_step = 1.0 / params.constants().timeUnit;
+    cfg.write_movies = false;
+    return cfg;
+  };
+
+  eonc::rng::random(42);
+  Matter continuous(pot, params);
+  REQUIRE(eonc::io::io_ok(continuous.con2matter(std::string("reactant.con"))));
+  Dynamics(&continuous, configure(10)).run();
+
+  eonc::rng::random(42);
+  Matter first(pot, params);
+  REQUIRE(eonc::io::io_ok(first.con2matter(std::string("reactant.con"))));
+  Dynamics(&first, configure(5)).run();
+
+  const auto path =
+      std::filesystem::temp_directory_path() / "eon_md_restart.con";
+  std::filesystem::remove(path);
+  REQUIRE(eonc::io::io_ok(first.matter2con(path.string(), false, nullptr, true)));
+
+  std::ifstream in(path);
+  const std::string text((std::istreambuf_iterator<char>(in)),
+                         std::istreambuf_iterator<char>());
+  REQUIRE(text.find("velocities") != std::string::npos);
+  REQUIRE(text.find("(amu*angstrom^2/eV)^0.5") != std::string::npos);
+  REQUIRE(text.find("\"time\":\"fs\"") == std::string::npos);
+  REQUIRE(text.find("\"time\": \"fs\"") == std::string::npos);
+
+  Matter restarted(pot, params);
+  REQUIRE(eonc::io::io_ok(restarted.con2matter(path.string())));
+  REQUIRE(restarted.getVelocities().cwiseAbs().maxCoeff() > 0.0);
+  Dynamics(&restarted, configure(5)).run();
+
+  REQUIRE(continuous.getPositions().isApprox(restarted.getPositions(), 1e-8));
+  REQUIRE(continuous.getVelocities().isApprox(restarted.getVelocities(), 1e-8));
+  std::filesystem::remove(path);
+
+  eonc::rng::random(42);
+  Matter redrawn(pot, params);
+  REQUIRE(eonc::io::io_ok(redrawn.con2matter(std::string("reactant.con"))));
+  Dynamics(&redrawn, configure(5)).run();
+  auto redrawCfg = configure(5);
+  redrawCfg.use_input_velocities = false;
+  Dynamics(&redrawn, redrawCfg).run();
+  REQUIRE_FALSE(
+      continuous.getPositions().isApprox(redrawn.getPositions(), 1e-4));
 }
 
 } /* namespace tests */

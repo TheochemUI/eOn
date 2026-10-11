@@ -40,6 +40,26 @@ template <typename E> static E enum_from_json(const json &j, E fallback) {
   return fallback;
 }
 
+/// "none" leaves the destination unset. An unknown token throws.
+static void read_explicit_opt(const json &value, eonc::OptType &dest,
+                              bool &was_set, const char *where) {
+  if (!value.is_string()) {
+    throw std::invalid_argument(std::string(where) + " must be a string");
+  }
+  const auto text = value.get<std::string>();
+  auto parsed = magic_enum::enum_cast<eonc::OptType>(
+      text, magic_enum::case_insensitive);
+  if (!parsed || *parsed == eonc::OptType::Unknown) {
+    throw std::invalid_argument(std::string(where) + " '" + text +
+                                "' is not a known optimizer");
+  }
+  if (*parsed == eonc::OptType::None) {
+    return;
+  }
+  dest = *parsed;
+  was_set = true;
+}
+
 // Macro for optional JSON field extraction with default
 #define JSON_OPT(j, key, target)                                               \
   if ((j).contains(key))                                                       \
@@ -168,6 +188,8 @@ json to_json(const Parameters &p) {
   j["Dynamics"] = {
       {"time_step", ParametersLoadAccess::dynamics_options(p).time_step_input},
       {"time", ParametersLoadAccess::dynamics_options(p).time_input},
+      {"use_input_velocities",
+       ParametersLoadAccess::dynamics_options(p).use_input_velocities},
   };
 
   // [Thermostat]
@@ -522,10 +544,11 @@ void from_json(const json &j, Parameters &p) {
   // [Optimizer]
   if (j.contains("Optimizer")) {
     auto &s = j.at("Optimizer");
-    if (s.contains("opt_method"))
-      ParametersLoadAccess::optimizer_options(p).method =
-          enum_from_json(s.at("opt_method"),
-                         ParametersLoadAccess::optimizer_options(p).method);
+    if (s.contains("opt_method")) {
+      auto &opt = ParametersLoadAccess::optimizer_options(p);
+      read_explicit_opt(s.at("opt_method"), opt.method, opt.method_set,
+                        "[Optimizer] opt_method");
+    }
     JSON_OPT(s, "convergence_metric",
              ParametersLoadAccess::optimizer_options(p).convergence_metric);
     for (char &c :
@@ -609,6 +632,8 @@ void from_json(const json &j, Parameters &p) {
     JSON_OPT(s, "time_step",
              ParametersLoadAccess::dynamics_options(p).time_step_input);
     JSON_OPT(s, "time", ParametersLoadAccess::dynamics_options(p).time_input);
+    JSON_OPT(s, "use_input_velocities",
+             ParametersLoadAccess::dynamics_options(p).use_input_velocities);
     readBathKeys(s, p);
   }
 
@@ -623,9 +648,17 @@ void from_json(const json &j, Parameters &p) {
     JSON_OPT(s, "images", ParametersLoadAccess::neb_options(p).image_count);
     JSON_OPT(s, "max_iterations",
              ParametersLoadAccess::neb_options(p).max_iterations);
-    if (s.contains("opt_method"))
-      ParametersLoadAccess::neb_options(p).opt_method = enum_from_json(
-          s.at("opt_method"), ParametersLoadAccess::neb_options(p).opt_method);
+    if (s.contains("opt_method")) {
+      auto &neb = ParametersLoadAccess::neb_options(p);
+      read_explicit_opt(s.at("opt_method"), neb.opt_method, neb.opt_method_set,
+                        "[Nudged Elastic Band] opt_method");
+    }
+    if (s.contains("ipath_opt_method")) {
+      auto &init = ParametersLoadAccess::neb_options(p).initialization;
+      read_explicit_opt(s.at("ipath_opt_method"), init.opt_method,
+                        init.opt_method_set,
+                        "[Nudged Elastic Band] ipath_opt_method");
+    }
     JSON_OPT(s, "converged_force",
              ParametersLoadAccess::neb_options(p).force_tolerance);
     JSON_OPT(s, "solid_state",
@@ -682,10 +715,26 @@ void from_json(const json &j, Parameters &p) {
              ParametersLoadAccess::dimer_options(p).converged_angle);
     JSON_OPT(s, "max_iterations",
              ParametersLoadAccess::dimer_options(p).max_iterations);
-    if (s.contains("opt_method"))
-      ParametersLoadAccess::dimer_options(p).opt_method =
-          enum_from_json(s.at("opt_method"),
-                         ParametersLoadAccess::dimer_options(p).opt_method);
+    if (s.contains("opt_method")) {
+      auto &dimer = ParametersLoadAccess::dimer_options(p);
+      const auto &value = s.at("opt_method");
+      if (!value.is_string()) {
+        throw std::invalid_argument("[Dimer] opt_method must be a string");
+      }
+      const auto text = value.get<std::string>();
+      auto parsed =
+          magic_enum::enum_cast<OptType>(text, magic_enum::case_insensitive);
+      if (!parsed || *parsed == OptType::Unknown ||
+          *parsed == OptType::None ||
+          (*parsed != OptType::SD && *parsed != OptType::CG &&
+           *parsed != OptType::LBFGS)) {
+        throw std::invalid_argument(
+            "[Dimer] opt_method '" + text +
+            "' is not a rotation optimizer (sd, cg, lbfgs)");
+      }
+      dimer.opt_method = *parsed;
+      dimer.opt_method_set = true;
+    }
     if (s.contains("rotation_backend"))
       ParametersLoadAccess::dimer_options(p).rotation_backend = enum_from_json(
           s.at("rotation_backend"),

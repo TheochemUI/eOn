@@ -42,7 +42,7 @@ obtained differs.
 
 | Value | Mode estimation | Notes |
 | --- | --- | --- |
-| `classical` | Constrained dimer rotation (Heyden / Kästner–Sherwood style) | Default; uses `opt_method`, torque limits, and rotation budgets as before |
+| `classical` | Constrained dimer rotation (Heyden / Kästner–Sherwood style) | Default; uses `opt_method`, torque limits, and rotation budgets as before. An omitted `[Dimer] opt_method` follows an explicit `[Optimizer] opt_method` of `sd`, `cg`, or `lbfgs`. Any other optimizer leaves the rotation on `cg`. |
 | `lanczos` | Finite-difference Lanczos min-mode | Shares the client Lanczos implementation; see {doc}`lanczos` |
 | `davidson` | Finite-difference Davidson min-mode | Same role as Lanczos with a different iterative subspace |
 | `lor` | Locally optimal rotation (LOR), Algorithm I | {cite:t}`dm-lengEfficientSoftestMode2013`; at most one new FD force per rotation iteration via Hessian–vector products and force translation of prior H·N / H·F⊥ products |

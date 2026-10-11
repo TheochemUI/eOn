@@ -135,7 +135,8 @@ void set_write_con_forces(bool enabled) noexcept;
  */
 [[nodiscard]] IoStatus matter2con(Matter &m, std::string filename,
                                   bool append = false,
-                                  const ConFrameMetadata *metadata = nullptr);
+                                  const ConFrameMetadata *metadata = nullptr,
+                                  bool with_velocities = false);
 
 /**
  * Drop the per-path bookkeeping that lets append-mode writes skip re-parsing

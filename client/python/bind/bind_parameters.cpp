@@ -1,6 +1,7 @@
 #include "eon/ConFileIO.h"
 #include "eon/HelperFunctions.h"
 #include "eon/Parameters.h"
+#include "eon/ParametersINI.h"
 
 #include <magic_enum/magic_enum.hpp>
 #include <nanobind/nanobind.h>
@@ -306,8 +307,13 @@ void bind_parameters(nb::module_ &m) {
           },
           [](eonc::Parameters &s, eonc::OptType v) {
             eonc::ParametersLoadAccess::optimizer_options(s).method = v;
+            eonc::ParametersLoadAccess::optimizer_options(s).method_set = true;
+            eonc::config::inherit_job_opt_methods(s);
           },
-          "Minimization / default job optimizer (CG, LBFGS, FIRE, QM, SD)")
+          "Minimization / default job optimizer (CG, LBFGS, FIRE, QM, SD). "
+          "An explicit value is the NEB band optimizer, the NEB path "
+          "initializer, and the dimer rotation method (sd, cg, lbfgs) when "
+          "those sections omit their own key.")
       .def_prop_rw(
           "refine_opt_method",
           [](const eonc::Parameters &s) {
@@ -408,8 +414,11 @@ void bind_parameters(nb::module_ &m) {
           },
           [](eonc::Parameters &s, eonc::OptType v) {
             eonc::ParametersLoadAccess::neb_options(s).opt_method = v;
+            eonc::ParametersLoadAccess::neb_options(s).opt_method_set = true;
+            eonc::config::inherit_job_opt_methods(s);
           },
-          "NEB band optimizer (independent of opt_method)")
+          "NEB band optimizer. Overrides an inherited [Optimizer] opt_method. "
+          "The path initializer follows this unless ipath_opt_method is set.")
       .def_prop_rw(
           "neb_force_tolerance",
           [](const eonc::Parameters &s) {
@@ -913,8 +922,10 @@ void bind_parameters(nb::module_ &m) {
           },
           [](eonc::Parameters &s, eonc::OptType v) {
             eonc::ParametersLoadAccess::dimer_options(s).opt_method = v;
+            eonc::ParametersLoadAccess::dimer_options(s).opt_method_set = true;
           },
-          "Rotation optimizer (CG, LBFGS, SD)")
+          "Rotation optimizer (CG, LBFGS, SD). Overrides an inherited "
+          "[Optimizer] opt_method.")
       .def_prop_rw(
           "dimer_rotations_max",
           [](const eonc::Parameters &s) {
@@ -1094,6 +1105,18 @@ void bind_parameters(nb::module_ &m) {
             eonc::ParametersLoadAccess::dynamics_options(s).time_step =
                 v / eonc::ParametersLoadAccess::constants(s).timeUnit;
           })
+      .def_prop_rw(
+          "dynamics_use_input_velocities",
+          [](const eonc::Parameters &s) {
+            return eonc::ParametersLoadAccess::dynamics_options(s)
+                .use_input_velocities;
+          },
+          [](eonc::Parameters &s, bool v) {
+            eonc::ParametersLoadAccess::dynamics_options(s)
+                .use_input_velocities = v;
+          },
+          "Keep nonzero velocities from the input structure. False redraws "
+          "thermal velocities at the start of Dynamics.run.")
       .def_prop_rw(
           "monte_carlo_steps",
           [](const eonc::Parameters &s) {

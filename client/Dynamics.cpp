@@ -178,7 +178,27 @@ void Dynamics::run() {
   }
   double sumT = 0.0, sumT2 = 0.0;
 
-  setThermalVelocity();
+  bool keepInputVelocities = false;
+  if (m_config.use_input_velocities) {
+    const AtomMatrix vel = matter->getVelocities();
+    for (long i = 0; i < nAtoms && !keepInputVelocities; ++i) {
+      if (matter->getFixed(i)) {
+        continue;
+      }
+      for (int axis = 0; axis < 3; ++axis) {
+        if (vel(i, axis) != 0.0) {
+          keepInputVelocities = true;
+          break;
+        }
+      }
+    }
+  }
+  if (keepInputVelocities) {
+    QUILL_LOG_DEBUG(log, "{} Keeping velocities from the input configuration",
+                    "[Dynamics]");
+  } else {
+    setThermalVelocity();
+  }
 
   if (m_config.thermostat_kind != NONE) {
     QUILL_LOG_DEBUG(log,

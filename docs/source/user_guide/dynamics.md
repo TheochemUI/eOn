@@ -51,7 +51,7 @@ Six thermostat options are available:
 | **Andersen** | `andersen` | Stochastic velocity reassignment with collision probability per step |
 | **Nose-Hoover** | `nose_hoover` | Deterministic extended-system thermostat (chains of length 2) |
 | **Langevin** | `langevin` | Stochastic friction + random force, good for non-equilibrium |
-| **None** | `none` | NVE ensemble (constant energy, no temperature control) |
+| **None** | `none` | NVE ensemble. Nonzero input velocities are kept when `use_input_velocities` is true |
 | **PILE** | `pile` | Ring-polymer Langevin equation on the normal modes |
 | **PIGLET** | `piglet` | Normal-mode GLE on the internal modes, Langevin on the centroid |
 
@@ -138,8 +138,11 @@ is handled automatically.
 
 - `time_step`: integration timestep (default: 1.0 fs)
 - `time`: total simulation time (default: 1000.0 fs)
+- `use_input_velocities`: when true (the default), a classical dynamics run keeps nonzero velocities from the input structure. A structure with no velocities is still drawn from the Maxwell-Boltzmann distribution at `[Main] temperature`. Set it false to redraw thermal velocities at the start of every run.
 
 The number of steps is computed as `floor(time / time_step)`.
+
+`final.con` always carries the velocities at the end of the run. The CON 3.1 time label is the natural unit `(amu*angstrom^2/eV)^0.5`, which is the unit those velocities are stored in. A later dynamics job with `use_input_velocities = true` continues from that file. An Andersen, Langevin, or Nose-Hoover thermostat keeps state that the file does not store, so a velocity-carrying restart matches a single run for NVE.
 
 ## Configuration
 
