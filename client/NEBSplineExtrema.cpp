@@ -368,9 +368,9 @@ std::vector<readcon::ConFrame> pathToConFrames(
   }
   if (quantumFreeEnergy != nullptr && quantumFreeEnergy->size() == nframes) {
     const double reactant = quantumFreeEnergy->front();
-    const double barrier =
-        *std::max_element(quantumFreeEnergy->begin(), quantumFreeEnergy->end()) -
-        reactant;
+    const double barrier = *std::max_element(quantumFreeEnergy->begin(),
+                                             quantumFreeEnergy->end()) -
+                           reactant;
     for (size_t i = 0; i < nframes; ++i) {
       metas[i].scalars.push_back(
           {"quantum_free_energy", (*quantumFreeEnergy)[i]});
@@ -390,10 +390,9 @@ eonc::io::IoStatus writePathCon(
     long numImages, bool estimateEigenvalues, std::string filename,
     std::optional<size_t> bandIndex, double referenceEnergy,
     const std::vector<double> *quantumFreeEnergy) {
-  auto frames =
-      pathToConFrames(path, tangent, eigenmode_solvers, numImages,
-                      estimateEigenvalues, bandIndex, referenceEnergy,
-                      quantumFreeEnergy);
+  auto frames = pathToConFrames(path, tangent, eigenmode_solvers, numImages,
+                                estimateEigenvalues, bandIndex, referenceEnergy,
+                                quantumFreeEnergy);
   if (frames.empty()) {
     return eonc::io::IoStatus::InvalidArgument;
   }

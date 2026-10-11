@@ -781,7 +781,8 @@ void RingPolymer::kick(double h, bool dropParallel) {
   if (!(dropParallel && constrain_)) {
     for (long bead = 0; bead < nBeads_; ++bead) {
       for (long a : freeIndex_) {
-        p_[static_cast<size_t>(bead)][a] += f_[static_cast<size_t>(bead)][a] * h;
+        p_[static_cast<size_t>(bead)][a] +=
+            f_[static_cast<size_t>(bead)][a] * h;
       }
     }
     return;
