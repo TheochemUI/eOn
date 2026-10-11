@@ -64,7 +64,8 @@ double scale_for_time_label(std::string_view label, double time_unit_fs) {
   if (compact == compact_unit(kNaturalTimeUnit)) {
     return 1.0;
   }
-  if (compact == "fs" || compact == "femtosecond" || compact == "femtoseconds") {
+  if (compact == "fs" || compact == "femtosecond" ||
+      compact == "femtoseconds") {
     return time_unit_fs;
   }
   if (compact == "ps" || compact == "picosecond" || compact == "picoseconds") {

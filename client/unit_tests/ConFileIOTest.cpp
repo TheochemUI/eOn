@@ -887,25 +887,28 @@ TEST_CASE("ConFileIO velocity time unit follows the spec minor",
   const auto dir = std::filesystem::temp_directory_path();
 
   const auto v30 = dir / "_test_v30.convel";
-  write_one(v30,
-            R"({"con_spec_version":3,"units":{"energy":"eV","length":"angstrom","mass":"amu","time":"fs"},"sections":["velocities"]})",
-            0.2);
+  write_one(
+      v30,
+      R"({"con_spec_version":3,"units":{"energy":"eV","length":"angstrom","mass":"amu","time":"fs"},"sections":["velocities"]})",
+      0.2);
   auto legacy = std::make_shared<Matter>(pot, params);
   REQUIRE(eonc::io::io_ok(legacy->convel2matter(v30.string())));
   REQUIRE(legacy->getVelocities()(0, 0) == Catch::Approx(0.2));
 
   const auto v31_fs = dir / "_test_v31_fs.convel";
-  write_one(v31_fs,
-            R"({"con_spec_version":3,"con_spec_minor":1,"units":{"energy":"eV","length":"angstrom","mass":"amu","time":"fs"},"sections":["velocities"]})",
-            0.2);
+  write_one(
+      v31_fs,
+      R"({"con_spec_version":3,"con_spec_minor":1,"units":{"energy":"eV","length":"angstrom","mass":"amu","time":"fs"},"sections":["velocities"]})",
+      0.2);
   auto scaled = std::make_shared<Matter>(pot, params);
   REQUIRE(eonc::io::io_ok(scaled->convel2matter(v31_fs.string())));
   REQUIRE(scaled->getVelocities()(0, 0) == Catch::Approx(0.2 * time_unit));
 
   const auto v31_nat = dir / "_test_v31_nat.convel";
-  write_one(v31_nat,
-            R"({"con_spec_version":3,"con_spec_minor":1,"units":{"energy":"eV","length":"angstrom","mass":"amu","time":"(amu*angstrom^2/eV)^0.5"},"sections":["velocities"]})",
-            0.2);
+  write_one(
+      v31_nat,
+      R"({"con_spec_version":3,"con_spec_minor":1,"units":{"energy":"eV","length":"angstrom","mass":"amu","time":"(amu*angstrom^2/eV)^0.5"},"sections":["velocities"]})",
+      0.2);
   auto natural = std::make_shared<Matter>(pot, params);
   REQUIRE(eonc::io::io_ok(natural->convel2matter(v31_nat.string())));
   REQUIRE(natural->getVelocities()(0, 0) == Catch::Approx(0.2));
@@ -927,10 +930,8 @@ TEST_CASE("ConFileIO geometry con has no velocity section",
   vel.setConstant(0.25);
   m->setVelocities(vel);
 
-  const auto a =
-      std::filesystem::temp_directory_path() / "_test_geom_a.con";
-  const auto b =
-      std::filesystem::temp_directory_path() / "_test_geom_b.con";
+  const auto a = std::filesystem::temp_directory_path() / "_test_geom_a.con";
+  const auto b = std::filesystem::temp_directory_path() / "_test_geom_b.con";
   REQUIRE(eonc::io::io_ok(m->matter2con(a.string(), false)));
   REQUIRE(eonc::io::io_ok(m->matter2con(b.string(), false)));
 
