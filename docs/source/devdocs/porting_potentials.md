@@ -27,7 +27,13 @@ Morse, or the Fortran pots is added in rgpot, then selected from eOn.
    (`client/Potential.cpp`) with `makeRgpot` or `makeRgpotDefault`.
 2. Add the token to the parameter schema (`[Potential]` / the pot's own
    section) and to `PotType`.
-3. Keep subprocess and file engines (VASP, LAMMPS, ASE, AMS, socket
+3. If the kernel has a proven Hessian range, specialize
+   `eonc::HessianRangeOf` as described in
+   {doc}`hessian`. A `config().cutoff` field does not do this.
+   The primary template leaves coloring off, which is the right
+   default for a many-body, water, or message-passing kernel until
+   the range is exact.
+4. Keep subprocess and file engines (VASP, LAMMPS, ASE, AMS, socket
    NWChem) in eOn. They are not kernels.
 
 Direct NWChem, CPMD, metatomic, and xTB engines stay `dlopen` plugins
