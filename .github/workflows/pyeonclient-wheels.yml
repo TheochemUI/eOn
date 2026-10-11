@@ -160,6 +160,92 @@ jobs:
           arch: x64
           vsversion: "2022"
 
+      - name: Install pixi [windows]
+        if: steps.gate.outputs.skip != 'true' && runner.os == 'Windows'
+        uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e # v0.9.4
+        with:
+          run-install: false
+          cache: false
+
+      # Git's sh.exe rewrites /nologo into C:\Program Files\Git\nologo.obj
+      # during CMake's compiler probe, so Eigen's cmake lookup never starts.
+      # MinGW gfortran fails that same probe. Drop both, and take Eigen,
+      # capnp, quill, and flang from conda-forge so pkg-config wins.
+      - name: Windows wheel native deps
+        if: steps.gate.outputs.skip != 'true' && runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          # Later steps (metatomic wheel rename) need Git usr\bin for sed.
+          # The build step takes the filtered PATH; the restore step puts this back.
+          "WHEEL_HOST_PATH=$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          # Git\usr\bin\sh.exe makes CMake rewrite /nologo. Git\bin stays so
+          # cibuildwheel can run the bash test script. Git\cmd stays for wrap-git.
+          $drop = '\\Git\\usr\\bin$|\\Git\\ucrt64\\bin$|\\Git\\mingw64\\bin$|\\mingw64\\bin$|[Mm]ingw|[Ss]trawberry'
+          $parts = @($env:PATH -split ';' | Where-Object { $_ -and ($_ -notmatch $drop) })
+          $env:PATH = ($parts -join ';')
+          $deps = 'C:\eon-wheel-deps'
+          New-Item -ItemType Directory -Force -Path $deps | Out-Null
+          @'
+          [workspace]
+          name = "eon-wheel-deps"
+          channels = ["conda-forge"]
+          platforms = ["win-64"]
+
+          [dependencies]
+          eigen = ">=3.4,<3.5"
+          capnproto = ">=1.0,<2"
+          pkg-config = ">=0.29.2,<0.30"
+          pkgconf = ">=2.4.3,<3"
+          fortran-compiler = ">=1.10.0,<2"
+          quill = ">=11.0.2,<12"
+          '@ | Set-Content -Encoding ascii "$deps\pixi.toml"
+          pixi install --manifest-path "$deps\pixi.toml"
+          $pre = "$deps\.pixi\envs\default"
+          if (-not (Test-Path "$pre\Library\bin")) {
+            throw "pixi prefix missing: $pre"
+          }
+          $env:PATH = "$pre\Library\bin;$pre\bin;$env:PATH"
+          $pc = "$pre\Library\lib\pkgconfig"
+          if (Test-Path "$pre\lib\pkgconfig") { $pc = "$pc;$pre\lib\pkgconfig" }
+          $eigenDir = ''
+          foreach ($cand in @(
+              "$pre\Library\share\eigen3\cmake",
+              "$pre\Library\share\eigen3",
+              "$pre\Library\lib\cmake\Eigen3"
+            )) {
+            if ((Test-Path "$cand\Eigen3Config.cmake") -or (Test-Path "$cand\eigen3-config.cmake")) {
+              $eigenDir = $cand
+              break
+            }
+          }
+          function Write-Env([string]$name, [string]$value) {
+            "$name=$value" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          }
+          Write-Env 'PATH' $env:PATH
+          Write-Env 'CMAKE_SH' 'CMAKE_SH-NOTFOUND'
+          Write-Env 'CC' 'cl'
+          Write-Env 'CXX' 'cl'
+          Write-Env 'AR' 'lib'
+          Write-Env 'FC' 'flang-new'
+          Write-Env 'PKG_CONFIG_PATH' $pc
+          Write-Env 'CMAKE_PREFIX_PATH' "$pre\Library;$pre"
+          if ($eigenDir) { Write-Env 'Eigen3_DIR' $eigenDir }
+          pkg-config --modversion eigen3
+          pkg-config --modversion capnp
+          if (-not (Get-Command flang-new -ErrorAction SilentlyContinue)) {
+            throw 'flang-new is not on PATH'
+          }
+          $link = (Get-Command link).Source
+          Write-Host "link.exe=$link"
+          if ($link -match '\\Git\\') { throw "Git link.exe is still first: $link" }
+          Get-Command sh -ErrorAction SilentlyContinue | ForEach-Object {
+            if ($_.Source -match '\\Git\\usr\\bin\\') {
+              throw "sh.exe is still on PATH: $($_.Source)"
+            }
+            Write-Host "sh.exe remains at $($_.Source); CMAKE_SH disables MSYS path rewrite"
+          }
+
       - name: Meson config-settings for variant
         if: steps.gate.outputs.skip != 'true'
         id: cfg
@@ -203,6 +289,21 @@ jobs:
             LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:$LD_LIBRARY_PATH
             PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig:/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH
             CMAKE_PREFIX_PATH=/usr/local
+          # CMAKE_SH stops Git sh.exe from turning /nologo into a Git-relative
+          # object. The pixi prefix is created by the Windows deps step.
+          CIBW_ENVIRONMENT_WINDOWS: >-
+            CMAKE_SH=CMAKE_SH-NOTFOUND
+            CC=cl
+            CXX=cl
+            AR=lib
+            FC=flang-new
+            PKG_CONFIG_PATH=C:\eon-wheel-deps\.pixi\envs\default\Library\lib\pkgconfig
+            CMAKE_PREFIX_PATH=C:\eon-wheel-deps\.pixi\envs\default\Library
+          CIBW_BEFORE_ALL_WINDOWS: >-
+            pkg-config --modversion eigen3
+            && pkg-config --modversion capnp
+            && where link
+            && where flang-new
           CIBW_BEFORE_ALL_LINUX: |
             bash scripts/pyeonclient_manylinux_deps.sh
           CIBW_BEFORE_BUILD_LINUX: |
@@ -244,6 +345,12 @@ jobs:
             --exclude "libmetatensor*.so*" --exclude "libmetatomic*.so*"'
           CIBW_TEST_REQUIRES: ${{ matrix.variant == 'metatomic' && 'pytest numpy torch>=2.7 metatensor metatensor-torch metatomic-torch vesin' || 'pytest numpy' }}
           CIBW_TEST_COMMAND: bash {project}/scripts/pyeonclient_cibw_test.sh
+
+      - name: Restore host PATH [windows]
+        if: steps.gate.outputs.skip != 'true' && runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          "PATH=$env:WHEEL_HOST_PATH" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Tag metatomic wheels with local version (never collide with base)
         if: steps.gate.outputs.skip != 'true' && matrix.variant == 'metatomic'
