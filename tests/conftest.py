@@ -8,17 +8,33 @@ module; resolving them here turns it into a skip that names what is
 missing.
 """
 
+import ctypes
 import os
 import shutil
 from pathlib import Path
 
 import pytest
 
-from eon._openblas import use_one_openblas_thread
+# Fork after threads. OpenBLAS's pthread server holds server_lock. This
+# test process later forks eonclient through sh, which keeps only the
+# calling thread, so the lock stays held and numpy.linalg.solve waits in
+# blas_thread_init. One thread here, before collection imports numpy.
+# Not an environment variable: the client process keeps its own pool.
+def _one_openblas_thread() -> None:
+    for name in ("libopenblas.so.0", "libopenblas.so", "libcblas.so.3", "libblas.so.3"):
+        try:
+            lib = ctypes.CDLL(name)
+        except OSError:
+            continue
+        setter = getattr(lib, "openblas_set_num_threads", None)
+        if setter is None:
+            continue
+        setter.argtypes = [ctypes.c_int]
+        setter.restype = None
+        setter(1)
 
-# Collection imports numpy. Pin OpenBLAS before the first dgesv so a later
-# eonclient subprocess cannot wedge server_lock.
-use_one_openblas_thread()
+
+_one_openblas_thread()
 
 
 def require_binary(name):

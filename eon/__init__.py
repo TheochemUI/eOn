@@ -1,10 +1,4 @@
 
-from eon._openblas import use_one_openblas_thread
-
-# Before any BLAS call. A later fork of eonclient must not inherit a live
-# OpenBLAS server thread.
-use_one_openblas_thread()
-
 try:
     from eon.version import version as __version__
 except ModuleNotFoundError:
