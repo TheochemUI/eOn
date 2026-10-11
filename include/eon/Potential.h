@@ -125,10 +125,15 @@ public:
     return 0;
   }
 
-  /// Finite interaction range in position length units.
-  /// 0 means the potential is not finite-cutoff; the FD Hessian then
-  /// stays one column per coordinate.
-  [[nodiscard]] virtual double finiteCutoff() const noexcept { return 0.0; }
+  /// Distance beyond which every Hessian block between two atoms is
+  /// exactly zero, in position length units.
+  ///
+  /// 0, or any non-finite value, means the range is unknown. The
+  /// finite-difference Hessian then stays one column per coordinate.
+  /// A potential opts in by overriding this. An interaction cutoff is
+  /// not this distance: a many-body kernel is nonzero out to twice its
+  /// cutoff, and a kernel that merely has a cutoff field stays at 0.
+  [[nodiscard]] virtual double hessianRange() const noexcept { return 0.0; }
 
   /// Whether this is a surrogate (GP) potential. Override in
   /// SurrogatePotential.
