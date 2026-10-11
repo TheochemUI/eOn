@@ -813,6 +813,15 @@ if not readcon_dep.found()
         _have_readcon_dll_beside = true
     endif
 endif
+# wrap_mode=forcefallback makes dependency() found, so the block above
+# does not run on a wheel and readcon_order_srcs stays empty.
+# partial_dependency drops the stamp, and ninja then links
+# readcon_core.lib before cargo writes it (LNK1181). The fallback
+# already configured this subproject.
+if is_windows and readcon_order_srcs.length() == 0 and readcon_dep.type_name() == 'internal'
+    readcon_proj = subproject('readcon-core')
+    readcon_order_srcs += readcon_proj.get_variable('readcon_order', [])
+endif
 if is_windows
     # On Windows, do not put cargo .lib/.dll on eonclib: llvm-ar treats
     # the .lib as an archive name, and link rejects the DLL (LNK1107).
@@ -1979,7 +1988,7 @@ if is_windows
 endif
 eon_relax_engine = shared_library(
     'eon_relax_engine',
-    ['relax/RelaxEngineAbi.cpp', eon_relax_capnp],
+    ['relax/RelaxEngineAbi.cpp', eon_relax_capnp] + readcon_order_srcs,
     dependencies: _engine_deps,
     cpp_args: _args + ['-DEON_RELAX_ENGINE_BUILD'],
     link_with: _linkto,
@@ -2057,6 +2066,11 @@ if is_windows
             links: true,
         ),
     ]
+    # The import library is a raw path. The stamp is the ninja edge that
+    # builds it first. A typedef, so a second copy does not clash.
+    if readcon_order_srcs.length() > 0
+        _exe_deps += declare_dependency(sources: readcon_order_srcs)
+    endif
 endif
 
 # Export variable

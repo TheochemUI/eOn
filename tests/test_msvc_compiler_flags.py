@@ -7,6 +7,15 @@ PY_MESON = ROOT / "client" / "python" / "meson.build"
 CLIENT_MESON = ROOT / "client" / "meson.build"
 
 
+def test_windows_wheel_orders_readcon_before_the_link():
+    text = (ROOT / "client" / "meson.build").read_text(encoding="utf-8")
+    # forcefallback finds the wrap, so the not-found branch never fills
+    # the order stamp and link.exe opens readcon_core.lib too early.
+    assert "readcon_dep.type_name() == 'internal'" in text
+    assert "readcon_order_srcs += readcon_proj.get_variable('readcon_order', [])" in text
+    assert "declare_dependency(sources: readcon_order_srcs)" in text
+
+
 def test_pyeonclient_does_not_pass_gcc_warning_flags_raw():
     text = PY_MESON.read_text(encoding="utf-8")
     assert "cppc.get_supported_arguments(['-Wno-unused-parameter'])" in text
