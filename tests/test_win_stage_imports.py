@@ -54,3 +54,21 @@ def test_import_table_lists_the_dll_and_skips_kernel32(tmp_path: Path):
     assert mod.imported_dlls(pe) == ["capnp.dll"]
     assert mod._system("KERNEL32.dll")
     assert not mod._system("capnp.dll")
+
+
+def test_stage_keeps_imports_with_the_dll_that_pulled_them(tmp_path: Path):
+    mod = _mod()
+    torch = tmp_path / "torch"
+    pixi = tmp_path / "pixi"
+    dest = tmp_path / "build"
+    torch.mkdir()
+    pixi.mkdir()
+    dest.mkdir()
+    (dest / "eon_relax_engine.dll").write_bytes(_pe(b"c10.dll"))
+    (torch / "c10.dll").write_bytes(_pe(b"omp.dll"))
+    (torch / "omp.dll").write_bytes(b"torch-omp")
+    # Same name, different bytes. The search list lists pixi first.
+    (pixi / "omp.dll").write_bytes(b"pixi-omp")
+    mod.stage(dest / "eon_relax_engine.dll", [pixi, torch], tmp_path / "stamp")
+    assert (dest / "c10.dll").read_bytes() == (torch / "c10.dll").read_bytes()
+    assert (dest / "omp.dll").read_bytes() == b"torch-omp"

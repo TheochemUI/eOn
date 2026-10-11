@@ -2281,6 +2281,18 @@ if get_option('with_tests')
         if fs.is_dir(_pbin)
             _stage_search += _pbin
         endif
+        # Pip wheels keep the DLLs the engine imports (c10, torch_cpu,
+        # metatensor_torch, metatomic_torch) under site-packages, often in
+        # a bin/ sibling of the import lib. The prefix search does not see
+        # them, so LoadLibrary walks PATH and can bind a same-named DLL.
+        if get_option('with_metatomic')
+            _stage_search += [LIB_TORCH_LIB_PATH, LIB_TORCH_BIN_PATH]
+            if get_option('pip_metatomic')
+                foreach _d : pip_metatomic_runtime_dirs
+                    _stage_search += [_d, fs.parent(_d) / 'bin']
+                endforeach
+            endif
+        endif
         _stage_engine_imports = custom_target(
             'stage-engine-dll-imports',
             input: eon_relax_engine,

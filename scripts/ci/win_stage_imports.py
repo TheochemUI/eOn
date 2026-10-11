@@ -87,10 +87,14 @@ def imported_dlls(path: Path) -> list[str]:
 def stage(dll: Path, search: list[Path], stamp: Path) -> None:
     dest = dll.parent
     seen: set[str] = set()
-    queue = [dll]
+    # Second item is the directory the module was copied from. Its own
+    # imports are taken from there before the search list, so c10.dll
+    # from torch/lib pulls torch's libiomp5md.dll rather than a pixi
+    # copy of the same name.
+    queue: list[tuple[Path, Path]] = [(dll, dll.parent)]
     copied: list[str] = []
     while queue:
-        current = queue.pop(0)
+        current, origin = queue.pop(0)
         key = str(current.resolve()).lower()
         if key in seen or not current.is_file():
             continue
@@ -101,16 +105,20 @@ def stage(dll: Path, search: list[Path], stamp: Path) -> None:
             target = dest / name
             if target.is_file():
                 continue
-            source = next(
-                (d / name for d in search if (d / name).is_file()),
-                None,
-            )
+            sibling = origin / name
+            if sibling.is_file():
+                source = sibling
+            else:
+                source = next(
+                    (d / name for d in search if (d / name).is_file()),
+                    None,
+                )
             if source is None:
                 print(f"win_stage_imports: {name} not in search path", file=sys.stderr)
                 continue
             shutil.copy2(source, target)
             copied.append(name)
-            queue.append(target)
+            queue.append((target, source.parent))
     stamp.write_text("\n".join(copied) + "\n", encoding="utf-8")
 
 
