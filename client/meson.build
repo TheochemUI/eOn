@@ -2038,22 +2038,6 @@ if get_option('with_tests')
         if fs.is_dir(_pbin)
             _stage_search += _pbin
         endif
-        # The prefix is already on the search list, so capnp, kj, and
-        # flang win over a same-named DLL in a wheel. Torch and
-        # metatensor are not in the prefix. Leaving them on PATH lets
-        # the metatomic Windows job load a copy that is missing the
-        # entry point (0xC0000139) before test_relax_engine reaches main.
-        if is_variable('pip_metatomic_runtime_dirs')
-            foreach _d : pip_metatomic_runtime_dirs
-                if fs.is_dir(_d)
-                    _stage_search += _d
-                endif
-                _wheel_bin = fs.parent(_d) / 'bin'
-                if fs.is_dir(_wheel_bin)
-                    _stage_search += _wheel_bin
-                endif
-            endforeach
-        endif
         _stage_engine_imports = custom_target(
             'stage-engine-dll-imports',
             input: eon_relax_engine,
