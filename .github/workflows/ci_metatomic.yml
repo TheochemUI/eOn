@@ -232,6 +232,63 @@ jobs:
             -Dpip_metatomic=True \
             -Dwith_fortran=true \
             -Dwith_cuh2=true
+          # Build the engine before the stage target copies DLLs beside it.
+          meson compile -C bbdir eon_relax_engine test_relax_engine
+          echo "=== engine imports before the DLL copy ==="
+          python - <<'PY'
+          import importlib.util
+          from pathlib import Path
+          spec = importlib.util.spec_from_file_location(
+              "win_stage_imports", Path("scripts/ci/win_stage_imports.py")
+          )
+          mod = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(mod)
+          for root in (
+              Path("bbdir/client/eon_relax_engine.dll"),
+              Path("bbdir/client/test_relax_engine.exe"),
+          ):
+              print(f"--- {root}")
+              for name, syms in mod.import_entries(root):
+                  if mod._system(name):
+                      continue
+                  shown = ", ".join(syms[:8])
+                  extra = f" (+{len(syms) - 8})" if len(syms) > 8 else ""
+                  print(f"  {name}: {shown}{extra}")
+          PY
+          # Loader order from a failing test_relax_engine PATH: wheel bins,
+          # then the pixi prefix, then torch/lib.
+          REPORT_PREFIX="$(python - <<'PY'
+          import os
+          import pathlib
+          import torch
+          site = pathlib.Path(torch.__file__).resolve().parent.parent
+          tv = ".".join(torch.__version__.split(".")[:2])
+          pixi = pathlib.Path(os.environ["PIXI_PRE"])
+          dirs = [
+              site / "metatensor_torch" / f"torch-{tv}" / "bin",
+              site / "metatomic" / "torch" / f"torch-{tv}" / "bin",
+              pixi / "Library" / "bin",
+              site / "metatensor" / "bin",
+              site / "torch" / "lib",
+              pixi / "bin",
+          ]
+          import sys
+          print(":".join(str(d) for d in dirs if d.is_dir()))
+          for d in dirs:
+              print(
+                  f"report-dir {'ok' if d.is_dir() else 'MISSING'} {d}",
+                  file=sys.stderr,
+              )
+          PY
+          )"
+          echo "=== --report before copy, loader PATH ==="
+          PATH="${REPORT_PREFIX}:${PATH}" python scripts/ci/win_stage_imports.py --report \
+            bbdir/client/test_relax_engine.exe \
+            bbdir/client/eon_relax_engine.dll
+          echo "=== --report before copy, prefix search only ==="
+          PATH="${PIXI_PRE}/Library/bin:${PIXI_PRE}/bin" python scripts/ci/win_stage_imports.py --report \
+            bbdir/client/test_relax_engine.exe \
+            bbdir/client/eon_relax_engine.dll
           meson install --skip-subprojects -C bbdir
 
       - name: Run tests [windows]
