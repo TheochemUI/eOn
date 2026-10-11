@@ -15,6 +15,7 @@ from tests.test_library_bodies import _atoms, _config, _states
 
 
 def _matter():
+    pytest.importorskip("pyeonclient")
     pc = _require_pyeonclient()
     cluster = _atoms(2.5)
     params = pc.Parameters()

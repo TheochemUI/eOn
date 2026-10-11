@@ -26,13 +26,26 @@ jobs:
         run: |
           meson setup bbdir --buildtype release -Dwith_tests=false
           meson compile -C bbdir eonclient
+      - name: sige_repro readable
+        id: sige
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api --silent repos/TheochemUI/sige_repro >/dev/null 2>&1; then
+            echo "readable=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "readable=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Si3N4 point skipped::TheochemUI/sige_repro is not readable by this token, so the Si3N4 point is skipped."
+          fi
       - name: Kit inputs
+        if: steps.sige.outputs.readable == 'true'
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: TheochemUI/sige_repro
           path: kit
           persist-credentials: false
       - name: Pinned OpenCPMD point
+        if: steps.sige.outputs.readable == 'true'
         shell: pixi run bash -e {0}
         env:
           OPENCPMD_COMMIT: 062582b7cfd832d36f88f504cd08e4ead42eb404

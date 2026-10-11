@@ -39,7 +39,9 @@ EonMtaPot *eon_mta_pot_create(const EonMtaConfig *cfg, char *errbuf,
     return nullptr;
   }
   try {
-    eonc::Parameters params;
+    // The default constructor is in eonclib, which this plugin does not
+    // link. Every field MetatomicPotential reads is set below.
+    eonc::Parameters params = eonc::ParametersLoadAccess::field_defaults();
     eonc::ParametersLoadAccess::potential_options(params).potential =
         eonc::PotType::METATOMIC;
     auto &o = eonc::ParametersLoadAccess::metatomic_options(params);

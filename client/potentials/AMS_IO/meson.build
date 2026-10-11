@@ -4,4 +4,4 @@ ams_io = library('ams_io',
            cpp_args : _args,
            link_with : _linkto,
            include_directories: _incdirs,
-           install : true)
+           install : _client_lib_install)

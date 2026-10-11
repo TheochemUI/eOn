@@ -34,9 +34,19 @@ def test_wrap_revision_matches_the_python_package():
     assert "subproject(\n        'readcon-db'" in meson or "subproject(\n    'readcon-db'" in meson
     assert f"'readcon-db',\n    version: '>={pin}'" in meson
     assert "'-lreadcon_db'" not in meson
-    fallback = meson.split("if not readcon_db_dep.found()", 1)[1].split("else", 1)[0]
-    assert "link_with: _readcon_db_order" in fallback
-    assert "_readcon_db_order = [_readcon_db_so]" in fallback
+    fallback = meson.split("if not readcon_db_dep.found()", 1)[1].split(
+        "\nelse\n", 1
+    )[0]
+    assert "link_with: [_readcon_db_so]" in fallback
+    # forcefallback makes dependency() found, so the wheel takes this arm.
+    # The subproject names readcon_db.dll; link.exe rejects that input.
+    found = meson.split("wrap_mode=forcefallback makes dependency() found", 1)[1]
+    windows = found.split("if is_windows", 1)[1].split("else", 1)[0]
+    assert "partial_dependency(" in windows
+    assert "includes: true" in windows
+    assert "compile_args: true" in windows
+    assert "readcon_db.dll" not in windows
+    assert "link_args" not in windows
 
 
 def test_missing_library_leaves_iostatus_and_fails_the_check():

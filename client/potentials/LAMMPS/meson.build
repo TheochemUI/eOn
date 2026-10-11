@@ -12,5 +12,5 @@ lammps_pot = library(
     cpp_args: _lammps_args,
     link_with: _linkto,
     include_directories: _incdirs,
-    install: true,
+    install: _client_lib_install,
 )

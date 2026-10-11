@@ -3,4 +3,4 @@ gprpot = library('gprpot',
            dependencies : _deps,
            cpp_args : _args,
            link_with : _linkto,
-           install : true)
+           install : _client_lib_install)

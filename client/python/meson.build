@@ -59,14 +59,23 @@ message('pyeonclient: nanobind @0@'.format(_nb_version))
 message('pyeonclient: free-threaded interpreter = @0@'.format(_nb_free_threaded))
 message('pyeonclient: robin_map include = @0@'.format(_nb_robin))
 
-# Use -isystem compile_args (not include_directories) so absolute paths under a
+# Use compile_args (not include_directories) so absolute paths under a
 # project-local .pixi env are allowed; Meson forbids abs include_directories
-# into the source tree.
-nanobind_dep = declare_dependency(
-    compile_args: [
+# into the source tree. -isystem keeps nanobind out of -Wall on GCC and
+# Clang. MSVC has no -isystem, so that path uses /I.
+if cppc.get_argument_syntax() == 'gcc'
+    _nb_inc_args = [
         '-isystem' + _nb_include,
         '-isystem' + _nb_robin,
-    ],
+    ]
+else
+    _nb_inc_args = [
+        '/I' + _nb_include,
+        '/I' + _nb_robin,
+    ]
+endif
+nanobind_dep = declare_dependency(
+    compile_args: _nb_inc_args,
 )
 
 pyeonclient_sources = files(
@@ -109,8 +118,10 @@ message('pyeonclient: version @0@'.format(_pyec_version))
 _nb_cpp_args = _args + [
     '-DNB_DOMAIN=pyeonclient',
     '-DPYEONCLIENT_VERSION="' + _pyec_version + '"',
-    '-Wno-unused-parameter',
 ]
+# nanobind's glue has unused parameters. -Wno-unused-parameter is GCC
+# and Clang. cl.exe reads -W as /W and errors D8021 on the rest.
+_nb_cpp_args += cppc.get_supported_arguments(['-Wno-unused-parameter'])
 
 if _nb_free_threaded
     # Free-threaded nanobind ABI (no abi3 until PEP 803)
@@ -196,7 +207,13 @@ if not _rgpot_pkg.found()
         'librgpot-so3-for-pyeonclient',
         input: _rgpot_proj.get_variable('rgpot'),
         output: 'librgpot.so.3',
-        command: [find_program('cp'), '-a', '@INPUT@', '@OUTPUT@'],
+        command: [
+            py,
+            '-c',
+            'import shutil, sys; shutil.copy2(sys.argv[1], sys.argv[2])',
+            '@INPUT@',
+            '@OUTPUT@',
+        ],
         install: true,
         install_dir: py.get_install_dir() / 'pyeonclient',
         build_by_default: true,
