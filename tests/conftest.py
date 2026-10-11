@@ -14,6 +14,12 @@ from pathlib import Path
 
 import pytest
 
+from eon._openblas import use_one_openblas_thread
+
+# Collection imports numpy. Pin OpenBLAS before the first dgesv so a later
+# eonclient subprocess cannot wedge server_lock.
+use_one_openblas_thread()
+
 
 def require_binary(name):
     """Return an sh.Command for *name*, or skip the caller.

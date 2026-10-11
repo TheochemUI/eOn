@@ -1,0 +1,1 @@
+The parent Python process uses one OpenBLAS thread, so forking eonclient cannot leave server_lock held. The Ubuntu Python test job and the Python coverage job also fail a hung test within their timeouts.
