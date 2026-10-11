@@ -23,6 +23,8 @@
 #include "eon/Tunneling.h"
 #include "eon/potentials/RgpotAdapter/RgpotAdapter.h"
 #include "rgpot/LennardJones/LJPot.hpp"
+#include "rgpot/UmaPot/UmaPot.hpp"
+#include "rgpot/Water/WaterPots.hpp"
 #include <nlohmann/json.hpp>
 
 #include <algorithm>
@@ -715,6 +717,43 @@ TEST_CASE_METHOD(HessianScratch,
   // A clean set costs nothing.
   eonc::evaluateTogether(*batched, both);
   REQUIRE(batched->forceCallCounter == before + 2);
+}
+
+namespace {
+// Kernels this build does not construct as RgpotAdapter are not opted
+// into Hessian colouring. The adapter's finiteCutoff is the range
+// Hessian::calculate reads.
+template <class RPot> constexpr bool kHessianColouringOptIn = false;
+} // namespace
+
+TEST_CASE("Group-cutoff kernels do not colour the finite-difference Hessian",
+          "[hessian][color]") {
+  Parameters params;
+#if defined(EON_RGPOT_HAS_WATER)
+  // rgpot 3.5.0 gives these kernels config().cutoff. Colouring at that
+  // distance is wrong: group cutoffs and message-passing blocks reach
+  // past r_c. The range reported to the Hessian must stay 0.
+  RgpotAdapter<rgpot::TIP4PPot> tip4p(PotType::TIP4P, params);
+  RgpotAdapter<rgpot::SPCEPot> spce(PotType::SPCE, params);
+  RgpotAdapter<rgpot::TIP4PPtPot> tip4pPt(PotType::TIP4P_PT, params);
+  REQUIRE(tip4p.finiteCutoff() == 0.0);
+  REQUIRE(spce.finiteCutoff() == 0.0);
+  REQUIRE(tip4pPt.finiteCutoff() == 0.0);
+#else
+  static_assert(!kHessianColouringOptIn<rgpot::TIP4PPot>);
+  static_assert(!kHessianColouringOptIn<rgpot::SPCEPot>);
+  static_assert(!kHessianColouringOptIn<rgpot::TIP4PPtPot>);
+  SUCCEED("TIP4P, SPC/E and TIP4P-Pt are not in this rgpot build");
+#endif
+#if defined(EON_RGPOT_HAS_UMA)
+  rgpot::UmaConfig umaCfg;
+  umaCfg.model_path = "guard.pt2";
+  RgpotAdapter<rgpot::UmaPot> uma(PotType::RGPOT, params, umaCfg);
+  REQUIRE(uma.finiteCutoff() == 0.0);
+#else
+  static_assert(!kHessianColouringOptIn<rgpot::UmaPot>);
+  SUCCEED("UmaPot is not an RgpotAdapter kernel in this build");
+#endif
 }
 
 } /* namespace tests */

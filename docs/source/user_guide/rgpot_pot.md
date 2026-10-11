@@ -32,7 +32,7 @@ Cap'n Proto messages passed into the C ABI. The `rgpot` Meson subproject is
 `subprojects/rgpot.wrap`, and the build pulls `nwchempot_dep` and
 `cpmdpot_dep`. Serve mode uses `ptlrpc_dep` under `-Dwith_serve`.
 
-`dependency('rgpot')` prefers an installed rgpot at 3.2.0 or newer. The Meson
+`dependency('rgpot')` prefers an installed rgpot at 3.5.0 or newer. The Meson
 wrap is the fallback. A CPMD run that splits ranks uses the flag in the CPMD
 section.
 
@@ -356,9 +356,9 @@ single request. The next SCF of an image or a bead starts from its own
 orbitals of the previous step rather than from those of whichever system
 the group evaluated last. One group (`ranks_per_image = 0`) batches as
 well, so the keys hold there too. The engine needs
-`cpmdc_session_select_orbitals`; an older libcpmdc keeps one stored copy
-per group, and so does an rgpot without `CPMDPot::selectOrbitals` (3.4.0
-and older).
+`cpmdc_session_select_orbitals`. An older libcpmdc keeps one stored copy
+per group. This tree requires rgpot 3.5.0, which provides
+`CPMDPot::selectOrbitals`.
 
 ### Choosing the number of groups
 

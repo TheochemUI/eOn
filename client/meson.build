@@ -520,9 +520,11 @@ _deps += dl_dep
 # with *default* options before eOn can pass its own; get_variable() then
 # fails for anything the default profile skipped. Force pkg-config-only.
 _rgpot_proj = []
+_rgpot_has_water = false
+_rgpot_has_uma = false
 _rgpot_pkg = dependency(
     'rgpot',
-    version: '>=3.2.0',
+    version: '>=3.5.0',
     method: 'pkg-config',
     required: false,
     allow_fallback: false,
@@ -546,6 +548,8 @@ if not _rgpot_pkg.found()
         # SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, and TIP4P-H are
         # Fortran kernels inside librgpot.
         'with_fortran_pots': 'enabled',
+        # The Hessian colouring guard instantiates TIP4P, SPC/E and TIP4P-Pt.
+        'with_water': true,
     }
     # Direct RGPOT is mandatory off Windows; serve still opts into RPC there.
     if not is_windows or get_option('with_serve')
@@ -757,6 +761,12 @@ if _rgpot_pkg.found()
     # SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, and TIP4P-H resolve to
     # nothing at link time. rgpot.pc advertises them; say so plainly here
     # rather than failing on undefined vtables.
+    if cppc.get_define('RGPOT_HAS_WATER', dependencies: _rgpot_pkg) != ''
+        _rgpot_has_water = true
+    endif
+    if cppc.get_define('RGPOT_HAS_UMA', dependencies: _rgpot_pkg) != ''
+        _rgpot_has_uma = true
+    endif
     if cppc.get_define('RGPOT_HAS_FORTRAN_POTS', dependencies: _rgpot_pkg) == ''
         error(
             'installed rgpot was built without Fortran potentials '
@@ -780,6 +790,8 @@ else
     # of a build directory, so a directory configured before this profile
     # changed silently keeps the old values and drops potentials. Fail
     # here instead, naming the fix.
+    _rgpot_has_water = _rgpot_proj.get_variable('has_water')
+    _rgpot_has_uma = _rgpot_proj.get_variable('has_metatomic')
     if not _rgpot_proj.get_variable('has_fortran')
         error(
             'rgpot subproject built without Fortran potentials. '
@@ -1852,6 +1864,12 @@ endif
 
 if get_option('with_tests')
     test_args = _args
+    if _rgpot_has_water
+        test_args += ['-DEON_RGPOT_HAS_WATER=1']
+    endif
+    if _rgpot_has_uma
+        test_args += ['-DEON_RGPOT_HAS_UMA=1']
+    endif
     test_deps = _exe_deps
     testMain = library(
         'TestMain',
