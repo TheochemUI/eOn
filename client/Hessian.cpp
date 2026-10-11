@@ -498,11 +498,11 @@ bool Hessian::calculateBatched(double dr, FdScheme scheme) {
   return finalizeHessian(size);
 }
 
-bool Hessian::calculateColored(double cutoff, double dr, FdScheme scheme) {
+bool Hessian::calculateColored(double range, double dr, FdScheme scheme) {
   const int nAtoms = static_cast<int>(matter->numberOfAtoms());
   const int nMobile = static_cast<int>(atoms.rows());
   const int size = nMobile * 3;
-  const MobileColoring coloring = buildMobileColoring(*matter, atoms, cutoff);
+  const MobileColoring coloring = buildMobileColoring(*matter, atoms, range);
   if (static_cast<int>(coloring.color.size()) != nMobile ||
       static_cast<int>(coloring.closed.size()) != nMobile) {
     return false;
