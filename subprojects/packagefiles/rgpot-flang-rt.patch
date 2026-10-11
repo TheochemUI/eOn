@@ -1,0 +1,131 @@
+--- a/meson.build
++++ b/meson.build
+@@ -179,13 +179,59 @@
+                 'flang',
+             ]
+             _fs = import('fs')
+-            _fc_bin = _fc.cmd_array()[0]
+-            if _fs.is_absolute(_fc_bin) or _fs.exists(_fc_bin)
+-                _fc_bindir = _fs.parent(_fc_bin)
+-                # .../Library/bin -> .../Library/lib
+-                _fc_rt_dirs += [_fs.parent(_fc_bindir) / 'lib']
+-                # .../bin -> .../lib (some layouts)
+-                _fc_rt_dirs += [_fc_bindir / '..' / 'lib']
++            # cmd_array()[0] is often the bare name flang-new. Resolve it,
++            # and also ask the compiler. conda-forge flang 19 ships
++            # FortranRuntime.dynamic.lib in Library/lib, not under
++            # -print-resource-dir (Library/lib/clang/<ver>).
++            _fc_names = [_fc.cmd_array()[0]]
++            _fc_prog = find_program(_fc.cmd_array()[0], required: false)
++            if _fc_prog.found()
++                _fc_names += [_fc_prog.full_path()]
++            endif
++            foreach _fc_bin_raw : _fc_names
++                _fc_bin = _fc_bin_raw.replace('\\', '/')
++                if _fs.is_absolute(_fc_bin) or _fs.exists(_fc_bin)
++                    _fc_bindir = _fs.parent(_fc_bin)
++                    # .../Library/bin -> .../Library/lib
++                    _fc_rt_dirs += [_fs.parent(_fc_bindir) / 'lib']
++                    _fc_rt_dirs += [_fc_bindir]
++                endif
++            endforeach
++            foreach _fname : [
++                'FortranRuntime.dynamic.lib',
++                'FortranDecimal.dynamic.lib',
++                'flang_rt.runtime.dynamic.lib',
++            ]
++                _pf = run_command(
++                    _fc,
++                    '-print-file-name=' + _fname,
++                    check: false,
++                )
++                if _pf.returncode() == 0
++                    _rt_path = _pf.stdout().strip().replace('\\', '/')
++                    if _rt_path != _fname and _fs.is_absolute(_rt_path) and _fs.is_file(
++                        _rt_path,
++                    )
++                        _fc_rt_dirs += [_fs.parent(_rt_path)]
++                    endif
++                endif
++            endforeach
++            _res = run_command(_fc, '-print-resource-dir', check: false)
++            if _res.returncode() == 0
++                _resdir = _res.stdout().strip().replace('\\', '/')
++                _fc_rt_dirs += [
++                    _resdir / 'lib' / 'x86_64-pc-windows-msvc',
++                    _resdir / 'lib',
++                    _resdir,
++                ]
++                _walk = _resdir
++                foreach _i : [0, 1, 2, 3, 4]
++                    if _walk == ''
++                        break
++                    endif
++                    _fc_rt_dirs += [_walk]
++                    _walk = _fs.parent(_walk)
++                endforeach
+             endif
+         else
+             _fc_rt_names = ['flang_rt.runtime', 'FortranRuntime', 'flang']
+@@ -193,20 +239,49 @@
+     elif _fc_id == 'intel-llvm' or _fc_id == 'intel'
+         _fc_rt_names = ['ifcoremt']
+     endif
+-    foreach _n : _fc_rt_names
+-        if _fc_rt_dirs.length() > 0
+-            _rt = _fc.find_library(_n, dirs: _fc_rt_dirs, required: false)
+-        else
+-            _rt = _fc.find_library(_n, required: false)
++    # eOn overrides flang_rt with the import libs and /LIBPATH before
++    # this subproject, on Windows only. find_library's full path does
++    # not satisfy the /DEFAULTLIB name inside the Fortran objects; the
++    # directory has to be on the link line as well. A host flang_rt.pc
++    # must not replace libgfortran on other systems.
++    _use_flang_override = false
++    if host_system == 'windows'
++        _flang_override = dependency('flang_rt', required: false)
++        if _flang_override.found()
++            fortran_rt_deps += _flang_override
++            message('fortran runtime: flang_rt dependency override')
++            _use_flang_override = true
+         endif
+-        if _rt.found()
+-            fortran_rt_deps += _rt
+-            message('fortran runtime: ' + _n)
+-            if host_system != 'windows'
+-                break
++    endif
++    if not _use_flang_override
++        _fs_link = import('fs')
++        _added_libpath = false
++        foreach _n : _fc_rt_names
++            if _fc_rt_dirs.length() > 0
++                _rt = _fc.find_library(_n, dirs: _fc_rt_dirs, required: false)
++            else
++                _rt = _fc.find_library(_n, required: false)
+             endif
+-        endif
+-    endforeach
++            if _rt.found()
++                fortran_rt_deps += _rt
++                message('fortran runtime: ' + _n)
++                if host_system == 'windows' and not _added_libpath
++                    foreach _d : _fc_rt_dirs
++                        if _fs_link.is_file(join_paths(_d, _n + '.lib'))
++                            fortran_rt_deps += declare_dependency(
++                                link_args: ['/LIBPATH:' + _d],
++                            )
++                            _added_libpath = true
++                            break
++                        endif
++                    endforeach
++                endif
++                if host_system != 'windows'
++                    break
++                endif
++            endif
++        endforeach
++    endif
+     # A toolchain that ships only the versioned runtime (conda's
+     # libgfortran.so.5 without the libgfortran.so link) is invisible to
+     # find_library; ask the compiler where its runtime lives and link that
