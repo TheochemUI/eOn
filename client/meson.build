@@ -1995,7 +1995,10 @@ eon_relax_engine = shared_library(
     include_directories: _incdirs + [include_directories('.')],
     build_rpath: ':'.join(_runtime_rpath),
     install_rpath: _lib_install_rpath,
-    install: true,
+    # meson-python will not bundle a Windows DLL. The extension links
+    # static archives and does not load this module. A normal install
+    # still publishes it.
+    install: _client_lib_install,
     gnu_symbol_visibility: 'inlineshidden',
 )
 
