@@ -242,10 +242,43 @@ if get_option('buildtype') == 'release' or get_option('buildtype') == 'debugopti
         _args += cppc.get_supported_arguments(['-march=native'])
     endif
     if get_option('fast_math')
+        # Leaves contraction to the compiler. Bit-identical results across
+        # CPUs are not guaranteed once this option is on.
         _args += cppc.get_supported_arguments(['-ffast-math'])
         if cppc.get_id() == 'msvc'
             _args += cppc.get_supported_arguments(['/fp:fast'])
         endif
+    endif
+endif
+
+# Contraction off on every eOn target unless fast_math is on.
+# GCC defaults to -ffp-contract=fast (Optimize Options), and Highway
+# compiles each per-target copy with FMA enabled, so separate Mul and
+# Add become vfmadd. Clang defaults to -ffp-contract=on. icpx defaults
+# to -fp-model=fast, so it also needs -fp-model=precise. nvc++ needs
+# -Mnofma. get_supported_arguments drops a flag the compiler rejects.
+# MSVC: CI is Visual Studio 2022 (windows-2022, msvc-dev-cmd vsversion
+# 2022). Under the default /fp:precise, contractions are not generated.
+# That default is new in Visual Studio 2022. /fp:contract is the opt-in
+# that turns contraction on, and the msvc-170 syntax list has no
+# /fp:contract- form, so this build does not pass one.
+# https://learn.microsoft.com/en-us/cpp/build/reference/fp-specify-floating-point-behavior?view=msvc-170
+if not get_option('fast_math')
+    _fp_off = ['-ffp-contract=off']
+    if cppc.get_id() in ['intel', 'intel-llvm', 'intel-cl', 'intel-llvm-cl']
+        _fp_off += ['-fp-model=precise']
+    elif cppc.get_id() in ['nvidia_hpc', 'pgi']
+        _fp_off += ['-Mnofma']
+    endif
+    _args += cppc.get_supported_arguments(_fp_off)
+    if use_fortran
+        _ffp_off = ['-ffp-contract=off']
+        if fc.get_id() in ['intel', 'intel-llvm', 'intel-cl', 'intel-llvm-cl']
+            _ffp_off += ['-fp-model=precise']
+        elif fc.get_id() in ['nvidia_hpc', 'pgi']
+            _ffp_off += ['-Mnofma']
+        endif
+        _fargs += fc.get_supported_arguments(_ffp_off)
     endif
 endif
 
@@ -1855,6 +1888,7 @@ endif
 # ------------------------ Tests
 
 if get_option('with_tests')
+    # test_args is _args, so unit tests use the same contraction mode.
     test_args = _args
     test_deps = _exe_deps
     testMain = library(
@@ -2291,6 +2325,45 @@ if get_option('with_tests')
             )
         endif
     endif
+
+    # Compile the kernels into this binary. libhwy is static and hidden
+    # inside libeonclib, so a test that only links the shared library
+    # cannot switch Highway targets with SetSupportedTargetsForTest.
+    _force_norm_deps = []
+    if _hwy_use
+        _force_norm_deps += [hwy_dep]
+    endif
+    test(
+        'test_force_norm_targets',
+        executable(
+            'test_force_norm_targets',
+            sources: [
+                'unit_tests/ForceNormHighwayTest.cpp',
+                'ForceNorm.cpp',
+                'PbcSimd.cpp',
+                'thirdparty/catch2/catch_amalgamated.cpp',
+            ],
+            include_directories: _incdirs,
+            cpp_args: test_args,
+            dependencies: _force_norm_deps,
+        ),
+        suite: ['eon'],
+        timeout: 60,
+    )
+
+    # Highway kernels must not contain a fused multiply-add. The script
+    # skips on Windows and when objdump or Highway is missing.
+    test(
+        'fp_contract_kernels',
+        py,
+        args: [
+            meson.project_source_root() / 'scripts' / 'check_fp_contract.py',
+            eclib.full_path(),
+        ],
+        depends: [eclib],
+        suite: ['eon'],
+        timeout: 180,
+    )
 
     # Benchmarks (not in default test suite -- run via: meson test --benchmark)
     bench_pot_exe = executable('bench_pot',
