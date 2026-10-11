@@ -17,6 +17,7 @@
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
 #include "eon/potentials/PluginLoader.h"
+#include "eon/potentials/RgpotAdapter/HessianRange.hpp"
 
 #include "rgpot/ForceStructs.hpp"
 #include "rgpot/pot_caps.hpp"
@@ -165,14 +166,10 @@ public:
 
   [[nodiscard]] const RPot &kernel() const noexcept { return pot_; }
 
-  /// Classical kernels expose ``config().cutoff``. Anything else is not
-  /// treated as finite-range.
-  [[nodiscard]] double finiteCutoff() const noexcept override {
-    if constexpr (requires(const RPot &k) { k.config().cutoff; }) {
-      return pot_.config().cutoff;
-    } else {
-      return 0.0;
-    }
+  /// Hessian block range from HessianRangeOf<RPot>, not from whether
+  /// the kernel happens to have a cutoff field. 0 leaves colouring off.
+  [[nodiscard]] double hessianRange() const noexcept override {
+    return eonc::acceptedHessianRange(eonc::HessianRangeOf<RPot>::range(pot_));
   }
 
 private:

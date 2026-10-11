@@ -313,13 +313,15 @@ bool Hessian::calculate() {
   }
   const bool netCoupled =
       parameters.main_options().removeNetForce && nAtoms > 1 && !anyFixed;
-  double cutoff = 0.0;
+  // hessianRange is the distance past which every block is exactly
+  // zero. An interaction cutoff is not that distance.
+  double range = 0.0;
   if (matter->getPotential()) {
-    cutoff = matter->getPotential()->finiteCutoff();
+    range = matter->getPotential()->hessianRange();
   }
-  if (!netCoupled && ckptPath.empty() && cutoff > 0.0 &&
-      std::isfinite(cutoff)) {
-    if (calculateColored(cutoff, dr, scheme)) {
+  if (!netCoupled && ckptPath.empty() && range > 0.0 &&
+      std::isfinite(range)) {
+    if (calculateColored(range, dr, scheme)) {
       return true;
     }
     hessian.setZero();
@@ -445,7 +447,8 @@ bool Hessian::calculateColored(double cutoff, double dr, FdScheme scheme) {
     return false;
   }
   QUILL_LOG_DEBUG(log,
-                  "[Hessian] cutoff coloring: {} colors for {} mobile atoms\n",
+                  "[Hessian] hessian-range coloring: {} colors for {} mobile "
+                  "atoms\n",
                   nColors, nMobile);
 
   std::vector<std::vector<int>> members(static_cast<std::size_t>(nColors));
