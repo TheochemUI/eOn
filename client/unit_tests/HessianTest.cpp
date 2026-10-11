@@ -31,12 +31,14 @@
 #include <nlohmann/json.hpp>
 
 #include <algorithm>
+#include <cmath>
 #include <complex>
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
 #include <iterator>
 #include <limits>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -741,7 +743,8 @@ struct CutoffOnlyKernel {
   struct Config {
     double cutoff = 4.0;
   };
-  explicit CutoffOnlyKernel(const Config &c) : cfg(c) {}
+  explicit CutoffOnlyKernel(const Config &c)
+      : cfg(c) {}
   [[nodiscard]] const Config &config() const noexcept { return cfg; }
   [[nodiscard]] rgpot::PotCaps caps() const noexcept { return {}; }
   void forceImpl(const rgpot::ForceInput &, rgpot::ForceOut *) const {}
@@ -832,9 +835,21 @@ struct ChainHessian {
   std::size_t calls = 0;
 };
 
-ChainHessian embeddingChainHessian(const Parameters &params, double declared) {
+struct ChainRequest {
+  double declared = 0.0;
+  bool fixOne = false;
+};
+
+ChainHessian embeddingChainHessian(const Parameters &params,
+                                   const ChainRequest &request) {
   constexpr int kN = 8;
-  auto pot = std::make_shared<EmbeddingChain>(params, 1.0, declared);
+  // Planar zig-zag, bond 0.75, 120 degree angle. rc is 1, so atom i and
+  // i+2 sit in (rc, 2 rc) and share a neighbour. The y offset makes the
+  // yy and xy blocks nonzero.
+  constexpr double kBond = 0.75;
+  const double step = kBond * std::sqrt(3.0) / 2.0;
+  const double height = kBond / 2.0;
+  auto pot = std::make_shared<EmbeddingChain>(params, 1.0, request.declared);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->resize(kN);
   AtomMatrix pos(kN, 3);
@@ -842,11 +857,15 @@ ChainHessian embeddingChainHessian(const Parameters &params, double declared) {
   for (int i = 0; i < kN; ++i) {
     matter->setAtomicNr(i, 1);
     matter->setMass(i, 1.0);
-    pos(i, 0) = 0.75 * static_cast<double>(i);
+    pos(i, 0) = step * static_cast<double>(i);
+    pos(i, 1) = (i % 2 == 0) ? 0.0 : height;
   }
   matter->setPositions(pos);
   matter->setCell(Matrix3d::Identity() * 40.0);
   matter->setPeriodic(false);
+  if (request.fixOne) {
+    matter->setFixed(0, 1);
+  }
   VectorXi all(kN);
   for (int i = 0; i < kN; ++i) {
     all(i) = i;
@@ -859,6 +878,167 @@ ChainHessian embeddingChainHessian(const Parameters &params, double declared) {
   out.calls = pot->forceCallCounter.load();
   return out;
 }
+
+/// Forwards forces to a real kernel and reports a chosen Hessian range.
+/// The stored cell is forwarded so EDIP still sees a box wide enough for
+/// its cell-width check while the image itself is non-periodic.
+class DeclaredRange final : public eonc::Potential {
+public:
+  DeclaredRange(std::shared_ptr<eonc::Potential> inner,
+                const Parameters &params, double range)
+      : eonc::Potential(inner->getType(), params),
+        inner_(std::move(inner)),
+        range_(range) {}
+
+  void force(long n, const double *r, const int *atomicNrs, double *f,
+             double *u, double *variance, const double *box) override {
+    inner_->force(n, r, atomicNrs, f, u, variance, box);
+  }
+
+  [[nodiscard]] double hessianRange() const noexcept override { return range_; }
+
+  [[nodiscard]] bool forwardsStoredCell() const noexcept override {
+    return true;
+  }
+
+  [[nodiscard]] bool supportsBatchEvaluation() const noexcept override {
+    return false;
+  }
+
+private:
+  std::shared_ptr<eonc::Potential> inner_;
+  double range_;
+};
+
+struct KernelProbe {
+  const char *name;
+  PotType type;
+  int z;
+  int zGuest;
+  double bond;
+  /// Perpendicular rise of the zig-zag. 0 selects a 120 degree angle.
+  double rise;
+  double interactionCutoff;
+  bool reachesPastCutoff;
+};
+
+double zigRise(const KernelProbe &probe) {
+  return probe.rise > 0.0 ? probe.rise : probe.bond / 2.0;
+}
+
+double zigStep(const KernelProbe &probe) {
+  const double rise = zigRise(probe);
+  return std::sqrt(probe.bond * probe.bond - rise * rise);
+}
+
+struct KernelReport {
+  int atoms = 0;
+  int colors = 0;
+  std::size_t serialCalls = 0;
+  std::size_t coloredCalls = 0;
+  double maxAbs = 0.0;
+  double largestNonzero = 0.0;
+  double coloredErr = 0.0;
+  double shortErr = 0.0;
+};
+
+double blockAbs(const MatrixXd &H, int atomI, int atomJ) {
+  double m = 0.0;
+  for (int a = 0; a < 3; ++a) {
+    for (int b = 0; b < 3; ++b) {
+      m = std::max(m, std::abs(H(3 * atomI + a, 3 * atomJ + b)));
+    }
+  }
+  return m;
+}
+
+ChainHessian kernelHessian(const Parameters &params,
+                           const std::shared_ptr<eonc::Potential> &pot, int n,
+                           double step, double height, int z, int zGuest) {
+  auto matter = std::make_shared<Matter>(pot, params);
+  matter->resize(n);
+  AtomMatrix pos(n, 3);
+  pos.setZero();
+  for (int i = 0; i < n; ++i) {
+    const bool guest = zGuest != 0 && (i == 1 || i == n / 2);
+    matter->setAtomicNr(i, guest ? zGuest : z);
+    matter->setMass(i, 1.0);
+    pos(i, 0) = step * static_cast<double>(i);
+    pos(i, 1) = (i % 2 == 0) ? 0.0 : height;
+  }
+  matter->setPositions(pos);
+  // Wide enough for EDIP's cell-width check. Diagonal, so the box the
+  // kernel sees is the same matrix Fortran stores as columns.
+  matter->setCell(Matrix3d::Identity() * 200.0);
+  matter->setPeriodic(false);
+  VectorXi all(n);
+  for (int i = 0; i < n; ++i) {
+    all(i) = i;
+  }
+  pot->forceCallCounter.store(0);
+  Hessian hess(params, matter.get());
+  hess.writeHessianFile(false);
+  ChainHessian out;
+  out.H = hess.getHessian(matter.get(), all);
+  out.calls = pot->forceCallCounter.load();
+  return out;
+}
+
+/// Spring cluster inside a range that covers every pair. Batching is on
+/// so a fallback off the coloured path is visible: the coloured loop
+/// never calls forceBatch.
+class BatchCluster final : public eonc::Potential {
+public:
+  explicit BatchCluster(const Parameters &params)
+      : eonc::Potential(PotType::LJ, params) {}
+
+  void force(long n, const double *r, const int *, double *f, double *u,
+             double *variance, const double *) override {
+    if (variance != nullptr) {
+      *variance = 0.0;
+    }
+    std::fill(f, f + 3L * n, 0.0);
+    double energy = 0.0;
+    for (long i = 0; i < n; ++i) {
+      for (long j = i + 1; j < n; ++j) {
+        const double dx = r[3 * i] - r[3 * j];
+        const double dy = r[3 * i + 1] - r[3 * j + 1];
+        const double dz = r[3 * i + 2] - r[3 * j + 2];
+        const double rij = std::sqrt(dx * dx + dy * dy + dz * dz);
+        if (!(rij > 0.0) || !(rij < 5.0)) {
+          continue;
+        }
+        const double stretch = rij - 1.2;
+        energy += 0.5 * stretch * stretch;
+        const double coeff = stretch / rij;
+        f[3 * i] -= coeff * dx;
+        f[3 * i + 1] -= coeff * dy;
+        f[3 * i + 2] -= coeff * dz;
+        f[3 * j] += coeff * dx;
+        f[3 * j + 1] += coeff * dy;
+        f[3 * j + 2] += coeff * dz;
+      }
+    }
+    *u = energy;
+  }
+
+  void forceBatch(long nSystems, long nAtoms, const double *const *positions,
+                  const int *const *atomicNrs, double *const *forces,
+                  double *energies, double *variances,
+                  const double *const *boxes) override {
+    ++batchCalls;
+    eonc::Potential::forceBatch(nSystems, nAtoms, positions, atomicNrs, forces,
+                                energies, variances, boxes);
+  }
+
+  [[nodiscard]] bool supportsBatchEvaluation() const noexcept override {
+    return true;
+  }
+
+  [[nodiscard]] double hessianRange() const noexcept override { return 30.0; }
+
+  std::size_t batchCalls = 0;
+};
 
 template <class RPot>
 void requireManyBodyRange(PotType ptype, const Parameters &params,
@@ -878,8 +1058,7 @@ void requireManyBodyRange(PotType ptype, const Parameters &params,
 
 } // namespace
 
-TEST_CASE("Pair kernels opt in at the interaction cutoff",
-          "[hessian][color]") {
+TEST_CASE("Pair kernels opt in at the interaction cutoff", "[hessian][color]") {
   Parameters params;
   auto lj = eonc::helpers::makePotential(PotType::LJ, params);
   REQUIRE(lj->hessianRange() == 15.0);
@@ -944,10 +1123,50 @@ TEST_CASE("A cutoff field without an opt-in is not colored",
                 eonc::HessianLocality::MolecularSite);
 #endif
   Parameters params;
-  RgpotAdapter<CutoffOnlyKernel> pot(
-      PotType::LJ, params, CutoffOnlyKernel::Config{.cutoff = 4.0});
+  RgpotAdapter<CutoffOnlyKernel> pot(PotType::LJ, params,
+                                     CutoffOnlyKernel::Config{.cutoff = 4.0});
   REQUIRE(pot.kernel().config().cutoff == 4.0);
   REQUIRE(pot.hessianRange() == 0.0);
+}
+
+void checkEmbeddingChain(const Parameters &params, std::size_t serialCalls,
+                         const char *label) {
+  const ChainHessian serial = embeddingChainHessian(params, ChainRequest{0.0});
+  const ChainHessian colored = embeddingChainHessian(params, ChainRequest{2.0});
+  const ChainHessian shortRange =
+      embeddingChainHessian(params, ChainRequest{1.0});
+  REQUIRE(serial.H.rows() == 24);
+  REQUIRE(colored.H.rows() == 24);
+  REQUIRE(shortRange.H.rows() == 24);
+  REQUIRE(serial.calls == serialCalls);
+  REQUIRE(colored.calls < serial.calls);
+  REQUIRE(shortRange.calls < serial.calls);
+
+  double maxAbs = 0.0;
+  double errColored = 0.0;
+  double errShort = 0.0;
+  double offAxis = 0.0;
+  for (int i = 0; i < 24; ++i) {
+    for (int j = 0; j < 24; ++j) {
+      maxAbs = std::max(maxAbs, std::abs(serial.H(i, j)));
+      errColored =
+          std::max(errColored, std::abs(colored.H(i, j) - serial.H(i, j)));
+      errShort =
+          std::max(errShort, std::abs(shortRange.H(i, j) - serial.H(i, j)));
+      if (i % 3 != 0 || j % 3 != 0) {
+        offAxis = std::max(offAxis, std::abs(serial.H(i, j)));
+      }
+    }
+  }
+  std::fprintf(stderr,
+               "EMBED %s serial_calls=%zu colored_calls=%zu short_calls=%zu "
+               "maxAbs=%.6e colored_err=%.6e short_err=%.6e off_axis=%.6e\n",
+               label, serial.calls, colored.calls, shortRange.calls, maxAbs,
+               errColored, errShort, offAxis);
+  REQUIRE(maxAbs > 0.0);
+  REQUIRE(offAxis > 1e-6);
+  REQUIRE(errColored < 1e-8);
+  REQUIRE(errShort > 1e-2 * maxAbs);
 }
 
 TEST_CASE("Embedding-chain coloring matches serial only at twice the cutoff",
@@ -957,19 +1176,24 @@ TEST_CASE("Embedding-chain coloring matches serial only at twice the cutoff",
   ParametersLoadAccess::main_options(params).finiteDifference = 1e-5;
   ParametersLoadAccess::main_options(params).removeNetForce = false;
   ParametersLoadAccess::hessian_options(params).fd_scheme = "central";
+  // Eight atoms, 24 coordinates, central stencil.
+  checkEmbeddingChain(params, static_cast<std::size_t>(1 + 2 * 24), "central");
 
-  const ChainHessian serial = embeddingChainHessian(params, 0.0);
-  const ChainHessian colored = embeddingChainHessian(params, 2.0);
-  const ChainHessian shortRange = embeddingChainHessian(params, 1.0);
-  REQUIRE(serial.H.rows() == 24);
-  REQUIRE(colored.H.rows() == 24);
-  REQUIRE(shortRange.H.rows() == 24);
-  // Range 0 is the per-column path: one base gradient and two central
-  // samples on each of 24 coordinates.
+  ParametersLoadAccess::hessian_options(params).fd_scheme = "fourth";
+  checkEmbeddingChain(params, static_cast<std::size_t>(1 + 4 * 24), "fourth");
+
+  // removeNetForce would couple every atom, except a fixed atom lets the
+  // coloured path run.
+  ParametersLoadAccess::hessian_options(params).fd_scheme = "central";
+  ParametersLoadAccess::main_options(params).removeNetForce = true;
+  const ChainHessian serial =
+      embeddingChainHessian(params, ChainRequest{0.0, true});
+  const ChainHessian colored =
+      embeddingChainHessian(params, ChainRequest{2.0, true});
+  const ChainHessian shortRange =
+      embeddingChainHessian(params, ChainRequest{1.0, true});
   REQUIRE(serial.calls == static_cast<std::size_t>(1 + 2 * 24));
   REQUIRE(colored.calls < serial.calls);
-  REQUIRE(shortRange.calls < serial.calls);
-
   double maxAbs = 0.0;
   double errColored = 0.0;
   double errShort = 0.0;
@@ -978,19 +1202,237 @@ TEST_CASE("Embedding-chain coloring matches serial only at twice the cutoff",
       maxAbs = std::max(maxAbs, std::abs(serial.H(i, j)));
       errColored =
           std::max(errColored, std::abs(colored.H(i, j) - serial.H(i, j)));
-      errShort = std::max(errShort,
-                          std::abs(shortRange.H(i, j) - serial.H(i, j)));
+      errShort =
+          std::max(errShort, std::abs(shortRange.H(i, j) - serial.H(i, j)));
     }
   }
-  UNSCOPED_INFO("serial calls " << serial.calls << " colored calls "
-                                << colored.calls << " short calls "
-                                << shortRange.calls);
-  UNSCOPED_INFO("max |H| " << maxAbs << " colored max abs err " << errColored
-                           << " short max abs err " << errShort);
-  REQUIRE(maxAbs > 0.0);
+  std::fprintf(stderr,
+               "EMBED fixed serial_calls=%zu colored_calls=%zu short_calls=%zu "
+               "maxAbs=%.6e colored_err=%.6e short_err=%.6e\n",
+               serial.calls, colored.calls, shortRange.calls, maxAbs,
+               errColored, errShort);
   REQUIRE(errColored < 1e-8);
-  REQUIRE(errShort > 1e-3);
-  REQUIRE(errShort > 0.01 * maxAbs);
+  REQUIRE(errShort > 1e-2 * maxAbs);
+}
+
+TEST_CASE("Opted-in kernels match the serial matrix at the declared range",
+          "[hessian][color]") {
+  const KernelProbe probes[] = {
+      {"EAM_AL", PotType::EAM_AL, 13, 0, 2.86, 0.0, 7.1, true},
+      {"SW_SI", PotType::SW_SI, 14, 0, 2.35, 0.0, 1.8 * 2.0951, true},
+      {"TERSOFF_SI", PotType::TERSOFF_SI, 14, 0, 2.35, 0.0, 3.0, true},
+      {"EDIP", PotType::EDIP, 14, 0, 2.35, 0.0, 3.1213820, true},
+      // A 120 degree chain puts atom i+2 inside the 4.5 pair cutoff.
+      // A flatter zig-zag keeps the 2.35 bond and puts i+2 in (4.5, 9).
+      {"LENOSKY_SI", PotType::LENOSKY_SI, 14, 0, 2.35, 0.45, 4.5, true},
+      // Fe-Fe density cuts at 4.2. A taller zig-zag keeps the 2.48 bond
+      // and puts a shared neighbour of an (rc, 2 rc) pair inside 4.2.
+      {"FEHE", PotType::FEHE, 26, 2, 2.48, 1.40, 5.4, true},
+      {"CUH2", PotType::CUH2, 29, 1, 2.55, 0.0, 6.1, true},
+      {"ZBL", PotType::ZBL, 14, 0, 1.50, 0.0, 2.5, false},
+  };
+
+  for (const KernelProbe &probe : probes) {
+    INFO(probe.name);
+    Parameters params;
+    ParametersLoadAccess::potential_options(params).potential = probe.type;
+    ParametersLoadAccess::main_options(params).finiteDifference = 1e-5;
+    ParametersLoadAccess::main_options(params).removeNetForce = false;
+    ParametersLoadAccess::hessian_options(params).fd_scheme = "central";
+    if (probe.type == PotType::ZBL) {
+      ParametersLoadAccess::zbl_options(params).cut_inner = 2.0;
+      ParametersLoadAccess::zbl_options(params).cut_global = 2.5;
+    }
+    auto real = eonc::helpers::sharePotential(
+        eonc::helpers::makePotential(probe.type, params));
+    const double declared = real->hessianRange();
+    if (probe.reachesPastCutoff) {
+      REQUIRE(declared == 2.0 * probe.interactionCutoff);
+    } else {
+      REQUIRE(declared == probe.interactionCutoff);
+    }
+
+    const double step = zigStep(probe);
+    const double height = zigRise(probe);
+    const int kMax = static_cast<int>(std::floor(declared / step));
+    const int n = std::max(8, 2 * kMax + 4);
+    auto serialPot = std::make_shared<DeclaredRange>(real, params, 0.0);
+    auto coloredPot = std::make_shared<DeclaredRange>(real, params, declared);
+    const ChainHessian serial = kernelHessian(params, serialPot, n, step,
+                                              height, probe.z, probe.zGuest);
+    const ChainHessian colored = kernelHessian(params, coloredPot, n, step,
+                                               height, probe.z, probe.zGuest);
+    REQUIRE(serial.H.rows() == 3 * n);
+    REQUIRE(colored.H.rows() == 3 * n);
+    REQUIRE(serial.calls == static_cast<std::size_t>(1 + 2 * 3 * n));
+    REQUIRE(colored.calls < serial.calls);
+
+    auto geom = std::make_shared<Matter>(serialPot, params);
+    geom->resize(n);
+    AtomMatrix pos(n, 3);
+    pos.setZero();
+    for (int i = 0; i < n; ++i) {
+      pos(i, 0) = step * static_cast<double>(i);
+      pos(i, 1) = (i % 2 == 0) ? 0.0 : height;
+    }
+    VectorXi all(n);
+    for (int i = 0; i < n; ++i) {
+      all(i) = i;
+    }
+    geom->setPositions(pos);
+    geom->setCell(Matrix3d::Identity() * 200.0);
+    geom->setPeriodic(false);
+    const std::vector<int> colors =
+        eonc::colorMobileCutoffGraph(*geom, all, declared);
+    int nColors = 0;
+    for (int c : colors) {
+      nColors = std::max(nColors, c + 1);
+    }
+    REQUIRE(nColors >= 2);
+    REQUIRE(nColors < n);
+
+    double maxAbs = 0.0;
+    double coloredErr = 0.0;
+    for (int i = 0; i < 3 * n; ++i) {
+      for (int j = 0; j < 3 * n; ++j) {
+        maxAbs = std::max(maxAbs, std::abs(serial.H(i, j)));
+        coloredErr =
+            std::max(coloredErr, std::abs(colored.H(i, j) - serial.H(i, j)));
+      }
+    }
+    REQUIRE(maxAbs > 0.0);
+    REQUIRE(coloredErr <= 1e-8 * maxAbs);
+
+    double largestNonzero = 0.0;
+    double pastCutoff = 0.0;
+    double pastRange = 0.0;
+    bool sawPastCutoff = false;
+    bool sawPastRange = false;
+    for (int i = 0; i < n; ++i) {
+      for (int j = i + 1; j < n; ++j) {
+        const double dx = pos(i, 0) - pos(j, 0);
+        const double dy = pos(i, 1) - pos(j, 1);
+        const double dist = std::sqrt(dx * dx + dy * dy);
+        const double block = blockAbs(serial.H, i, j);
+        if (block > 0.0) {
+          largestNonzero = std::max(largestNonzero, dist);
+        }
+        if (dist > probe.interactionCutoff) {
+          sawPastCutoff = true;
+          pastCutoff = std::max(pastCutoff, block);
+        }
+        if (dist > declared) {
+          sawPastRange = true;
+          pastRange = std::max(pastRange, block);
+        }
+      }
+    }
+    REQUIRE(sawPastRange);
+    REQUIRE(pastRange == 0.0);
+    if (probe.reachesPastCutoff) {
+      REQUIRE(sawPastCutoff);
+      REQUIRE(pastCutoff > 1e-6 * maxAbs);
+    }
+    REQUIRE(largestNonzero > 0.0);
+    REQUIRE(largestNonzero <= declared);
+
+    double shortErr = 0.0;
+    if (probe.name == std::string("SW_SI") ||
+        probe.name == std::string("EAM_AL")) {
+      auto shortPot = std::make_shared<DeclaredRange>(real, params,
+                                                      probe.interactionCutoff);
+      const ChainHessian shortH = kernelHessian(params, shortPot, n, step,
+                                                height, probe.z, probe.zGuest);
+      REQUIRE(shortH.calls < serial.calls);
+      for (int i = 0; i < 3 * n; ++i) {
+        for (int j = 0; j < 3 * n; ++j) {
+          shortErr =
+              std::max(shortErr, std::abs(shortH.H(i, j) - serial.H(i, j)));
+        }
+      }
+      REQUIRE(shortErr > 1e-2 * maxAbs);
+    }
+
+    std::fprintf(stderr,
+                 "KERNEL %s atoms=%d colors=%d serial_calls=%zu "
+                 "colored_calls=%zu maxAbs=%.6e largest_nonzero=%.6f "
+                 "colored_err=%.6e short_err=%.6e\n",
+                 probe.name, n, nColors, serial.calls, colored.calls, maxAbs,
+                 largestNonzero, coloredErr, shortErr);
+  }
+}
+
+TEST_CASE("Coloring falls back when every mobile atom needs its own color",
+          "[hessian][color]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::main_options(params).finiteDifference = 1e-5;
+  ParametersLoadAccess::main_options(params).removeNetForce = false;
+  ParametersLoadAccess::hessian_options(params).fd_scheme = "central";
+
+  constexpr int kN = 4;
+  auto place = [kN](const std::shared_ptr<Matter> &matter) {
+    matter->resize(kN);
+    for (long i = 0; i < kN; ++i) {
+      matter->setAtomicNr(i, 1);
+      matter->setMass(i, 1.0);
+    }
+    AtomMatrix pos(kN, 3);
+    pos.setZero();
+    pos(1, 0) = 1.0;
+    pos(2, 0) = 0.4;
+    pos(2, 1) = 0.7;
+    pos(3, 0) = 0.5;
+    pos(3, 2) = 0.6;
+    matter->setPositions(pos);
+    matter->setCell(Matrix3d::Identity() * 40.0);
+    matter->setPeriodic(false);
+  };
+
+  auto lj = std::make_shared<RgpotAdapter<rgpot::LJPot>>(
+      PotType::LJ, params, rgpot::LJConfig{.cutoff = 20.0});
+  REQUIRE(lj->hessianRange() == 20.0);
+  auto ljMatter = std::make_shared<Matter>(lj, params);
+  place(ljMatter);
+  VectorXi all(kN);
+  all << 0, 1, 2, 3;
+  const std::vector<int> colors =
+      eonc::colorMobileCutoffGraph(*ljMatter, all, lj->hessianRange());
+  int nColors = 0;
+  for (int c : colors) {
+    nColors = std::max(nColors, c + 1);
+  }
+  REQUIRE(nColors == kN);
+
+  lj->forceCallCounter.store(0);
+  Hessian ljHess(params, ljMatter.get());
+  ljHess.writeHessianFile(false);
+  const MatrixXd ljH = ljHess.getHessian(ljMatter.get(), all);
+  REQUIRE(ljH.rows() == 3 * kN);
+  // Diameter is below the range, so colouring saves nothing and the
+  // per-column loop runs: one base gradient and two central samples
+  // on each of 12 coordinates.
+  REQUIRE(lj->forceCallCounter.load() == static_cast<std::size_t>(1 + 2 * 12));
+
+  auto batch = std::make_shared<BatchCluster>(params);
+  auto batchMatter = std::make_shared<Matter>(batch, params);
+  place(batchMatter);
+  const std::vector<int> batchColors =
+      eonc::colorMobileCutoffGraph(*batchMatter, all, batch->hessianRange());
+  int batchNColors = 0;
+  for (int c : batchColors) {
+    batchNColors = std::max(batchNColors, c + 1);
+  }
+  REQUIRE(batchNColors == kN);
+  batch->forceCallCounter.store(0);
+  batch->batchCalls = 0;
+  Hessian batchHess(params, batchMatter.get());
+  batchHess.writeHessianFile(false);
+  const MatrixXd batchH = batchHess.getHessian(batchMatter.get(), all);
+  REQUIRE(batchH.rows() == 3 * kN);
+  REQUIRE(batch->batchCalls > 0);
+  REQUIRE(batch->forceCallCounter.load() ==
+          static_cast<std::size_t>(1 + 2 * 12));
 }
 
 } /* namespace tests */
