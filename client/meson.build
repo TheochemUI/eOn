@@ -888,36 +888,53 @@ else
     if _readcon_db_version == ''
         _readcon_db_version = '0.1.6'
     endif
-    # A wrap fallback is already found(), and its link line is the cdylib
-    # path. A bare -lreadcon_db has no -L under the wheel's conda linker.
-    # An installed pkg-config file is kept by that same path when libdir
-    # names the shared library.
-    _readcon_db_keep = []
-    _pc_libdir = readcon_db_dep.get_variable(
-        pkgconfig: 'libdir',
-        default_value: '',
-    )
-    if _pc_libdir != ''
-        foreach _name : ['libreadcon_db.so', 'libreadcon_db.dylib']
-            _cand = _pc_libdir / _name
-            if fs.exists(_cand)
-                _readcon_db_keep = [_cand]
-                if _readcon_db_as_needed
-                    _readcon_db_keep = [
-                        '-Wl,--no-as-needed',
-                        _cand,
-                        '-Wl,--as-needed',
-                    ]
+    # wrap_mode=forcefallback makes dependency() found, so the not-found
+    # branch above does not run on a wheel. The subproject link line is
+    # readcon_db.dll, and its sources hold that DLL. link.exe rejects a
+    # DLL input (LNK1107). The mirror is compiled out on Windows, so
+    # headers and the version macro are enough.
+    if is_windows
+        readcon_db_dep = declare_dependency(
+            dependencies: [
+                readcon_db_dep.partial_dependency(
+                    includes: true,
+                    compile_args: true,
+                ),
+            ],
+            compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
+        )
+    else
+        # A wrap fallback is already found(), and its link line is the cdylib
+        # path. A bare -lreadcon_db has no -L under the wheel's conda linker.
+        # An installed pkg-config file is kept by that same path when libdir
+        # names the shared library.
+        _readcon_db_keep = []
+        _pc_libdir = readcon_db_dep.get_variable(
+            pkgconfig: 'libdir',
+            default_value: '',
+        )
+        if _pc_libdir != ''
+            foreach _name : ['libreadcon_db.so', 'libreadcon_db.dylib']
+                _cand = _pc_libdir / _name
+                if fs.exists(_cand)
+                    _readcon_db_keep = [_cand]
+                    if _readcon_db_as_needed
+                        _readcon_db_keep = [
+                            '-Wl,--no-as-needed',
+                            _cand,
+                            '-Wl,--as-needed',
+                        ]
+                    endif
+                    break
                 endif
-                break
-            endif
-        endforeach
+            endforeach
+        endif
+        readcon_db_dep = declare_dependency(
+            dependencies: [readcon_db_dep],
+            link_args: _readcon_db_keep,
+            compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
+        )
     endif
-    readcon_db_dep = declare_dependency(
-        dependencies: [readcon_db_dep],
-        link_args: _readcon_db_keep,
-        compile_args: ['-DEON_READCON_DB_VERSION="' + _readcon_db_version + '"'],
-    )
 endif
 _deps += [readcon_db_dep]
 

@@ -38,6 +38,15 @@ def test_wrap_revision_matches_the_python_package():
         "\nelse\n", 1
     )[0]
     assert "link_with: [_readcon_db_so]" in fallback
+    # forcefallback makes dependency() found, so the wheel takes this arm.
+    # The subproject names readcon_db.dll; link.exe rejects that input.
+    found = meson.split("wrap_mode=forcefallback makes dependency() found", 1)[1]
+    windows = found.split("if is_windows", 1)[1].split("else", 1)[0]
+    assert "partial_dependency(" in windows
+    assert "includes: true" in windows
+    assert "compile_args: true" in windows
+    assert "readcon_db.dll" not in windows
+    assert "link_args" not in windows
 
 
 def test_missing_library_leaves_iostatus_and_fails_the_check():
