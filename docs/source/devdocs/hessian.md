@@ -24,7 +24,7 @@ The reported value is the distance beyond which every Hessian block between two 
 
 Each row of that square is deduplicated while it is filled, with the same epoch-marked visited array the greedy coloring uses. The temporary storage is the edges, at most one slot per mobile pair. Pushing every toucher pair and sorting afterwards holds `O(sum t_k^2)` integers first, which is the whole cell when a many-body range reaches across it.
 
-When the coloring has as many colors as mobile atoms, `calculateColored` returns false and `calculate` takes the batched path, or the serial path when the potential does not batch. A color per atom does not reduce the force count, and the colored loop would skip batching. Catch2 `Coloring falls back when every mobile atom needs its own color` is that case: a four-atom cluster whose diameter is below the range takes 25 force calls, the serial central count.
+When the coloring has as many colors as mobile atoms, `calculateColored` returns false and `calculate` takes the batched path, or the serial path when the potential does not batch. A color per atom does not reduce the force count, and the colored loop would skip batching. Catch2 `Coloring falls back when every mobile atom needs its own color` is that case: a four-atom cluster whose diameter is below the range takes 25 force calls, the serial central count. The eight-atom embedding chain takes 49 force calls total on the central scheme.
 
 `0` and any non-finite value mean the range is unknown. The matrix is then one column per coordinate. A potential that evaluates batches takes the batched path instead, still one sample per coordinate.
 
@@ -32,7 +32,9 @@ When the coloring has as many colors as mobile atoms, `calculateColored` returns
 
 Override `Potential::hessianRange()` and return that distance. The default is `0`.
 
-An rgpot kernel wrapped by `RgpotAdapter` does not override the adapter. It specializes `eonc::HessianRangeOf<Kernel>` in `include/eon/potentials/RgpotAdapter/HessianRange.hpp`. The primary template is `HessianLocality::Unknown` and returns `0`. The adapter calls that trait and passes the result through `acceptedHessianRange`, which turns a non-positive or non-finite value into `0`.
+An rgpot kernel wrapped by `RgpotAdapter` does not override the adapter. It specializes `eonc::HessianRangeOf<Kernel>` in `include/eon/potentials/RgpotAdapter/HessianRange.h`. The primary template is `HessianLocality::Unknown` and returns `0`. The adapter calls that trait and passes the result through `acceptedHessianRange`, which turns a non-positive or non-finite value into `0`.
+
+Override `Potential::hessianRange()` directly for a potential that is not an rgpot kernel. `finiteCutoff()` is deprecated and stays as the fallback that default `hessianRange()` calls, so an existing override still colors.
 
 The specialization declares a locality class and returns the matching distance.
 
@@ -49,7 +51,7 @@ A kernel added in rgpot follows [Porting potentials](project:porting_potentials.
 
 ## Kernels
 
-The current pin is rgpot `004707295af9253047129a723ae79f0c1bc5afa2`. The same classes were checked on rgpot branch `release/3.5.0`. "Wrapped" means `makePotential` builds an `RgpotAdapter` for that kernel. A kernel that exists in rgpot but is not wrapped still has a specialization when its header is present, so a later factory arm cannot turn coloring on by having a cutoff field.
+The classes below were checked at the current rgpot pin and at rgpot release `v3.5.0`. "Wrapped" means `makePotential` builds an `RgpotAdapter` for that kernel. A kernel that exists in rgpot but is not wrapped still has a specialization when its header is present, so a later factory arm cannot turn coloring on by having a cutoff field.
 
 | Kernel | Pin | 3.5.0 | Class | Reported range |
 | --- | --- | --- | --- | --- |
@@ -62,7 +64,7 @@ The current pin is rgpot `004707295af9253047129a723ae79f0c1bc5afa2`. The same cl
 | `TersoffPot` | wrapped | wrapped | atom-centred | `2 * 3.0` Å |
 | `EDIPPot` | wrapped | wrapped | atom-centred | `2 * 3.1213820` Å |
 | `LenoskyPot` | wrapped | wrapped | atom-centred | `2 * 4.5` Å |
-| `FeHePot` | wrapped | wrapped | atom-centred | `2 * 5.4` Å |
+| `FeHePot` | wrapped | wrapped | atom-centred | `8.4` Å |
 | `CuH2Pot` | wrapped | wrapped | atom-centred | `2 * 6.1` Å |
 | `WaterHPot` (TIP4P-H) | factory arm when water is built | same | unknown | disabled |
 | `XTBPot` | wrapped when built | same | unknown | disabled |
@@ -93,20 +95,35 @@ Atom-centred Fortran kernels. The C++ face has no cutoff field. The defaults bel
 - `TersoffPot`: taper end `s = 3.0` in `rgpot_tersoff.f90`. `cutoff_taper` is zero at and beyond `S`.
 - `EDIPPot`: `max(a, b)` with `a = b = 3.1213820` in `rgpot_edip.f90`.
 - `LenoskyPot`: `default_cutoff = 4.5` in `rgpot_lenosky.f90`, shared by the pair and density splines.
-- `FeHePot`: the largest of the five cutoffs is the He-He pair, `rcut_he_pair = 5.4`, in `rgpot_fehe.f90`.
+- `FeHePot`: in `rgpot_fehe.f90` the pair cutoffs are Fe-Fe 5.3, Fe-He 3.9028 and He-He 5.4. d-band density vanishes at 4.2 and only Fe embeds it. s-band density vanishes at 4.10 and both species embed it. The range is the larger of the pair cutoffs and twice the largest density cutoff, `max(5.4, 2 * 4.2) = 8.4`.
 - `CuH2Pot`: `rcut = 6.1` in `rgpot_cuh2.f90`. `phi` and `rho` are shifted to vanish there.
 
 `WaterHPot`. `rgpot_water_h.f90` says there is no cutoff. Every site interacts with the lone H at its nearest periodic image, however far away. The range stays `0`.
 
-UMA, on the pin and on `release/3.5.0`. `UmaConfig::cutoff` (default 6 Å, `UmaConfig.hpp`) is the vesin edge cutoff. `UmaPot::forceImpl` builds that edge list and runs the compiled graph (`UmaPot.cc`, the `vesin_fairchem_edges` call). The package metadata can replace the cutoff. The number of message-passing layers is not a field of the kernel or of `UmaConfig`. `n_layers * cutoff` is not derivable, so the specialization is `MessagePassing` and the range is `0`.
+UMA, on the pin and on `v3.5.0`. `UmaConfig::cutoff` (default 6 Å, `UmaConfig.hpp`) is the vesin edge cutoff. `UmaPot::forceImpl` builds that edge list and runs the compiled graph (`UmaPot.cc`, the `vesin_fairchem_edges` call). The package metadata can replace the cutoff. The number of message-passing layers is not a field of the kernel or of `UmaConfig`. `n_layers * cutoff` is not derivable, so the specialization is `MessagePassing` and the range is `0`.
 
-Water on `release/3.5.0`. `WaterConfig::cutoff` (default 8.5 Å, `WaterPots.hpp`) is the intermolecular cutoff passed into TIP4P, SPC/E and TIP4P-Pt. The CCL intramolecular term (`ccl.hpp`, `intramolecular`) is a polynomial in the bond stretch and the angle. It has no distance at which it is identically zero. SPC/E also exposes `coulombFull` (`spce_ccl.hpp`), a Coulomb path with no cutoff. A molecule is flexible, so there is no hard intramolecular extent to add to the cutoff. The range stays `0`.
+Water on `v3.5.0`. `WaterConfig::cutoff` (default 8.5 Å, `WaterPots.hpp`) is the intermolecular cutoff passed into TIP4P, SPC/E and TIP4P-Pt. The CCL intramolecular term (`ccl.hpp`, `intramolecular`) is a polynomial in the bond stretch and the angle. It has no distance at which it is identically zero. SPC/E also exposes `coulombFull` (`spce_ccl.hpp`), a Coulomb path with no cutoff. A molecule is flexible, so there is no hard intramolecular extent to add to the cutoff. The range stays `0`.
 
-Cell-list EAM on `release/3.5.0`. `EAMCellConfig` is empty. `EAM/Parameters.h` lists `r_cut` of 5.555 Å (Al), 5.412 Å (Pd) and 5.5155 Å (Au). The specialization uses twice the largest, 5.555 Å.
+Cell-list EAM on `v3.5.0`. `EAMCellConfig` is empty. `EAM/Parameters.h` lists `r_cut` of 5.555 Å (Al), 5.412 Å (Pd) and 5.5155 Å (Au). The specialization reports twice the largest of those cutoffs, `2 * 5.555` Å.
 
-EMT on `release/3.5.0`. `EMTConfig` is a parameter-set flag and has no cutoff. `EMTDefaultParameterProvider::calc_cutoff` builds a cutoff from the elements in the system, and the weight is a Fermi function. There is no single distance that is exact for every system, so the class is recorded and the range stays `0`.
+EMT on `v3.5.0`. `EMTConfig` is a parameter-set flag and has no cutoff. `EMTDefaultParameterProvider::calc_cutoff` builds a cutoff from the elements in the system, and the weight is a Fermi function. There is no single distance that is exact for every system, so the class is recorded and the range stays `0`.
 
 `XTBPot`, `D3Pot`, `D4Pot`, `MOPACPot` and `ExprPot` use the primary template. D3 and D4 do not expose a cutoff on their config, and an expression is only as local as its terms.
+
+## Checked zig-zags
+
+Catch2 `Opted-in kernels match the serial matrix at the declared range` runs each opted-in kernel on its own zig-zag. The colored matrix matches the per-column matrix. A block past the interaction cutoff is nonzero for every many-body kernel, and every block past the declared range is 0. The short-range column is the negative test: SW_SI and EAM_AL are wrapped so the reported range is `r_c` instead of `2 r_c`, and that matrix misses the per-column matrix by more than `1e-2` of max `|H|`.
+
+| Kernel | Atoms | Colors | Serial calls | Colored calls | max `|H|` | Largest nonzero block (Å) | Colored error | Short-range error |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| EAM_AL | 14 | 11 | 85 | 67 | 0.730150 | 9.907 | 0 | 0.013011 |
+| SW_SI | 10 | 7 | 61 | 43 | 16.16306 | 4.070 | 0 | 0.458243 |
+| TERSOFF_SI | 8 | 5 | 49 | 31 | 14.54654 | 4.070 | 0 | not run |
+| EDIP | 10 | 7 | 61 | 43 | 12.68665 | 4.070 | 0 | not run |
+| LENOSKY_SI | 10 | 7 | 61 | 43 | 13.38487 | 4.613 | 0 | not run |
+| FEHE | 12 | 9 | 73 | 55 | 3.670133 | 8.188 | 0 | not run |
+| CUH2 | 14 | 11 | 85 | 67 | 2.062919 | 8.833 | 0 | not run |
+| ZBL | 8 | 3 | 49 | 19 | 137.3325 | 1.500 | 0 | not run |
 
 ## References
 
