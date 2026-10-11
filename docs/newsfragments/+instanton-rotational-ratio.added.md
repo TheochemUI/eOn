@@ -1,0 +1,1 @@
+A free cluster's rate instanton carries the ratio of the ring's rotational partition function to the reactant's, from the ring's principal moments of inertia averaged over its beads (`instanton_rotation_ratio_log`); the classical and parabolic comparisons take the saddle's ratio.

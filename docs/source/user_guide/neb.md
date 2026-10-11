@@ -204,10 +204,17 @@ potential-energy surface.
 
 `temperature` is in kelvin. Above zero, each image carries
 `quantum_free_energy`, the potential energy plus
-`kT ln(2 sinh(beta hbar omega / 2))` summed over modes perpendicular to
-the tangent, and `zpe_corrected_barrier`, the highest of those free
-energies minus the reactant. Zero temperature is the limit
-`V + ZPE_perp` and does not turn the profile on.
+`kT ln(2 sinh(beta hbar omega / 2))` summed over its vibrations, and
+`zpe_corrected_barrier`, the highest of those free energies minus the
+reactant. The end images are minima and keep every vibration, the one
+along the band included; between them the tangent is the reaction
+coordinate and leaves the sum, so the barrier compares the generalized
+transition state's modes with all of the reactant's. With no atom fixed,
+the three translations, and each rotation the reactant's Hessian leaves
+null (a free cluster, in a periodic cell or not), are rigid motions and
+are projected out of every image's Hessian, not summed as near-zero
+frequencies. Zero temperature is the limit `V + ZPE` and does not turn the
+profile on.
 
 The cell force is the stress tensor. A potential that implements the Cauchy
 stress, with the sign `sigma = (1/V) dE/dε` for the right strain

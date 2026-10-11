@@ -230,6 +230,14 @@ Nudged Elastic Band:
             kind: float
             default: 0.0
 
+        # Force calls past each end minimum of the converged band, along
+        # its end segment continued outward, for the outer walls of the
+        # one-dimensional tunnelling levels. 0 continues each well by its
+        # fit.
+        tunnel_wall_points:
+            kind: int
+            default: 0
+
         climbing_image_method:
             kind: boolean
             default: true
@@ -1219,6 +1227,13 @@ Instanton:
             kind: int
             default: 1
 
+        # Mode splitting: minima of different energy tunnel on the surface
+        # with the difference switched off along the path. false writes no
+        # splitting once beta |dV| reaches 0.1.
+        symmetrize:
+            kind: bool
+            default: true
+
         saddle_filename:
             kind: string
             default: saddle.con
@@ -1255,14 +1270,18 @@ Instanton:
             kind: float
             default: 0.0
 
-        # Empty keeps every spring equal. One positive weight per bead
-        # divides the spring from that bead to the next.
+        # Mode rate: empty keeps every imaginary-time step equal. One
+        # positive weight per bead, scaled to a mean of one, is the time
+        # step of the link to the next bead (an adaptive grid: spring
+        # c / w_j, bead potential weighted (w_{j-1} + w_j) / 2). Weights
+        # keep the whole ring and take no friction bath.
         discretization:
             kind: string
             default: ""
 
         # Mode rate: Litman friction bath. none, implicit (one eta on
-        # every bead) or explicit (one eta per bead).
+        # every bead) or explicit (one eta per bead; the ring is searched
+        # under it, but the rate needs one eta and is not written).
         friction:
             kind: string
             default: none
@@ -1271,11 +1290,14 @@ Instanton:
                 - implicit
                 - explicit
 
+        # Friction per unit mass, eta / m, in 1 / time with time in
+        # sqrt(amu Angstrom^2 / eV) (10.18 fs).
         friction_eta:
             kind: float
             default: 0.0
 
-        # Explicit bath: comma-separated eta, one value per bead.
+        # Explicit bath: comma-separated eta, one value per bead, in the
+        # units of friction_eta.
         friction_eta_beads:
             kind: string
             default: ""

@@ -387,6 +387,7 @@ TEST_CASE("JSON round-trips every Instanton and Hessian key",
   o.max_iterations = 77;
   o.force_tolerance = 2e-4;
   o.hessian_stride = 3;
+  o.symmetrize = false;
   o.saddle_filename = "s.con";
   o.temperature = 150.0;
   o.temperatures = {200.0, 100.0};
@@ -417,6 +418,7 @@ TEST_CASE("JSON round-trips every Instanton and Hessian key",
   REQUIRE(l.max_iterations == 77);
   REQUIRE(l.force_tolerance == Catch::Approx(2e-4));
   REQUIRE(l.hessian_stride == 3);
+  REQUIRE_FALSE(l.symmetrize);
   REQUIRE(l.saddle_filename == "s.con");
   REQUIRE(l.temperature == Catch::Approx(150.0));
   REQUIRE(l.temperatures == std::vector<double>{200.0, 100.0});

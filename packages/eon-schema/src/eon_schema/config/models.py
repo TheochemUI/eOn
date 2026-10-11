@@ -2230,6 +2230,16 @@ class NudgedElasticBandConfig(BaseModel):
             "along the band. Zero leaves the profile on the potential energy."
         ),
     )
+    tunnel_wall_points: int = Field(
+        default=0,
+        ge=0,
+        description=(
+            "Force calls past each end minimum of the converged band, along "
+            "its end segment continued outward, for the outer walls of the "
+            "one-dimensional tunnelling levels. 0 continues each well by its "
+            "fit."
+        ),
+    )
     solid_state_pressure: float = Field(
         default=0.0,
         description=(
@@ -2669,6 +2679,14 @@ class InstantonConfig(BaseModel):
             " between; 1 takes one on every bead."
         ),
     )
+    symmetrize: bool = Field(
+        default=True,
+        description=(
+            "Mode splitting: minima of different energy tunnel on the surface"
+            " with the difference switched off along the path. False writes"
+            " no splitting once beta |dV| reaches 0.1."
+        ),
+    )
     saddle_filename: str = Field(
         default="saddle.con",
         description="Mode rate: the first-order saddle out of the reactant.",
@@ -2714,8 +2732,12 @@ class InstantonConfig(BaseModel):
     discretization: str = Field(
         default="",
         description=(
-            "Empty keeps every spring equal. One positive weight per bead,"
-            " comma-separated, divides the spring from that bead to the next."
+            "Mode rate: empty keeps every imaginary-time step equal. One"
+            " positive weight per bead, comma-separated and scaled to a mean"
+            " of one, is the time step of the link to the next bead: an"
+            " adaptive grid whose spring is c / w_j and whose bead potential"
+            " is weighted (w_{j-1} + w_j) / 2. Weights keep the whole ring"
+            " and take no friction bath."
         ),
     )
     friction: Literal["none", "implicit", "explicit"] = Field(
@@ -2723,18 +2745,25 @@ class InstantonConfig(BaseModel):
         description=(
             "Mode rate: Litman friction bath. none leaves the ring"
             " potential unchanged. implicit uses friction_eta on every"
-            " bead. explicit uses friction_eta_beads, one value per bead."
+            " bead. explicit uses friction_eta_beads, one value per bead;"
+            " the ring is searched under it, but the rate needs one eta"
+            " and is not written."
         ),
     )
     friction_eta: float = Field(
         default=0.0,
         ge=0.0,
-        description="Implicit bath strength, the same on every bead.",
+        description=(
+            "Implicit bath strength, the same on every bead: friction per"
+            " unit mass, eta / m, in 1 / time with time in"
+            " sqrt(amu Angstrom^2 / eV) (10.18 fs)."
+        ),
     )
     friction_eta_beads: str = Field(
         default="",
         description=(
-            "Explicit bath: comma-separated eta, one value per bead."
+            "Explicit bath: comma-separated eta, one value per bead, in the"
+            " units of friction_eta."
         ),
     )
     bead_ladder: bool = Field(

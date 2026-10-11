@@ -628,6 +628,11 @@ struct neb_options_t {
   /// Temperature in kelvin for the harmonic quantum free-energy profile.
   /// Zero leaves the band on the potential energy.
   double quantum_temperature{0.0};
+
+  /// Force calls past each end minimum of the converged band, along its end
+  /// segment continued outward, for the outer walls of the one-dimensional
+  /// tunnelling levels. Zero continues each well by its fit.
+  long tunnel_wall_points{0};
 };
 
 // [Molecular Dynamics] //
@@ -826,6 +831,10 @@ struct instanton_options_t {
   double force_tolerance{1e-3}; // eV / (amu^0.5 A), largest bead residual
   // FD Hessians on every stride-th bead, linear in between; 1 is every bead.
   long hessian_stride{1};
+  // Mode splitting: minima of different energy tunnel on the surface with
+  // the difference switched off along the path (tunneling::EnergyBias).
+  // False writes no splitting once beta |dV| reaches 0.1.
+  bool symmetrize{true};
   // Mode "rate": the first-order saddle out of the reactant, and T in K.
   std::string saddle_filename{"saddle.con"};
   double temperature{0.0};

@@ -19,6 +19,7 @@
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 #include "eon/QuantumFreeEnergy.h"
+#include "eon/Tunneling.h"
 
 #include <filesystem>
 #include <format>
@@ -193,6 +194,22 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
                                     NudgedElasticBand *neb) {
   std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
+  // The outer walls of both wells, for the one-dimensional tunnelling
+  // levels written beside the band; sampled first, so the force calls they
+  // take are in results.dat.
+  std::optional<eonc::tunneling::BandWalls> walls;
+  if (const long points = params.neb_options().tunnel_wall_points;
+      points > 0 && status == NudgedElasticBand::NEBStatus::GOOD) {
+    try {
+      const std::vector<std::shared_ptr<Matter>> band(
+          neb->path.begin(),
+          neb->path.begin() + static_cast<std::ptrdiff_t>(neb->numImages + 2));
+      walls = eonc::tunneling::bandWalls(band, neb->reactantEnergy, points);
+    } catch (const std::invalid_argument &ex) {
+      QUILL_LOG_WARNING(m_log, "No tunnelling walls for this band: {}",
+                        ex.what());
+    }
+  }
 
   {
     auto env = JobResultEnvelope::fromMinimization(
@@ -244,14 +261,15 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   const double quantumTemperature = params.neb_options().quantum_temperature;
   const std::vector<double> *quantumPtr = nullptr;
   if (quantumTemperature > 0.0) {
-    quantumFreeEnergy = eonc::quantumFreeEnergies(
-        neb->path, neb->tangent, quantumTemperature, params);
+    quantumFreeEnergy = eonc::quantumFreeEnergies(neb->path, neb->tangent,
+                                                  quantumTemperature, params);
     quantumPtr = &quantumFreeEnergy;
   }
   if (!eonc::io::io_ok(eonc::neb::writePathCon(
           neb->path, neb->tangent, neb->eigenmode_solvers, neb->numImages,
           params.debug_options().estimate_neb_eigenvalues, nebFilename,
-          std::nullopt, neb->reactantEnergy, quantumPtr))) {
+          std::nullopt, neb->reactantEnergy, quantumPtr,
+          walls ? &*walls : nullptr))) {
     QUILL_LOG_ERROR(m_log, "Failed to write {}", nebFilename);
   }
 

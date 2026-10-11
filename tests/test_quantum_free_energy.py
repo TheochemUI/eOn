@@ -1,4 +1,4 @@
-"""The band carries a harmonic quantum free energy with the tangent removed."""
+"""The band carries a harmonic quantum free energy of its vibrations."""
 
 from pathlib import Path
 
@@ -21,6 +21,7 @@ def test_quantum_free_energy_is_wired_through_the_band():
     ).read_text(encoding="utf-8")
     assert "curved valley free energy matches a direct sum" in case
     assert "perpendicularHarmonicFreeEnergy(hessian, tangent, 0.0)" in case
+    assert "a free cluster's band free energy leaves out its rigid motions" in case
     job = (ROOT / "client" / "NudgedElasticBandJob.cpp").read_text(
         encoding="utf-8"
     )
