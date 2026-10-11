@@ -177,8 +177,9 @@
     "8756": "fix(test): drop the delay-load hook on the relax engine",
     "8757": "chore(release): merge develop into main",
     "8758": "chore(version): v3.6.0",
-    "8763": "feat(schema): publish one JSON Schema per config.ini section",
-    "8765": "docs: state 3.6.0 and the calculator-group build flag"
+    "8762": "feat(schema): publish one JSON Schema per config.ini section",
+    "8764": "docs: state 3.6.0 and the calculator-group build flag",
+    "9088": "fix: disable floating-point contraction unless fast_math is on (#771)"
   },
   "dcbade17ecc8386a4ee5804354b4994c8ba1d6d8": "update lammps webpage",
   "292bc143343709b10fb7ed150ae5bb493748b289": "gitig: Update",
@@ -358,5 +359,6 @@
   "c944cfcf7b3f329553aa31bb869ac321135581d6": "chore(release): merge develop into main",
   "2d2adada2f64c4c5a063065abc0d9a8a56d74b2c": "chore(version): v3.6.0",
   "c0dcb1b36906677f4a98cf6bac57d148c9dd76c7": "feat(schema): publish one JSON Schema per config.ini section",
-  "2f84d583dd0c8c5a6a25d35b06fc2a1f3425c051": "docs: state 3.6.0 and the calculator-group build flag"
+  "2f84d583dd0c8c5a6a25d35b06fc2a1f3425c051": "docs: state 3.6.0 and the calculator-group build flag",
+  "cc4f69982610ae4872ba6fa33ea324f0f45aa1f8": "fix: disable floating-point contraction unless fast_math is on (#771)"
 }
