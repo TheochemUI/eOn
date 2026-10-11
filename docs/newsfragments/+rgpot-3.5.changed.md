@@ -1,1 +1,1 @@
-eOn requires rgpot 3.5.0 or newer. rgpot 3.5.0 changed the C++ layout of PotCaps, LJConfig, LJClusterConfig and MorseConfig, and eOn compiles the inline caps() into librgpot_pot.so. An older rgpot reports the wrong capabilities and crashes the Hessian.
+eOn requires rgpot 3.5.1 or newer. rgpot 3.5.0 changed the C++ layout of PotCaps, LJConfig, LJClusterConfig and MorseConfig but kept soversion 3, so a caller built against 3.4.0 crashes. rgpot 3.5.1 publishes that layout as librgpot.so.4. eOn compiles the inline caps() into librgpot_pot.so.
