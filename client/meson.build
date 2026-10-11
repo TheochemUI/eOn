@@ -2119,7 +2119,6 @@ if get_option('with_tests')
         ['test_xtsci_eindir', 'XtsciEindirTest.cpp', ''],
         ['test_lammps_loader', 'LammpsLoaderTest.cpp', ''],
         ['test_coverage_paths', 'CoveragePathsTest.cpp', 'neb_morse', 180],
-        ['test_socket_nwchem_listen', 'SocketNWChemListenTest.cpp', ''],
         ['test_plugin_loader', 'PluginLoaderTest.cpp', ''],
         ['test_ira_resource', 'IRAResourceTest.cpp', ''],
         ['test_artn_resource', 'ARTnResourceTest.cpp', ''],
@@ -2153,6 +2152,10 @@ if get_option('with_tests')
         ['test_neb_subsystem', 'NEBSubsystemTest.cpp', ''],
         ['test_neb_zoom', 'NEBZoomTest.cpp', ''],
     ]
+    # SocketNWChem is POSIX sockets and is not built on Windows.
+    if not is_windows
+        test_array += [['test_socket_nwchem_listen', 'SocketNWChemListenTest.cpp', '']]
+    endif
     # posix_spawn. On Windows the only case is skipped and Catch2 exits 4.
     if not is_windows
         test_array += [['test_client_timing', 'ClientTimingTest.cpp', '', 60]]
