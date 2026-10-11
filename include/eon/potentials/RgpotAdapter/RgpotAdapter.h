@@ -17,7 +17,7 @@
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
 #include "eon/potentials/PluginLoader.h"
-#include "eon/potentials/RgpotAdapter/HessianRange.hpp"
+#include "eon/potentials/RgpotAdapter/HessianRange.h"
 
 #include "rgpot/ForceStructs.hpp"
 #include "rgpot/pot_caps.hpp"
@@ -167,7 +167,7 @@ public:
   [[nodiscard]] const RPot &kernel() const noexcept { return pot_; }
 
   /// Hessian block range from HessianRangeOf<RPot>, not from whether
-  /// the kernel happens to have a cutoff field. 0 leaves colouring off.
+  /// the kernel happens to have a cutoff field. 0 leaves coloring off.
   [[nodiscard]] double hessianRange() const noexcept override {
     return eonc::acceptedHessianRange(eonc::HessianRangeOf<RPot>::range(pot_));
   }
