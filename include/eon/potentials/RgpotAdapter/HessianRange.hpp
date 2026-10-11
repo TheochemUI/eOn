@@ -87,8 +87,9 @@ enum class HessianLocality {
 /// one column per coordinate.
 template <class RPot> struct HessianRangeOf {
   static constexpr HessianLocality locality = HessianLocality::Unknown;
-  /// Interaction cutoff the range is built from. 0 when the kernel
-  /// does not publish a single finite cutoff.
+  /// Interaction cutoff the range is built from. 0 when that cutoff is
+  /// not a compile-time constant. Pair kernels with a runtime cutoff
+  /// leave this at 0 and return the config value from range().
   static constexpr double interactionCutoff = 0.0;
   static constexpr double range(const RPot &) noexcept { return 0.0; }
 };
@@ -103,6 +104,9 @@ template <class RPot> struct HessianRangeOf {
 
 template <> struct HessianRangeOf<rgpot::LJPot> {
   static constexpr HessianLocality locality = HessianLocality::Pair;
+  /// config().cutoff is chosen per potential, so there is no compile-time
+  /// cutoff. range() returns that runtime value.
+  static constexpr double interactionCutoff = 0.0;
   static double range(const rgpot::LJPot &pot) noexcept {
     return pot.config().cutoff;
   }
@@ -110,6 +114,9 @@ template <> struct HessianRangeOf<rgpot::LJPot> {
 
 template <> struct HessianRangeOf<rgpot::LJClusterPot> {
   static constexpr HessianLocality locality = HessianLocality::Pair;
+  /// config().cutoff is chosen per potential, so there is no compile-time
+  /// cutoff. range() returns that runtime value.
+  static constexpr double interactionCutoff = 0.0;
   static double range(const rgpot::LJClusterPot &pot) noexcept {
     return pot.config().cutoff;
   }
@@ -117,6 +124,9 @@ template <> struct HessianRangeOf<rgpot::LJClusterPot> {
 
 template <> struct HessianRangeOf<rgpot::MorsePot> {
   static constexpr HessianLocality locality = HessianLocality::Pair;
+  /// config().cutoff is chosen per potential, so there is no compile-time
+  /// cutoff. range() returns that runtime value.
+  static constexpr double interactionCutoff = 0.0;
   static double range(const rgpot::MorsePot &pot) noexcept {
     return pot.config().cutoff;
   }
@@ -126,6 +136,8 @@ template <> struct HessianRangeOf<rgpot::MorsePot> {
 /// (ZBLPot.cc), so the block range is that truncation, not cut_inner.
 template <> struct HessianRangeOf<rgpot::ZBLPot> {
   static constexpr HessianLocality locality = HessianLocality::Pair;
+  /// cut_global is a config field. range() returns that runtime value.
+  static constexpr double interactionCutoff = 0.0;
   static double range(const rgpot::ZBLPot &pot) noexcept {
     return pot.config().cut_global;
   }
