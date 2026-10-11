@@ -106,10 +106,43 @@ Coloring still reduces the force calls: three colors, so the central
 scheme takes `1 + 2 × 3 × 3 = 19` force calls. The per-column loop takes
 `1 + 2 × 12 = 25`. The colored matrix matches the serial central matrix
 to `1e-8`. Catch2 `Embedding-chain coloring matches serial only at twice
-the cutoff` is the many-body check. An embedding chain colored at `2 r_c`
-matches the per-column matrix to finite-difference precision and uses
-fewer force calls. The same chain colored at `r_c` does not match, which
-is the negative test. Catch2 `Fourth-order stencil matches a complex-step
+the cutoff` is a planar zig-zag of eight atoms, bond 0.75 Å, with the
+embedding cutoff at 1 Å. The central scheme takes 49 force calls per
+column and 43 once colored at `2 r_c`. The fourth-order scheme takes 97
+and 85. Coloring at `r_c` takes 19 and 37. The colored matrix matches
+the per-column matrix to `1e-8`. The short-range matrix misses by
+0.1875 against max `|H|` 1.041667, and an off-axis entry reaches
+0.541. The same central numbers hold with `remove_net_force` on and
+one atom fixed, which is the path that still colors.
+Catch2 `Opted-in kernels match the serial matrix at the declared range`
+runs each opted-in kernel on its own zig-zag. The colored matrix matches
+the per-column matrix exactly in these runs. A block past the interaction
+cutoff is nonzero for every many-body kernel, and every block past the
+declared range is 0. ZBL is a pair kernel, so that past-cutoff window is
+empty. Its nearest-neighbour block at 1.5 Å is nonzero and every block
+past `cut_global` is 0.
+
+| Kernel | Atoms | Colors | Serial calls | Colored calls | max `|H|` | Largest nonzero block (Å) | Colored error | Short-range error |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| EAM_AL | 14 | 11 | 85 | 67 | 0.730150 | 9.907 | 0 | 0.013011 |
+| SW_SI | 10 | 7 | 61 | 43 | 16.16306 | 4.070 | 0 | 0.458243 |
+| TERSOFF_SI | 8 | 5 | 49 | 31 | 14.54654 | 4.070 | 0 | not run |
+| EDIP | 10 | 7 | 61 | 43 | 12.68665 | 4.070 | 0 | not run |
+| LENOSKY_SI | 10 | 7 | 61 | 43 | 13.38487 | 4.613 | 0 | not run |
+| FEHE | 14 | 11 | 85 | 67 | 3.670133 | 8.188 | 0 | not run |
+| CUH2 | 14 | 11 | 85 | 67 | 2.062919 | 8.833 | 0 | not run |
+| ZBL | 8 | 3 | 49 | 19 | 137.3325 | 1.500 | 0 | not run |
+
+The short-range column is the negative test. SW_SI and EAM_AL are wrapped
+so the reported range is `r_c` instead of `2 r_c`, and that matrix misses
+the per-column matrix by more than `1e-2` max `|H|`.
+Catch2 `Coloring falls back when every mobile atom needs its own color`
+is four atoms inside a 20 Å Lennard-Jones cutoff, and the same cluster
+with a batching spring of range 30 Å. Both need four colours. Both take
+the column path, 25 force calls, which is one base gradient and two
+central samples on 12 coordinates. The spring records a batch call, so
+the coloured loop did not run.
+Catch2 `Fourth-order stencil matches a complex-step
 oracle` evaluates `z^4 + 0.3 z^2` at `0.8`. The fourth-order value stays
 within `1e-10` of the complex-step derivative. The central value is more
 than `1e-3` away, and farther from the oracle than the fourth-order

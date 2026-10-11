@@ -22,6 +22,10 @@ The older description of that client is Chill et al.
 
 The reported value is the distance beyond which every Hessian block between two atoms is exactly zero. Mobile atoms are greedy-colored on the square of that neighborhood. One displacement of a color along x, y, or z fills the columns of that color. Entries outside the neighborhood are written as zero, which is exact only for that distance.
 
+Each row of that square is deduplicated while it is filled, with the same epoch-marked visited array the greedy coloring uses. The temporary storage is the edges, at most one slot per mobile pair. Pushing every toucher pair and sorting afterwards holds `O(sum t_k^2)` integers first, which is the whole cell when a many-body range reaches across it.
+
+When the coloring has as many colors as mobile atoms, `calculateColored` returns false and `calculate` takes the batched path, or the serial path when the potential does not batch. A color per atom does not reduce the force count, and the colored loop would skip batching. Catch2 `Coloring falls back when every mobile atom needs its own color` is that case: a four-atom cluster whose diameter is below the range takes 25 force calls, the serial central count.
+
 `0` and any non-finite value mean the range is unknown. The matrix is then one column per coordinate. A potential that evaluates batches takes the batched path instead, still one sample per coordinate.
 
 ## How a potential opts in
