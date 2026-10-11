@@ -341,7 +341,7 @@ TEST_CASE("Colored FD Hessian matches serial central difference",
   constexpr double kCutoff = 1.5;
   auto pot = std::make_shared<RgpotAdapter<rgpot::LJPot>>(
       PotType::LJ, params, rgpot::LJConfig{.cutoff = kCutoff});
-  REQUIRE(pot->finiteCutoff() == kCutoff);
+  REQUIRE(pot->hessianRange() == kCutoff);
 
   auto matter = std::make_shared<Matter>(pot, params);
   matter->resize(4);
@@ -363,7 +363,7 @@ TEST_CASE("Colored FD Hessian matches serial central difference",
   all << 0, 1, 2, 3;
 
   const std::vector<int> colors =
-      eonc::colorMobileCutoffGraph(*matter, all, pot->finiteCutoff());
+      eonc::colorMobileCutoffGraph(*matter, all, pot->hessianRange());
   REQUIRE(colors.size() == 4);
   bool shared = false;
   for (int i = 0; i < 4; ++i) {
@@ -485,7 +485,7 @@ TEST_CASE("Colored fourth-order FD matches the serial stencil",
   VectorXi all(4);
   all << 0, 1, 2, 3;
   const std::vector<int> colors =
-      eonc::colorMobileCutoffGraph(*matter, all, pot->finiteCutoff());
+      eonc::colorMobileCutoffGraph(*matter, all, pot->hessianRange());
   int nColors = 0;
   for (int c : colors) {
     nColors = std::max(nColors, c + 1);
@@ -715,6 +715,265 @@ TEST_CASE_METHOD(HessianScratch,
   // A clean set costs nothing.
   eonc::evaluateTogether(*batched, both);
   REQUIRE(batched->forceCallCounter == before + 2);
+}
+
+namespace {
+
+/// Has config().cutoff and no HessianRangeOf specialization.
+struct CutoffOnlyKernel {
+  struct Config {
+    double cutoff = 4.0;
+  };
+  explicit CutoffOnlyKernel(const Config &c) : cfg(c) {}
+  [[nodiscard]] const Config &config() const noexcept { return cfg; }
+  [[nodiscard]] rgpot::PotCaps caps() const noexcept { return {}; }
+  void forceImpl(const rgpot::ForceInput &, rgpot::ForceOut *) const {}
+  void forceBatchImpl(const rgpot::ForceBatch &) const {}
+  Config cfg{};
+};
+
+/// EAM-like chain: density is a pair sum inside rc, embedding is 1/2 rho^2.
+/// A block between atoms in (rc, 2 rc) is carried by the shared neighbour
+/// and is zero past 2 rc.
+class EmbeddingChain final : public eonc::Potential {
+public:
+  EmbeddingChain(const Parameters &params, double rc, double declared)
+      : eonc::Potential(PotType::LJ, params),
+        rc_(rc),
+        declared_(declared) {}
+
+  void force(long n, const double *r, const int *, double *f, double *u,
+             double *variance, const double *) override {
+    if (variance != nullptr) {
+      *variance = 0.0;
+    }
+    std::fill(f, f + 3L * n, 0.0);
+    std::vector<double> rho(static_cast<std::size_t>(n), 0.0);
+    const auto weight = [&](double rij) {
+      if (!(rij < rc_)) {
+        return 0.0;
+      }
+      const double x = 1.0 - rij / rc_;
+      return x * x;
+    };
+    const auto slope = [&](double rij) {
+      if (!(rij < rc_)) {
+        return 0.0;
+      }
+      const double x = 1.0 - rij / rc_;
+      return -2.0 * x / rc_;
+    };
+    for (long i = 0; i < n; ++i) {
+      for (long j = i + 1; j < n; ++j) {
+        const double dx = r[3 * i] - r[3 * j];
+        const double dy = r[3 * i + 1] - r[3 * j + 1];
+        const double dz = r[3 * i + 2] - r[3 * j + 2];
+        const double rij = std::sqrt(dx * dx + dy * dy + dz * dz);
+        const double w = weight(rij);
+        rho[static_cast<std::size_t>(i)] += w;
+        rho[static_cast<std::size_t>(j)] += w;
+      }
+    }
+    double energy = 0.0;
+    for (double rhoI : rho) {
+      energy += 0.5 * rhoI * rhoI;
+    }
+    *u = energy;
+    for (long i = 0; i < n; ++i) {
+      for (long j = i + 1; j < n; ++j) {
+        const double dx = r[3 * i] - r[3 * j];
+        const double dy = r[3 * i + 1] - r[3 * j + 1];
+        const double dz = r[3 * i + 2] - r[3 * j + 2];
+        const double rij = std::sqrt(dx * dx + dy * dy + dz * dz);
+        if (!(rij > 0.0) || !(rij < rc_)) {
+          continue;
+        }
+        const double coeff = (rho[static_cast<std::size_t>(i)] +
+                              rho[static_cast<std::size_t>(j)]) *
+                             slope(rij) / rij;
+        f[3 * i] -= coeff * dx;
+        f[3 * i + 1] -= coeff * dy;
+        f[3 * i + 2] -= coeff * dz;
+        f[3 * j] += coeff * dx;
+        f[3 * j + 1] += coeff * dy;
+        f[3 * j + 2] += coeff * dz;
+      }
+    }
+  }
+
+  [[nodiscard]] double hessianRange() const noexcept override {
+    return declared_;
+  }
+
+private:
+  double rc_;
+  double declared_;
+};
+
+struct ChainHessian {
+  MatrixXd H;
+  std::size_t calls = 0;
+};
+
+ChainHessian embeddingChainHessian(const Parameters &params, double declared) {
+  constexpr int kN = 8;
+  auto pot = std::make_shared<EmbeddingChain>(params, 1.0, declared);
+  auto matter = std::make_shared<Matter>(pot, params);
+  matter->resize(kN);
+  AtomMatrix pos(kN, 3);
+  pos.setZero();
+  for (int i = 0; i < kN; ++i) {
+    matter->setAtomicNr(i, 1);
+    matter->setMass(i, 1.0);
+    pos(i, 0) = 0.75 * static_cast<double>(i);
+  }
+  matter->setPositions(pos);
+  matter->setCell(Matrix3d::Identity() * 40.0);
+  matter->setPeriodic(false);
+  VectorXi all(kN);
+  for (int i = 0; i < kN; ++i) {
+    all(i) = i;
+  }
+  pot->forceCallCounter.store(0);
+  Hessian hess(params, matter.get());
+  hess.writeHessianFile(false);
+  ChainHessian out;
+  out.H = hess.getHessian(matter.get(), all);
+  out.calls = pot->forceCallCounter.load();
+  return out;
+}
+
+template <class RPot>
+void requireManyBodyRange(PotType ptype, const Parameters &params,
+                          bool enabled) {
+  RgpotAdapter<RPot> pot(ptype, params);
+  using Trait = eonc::HessianRangeOf<RPot>;
+  if (enabled) {
+    REQUIRE(Trait::locality == eonc::HessianLocality::AtomCentred);
+    REQUIRE(Trait::interactionCutoff > 0.0);
+    const double want = 2.0 * Trait::interactionCutoff;
+    REQUIRE(want > Trait::interactionCutoff);
+    REQUIRE(pot.hessianRange() == want);
+  } else {
+    REQUIRE(pot.hessianRange() == 0.0);
+  }
+}
+
+} // namespace
+
+TEST_CASE("Pair kernels opt in at the interaction cutoff",
+          "[hessian][color]") {
+  Parameters params;
+  auto lj = eonc::helpers::makePotential(PotType::LJ, params);
+  REQUIRE(lj->hessianRange() == 15.0);
+  auto cluster = eonc::helpers::makePotential(PotType::LJCLUSTER, params);
+  REQUIRE(cluster->hessianRange() == 15.0);
+  auto morse = eonc::helpers::makePotential(PotType::MORSE_PT, params);
+  REQUIRE(morse->hessianRange() == 9.5);
+  ParametersLoadAccess::zbl_options(params).cut_inner = 1.5;
+  ParametersLoadAccess::zbl_options(params).cut_global = 2.25;
+  auto zbl = eonc::helpers::makePotential(PotType::ZBL, params);
+  REQUIRE(zbl->hessianRange() == 2.25);
+}
+
+TEST_CASE("Many-body rgpot kernels report a disabled or doubled range",
+          "[hessian][color]") {
+  Parameters params;
+  requireManyBodyRange<rgpot::fortranpots::EAMAlPot>(PotType::EAM_AL, params,
+                                                     true);
+  requireManyBodyRange<rgpot::fortranpots::SWPot>(PotType::SW_SI, params, true);
+  requireManyBodyRange<rgpot::fortranpots::TersoffPot>(PotType::TERSOFF_SI,
+                                                       params, true);
+  requireManyBodyRange<rgpot::fortranpots::EDIPPot>(PotType::EDIP, params,
+                                                    true);
+  requireManyBodyRange<rgpot::fortranpots::LenoskyPot>(PotType::LENOSKY_SI,
+                                                       params, true);
+  requireManyBodyRange<rgpot::fortranpots::FeHePot>(PotType::FEHE, params,
+                                                    true);
+  requireManyBodyRange<rgpot::fortranpots::CuH2Pot>(PotType::CUH2, params,
+                                                    true);
+  requireManyBodyRange<rgpot::fortranpots::WaterHPot>(PotType::TIP4P_H, params,
+                                                      false);
+  // Factory arm agrees with the trait for the kernels jobs actually build.
+  auto eam = eonc::helpers::makePotential(PotType::EAM_AL, params);
+  REQUIRE(eam->hessianRange() ==
+          2.0 * eonc::HessianRangeOf<
+                    rgpot::fortranpots::EAMAlPot>::interactionCutoff);
+  auto sw = eonc::helpers::makePotential(PotType::SW_SI, params);
+  REQUIRE(sw->hessianRange() ==
+          eonc::HessianRangeOf<rgpot::fortranpots::SWPot>::range(
+              rgpot::fortranpots::SWPot{}));
+}
+
+TEST_CASE("A cutoff field without an opt-in is not colored",
+          "[hessian][color]") {
+  static_assert(eonc::HessianRangeOf<CutoffOnlyKernel>::locality ==
+                eonc::HessianLocality::Unknown);
+  static_assert(eonc::HessianRangeOf<CutoffOnlyKernel>::interactionCutoff ==
+                0.0);
+#if EON_RGPOT_HAS_UMA
+  static_assert(eonc::HessianRangeOf<rgpot::UmaPot>::locality ==
+                eonc::HessianLocality::MessagePassing);
+  static_assert(eonc::HessianRangeOf<rgpot::UmaPot>::interactionCutoff == 0.0);
+#endif
+#if EON_RGPOT_HAS_WATER_POTS
+  static_assert(eonc::HessianRangeOf<rgpot::TIP4PPot>::locality ==
+                eonc::HessianLocality::MolecularSite);
+  static_assert(eonc::HessianRangeOf<rgpot::TIP4PPot>::interactionCutoff ==
+                0.0);
+  static_assert(eonc::HessianRangeOf<rgpot::SPCEPot>::locality ==
+                eonc::HessianLocality::MolecularSite);
+  static_assert(eonc::HessianRangeOf<rgpot::TIP4PPtPot>::locality ==
+                eonc::HessianLocality::MolecularSite);
+#endif
+  Parameters params;
+  RgpotAdapter<CutoffOnlyKernel> pot(
+      PotType::LJ, params, CutoffOnlyKernel::Config{.cutoff = 4.0});
+  REQUIRE(pot.kernel().config().cutoff == 4.0);
+  REQUIRE(pot.hessianRange() == 0.0);
+}
+
+TEST_CASE("Embedding-chain coloring matches serial only at twice the cutoff",
+          "[hessian][color]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::main_options(params).finiteDifference = 1e-5;
+  ParametersLoadAccess::main_options(params).removeNetForce = false;
+  ParametersLoadAccess::hessian_options(params).fd_scheme = "central";
+
+  const ChainHessian serial = embeddingChainHessian(params, 0.0);
+  const ChainHessian colored = embeddingChainHessian(params, 2.0);
+  const ChainHessian shortRange = embeddingChainHessian(params, 1.0);
+  REQUIRE(serial.H.rows() == 24);
+  REQUIRE(colored.H.rows() == 24);
+  REQUIRE(shortRange.H.rows() == 24);
+  // Range 0 is the per-column path: one base gradient and two central
+  // samples on each of 24 coordinates.
+  REQUIRE(serial.calls == static_cast<std::size_t>(1 + 2 * 24));
+  REQUIRE(colored.calls < serial.calls);
+  REQUIRE(shortRange.calls < serial.calls);
+
+  double maxAbs = 0.0;
+  double errColored = 0.0;
+  double errShort = 0.0;
+  for (int i = 0; i < 24; ++i) {
+    for (int j = 0; j < 24; ++j) {
+      maxAbs = std::max(maxAbs, std::abs(serial.H(i, j)));
+      errColored =
+          std::max(errColored, std::abs(colored.H(i, j) - serial.H(i, j)));
+      errShort = std::max(errShort,
+                          std::abs(shortRange.H(i, j) - serial.H(i, j)));
+    }
+  }
+  UNSCOPED_INFO("serial calls " << serial.calls << " colored calls "
+                                << colored.calls << " short calls "
+                                << shortRange.calls);
+  UNSCOPED_INFO("max |H| " << maxAbs << " colored max abs err " << errColored
+                           << " short max abs err " << errShort);
+  REQUIRE(maxAbs > 0.0);
+  REQUIRE(errColored < 1e-8);
+  REQUIRE(errShort > 1e-3);
+  REQUIRE(errShort > 0.01 * maxAbs);
 }
 
 } /* namespace tests */
