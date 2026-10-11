@@ -146,7 +146,14 @@ void set_write_con_forces(bool enabled) noexcept;
  * inside one filesystem timestamp tick.
  */
 void resetConAppendState();
-[[nodiscard]] IoStatus matter2convel(Matter &m, std::string filename);
+/// Write velocities in the natural time unit.
+///
+/// Omit `decimal_places` for binary64 round-trip text. A value, including
+/// the historical 6, selects that many digits after the decimal. Six digits
+/// lose about 5.8e-7 relative kinetic energy.
+[[nodiscard]] IoStatus
+matter2convel(Matter &m, std::string filename,
+              std::optional<std::uint8_t> decimal_places = std::nullopt);
 
 /**
  * Write one extended-XYZ frame: Lattice= cell and 17-digit coordinates.

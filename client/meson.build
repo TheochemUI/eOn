@@ -676,12 +676,13 @@ _linkto += eoncbase
 # later _deps += readcon_dep does not reach libsocket_nwchem.so.
 # Prefer cargo-c / pkg-config install (conda-forge host package); fall back
 # to the meson subproject when the system package is not available.
-# ConFileIO needs 0.16 for set_spreads_from_flat, on top of 0.15's
-# displacements section (Hessian modes.con) and 0.13's clone, bulk
-# set_*_from_flat and compression_from_extension.
+# ConFileIO needs 0.17 so a velocities section can name the natural time
+# unit and carry con_spec_minor. 0.16 remains the floor for
+# set_spreads_from_flat, on top of 0.15's displacements section and 0.13's
+# clone, bulk set_*_from_flat and compression_from_extension.
 readcon_dep = dependency(
     'readcon-core',
-    version: '>=0.16.0',
+    version: '>=0.17.0',
     method: 'pkg-config',
     required: false,
 )
@@ -694,7 +695,7 @@ _have_readcon_dll_beside = false
 if not readcon_dep.found()
     readcon_proj = subproject(
         'readcon-core',
-        version: '>=0.16.0',
+        version: '>=0.17.0',
         default_options: {
             'with_tests': false,
             'with_examples': false,

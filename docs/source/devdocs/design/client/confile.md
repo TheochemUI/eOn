@@ -30,7 +30,21 @@ writer.extend({frame});
 ```
 
 Position precision is 17 digits (matching the previous `%22.17f` format).
-Velocity files use 6-digit precision.
+A `.convel` file uses binary64 round-trip text, so a kinetic energy reads
+back to a relative 1e-12. `matter2convel` takes a decimal count for the
+older fixed layout. Six decimal places lose about 5.8e-7 relative kinetic
+energy.
+
+Velocities are stored in `(amu*angstrom^2/eV)^0.5` (10.1805055 fs). A frame
+that carries them is written as `con_spec_minor` 1 with that spelling in
+`units.time`, plus length angstrom, energy eV, and mass amu. eOn reads
+spec versions 1, 2, and 3.0 in that internal unit even when the label says
+`fs`. From minor 1, `units.time` is applied. Files from eOn 3.6.0 and
+earlier (doi:10.5281/zenodo.23166734) used the natural unit under an `fs`
+label and have no minor. readcon 0.17 leaves those values unscaled.
+readcon-db `export_h5md` takes `velocity_time_unit` set to
+`(amu*angstrom^2/eV)^0.5` when a later file mislabels the same numbers
+as `fs`.
 
 Movie-like outputs can also carry structured frame metadata:
 
@@ -112,10 +126,11 @@ the C++ client for trajectory outputs and downstream visualization tooling.
 - **Meson** >= 1.8.0
 
 The `readcon-core` library is fetched as a Meson subproject via
-`subprojects/readcon-core.wrap` and linked statically. The wrap pins release
-the 0.14 line (spec 3, x-only decode from readcon-core #25), and
-`client/meson.build` asks for `>=0.14.2` on both resolution paths.
-`eon/fileio.py` needs the companion `readcon` package at `>=0.14.5`.
+`subprojects/readcon-core.wrap` and linked statically. The wrap pins
+v0.17.0, and `client/meson.build` asks for `>=0.17.0` on both resolution
+paths. That release writes `con_spec_minor` and keeps the natural time
+spelling `(amu*angstrom^2/eV)^0.5`. `eon/fileio.py` needs the companion
+`readcon` package at `>=0.14.5`.
 
 ## Updating the subproject
 

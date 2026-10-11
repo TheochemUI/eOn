@@ -8,11 +8,14 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
 #include <nanobind/stl/array.h>
+#include <nanobind/stl/optional.h>
 #include <nanobind/stl/shared_ptr.h>
 #include <nanobind/stl/string.h>
 #include <nanobind/stl/tuple.h>
 
+#include <cstdint>
 #include <memory>
+#include <optional>
 #include <stdexcept>
 #include <string>
 
@@ -390,10 +393,23 @@ void bind_matter(nb::module_ &m) {
           nb::arg("path"))
       .def(
           "matter2convel",
-          [](Matter &self, const std::string &path) {
-            return self.matter2convel(path);
+          [](Matter &self, const std::string &path,
+             std::optional<int> decimal_places) {
+            std::optional<std::uint8_t> places;
+            if (decimal_places) {
+              if (*decimal_places < 0 || *decimal_places > 17) {
+                throw std::invalid_argument(
+                    "decimal_places must be an integer from 0 to 17");
+              }
+              places = static_cast<std::uint8_t>(*decimal_places);
+            }
+            return self.matter2convel(path, places);
           },
-          nb::arg("path"))
+          nb::arg("path"), nb::arg("decimal_places") = nb::none(),
+          "Write a .convel file. Omit decimal_places for binary64 round-trip "
+          "text. Six decimal places lose about 5.8e-7 relative kinetic energy. "
+          "Velocities are labeled with the natural time unit "
+          "(amu*angstrom^2/eV)^0.5.")
       .def(
           "matter2xyz",
           [](Matter &self, const std::string &path, bool append) {

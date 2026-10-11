@@ -17,8 +17,11 @@
 #include "eon/Matter.h"
 #include "eon/SafeMath.h"
 
+#include "eon/Parameters.h"
+
 #include <algorithm>
 #include <atomic>
+#include <cctype>
 #include <cmath>
 #include <cstdint>
 #include <cstring>
@@ -26,6 +29,7 @@
 #include <format>
 #include <fstream>
 #include <mutex>
+#include <nlohmann/json.hpp>
 #include <numeric>
 #include <optional>
 #include <stdexcept>
@@ -40,7 +44,76 @@ using Matter = eonc::Matter;
 namespace fs = std::filesystem;
 
 constexpr uint8_t kConPrecision = 17;
-constexpr uint8_t kConvelPrecision = 6;
+// CON-units.5. Matter stores velocities in this unit (constants_t::timeUnit
+// fs). The spelling is pinned with no spaces.
+constexpr const char kNaturalTimeUnit[] = "(amu*angstrom^2/eV)^0.5";
+
+std::string compact_unit(std::string_view text) {
+  std::string out;
+  out.reserve(text.size());
+  for (unsigned char c : text) {
+    if (c != ' ' && c != '\t') {
+      out.push_back(static_cast<char>(std::tolower(c)));
+    }
+  }
+  return out;
+}
+
+double scale_for_time_label(std::string_view label, double time_unit_fs) {
+  const std::string compact = compact_unit(label);
+  if (compact == compact_unit(kNaturalTimeUnit)) {
+    return 1.0;
+  }
+  if (compact == "fs" || compact == "femtosecond" || compact == "femtoseconds") {
+    return time_unit_fs;
+  }
+  if (compact == "ps" || compact == "picosecond" || compact == "picoseconds") {
+    return time_unit_fs * 1000.0;
+  }
+  if (compact == "ns" || compact == "nanosecond" || compact == "nanoseconds") {
+    return time_unit_fs * 1.0e6;
+  }
+  if (compact == "s" || compact == "sec" || compact == "second" ||
+      compact == "seconds") {
+    return time_unit_fs * 1.0e15;
+  }
+  throw std::invalid_argument(
+      std::format("units.time '{}' is not a known time unit", label));
+}
+
+// D10. Honour units.time only when the frame is v3.1 or later. Versions 1, 2,
+// and 3.0 stay in eOn's internal unit whatever the label says.
+double velocity_scale_to_internal(const readcon::ConFrame &frame,
+                                  double time_unit_fs) {
+  if (frame.spec_version() < 3) {
+    return 1.0;
+  }
+  const std::string text = frame.metadata_json();
+  if (text.empty()) {
+    return 1.0;
+  }
+  const nlohmann::json meta = nlohmann::json::parse(text);
+  if (!meta.is_object()) {
+    return 1.0;
+  }
+  std::uint64_t minor = 0;
+  if (meta.contains("con_spec_minor")) {
+    const auto &value = meta["con_spec_minor"];
+    if (!value.is_number_integer() || value.get<std::int64_t>() < 0) {
+      throw std::invalid_argument("con_spec_minor must be an integer >= 0");
+    }
+    minor = value.get<std::uint64_t>();
+  }
+  if (minor < 1) {
+    return 1.0;
+  }
+  if (!meta.contains("units") || !meta["units"].is_object() ||
+      !meta["units"].contains("time") || !meta["units"]["time"].is_string()) {
+    throw std::invalid_argument("v3.1 velocities require units.time");
+  }
+  return scale_for_time_label(meta["units"]["time"].get<std::string>(),
+                              time_unit_fs);
+}
 
 std::string strip_nl(const std::string &s) {
   std::string str(s);
@@ -83,12 +156,39 @@ std::vector<double> flat_row_major(const AtomMatrix &m) {
 }
 
 void apply_frame_metadata(readcon::ConFrameBuilder &builder,
-                          const eonc::io::ConFrameMetadata *metadata) {
+                          const eonc::io::ConFrameMetadata *metadata,
+                          bool stamp_velocity_units = false) {
+  if (stamp_velocity_units) {
+    nlohmann::json meta = nlohmann::json::object();
+    if (metadata != nullptr && metadata->raw_json &&
+        !metadata->raw_json->empty()) {
+      meta = nlohmann::json::parse(*metadata->raw_json);
+    }
+    if (!meta.is_object()) {
+      throw std::invalid_argument("frame metadata JSON must be an object");
+    }
+    meta["con_spec_minor"] = 1;
+    if (!meta.contains("units") || !meta["units"].is_object()) {
+      meta["units"] = nlohmann::json::object();
+    }
+    auto &units = meta["units"];
+    if (!units.contains("length")) {
+      units["length"] = "angstrom";
+    }
+    if (!units.contains("energy")) {
+      units["energy"] = "eV";
+    }
+    if (!units.contains("mass")) {
+      units["mass"] = "amu";
+    }
+    units["time"] = kNaturalTimeUnit;
+    builder.set_metadata_json(meta.dump());
+  } else if (metadata != nullptr && metadata->raw_json &&
+             !metadata->raw_json->empty()) {
+    builder.set_metadata_json(*metadata->raw_json);
+  }
   if (metadata == nullptr) {
     return;
-  }
-  if (metadata->raw_json && !metadata->raw_json->empty()) {
-    builder.set_metadata_json(*metadata->raw_json);
   }
   if (metadata->energy) {
     builder.set_energy(*metadata->energy);
@@ -126,6 +226,21 @@ eonc::io::IoStatus write_frames(const fs::path &path,
     const auto compression =
         readcon::ConFrameWriter::compression_from_extension(path);
     readcon::ConFrameWriter writer(path, compression, precision);
+    writer.extend(frames);
+    return eonc::io::IoStatus::Ok;
+  } catch (const std::exception &e) {
+    EONC_LOG_ERROR("Failed to write {}: {}", path.string(), e.what());
+    return eonc::io::IoStatus::WriteError;
+  }
+}
+
+eonc::io::IoStatus
+write_frames_round_trip(const fs::path &path,
+                        const std::vector<readcon::ConFrame> &frames) {
+  try {
+    const auto compression =
+        readcon::ConFrameWriter::compression_from_extension(path);
+    readcon::ConFrameWriter writer(path, compression);
     writer.extend(frames);
     return eonc::io::IoStatus::Ok;
   } catch (const std::exception &e) {
@@ -482,7 +597,8 @@ readcon::ConFrame frame_from_matter(Matter &m,
       meta_ptr = &auto_meta;
     }
   }
-  apply_frame_metadata(builder, meta_ptr);
+  apply_frame_metadata(builder, meta_ptr,
+                       with_velocities && m.numberOfAtoms() > 0);
   apply_geometry(builder, m, with_velocities, meta_ptr);
   return builder.build();
 }
@@ -734,6 +850,13 @@ IoStatus con2matter(Matter &m, const readcon::ConFrame &frame,
     m.setPositions(positions);
 
     if (any_velocity || frame.has_velocities()) {
+      const double time_unit_fs = m.parameters != nullptr
+                                      ? m.parameters->constants().timeUnit
+                                      : 10.1805055;
+      const double scale = velocity_scale_to_internal(frame, time_unit_fs);
+      if (scale != 1.0) {
+        velocities *= scale;
+      }
       m.setVelocities(velocities);
     }
 
@@ -764,7 +887,8 @@ IoStatus con2matter(Matter &m, const readcon::ConFrame &frame,
   }
 }
 
-IoStatus matter2convel(Matter &m, std::string filename) {
+IoStatus matter2convel(Matter &m, std::string filename,
+                       std::optional<std::uint8_t> decimal_places) {
   filename = ensure_extension(std::move(filename), ".convel");
 
   m.applyPeriodicBoundaryIfEnabled();
@@ -773,7 +897,9 @@ IoStatus matter2convel(Matter &m, std::string filename) {
     auto frame = frame_from_matter(m, nullptr, /*with_velocities=*/true);
     std::vector<readcon::ConFrame> frames;
     frames.push_back(std::move(frame));
-    const IoStatus status = write_frames(filename, frames, kConvelPrecision);
+    const IoStatus status =
+        decimal_places ? write_frames(filename, frames, *decimal_places)
+                       : write_frames_round_trip(filename, frames);
     if (io_ok(status)) {
       mirror_con_corpus(filename);
     }

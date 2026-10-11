@@ -285,8 +285,10 @@ public:
              const io::ConFrameMetadata *metadata = nullptr) {
     return io::matter2con(*this, filename, append, metadata);
   }
-  [[nodiscard]] io::IoStatus matter2convel(std::string filename) {
-    return io::matter2convel(*this, filename);
+  [[nodiscard]] io::IoStatus matter2convel(
+      std::string filename,
+      std::optional<std::uint8_t> decimal_places = std::nullopt) {
+    return io::matter2convel(*this, filename, decimal_places);
   }
   [[nodiscard]] io::IoStatus matter2xyz(std::string filename,
                                         bool append = false) {
