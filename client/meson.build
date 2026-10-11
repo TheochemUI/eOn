@@ -520,9 +520,13 @@ _deps += dl_dep
 # with *default* options before eOn can pass its own; get_variable() then
 # fails for anything the default profile skipped. Force pkg-config-only.
 _rgpot_proj = []
+# rgpot 3.5.0 changed the C++ layout of PotCaps, LJConfig,
+# LJClusterConfig and MorseConfig. eOn compiles the inline caps()
+# into librgpot_pot.so, so an older rgpot reports the wrong
+# capabilities and crashes the Hessian.
 _rgpot_pkg = dependency(
     'rgpot',
-    version: '>=3.2.0',
+    version: '>=3.5.0',
     method: 'pkg-config',
     required: false,
     allow_fallback: false,
