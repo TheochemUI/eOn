@@ -1,1 +1,1 @@
-eOn requires rgpot 3.5.1 or newer. rgpot 3.5.0 changed the C++ layout of PotCaps, LJConfig, LJClusterConfig and MorseConfig but kept soversion 3, so a caller built against 3.4.0 crashes. rgpot 3.5.1 publishes that layout as librgpot.so.4. eOn compiles the inline caps() into librgpot_pot.so.
+eOn requires rgpot 3.5.1 or newer. rgpot 3.5.0 changed the C++ layout of PotCaps, LJConfig, LJClusterConfig and MorseConfig but kept soversion 3, and 3.5.1 installs librgpot.so.4. An older install now fails at configure time instead of in EAMAlTest.
