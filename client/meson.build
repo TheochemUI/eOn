@@ -548,8 +548,6 @@ if not _rgpot_pkg.found()
         # SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, and TIP4P-H are
         # Fortran kernels inside librgpot.
         'with_fortran_pots': 'enabled',
-        # The Hessian colouring guard instantiates TIP4P, SPC/E and TIP4P-Pt.
-        'with_water': true,
     }
     # Direct RGPOT is mandatory off Windows; serve still opts into RPC there.
     if not is_windows or get_option('with_serve')
@@ -1864,13 +1862,32 @@ endif
 
 if get_option('with_tests')
     test_args = _args
-    if _rgpot_has_water
-        test_args += ['-DEON_RGPOT_HAS_WATER=1']
-    endif
-    if _rgpot_has_uma
-        test_args += ['-DEON_RGPOT_HAS_UMA=1']
-    endif
     test_deps = _exe_deps
+    # rgpot's classical engine references the water kernels when
+    # with_water is on, and does not link them. The colouring guard
+    # compiles those kernels itself unless this rgpot already has them.
+    if not _rgpot_has_water
+        _water_dir = meson.project_source_root() / 'subprojects' / 'rgpot' / 'CppCore' / 'rgpot' / 'Water'
+        _rgpot_water_guard = static_library(
+            'eon_rgpot_water_guard',
+            [
+                _water_dir / 'potential_base.cpp',
+                _water_dir / 'ccl.cpp',
+                _water_dir / 'tip4p_ccl.cpp',
+                _water_dir / 'spce_ccl.cpp',
+                _water_dir / 'zhu_philpott_parameters.cpp',
+                _water_dir / 'zhu_philpott.cpp',
+                _water_dir / 'WaterPots.cc',
+            ],
+            include_directories: [
+                include_directories(_water_dir),
+                include_directories(
+                    meson.project_source_root() / 'subprojects' / 'rgpot' / 'CppCore',
+                ),
+            ],
+            cpp_args: _args,
+        )
+    endif
     testMain = library(
         'TestMain',
         ['unit_tests/TestMain.cpp', 'thirdparty/catch2/catch_amalgamated.cpp'],
@@ -2084,6 +2101,18 @@ if get_option('with_tests')
             _case_env.set('EONCLIENT', ec.full_path())
             _case_depends = [ec]
         endif
+        _case_cpp_args = test_args
+        _case_link = test_link
+        if test.get(0) == 'test_hessian'
+            # TIP4P, SPC/E and TIP4P-Pt. UmaPot stays out unless rgpot linked it.
+            _case_cpp_args += ['-DEON_RGPOT_HAS_WATER=1']
+            if _rgpot_has_uma
+                _case_cpp_args += ['-DEON_RGPOT_HAS_UMA=1']
+            endif
+            if not _rgpot_has_water
+                _case_link += [_rgpot_water_guard]
+            endif
+        endif
         test(
             test.get(0),
             executable(
@@ -2095,7 +2124,7 @@ if get_option('with_tests')
                 include_directories: test.get(0) == 'test_relax_engine'
                 ? _incdirs + [include_directories('.')]
                 : _incdirs,
-                cpp_args: test_args,
+                cpp_args: _case_cpp_args,
                 # Include /STACK:16M (Windows) so EAM Al Fortran pots do not
                 # SIGSEGV with STATUS_STACK_OVERFLOW (default stack is 1 MB).
                 link_args: _linkargs,
@@ -2104,7 +2133,7 @@ if get_option('with_tests')
                 : test_deps,
                 link_with: test.get(0) == 'test_relax_engine'
                 ? test_link + [eon_relax_engine]
-                : test_link,
+                : _case_link,
                 build_rpath: ':'.join(_runtime_rpath),
             ),
             workdir: meson.project_source_root() + '/client/unit_tests/data/systems/' + test.get(
