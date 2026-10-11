@@ -1,0 +1,30 @@
+diff --git a/CppCore/meson.build b/CppCore/meson.build
+index 69c3557..17a11df 100644
+--- a/CppCore/meson.build
++++ b/CppCore/meson.build
+@@ -120,6 +120,25 @@ if not get_option('with_rpc_client_only')
+     if has_water
+         subdir('rgpot/Water')  # 'water_pots'
+         rgpotentials += [water_pots]
++    else
++        # Kept out of librgpot and the classical engine. A consumer can
++        # link the kernels without defining RGPOT_HAS_WATER.
++        water_colour_guard = static_library(
++            'water_colour_guard',
++            files(
++                'rgpot/Water/potential_base.cpp',
++                'rgpot/Water/ccl.cpp',
++                'rgpot/Water/tip4p_ccl.cpp',
++                'rgpot/Water/spce_ccl.cpp',
++                'rgpot/Water/zhu_philpott_parameters.cpp',
++                'rgpot/Water/zhu_philpott.cpp',
++                'rgpot/Water/WaterPots.cc',
++            ),
++            include_directories: _incdirs + [include_directories('rgpot/Water')],
++            cpp_args: _args,
++            pic: true,
++            build_by_default: false,
++        )
+     endif
+ 
+     subdir('rgpot/ZBL')  # 'zbl'

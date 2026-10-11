@@ -4,4 +4,4 @@ url = https://github.com/OmniPotentRPC/rgpot.git
 # rgpot v3.5.0
 revision = 7845d96971aad552d17f8e60b924f8bd3cb37740
 depth = 1
-diff_files = rgpot-capnp-includes.patch
+diff_files = rgpot-capnp-includes.patch, rgpot-water-colour-guard.patch

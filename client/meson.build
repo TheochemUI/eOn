@@ -790,6 +790,12 @@ else
     # here instead, naming the fix.
     _rgpot_has_water = _rgpot_proj.get_variable('has_water')
     _rgpot_has_uma = _rgpot_proj.get_variable('has_metatomic')
+    # with_water stays off: the classical engine references the water
+    # kernels when that define is set and does not link them. The colouring
+    # guard links the separate static library from the wrap patch.
+    if not _rgpot_has_water
+        _rgpot_water_guard = _rgpot_proj.get_variable('water_colour_guard')
+    endif
     if not _rgpot_proj.get_variable('has_fortran')
         error(
             'rgpot subproject built without Fortran potentials. '
@@ -1863,31 +1869,6 @@ endif
 if get_option('with_tests')
     test_args = _args
     test_deps = _exe_deps
-    # rgpot's classical engine references the water kernels when
-    # with_water is on, and does not link them. The colouring guard
-    # compiles those kernels itself unless this rgpot already has them.
-    if not _rgpot_has_water
-        _water_dir = meson.project_source_root() / 'subprojects' / 'rgpot' / 'CppCore' / 'rgpot' / 'Water'
-        _rgpot_water_guard = static_library(
-            'eon_rgpot_water_guard',
-            [
-                _water_dir / 'potential_base.cpp',
-                _water_dir / 'ccl.cpp',
-                _water_dir / 'tip4p_ccl.cpp',
-                _water_dir / 'spce_ccl.cpp',
-                _water_dir / 'zhu_philpott_parameters.cpp',
-                _water_dir / 'zhu_philpott.cpp',
-                _water_dir / 'WaterPots.cc',
-            ],
-            include_directories: [
-                include_directories(_water_dir),
-                include_directories(
-                    meson.project_source_root() / 'subprojects' / 'rgpot' / 'CppCore',
-                ),
-            ],
-            cpp_args: _args,
-        )
-    endif
     testMain = library(
         'TestMain',
         ['unit_tests/TestMain.cpp', 'thirdparty/catch2/catch_amalgamated.cpp'],
@@ -2104,12 +2085,15 @@ if get_option('with_tests')
         _case_cpp_args = test_args
         _case_link = test_link
         if test.get(0) == 'test_hessian'
-            # TIP4P, SPC/E and TIP4P-Pt. UmaPot stays out unless rgpot linked it.
-            _case_cpp_args += ['-DEON_RGPOT_HAS_WATER=1']
+            # TIP4P, SPC/E and TIP4P-Pt when this build can construct them.
+            # UmaPot stays out unless rgpot linked it.
             if _rgpot_has_uma
                 _case_cpp_args += ['-DEON_RGPOT_HAS_UMA=1']
             endif
-            if not _rgpot_has_water
+            if _rgpot_has_water or not _rgpot_from_pkg
+                _case_cpp_args += ['-DEON_RGPOT_HAS_WATER=1']
+            endif
+            if not _rgpot_has_water and not _rgpot_from_pkg
                 _case_link += [_rgpot_water_guard]
             endif
         endif
