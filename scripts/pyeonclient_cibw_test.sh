@@ -27,4 +27,17 @@ if [ -n "${EXTRA_LIBS}" ]; then
   export LD_LIBRARY_PATH="${EXTRA_LIBS}:${LD_LIBRARY_PATH:-}"
   echo "cibw-test EXTRA_LIBS=${EXTRA_LIBS}"
 fi
-python -c "import pyeonclient as p, pathlib, subprocess; print(p.__version__, 'mta', p.built_with_metatomic(), 'rgpot', p.built_with_rgpot()); assert p.built_with_rgpot(); core=next(pathlib.Path(p.__file__).parent.glob('_core*.so')); out=subprocess.check_output(['readelf','-d',str(core)],text=True); assert 'libtorch' not in out or p.built_with_metatomic(); print('NEEDED_OK'); assert hasattr(p.NudgedElasticBand, 'path_frames')"
+python -c "
+import pathlib, subprocess, sys
+import pyeonclient as p
+print(p.__version__, 'mta', p.built_with_metatomic(), 'rgpot', p.built_with_rgpot())
+assert p.built_with_rgpot()
+cores = list(pathlib.Path(p.__file__).parent.glob('_core*.so'))
+cores += list(pathlib.Path(p.__file__).parent.glob('_core*.pyd'))
+assert cores, 'missing _core extension'
+if sys.platform != 'win32':
+    out = subprocess.check_output(['readelf', '-d', str(cores[0])], text=True)
+    assert 'libtorch' not in out or p.built_with_metatomic()
+print('NEEDED_OK')
+assert hasattr(p.NudgedElasticBand, 'path_frames')
+"

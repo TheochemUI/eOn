@@ -25,3 +25,7 @@ def test_win64_metatomic_wheel_is_in_the_matrix():
     # Shared plugin DLLs export nothing, so MSVC writes no import library.
     assert 'runner.os }}" == "Windows"' in text
     assert "setup-args=-Ddefault_library=static" in text
+    toml = (
+        Path(__file__).resolve().parents[1] / "pyproject-pyeonclient.toml"
+    ).read_text(encoding="utf-8")
+    assert "allow-windows-internal-shared-libs = true" in toml

@@ -74,6 +74,10 @@ build-backend = "mesonpy"
 
 [tool.meson-python]
 limited-api = true
+# The wheel bundles librgpot (and, on Windows, its DLL). meson-python
+# refuses a PE library in the wheel until this is set. __init__ adds the
+# directory before importing _core.
+allow-windows-internal-shared-libs = true
 
 # Default PyPI wheel: RGPOT linked (dlopen engines at runtime), no torch NEEDED.
 # Metatomic-linked wheels: override setup-args with -Dwith_metatomic=true

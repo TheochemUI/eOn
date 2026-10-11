@@ -203,10 +203,17 @@ py.install_sources(
 # an install script into prefix/lib. custom_target+install ships the
 # SONAME next to _core.so so the wheel dlopens it.
 if not _rgpot_pkg.found()
+    _rgpot_lib = _rgpot_proj.get_variable('rgpot')
+    # Linux dlopen follows the SONAME. Windows LoadLibrary uses the DLL
+    # file name, so a copy named librgpot.so.3 never resolves.
+    _rgpot_out = 'librgpot.so.3'
+    if is_windows
+        _rgpot_out = fs.name(_rgpot_lib.full_path())
+    endif
     _rgpot_for_py = custom_target(
         'librgpot-so3-for-pyeonclient',
-        input: _rgpot_proj.get_variable('rgpot'),
-        output: 'librgpot.so.3',
+        input: _rgpot_lib,
+        output: _rgpot_out,
         command: [
             py,
             '-c',

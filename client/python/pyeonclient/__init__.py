@@ -25,6 +25,21 @@ Docs: https://eondocs.org/user_guide/pyeonclient.html
 
 from __future__ import annotations
 
+import os
+import sys
+
+if sys.platform == "win32":
+    # meson-python parks project DLLs in .{name}.mesonpy.libs. The rgpot
+    # copy sits next to this file. Both have to be on the loader path
+    # before _core.pyd is imported.
+    _pkg_dir = os.path.dirname(os.path.abspath(__file__))
+    for _dll_dir in (
+        _pkg_dir,
+        os.path.join(os.path.dirname(_pkg_dir), ".pyeonclient.mesonpy.libs"),
+    ):
+        if os.path.isdir(_dll_dir):
+            os.add_dll_directory(_dll_dir)
+
 try:
     from pyeonclient._core import (  # type: ignore F401
         CancelToken,
