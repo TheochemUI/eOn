@@ -259,4 +259,8 @@ jobs:
           unset LDFLAGS CFLAGS CXXFLAGS FCFLAGS || true
           which meson
           meson --version
+          # Name any import the loader would fail with 0xC0000139.
+          python scripts/ci/win_stage_imports.py --report \
+            bbdir/client/test_relax_engine.exe \
+            bbdir/client/eon_relax_engine.dll
           meson test -C bbdir --suite eon --print-errorlogs
