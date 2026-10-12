@@ -49,6 +49,7 @@ py.install_sources(
         'state.py',
         'superbasin.py',
         'superbasinscheme.py',
+        '_forksafe.py',
         '_utils.py',
     ],
     pure: false,  # install next to compiled extension

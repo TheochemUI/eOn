@@ -596,6 +596,9 @@ class Local(Communicator):
             fstderr = open(Path(jobpath) / "stderr.dat", 'w')
             # A session of its own lets cleanup() reach every process the
             # client starts (ExtPot wrappers, srun, mpirun), not just the client.
+            # That session also forces subprocess down fork or vfork. fork runs
+            # atfork handlers; eon._forksafe parks the OpenBLAS pool first so
+            # server_lock is free when this process next factorizes.
             p = Popen(self.client, cwd=jobpath, stdout=fstdout, stderr=fstderr,
                       env=client_environment(),
                       start_new_session=(os.name == 'posix'))

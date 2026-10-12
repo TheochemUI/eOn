@@ -1,1 +1,1 @@
-Pytest keeps one OpenBLAS thread in the test process so a fork of eonclient cannot leave server_lock held. The Ubuntu Python test job and the Python coverage job time out a hung test.
+Pytest still keeps one OpenBLAS thread in the test process, as defence in depth for a fork that happens before eon is imported. The Ubuntu Python test job and the Python coverage job time out a hung test.

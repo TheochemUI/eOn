@@ -15,11 +15,11 @@ from pathlib import Path
 
 import pytest
 
-# Fork after threads. OpenBLAS's pthread server holds server_lock. This
-# test process later forks eonclient through sh, which keeps only the
-# calling thread, so the lock stays held and numpy.linalg.solve waits in
-# blas_thread_init. One thread here, before collection imports numpy.
-# Not an environment variable: the client process keeps its own pool.
+# Defence in depth. eon._forksafe restores the OpenBLAS pool around
+# os.fork, but a test can fork eonclient through sh before it imports
+# eon. One thread here, before collection imports numpy, so that fork
+# cannot leave server_lock held. Not an environment variable: the client
+# process keeps its own pool.
 def _one_openblas_thread() -> None:
     for name in ("libopenblas.so.0", "libopenblas.so", "libcblas.so.3", "libblas.so.3"):
         try:

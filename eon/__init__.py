@@ -18,6 +18,12 @@ except ModuleNotFoundError:
 # the fallback above.
 version = __version__
 
+# Fork after the OpenBLAS pool exists. The handler parks that pool at one
+# thread across os.fork and restores the caller's count in this process.
+from eon._forksafe import install as _install_forksafe
+
+_install_forksafe()
+
 
 def __getattr__(name):
     if name == "server":
