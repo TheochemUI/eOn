@@ -1,1 +1,1 @@
-Windows pyeonclient wheels bundle the rgpot DLL under its real file name, and the package adds that directory before the extension is imported.
+Windows pyeonclient wheels bundle the rgpot DLL under its real file name, and the package adds that directory before the extension is imported. A metatomic build imports torch first so torch's DLLs are on the loader path.

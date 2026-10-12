@@ -39,6 +39,13 @@ if sys.platform == "win32":
     ):
         if os.path.isdir(_dll_dir):
             os.add_dll_directory(_dll_dir)
+    # A metatomic build links torch. Importing torch registers its DLL
+    # directory. The base wheel has no torch and skips this.
+    for _name in ("torch", "metatensor", "metatomic.torch"):
+        try:
+            __import__(_name)
+        except ImportError:
+            pass
 
 try:
     from pyeonclient._core import (  # type: ignore F401
