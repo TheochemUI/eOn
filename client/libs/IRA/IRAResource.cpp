@@ -20,8 +20,7 @@ IRAResource &IRAResource::instance() {
   return resource;
 }
 
-IRAResource::IRAResource(Key)
-    : IRAResource() {}
+IRAResource::IRAResource(Key) : IRAResource() {}
 
 IRAResource::IRAResource() {
 #ifdef _WIN32

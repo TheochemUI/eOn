@@ -13,6 +13,7 @@
 #include "TestUtils.hpp"
 #include "eon/HelperFunctions.h"
 
+#include <cmath>
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/ForceNorm.h"
 #include "eon/MonteCarlo.h"

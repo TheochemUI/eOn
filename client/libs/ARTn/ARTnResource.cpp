@@ -20,8 +20,7 @@ ARTnResource &ARTnResource::instance() {
   return resource;
 }
 
-ARTnResource::ARTnResource(Key)
-    : ARTnResource() {}
+ARTnResource::ARTnResource(Key) : ARTnResource() {}
 
 ARTnResource::ARTnResource() {
 #ifdef _WIN32

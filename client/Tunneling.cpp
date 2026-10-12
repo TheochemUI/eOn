@@ -1026,9 +1026,9 @@ void addFrictionBath(const std::vector<VectorXd> &q, double &u,
   std::vector<VectorXd> dUdg(n, VectorXd::Zero(f));
   const double scale = 1.0 / std::sqrt(static_cast<double>(n));
   for (size_t k = 1; k < n; ++k) {
-    const double omega =
-        2.0 * std::abs(std::sin(std::numbers::pi * static_cast<double>(k) /
-                                static_cast<double>(n)));
+    const double omega = 2.0 * std::abs(std::sin(std::numbers::pi *
+                                                  static_cast<double>(k) /
+                                                  static_cast<double>(n)));
     VectorXd real = VectorXd::Zero(f);
     VectorXd imag = VectorXd::Zero(f);
     for (size_t j = 0; j < n; ++j) {
@@ -1079,7 +1079,8 @@ std::vector<double> frictionEta(const RateInstantonOptions &options,
 }
 
 RingEval evaluateRing(const std::vector<VectorXd> &x, double c,
-                      const BatchPotential &potential, double energyShift = 0.0,
+                      const BatchPotential &potential,
+                      double energyShift = 0.0,
                       const std::vector<double> &eta = {},
                       const std::vector<double> &discretization = {}) {
   RingEval out;
@@ -1576,9 +1577,9 @@ private:
 
 // Diagonal blocks of the closed ring (H + 2 c I) or of the half chain from
 // one turning point to the other (end blocks H / 2 + c I).
-std::vector<MatrixXd>
-ringDiagonal(const std::vector<MatrixXd> &physical, double c, bool half,
-             const std::vector<double> *weight = nullptr) {
+std::vector<MatrixXd> ringDiagonal(const std::vector<MatrixXd> &physical,
+                                   double c, bool half,
+                                   const std::vector<double> *weight = nullptr) {
   const long beads = static_cast<long>(physical.size());
   const long f = physical.front().rows();
   const bool weighted = weight != nullptr && !weight->empty();
@@ -1597,7 +1598,8 @@ ringDiagonal(const std::vector<MatrixXd> &physical, double c, bool half,
     double add = end ? c : 2.0 * c;
     if (weighted) {
       const double wj = (*weight)[static_cast<size_t>(j)];
-      const double wp = (*weight)[static_cast<size_t>((j + beads - 1) % beads)];
+      const double wp =
+          (*weight)[static_cast<size_t>((j + beads - 1) % beads)];
       if (!(wj > 0.0) || !(wp > 0.0)) {
         throw std::invalid_argument(
             "link weights must be one positive value per bead");
@@ -1611,10 +1613,10 @@ ringDiagonal(const std::vector<MatrixXd> &physical, double c, bool half,
 }
 
 // (diag - c neighbours) v for the closed ring or the open half chain.
-std::vector<VectorXd>
-applyDiagonal(const std::vector<MatrixXd> &diag, double c, bool closed,
-              const std::vector<VectorXd> &v,
-              const std::vector<double> *weight = nullptr) {
+std::vector<VectorXd> applyDiagonal(const std::vector<MatrixXd> &diag, double c,
+                                    bool closed,
+                                    const std::vector<VectorXd> &v,
+                                    const std::vector<double> *weight = nullptr) {
   const size_t n = v.size();
   const bool weighted = weight != nullptr && !weight->empty();
   if (weighted && (!closed || weight->size() != n)) {
@@ -1823,10 +1825,9 @@ VectorXd timeTranslation(const std::vector<VectorXd> &x) {
   return tau;
 }
 
-std::vector<VectorXd>
-physicalGradient(const std::vector<VectorXd> &x,
-                 const std::vector<VectorXd> &ringGrad, double c,
-                 const std::vector<double> &discretization = {}) {
+std::vector<VectorXd> physicalGradient(
+    const std::vector<VectorXd> &x, const std::vector<VectorXd> &ringGrad,
+    double c, const std::vector<double> &discretization = {}) {
   const size_t n = x.size();
   std::vector<VectorXd> g(n);
   for (size_t j = 0; j < n; ++j) {
@@ -2218,8 +2219,8 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
     }
   }
   if (half && !options.discretization.empty()) {
-    throw std::invalid_argument("link weights need the full ring; a half ring "
-                                "keeps the uniform spring");
+    throw std::invalid_argument(
+        "link weights need the full ring; a half ring keeps the uniform spring");
   }
   const std::vector<double> *linkWeight =
       options.discretization.empty() ? nullptr : &options.discretization;
@@ -2803,9 +2804,9 @@ NewtonOut newtonInstanton(std::vector<VectorXd> guess, double c,
       stalledHalf = true;
       break;
     }
-    const VectorXd step =
-        chainIndexOneStep(v.ritz, v.climb, v.diag, c, !half, cur.grad, v.tau,
-                          nullRing, linkWeight);
+    const VectorXd step = chainIndexOneStep(v.ritz, v.climb, v.diag, c, !half,
+                                            cur.grad, v.tau, nullRing,
+                                            linkWeight);
     bool moved = false;
     VectorXd dir = step;
     // Clip to the trust radius once, then halve that capped step.
@@ -3116,8 +3117,7 @@ RingPolymerPotential::RingPolymerPotential(BatchPotential beads, long nBeads,
       energyShift_(energyShift),
       eta_(std::move(eta)) {
   if (!(spring > 0.0) || !std::isfinite(spring)) {
-    throw std::invalid_argument(
-        "ring structure: the spring constant must be positive");
+    throw std::invalid_argument("ring structure: the spring constant must be positive");
   }
   fixLayout(nBeads, dof, fold, modeDir);
 }
@@ -3269,12 +3269,10 @@ void RingPolymerPotential::forceBatch(long nSystems, long nAtoms,
   for (long i = 0; i < nSystems; ++i) {
     const auto &q = items[static_cast<size_t>(i)].q;
     const auto &raw = items[static_cast<size_t>(i)].raw;
-    std::vector<double> vActive(
-        vAll.begin() + static_cast<std::ptrdiff_t>(cursor),
-        vAll.begin() + static_cast<std::ptrdiff_t>(cursor + nActive_));
-    std::vector<VectorXd> gActive(
-        gAll.begin() + static_cast<std::ptrdiff_t>(cursor),
-        gAll.begin() + static_cast<std::ptrdiff_t>(cursor + nActive_));
+    std::vector<double> vActive(vAll.begin() + static_cast<std::ptrdiff_t>(cursor),
+                                vAll.begin() + static_cast<std::ptrdiff_t>(cursor + nActive_));
+    std::vector<VectorXd> gActive(gAll.begin() + static_cast<std::ptrdiff_t>(cursor),
+                                  gAll.begin() + static_cast<std::ptrdiff_t>(cursor + nActive_));
     cursor += static_cast<size_t>(nActive_);
     for (const auto &g : gActive) {
       if (g.size() != dof_) {
@@ -3297,11 +3295,9 @@ void RingPolymerPotential::forceBatch(long nSystems, long nAtoms,
       gFull[static_cast<size_t>(m)] = gActive[static_cast<size_t>(m)];
       for (long j = 1; j < m; ++j) {
         vFull[static_cast<size_t>(j)] = vActive[static_cast<size_t>(j)];
-        vFull[static_cast<size_t>(nBeads_ - j)] =
-            vActive[static_cast<size_t>(j)];
+        vFull[static_cast<size_t>(nBeads_ - j)] = vActive[static_cast<size_t>(j)];
         gFull[static_cast<size_t>(j)] = gActive[static_cast<size_t>(j)];
-        gFull[static_cast<size_t>(nBeads_ - j)] =
-            gActive[static_cast<size_t>(j)];
+        gFull[static_cast<size_t>(nBeads_ - j)] = gActive[static_cast<size_t>(j)];
       }
     }
     auto replay = [&](const std::vector<VectorXd> &, std::vector<double> &v,
@@ -3309,8 +3305,7 @@ void RingPolymerPotential::forceBatch(long nSystems, long nAtoms,
       v = vFull;
       g = gFull;
     };
-    const RingEval ev =
-        evaluateRing(fullQ, spring_, replay, energyShift_, eta_);
+    const RingEval ev = evaluateRing(fullQ, spring_, replay, energyShift_, eta_);
     std::vector<VectorXd> reduced;
     if (!fold_) {
       reduced = ev.grad;
@@ -3328,8 +3323,7 @@ void RingPolymerPotential::forceBatch(long nSystems, long nAtoms,
     double penalty = 0.0;
     if (fold_) {
       for (long j = 0; j < nActive_; ++j) {
-        const VectorXd d =
-            raw[static_cast<size_t>(j)] - q[static_cast<size_t>(j)];
+        const VectorXd d = raw[static_cast<size_t>(j)] - q[static_cast<size_t>(j)];
         penalty += 0.5 * kMono * d.squaredNorm();
         reduced[static_cast<size_t>(j)] += kMono * d;
       }
@@ -3402,8 +3396,9 @@ SearchedRing oneDimerSearch(const std::vector<VectorXd> &full, double c,
   MinModeSaddleSearch search(matter, mode, e0, params, pot);
   const int status = search.run(options.maxIterations);
 
-  std::vector<VectorXd> beads = expandMirrored(
-      pot->unpack(matter->getPositions().data()), options.beads, fold);
+  std::vector<VectorXd> beads =
+      expandMirrored(pot->unpack(matter->getPositions().data()), options.beads,
+                     fold);
   RingEval ev = evaluateRing(beads, c, potential, options.energyShift, eta);
   if (fold) {
     std::vector<VectorXd> projected = beads;
@@ -3430,8 +3425,8 @@ SearchedRing oneDimerSearch(const std::vector<VectorXd> &full, double c,
   }
   out.iterations = search.getIterationCount();
   const double residual = largestBeadNorm(ev.grad);
-  out.converged =
-      search.getEigenvalue() < 0.0 && residual < options.forceTolerance;
+  out.converged = search.getEigenvalue() < 0.0 &&
+                  residual < options.forceTolerance;
   EONC_LOG_INFO("[Instanton] dimer status {} after {} iterations, largest "
                 "residual {:.3e}, curvature {:.6f}",
                 status, out.iterations, residual, search.getEigenvalue());
@@ -3595,6 +3590,7 @@ RateInstanton optimizeRateInstanton(const VectorXd &saddle,
   inst.converged = found.converged;
   return inst;
 }
+
 
 namespace {
 
