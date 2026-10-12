@@ -98,6 +98,7 @@ GitHub reads the same reference from ~CITATION.cff~.
 @software{goswamiEOn,
   title = {{TheochemUI/eOn}},
   author = {Rohit Goswami and Sam Chill and Rye Terrell and Graeme Henkelman and Matthew Welborn and Liang Zhang and Andreas Pedersen and {t-brink} and Erik Edelmann and Jean Claude and {Alejandro} and Sung Hoon Jung and Seyed Alireza Ghasemi and {chemist29} and {satishskamath} and {Maxim} and Tobias Dijkhuis and {via9a}},
+  year = 2026,
   publisher = {Zenodo},
   doi = {10.5281/zenodo.18529495},
   url = {https://doi.org/10.5281/zenodo.18529495}
@@ -109,8 +110,10 @@ GitHub reads the same reference from ~CITATION.cff~.
 The rewrites behind eOn 2.x and 3.x, including the Gaussian process methods, are
 covered in R. Goswami, /Efficient Exploration of Chemical Kinetics/, arXiv:2510.21368 (2025).
 [[https://doi.org/10.48550/arXiv.2510.21368][doi:10.48550/arXiv.2510.21368]]
+For other eOn 2.x and later methods (AKMC, the dimer, Lanczos, and
+minimization), please also cite Goswami's 2025 thesis.
 
-If you use one of these methods, please also cite the paper behind it.
+If you use one of the methods below, please also cite the paper behind it.
 
 - GPR accelerated dimer (~min_mode_method = gprdimer~, ~gp_surrogate~):
   R. Goswami, M. Masterov, S. Kamath, A. Peña-Torres and H. Jónsson,
@@ -119,7 +122,8 @@ If you use one of these methods, please also cite the paper behind it.
 - Pruning and optimal transport for GP saddle searches (~use_prune~ and
   related keys): R. Goswami and H. Jónsson, /ChemPhysChem/ *27*, e202500730
   (2026). [[https://doi.org/10.1002/cphc.202500730][doi:10.1002/cphc.202500730]]
-- Off-path climbing image NEB (OCI-NEB) with Hessian eigenmode alignment:
+- Any nudged elastic band run (~job = nudged_elastic_band~), including
+  off-path climbing image NEB (OCI-NEB) with Hessian eigenmode alignment:
   R. Goswami, M. Gunde and H. Jónsson, /Front. Chem./ *14*, 1807063 (2026).
   [[https://doi.org/10.3389/fchem.2026.1807063][doi:10.3389/fchem.2026.1807063]]
 - Benchmarking saddle searches, and rotation removal in the dimer: R. Goswami,
@@ -130,6 +134,11 @@ If you use one of these methods, please also cite the paper behind it.
   /MethodsX/ *16*, 103899 (2026). [[https://doi.org/10.1016/j.mex.2026.103899][doi:10.1016/j.mex.2026.103899]]
 - Two-dimensional RMSD plots of NEB paths (via ~rgpycrumbs~): R. Goswami,
   /MethodsX/ *16*, 103851 (2026). [[https://doi.org/10.1016/j.mex.2026.103851][doi:10.1016/j.mex.2026.103851]]
+- Metatomic potentials in eOn, including the NEB runs: F. Bigi, J. W. Abbott,
+  P. Loche, A. Mazitov, D. Tisi, M. F. Langer, A. Goscinski, P. Pegolo,
+  S. Chong, R. Goswami, P. Febrer, S. Chorna, M. Kellner, M. Ceriotti and
+  G. Fraux, /J. Chem. Phys./ *164*, 064113 (2026).
+  [[https://doi.org/10.1063/5.0304911][doi:10.1063/5.0304911]]
 
 ** Older papers
 

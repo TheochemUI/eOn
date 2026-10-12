@@ -31,8 +31,10 @@ GitHub reads the same reference from `CITATION.cff`. The entry below matches
 The rewrites behind eOn 2.x and 3.x, including the Gaussian process methods and
 the socket and calculator interfaces, are covered in
 {cite:t}`cite-goswamiEfficientExplorationChemical2025`.
+For other eOn 2.x and later methods (AKMC, the dimer, Lanczos, and
+minimization), please also cite Goswami's 2025 thesis.
 
-If you use one of these methods, please also cite the paper behind it.
+If you use one of the methods below, please also cite the paper behind it.
 
 - Gaussian process regression accelerated dimer
   (`min_mode_method = gprdimer`):
@@ -40,8 +42,9 @@ If you use one of these methods, please also cite the paper behind it.
 - Adaptive pruning and optimal transport for Gaussian process saddle searches
   (`use_prune` and related keys under `[GPR Dimer]`):
   {cite:t}`cite-goswamiAdaptivePruningIncreased2025b`.
-- Off-path climbing image NEB (OCINEB, `ci_mmf = true`) with Hessian eigenmode
-  alignment: {cite:t}`cite-goswamiEnhancedClimbingImage2026`.
+- Any nudged elastic band run (`job = nudged_elastic_band`), including
+  off-path climbing image NEB (OCI-NEB) with Hessian eigenmode alignment:
+  {cite:t}`cite-goswamiEnhancedClimbingImage2026`.
 - Benchmarking saddle searches, and rotation removal in the dimer
   (`remove_rotation`): {cite:t}`cite-goswamiBayesianHierarchicalModels2025a`.
 - Background on Gaussian process acceleration of saddle and minimum searches:
