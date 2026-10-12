@@ -690,6 +690,7 @@ readcon_order_srcs = []
 # test with STATUS_ENTRYPOINT_NOT_FOUND (0xC0000139).
 _readcon_runtime_dir = ''
 _have_readcon_dll_beside = false
+_have_readcon_implib = false
 if not readcon_dep.found()
     readcon_proj = subproject(
         'readcon-core',
@@ -726,6 +727,8 @@ if not readcon_dep.found()
             build_by_default: true,
         )
         _have_readcon_dll_beside = true
+        _readcon_implib = readcon_proj.get_variable('readcon_implib')
+        _have_readcon_implib = true
     endif
 endif
 if is_windows
@@ -1713,10 +1716,24 @@ eon_relax_capnp = custom_target(
 # LoadLibrary returns null. default_library=static must not apply here.
 # Windows puts only readcon headers on _deps. The import library stays
 # off eonclib because llvm-ar and link reject the cargo DLL. This DLL
-# pulls eonclib in, so it needs the same import library the executables
-# get, without the cargo sources that contain the DLL.
+# pulls eonclib in, so it needs readcon on the link line, without the
+# cargo sources that contain the DLL.
+# The static archive plus torch in this DLL binds a Rust runtime import
+# to a torch DLL that does not export it. test_relax_engine then exits
+# 0xC0000139 before main. Link the cdylib import library instead so that
+# runtime stays in readcon_core.dll, which is copied beside the test.
 _engine_deps = _deps + _gprd_extra_deps + [capnp_dep]
-if is_windows
+_engine_link_depends = []
+if is_windows and _have_readcon_implib
+    _engine_deps += readcon_dep.partial_dependency(
+        includes: true,
+        compile_args: true,
+    )
+    _engine_deps += declare_dependency(
+        link_args: [_readcon_implib.full_path()],
+    )
+    _engine_link_depends += [_readcon_implib]
+elif is_windows
     _engine_deps += readcon_dep.partial_dependency(
         includes: true,
         compile_args: true,
@@ -1735,6 +1752,7 @@ eon_relax_engine = shared_library(
     install_rpath: _lib_install_rpath,
     install: true,
     gnu_symbol_visibility: 'inlineshidden',
+    link_depends: _engine_link_depends,
 )
 
 # RGPOT-metatomic engine (slow path); fat pot already in potentials above.

@@ -96,6 +96,26 @@ readcon_cargo = custom_target(
     install_dir: [get_option('libdir'), get_option('libdir')],
 )
 
+# MSVC names the cdylib import library readcon_core.dll.lib. It survives
+# the staticlib build, which writes readcon_core.lib instead. A Windows
+# DLL that also imports torch must link this import library. The static
+# archive in that image binds a Rust runtime symbol to a torch DLL.
+if host_machine.system() == 'windows'
+    readcon_implib = custom_target(
+        'readcon-implib',
+        output: 'readcon_core.dll.lib',
+        command: [
+            _py,
+            files('scripts/copy_msvc_implib.py'),
+            _mbproot / 'cargo-target',
+            _profile,
+            '@OUTPUT@',
+        ],
+        depends: [readcon_cargo],
+        build_by_default: true,
+    )
+endif
+
 # Indexing readcon_cargo in declare_dependency.sources does not create a
 # ninja edge. Putting the cdylib in sources records NEEDED / LNK1107.
 # A generated .c that depends on the whole cargo target is the order
