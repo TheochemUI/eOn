@@ -24,6 +24,7 @@
 #include <iterator>
 #include <stdexcept>
 #include <string>
+#include <system_error>
 
 namespace tests {
 
@@ -518,13 +519,17 @@ TEST_CASE_METHOD(DynamicsFixture,
 
   const auto path =
       std::filesystem::temp_directory_path() / "eon_md_restart.con";
-  std::filesystem::remove(path);
+  std::error_code rm_ec;
+  std::filesystem::remove(path, rm_ec);
   REQUIRE(
       eonc::io::io_ok(first.matter2con(path.string(), false, nullptr, true)));
 
-  std::ifstream in(path);
-  const std::string text((std::istreambuf_iterator<char>(in)),
-                         std::istreambuf_iterator<char>());
+  std::string text;
+  {
+    std::ifstream in(path);
+    text.assign(std::istreambuf_iterator<char>(in),
+                std::istreambuf_iterator<char>());
+  }
   REQUIRE(text.find("velocities") != std::string::npos);
   REQUIRE(text.find("(amu*angstrom^2/eV)^0.5") != std::string::npos);
   REQUIRE(text.find("\"time\":\"fs\"") == std::string::npos);
@@ -537,7 +542,7 @@ TEST_CASE_METHOD(DynamicsFixture,
 
   REQUIRE(continuous.getPositions().isApprox(restarted.getPositions(), 1e-8));
   REQUIRE(continuous.getVelocities().isApprox(restarted.getVelocities(), 1e-8));
-  std::filesystem::remove(path);
+  std::filesystem::remove(path, rm_ec);
 
   eonc::rng::random(42);
   Matter redrawn(pot, params);
