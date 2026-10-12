@@ -2061,35 +2061,33 @@ if get_option('with_tests')
         if fs.is_dir(_pbin)
             _stage_search += _pbin
         endif
-        # Wheel directories supply c10.dll and the metatomic DLLs the
-        # engine imports. They are not searched for transitive imports:
-        # torch's libiomp5md.dll in the test directory makes every other
-        # executable exit 0xC0000139.
-        _stage_cmd = [
-            py,
-            meson.project_source_root() / 'scripts' / 'ci' / 'win_stage_imports.py',
-            '@INPUT@',
-            '@OUTPUT@',
-        ] + _stage_search
-        if get_option('with_metatomic') and get_option('pip_metatomic')
-            _wheel_dirs = []
-            _wheel_dirs += pip_metatomic_runtime_dirs
-            foreach _d : pip_metatomic_runtime_dirs
-                _wheel_bin = fs.parent(_d) / 'bin'
-                if fs.is_dir(_wheel_bin)
-                    _wheel_dirs += _wheel_bin
-                endif
-            endforeach
-            _stage_cmd += ['--'] + _wheel_dirs
-        endif
         _stage_engine_imports = custom_target(
             'stage-engine-dll-imports',
             input: eon_relax_engine,
             output: 'engine-dll-imports.stamp',
-            command: _stage_cmd,
+            command: [
+                py,
+                meson.project_source_root() / 'scripts' / 'ci' / 'win_stage_imports.py',
+                '@INPUT@',
+                '@OUTPUT@',
+            ] + _stage_search,
             build_by_default: true,
         )
         _have_staged_engine_imports = true
+    endif
+    # Meson puts metatomic wheel bins ahead of PATH. Their c10.dll is
+    # missing an entry point, and test_relax_engine exits 0xC0000139.
+    # Copying those DLLs beside every test breaks the rest of the suite.
+    # Prepend the prefix and the linked torch directory for this test only.
+    _relax_front = []
+    if is_windows and get_option('with_metatomic') and get_option('pip_metatomic')
+        if fs.is_dir(_lbin)
+            _relax_front += _lbin
+        endif
+        if fs.is_dir(_pbin)
+            _relax_front += _pbin
+        endif
+        _relax_front += [LIB_TORCH_LIB_PATH, LIB_TORCH_BIN_PATH]
     endif
     if _fortran_pot_dirs.length() > 0
         # FortranPotLoader splits on ';' on Windows (drive letters break ':').
@@ -2121,29 +2119,41 @@ if get_option('with_tests')
             _case_env.set('EONCLIENT', ec.full_path())
             _case_depends = [ec]
         endif
+        _test_exe = executable(
+            test.get(0),
+            sources: [
+                'unit_tests/' + test.get(1),
+                'thirdparty/catch2/catch_amalgamated.cpp',
+            ],
+            include_directories: test.get(0) == 'test_relax_engine'
+            ? _incdirs + [include_directories('.')]
+            : _incdirs,
+            cpp_args: test_args,
+            # Include /STACK:16M (Windows) so EAM Al Fortran pots do not
+            # SIGSEGV with STATUS_STACK_OVERFLOW (default stack is 1 MB).
+            link_args: _linkargs,
+            dependencies: test.get(0) == 'test_relax_engine'
+            ? test_deps + [capnp_dep]
+            : test_deps,
+            link_with: test.get(0) == 'test_relax_engine'
+            ? test_link + [eon_relax_engine]
+            : test_link,
+            build_rpath: ':'.join(_runtime_rpath),
+        )
+        _test_prog = _test_exe
+        _test_args = []
+        if test.get(0) == 'test_relax_engine' and _relax_front.length() > 0
+            _test_prog = py
+            _test_args = [
+                meson.project_source_root() / 'scripts' / 'ci' / 'win_relax_engine_test.py',
+                _test_exe.full_path(),
+            ] + _relax_front
+            _case_depends += [_test_exe]
+        endif
         test(
             test.get(0),
-            executable(
-                test.get(0),
-                sources: [
-                    'unit_tests/' + test.get(1),
-                    'thirdparty/catch2/catch_amalgamated.cpp',
-                ],
-                include_directories: test.get(0) == 'test_relax_engine'
-                ? _incdirs + [include_directories('.')]
-                : _incdirs,
-                cpp_args: test_args,
-                # Include /STACK:16M (Windows) so EAM Al Fortran pots do not
-                # SIGSEGV with STATUS_STACK_OVERFLOW (default stack is 1 MB).
-                link_args: _linkargs,
-                dependencies: test.get(0) == 'test_relax_engine'
-                ? test_deps + [capnp_dep]
-                : test_deps,
-                link_with: test.get(0) == 'test_relax_engine'
-                ? test_link + [eon_relax_engine]
-                : test_link,
-                build_rpath: ':'.join(_runtime_rpath),
-            ),
+            _test_prog,
+            args: _test_args,
             workdir: meson.project_source_root() + '/client/unit_tests/data/systems/' + test.get(
                 2,
             ),

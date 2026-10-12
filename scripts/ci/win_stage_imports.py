@@ -84,32 +84,17 @@ def imported_dlls(path: Path) -> list[str]:
     return names
 
 
-def stage(
-    dll: Path,
-    search: list[Path],
-    stamp: Path,
-    direct_search: list[Path] | None = None,
-) -> None:
-    """Copy imports beside ``dll``.
-
-    ``search`` is used for every import. ``direct_search`` is used only
-    for the root DLL. A wheel directory often holds both ``c10.dll`` and
-    a ``libiomp5md.dll`` that other tests must not pick up from the
-    executable directory.
-    """
+def stage(dll: Path, search: list[Path], stamp: Path) -> None:
     dest = dll.parent
     seen: set[str] = set()
-    # (path, include direct_search)
-    queue: list[tuple[Path, bool]] = [(dll, True)]
+    queue = [dll]
     copied: list[str] = []
-    extra = direct_search or []
     while queue:
-        current, include_direct = queue.pop(0)
+        current = queue.pop(0)
         key = str(current.resolve()).lower()
         if key in seen or not current.is_file():
             continue
         seen.add(key)
-        dirs = search + extra if include_direct else search
         for name in imported_dlls(current):
             if _system(name):
                 continue
@@ -117,7 +102,7 @@ def stage(
             if target.is_file():
                 continue
             source = next(
-                (d / name for d in dirs if (d / name).is_file()),
+                (d / name for d in search if (d / name).is_file()),
                 None,
             )
             if source is None:
@@ -125,26 +110,18 @@ def stage(
                 continue
             shutil.copy2(source, target)
             copied.append(name)
-            queue.append((target, False))
+            queue.append(target)
     stamp.write_text("\n".join(copied) + "\n", encoding="utf-8")
 
 
 def main(argv: list[str]) -> int:
     if len(argv) < 4:
         print(
-            "usage: win_stage_imports.py DLL STAMP SEARCH_DIR... [-- DIRECT_DIR...]",
+            "usage: win_stage_imports.py DLL STAMP SEARCH_DIR...",
             file=sys.stderr,
         )
         return 2
-    args = argv[3:]
-    if "--" in args:
-        split = args.index("--")
-        search = [Path(p) for p in args[:split]]
-        direct = [Path(p) for p in args[split + 1 :]]
-    else:
-        search = [Path(p) for p in args]
-        direct = []
-    stage(Path(argv[1]), search, Path(argv[2]), direct)
+    stage(Path(argv[1]), [Path(p) for p in argv[3:]], Path(argv[2]))
     return 0
 
 
