@@ -40,7 +40,9 @@ jobs:
       - name: Si3N4 skip is reported
         if: steps.sige.outputs.readable != 'true'
         shell: pixi run bash -e {0}
-        run: python -m pytest scripts/ci/test_si3n4_point_skip.py -ra -q --tb=short -p no:cacheprovider
+        run: |
+          python -m pip install -q 'pytest>=8'
+          python -m pytest scripts/ci/test_si3n4_point_skip.py -ra -q --tb=short -p no:cacheprovider
       - name: Kit inputs
         if: steps.sige.outputs.readable == 'true'
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2

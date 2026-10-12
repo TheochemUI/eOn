@@ -18,6 +18,7 @@ def test_opencpmd_job_warns_and_skips_with_a_reason():
     )
     assert "::warning title=Si3N4 point skipped::" + reason in workflow
     assert "::notice title=Si3N4 point skipped::" not in workflow
+    assert "python -m pip install -q 'pytest>=8'" in workflow
     assert "scripts/ci/test_si3n4_point_skip.py" in workflow
     assert "steps.sige.outputs.readable != 'true'" in workflow
     assert reason in skip_test
