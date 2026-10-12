@@ -34,3 +34,4 @@ def test_win64_metatomic_wheel_is_in_the_matrix():
     assert "readelf" in script
     assert "eon-wheel-deps" in script
     assert "add_dll_directory" in script
+    assert "/torch-" in script

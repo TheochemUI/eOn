@@ -78,14 +78,25 @@ if os.name == "nt":
         torch = None
     if torch is not None:
         roots.append(pathlib.Path(torch.__file__).resolve().parent)
+    mm = None
+    if torch is not None:
+        mm = ".".join(torch.__version__.split("+")[0].split(".")[:2])
+        print("torch", torch.__version__, flush=True)
+    # metatensor-torch ships one DLL tree per torch minor. The first
+    # add_dll_directory wins, so an older tree hides the one this
+    # interpreter was built against and the import fails with a missing
+    # procedure.
     needles = ("metatensor", "metatomic", "vesin", "torch", "c10", "libiomp", "libomp")
     for root in roots:
         if not root.is_dir():
             continue
         for dll in root.rglob("*.dll"):
-            low = str(dll).lower()
-            if any(n in low for n in needles):
-                dll_dirs.append(dll.parent)
+            low = str(dll).lower().replace("\\", "/")
+            if not any(n in low for n in needles):
+                continue
+            if "/torch-" in low and (mm is None or f"/torch-{mm}/" not in low):
+                continue
+            dll_dirs.append(dll.parent)
     seen = []
     for directory in dll_dirs:
         text = str(directory)
