@@ -125,7 +125,12 @@ except ImportError:
     raise
 
 print(p.__version__, "mta", p.built_with_metatomic(), "rgpot", p.built_with_rgpot())
-assert p.built_with_rgpot()
+# WITH_RGPOT is compiled out on Windows. The binding documents
+# built_with_rgpot() as true only for non-Windows builds.
+if platform.system() == "Windows":
+    assert p.built_with_rgpot() is False
+else:
+    assert p.built_with_rgpot()
 parent = pathlib.Path(p.__file__).parent
 cores = list(parent.glob("_core*.so")) + list(parent.glob("_core*.pyd"))
 assert cores, sorted(parent.iterdir())
