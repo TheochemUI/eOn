@@ -2061,16 +2061,32 @@ if get_option('with_tests')
         if fs.is_dir(_pbin)
             _stage_search += _pbin
         endif
+        # Wheel directories supply c10.dll and the metatomic DLLs the
+        # engine imports. They are not searched for transitive imports:
+        # torch's libiomp5md.dll in the test directory makes every other
+        # executable exit 0xC0000139.
+        _stage_cmd = [
+            py,
+            meson.project_source_root() / 'scripts' / 'ci' / 'win_stage_imports.py',
+            '@INPUT@',
+            '@OUTPUT@',
+        ] + _stage_search
+        if get_option('with_metatomic') and get_option('pip_metatomic')
+            _wheel_dirs = []
+            _wheel_dirs += pip_metatomic_runtime_dirs
+            foreach _d : pip_metatomic_runtime_dirs
+                _wheel_bin = fs.parent(_d) / 'bin'
+                if fs.is_dir(_wheel_bin)
+                    _wheel_dirs += _wheel_bin
+                endif
+            endforeach
+            _stage_cmd += ['--'] + _wheel_dirs
+        endif
         _stage_engine_imports = custom_target(
             'stage-engine-dll-imports',
             input: eon_relax_engine,
             output: 'engine-dll-imports.stamp',
-            command: [
-                py,
-                meson.project_source_root() / 'scripts' / 'ci' / 'win_stage_imports.py',
-                '@INPUT@',
-                '@OUTPUT@',
-            ] + _stage_search,
+            command: _stage_cmd,
             build_by_default: true,
         )
         _have_staged_engine_imports = true

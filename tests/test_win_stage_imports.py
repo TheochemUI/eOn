@@ -54,3 +54,17 @@ def test_import_table_lists_the_dll_and_skips_kernel32(tmp_path: Path):
     assert mod.imported_dlls(pe) == ["capnp.dll"]
     assert mod._system("KERNEL32.dll")
     assert not mod._system("capnp.dll")
+
+
+def test_direct_search_does_not_copy_transitive_wheel_dlls(tmp_path: Path):
+    mod = _mod()
+    engine = tmp_path / "engine.dll"
+    engine.write_bytes(_pe(b"plugin.dll"))
+    wheel = tmp_path / "wheel"
+    wheel.mkdir()
+    (wheel / "plugin.dll").write_bytes(_pe(b"shadow.dll"))
+    (wheel / "shadow.dll").write_bytes(b"not-a-dll")
+    stamp = tmp_path / "stamp"
+    mod.stage(engine, [], stamp, [wheel])
+    assert (tmp_path / "plugin.dll").is_file()
+    assert not (tmp_path / "shadow.dll").exists()
