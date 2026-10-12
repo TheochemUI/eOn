@@ -58,11 +58,60 @@ if [ "${OS:-}" = "Windows_NT" ]; then
   fi
 fi
 python - <<'PY'
+import os
 import pathlib
 import platform
+import site
 import subprocess
 
-import pyeonclient as p
+# Git bash mangles PATH, and Windows does not search LD_LIBRARY_PATH.
+# Register the directories with the loader before importing the extension.
+if os.name == "nt":
+    dll_dirs = []
+    flang = pathlib.Path(r"C:\eon-wheel-deps\.pixi\envs\default\Library\bin")
+    if flang.is_dir():
+        dll_dirs.append(flang)
+    roots = [pathlib.Path(p) for p in site.getsitepackages()]
+    try:
+        import torch
+    except ImportError:
+        torch = None
+    if torch is not None:
+        roots.append(pathlib.Path(torch.__file__).resolve().parent)
+    needles = ("metatensor", "metatomic", "vesin", "torch", "c10", "libiomp", "libomp")
+    for root in roots:
+        if not root.is_dir():
+            continue
+        for dll in root.rglob("*.dll"):
+            low = str(dll).lower()
+            if any(n in low for n in needles):
+                dll_dirs.append(dll.parent)
+    seen = []
+    for directory in dll_dirs:
+        text = str(directory)
+        if text in seen:
+            continue
+        seen.append(text)
+        print("add_dll_directory", text, flush=True)
+        os.add_dll_directory(text)
+
+try:
+    import pyeonclient as p
+except ImportError:
+    if os.name == "nt":
+        hits = []
+        for sp in site.getsitepackages():
+            hits.extend(pathlib.Path(sp).rglob("_core*.pyd"))
+        for hit in hits:
+            print("core", hit, flush=True)
+            probe = subprocess.run(
+                ["dumpbin", "/dependents", str(hit)],
+                text=True,
+                capture_output=True,
+            )
+            print(probe.stdout)
+            print(probe.stderr)
+    raise
 
 print(p.__version__, "mta", p.built_with_metatomic(), "rgpot", p.built_with_rgpot())
 assert p.built_with_rgpot()
