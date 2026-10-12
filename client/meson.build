@@ -1241,6 +1241,7 @@ if get_option('with_ase_nwchem')
     _args += ['-DWITH_ASE_NWCHEM']
 endif
 
+_win_mta_dll_dirs = []
 if get_option('with_metatomic')
     if get_option('torch_path') != ''
         # Setting up Torch..
@@ -1271,6 +1272,10 @@ if get_option('with_metatomic')
     ]
 
 
+    # Windows test_relax_engine delay-loads the engine and searches these
+    # directories before PATH. A same-named DLL from torch is otherwise
+    # missing the entry point and the process exits 0xC0000139.
+    _win_mta_dll_dirs = []
     lib_torch_list = ['c10', 'torch', 'torch_cpu']
     if not is_windows
         lib_torch_list += 'torch_global_deps'
@@ -1339,6 +1344,24 @@ for name in ("metatensor", "metatensor_torch", "metatomic", "vesin"):
             _mta_lib,
             _vesin_lib,
         ]
+        if is_windows
+            # Wheels put the DLLs in bin next to lib. The loader must see
+            # those bins, not an earlier same-named DLL on PATH.
+            _win_mta_dll_dirs += [
+                LIB_TORCH_LIB_PATH,
+                LIB_TORCH_PATH / 'bin',
+                fs.parent(_mts_core_lib) / 'bin',
+                fs.parent(_mts_torch_lib_new) / 'bin',
+                fs.parent(_mts_torch_lib_old) / 'bin',
+                fs.parent(_mta_lib) / 'bin',
+                fs.parent(_vesin_lib) / 'bin',
+                _mts_core_lib,
+                _mts_torch_lib_new,
+                _mts_torch_lib_old,
+                _mta_lib,
+                _vesin_lib,
+            ]
+        endif
         if not is_windows
             _runtime_rpath += pip_metatomic_runtime_dirs
         endif
@@ -2027,6 +2050,10 @@ if get_option('with_tests')
         _fortran_pot_dirs += meson.project_build_root() / 'client'
         _fortran_pot_dirs += meson.project_build_root() / 'client' / 'potentials' / 'Metatomic'
     endif
+    _delayimp_dep = []
+    if is_windows
+        _delayimp_dep = [cppc.find_library('delayimp', required: true)]
+    endif
     _test_env = environment()
     _systems_dir = join_paths(
         meson.project_source_root(),
@@ -2055,6 +2082,30 @@ if get_option('with_tests')
     endif
     if _readcon_runtime_dir != ''
         _test_env.prepend('PATH', _readcon_runtime_dir)
+    endif
+    # Delay-load reads EON_WIN_DLL_DIRS before the first eon_relax_* call.
+    # Semicolon-separated. These are the DLLs the engine was linked against.
+    # SetDefaultDllDirectories then ignores PATH, so torch cannot shadow them.
+    if is_windows
+        _win_dll_dirs = []
+        if _readcon_runtime_dir != ''
+            _win_dll_dirs += _readcon_runtime_dir
+        endif
+        _pbin = get_option('prefix') / 'bin'
+        _lbin = get_option('prefix') / 'Library' / 'bin'
+        if fs.is_dir(_lbin)
+            _win_dll_dirs += _lbin
+        endif
+        if fs.is_dir(_pbin)
+            _win_dll_dirs += _pbin
+        endif
+        foreach _extra : _win_mta_dll_dirs
+            if fs.is_dir(_extra)
+                _win_dll_dirs += _extra
+            endif
+        endforeach
+        _win_dll_dirs += fs.parent(eon_relax_engine.full_path())
+        _test_env.set('EON_WIN_DLL_DIRS', ';'.join(_win_dll_dirs))
     endif
     # Windows loads a DLL's imports from the executable directory before
     # PATH. Stage the engine's non-system imports beside the test, the
@@ -2133,9 +2184,13 @@ if get_option('with_tests')
                 cpp_args: test_args,
                 # Include /STACK:16M (Windows) so EAM Al Fortran pots do not
                 # SIGSEGV with STATUS_STACK_OVERFLOW (default stack is 1 MB).
-                link_args: _linkargs,
+                link_args: (
+                    test.get(0) == 'test_relax_engine' and is_windows
+                )
+                ? _linkargs + ['/DELAYLOAD:eon_relax_engine.dll']
+                : _linkargs,
                 dependencies: test.get(0) == 'test_relax_engine'
-                ? test_deps + [capnp_dep]
+                ? test_deps + [capnp_dep] + _delayimp_dep
                 : test_deps,
                 link_with: test.get(0) == 'test_relax_engine'
                 ? test_link + [eon_relax_engine]
