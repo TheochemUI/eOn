@@ -31,7 +31,9 @@ python -c "
 import pathlib, subprocess, sys
 import pyeonclient as p
 print(p.__version__, 'mta', p.built_with_metatomic(), 'rgpot', p.built_with_rgpot())
-assert p.built_with_rgpot()
+# WITH_RGPOT is the NWChem and CPMD dlopen arm. Windows does not build it.
+if sys.platform != 'win32':
+    assert p.built_with_rgpot()
 cores = list(pathlib.Path(p.__file__).parent.glob('_core*.so'))
 cores += list(pathlib.Path(p.__file__).parent.glob('_core*.pyd'))
 assert cores, 'missing _core extension'
