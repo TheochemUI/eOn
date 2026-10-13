@@ -2056,6 +2056,26 @@ if get_option('with_tests')
         if fs.is_dir(_pbin)
             _stage_search += _pbin
         endif
+        # Prefix DLLs stay first. A later directory is used only when the
+        # earlier copy does not export the imported symbol. Torch's c10
+        # and the metatensor bins are those later directories. The DLLs
+        # live in lib for torch and in the sibling bin for the wheels.
+        _runtime_dirs = []
+        if is_variable('pip_metatomic_runtime_dirs')
+            _runtime_dirs += pip_metatomic_runtime_dirs
+        endif
+        if is_variable('LIB_TORCH_LIB_PATH')
+            _runtime_dirs += [LIB_TORCH_LIB_PATH]
+        endif
+        foreach _rd : _runtime_dirs
+            if fs.is_dir(_rd)
+                _stage_search += _rd
+            endif
+            _sib = fs.parent(_rd) / 'bin'
+            if fs.is_dir(_sib)
+                _stage_search += _sib
+            endif
+        endforeach
         _stage_engine_imports = custom_target(
             'stage-engine-dll-imports',
             input: eon_relax_engine,
