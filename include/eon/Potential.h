@@ -115,8 +115,11 @@ public:
   }
 
   /// Finite interaction range in position length units.
-  /// 0 means the potential is not finite-cutoff; the FD Hessian then
-  /// stays one column per coordinate.
+  ///
+  /// Deprecated. Override hessianRange() instead. The default
+  /// hessianRange() returns this value, so an existing override still
+  /// colors the finite-difference Hessian. 0 means the range is unknown.
+  [[deprecated("Override hessianRange() instead.")]]
   [[nodiscard]] virtual double finiteCutoff() const noexcept { return 0.0; }
 
   /// Whether this is a surrogate (GP) potential. Override in
@@ -231,6 +234,35 @@ public:
       forceCallCounter++;
       registry_.on_force_call(ptype);
     }
+  }
+
+  /// Distance beyond which every Hessian block between two atoms is
+  /// exactly zero, in position length units.
+  ///
+  /// The default returns finiteCutoff(), so an override of that
+  /// deprecated method still colors. 0, or any non-finite value, means
+  /// the range is unknown. The finite-difference Hessian then stays one
+  /// column per coordinate. A potential opts in by overriding this. An
+  /// interaction cutoff is not this distance: a many-body kernel is
+  /// nonzero out to twice its cutoff, and a kernel that merely has a
+  /// cutoff field stays at 0.
+  [[nodiscard]] virtual double hessianRange() const noexcept {
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4996)
+#endif
+    const double range = finiteCutoff();
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
+    return range;
   }
 };
 
