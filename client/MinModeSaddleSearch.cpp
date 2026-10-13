@@ -276,9 +276,15 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       status = STATUS_NONNEGATIVE_ABORT;
       return status;
     }
-    if (getEigenvalue() > 0.0 && status == STATUS_GOOD) {
-      QUILL_LOG_DEBUG(log, "[MinModeSaddleSearch] eigenvalue not negative");
-      status = STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE;
+    // The GP dimer stops at its outer iteration limit without saying so.
+    // Its own test is the largest free-atom force against converged_force,
+    // so a midpoint at or above that limit did not converge.
+    // The positive-eigenvalue case already returned above.
+    const double finalForce = matter->maxForce();
+    if (!(finalForce < params.saddle_search_options().converged_force)) {
+      QUILL_LOG_DEBUG(log, "GPR dimer stopped unconverged, max force {}",
+                      finalForce);
+      status = STATUS_BAD_MAX_ITERATIONS;
     }
     if (std::abs(eonc::eigenmodeGetEigenvalue(*minModeMethod)) <
         params.saddle_search_options().zero_mode_abort_curvature) {
