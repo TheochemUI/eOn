@@ -113,7 +113,11 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
   matter->setPositionsFreeV(atomic_dimer.getFinalCoordOfMidPoint());
   this->totalIterations = atomic_dimer.getIterations();
   this->totalForceCalls = atomic_dimer.getTotalForceCalls();
-  pot->forceCallCounter = atomic_dimer.getTotalForceCalls();
+  // The GP dimer evaluates a private potential, so pot never saw these calls.
+  // Add them: callers measure the search as a difference of this counter, and
+  // an assignment drops the earlier calls and can wrap the size_t difference.
+  pot->forceCallCounter +=
+      static_cast<size_t>(atomic_dimer.getTotalForceCalls());
   return;
 }
 
