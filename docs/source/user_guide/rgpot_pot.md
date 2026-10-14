@@ -361,18 +361,16 @@ orbitals.
 A batch puts at most ceil(M / G) of its M systems on one group. An
 update of only some images, which would stack them on the groups that
 own them, moves the excess to the least-loaded groups, and a moved image
-stays on its new group. Groups that own fewer systems than the busiest
-group repeat their last system into scratch, and an empty group repeats
-system 0 of that batch, so every group enters the engine the same number
-of times. A repeat of a group's last system is the stored result of its
-session and runs no SCF. The systems count omits those repeats.
+stays on its new group. A group with fewer systems than the busiest
+waits for the others at the result exchange; rgpot keeps the engine's
+error agreement inside each calculator, so no group has to repeat a
+system to match the others' engine calls.
 
 With `ci_mmf = true` the climbing image takes improved-dimer steps on its
 own. Each step evaluates the moved centre and its forward image as one
-batch. A rotation trial depends on the previous one and runs alone:
-every group evaluates that one structure, and the run keeps the result
-of the group that last evaluated the geometry nearest to it. The usage
-line counts the call on that group. A saddle search does the same, and
+batch. A rotation trial depends on the previous one and runs alone, on
+the group that last evaluated the geometry nearest to it, while the other
+groups wait. A saddle search does the same, and
 with `min_mode_method = lanczos` the second system of that batch is the
 first Krylov product's displaced image.
 
