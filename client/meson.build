@@ -676,12 +676,12 @@ _linkto += eoncbase
 # later _deps += readcon_dep does not reach libsocket_nwchem.so.
 # Prefer cargo-c / pkg-config install (conda-forge host package); fall back
 # to the meson subproject when the system package is not available.
-# ConFileIO needs 0.16 for set_spreads_from_flat, on top of 0.15's
-# displacements section (Hessian modes.con) and 0.13's clone, bulk
-# set_*_from_flat and compression_from_extension.
+# ConFileIO needs 0.17.1 for the round-trip writer, on top of 0.16's
+# set_spreads_from_flat, 0.15's displacements section (Hessian modes.con),
+# and 0.13's clone, bulk set_*_from_flat and compression_from_extension.
 readcon_dep = dependency(
     'readcon-core',
-    version: '>=0.16.0',
+    version: '>=0.17.1',
     method: 'pkg-config',
     required: false,
 )
@@ -694,7 +694,7 @@ _have_readcon_dll_beside = false
 if not readcon_dep.found()
     readcon_proj = subproject(
         'readcon-core',
-        version: '>=0.16.0',
+        version: '>=0.17.1',
         default_options: {
             'with_tests': false,
             'with_examples': false,
@@ -1932,6 +1932,7 @@ if get_option('with_tests')
         ['test_saddle', 'SaddleSearchTest.cpp', 'neb_morse'],
         ['test_confileio', 'ConFileIOTest.cpp', 'neb_morse'],
         ['test_approve_confileio', 'ApproveConFileIO.cpp', 'neb_morse'],
+        ['test_con_restart_exact', 'ConRestartExact.cpp', 'neb_morse'],
         ['test_minimization', 'MinimizationTest.cpp', 'neb_morse'],
         ['test_optimizer', 'OptimizerTest.cpp', ''],
         ['test_fpe_handler', 'FPEHandlerTest.cpp', ''],

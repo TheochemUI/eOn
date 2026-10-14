@@ -159,6 +159,14 @@ def _mirror_con_text(path, text):
     mirror_con_text(path, text)
 
 
+def _note_corpus_append(path, text):
+    try:
+        from eon.concorpus import note_corpus_append
+    except ImportError:
+        return
+    note_corpus_append(path, text)
+
+
 def loadcons(filename):
     frames = readcon.read_con(filename)
     _mirror_con_path(filename)
@@ -294,8 +302,13 @@ def savecon(fileout, p, w = 'w'):
     else:
         readcon.write_con(fileout, [frame])
     if not hasattr(fileout, 'write'):
-        if w == 'a':
-            _mirror_con_text(fileout, frame_text)
+        appended = (
+            w == 'a'
+            and Path(fileout).exists()
+            and Path(fileout).stat().st_size > len(frame_text.encode())
+        )
+        if appended:
+            _note_corpus_append(fileout, frame_text)
         else:
             _mirror_con_path(fileout)
 

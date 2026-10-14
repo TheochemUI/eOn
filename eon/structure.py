@@ -10,12 +10,15 @@ aselite-era mini-Atoms type without requiring ASE.
 
 from __future__ import annotations
 
+import logging
 from typing import List, Sequence
 
 import numpy as np
 import readcon
 
 from eon.geometry.cell import box_to_length_angle, length_angle_to_box
+
+logger = logging.getLogger("eon.structure")
 
 
 def coerce_free(value, n: int) -> np.ndarray:
@@ -130,6 +133,9 @@ class Structure:
         "atom_ids",
         "file_to_struct",
         "periodic",
+        "forces",
+        "velocities",
+        "con_energy",
     )
 
     def __init__(self, n_atoms: int = 0):
@@ -141,6 +147,9 @@ class Structure:
         self.atom_ids = np.arange(1, n_atoms + 1, dtype=np.uint64)
         self.file_to_struct = np.arange(n_atoms, dtype=np.int64)
         self.periodic = np.ones(3, dtype=bool)
+        self.forces = None
+        self.velocities = None
+        self.con_energy = None
 
     @property
     def free(self) -> np.ndarray:
@@ -172,6 +181,17 @@ class Structure:
         p.atom_ids = self.atom_ids.copy()
         p.file_to_struct = self.file_to_struct.copy()
         p.periodic = np.array(self.periodic, dtype=bool, copy=True)
+        p.forces = (
+            None
+            if self.forces is None
+            else np.array(self.forces, dtype=float, copy=True)
+        )
+        p.velocities = (
+            None
+            if self.velocities is None
+            else np.array(self.velocities, dtype=float, copy=True)
+        )
+        p.con_energy = self.con_energy
         return p
 
     def ids_or_sequential(self) -> np.ndarray:
@@ -240,16 +260,10 @@ class Structure:
         boxlengths = np.asarray(list(frame.cell), dtype=float)
         boxangles = np.asarray(list(frame.angles), dtype=float)
         p.box = length_angle_to_box(boxlengths, boxangles)
-        # Prefer bulk coords when available
-        try:
-            coords = np.asarray(frame.coords_array(), dtype=float)
-            if coords.shape == (n, 3):
-                p.r = coords.copy()
-            else:
-                raise ValueError("coords shape")
-        except Exception:
-            for i, atom in enumerate(frame.atoms):
-                p.r[i] = [atom.x, atom.y, atom.z]
+        coords = np.asarray(frame.xyz, dtype=float)
+        if coords.shape != (n, 3):
+            raise ValueError(f"xyz shape {coords.shape} is not {(n, 3)}")
+        p.r = np.array(coords, dtype=float, copy=True)
         try:
             ids = np.asarray(frame.atom_ids_array(), dtype=np.uint64)
             if ids.shape != (n,):
@@ -277,6 +291,32 @@ class Structure:
             p.mass = p.mass[order]
             p.atom_ids = p.atom_ids[order]
             p.names = [p.names[j] for j in order]
+
+        def _section(attrs: tuple[str, str, str]) -> np.ndarray | None:
+            rows = []
+            present = False
+            for atom in frame.atoms:
+                vals = [getattr(atom, name) for name in attrs]
+                if any(val is not None for val in vals):
+                    present = True
+                rows.append([0.0 if val is None else float(val) for val in vals])
+            if not present:
+                return None
+            arr = np.array(rows, dtype=float)
+            if not np.array_equal(order, np.arange(n)):
+                arr = arr[order]
+            return arr
+
+        p.forces = _section(("fx", "fy", "fz"))
+        p.velocities = _section(("vx", "vy", "vz"))
+        meta = getattr(frame, "metadata", None)
+        if meta is not None:
+            try:
+                energy = meta["energy"]
+            except Exception:
+                energy = None
+            if energy is not None:
+                p.con_energy = float(energy)
         return p
 
     def to_conframe(
@@ -292,21 +332,50 @@ class Structure:
         """
         lengths, angles = box_to_length_angle(self.box)
         atom_ids = self.ids_or_sequential()
+        forces = getattr(self, "forces", None)
+        velocities = getattr(self, "velocities", None)
+        first_mass: dict[str, float] = {}
         atom_list = []
         for i in range(len(self)):
             fixed = [bool(self._free[i, a] < 0.5) for a in range(3)]
+            symbol = self.names[i]
+            mass = float(self.mass[i])
+            seen = first_mass.get(symbol)
+            if seen is None:
+                first_mass[symbol] = mass
+            elif seen != mass:
+                logger.info(
+                    "Collapsed mass of %s atom %s from %s to %s",
+                    symbol,
+                    i,
+                    mass,
+                    seen,
+                )
+                mass = seen
+            kwargs = {}
+            if forces is not None:
+                row = np.asarray(forces[i], dtype=float).reshape(3)
+                kwargs["fx"] = float(row[0])
+                kwargs["fy"] = float(row[1])
+                kwargs["fz"] = float(row[2])
+            if velocities is not None:
+                row = np.asarray(velocities[i], dtype=float).reshape(3)
+                kwargs["vx"] = float(row[0])
+                kwargs["vy"] = float(row[1])
+                kwargs["vz"] = float(row[2])
             atom_list.append(
                 readcon.Atom(
-                    symbol=self.names[i],
+                    symbol=symbol,
                     x=float(self.r[i][0]),
                     y=float(self.r[i][1]),
                     z=float(self.r[i][2]),
                     fixed=fixed,
                     atom_id=int(atom_ids[i]),
-                    mass=float(self.mass[i]),
+                    mass=mass,
+                    **kwargs,
                 )
             )
-        return readcon.ConFrame(
+        frame = readcon.ConFrame(
             cell=list(lengths),
             angles=list(angles),
             atoms=atom_list,
@@ -315,6 +384,10 @@ class Structure:
             else ["Generated by eOn", ""],
             postbox_header=list(postbox_header) if postbox_header is not None else None,
         )
+        energy = getattr(self, "con_energy", None)
+        if energy is not None:
+            frame.set_energy(float(energy))
+        return frame
 
 
 # Back-compat name used throughout the server

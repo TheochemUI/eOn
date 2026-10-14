@@ -1,7 +1,7 @@
 project(
     'readcon-core',
     'c',
-    version: '0.16.0',
+    version: '0.17.1',
     meson_version: '>=1.3.0',
     default_options: [
         'buildtype=debugoptimized',
@@ -29,8 +29,12 @@ cc = meson.get_compiler('c')
 cargo_prog = find_program('cargo', required: true)
 rustc_prog = find_program('rustc', required: true)
 _py = find_program('python3', 'python')
-_rv = run_command(rustc_prog, '--version', check: true).stdout().strip().split()
-if _rv.length() < 2 or not _rv[1].version_compare('>= 1.88.0')
+_rv = run_command(rustc_prog, '--version', check: false)
+if _rv.returncode() != 0
+    error('unsupported architecture')
+endif
+_rv_bits = _rv.stdout().strip().split()
+if _rv_bits.length() < 2 or not _rv_bits[1].version_compare('>= 1.88.0')
     error('readcon-core requires rustc >= 1.88.0')
 endif
 

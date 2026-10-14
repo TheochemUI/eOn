@@ -12,10 +12,12 @@ read those frames back with one read-only ``get_frame_texts`` call. The
 
 from __future__ import annotations
 
+import atexit
 import gc
 import logging
 import os
 import tempfile
+import threading
 from pathlib import Path
 
 logger = logging.getLogger("eon.concorpus")
@@ -24,14 +26,23 @@ _FNV_OFFSET = 14695981039346656037
 _FNV_PRIME = 1099511628211
 _MASK = (1 << 64) - 1
 
+_GROUP = 64
 _unavailable = False
 _corpora: dict[str, object] = {}
+_pending: dict[str, list[str]] = {}
+_pending_lock = threading.Lock()
 
 
-def traj_id(path: str, text: str) -> int:
-    """FNV-1a 64 over the absolute path, a NUL, and the con text."""
+def traj_id(path: str, text: str | None = None) -> int:
+    """FNV-1a 64 of the canonical path bytes.
+
+    ``text`` is ignored. The id is the path alone, the same offset and
+    prime as the C++ mirror. A zero digest becomes 1. Old corpora stay
+    under the keys they already have.
+    """
+    del text
     h = _FNV_OFFSET
-    for byte in (path + "\0" + text).encode():
+    for byte in path.encode():
         h ^= byte
         h = (h * _FNV_PRIME) & _MASK
     return h or 1
@@ -73,20 +84,90 @@ def _corpus(directory: Path):
     return db
 
 
-def mirror_con_text(path, text: str) -> None:
-    """Insert one con blob. Identical path-and-text pairs are stored once."""
-    if not text or not text.strip():
-        return
+def _resolved(path) -> str:
     con_path = Path(path)
     try:
-        resolved = str(con_path.resolve())
+        return str(con_path.resolve())
     except OSError:
-        resolved = str(con_path)
-    db = _corpus(corpus_dir(con_path))
+        return str(con_path)
+
+
+def _extend_batch(resolved: str, frames: list[str]) -> None:
+    """Extend one batch. A missing symbol or library is a soft skip."""
+    if not frames:
+        return
+    text = "".join(frames)
+    db = _corpus(corpus_dir(Path(resolved)))
+    if db is None:
+        return
+    tid = traj_id(resolved)
+    extend_str = getattr(db, "extend_trajectory_str", None)
+    try:
+        if extend_str is not None:
+            extend_str(tid, text, source=resolved)
+            return
+        extend = getattr(db, "extend_trajectory", None)
+        if extend is None:
+            logger.debug("readcon-db has no extend entry; corpus batch skipped")
+            return
+        fd, scratch = tempfile.mkstemp(prefix="eon-corpus-", suffix=".con")
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as fh:
+                fh.write(text)
+            extend(tid, scratch)
+        finally:
+            try:
+                os.unlink(scratch)
+            except OSError:
+                pass
+    except Exception as exc:
+        logger.debug("readcon-db extend skipped for %s: %s", resolved, exc)
+
+
+def note_corpus_append(path, frame_text: str) -> None:
+    """Buffer one appended frame. Flush at 64 frames."""
+    if not frame_text or not frame_text.strip():
+        return
+    resolved = _resolved(path)
+    ready: list[str] | None = None
+    with _pending_lock:
+        slot = _pending.setdefault(resolved, [])
+        slot.append(frame_text)
+        if len(slot) >= _GROUP:
+            ready = slot
+            del _pending[resolved]
+    if ready is not None:
+        _extend_batch(resolved, ready)
+
+
+def flush_corpus_appends() -> None:
+    """Extend every buffered batch. A crash before this drops at most 63 frames."""
+    with _pending_lock:
+        pending = list(_pending.items())
+        _pending.clear()
+    for resolved, frames in pending:
+        _extend_batch(resolved, frames)
+
+
+def corpus_buffered_frames(path) -> int:
+    resolved = _resolved(path)
+    with _pending_lock:
+        return len(_pending.get(resolved, ()))
+
+
+atexit.register(flush_corpus_appends)
+
+
+def mirror_con_text(path, text: str) -> None:
+    """Insert one con blob under the path id. A second insert is TrajExists."""
+    if not text or not text.strip():
+        return
+    resolved = _resolved(path)
+    db = _corpus(corpus_dir(Path(resolved)))
     if db is None:
         return
     try:
-        db.append_trajectory_str(traj_id(resolved, text), text, source=resolved)
+        db.append_trajectory_str(traj_id(resolved), text, source=resolved)
     except Exception as exc:
         if "already exists" in str(exc):
             return
@@ -102,15 +183,11 @@ def store_frame_text(path, text: str) -> tuple[int, int] | None:
     """
     if not text or not text.strip():
         return None
-    con_path = Path(path)
-    try:
-        resolved = str(con_path.resolve())
-    except OSError:
-        resolved = str(con_path)
-    db = _corpus(corpus_dir(con_path))
+    resolved = _resolved(path)
+    db = _corpus(corpus_dir(Path(resolved)))
     if db is None:
         return None
-    key = traj_id(resolved, text)
+    key = traj_id(resolved)
     try:
         db.append_trajectory_str(key, text, source=resolved)
     except Exception as exc:
@@ -122,6 +199,7 @@ def store_frame_text(path, text: str) -> tuple[int, int] | None:
 
 def load_frame_text(directory: Path, traj: int, frame_idx: int) -> str | None:
     """Frame text for a key in this corpus, or None when it is absent."""
+    flush_corpus_appends()
     db = _corpus(Path(directory))
     if db is None:
         return None
@@ -140,9 +218,9 @@ def load_frame_text(directory: Path, traj: int, frame_idx: int) -> str | None:
 
 def stored_frame_text(path) -> str | None:
     """Frame text for this path's current blob, or None when the corpus has no copy."""
+    flush_corpus_appends()
     con_path = Path(path)
     try:
-        text = con_path.read_text()
         resolved = str(con_path.resolve())
     except OSError:
         return None
@@ -150,7 +228,7 @@ def stored_frame_text(path) -> str | None:
     if db is None:
         return None
     try:
-        return db.get_frame_text(traj_id(resolved, text), 0)
+        return db.get_frame_text(traj_id(resolved), 0)
     except Exception:
         return None
 
