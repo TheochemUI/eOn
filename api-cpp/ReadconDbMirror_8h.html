@@ -237,7 +237,10 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('ReadconDbMirro
   <div class="headertitle"><div class="title">ReadconDbMirror.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;string&gt;</code><br />
+<div class="textblock"><code>#include &lt;cstddef&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
 </div>
 <p><a href="ReadconDbMirror_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -249,8 +252,16 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a283dbb3464136e99df71453b4fb09202" id="r_a283dbb3464136e99df71453b4fb09202"><td class="memItemLeft">std::uint64_t&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#a283dbb3464136e99df71453b4fb09202">eonc::io::corpus_path_id</a> (std::string_view canonical_path)</td></tr>
+<tr class="memdesc:a283dbb3464136e99df71453b4fb09202"><td class="mdescLeft">&#160;</td><td class="mdescRight">FNV-1a 64 of the canonical path bytes.  <br /></td></tr>
 <tr class="memitem:abc75e22aaffd22817956f2c37fac7bac" id="r_abc75e22aaffd22817956f2c37fac7bac"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#abc75e22aaffd22817956f2c37fac7bac">eonc::io::mirror_con_corpus</a> (const std::string &amp;path)</td></tr>
 <tr class="memdesc:abc75e22aaffd22817956f2c37fac7bac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy a con file into the run readcon-db corpus when libreadcon_db loads.  <br /></td></tr>
+<tr class="memitem:aba01c03e69b625b827df99e81fc299e0" id="r_aba01c03e69b625b827df99e81fc299e0"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#aba01c03e69b625b827df99e81fc299e0">eonc::io::note_corpus_append</a> (const std::string &amp;path, const std::string &amp;frame_text)</td></tr>
+<tr class="memdesc:aba01c03e69b625b827df99e81fc299e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Buffer one serialized frame from an append.  <br /></td></tr>
+<tr class="memitem:a52586b519002b3f7a3d01421452aa808" id="r_a52586b519002b3f7a3d01421452aa808"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#a52586b519002b3f7a3d01421452aa808">eonc::io::flush_corpus_appends</a> ()</td></tr>
+<tr class="memdesc:a52586b519002b3f7a3d01421452aa808"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extend every buffered batch. Called on corpus-cache teardown.  <br /></td></tr>
+<tr class="memitem:a2aac5a81cbe10efef71df5dff3365488" id="r_a2aac5a81cbe10efef71df5dff3365488"><td class="memItemLeft">std::size_t&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#a2aac5a81cbe10efef71df5dff3365488">eonc::io::corpus_buffered_frames</a> (const std::string &amp;path)</td></tr>
+<tr class="memdesc:a2aac5a81cbe10efef71df5dff3365488"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frames waiting for the next extend of this path.  <br /></td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

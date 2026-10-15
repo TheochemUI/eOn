@@ -1,5 +1,10 @@
 var NAVTREEINDEX38 =
 {
+"structeonc_1_1tunneling_1_1RingChannel.html#a5c7b8a9cdc1a0c0a37926f587cb7da31":[6,0,0,8,5,1],
+"structeonc_1_1tunneling_1_1RingChannel.html#a9bd776bb074359bcd7ffb919b5bf30d1":[4,0,1,18,5,2],
+"structeonc_1_1tunneling_1_1RingChannel.html#a9bd776bb074359bcd7ffb919b5bf30d1":[6,0,0,8,5,2],
+"structeonc_1_1tunneling_1_1RingChannel.html#ac1a3ef3d1199ab518d104839e2263603":[4,0,1,18,5,3],
+"structeonc_1_1tunneling_1_1RingChannel.html#ac1a3ef3d1199ab518d104839e2263603":[6,0,0,8,5,3],
 "structeonc_1_1tunneling_1_1RingRigidBodies.html":[4,0,1,18,6],
 "structeonc_1_1tunneling_1_1RingRigidBodies.html":[6,0,0,8,6],
 "structeonc_1_1tunneling_1_1RingRigidBodies.html#a39ed47388bf2dddcd6c5459eeafe50db":[4,0,1,18,6,0],
@@ -244,10 +249,5 @@ var NAVTREEINDEX38 =
 "tip4p__ccl_8hpp.html":[7,0,1,0,3,17,3],
 "tip4p__ccl_8hpp_source.html":[7,0,1,0,3,17,3],
 "tip4p__unit__system_8hpp.html":[7,0,1,0,3,17,4],
-"tip4p__unit__system_8hpp.html#a1286742836184cb394390f105218510a":[7,0,1,0,3,17,4,3],
-"tip4p__unit__system_8hpp.html#a489f5131304a4904be0b8209a740d32a":[7,0,1,0,3,17,4,6],
-"tip4p__unit__system_8hpp.html#a6ad4bb5c98f77601ae147f4e50981527":[7,0,1,0,3,17,4,0],
-"tip4p__unit__system_8hpp.html#a6d49fd9bb65e21ca5fcb3a44f4b3d6f4":[7,0,1,0,3,17,4,4],
-"tip4p__unit__system_8hpp.html#ab2d83ee83f5c36c3f706df8101d4c720":[7,0,1,0,3,17,4,1],
-"tip4p__unit__system_8hpp.html#ad2ec3f26648db31dc12c1078a599de0d":[7,0,1,0,3,17,4,2]
+"tip4p__unit__system_8hpp.html#a1286742836184cb394390f105218510a":[7,0,1,0,3,17,4,3]
 };

@@ -1,5 +1,10 @@
 var NAVTREEINDEX28 =
 {
+"structeonc_1_1DimerRotationResult.html":[6,0,0,39],
+"structeonc_1_1DimerRotationResult.html#a49d4111f3e34dbf4538f416dfa974f24":[4,0,1,49,0],
+"structeonc_1_1DimerRotationResult.html#a49d4111f3e34dbf4538f416dfa974f24":[6,0,0,39,0],
+"structeonc_1_1DimerRotationResult.html#a4fdd4d51b89eb40082db510b2f440924":[4,0,1,49,4],
+"structeonc_1_1DimerRotationResult.html#a4fdd4d51b89eb40082db510b2f440924":[6,0,0,39,4],
 "structeonc_1_1DimerRotationResult.html#a583de8c71b44cd847e99b80f0dd50c2f":[4,0,1,49,3],
 "structeonc_1_1DimerRotationResult.html#a583de8c71b44cd847e99b80f0dd50c2f":[6,0,0,39,3],
 "structeonc_1_1DimerRotationResult.html#ac95fdeb06b626503dad6236b39079674":[4,0,1,49,1],
@@ -244,10 +249,5 @@ var NAVTREEINDEX28 =
 "structeonc_1_1OHTSTJob_1_1PlaneAverages.html#ae177ec153c024ccf6df60632f4c661fd":[6,0,0,106,0,1],
 "structeonc_1_1OHTSTJob_1_1PlaneAverages.html#aeb276652bc2e5ad8864424e900d01ea1":[4,0,1,116,0,2],
 "structeonc_1_1OHTSTJob_1_1PlaneAverages.html#aeb276652bc2e5ad8864424e900d01ea1":[6,0,0,106,0,2],
-"structeonc_1_1OHTSTJob_1_1PlaneAverages.html#afcf5c982a3e80b4c2cd8e144dddf7643":[4,0,1,116,0,3],
-"structeonc_1_1OHTSTJob_1_1PlaneAverages.html#afcf5c982a3e80b4c2cd8e144dddf7643":[6,0,0,106,0,3],
-"structeonc_1_1OptimizerConfig.html":[4,0,1,119],
-"structeonc_1_1OptimizerConfig.html":[6,0,0,109],
-"structeonc_1_1OptimizerConfig.html#a519fd435ac409c95359a5edcada28935":[4,0,1,119,4],
-"structeonc_1_1OptimizerConfig.html#a519fd435ac409c95359a5edcada28935":[6,0,0,109,4]
+"structeonc_1_1OHTSTJob_1_1PlaneAverages.html#afcf5c982a3e80b4c2cd8e144dddf7643":[4,0,1,116,0,3]
 };
