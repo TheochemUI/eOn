@@ -2120,6 +2120,14 @@ if get_option('with_tests')
         if fs.is_dir(_pbin)
             _stage_search += _pbin
         endif
+        # Torch and metatomic DLLs are not in the pixi prefix. Without
+        # them on the search list, c10 and libiomp stay on PATH and a
+        # pixi copy of the same name is missing the entry point.
+        foreach _extra : _win_mta_dll_dirs
+            if fs.is_dir(_extra)
+                _stage_search += _extra
+            endif
+        endforeach
         _stage_engine_imports = custom_target(
             'stage-engine-dll-imports',
             input: eon_relax_engine,
