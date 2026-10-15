@@ -89,6 +89,10 @@ def stage(dll: Path, search: list[Path], stamp: Path) -> None:
     seen: set[str] = set()
     queue = [dll]
     copied: list[str] = []
+    print(
+        f"win_stage_imports: imports of {dll.name}: {', '.join(imported_dlls(dll))}",
+        flush=True,
+    )
     while queue:
         current = queue.pop(0)
         key = str(current.resolve()).lower()
@@ -111,6 +115,7 @@ def stage(dll: Path, search: list[Path], stamp: Path) -> None:
             shutil.copy2(source, target)
             copied.append(name)
             queue.append(target)
+    print("win_stage_imports: copied " + ", ".join(copied), flush=True)
     stamp.write_text("\n".join(copied) + "\n", encoding="utf-8")
 
 
