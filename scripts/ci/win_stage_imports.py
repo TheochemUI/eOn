@@ -84,13 +84,27 @@ def imported_dlls(path: Path) -> list[str]:
     return names
 
 
+def _find_import(name: str, preferred: Path, search: list[Path]) -> Path | None:
+    # Prefer the directory the importing DLL came from so a pixi copy of
+    # the same name cannot replace torch's matching dependency.
+    sibling = preferred / name
+    if sibling.is_file():
+        return sibling
+    return next((d / name for d in search if (d / name).is_file()), None)
+
+
 def stage(dll: Path, search: list[Path], stamp: Path) -> None:
     dest = dll.parent
     seen: set[str] = set()
-    queue = [dll]
+    # Second item is the directory preferred for this DLL's imports.
+    queue: list[tuple[Path, Path]] = [(dll, dll.parent)]
     copied: list[str] = []
+    print(
+        f"win_stage_imports: imports of {dll.name}: {', '.join(imported_dlls(dll))}",
+        flush=True,
+    )
     while queue:
-        current = queue.pop(0)
+        current, preferred = queue.pop(0)
         key = str(current.resolve()).lower()
         if key in seen or not current.is_file():
             continue
@@ -100,17 +114,17 @@ def stage(dll: Path, search: list[Path], stamp: Path) -> None:
                 continue
             target = dest / name
             if target.is_file():
+                if str(target.resolve()).lower() not in seen:
+                    queue.append((target, target.parent))
                 continue
-            source = next(
-                (d / name for d in search if (d / name).is_file()),
-                None,
-            )
+            source = _find_import(name, preferred, search)
             if source is None:
                 print(f"win_stage_imports: {name} not in search path", file=sys.stderr)
                 continue
             shutil.copy2(source, target)
             copied.append(name)
-            queue.append(target)
+            queue.append((target, source.parent))
+    print("win_stage_imports: copied " + ", ".join(copied), flush=True)
     stamp.write_text("\n".join(copied) + "\n", encoding="utf-8")
 
 
