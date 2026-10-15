@@ -179,7 +179,12 @@
     "8758": "chore(version): v3.6.0",
     "8762": "feat(schema): publish one JSON Schema per config.ini section",
     "8764": "docs: state 3.6.0 and the calculator-group build flag",
-    "9087": "fix: disable floating-point contraction unless fast_math is on (#771)"
+    "9087": "fix: disable floating-point contraction unless fast_math is on (#771)",
+    "9133": "feat(io): write CON with binary64 round-trip spelling",
+    "9134": "fix(test): keep restart golden newlines as LF",
+    "9135": "fix(test): delay-load the relax engine before torch binds DLLs",
+    "9136": "fix(test): stage torch DLLs beside the relax engine",
+    "9137": "Merge pull request #776 from TheochemUI/feat/readcon-0.17-roundtrip"
   },
   "dcbade17ecc8386a4ee5804354b4994c8ba1d6d8": "update lammps webpage",
   "292bc143343709b10fb7ed150ae5bb493748b289": "gitig: Update",
@@ -360,5 +365,10 @@
   "2d2adada2f64c4c5a063065abc0d9a8a56d74b2c": "chore(version): v3.6.0",
   "c0dcb1b36906677f4a98cf6bac57d148c9dd76c7": "feat(schema): publish one JSON Schema per config.ini section",
   "2f84d583dd0c8c5a6a25d35b06fc2a1f3425c051": "docs: state 3.6.0 and the calculator-group build flag",
-  "cc4f69982610ae4872ba6fa33ea324f0f45aa1f8": "fix: disable floating-point contraction unless fast_math is on (#771)"
+  "cc4f69982610ae4872ba6fa33ea324f0f45aa1f8": "fix: disable floating-point contraction unless fast_math is on (#771)",
+  "e5b658813a9ff79e8f44861387b1c2bfae274a90": "feat(io): write CON with binary64 round-trip spelling",
+  "b001e9424df4d406f57d050adc244f77d071938f": "fix(test): keep restart golden newlines as LF",
+  "3242302e953b8396aa30a561b645f84b4b345e65": "fix(test): delay-load the relax engine before torch binds DLLs",
+  "438a0021086054c4266ead9aac6e7af571014148": "fix(test): stage torch DLLs beside the relax engine",
+  "1d71c944501832bfafb955ffe13b9aae50c8efd4": "Merge pull request #776 from TheochemUI/feat/readcon-0.17-roundtrip"
 }
