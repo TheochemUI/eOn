@@ -10,8 +10,8 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/ConFileIO.h"
-#include "eon/ChemfilesIO.h"
 #include "ReadconDbMirror.h"
+#include "eon/ChemfilesIO.h"
 #include "eon/Eigen.h"
 #include "eon/EonLogger.h"
 #include "eon/HelperFunctions.h"

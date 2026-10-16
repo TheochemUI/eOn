@@ -1802,8 +1802,8 @@ int load_ini(const INIReader &ini, Parameters &params) {
                                   "or finite_difference, not " +
                                   o.initial_hessians);
     }
-    o.physical_hessian_step = ini.GetReal(
-        "Instanton", "physical_hessian_step", o.physical_hessian_step);
+    o.physical_hessian_step = ini.GetReal("Instanton", "physical_hessian_step",
+                                          o.physical_hessian_step);
     if (!(o.physical_hessian_step > 0.0) ||
         !std::isfinite(o.physical_hessian_step)) {
       throw std::invalid_argument(
