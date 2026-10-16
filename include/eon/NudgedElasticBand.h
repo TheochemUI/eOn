@@ -64,6 +64,7 @@ public:
   [[nodiscard]] const Matrix3d &cellForce(long image) const {
     return projectedCellForce.at(static_cast<size_t>(image));
   }
+  // An explicit projection does not change the runtime CI flag.
   void updateForces(bool ci_active);
   void updateForces(void) { updateForces(ci_enabled_); }
   void setCIEnabled(bool enabled) {
@@ -97,6 +98,7 @@ public:
   std::vector<double> extremumCurvature;
 
   std::size_t maxEnergyImage{0};
+  // Geometry or runtime CI state differs from the cached band projection.
   bool movedAfterForceCall{false};
   bool perImagePotentials_{
       false}; ///< Whether per-image potential instances exist
