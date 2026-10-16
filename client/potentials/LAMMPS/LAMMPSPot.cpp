@@ -462,15 +462,14 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
     // pipe closed, so the first send after it fails. Respawning happens on
     // the next evaluation; reject this one rather than end the client.
     --workerRespawnsLeft;
-    EONC_LOG_WARNING("[LAMMPSPot] send to worker failed; {} respawns left "
-                     "(eon-7416)",
+    EONC_LOG_WARNING("[LAMMPSPot] send to worker failed; {} respawns left",
                      workerRespawnsLeft);
     stopWorker();
     rejectGeometry(U, F, N);
     return;
   }
 
-  // eon-7416: a worker stuck on a pathological geometry (LAMMPS spinning, or
+  // A worker stuck on a pathological geometry (LAMMPS spinning, or
   // a NaN it never returns) would make the blocking read below hang until the
   // akmc pass times out. Bound the wait: if the worker is silent past a
   // generous per-eval deadline, kill and reap it (a stuck worker never reaches
@@ -488,8 +487,7 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
       }
       --workerRespawnsLeft;
       EONC_LOG_WARNING(
-          "[LAMMPSPot] worker force eval timed out; {} respawns left "
-          "(eon-7416)",
+          "[LAMMPSPot] worker force eval timed out; {} respawns left",
           workerRespawnsLeft);
       stopWorker();
       rejectGeometry(U, F, N);
@@ -504,8 +502,7 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
       !readExact(resFd, stressRaw, sizeof(stressRaw))) {
     --workerRespawnsLeft;
     EONC_LOG_WARNING(
-        "[LAMMPSPot] worker died during force eval; {} respawns left "
-        "(eon-7416)",
+        "[LAMMPSPot] worker died during force eval; {} respawns left",
         workerRespawnsLeft);
     stopWorker();
     rejectGeometry(U, F, N);
@@ -525,8 +522,7 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
     drainLammpsScreen();
     --workerRespawnsLeft;
     EONC_LOG_WARNING(
-        "[LAMMPSPot] worker reported an evaluation error; {} respawns left "
-        "(eon-7416)",
+        "[LAMMPSPot] worker reported an evaluation error; {} respawns left",
         workerRespawnsLeft);
     stopWorker();
     rejectGeometry(U, F, N);
@@ -557,7 +553,7 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
   }
   if (nonfinite) {
     EONC_LOG_WARNING("[LAMMPSPot] non-finite force or energy; rejecting "
-                     "geometry (eon-7416)");
+                     "geometry");
     rejectGeometry(U, F, N);
   }
 #endif
@@ -774,9 +770,9 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
       MPI_Comm_size(mpiComm, &ranks);
     }
     if (ranks > 1) {
-      throw std::runtime_error(
-          "LAMMPS calculator uses multiple MPI ranks but lammps_open is missing.\n"
-          "Install an MPI-enabled LAMMPS build.");
+      throw std::runtime_error("LAMMPS calculator uses multiple MPI ranks but "
+                               "lammps_open is missing.\n"
+                               "Install an MPI-enabled LAMMPS build.");
     }
   }
 #else
