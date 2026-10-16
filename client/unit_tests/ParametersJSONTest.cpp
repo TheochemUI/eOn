@@ -525,9 +525,11 @@ TEST_CASE("Physical Hessian displacement survives INI and JSON configuration",
   REQUIRE_THROWS_AS(
       ini.load_ini_text("[Instanton]\nphysical_hessian_step = 0\n"),
       std::invalid_argument);
-  // load_json reports invalid_argument as a nonzero status.
-  REQUIRE(roundtrip.load_json(
-              R"({"Instanton":{"physical_hessian_step":-0.001}})") != 0);
+  const auto invalidStep = nlohmann::json::parse(
+      R"({"Instanton":{"physical_hessian_step":-0.001}})");
+  REQUIRE(roundtrip.load_json(invalidStep.dump()) != 0);
+  REQUIRE_THROWS_AS(eonc::config::from_json(invalidStep, roundtrip),
+                    std::invalid_argument);
 }
 
 } /* namespace tests */
