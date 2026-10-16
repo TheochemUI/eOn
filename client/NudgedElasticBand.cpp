@@ -333,6 +333,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
   long zoomStable{0};
   long zoomPrevCI{-1};
   long zoomAt{-1};
+  // Activation uses the stepping projection; acceptance uses configured CI.
+  double activation_force{0.0};
 
   while (this->status != NEBStatus::GOOD) {
     if (!path.empty()) {
@@ -387,6 +389,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
 
     if (iteration == 0) {
       baseline_force = convForce;
+      activation_force = convForce;
       ocineb.initBaseline(convForce);
 
       // Log configuration banner
@@ -448,9 +451,9 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
     // CI active when force drops below relative threshold
     bool ci_active =
         params.neb_options().climbing_image.enabled &&
-        (convForce < baseline_force *
+        (activation_force < baseline_force *
                          params.neb_options().climbing_image.trigger_factor ||
-         convForce < params.neb_options().climbing_image.trigger_force);
+         activation_force < params.neb_options().climbing_image.trigger_force);
 
     bool zoomedThisStep = false;
     if (iteration && !zoomDone && params.neb_options().zoom.enabled &&
@@ -541,6 +544,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
       }
 
       if (zoomedThisStep) {
+        activation_force = convergenceForce();
         iteration++;
         continue;
       }
@@ -571,6 +575,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
         activeOptim->step(params.optimizer_options().max_move);
       }
 
+      activation_force = convergenceForce();
       setCIEnabled(params.neb_options().climbing_image.enabled);
     }
 
