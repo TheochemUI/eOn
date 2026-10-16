@@ -669,3 +669,64 @@ labelprefix: INST_
 keyprefix: inst-
 ---
 ```
+
+
+## Fixed bath coefficients and physical units
+
+`friction = implicit` uses one nonnegative `friction_eta` coefficient.
+`friction = explicit` uses the comma-separated `friction_eta_beads`, one
+nonnegative coefficient per bead. These inputs define a **fixed quadratic
+bead operator**. Their numerical values retain their input convention.
+
+In mass-weighted coordinates {math}`q=\sqrt{m}\,r`, the implicit bath is
+
+```{math}
+ U_{\rm bath}=\frac12\sum_k
+       \eta_{\rm eff}\,2|\sin(\pi k/P)|\,|Q_k|^2.
+```
+
+The sine factor is dimensionless. Thus `friction_eta` is a curvature
+coefficient, in **eV/(amu Angstrom²)**, equivalently inverse internal time
+squared. It is not directly a damping frequency in inverse fs.
+For a physical scalar Ohmic damping {math}`\gamma` in mass-weighted coordinates,
+the mapping at the requested temperature and bead count is
+
+```{math}
+ \omega_P=\frac{1}{\beta_P\hbar_{\rm internal}},\qquad
+ \eta_{\rm eff}=\gamma_{\rm internal}\omega_P,\qquad
+ \beta_P=\beta/P.
+```
+
+The internal time unit is approximately 10.1805 fs. A damping specified in
+inverse fs converts as `gamma_internal = gamma_per_fs * time_unit_fs`.
+Cartesian scalar friction divided by the atom's mass gives the corresponding
+mass-weighted damping. The one-coefficient API applies that mass-weighted
+damping equally to all active coordinates.
+
+At fixed physical damping, changing temperature or bead count requires
+recomputing `eta_eff`. This also applies to a bead ladder: fixed raw input
+coefficients do not define a study at fixed physical damping. The code
+does not rescale existing input coefficients automatically.
+
+For explicit coefficients, the implemented map is
+
+```{math}
+ (Tq)_0=0,\qquad (Tq)_j=(Tq)_{j-1}
+ +\tfrac12(\sqrt{\eta_{j-1}}+\sqrt{\eta_j})(q_j-q_{j-1}),
+ \qquad K=T^T F^*\Omega F T,
+```
+
+where {math}`F` is unitary and {math}`\Omega_{kk}=2|\sin(\pi k/P)|`.
+The coefficients remain fixed while differentiating this quadratic form.
+A coordinate-dependent friction tensor or frequency-dependent spectral
+density requires additional coupling data and derivatives; a list of fixed
+bead coefficients alone does not specify either model.
+
+The physical-frequency mapping follows the uniform-coupling kernel in
+[Litman et al., Eqs. (16) and (20)](https://arxiv.org/html/2202.08668).
+Their Eq. (4) supplies the collective-coordinate normalization when its
+cyclic phase mode is a zero mode. For a nonzero bath, the rate calculation checks for one
+physical negative mode and a numerically null phase before using that
+factor. A resolved nonzero phase remains in the signed fluctuation
+diagnostics; the absolute Gaussian weight excludes contour and rate
+normalization. Its `rateValid = false` status must be retained by callers.

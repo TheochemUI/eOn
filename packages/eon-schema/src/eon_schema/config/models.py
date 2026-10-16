@@ -2738,12 +2738,17 @@ class InstantonConfig(BaseModel):
     friction_eta: float = Field(
         default=0.0,
         ge=0.0,
-        description="Implicit bath strength, the same on every bead.",
+        description=(
+            "Fixed bath curvature eta_eff in eV/(amu Angstrom^2), equal on every bead."
+            " For physical scalar Ohmic damping use eta_eff=gamma_internal/(beta_P*kHbar)."
+            " Raw coefficients are not rescaled across temperature or bead count."
+        ),
     )
     friction_eta_beads: str = Field(
         default="",
         description=(
-            "Explicit bath: comma-separated eta, one value per bead."
+            "Fixed bath curvatures in eV/(amu Angstrom^2), comma-separated, one per bead."
+            " Values stay fixed while differentiating the quadratic bead operator."
         ),
     )
     bead_ladder: bool = Field(

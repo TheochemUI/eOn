@@ -1277,11 +1277,16 @@ Instanton:
                 - implicit
                 - explicit
 
+        # Fixed bath curvature eta_eff, eV/(amu Angstrom^2).
+        # Raw normal-mode frequency is dimensionless 2*abs(sin(pi*k/P)).
+        # Physical Ohmic damping maps as eta_eff=gamma_internal/(beta_P*kHbar).
+        # Coefficients are not rescaled across temperatures or bead counts.
         friction_eta:
             kind: float
             default: 0.0
 
-        # Explicit bath: comma-separated eta, one value per bead.
+        # Fixed bath curvatures in eV/(amu Angstrom^2), one per bead.
+        # Values stay fixed when differentiating the quadratic bead operator.
         friction_eta_beads:
             kind: string
             default: ""
