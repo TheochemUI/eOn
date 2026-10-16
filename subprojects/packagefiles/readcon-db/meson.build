@@ -74,11 +74,13 @@ _src_rs = run_command(
     check: true,
 ).stdout().strip().split('\n')
 
-# MSVC links a shared library through readcon_db.dll.lib. rustc writes
-# that import library beside the DLL (often only under deps/). The
-# static archive is readcon_db.lib and is a different file. A path
-# string is not a ninja edge, so the import library is its own output
-# and readcon_dep link_with's it.
+# MSVC links a shared library through readcon_db.dll.lib. rustc's import
+# library also exports the readcon-core C ABI, and linking that with the
+# static readcon-core library is LNK2005. The cargo script rewrites the
+# import library so it exports only the rkrdb_ symbols. The static
+# archive is readcon_db.lib and is a different file. A path string is
+# not a ninja edge, so the import library is its own output and
+# readcon_dep link_with's it.
 _cargo_outputs = [_cargo_shared, _cargo_static]
 _cargo_install_dirs = [get_option('libdir'), get_option('libdir')]
 _cargo_cmd = [

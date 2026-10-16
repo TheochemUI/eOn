@@ -2,8 +2,13 @@
 """Build the readcon-db C ABI via cargo rustc and copy artifacts.
 
 Used by meson.build. Headers are shipped; this script never invokes cbindgen.
-On MSVC the cdylib's import library is ``<dll>.dll.lib`` (often only under
-``deps/``). The static archive is ``readcon_db.lib`` and is not that file.
+On MSVC the cdylib's import library is ``<dll>.dll.lib``. The static archive
+is ``readcon_db.lib`` and is not that file.
+
+rustc's import library re-exports every ``#[no_mangle]`` symbol linked into
+the cdylib, including the readcon-core C ABI. eOn also links the static
+readcon-core library, and those two definitions are LNK2005. The import
+library this script writes lists only the ``rkrdb_`` ABI.
 """
 
 from __future__ import annotations
@@ -16,22 +21,20 @@ import sys
 from pathlib import Path
 
 
-def locate_implib(built: Path, shared_name: str) -> Path | None:
-    """Return rustc's MSVC import library, or None when it was not emitted."""
-    exact = f"{shared_name}.lib"
-    for cand in (built / exact, built / "deps" / exact):
-        if cand.is_file() and cand.stat().st_size > 0:
-            return cand
-    matches = [p for p in built.rglob(exact) if p.is_file() and p.stat().st_size > 0]
-    if len(matches) == 1:
-        return matches[0]
-    for dll in built.rglob("*.dll"):
-        if "readcon_db" not in dll.name or not dll.is_file():
-            continue
-        sibling = dll.parent / f"{dll.name}.lib"
-        if sibling.is_file() and sibling.stat().st_size > 0:
-            return sibling
-    return None
+def is_readcon_db_export(name: str) -> bool:
+    """True for readcon-db's own C ABI.
+
+    A leading underscore is the 32-bit cdecl decoration. readcon-core
+    symbols (``rkr_``, ``create_writer_``, ``free_``, iterators) stay out
+    of the import library.
+    """
+    bare = name[1:] if name.startswith("_") else name
+    return bare.startswith("rkrdb_")
+
+
+def abi_exports(names: list[str]) -> list[str]:
+    """Import-library exports. Order follows the DLL export table."""
+    return [name for name in names if is_readcon_db_export(name)]
 
 
 def export_names(text: str) -> list[str]:
@@ -81,16 +84,16 @@ def write_implib(dll: Path, out_lib: Path) -> None:
     lib_exe = shutil.which("lib") or shutil.which("lib.exe")
     if dumpbin is None or lib_exe is None:
         sys.exit(
-            "MSVC import library was not produced and dumpbin/lib are not on PATH"
+            "dumpbin and lib.exe are required to write the readcon-db import library"
         )
     text = subprocess.check_output(
         [dumpbin, "/nologo", "/exports", str(dll)],
         text=True,
         errors="replace",
     )
-    names = export_names(text)
-    if not names:
-        sys.exit(f"no exports in {dll}\n{text[:2000]}")
+    names = abi_exports(export_names(text))
+    if "rkrdb_open" not in names and "_rkrdb_open" not in names:
+        sys.exit(f"no rkrdb_open export in {dll}\n{text[:2000]}")
     out_lib.parent.mkdir(parents=True, exist_ok=True)
     out_def = out_lib.with_suffix(".def")
     out_def.write_text(
@@ -110,16 +113,13 @@ def write_implib(dll: Path, out_lib: Path) -> None:
         sys.exit(f"lib.exe did not write {out_lib}")
 
 
-def copy_or_make_implib(
-    built: Path, shared_name: str, out_shared: Path, out_implib: Path
-) -> None:
-    if out_implib.is_file() and out_implib.stat().st_size > 0:
-        return
-    found = locate_implib(built, shared_name)
-    if found is not None:
-        if found.resolve() != out_implib.resolve():
-            shutil.copy2(found, out_implib)
-        return
+def copy_or_make_implib(out_shared: Path, out_implib: Path) -> None:
+    """Write the MSVC import library from the DLL export table.
+
+    rustc's ``<dll>.dll.lib`` is one object that defines the whole export
+    set. Copying it makes link.exe report LNK2005 against static
+    readcon-core, so this always rebuilds the import library.
+    """
     if not out_shared.is_file():
         sys.exit(f"cannot make an import library; DLL is missing: {out_shared}")
     write_implib(out_shared, out_implib)
@@ -188,7 +188,7 @@ def main(argv: list[str]) -> int:
     shutil.copy2(built / shared_name, out_shared)
     shutil.copy2(built / static_name, out_static)
     if out_implib:
-        copy_or_make_implib(built, shared_name, Path(out_shared), Path(out_implib))
+        copy_or_make_implib(Path(out_shared), Path(out_implib))
     return 0
 
 
